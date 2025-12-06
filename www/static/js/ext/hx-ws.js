@@ -78,6 +78,23 @@
             }
         }
         
+        // Close and remove listeners from old socket
+        if (entry.socket) {
+            let oldSocket = entry.socket;
+            entry.socket = null;
+            
+            oldSocket.onopen = null;
+            oldSocket.onmessage = null;
+            oldSocket.onclose = null;
+            oldSocket.onerror = null;
+            
+            try {
+                if (oldSocket.readyState === WebSocket.OPEN || oldSocket.readyState === WebSocket.CONNECTING) {
+                    oldSocket.close();
+                }
+            } catch (e) {}
+        }
+        
         try {
             entry.socket = new WebSocket(url);
             
@@ -93,7 +110,10 @@
                 handleMessage(entry, event);
             });
             
-            entry.socket.addEventListener('close', () => {
+            entry.socket.addEventListener('close', (event) => {
+                // Check if this socket is still the active one
+                if (event.target !== entry.socket) return;
+                
                 if (firstElement) {
                     triggerEvent(firstElement, 'htmx:ws:close', { url });
                 }
@@ -305,9 +325,9 @@
         
         if (partials.length === 0) {
             // No partials, treat entire payload as content for element's target
-            let target = resolveTarget(element);
+            let target = resolveTarget(element, envelope.target);
             if (target) {
-                swapContent(target, envelope.payload, element);
+                swapContent(target, envelope.payload, element, envelope.swap);
             }
             return;
         }
@@ -323,7 +343,13 @@
         });
     }
     
-    function resolveTarget(element) {
+    function resolveTarget(element, envelopeTarget) {
+        if (envelopeTarget) {
+            if (envelopeTarget === 'this') {
+                return element;
+            }
+            return document.querySelector(envelopeTarget);
+        }
         let targetSelector = api.attributeValue(element, 'hx-target');
         if (targetSelector) {
             if (targetSelector === 'this') {
@@ -334,8 +360,8 @@
         return element;
     }
     
-    function swapContent(target, content, sourceElement) {
-        let swapStyle = api.attributeValue(sourceElement, 'hx-swap') || htmx.config.defaultSwap;
+    function swapContent(target, content, sourceElement, envelopeSwap) {
+        let swapStyle = envelopeSwap || api.attributeValue(sourceElement, 'hx-swap') || htmx.config.defaultSwap;
         
         // Parse swap style (just get the main style, ignore modifiers for now)
         let style = swapStyle.split(' ')[0];
@@ -549,7 +575,7 @@
             processNode(element);
             
             // Process descendants
-            element.querySelectorAll('[hx-ws\\:connect], [hx-ws-connect], [hx-ws\\:send], [hx-ws-send], [hx-ws], [ws-connect], [ws-send]').forEach(processNode);
+                element.querySelectorAll('[hx-ws\\:connect], [hx-ws-connect], [hx-ws\\:send], [hx-ws-send], [hx-ws], [ws-connect], [ws-send]').forEach(processNode);
         },
         
         htmx_before_cleanup: (element) => {
