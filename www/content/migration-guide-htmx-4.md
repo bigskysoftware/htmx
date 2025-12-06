@@ -159,7 +159,6 @@ If you need upload progress tracking in htmx 4:
 
 * `htmx:after:cleanup` - Triggered after element cleanup
 * `htmx:after:history:update` - Triggered after history is updated
-* `htmx:after:implicitInheritance` - Triggered when implicit inheritance occurs (when config enabled)
 * `htmx:after:process` - Triggered after processing an element
 * `htmx:after:restore` - Triggered after all restore tasks complete
 * `htmx:after:viewTransition` - Triggered after view transition completes
@@ -208,6 +207,7 @@ These methods continue to exist in htmx 4:
 * `htmx.parseInterval(str)` - Parse interval strings like "1s", "500ms"
 * `htmx.process(element)` - Process htmx attributes on an element
 * `htmx.swap()` - Swap content into the DOM
+* `htmx.takeClass(element, className, container)` - Take a class from sibling elements
 * `htmx.trigger(element, eventName, detail)` - Trigger custom events
 
 ### New API Methods
