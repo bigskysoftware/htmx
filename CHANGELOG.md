@@ -11,6 +11,7 @@
 * Added `mergeConfig` support and improved `hx-config` merging ([#3561](https://github.com/bigskysoftware/htmx/pull/3561))
 * Fixed `hx-validate` to respect `noValidate` and validate inputs outside of forms ([#3562](https://github.com/bigskysoftware/htmx/pull/3562))
 * Fixed bug with empty response after partial removal detection ([#3569](https://github.com/bigskysoftware/htmx/pull/3569))
+* Removed `htmx.config.historyReload` in favor of `htmx.config.history = 'reload'`
 
 ## [4.0.0-alpha4] - 2025-11-27
 
