@@ -41,7 +41,23 @@ The `hx-swap` attributes supports modifiers for changing the behavior of the swa
 
 If you want to use the new [View Transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) API
 when a swap occurs, you can use the `transition:true` option for your swap.  You can also enable this feature globally by
-setting the `htmx.config.globalViewTransitions` config setting to `true`.
+setting the `htmx.config.transitions` config setting to `true`.
+
+Note that the default view transition is a cross-fade effect that takes
+[250 milliseconds](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using) to complete.  During a view
+transition, the application will not allow user interactions and, thus, can make the web application feel unresponsive.
+
+We strongly recommend a much lower transition time, in the sub-50ms range.  Here is how you would update the default
+view transition to take only 20 milliseconds:
+
+```css
+  ::view-transition-group(*) {
+    animation-duration: 20ms;
+  }
+```
+
+This affords a much better user experience when using view transitions in most cases.
+
 
 #### Timing: `swap` & `settle`
 
@@ -114,31 +130,6 @@ You may also use `window:top` and `window:bottom` to scroll to the top and botto
        hx-swap="innerHTML show:window:top">
     Get Some Content
   </div>
-```
-
-For boosted links and forms the default behaviour is `show:top`. You can disable it globally with
-[htmx.config.scrollIntoViewOnBoost](@/api.md#config) or you can use `hx-swap="show:none"` on an element basis.
-
-```html
-<form action="/example" hx-swap="show:none">
-  ...
-</form>
-```
-
-#### Focus scroll
-
-htmx preserves focus between requests for inputs that have a defined id attribute. By default htmx prevents auto-scrolling to focused inputs between requests which can be unwanted behavior on longer requests when the user has already scrolled away. To enable focus scroll you can use `focus-scroll:true`.
-
-```html
-  <input id="name" hx-get="/validation" 
-       hx-swap="outerHTML focus-scroll:true"/>
-```
-
-Alternatively, if you want the page to automatically scroll to the focused element after each request you can change the htmx global configuration value `htmx.config.defaultFocusScroll` to true. Then disable it for specific requests using `focus-scroll:false`.
-
-```html
-  <input id="name" hx-get="/validation" 
-       hx-swap="outerHTML focus-scroll:false"/>
 ```
 
 ## Notes

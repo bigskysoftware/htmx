@@ -559,8 +559,32 @@ Note that a similar effect can be achieved with the `hx-preserve` attribute, dis
 The [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
 gives developers a way to create an animated transition between different DOM states.  
 
-<!-- TODO - is this going to be true? -->
-By default, htmx uses the viewTransition() API when swapping in content.
+htmx supports view transitions in a few different ways:
+
+* You can enable them globally by setting the `htmx.config.viewTransitions` property to `true`
+* You can enable them on a per-swap basis via the `hx-swap` `transition` property:
+  ```html
+    <button hx-post="/like" hx-swap="outerHTML transition:true">Like</button>
+  ```
+* You can enable them for all boosted elements via the `hx-boost` attribute
+  ```html
+    <main hx-boost="transition:true"> ...
+  ```
+
+Note that the default view transition is a cross-fade effect that takes 
+[250 milliseconds](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using) to complete.  During a view 
+transition, the application will not allow user interactions and, thus, can make the web application feel unresponsive.
+
+We strongly recommend a much lower transition time, in the sub-50ms range.  Here is how you would update the default
+view transition to take only 20 milliseconds:
+
+```css
+  ::view-transition-group(*) {
+    animation-duration: 20ms;
+  }
+```
+
+This affords a much better user experience when using view transitions in most cases.
 
 #### Swap Options
 
@@ -574,16 +598,16 @@ behavior off by setting the `ignoreTitle` modifier to true:
 
 The modifiers available on `hx-swap` are:
 
-| Option       | Description                                                                                          |
-|--------------|------------------------------------------------------------------------------------------------------|
-| swap         | A time interval (e.g., 100ms, 1s) to delay the swap operation                                        |
-| transition   | true or false, whether to use the view transition API for this swap                                  |
-| ignoreTitle  | If set to true, any title found in the new content will be ignored and not update the document title |
-| strip        | true or false, whether to strip the outer element when swapping (unwrap the content)                 |
-| focus-scroll | true or false, whether to scroll focused elements into view                                          |
-| scroll       | top or bottom, will scroll the target element to its top or bottom                                   |
-| show         | top or bottom, will scroll the target element's top or bottom into view                              |
-| target       | A selector to retarget the swap to a different element                                               |
+| Option         | Description                                                                                          |
+|----------------|------------------------------------------------------------------------------------------------------|
+| `swap`         | A time interval (e.g., 100ms, 1s) to delay the swap operation                                        |
+| `transition`   | true or false, whether to use the view transition API for this swap                                  |
+| `ignoreTitle`  | If set to true, any title found in the new content will be ignored and not update the document title |
+| `strip`        | true or false, whether to strip the outer element when swapping (unwrap the content)                 |
+| `focus-scroll` | true or false, whether to scroll focused elements into view                                          |
+| `scroll`       | top or bottom, will scroll the target element to its top or bottom                                   |
+| `show`         | top or bottom, will scroll the target element's top or bottom into view                              |
+| `target`       | A selector to retarget the swap to a different element                                               |
 
 
 All swap modifiers appear after the swap style is specified, and are colon-separated.
@@ -760,6 +784,9 @@ included (typically this is the nearest enclosing form, but could be different i
 
 If you wish to include the values of other elements, you can use the [hx-include](@/attributes/hx-include.md) attribute
 with a CSS selector of all the elements whose values you want to include in the request.
+
+If you wish to add values programmatically to the request, you can use the [hx-vals](@/attributes/hx-vals.md) attribute
+with either static JSON or JavaScript to dynamically compute values.
 
 Finally, if you want to programmatically modify the parameters, you can use the [htmx:config:request](@/events.md#)
 event.

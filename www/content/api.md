@@ -330,7 +330,7 @@ Note that using a [meta tag](@/docs.md#configuring-htmx) is the preferred mechan
 
 * `logAll` - boolean: if true, htmx will log all events for debugging (default: `false`)
 * `prefix` - string: custom prefix for htmx attributes (default: `""`)
-* `transitions` - boolean: whether to use view transitions when swapping (default: `true`)
+* `transitions` - boolean: whether to use view transitions when swapping (default: `false`)
 * `history` - boolean: whether to enable history support (default: `true`)
 * `historyReload` - boolean: if true, do full reload on history navigation (default: `false`)
 * `mode` - string: the fetch mode for AJAX requests (default: `'same-origin'`)
@@ -342,7 +342,7 @@ Note that using a [meta tag](@/docs.md#configuring-htmx) is the preferred mechan
 * `inlineScriptNonce` - string: nonce to add to inline scripts (default: `''`)
 * `inlineStyleNonce` - string: nonce to add to inline styles (default: `''`)
 * `extensions` - string: comma-separated list of extensions to load (default: `''`)
-* `streams` - object: SSE stream configuration with properties:
+* `sse` - object: SSE/streaming configuration properties:
   * `reconnect` - boolean: whether to reconnect on disconnect (default: `false`)
   * `reconnectMaxAttempts` - number (default: `10`)
   * `reconnectDelay` - number in ms (default: `500`)
@@ -353,6 +353,7 @@ Note that using a [meta tag](@/docs.md#configuring-htmx) is the preferred mechan
 * `noSwap` - array: HTTP status codes that should not trigger a swap (default: `[204, 304]`)
 * `implicitInheritance` - boolean: inherit attributes automatically without `:inherited` (default: `false`)
 * `metaCharacter` - string: custom character for attribute modifiers instead of `:` (default: `undefined`)
+* `version` - string: the version of the current htmx library
 
 ##### Example
 
