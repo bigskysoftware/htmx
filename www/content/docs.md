@@ -1008,7 +1008,7 @@ data: 100
 You can configure the global streaming config in `htmx.config.streams`:
 
 ```html
-<meta name="htmx:config" content='{
+<meta name="htmx-config" content='{
   "streams": {
     "reconnect": false,
     "reconnectMaxAttempts": 10,
@@ -1217,7 +1217,7 @@ Extensions apply page-wide without requiring `hx-ext` on parent elements. They a
 To restrict which extensions can register, use an allow list:
 
 ```html
-<meta name="htmx:config" content='{"extensions": "my-ext,another-ext"}'>
+<meta name="htmx-config" content='{"extensions": "my-ext,another-ext"}'>
 ```
 
 ### Core Extensions
@@ -1712,10 +1712,8 @@ They are listed below:
 You can set them directly in JavaScript, or you can use a `meta` tag:
 
 ```html
-<meta name="htmx:config" content='{"defaultSwap":"innerHTML"}'>
+<meta name="htmx-config" content='{"defaultSwap":"innerHTML"}'>
 ```
-
-**Note:** The meta tag name has changed from `htmx-config` to `htmx:config` in htmx 4.
 
 ## Conclusion
 

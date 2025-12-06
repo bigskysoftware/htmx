@@ -49,7 +49,7 @@ htmx.registerExtension("my-ext", {
 Extensions can be approved via the `extensions` config option in a meta tag:
 
 ```html
-<meta name="htmx:config" content='{"extensions": "my-ext,another-ext"}'>
+<meta name="htmx-config" content='{"extensions": "my-ext,another-ext"}'>
 ```
 
 If this is set then only approved extensions will be loaded. This prevents

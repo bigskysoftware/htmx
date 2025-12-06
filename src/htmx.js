@@ -116,7 +116,7 @@ var htmx = (() => {
                 noSwap: [204, 304],
                 implicitInheritance: false
             }
-            let metaConfig = document.querySelector('meta[name="htmx:config"]');
+            let metaConfig = document.querySelector('meta[name="htmx-config"]');
             if (metaConfig) {
                 this.__mergeConfig(metaConfig.content, this.config);
             }

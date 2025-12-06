@@ -49,10 +49,10 @@ major changes between htmx 2.x and htmx 4.x.
 ### Built-in Streaming Response Support
 - Streaming functionality/SSE now built into core htmx
 - Improved event handling and reconnection logic 
-- Configure globally using `<meta name="htmx:config">`
+- Configure globally using `<meta name="htmx-config">`
    ```html
    <!-- Global defaults -->
-   <meta name="htmx:config" content="{
+   <meta name="htmx-config" content="{
        streams:{
          reconnect: false,
          reconnectDelay: 500,

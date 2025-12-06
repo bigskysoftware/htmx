@@ -40,8 +40,7 @@ addEventListener("htmx:afterOnLoad", (event) => {
 
 ## Events
 
-* Intercepting or Pausing Events. `htmx:config-request` is equivalent to `turbo:before-fetch-request` See: [Handbook](https://turbo.hotwired.dev/handbook/drive#pausing-requests)
-  * `htmx:config-request` is the same as `htmx:configRequest`
+* Intercepting or Pausing Events. `htmx:config:request` is equivalent to `turbo:before-fetch-request` See: [Handbook](https://turbo.hotwired.dev/handbook/drive#pausing-requests)
 
 {% construction_warning() %}
     <p>Need to fix or remove</p>
