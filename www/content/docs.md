@@ -995,7 +995,7 @@ Stream reconnection behavior is controlled via `hx-config`. By default, reconnec
 To enable automatic reconnection when the connection drops:
 
 ```html
-<body hx-get="/updates" hx-config='{ "streams": { "reconnect": true } }' hx-trigger="load">
+<body hx-get="/updates" hx-config='{ "sse": { "reconnect": true } }' hx-trigger="load">
     ...
 </body>
 ```
@@ -1036,7 +1036,7 @@ You can configure the global streaming config in `htmx.config.sse`:
 
 ```html
 <meta name="htmx-config" content='{
-  "streams": {
+  "sse": {
     "reconnect": false,
     "reconnectMaxAttempts": 10,
     "reconnectDelay": 500,
@@ -1058,7 +1058,7 @@ You can configure the global streaming config in `htmx.config.sse`:
 You can override these settings per-element using `hx-config`:
 ```html
 <button hx-get="/stream"
-        hx-config='{"streams": {"reconnect": true, "reconnectMaxAttempts": 10, "reconnectDelay": 1000, "pauseInBackground": true}}'>
+        hx-config='{"sse": {"reconnect": true, "reconnectMaxAttempts": 10, "reconnectDelay": 1000, "pauseInBackground": true}}'>
     Start
 </button>
 ```
