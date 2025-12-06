@@ -561,7 +561,7 @@ gives developers a way to create an animated transition between different DOM st
 
 htmx supports view transitions in a few different ways:
 
-* You can enable them globally by setting the `htmx.config.viewTransitions` property to `true`
+* You can enable them globally by setting the `htmx.config.transitions` property to `true`
 * You can enable them on a per-swap basis via the `hx-swap` `transition` property:
   ```html
     <button hx-post="/like" hx-swap="outerHTML transition:true">Like</button>
@@ -575,16 +575,16 @@ Note that the default view transition is a cross-fade effect that takes
 [250 milliseconds](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using) to complete.  During a view 
 transition, the application will not allow user interactions and, thus, can make the web application feel unresponsive.
 
-We strongly recommend a much lower transition time, in the sub-50ms range.  Here is how you would update the default
-view transition to take only 20 milliseconds:
+We strongly recommend a much lower transition time, in the 50-100ms range.  Here is how you would update the default
+view transition to take only 80 milliseconds:
 
 ```css
   ::view-transition-group(*) {
-    animation-duration: 20ms;
+    animation-duration: 80ms;
   }
 ```
 
-This affords a much better user experience when using view transitions in most cases.
+This affords a better user experience when using view transitions in most cases.
 
 #### Swap Options
 
