@@ -1701,7 +1701,8 @@ var htmx = (() => {
             let disabledSelector = this.__attributeValue(elt, "hx-disable");
             let disabledElements = []
             if (disabledSelector) {
-                disabledElements = this.__queryEltAndDescendants(elt, disabledSelector);
+                let thisElt = this.__attributeValue(elt, "hx-disable", undefined, true);
+                disabledElements = this.__findAllExt(elt, disabledSelector, false, thisElt);
                 for (let indicator of disabledElements) {
                     indicator._htmxDisableCount ||= 0
                     indicator._htmxDisableCount++
