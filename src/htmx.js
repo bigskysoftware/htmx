@@ -384,8 +384,7 @@ var htmx = (() => {
             if (selector instanceof Element) {
                 return selector;
             } else if (selector != null) {
-                let thisElt = this.__attributeValue(elt, "hx-target", undefined, true);
-                return this.__findAllExt(elt, selector, false, thisElt)[0];
+                return this.__findExt(elt, selector, "hx-target");
             } else if (this.__isBoosted(elt)) {
                 return document.body
             } else {
@@ -1493,7 +1492,7 @@ var htmx = (() => {
         }
 
         takeClass(element, className, container = element.parentElement) {
-            for (let elt of this.findAll(this.__normalizeElement(container), "." + className)) {
+            for (let elt of this.__findAllExt(this.__normalizeElement(container), "." + className)) {
                 elt.classList.remove(className);
             }
             element.classList.add(className);
@@ -1674,8 +1673,7 @@ var htmx = (() => {
             if (!indicatorsSelector) {
                 indicatorElements = [elt]
             } else {
-                let thisElt = this.__attributeValue(elt, "hx-indicator", undefined, true);
-                indicatorElements = this.__findAllExt(elt, indicatorsSelector, false, thisElt);
+                indicatorElements = this.__findAllExt(elt, indicatorsSelector, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
                 indicator._htmxReqCount ||= 0
@@ -1701,8 +1699,7 @@ var htmx = (() => {
             let disabledSelector = this.__attributeValue(elt, "hx-disable");
             let disabledElements = []
             if (disabledSelector) {
-                let thisElt = this.__attributeValue(elt, "hx-disable", undefined, true);
-                disabledElements = this.__findAllExt(elt, disabledSelector, false, thisElt);
+                disabledElements = this.__findAllExt(elt, disabledSelector, "hx-disable");
                 for (let indicator of disabledElements) {
                     indicator._htmxDisableCount ||= 0
                     indicator._htmxDisableCount++
@@ -1818,11 +1815,11 @@ var htmx = (() => {
             return s.startsWith('<') && s.endsWith('/>') ? s.slice(1, -2) : s;
         }
 
-        __findAllExt(eltOrSelector, maybeSelector, global, thisElt) {
+        __findAllExt(eltOrSelector, maybeSelector, thisAttr, global) {
             let selector = maybeSelector ?? eltOrSelector;
             let elt = maybeSelector ? this.__normalizeElement(eltOrSelector) : document;
             if (selector.startsWith('global ')) {
-                return this.__findAllExt(elt, selector.slice(7), true,  thisElt);
+                return this.__findAllExt(elt, selector.slice(7), thisAttr, true);
             }
             let parts = selector ? selector.replace(/<[^>]+\/>/g, m => m.replace(/,/g, '%2C'))
                 .split(',').map(p => p.replace(/%2C/g, ',')) : [];
@@ -1854,7 +1851,7 @@ var htmx = (() => {
                 } else if (selector === 'host') {
                     item = (elt.getRootNode()).host
                 } else if (selector === 'this') {
-                    item = thisElt || elt
+                    item = thisAttr ? this.__attributeValue(elt, thisAttr, undefined, true) : elt
                 } else {
                     unprocessedParts.push(selector)
                 }
@@ -1898,8 +1895,8 @@ var htmx = (() => {
             }
         }
 
-        __findExt(eltOrSelector, selector, thisElt) {
-            return this.__findAllExt(eltOrSelector, selector)[0]
+        __findExt(eltOrSelector, selector, thisAttr) {
+            return this.__findAllExt(eltOrSelector, selector, thisAttr)[0]
         }
 
         __extractJavascriptContent(string) {
