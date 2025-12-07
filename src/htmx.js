@@ -171,40 +171,49 @@ var htmx = (() => {
                    style === 'append' ? 'beforeend' : style;
         }
 
-        __attributeValue(elt, name, defaultVal, returnElt) {
+        __includesThis(val) {
+            return val?.split(/\s*,\s*/).includes('this');
+        }
+
+        __attributeValue(elt, name, defaultVal, returnThis) {
             name = this.__prefix(name);
             let appendName = name + this.__maybeAdjustMetaCharacter(":append");
             let inheritName = name + (this.config.implicitInheritance ? "" : this.__maybeAdjustMetaCharacter(":inherited"));
             let inheritAppendName = name + this.__maybeAdjustMetaCharacter(":inherited:append");
 
             if (elt.hasAttribute(name)) {
-                return returnElt ? elt : elt.getAttribute(name);
+                let val = elt.getAttribute(name);
+                return returnThis ? (this.__includesThis(val) ? [elt] : []) : val;
             }
 
             if (elt.hasAttribute(inheritName)) {
-                return returnElt ? elt : elt.getAttribute(inheritName);
+                let val = elt.getAttribute(inheritName);
+                return returnThis ? (this.__includesThis(val) ? [elt] : []) : val;
             }
 
             if (elt.hasAttribute(appendName) || elt.hasAttribute(inheritAppendName)) {
                 let appendValue = elt.getAttribute(appendName) || elt.getAttribute(inheritAppendName);
                 let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
                 if (parent) {
-                    let inherited = this.__attributeValue(parent, name, undefined, returnElt);
-                    return returnElt ? inherited : (inherited ? (inherited + "," + appendValue).replace(/[{}]/g, '') : appendValue);
+                    let inherited = this.__attributeValue(parent, name, undefined, returnThis);
+                    if (returnThis) {
+                        return this.__includesThis(appendValue) ? [elt, ...inherited] : inherited;
+                    }
+                    return inherited ? (inherited + "," + appendValue).replace(/[{}]/g, '') : appendValue;
                 } else {
-                    return returnElt ? elt : appendValue;
+                    return returnThis ? (this.__includesThis(appendValue) ? [elt] : []) : appendValue;
                 }
             }
 
             let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
             if (parent) {
-                let val = this.__attributeValue(parent, name, undefined, returnElt);
-                if (!returnElt && val && this.config.implicitInheritance) {
+                let val = this.__attributeValue(parent, name, undefined, returnThis);
+                if (!returnThis && val && this.config.implicitInheritance) {
                     this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
                 }
                 return val;
             }
-            return returnElt ? elt : defaultVal;
+            return returnThis ? [] : defaultVal;
         }
 
         __parseConfig(configString) {
@@ -1851,7 +1860,11 @@ var htmx = (() => {
                 } else if (selector === 'host') {
                     item = (elt.getRootNode()).host
                 } else if (selector === 'this') {
-                    item = thisAttr ? this.__attributeValue(elt, thisAttr, undefined, true) : elt
+                    if (thisAttr) {
+                        result.push(...this.__attributeValue(elt, thisAttr, undefined, true));
+                        continue;
+                    }
+                    item = elt
                 } else {
                     unprocessedParts.push(selector)
                 }
@@ -1867,7 +1880,7 @@ var htmx = (() => {
                 result.push(...rootNode.querySelectorAll(standardSelector))
             }
 
-            return result
+            return [...new Set(result)]
         }
 
         __scanForwardQuery(start, match, global) {
