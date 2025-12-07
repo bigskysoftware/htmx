@@ -191,7 +191,7 @@ var htmx = (() => {
                 let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
                 if (parent) {
                     let inherited = this.__attributeValue(parent, name, undefined, returnElt);
-                    return returnElt ? inherited : (inherited ? inherited + "," + appendValue : appendValue);
+                    return returnElt ? inherited : (inherited ? (inherited + "," + appendValue).replace(/[{}]/g, '') : appendValue);
                 } else {
                     return returnElt ? elt : appendValue;
                 }
@@ -210,10 +210,10 @@ var htmx = (() => {
 
         __parseConfig(configString) {
             if (configString[0] === '{') return JSON.parse(configString);
-            let configPattern = /([^\s,]+?)(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
+            let configPattern = /(?:"([^"]+)"|([^\s,:]+))(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
             return [...configString.matchAll(configPattern)].reduce((result, match) => {
-                let keyPath = match[1].split('.');
-                let value = (match[2] ?? match[3] ?? match[4] ?? match[5] ?? 'true').trim();
+                let keyPath = (match[1] ?? match[2]).split('.');
+                let value = (match[3] ?? match[4] ?? match[5] ?? match[6] ?? 'true').trim();
                 if (value === 'true') value = true;
                 else if (value === 'false') value = false;
                 else if (/^\d+$/.test(value)) value = parseInt(value);

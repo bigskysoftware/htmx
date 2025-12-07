@@ -77,6 +77,21 @@ Combine values from other inputs with computed values:
 </div>
 ```
 
+### Merging Values with `:append`
+
+Use the `:append` modifier to merge child values with inherited parent values:
+
+```html
+<div hx-vals='{"source": "landing-page"}'>
+    <button hx-post="/register"
+            hx-vals:append='{"campaign": "summer-sale"}'>
+        Register
+    </button>
+</div>
+```
+
+The button will send both `source=landing-page` and `campaign=summer-sale` parameters. When using `:append` with JSON objects, the values are merged into a single valid JSON object. If both parent and child define the same parameter name, the child value will override the parent value.
+
 ## Security Considerations
 
 * By default, the value of `hx-vals` must be valid [JSON](https://developer.mozilla.org/en-US/docs/Glossary/JSON).
@@ -86,6 +101,7 @@ Combine values from other inputs with computed values:
 
 ## Notes
 
-* A child declaration of a parameter name will override a parent declaration of the same name.
+* By default in htmx 4.x, child elements do not inherit parent `hx-vals` unless using the `:inherited` or `:append` modifiers, or when `htmx.config.implicitInheritance` is set to `true`.
+* When inheritance is enabled, a child `hx-vals` declaration will completely replace the parent value unless the `:append` modifier is used to merge them.
 * Values from `hx-vals` are added to the request *after* values from the form and `hx-include`, so they can override those values.
 * When using the `js:` prefix, the code has access to the htmx API methods as well as the element as `this`.
