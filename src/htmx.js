@@ -1768,14 +1768,14 @@ var htmx = (() => {
                     // Return promise for async evaluation
                     return this.__executeJavaScriptAsync(elt, {}, javascriptContent, true).then(obj => {
                         for (let key in obj) {
-                            body.append(key, obj[key])
+                            body.set(key, obj[key])
                         }
                     });
                 } else {
                     // Synchronous path
                     let obj = this.__parseConfig(hxValsValue);
                     for (let key in obj) {
-                        body.append(key, obj[key])
+                        body.set(key, obj[key])
                     }
                 }
             }
