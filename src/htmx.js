@@ -319,7 +319,7 @@ var htmx = (() => {
                     action: fullAction,
                     anchor,
                     method,
-                    headers: this.__determineHeaders(sourceElement),
+                    headers: this.__createCoreHeaders(sourceElement),
                     abort: ac.abort.bind(ac),
                     credentials: "same-origin",
                     signal: ac.signal,
@@ -350,7 +350,7 @@ var htmx = (() => {
             return `${elt.tagName.toLowerCase()}${elt.id ? '#' + elt.id : ''}`;
         }
 
-        __determineHeaders(elt) {
+        __createCoreHeaders(elt) {
             let headers = {
                 "HX-Request": "true",
                 "HX-Source": this.__buildIdentifier(elt),
@@ -360,11 +360,24 @@ var htmx = (() => {
             if (this.__isBoosted(elt)) {
                 headers["HX-Boosted"] = "true"
             }
-            let headersAttribute = this.__attributeValue(elt, "hx-headers");
-            if (headersAttribute) {
-                this.__mergeConfig(headersAttribute, headers);
-            }
             return headers;
+        }
+
+        __handleHxHeaders(elt, headers) {
+            let result = this.__getAttributeObject(elt, "hx-headers");
+            if (result) {
+                if (result instanceof Promise) {
+                    return result.then(obj => {
+                        for (let key in obj) {
+                            headers[key] = String(obj[key]);
+                        }
+                    });
+                } else {
+                    for (let key in result) {
+                        headers[key] = String(result[key]);
+                    }
+                }
+            }
         }
 
         __resolveTarget(elt, selector) {
@@ -405,6 +418,10 @@ var htmx = (() => {
                     body.append(k, ctx.values[k]);
                 }
             }
+
+            // Handle dynamic headers
+            let headersResult = this.__handleHxHeaders(elt, ctx.request.headers)
+            if (headersResult) await headersResult  // Only await if it returned a promise
 
             // Add HX-Request-Type and HX-Target headers
             ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
@@ -1760,22 +1777,36 @@ var htmx = (() => {
             }
         }
 
+        __getAttributeObject(elt, attrName) {
+            let attrValue = this.__attributeValue(elt, attrName);
+            if (!attrValue) return null;
+
+            let javascriptContent = this.__extractJavascriptContent(attrValue);
+            if (javascriptContent) {
+                // Wrap in braces if not already wrapped (for htmx 2.x compatibility)
+                if (javascriptContent.indexOf('{') !== 0) {
+                    javascriptContent = '{' + javascriptContent + '}';
+                }
+                // Return promise for async evaluation
+                return this.__executeJavaScriptAsync(elt, {}, javascriptContent, true);
+            } else {
+                // Synchronous path - return the parsed object directly
+                return this.__parseConfig(attrValue);
+            }
+        }
+
         __handleHxVals(elt, body) {
-            let hxValsValue = this.__attributeValue(elt, "hx-vals");
-            if (hxValsValue) {
-                let javascriptContent = this.__extractJavascriptContent(hxValsValue);
-                if (javascriptContent) {
-                    // Return promise for async evaluation
-                    return this.__executeJavaScriptAsync(elt, {}, javascriptContent, true).then(obj => {
+            let result = this.__getAttributeObject(elt, "hx-vals");
+            if (result) {
+                if (result instanceof Promise) {
+                    return result.then(obj => {
                         for (let key in obj) {
                             body.set(key, obj[key])
                         }
                     });
                 } else {
-                    // Synchronous path
-                    let obj = this.__parseConfig(hxValsValue);
-                    for (let key in obj) {
-                        body.set(key, obj[key])
+                    for (let key in result) {
+                        body.set(key, result[key])
                     }
                 }
             }
