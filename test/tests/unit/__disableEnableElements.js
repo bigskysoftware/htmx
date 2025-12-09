@@ -130,4 +130,55 @@ describe('__disableElements / __enableElements unit tests', function() {
         assert.equal(input._htmxDisableCount, 1)
     })
 
+    it('resolves this selector for disable', function () {
+        let container = createProcessedHTML('<button hx-disable="this" hx-get="/test"></button>');
+        
+        let elements = htmx.__disableElements(container);
+        
+        assert.isTrue(container.disabled);
+        assert.equal(elements.length, 1);
+        assert.equal(elements[0], container);
+    })
+
+    it('resolves this selector with inherited disable', function () {
+        let container = createProcessedHTML('<button hx-disable:inherited="this"><span hx-get="/test"></span></button>');
+        let span = container.querySelector('span');
+        
+        let elements = htmx.__disableElements(span);
+        
+        assert.isTrue(container.disabled);
+    })
+
+    it('resolves this selector respecting disable override', function () {
+        let html = '<button hx-disable="this"><span hx-disable=".other"><input hx-get="/test"></span></button>';
+        let outer = createProcessedHTML(html);
+        let input = outer.querySelector('input');
+        
+        let elements = htmx.__disableElements(input);
+        
+        assert.isFalse(outer.disabled);
+        assert.equal(elements.length, 0);
+    })
+
+    it('resolves this selector with append for disable', function () {
+        let html = '<button hx-disable:inherited="this"><input hx-disable:append="this" hx-get="/test"></button>';
+        let outer = createProcessedHTML(html);
+        let inner = outer.querySelector('input');
+        
+        let elements = htmx.__disableElements(inner);
+        
+        assert.equal(elements.length, 2);
+        assert.isTrue(inner.disabled);
+        assert.isTrue(outer.disabled);
+    })
+
+    it('resolves this selector with comma-separated disable values', function () {
+        let html = '<button hx-disable="this, .other" hx-get="/test"></button>';
+        let button = createProcessedHTML(html);
+        
+        let elements = htmx.__disableElements(button);
+        
+        assert.isTrue(button.disabled);
+    })
+
 });

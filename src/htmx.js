@@ -171,40 +171,52 @@ var htmx = (() => {
                    style === 'append' ? 'beforeend' : style;
         }
 
-        __attributeValue(elt, name, defaultVal, returnElt) {
+        __findThisElements(elt, attrName) {
+            let result = [];
+            this.__attributeValue(elt, attrName, undefined, (val, elt) => {
+                if (val?.split(/\s*,\s*/).includes('this')) result.push(elt);
+            });
+            return result;
+        }
+
+        __attributeValue(elt, name, defaultVal, eltCollector) {
             name = this.__prefix(name);
             let appendName = name + this.__maybeAdjustMetaCharacter(":append");
             let inheritName = name + (this.config.implicitInheritance ? "" : this.__maybeAdjustMetaCharacter(":inherited"));
             let inheritAppendName = name + this.__maybeAdjustMetaCharacter(":inherited:append");
 
             if (elt.hasAttribute(name)) {
-                return returnElt ? elt : elt.getAttribute(name);
+                let val = elt.getAttribute(name);
+                return eltCollector ? eltCollector(val, elt) : val;
             }
 
             if (elt.hasAttribute(inheritName)) {
-                return returnElt ? elt : elt.getAttribute(inheritName);
+                let val = elt.getAttribute(inheritName);
+                return eltCollector ? eltCollector(val, elt) : val;
             }
 
             if (elt.hasAttribute(appendName) || elt.hasAttribute(inheritAppendName)) {
                 let appendValue = elt.getAttribute(appendName) || elt.getAttribute(inheritAppendName);
                 let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
-                if (parent) {
-                    let inherited = this.__attributeValue(parent, name, undefined, returnElt);
-                    return returnElt ? inherited : (inherited ? (inherited + "," + appendValue).replace(/[{}]/g, '') : appendValue);
-                } else {
-                    return returnElt ? elt : appendValue;
+                if (eltCollector) {
+                    eltCollector(appendValue, elt);
                 }
+                if (parent) {
+                    let inherited = this.__attributeValue(parent, name, undefined, eltCollector);
+                    return inherited ? (inherited + "," + appendValue).replace(/[{}]/g, '') : appendValue;
+                }
+                return appendValue;
             }
 
             let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
             if (parent) {
-                let val = this.__attributeValue(parent, name, undefined, returnElt);
-                if (!returnElt && val && this.config.implicitInheritance) {
+                let val = this.__attributeValue(parent, name, undefined, eltCollector);
+                if (!eltCollector && val && this.config.implicitInheritance) {
                     this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
                 }
                 return val;
             }
-            return returnElt ? elt : defaultVal;
+            return defaultVal;
         }
 
         __parseConfig(configString) {
@@ -384,8 +396,7 @@ var htmx = (() => {
             if (selector instanceof Element) {
                 return selector;
             } else if (selector != null) {
-                let thisElt = this.__attributeValue(elt, "hx-target", undefined, true);
-                return this.__findAllExt(elt, selector, false, thisElt)[0];
+                return this.__findExt(elt, selector, "hx-target");
             } else if (this.__isBoosted(elt)) {
                 return document.body
             } else {
@@ -1493,7 +1504,7 @@ var htmx = (() => {
         }
 
         takeClass(element, className, container = element.parentElement) {
-            for (let elt of this.findAll(this.__normalizeElement(container), "." + className)) {
+            for (let elt of this.__findAllExt(this.__normalizeElement(container), "." + className)) {
                 elt.classList.remove(className);
             }
             element.classList.add(className);
@@ -1674,8 +1685,7 @@ var htmx = (() => {
             if (!indicatorsSelector) {
                 indicatorElements = [elt]
             } else {
-                let thisElt = this.__attributeValue(elt, "hx-indicator", undefined, true);
-                indicatorElements = this.__findAllExt(elt, indicatorsSelector, false, thisElt);
+                indicatorElements = this.__findAllExt(elt, indicatorsSelector, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
                 indicator._htmxReqCount ||= 0
@@ -1701,8 +1711,7 @@ var htmx = (() => {
             let disabledSelector = this.__attributeValue(elt, "hx-disable");
             let disabledElements = []
             if (disabledSelector) {
-                let thisElt = this.__attributeValue(elt, "hx-disable", undefined, true);
-                disabledElements = this.__findAllExt(elt, disabledSelector, false, thisElt);
+                disabledElements = this.__findAllExt(elt, disabledSelector, "hx-disable");
                 for (let indicator of disabledElements) {
                     indicator._htmxDisableCount ||= 0
                     indicator._htmxDisableCount++
@@ -1818,11 +1827,11 @@ var htmx = (() => {
             return s.startsWith('<') && s.endsWith('/>') ? s.slice(1, -2) : s;
         }
 
-        __findAllExt(eltOrSelector, maybeSelector, global, thisElt) {
+        __findAllExt(eltOrSelector, maybeSelector, thisAttr, global) {
             let selector = maybeSelector ?? eltOrSelector;
             let elt = maybeSelector ? this.__normalizeElement(eltOrSelector) : document;
             if (selector.startsWith('global ')) {
-                return this.__findAllExt(elt, selector.slice(7), true,  thisElt);
+                return this.__findAllExt(elt, selector.slice(7), thisAttr, true);
             }
             let parts = selector ? selector.replace(/<[^>]+\/>/g, m => m.replace(/,/g, '%2C'))
                 .split(',').map(p => p.replace(/%2C/g, ',')) : [];
@@ -1854,7 +1863,11 @@ var htmx = (() => {
                 } else if (selector === 'host') {
                     item = (elt.getRootNode()).host
                 } else if (selector === 'this') {
-                    item = thisElt || elt
+                    if (thisAttr) {
+                        result.push(...this.__findThisElements(elt, thisAttr));
+                        continue;
+                    }
+                    item = elt
                 } else {
                     unprocessedParts.push(selector)
                 }
@@ -1870,7 +1883,7 @@ var htmx = (() => {
                 result.push(...rootNode.querySelectorAll(standardSelector))
             }
 
-            return result
+            return [...new Set(result)]
         }
 
         __scanForwardQuery(start, match, global) {
@@ -1898,8 +1911,8 @@ var htmx = (() => {
             }
         }
 
-        __findExt(eltOrSelector, selector, thisElt) {
-            return this.__findAllExt(eltOrSelector, selector)[0]
+        __findExt(eltOrSelector, selector, thisAttr) {
+            return this.__findAllExt(eltOrSelector, selector, thisAttr)[0]
         }
 
         __extractJavascriptContent(string) {
