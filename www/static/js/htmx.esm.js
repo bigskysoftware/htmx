@@ -171,48 +171,60 @@ var htmx = (() => {
                    style === 'append' ? 'beforeend' : style;
         }
 
-        #attributeValue(elt, name, defaultVal, returnElt) {
+        #findThisElements(elt, attrName) {
+            let result = [];
+            this.#attributeValue(elt, attrName, undefined, (val, elt) => {
+                if (val?.split(/\s*,\s*/).includes('this')) result.push(elt);
+            });
+            return result;
+        }
+
+        #attributeValue(elt, name, defaultVal, eltCollector) {
             name = this.#prefix(name);
             let appendName = name + this.#maybeAdjustMetaCharacter(":append");
             let inheritName = name + (this.config.implicitInheritance ? "" : this.#maybeAdjustMetaCharacter(":inherited"));
             let inheritAppendName = name + this.#maybeAdjustMetaCharacter(":inherited:append");
 
             if (elt.hasAttribute(name)) {
-                return returnElt ? elt : elt.getAttribute(name);
+                let val = elt.getAttribute(name);
+                return eltCollector ? eltCollector(val, elt) : val;
             }
 
             if (elt.hasAttribute(inheritName)) {
-                return returnElt ? elt : elt.getAttribute(inheritName);
+                let val = elt.getAttribute(inheritName);
+                return eltCollector ? eltCollector(val, elt) : val;
             }
 
             if (elt.hasAttribute(appendName) || elt.hasAttribute(inheritAppendName)) {
                 let appendValue = elt.getAttribute(appendName) || elt.getAttribute(inheritAppendName);
                 let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
-                if (parent) {
-                    let inherited = this.#attributeValue(parent, name, undefined, returnElt);
-                    return returnElt ? inherited : (inherited ? inherited + "," + appendValue : appendValue);
-                } else {
-                    return returnElt ? elt : appendValue;
+                if (eltCollector) {
+                    eltCollector(appendValue, elt);
                 }
+                if (parent) {
+                    let inherited = this.#attributeValue(parent, name, undefined, eltCollector);
+                    return inherited ? (inherited + "," + appendValue).replace(/[{}]/g, '') : appendValue;
+                }
+                return appendValue;
             }
 
             let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
             if (parent) {
-                let val = this.#attributeValue(parent, name, undefined, returnElt);
-                if (!returnElt && val && this.config.implicitInheritance) {
+                let val = this.#attributeValue(parent, name, undefined, eltCollector);
+                if (!eltCollector && val && this.config.implicitInheritance) {
                     this.#triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
                 }
                 return val;
             }
-            return returnElt ? elt : defaultVal;
+            return defaultVal;
         }
 
         #parseConfig(configString) {
             if (configString[0] === '{') return JSON.parse(configString);
-            let configPattern = /([^\s,]+?)(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
+            let configPattern = /(?:"([^"]+)"|([^\s,:]+))(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
             return [...configString.matchAll(configPattern)].reduce((result, match) => {
-                let keyPath = match[1].split('.');
-                let value = (match[2] ?? match[3] ?? match[4] ?? match[5] ?? 'true').trim();
+                let keyPath = (match[1] ?? match[2]).split('.');
+                let value = (match[3] ?? match[4] ?? match[5] ?? match[6] ?? 'true').trim();
                 if (value === 'true') value = true;
                 else if (value === 'false') value = false;
                 else if (/^\d+$/.test(value)) value = parseInt(value);
@@ -319,7 +331,7 @@ var htmx = (() => {
                     action: fullAction,
                     anchor,
                     method,
-                    headers: this.#determineHeaders(sourceElement),
+                    headers: this.#createCoreHeaders(sourceElement),
                     abort: ac.abort.bind(ac),
                     credentials: "same-origin",
                     signal: ac.signal,
@@ -350,7 +362,7 @@ var htmx = (() => {
             return `${elt.tagName.toLowerCase()}${elt.id ? '#' + elt.id : ''}`;
         }
 
-        #determineHeaders(elt) {
+        #createCoreHeaders(elt) {
             let headers = {
                 "HX-Request": "true",
                 "HX-Source": this.#buildIdentifier(elt),
@@ -360,19 +372,31 @@ var htmx = (() => {
             if (this.#isBoosted(elt)) {
                 headers["HX-Boosted"] = "true"
             }
-            let headersAttribute = this.#attributeValue(elt, "hx-headers");
-            if (headersAttribute) {
-                this.#mergeConfig(headersAttribute, headers);
-            }
             return headers;
+        }
+
+        #handleHxHeaders(elt, headers) {
+            let result = this.#getAttributeObject(elt, "hx-headers");
+            if (result) {
+                if (result instanceof Promise) {
+                    return result.then(obj => {
+                        for (let key in obj) {
+                            headers[key] = String(obj[key]);
+                        }
+                    });
+                } else {
+                    for (let key in result) {
+                        headers[key] = String(result[key]);
+                    }
+                }
+            }
         }
 
         #resolveTarget(elt, selector) {
             if (selector instanceof Element) {
                 return selector;
             } else if (selector != null) {
-                let thisElt = this.#attributeValue(elt, "hx-target", undefined, true);
-                return this.#findAllExt(elt, selector, false, thisElt)[0];
+                return this.#findExt(elt, selector, "hx-target");
             } else if (this.#isBoosted(elt)) {
                 return document.body
             } else {
@@ -405,6 +429,10 @@ var htmx = (() => {
                     body.append(k, ctx.values[k]);
                 }
             }
+
+            // Handle dynamic headers
+            let headersResult = this.#handleHxHeaders(elt, ctx.request.headers)
+            if (headersResult) await headersResult  // Only await if it returned a promise
 
             // Add HX-Request-Type and HX-Target headers
             ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
@@ -1476,7 +1504,7 @@ var htmx = (() => {
         }
 
         takeClass(element, className, container = element.parentElement) {
-            for (let elt of this.findAll(this.#normalizeElement(container), "." + className)) {
+            for (let elt of this.#findAllExt(this.#normalizeElement(container), "." + className)) {
                 elt.classList.remove(className);
             }
             element.classList.add(className);
@@ -1657,8 +1685,7 @@ var htmx = (() => {
             if (!indicatorsSelector) {
                 indicatorElements = [elt]
             } else {
-                let thisElt = this.#attributeValue(elt, "hx-indicator", undefined, true);
-                indicatorElements = this.#findAllExt(elt, indicatorsSelector, false, thisElt);
+                indicatorElements = this.#findAllExt(elt, indicatorsSelector, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
                 indicator._htmxReqCount ||= 0
@@ -1684,7 +1711,7 @@ var htmx = (() => {
             let disabledSelector = this.#attributeValue(elt, "hx-disable");
             let disabledElements = []
             if (disabledSelector) {
-                disabledElements = this.#queryEltAndDescendants(elt, disabledSelector);
+                disabledElements = this.#findAllExt(elt, disabledSelector, "hx-disable");
                 for (let indicator of disabledElements) {
                     indicator._htmxDisableCount ||= 0
                     indicator._htmxDisableCount++
@@ -1760,22 +1787,36 @@ var htmx = (() => {
             }
         }
 
+        #getAttributeObject(elt, attrName) {
+            let attrValue = this.#attributeValue(elt, attrName);
+            if (!attrValue) return null;
+
+            let javascriptContent = this.#extractJavascriptContent(attrValue);
+            if (javascriptContent) {
+                // Wrap in braces if not already wrapped (for htmx 2.x compatibility)
+                if (javascriptContent.indexOf('{') !== 0) {
+                    javascriptContent = '{' + javascriptContent + '}';
+                }
+                // Return promise for async evaluation
+                return this.#executeJavaScriptAsync(elt, {}, javascriptContent, true);
+            } else {
+                // Synchronous path - return the parsed object directly
+                return this.#parseConfig(attrValue);
+            }
+        }
+
         #handleHxVals(elt, body) {
-            let hxValsValue = this.#attributeValue(elt, "hx-vals");
-            if (hxValsValue) {
-                let javascriptContent = this.#extractJavascriptContent(hxValsValue);
-                if (javascriptContent) {
-                    // Return promise for async evaluation
-                    return this.#executeJavaScriptAsync(elt, {}, javascriptContent, true).then(obj => {
+            let result = this.#getAttributeObject(elt, "hx-vals");
+            if (result) {
+                if (result instanceof Promise) {
+                    return result.then(obj => {
                         for (let key in obj) {
-                            body.append(key, obj[key])
+                            body.set(key, obj[key])
                         }
                     });
                 } else {
-                    // Synchronous path
-                    let obj = this.#parseConfig(hxValsValue);
-                    for (let key in obj) {
-                        body.append(key, obj[key])
+                    for (let key in result) {
+                        body.set(key, result[key])
                     }
                 }
             }
@@ -1786,11 +1827,11 @@ var htmx = (() => {
             return s.startsWith('<') && s.endsWith('/>') ? s.slice(1, -2) : s;
         }
 
-        #findAllExt(eltOrSelector, maybeSelector, global, thisElt) {
+        #findAllExt(eltOrSelector, maybeSelector, thisAttr, global) {
             let selector = maybeSelector ?? eltOrSelector;
             let elt = maybeSelector ? this.#normalizeElement(eltOrSelector) : document;
             if (selector.startsWith('global ')) {
-                return this.#findAllExt(elt, selector.slice(7), true,  thisElt);
+                return this.#findAllExt(elt, selector.slice(7), thisAttr, true);
             }
             let parts = selector ? selector.replace(/<[^>]+\/>/g, m => m.replace(/,/g, '%2C'))
                 .split(',').map(p => p.replace(/%2C/g, ',')) : [];
@@ -1822,7 +1863,11 @@ var htmx = (() => {
                 } else if (selector === 'host') {
                     item = (elt.getRootNode()).host
                 } else if (selector === 'this') {
-                    item = thisElt || elt
+                    if (thisAttr) {
+                        result.push(...this.#findThisElements(elt, thisAttr));
+                        continue;
+                    }
+                    item = elt
                 } else {
                     unprocessedParts.push(selector)
                 }
@@ -1838,7 +1883,7 @@ var htmx = (() => {
                 result.push(...rootNode.querySelectorAll(standardSelector))
             }
 
-            return result
+            return [...new Set(result)]
         }
 
         #scanForwardQuery(start, match, global) {
@@ -1866,8 +1911,8 @@ var htmx = (() => {
             }
         }
 
-        #findExt(eltOrSelector, selector, thisElt) {
-            return this.#findAllExt(eltOrSelector, selector)[0]
+        #findExt(eltOrSelector, selector, thisAttr) {
+            return this.#findAllExt(eltOrSelector, selector, thisAttr)[0]
         }
 
         #extractJavascriptContent(string) {

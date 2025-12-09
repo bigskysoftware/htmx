@@ -130,4 +130,61 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         assert.equal(div._htmxReqCount, 1)
     })
 
+    it('resolves this selector for indicators', function () {
+        let container = createProcessedHTML('<div hx-indicator="this"><button hx-get="/test" hx-indicator="this"></button></div>');
+        let button = container.querySelector('button');
+        
+        let indicators = htmx.__showIndicators(button);
+        
+        assert.isTrue(button.classList.contains('htmx-request'));
+        assert.equal(indicators.length, 1);
+        assert.equal(indicators[0], button);
+    })
+
+    it('resolves this selector with inherited indicator', function () {
+        let outer = createProcessedHTML('<div hx-indicator:inherited="this"><button hx-get="/test"></button></div>');
+        let button = outer.querySelector('button');
+        
+        let indicators = htmx.__showIndicators(button);
+        
+        assert.isTrue(outer.classList.contains('htmx-request'));
+        assert.equal(indicators.length, 1);
+        assert.equal(indicators[0], outer);
+    })
+
+    it('resolves this selector respecting indicator override', function () {
+        let html = '<div hx-indicator="this"><button hx-get="/test" hx-indicator=".other" class="other"></button></div>';
+        let outer = createProcessedHTML(html);
+        let button = outer.querySelector('button');
+        
+        let indicators = htmx.__showIndicators(button);
+        
+        assert.isFalse(outer.classList.contains('htmx-request'));
+        assert.isTrue(button.classList.contains('htmx-request'));
+    })
+
+    it('resolves this selector with append for indicators', function () {
+        let html = '<div hx-indicator:inherited="this"><button hx-get="/test" hx-indicator:append="this"></button></div>';
+        let outer = createProcessedHTML(html);
+        let button = outer.querySelector('button');
+        
+        let indicators = htmx.__showIndicators(button);
+        
+        assert.isTrue(outer.classList.contains('htmx-request'));
+        assert.isTrue(button.classList.contains('htmx-request'));
+        assert.equal(indicators.length, 2);
+    })
+
+    it('resolves this selector with comma-separated indicator values', function () {
+        let html = '<div class="other"><button hx-get="/test" hx-indicator="this, .other"></button></div>';
+        let container = createProcessedHTML(html);
+        let button = container.querySelector('button');
+        
+        let indicators = htmx.__showIndicators(button);
+        
+        assert.isTrue(button.classList.contains('htmx-request'));
+        assert.isTrue(container.classList.contains('htmx-request'));
+        assert.equal(indicators.length, 2);
+    })
+
 });

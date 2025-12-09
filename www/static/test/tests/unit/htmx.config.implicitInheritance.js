@@ -53,7 +53,7 @@ describe('htmx.config.implicitInheritance test', function() {
         );
         const button = container.querySelector('button');
         const result = htmx.__attributeValue(button, 'hx-vals');
-        assert.equal(result, '{"a":1},{"b":2}');
+        assert.equal(result, '"a":1,"b":2');
     });
 
 });
