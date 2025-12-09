@@ -171,15 +171,15 @@ var htmx = (() => {
                    style === 'append' ? 'beforeend' : style;
         }
 
-        __includesThis(val) {
-            return val?.split(/\s*,\s*/).includes('this');
-        }
-
         __findThisElements(elt, attrName) {
-            return this.__attributeValue(elt, attrName, undefined, true);
+            let result = [];
+            this.__attributeValue(elt, attrName, undefined, (val, elt) => {
+                if (val?.split(/\s*,\s*/).includes('this')) result.push(elt);
+            });
+            return result;
         }
 
-        __attributeValue(elt, name, defaultVal, asThisElements) {
+        __attributeValue(elt, name, defaultVal, onElement) {
             name = this.__prefix(name);
             let appendName = name + this.__maybeAdjustMetaCharacter(":append");
             let inheritName = name + (this.config.implicitInheritance ? "" : this.__maybeAdjustMetaCharacter(":inherited"));
@@ -187,37 +187,37 @@ var htmx = (() => {
 
             if (elt.hasAttribute(name)) {
                 let val = elt.getAttribute(name);
-                return asThisElements ? (this.__includesThis(val) ? [elt] : []) : val;
+                return onElement ? onElement(val, elt) : val;
             }
 
             if (elt.hasAttribute(inheritName)) {
                 let val = elt.getAttribute(inheritName);
-                return asThisElements ? (this.__includesThis(val) ? [elt] : []) : val;
+                return onElement ? onElement(val, elt) : val;
             }
 
             if (elt.hasAttribute(appendName) || elt.hasAttribute(inheritAppendName)) {
                 let appendValue = elt.getAttribute(appendName) || elt.getAttribute(inheritAppendName);
                 let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
                 if (parent) {
-                    let inherited = this.__attributeValue(parent, name, undefined, asThisElements);
-                    if (asThisElements) {
-                        return this.__includesThis(appendValue) ? [elt, ...inherited] : inherited;
+                    if (onElement) {
+                        onElement(appendValue, elt);
+                        return this.__attributeValue(parent, name, undefined, onElement);
                     }
+                    let inherited = this.__attributeValue(parent, name, undefined, onElement);
                     return inherited ? (inherited + "," + appendValue).replace(/[{}]/g, '') : appendValue;
-                } else {
-                    return asThisElements ? (this.__includesThis(appendValue) ? [elt] : []) : appendValue;
                 }
+                return onElement ? onElement(appendValue, elt) : appendValue;
             }
 
             let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
             if (parent) {
-                let val = this.__attributeValue(parent, name, undefined, asThisElements);
-                if (!asThisElements && val && this.config.implicitInheritance) {
+                let val = this.__attributeValue(parent, name, undefined, onElement);
+                if (!onElement && val && this.config.implicitInheritance) {
                     this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
                 }
                 return val;
             }
-            return asThisElements ? [] : defaultVal;
+            return defaultVal;
         }
 
         __parseConfig(configString) {
