@@ -13,8 +13,8 @@ The possible values of this attribute are:
 
 * `innerHTML` - Replace the inner html of the target element
 * `outerHTML` - Replace the entire target element with the response
-* `innerMorph` - Morphs the inner HTML of the target to the new content
-* `outerMorph` - Morphs the outer HTML of the target to the new content
+* `innerMorph` - Morphs the inner HTML of the target to the new content (see [Morphing](@/morphing.md) for details)
+* `outerMorph` - Morphs the outer HTML of the target to the new content (see [Morphing](@/morphing.md) for details)
 * `textContent` - Replace the text content of the target element, without parsing the response as HTML
 * `before` or `beforebegin` - Insert the response before the target element
 * `prepend` or `afterbegin` - Insert the response before the first child of the target element
