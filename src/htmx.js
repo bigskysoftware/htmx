@@ -179,7 +179,7 @@ var htmx = (() => {
             return result;
         }
 
-        __attributeValue(elt, name, defaultVal, onElement) {
+        __attributeValue(elt, name, defaultVal, eltCollector) {
             name = this.__prefix(name);
             let appendName = name + this.__maybeAdjustMetaCharacter(":append");
             let inheritName = name + (this.config.implicitInheritance ? "" : this.__maybeAdjustMetaCharacter(":inherited"));
@@ -187,32 +187,31 @@ var htmx = (() => {
 
             if (elt.hasAttribute(name)) {
                 let val = elt.getAttribute(name);
-                return onElement ? onElement(val, elt) : val;
+                return eltCollector ? eltCollector(val, elt) : val;
             }
 
             if (elt.hasAttribute(inheritName)) {
                 let val = elt.getAttribute(inheritName);
-                return onElement ? onElement(val, elt) : val;
+                return eltCollector ? eltCollector(val, elt) : val;
             }
 
             if (elt.hasAttribute(appendName) || elt.hasAttribute(inheritAppendName)) {
                 let appendValue = elt.getAttribute(appendName) || elt.getAttribute(inheritAppendName);
                 let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
+                if (eltCollector) {
+                    eltCollector(appendValue, elt);
+                }
                 if (parent) {
-                    if (onElement) {
-                        onElement(appendValue, elt);
-                        return this.__attributeValue(parent, name, undefined, onElement);
-                    }
-                    let inherited = this.__attributeValue(parent, name, undefined, onElement);
+                    let inherited = this.__attributeValue(parent, name, undefined, eltCollector);
                     return inherited ? (inherited + "," + appendValue).replace(/[{}]/g, '') : appendValue;
                 }
-                return onElement ? onElement(appendValue, elt) : appendValue;
+                return appendValue;
             }
 
             let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
             if (parent) {
-                let val = this.__attributeValue(parent, name, undefined, onElement);
-                if (!onElement && val && this.config.implicitInheritance) {
+                let val = this.__attributeValue(parent, name, undefined, eltCollector);
+                if (!eltCollector && val && this.config.implicitInheritance) {
                     this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
                 }
                 return val;
