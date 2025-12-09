@@ -99,13 +99,13 @@ The fastest way to get going with htmx is to load it via a CDN.
 Just add this to your head tag and you can get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha5/dist/htmx.min.js" integrity="sha384-Ygvy/K5smZ2205k8c+XtILRfDt2QrKB4D7ryAz1slfsAe1pFmaF4fTkC0BLPVtjG" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha5/dist/htmx.min.js" integrity="sha384-LAnQFtNXh8s0hn9mOc8bezfn16i4Zo4y3i4dMT8PtV9yip8jGehR3RxCJrmHV11d" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available as well:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha5/dist/htmx.js" integrity="sha384-zLfyrUaOp5k46obvC9PURUvNGSteuuCM5RIwoT9FLfPoDbCWaMqDtXHOqSpMBgJL" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha5/dist/htmx.js" integrity="sha384-dLUc4ssW6oY1/JPIIhUY8KmdLXrhFNQDr3X+G1OvZgnYayZTZrGNlHMsXaFp8JPD" crossorigin="anonymous"></script>
 ```
 
 While this CDN-based approach is quick and easy, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
