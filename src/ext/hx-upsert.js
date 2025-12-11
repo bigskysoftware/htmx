@@ -6,7 +6,8 @@
 //
 // Modifiers:
 //   key:attr - attribute name for matching (default: id or data-upsert-key)
-//   sort     - sort all elements by key (default: response order)
+//   sort     - sort all elements by key ascending (default: response order)
+//   sort:desc - sort all elements by key descending
 //   append   - append unmatched new elements (default)
 //   prepend  - prepend unmatched new elements
 //==========================================================
@@ -21,8 +22,9 @@
             if (style === 'upsert') {
                 let keyAttr = swapSpec.key;
                 let existingMap = new Map();
+                let existingUnkeyed = [];
                 let newMap = new Map();
-                let unkeyed = [];
+                let newUnkeyed = [];
                 
                 // Helper to get key from element
                 let getKey = (el) => {
@@ -30,10 +32,11 @@
                     return el.id || el.getAttribute('data-upsert-key');
                 };
                 
-                // Collect existing elements by key
+                // Collect existing elements by key and unkeyed
                 for (let child of target.children) {
                     let key = getKey(child);
                     if (key) existingMap.set(key, child);
+                    else existingUnkeyed.push(child);
                 }
                 
                 // Process new elements
@@ -42,7 +45,7 @@
                     if (key) {
                         newMap.set(key, newChild);
                     } else {
-                        unkeyed.push(newChild);
+                        newUnkeyed.push(newChild);
                     }
                 }
                 
@@ -60,16 +63,17 @@
                         allElements.set(key, {el: newEl, isExisting: false});
                     }
                     
+                    let sortDir = swapSpec.sort === 'desc' ? -1 : 1;
                     let sorted = Array.from(allElements.entries())
-                        .sort((a, b) => a[0].localeCompare(b[0], undefined, {numeric: true}));
+                        .sort((a, b) => sortDir * a[0].localeCompare(b[0], undefined, {numeric: true}));
                     result = sorted.map(([_, {el, isExisting}]) => 
                         isExisting ? el.cloneNode(true) : el
                     );
-                    // Add unkeyed elements
+                    // Add unkeyed elements (existing first, then new)
                     if (swapSpec.prepend) {
-                        result.unshift(...unkeyed);
+                        result.unshift(...newUnkeyed, ...existingUnkeyed);
                     } else {
-                        result.push(...unkeyed);
+                        result.push(...existingUnkeyed, ...newUnkeyed);
                     }
                 } else {
                     // Default: preserve existing, append/prepend new
@@ -82,17 +86,38 @@
                         }
                     }
                     // Add remaining new elements + unkeyed
-                    let toAdd = [...newMap.values(), ...unkeyed];
+                    let toAdd = [...newMap.values(), ...newUnkeyed];
                     if (swapSpec.prepend) {
-                        result.unshift(...toAdd);
+                        result.unshift(...toAdd, ...existingUnkeyed);
                     } else {
-                        result.push(...toAdd);
+                        result.push(...existingUnkeyed, ...toAdd);
                     }
                 }
                 
-                // Build fragment with clones, morph will compare and update live DOM
+                // Add temp IDs for morph matching
+                let tempIdSet = new Set();
+                for (let i = 0; i < result.length; i++) {
+                    let newEl = result[i];
+                    let key = getKey(newEl);
+                    if (key && existingMap.has(key)) {
+                        let existing = existingMap.get(key);
+                        if (!existing.id && !newEl.id) {
+                            let tempId = 'htmx-upsert-' + Math.random().toString(36).substr(2, 9);
+                            existing.id = tempId;
+                            newEl.id = tempId;
+                            tempIdSet.add(tempId);
+                        }
+                    }
+                }
+                
                 resultFragment.append(...result);
                 api.morph(target, resultFragment, true);
+                
+                // Remove temp IDs from live DOM
+                for (let tempId of tempIdSet) {
+                    let el = target.querySelector('#' + tempId);
+                    if (el) el.removeAttribute('id');
+                }
                 
                 return true;
             }

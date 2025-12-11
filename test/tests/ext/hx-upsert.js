@@ -209,4 +209,37 @@ describe('hx-upsert extension', function() {
         assert.equal(list2.querySelector('#item-a').textContent, 'A')
         assert.equal(list2.querySelector('#item-b').textContent, 'B')
     })
+
+    it('adds temp IDs for elements without id', async function () {
+        mockResponse('GET', '/test', '<div data-sku="b"><span>B</span></div>')
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="upsert key:data-sku sort"><div data-sku="c"><span>C</span></div><div data-sku="a"><span>A</span></div></div>');
+        div.click()
+        await htmx.timeout(20)
+        assert.equal(div.children[0].getAttribute('data-sku'), 'a')
+        assert.equal(div.children[1].getAttribute('data-sku'), 'b')
+        assert.equal(div.children[2].getAttribute('data-sku'), 'c')
+        assert.equal(div.children[0].id, '')
+        assert.equal(div.children[1].id, '')
+        assert.equal(div.children[2].id, '')
+    })
+
+    it('sorts descending with sort:desc', async function () {
+        mockResponse('GET', '/test', '<div id="item-2">Two</div>')
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="upsert sort:desc"><div id="item-3">Three</div><div id="item-1">One</div></div>');
+        div.click()
+        await htmx.timeout(20)
+        assert.equal(div.children[0].id, 'item-3')
+        assert.equal(div.children[1].id, 'item-2')
+        assert.equal(div.children[2].id, 'item-1')
+    })
+
+    it('sort:desc with prepend puts unkeyed first', async function () {
+        mockResponse('GET', '/test', '<div id="item-2">Two</div><div>Unkeyed</div>')
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="upsert sort:desc prepend"><div id="item-1">One</div></div>');
+        div.click()
+        await htmx.timeout(20)
+        assert.equal(div.children[0].textContent, 'Unkeyed')
+        assert.equal(div.children[1].id, 'item-2')
+        assert.equal(div.children[2].id, 'item-1')
+    })
 })
