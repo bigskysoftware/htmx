@@ -1088,8 +1088,10 @@ var htmx = (() => {
                 }
                 this.__trigger(elt, "htmx:after:cleanup")
             }
-            for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
-                this.__cleanup(child);
+            if (elt.nodeType === 1) {
+                for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
+                    this.__cleanup(child);
+                }
             }
         }
 
