@@ -1088,7 +1088,7 @@ var htmx = (() => {
                 }
                 this.__trigger(elt, "htmx:after:cleanup")
             }
-            if (elt.nodeType === 1) {
+            if (elt.firstChild) {
                 for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
                     this.__cleanup(child);
                 }
