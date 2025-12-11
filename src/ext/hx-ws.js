@@ -190,7 +190,7 @@
     // MESSAGE SENDING
     // ========================================
     
-    function sendMessage(element, event) {
+    async function sendMessage(element, event) {
         // Find connection URL
         let url = getWsAttribute(element, 'send');
         if (!url) {
@@ -216,7 +216,8 @@
         // Build message
         let form = element.form || element.closest('form');
         let body = api.collectFormData(element, form, event.submitter);
-        api.handleHxVals(element, body);
+        let valsResult = api.handleHxVals(element, body);
+        if (valsResult) await valsResult;
         
         let values = {};
         for (let [key, value] of body) {
@@ -480,7 +481,7 @@
         if (specs.length > 0) {
             let spec = specs[0];
             
-            let handler = (evt) => {
+            let handler = async (evt) => {
                 // Prevent default for forms
                 if (element.matches('form') && evt.type === 'submit') {
                     evt.preventDefault();
@@ -495,7 +496,7 @@
                     }
                 }
                 
-                sendMessage(element, evt);
+                await sendMessage(element, evt);
             };
             
             element.addEventListener(spec.name, handler);
