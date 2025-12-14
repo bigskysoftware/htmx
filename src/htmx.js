@@ -716,7 +716,9 @@ var htmx = (() => {
                         if (colonIndex <= 0) continue;
 
                         let field = line.slice(0, colonIndex);
-                        let value = line.slice(colonIndex + 1).trimStart();
+
+                        let value = line.slice(colonIndex + 1)
+                        if (value[0] === ' ') value = value.slice(1);
 
                         if (field === 'data') {
                             message.data += (message.data ? '\n' : '') + value;
