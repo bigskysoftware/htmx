@@ -42,13 +42,12 @@ The `hx-disable` attribute also supports specifying multiple CSS selectors separ
 </form>
 ```
 
-Note that you can also use the `merge` modifier to merge parent values for a disabled elements and add additional 
-disabled element CSS selectors:
+Note that you can also use the `append` modifier to add disabled elements CSS selectors to inherited values:
 
 ```html
-<main hx-disable="#logout-button">
+<main hx-disable:inherited="#logout-button">
     ...
-  <form hx-post="/example" hx-disable:merge="find input[type='text'], find button">
+  <form hx-post="/example" hx-disable:append="find input[type='text'], find button">
     <input type="text" placeholder="Type here...">
     <button type="submit">Send</button>
   </form>

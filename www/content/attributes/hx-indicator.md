@@ -25,13 +25,12 @@ Here is an example with a spinner adjacent to the button:
 </div>
 ```
 
-Note that you can also use the `inherit` keyword to inherit parent values for an indicator and add additional indicator
-CSS selectors:
+Note that you can also use the `append` modifier to add additional indicators to inidicators from parent elements:
 
 ```html
-<main hx-indicator="#global-indicator">
+<main hx-indicator:inherit="#global-indicator">
     ...
-    <button hx-post="/example" hx-indicator="inherit, #spinner">
+    <button hx-post="/example" hx-indicator:append="#spinner">
         Post It!
     </button>
     <img  id="spinner" class="htmx-indicator" src="/img/bars.svg" alt="Loading..."/>
@@ -82,15 +81,6 @@ call it out with the `hx-indicator` attribute:
    <img  class="htmx-indicator" src="/img/bars.svg" alt="Loading..."/>
 </button>
 ```
-
-## Demo
-
-This simulates what a spinner might look like in that situation:
-
-<button class="btn" classes="toggle htmx-request:3s">
-    Post It!
-   <img  class="htmx-indicator" src="/img/bars.svg" alt="Loading..."/>
-</button>
 
 ## Notes
 

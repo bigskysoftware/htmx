@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        .container {
+            width: 400px;
+            height: 400px;
+            border: 2px solid #333;
+            position: relative;
+            margin: 50px auto;
+        }
+        .ball {
+            width: 80px;
+            height: 80px;
+            background: #e63946;
+            border-radius: 50%;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" x-data="{
+        x: 50,
+        y: 50,
+        vx: 3,
+        vy: 4,
+        maxX: 320,
+        maxY: 320,
+        animate() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x <= 0 || this.x >= this.maxX) this.vx *= -1;
+            if (this.y <= 0 || this.y >= this.maxY) this.vy *= -1;
+            requestAnimationFrame(() => this.animate());
+        }
+    }" x-init="animate()">
+        <div class="ball" :style="`left: ${x}px; top: ${y}px`"></div>
+    </div>
+</body>
+</html>
