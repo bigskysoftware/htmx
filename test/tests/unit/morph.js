@@ -486,6 +486,38 @@ describe('Morph Swap Styles Tests', function() {
         });
     });
 
+    describe('text node handling', function() {
+        it('removes text nodes during morph without error', async function() {
+            mockResponse('GET', '/test', '<div id="child">content</div>');
+            const div = createProcessedHTML('<div id="target">text node<div id="child">old</div></div>');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.isNotNull(div.querySelector('#child'));
+            assert.equal(div.querySelector('#child').textContent, 'content');
+        });
+
+        it('handles mixed text nodes and elements', async function() {
+            mockResponse('GET', '/test', '<span>new</span>');
+            const div = createProcessedHTML('<div id="target">text1<span>old</span>text2</div>');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.isNotNull(div.querySelector('span'));
+            assert.equal(div.querySelector('span').textContent, 'new');
+        });
+
+        it('replaces text nodes with elements', async function() {
+            mockResponse('GET', '/test', '<div id="new">element</div>');
+            const div = createProcessedHTML('<div id="target">just text</div>');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.isNotNull(div.querySelector('#new'));
+            assert.equal(div.querySelector('#new').textContent, 'element');
+        });
+    });
+
     describe('morphSkipChildren config', function() {
         afterEach(function() {
             htmx.config.morphSkipChildren = null;

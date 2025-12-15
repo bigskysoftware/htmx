@@ -376,20 +376,9 @@ var htmx = (() => {
         }
 
         __handleHxHeaders(elt, headers) {
-            let result = this.__getAttributeObject(elt, "hx-headers");
-            if (result) {
-                if (result instanceof Promise) {
-                    return result.then(obj => {
-                        for (let key in obj) {
-                            headers[key] = String(obj[key]);
-                        }
-                    });
-                } else {
-                    for (let key in result) {
-                        headers[key] = String(result[key]);
-                    }
-                }
-            }
+            return this.__getAttributeObject(elt, "hx-headers", obj => {
+                for (let key in obj) headers[key] = String(obj[key]);
+            });
         }
 
         __resolveTarget(elt, selector) {
@@ -1088,8 +1077,10 @@ var htmx = (() => {
                 }
                 this.__trigger(elt, "htmx:after:cleanup")
             }
-            for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
-                this.__cleanup(child);
+            if (elt.firstChild) {
+                for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
+                    this.__cleanup(child);
+                }
             }
         }
 
@@ -1787,7 +1778,7 @@ var htmx = (() => {
             }
         }
 
-        __getAttributeObject(elt, attrName) {
+        __getAttributeObject(elt, attrName, callback) {
             let attrValue = this.__attributeValue(elt, attrName);
             if (!attrValue) return null;
 
@@ -1798,28 +1789,19 @@ var htmx = (() => {
                     javascriptContent = '{' + javascriptContent + '}';
                 }
                 // Return promise for async evaluation
-                return this.__executeJavaScriptAsync(elt, {}, javascriptContent, true);
+                return this.__executeJavaScriptAsync(elt, {}, javascriptContent, true).then(obj => {
+                    callback(obj);
+                });
             } else {
                 // Synchronous path - return the parsed object directly
-                return this.__parseConfig(attrValue);
+                callback(this.__parseConfig(attrValue));
             }
         }
 
         __handleHxVals(elt, body) {
-            let result = this.__getAttributeObject(elt, "hx-vals");
-            if (result) {
-                if (result instanceof Promise) {
-                    return result.then(obj => {
-                        for (let key in obj) {
-                            body.set(key, obj[key])
-                        }
-                    });
-                } else {
-                    for (let key in result) {
-                        body.set(key, result[key])
-                    }
-                }
-            }
+            return this.__getAttributeObject(elt, "hx-vals", obj => {
+                for (let key in obj) body.set(key, obj[key]);
+            });
         }
 
         __stringHyperscriptStyleSelector(selector) {

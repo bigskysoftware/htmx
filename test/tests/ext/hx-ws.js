@@ -327,6 +327,27 @@ describe('hx-ws WebSocket extension', function() {
             
             assert.notEqual(firstId, secondId);
         });
+        
+        it('includes async hx-vals (js:) in sent message', async function() {
+            window.testAsyncValue = () => new Promise(resolve => setTimeout(() => resolve('asyncValue'), 10));
+            
+            let div = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load">
+                    <button hx-ws:send hx-vals='js:{asyncField: await testAsyncValue()}' hx-trigger="click">Send</button>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            let button = div.querySelector('button');
+            button.click();
+            await htmx.timeout(20);
+            
+            let ws = mockWebSocketInstances[0];
+            let sent = JSON.parse(ws.lastSent);
+            assert.equal(sent.values.asyncField, 'asyncValue');
+            
+            delete window.testAsyncValue;
+        });
     });
     
     // ========================================

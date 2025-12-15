@@ -515,15 +515,16 @@ You can modify this by using the [hx-swap](@/attributes/hx-swap.md) attribute wi
 | `afterend` (or `after`)     | appends the content after the target in the target's parent element                                                                       |
 | `delete`                    | deletes the target element regardless of the response                                                                                     |
 | `none`                      | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed) |
-| `innerMorph`                | morphs the children of the target element, preserving as much of the existing DOM as possible                                             |
-| `outerMorph`                | morphs the target element itself, preserving as much of the existing DOM as possible                                                      |
+| `innerMorph`                | morphs the children of the target element, preserving as much of the existing DOM as possible (see [Morphing](@/morphing.md))             |
+| `outerMorph`                | morphs the target element itself, preserving as much of the existing DOM as possible (see [Morphing](@/morphing.md))                      |
 
 #### Morph Swaps {#morphing}
 
-In addition to the standard swap mechanisms above, htmx also supports _morphing_ swaps, via extensions.  Morphing swaps
-attempt to _merge_ new content into the existing DOM, rather than simply replacing it.  They often do a better job
-preserving things like focus, video state, etc. by mutating existing nodes in-place during the swap operation, at the
-cost of more CPU.
+htmx includes built-in morphing swaps via `innerMorph` and `outerMorph`. Morphing swaps attempt to _merge_ new content into the existing DOM, rather than simply replacing it. They preserve element identity, focus, video state, form input values, and event listeners by mutating existing nodes in-place during the swap operation.
+
+See the [Morphing documentation](@/morphing.md) for details on how morphing works, configuration options (`morphIgnore`, `morphSkip`, `morphSkipChildren`), and best practices.
+
+htmx also supports the [idiomorph extension](@/extensions/idiomorph.md) which provides a more advanced morphing algorithm.
 
 Consider this HTML:
 
