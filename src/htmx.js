@@ -6,17 +6,17 @@ var htmx = (() => {
         #q = []
 
         issue(ctx, queueStrategy) {
+            ctx.queueStrategy = queueStrategy
             if (!this.#c) {
                 this.#c = ctx
                 return true
             } else {
-                // Update ctx.status properly for replaced request contexts
-                if (queueStrategy === "replace") {
+                // Replace strategy OR current is abortable: abort current and issue new
+                if (queueStrategy === "replace" || (queueStrategy !== "abort" && this.#c.queueStrategy === "abort")) {
                     this.#q.map(value => value.status = "dropped");
                     this.#q = []
-                    if (this.#c) {
-                        this.#c.abort();
-                    }
+                    this.#c.request.abort();
+                    this.#c = ctx
                     return true
                 } else if (queueStrategy === "queue all") {
                     this.#q.push(ctx)
@@ -28,7 +28,7 @@ var htmx = (() => {
                     this.#q.map(value => value.status = "dropped");
                     this.#q = [ctx]
                     ctx.status = "queued";
-                } else if (this.#q.length === 0) {
+                } else if (this.#q.length === 0 && queueStrategy !== "abort") {
                     // default queue first
                     this.#q.push(ctx)
                     ctx.status = "queued";
@@ -769,7 +769,7 @@ var htmx = (() => {
             if (syncValue && syncValue.includes(":")) {
                 let strings = syncValue.split(":");
                 let selector = strings[0];
-                syncElt = this.__findExt(selector);
+                syncElt = this.__findExt(elt, selector, "hx-sync");
             }
             return syncElt._htmxRequestQueue ||= new ReqQ()
         }
