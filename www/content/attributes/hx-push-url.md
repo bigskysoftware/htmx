@@ -7,7 +7,9 @@ description = """\
 
 The `hx-push-url` attribute allows you to push a URL into the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
 This creates a new history entry, allowing navigation with the browser’s back and forward buttons.
-htmx snapshots the current DOM and saves it into its history cache, and restores from this cache on navigation.
+
+When a history navigation occurs, htmx will issue a request to the URL for that pages content and swap it in, replacing
+the current body.  Note that this is a change from the htmx 2.0 behavior, which used a local cache for history.
 
 The possible values of this attribute are:
 
