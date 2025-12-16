@@ -45,9 +45,9 @@ describe('hx-ws WebSocket extension', function() {
                 this.lastSent = data;
             }
             
-            close() {
+            close(code = 1000, reason = '') {
                 this.readyState = MockWebSocket.CLOSED;
-                this.triggerEvent('close', {});
+                this.triggerEvent('close', { code, reason });
             }
             
             triggerEvent(event, data) {
@@ -58,9 +58,14 @@ describe('hx-ws WebSocket extension', function() {
                 }
             }
             
-            // Helper to simulate receiving a message
+            // Helper to simulate receiving a message (JSON)
             simulateMessage(data) {
                 this.triggerEvent('message', { data: JSON.stringify(data) });
+            }
+            
+            // Helper to simulate receiving raw (non-JSON) message
+            simulateRawMessage(data) {
+                this.triggerEvent('message', { data: data });
             }
         };
         
@@ -109,6 +114,18 @@ describe('hx-ws WebSocket extension', function() {
         });
     });
     
+    // Helper to check if URL ends with expected path (accounts for URL normalization)
+    function urlEndsWith(url, expectedPath) {
+        return url.endsWith(expectedPath);
+    }
+    
+    // Helper to get normalized URL for registry lookups
+    function getNormalizedUrl(path) {
+        // The extension normalizes /path to ws://host/path or wss://host/path
+        let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        return protocol + '//' + window.location.host + path;
+    }
+    
     // ========================================
     // 1. CONNECTION LIFECYCLE TESTS
     // ========================================
@@ -119,7 +136,7 @@ describe('hx-ws WebSocket extension', function() {
             let div = createProcessedHTML('<div hx-ext="ws" hx-ws:connect="/ws/test" hx-trigger="load"></div>');
             await htmx.timeout(50);
             assert.equal(mockWebSocketInstances.length, 1);
-            assert.equal(mockWebSocketInstances[0].url, '/ws/test');
+            assert.isTrue(urlEndsWith(mockWebSocketInstances[0].url, '/ws/test'), 'URL should end with /ws/test');
         });
         
         it('does not auto-connect without trigger', async function() {
@@ -170,9 +187,12 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(50);
             
             // Access internal registry (this assumes the extension exposes it for testing)
+            // Registry now uses normalized URLs, so we can pass relative path (it normalizes internally)
             let registry = htmx.ext.ws.getRegistry?.();
             if (registry) {
-                assert.equal(registry.get('/ws/shared').refCount, 2);
+                let entry = registry.get('/ws/shared');
+                assert.isNotNull(entry, 'Should find entry for /ws/shared');
+                assert.equal(entry.refCount, 2);
             }
         });
         
@@ -289,7 +309,7 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(50);
             
             assert.equal(mockWebSocketInstances.length, 1);
-            assert.equal(mockWebSocketInstances[0].url, '/ws/direct');
+            assert.isTrue(urlEndsWith(mockWebSocketInstances[0].url, '/ws/direct'), 'URL should end with /ws/direct');
         });
         
         it('includes element id in message context', async function() {
@@ -720,26 +740,26 @@ describe('hx-ws WebSocket extension', function() {
             assert.isTrue(errorFired);
         });
         
-        it('emits htmx:wsUnknownMessage for unrecognized format', async function() {
+        it('emits htmx:wsUnknownMessage for non-JSON data', async function() {
             let container = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test" hx-trigger="load"></div>
             `);
             await htmx.timeout(50);
             
             let unknownFired = false;
-            container.addEventListener('htmx:wsUnknownMessage', () => {
+            let receivedData = null;
+            container.addEventListener('htmx:wsUnknownMessage', (e) => {
                 unknownFired = true;
+                receivedData = e.detail.data;
             });
             
             let ws = mockWebSocketInstances[0];
-            ws.simulateMessage({
-                channel: 'unknown',
-                format: 'weird',
-                payload: 'something'
-            });
+            // Send raw non-JSON data
+            ws.simulateRawMessage('not valid json {{{');
             await htmx.timeout(20);
             
             assert.isTrue(unknownFired);
+            assert.equal(receivedData, 'not valid json {{{');
         });
     });
     
@@ -889,7 +909,7 @@ describe('hx-ws WebSocket extension', function() {
             `);
             
             div.addEventListener('htmx:before:ws:send', (e) => {
-                e.detail.message.custom = 'added';
+                e.detail.data.custom = 'added';
             });
             
             await htmx.timeout(50);

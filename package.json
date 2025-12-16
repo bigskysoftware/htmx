@@ -29,6 +29,7 @@
     "test:webkit": "web-test-runner --browsers webkit --config test/web-test-runner.config.mjs --playwright",
     "test:all": "web-test-runner --browsers chromium firefox webkit --config test/web-test-runner.config.mjs --playwright --concurrency 1",
     "test:manual": "node test/manual/server.js",
+    "test:manual:ws": "node test/manual/ws-server.js",
     "www": "bash scripts/www.sh",
     "site": "npm run site:css & npm run site:serve",
     "site:css": "cd www && npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --watch",
@@ -58,9 +59,7 @@
     "brotli-cli": "^2.1.1",
     "chai": "^4.5.0",
     "mocha": "^11.7.4",
-    "terser": "^5.36.0"
-  },
-  "dependencies": {
+    "terser": "^5.36.0",
     "ws": "^8.18.3"
   }
 }

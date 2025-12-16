@@ -68,11 +68,30 @@ Sends data to the server via WebSocket.
 The extension sends a JSON object containing:
 ```json
 {
-    "headers": { /* request headers */ },
-    "values": { /* form data or hx-vals */ },
-    "request_id": "unique-id"  // for response matching
+    "type": "request",
+    "request_id": "unique-id",
+    "event": "click",
+    "headers": {
+        "HX-Request": "true",
+        "HX-Current-URL": "https://example.com/page",
+        "HX-Trigger": "element-id",
+        "HX-Target": "#target"
+    },
+    "values": { /* form data or hx-vals - arrays for multi-value fields */ },
+    "path": "wss://example.com/ws",
+    "id": "element-id"
 }
 ```
+
+| Field | Description |
+|-------|-------------|
+| `type` | Always `"request"` for client-to-server messages |
+| `request_id` | Unique ID for request/response matching |
+| `event` | The DOM event type that triggered the send (e.g., `"click"`, `"submit"`, `"change"`) |
+| `headers` | HTMX-style headers for server-side routing/processing |
+| `values` | Form data and `hx-vals` - multi-value fields preserved as arrays |
+| `path` | The normalized WebSocket URL |
+| `id` | Element ID (only if the triggering element has an `id` attribute) |
 
 ## Message Format
 
@@ -121,18 +140,19 @@ Configure via `htmx.config.websockets`:
 ```javascript
 htmx.config.websockets = {
     reconnect: true,              // Enable auto-reconnect (default: true)
-    reconnectDelay: 1000,        // Initial delay in ms (default: 1000)
-    reconnectMaxDelay: 30000,    // Max delay in ms (default: 30000)
-    reconnectJitter: true,       // Add jitter to reconnect delays (default: true)
-    autoConnect: false,          // Auto-connect on page load (default: false)
-    pauseInBackground: true      // Pause reconnection when page hidden (default: true)
+    reconnectDelay: 1000,         // Initial delay in ms (default: 1000)
+    reconnectMaxDelay: 30000,     // Max delay in ms (default: 30000)
+    reconnectJitter: true,        // Add jitter to reconnect delays (default: true)
+    autoConnect: false,           // Auto-connect on page load (default: false)
+    pendingRequestTTL: 30000      // TTL for pending requests in ms (default: 30000)
 };
 ```
 
 **Reconnection Strategy:**
-- Exponential backoff: `delay = min(reconnectDelay * 2^attempts, reconnectMaxDelay)`
-- Jitter reduces delay by up to 25% to avoid thundering herd
-- Respects page visibility API to pause reconnection in background tabs
+- Exponential backoff: `delay = min(reconnectDelay * 2^(attempts-1), reconnectMaxDelay)`
+- Jitter adds ±25% randomization to avoid thundering herd
+- Attempts counter resets to 0 on successful connection
+- To implement visibility-aware behavior, listen for `htmx:ws:reconnect` and cancel if `document.hidden`
 
 ## Events
 
@@ -153,7 +173,7 @@ htmx.config.websockets = {
 
 **`htmx:ws:close`**
 - Triggered when connection closes
-- `detail`: `{ url, code, reason }`
+- `detail`: `{ url, code, reason }` (code and reason from WebSocket CloseEvent)
 
 **`htmx:ws:error`**
 - Triggered on connection error
@@ -163,34 +183,83 @@ htmx.config.websockets = {
 
 **`htmx:before:ws:send`**
 - Triggered before sending a message
-- `detail`: `{ data, element }`
+- `detail`: `{ data, element, url }` (data is the message object, can be modified)
 - Cancellable via `preventDefault()`
 
 **`htmx:after:ws:send`**
 - Triggered after message is sent
-- `detail`: `{ data, element }`
+- `detail`: `{ data, url }` (data is the sent message object)
 
 **`htmx:wsSendError`**
 - Triggered when send fails (e.g., no connection URL found)
 - `detail`: `{ element }`
 
 **`htmx:wsMessage`**
-- Triggered for custom channel messages
-- `detail`: `{ channel, format, payload, ... }`
+- Triggered for any non-UI channel message (json, audio, binary, custom channels, etc.)
+- `detail`: `{ channel, format, payload, element, ... }` (entire envelope plus target element)
+- Use this event to implement custom message handling for your application
 
 **`htmx:wsUnknownMessage`**
-- Triggered for non-JSON messages
-- `detail`: `{ data }` (raw message data)
+- Triggered for messages that fail JSON parsing (invalid JSON)
+- `detail`: `{ data, parseError }` (raw message data and parse error)
 
 ## Implementation Details
 
+### URL Normalization
+
+WebSocket URLs are automatically normalized:
+- Relative paths (`/ws/chat`) are converted to absolute WebSocket URLs based on current page location
+- `http://` is converted to `ws://`
+- `https://` is converted to `wss://`
+- Protocol-relative URLs (`//example.com/ws`) use `ws:` or `wss:` based on current page protocol
+
+```html
+<!-- All of these work: -->
+<div hx-ws:connect="/ws/chat">          <!-- becomes wss://example.com/ws/chat on HTTPS -->
+<div hx-ws:connect="ws://localhost:8080/ws">
+<div hx-ws:connect="https://api.example.com/ws">  <!-- becomes wss://api.example.com/ws -->
+```
+
+### Trigger Semantics
+
+**Important:** The `hx-trigger` attribute on WebSocket elements only supports **bare event names**. Trigger modifiers like `once`, `delay`, `throttle`, `target`, `from`, `revealed`, and `intersect` are **not supported** for WebSocket connection/send triggers.
+
+```html
+<!-- Supported: bare event names -->
+<div hx-ws:connect="/ws" hx-trigger="load">
+<div hx-ws:connect="/ws" hx-trigger="click">
+<button hx-ws:send hx-trigger="click">
+
+<!-- NOT supported: trigger modifiers -->
+<div hx-ws:connect="/ws" hx-trigger="click delay:500ms">  <!-- delay ignored -->
+<div hx-ws:connect="/ws" hx-trigger="intersect">          <!-- won't work -->
+```
+
+For complex connection control, use the `htmx:before:ws:connect` event:
+```javascript
+document.addEventListener('htmx:before:ws:connect', (e) => {
+    if (someCondition) {
+        e.preventDefault(); // Cancel connection
+    }
+});
+```
+
 ### HTML Swapping
 
-When a `channel: "ui"` message arrives:
+When a `channel: "ui"` message arrives, the extension uses htmx's internal `insertContent` API:
+
 1. Determine target element (from message `target`, request context, or default `hx-target`)
 2. Determine swap strategy (from message `swap`, or default `hx-swap`, or `innerHTML`)
-3. Use htmx's swap mechanisms to update the DOM
-4. Automatically processes swapped content with `htmx.process()`
+3. Create a document fragment from the payload
+4. Call `api.insertContent({target, swapSpec, fragment})`
+
+This ensures WebSocket swaps get proper htmx behavior:
+- All swap styles (innerHTML, outerHTML, beforebegin, afterend, etc.)
+- Preserved elements (`hx-preserve`)
+- Auto-focus handling
+- Scroll handling
+- Proper cleanup of removed elements
+- `htmx.process()` called on newly inserted content (not the old target)
 
 ### Request-Response Matching
 
