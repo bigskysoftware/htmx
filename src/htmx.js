@@ -1996,25 +1996,33 @@ var htmx = (() => {
 
         __findBestMatch(ctx, node, startPoint, endPoint) {
             let softMatch = null, nextSibling = node.nextSibling, siblingMatchCount = 0, displaceMatchCount = 0, scanLimit = this.config.morphScanLimit;
+            // Get ID count for this node to prioritize ID-based matches
             let newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
             let cursor = startPoint;
             while (cursor && cursor != endPoint) {
                 let oldSet = ctx.idMap.get(cursor);
                 if (this.__isSoftMatch(cursor, node)) {
+                    // Hard match: matching IDs found in both nodes
                     if (oldSet && newSet && [...oldSet].some(id => newSet.has(id))) return cursor;
                     if (!oldSet) {
+                        // Exact match: nodes are identical
                         if (scanLimit > 0 && cursor.isEqualNode(node)) return cursor;
+                        // Soft match: same tag/type, save as fallback
                         if (!softMatch) softMatch = cursor;
                     }
                 }
+                // Stop if too many ID elements would be displaced
                 displaceMatchCount += oldSet?.size || 0;
                 if (displaceMatchCount > nodeMatchCount) break;
+                // Look ahead: if next siblings match exactly, abort to let them match instead
                 if (nextSibling && scanLimit > 0 && cursor.isEqualNode(nextSibling)) {
                     siblingMatchCount++;
                     nextSibling = nextSibling.nextSibling;
                     if (siblingMatchCount >= 2) return null;
                 }
+                // Don't move elements containing focus
                 if (cursor.contains(document.activeElement)) break;
+                // Stop scanning if limit reached and no IDs to match
                 if (--scanLimit < 1 && nodeMatchCount === 0) break;
                 cursor = cursor.nextSibling;
             }
