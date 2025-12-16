@@ -1390,6 +1390,8 @@ var htmx = (() => {
                     this.__cleanup(child)
                 }
                 target.replaceChildren(...fragment.childNodes);
+            } else if (swapSpec.style === 'textContent') {
+                target.textContent = fragment.textContent;
             } else if (swapSpec.style === 'outerHTML') {
                 if (parentNode) {
                     this.__captureCSSTransitions(task, parentNode);
