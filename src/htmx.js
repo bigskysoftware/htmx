@@ -112,6 +112,7 @@ var htmx = (() => {
                     pauseInBackground: false
                 },
                 morphIgnore: ["data-htmx-powered"],
+                morphScanLimit: 10,
                 noSwap: [204, 304],
                 implicitInheritance: false
             }
@@ -1994,26 +1995,27 @@ var htmx = (() => {
         }
 
         __findBestMatch(ctx, node, startPoint, endPoint) {
-            let softMatch = null, nextSibling = node.nextSibling, siblingSoftMatchCount = 0, displaceMatchCount = 0;
+            let softMatch = null, nextSibling = node.nextSibling, siblingMatchCount = 0, displaceMatchCount = 0, scanLimit = this.config.morphScanLimit;
             let newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
             let cursor = startPoint;
             while (cursor && cursor != endPoint) {
                 let oldSet = ctx.idMap.get(cursor);
                 if (this.__isSoftMatch(cursor, node)) {
                     if (oldSet && newSet && [...oldSet].some(id => newSet.has(id))) return cursor;
-                    if (softMatch === null && !oldSet) {
-                        if (!nodeMatchCount) return cursor;
-                        else softMatch = cursor;
+                    if (!oldSet) {
+                        if (scanLimit > 0 && cursor.isEqualNode(node)) return cursor;
+                        if (!softMatch) softMatch = cursor;
                     }
                 }
                 displaceMatchCount += oldSet?.size || 0;
                 if (displaceMatchCount > nodeMatchCount) break;
-                if (softMatch === null && nextSibling && this.__isSoftMatch(cursor, nextSibling)) {
-                    siblingSoftMatchCount++;
+                if (nextSibling && scanLimit > 0 && cursor.isEqualNode(nextSibling)) {
+                    siblingMatchCount++;
                     nextSibling = nextSibling.nextSibling;
-                    if (siblingSoftMatchCount >= 2) softMatch = undefined;
+                    if (siblingMatchCount >= 2) return null;
                 }
                 if (cursor.contains(document.activeElement)) break;
+                if (--scanLimit < 1 && nodeMatchCount === 0) break;
                 cursor = cursor.nextSibling;
             }
             return softMatch || null;

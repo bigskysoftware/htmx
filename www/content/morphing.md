@@ -47,7 +47,25 @@ This approach minimizes DOM changes, which helps preserve:
 
 ## Configuration Options
 
-htmx provides three configuration options to control morphing behavior:
+htmx provides four configuration options to control morphing behavior:
+
+### `htmx.config.morphScanLimit`
+
+A number that limits how many siblings to scan when looking for matching elements during morphing. The default is `10`.
+
+```javascript
+// Increase scan limit for large lists
+htmx.config.morphScanLimit = 100;
+```
+
+**How it works:** When morphing tries to match an element from the new content with an element in the old content, it scans through siblings to find exact matches. This limit prevents excessive scanning in very large DOM trees.
+
+**Important:** Elements with matching IDs will always be found regardless of the scan limit, as ID-based matches are prioritized and continue scanning even after the limit is reached.
+
+**Use cases:**
+- **Large lists**: Increase the limit when morph accuracy is needed with long lists of items without IDs
+- **Performance tuning**: Decrease the limit to improve performance if morphing is slow
+- **Default behavior**: Most applications don't need to change this value
 
 ### `htmx.config.morphIgnore`
 
