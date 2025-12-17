@@ -57,7 +57,6 @@
             reconnectDelay: 1000,
             reconnectMaxDelay: 30000,
             reconnectJitter: true,
-            autoConnect: false,
             // Note: pauseInBackground is NOT implemented. Reconnection continues in background tabs.
             // To implement visibility-aware behavior, listen for htmx:ws:reconnect and cancel if needed.
             pendingRequestTTL: 30000  // TTL for pending requests in ms
@@ -544,17 +543,17 @@
         element._htmx = element._htmx || {};
         element._htmx.wsInitialized = true;
         
-        let config = getConfig();
         let triggerSpec = api.attributeValue(element, 'hx-trigger');
         
-        if (!triggerSpec && config.autoConnect === true) {
-            // Auto-connect on element initialization
+        if (!triggerSpec) {
+            // No trigger specified - connect immediately (default behavior)
+            // This is the most common use case: connect when element appears
             let entry = getOrCreateConnection(connectUrl, element);
             if (entry) {
                 element._htmx.wsUrl = entry.url;
             }
-        } else if (triggerSpec) {
-            // Connect based on trigger
+        } else {
+            // Connect based on explicit trigger
             // Note: We only support bare event names for connection triggers.
             // Modifiers like once, delay, throttle, from, target are NOT supported
             // for connection establishment. Use htmx:before:ws:connect event for
@@ -563,6 +562,7 @@
             if (specs.length > 0) {
                 let spec = specs[0];
                 if (spec.name === 'load') {
+                    // Explicit load trigger - connect immediately
                     let entry = getOrCreateConnection(connectUrl, element);
                     if (entry) {
                         element._htmx.wsUrl = entry.url;

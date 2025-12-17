@@ -28,13 +28,14 @@ The extension maintains a global connection registry that ensures:
 Establishes a WebSocket connection to the specified URL.
 
 ```html
-<div hx-ws:connect="ws://localhost:8080/chat" hx-trigger="load">
+<div hx-ws:connect="/chat">
     <!-- Content updated via WebSocket messages -->
 </div>
 ```
 
 **Key Features:**
-- Supports `hx-trigger` to control when the connection is established (default: explicit trigger required)
+- Connects immediately when element is processed (default behavior)
+- Use `hx-trigger` to defer connection until a specific event (e.g., `hx-trigger="click"`)
 - Can set `hx-target` and `hx-swap` for default message handling
 - Connection is shared across all elements using the same URL
 
@@ -59,7 +60,7 @@ Sends data to the server via WebSocket.
 
 **Explicit URL (establishes new connection):**
 ```html
-<button hx-ws:send="ws://localhost:8080/actions" hx-vals='{"type":"ping"}'>
+<button hx-ws:send="/actions" hx-vals='{"type":"ping"}'>
     Ping
 </button>
 ```
@@ -143,7 +144,6 @@ htmx.config.websockets = {
     reconnectDelay: 1000,         // Initial delay in ms (default: 1000)
     reconnectMaxDelay: 30000,     // Max delay in ms (default: 30000)
     reconnectJitter: true,        // Add jitter to reconnect delays (default: true)
-    autoConnect: false,           // Auto-connect on page load (default: false)
     pendingRequestTTL: 30000      // TTL for pending requests in ms (default: 30000)
 };
 ```
@@ -222,14 +222,19 @@ WebSocket URLs are automatically normalized:
 
 ### Trigger Semantics
 
-**Important:** The `hx-trigger` attribute on WebSocket elements only supports **bare event names**. Trigger modifiers like `once`, `delay`, `throttle`, `target`, `from`, `revealed`, and `intersect` are **not supported** for WebSocket connection/send triggers.
+By default, WebSocket connections are established immediately when the element is processed. Use `hx-trigger` only when you want to **defer** connection until a specific event.
 
 ```html
-<!-- Supported: bare event names -->
-<div hx-ws:connect="/ws" hx-trigger="load">
-<div hx-ws:connect="/ws" hx-trigger="click">
-<button hx-ws:send hx-trigger="click">
+<!-- Connects immediately (default) -->
+<div hx-ws:connect="/ws">
 
+<!-- Defers connection until click -->
+<div hx-ws:connect="/ws" hx-trigger="click">
+```
+
+**Important:** Only **bare event names** are supported for connection triggers. Modifiers like `once`, `delay`, `throttle`, `target`, `from`, `revealed`, and `intersect` are **not supported**.
+
+```html
 <!-- NOT supported: trigger modifiers -->
 <div hx-ws:connect="/ws" hx-trigger="click delay:500ms">  <!-- delay ignored -->
 <div hx-ws:connect="/ws" hx-trigger="intersect">          <!-- won't work -->
@@ -329,9 +334,8 @@ The initial design concept proposed:
 
 ### Live Chat
 ```html
-<div hx-ws:connect="ws://localhost:8080/chat" 
-     hx-trigger="load" 
-     hx-target="#messages" 
+<div hx-ws:connect="/chat"
+     hx-target="#messages"
      hx-swap="beforeend">
     <div id="messages"></div>
     <form hx-ws:send hx-trigger="submit">
@@ -343,8 +347,7 @@ The initial design concept proposed:
 
 ### Real-Time Notifications
 ```html
-<div hx-ws:connect="ws://localhost:8080/notifications" 
-     hx-trigger="load"
+<div hx-ws:connect="/notifications"
      hx-target="#notifications"
      hx-swap="afterbegin">
     <div id="notifications"></div>
@@ -353,7 +356,7 @@ The initial design concept proposed:
 
 ### Interactive Controls
 ```html
-<div hx-ws:connect="ws://localhost:8080/counter" hx-trigger="load">
+<div hx-ws:connect="/counter">
     <div id="counter">0</div>
     <button hx-ws:send hx-vals='{"action":"increment"}'>+</button>
     <button hx-ws:send hx-vals='{"action":"decrement"}'>-</button>

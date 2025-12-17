@@ -139,10 +139,10 @@ describe('hx-ws WebSocket extension', function() {
             assert.isTrue(urlEndsWith(mockWebSocketInstances[0].url, '/ws/test'), 'URL should end with /ws/test');
         });
         
-        it('does not auto-connect without trigger', async function() {
+        it('auto-connects by default without explicit trigger', async function() {
             let div = createProcessedHTML('<div hx-ws:connect="/ws/test"></div>');
             await htmx.timeout(50);
-            assert.equal(mockWebSocketInstances.length, 0);
+            assert.equal(mockWebSocketInstances.length, 1, 'Should auto-connect when no trigger is specified');
         });
         
         it('connects on custom trigger event', async function() {
@@ -769,15 +769,14 @@ describe('hx-ws WebSocket extension', function() {
     
     describe('Configuration', function() {
         
-        it('respects htmx.config.websockets.autoConnect', async function() {
-            htmx.config.websockets = { autoConnect: false };
-            
+        it('defers connection when explicit trigger is specified', async function() {
             let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/test"></div>
+                <div hx-ws:connect="/ws/test" hx-trigger="click"></div>
             `);
             await htmx.timeout(50);
             
-            assert.equal(mockWebSocketInstances.length, 0);
+            // Should not connect immediately when explicit trigger is set
+            assert.equal(mockWebSocketInstances.length, 0, 'Should not connect until trigger fires');
         });
         
         it('uses custom reconnectDelay from config', async function() {
