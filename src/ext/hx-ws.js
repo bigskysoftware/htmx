@@ -296,15 +296,30 @@
     // MESSAGE SENDING
     // ========================================
     
+    // Check if a value looks like a URL (vs a boolean marker like "" or "true")
+    function looksLikeUrl(value) {
+        if (!value) return false;
+        // Check for URL-like patterns: paths, protocols, protocol-relative
+        return value.startsWith('/') || 
+               value.startsWith('.') ||
+               value.startsWith('ws:') || 
+               value.startsWith('wss:') || 
+               value.startsWith('http:') || 
+               value.startsWith('https:') ||
+               value.startsWith('//');
+    }
+    
     async function sendMessage(element, event) {
         // Find connection URL
         let url = getWsAttribute(element, 'send');
-        if (!url) {
-            // Look for nearest ancestor with hx-ws:connect or hx-ws-connect
+        if (!looksLikeUrl(url)) {
+            // Value is empty, "true", or other non-URL marker - look for ancestor connection
             let selector = buildWsSelector('connect');
             let ancestor = element.closest(selector);
             if (ancestor) {
                 url = getWsAttribute(ancestor, 'connect');
+            } else {
+                url = null;
             }
         }
         
@@ -585,7 +600,9 @@
     function initializeSendElement(element) {
         if (element._htmx?.wsSendInitialized) return;
 
-        let sendUrl = getWsAttribute(element, 'send');
+        let sendAttr = getWsAttribute(element, 'send');
+        // Only treat as URL if it looks like one (not "", "true", etc.)
+        let sendUrl = looksLikeUrl(sendAttr) ? sendAttr : null;
         let triggerSpec = api.attributeValue(element, 'hx-trigger');
         
         if (!triggerSpec) {
