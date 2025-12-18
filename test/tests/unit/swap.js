@@ -266,9 +266,9 @@ describe('swap() unit tests', function() {
         triggered.should.be.true;
     })
 
-    it('triggers htmx:after:restore event', async function () {
+    it('triggers htmx:after:settle event', async function () {
         let triggered = false;
-        htmx.on('htmx:after:restore', () => {
+        htmx.on('htmx:after:settle', () => {
             triggered = true;
         });
         await htmx.swap({"target":"#test-playground", "text":"<div>Content</div>"})
@@ -276,6 +276,7 @@ describe('swap() unit tests', function() {
     })
 
     it('triggers view transition events with transition:true', async function () {
+        htmx.config.logAll = true;
         if (!document.startViewTransition) {
             this.skip();
             return;
@@ -290,7 +291,7 @@ describe('swap() unit tests', function() {
             afterTriggered = true;
         });
 
-        await htmx.swap({"target":"#test-playground", "text":"<div id='d1'>Content</div>", "transition":true})
+        await htmx.swap({"target":"#test-playground", "text":"<div id='d1'>Content</div>", "swap":"innerHTML transition:true"})
         beforeTriggered.should.be.true;
         afterTriggered.should.be.true;
     })

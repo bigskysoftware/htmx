@@ -1281,65 +1281,41 @@ var htmx = (() => {
             let partialTasks = this.__processPartials(fragment, ctx);
             tasks.push(...oobTasks, ...partialTasks);
 
-            // Process main swap
+            // Process main swap first
             let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
             if (mainSwap) {
-                tasks.push(mainSwap);
+                tasks.unshift(mainSwap);
             }
-
-            // TODO - can we remove this and just let the function complete?
-            if (tasks.length === 0) return;
 
             if(!this.__trigger(document, "htmx:before:swap", {ctx, tasks})){
                 return
             }
 
-            // insert non-transition tasks immediately or with delay, collect transition tasks
+            let swapPromises = [];
             let transitionTasks = [];
             for (let task of tasks) {
-                // OOB/partial tasks with swap delays should be non-transition (non-blocking)
-                let swapDelay = task.swapSpec?.swap;
-                if (!(task.swapSpec?.transition ?? mainSwap?.transition) || (swapDelay && task !== mainSwap)) {
-                    if (swapDelay) {
-                        if (task === mainSwap) {
-                            await this.timeout(swapDelay);
-                        } else {
-                            setTimeout(() => this.__insertContent(task), this.parseInterval(swapDelay));
-                            continue;
-                        }
-                    }
-                    this.__insertContent(task)
-                } else {
+                if (task.swapSpec?.transition) {
                     transitionTasks.push(task);
+                } else {
+                    swapPromises.push(this.__insertContent(task));
                 }
             }
 
-            // insert transition tasks in the transition queue
+            // submit all transition tasks in the transition queue
             if (transitionTasks.length > 0) {
-                if (mainSwap?.transition && mainSwap?.swapSpec?.swap) {
-                    await this.timeout(mainSwap.swapSpec.swap);
-                }
-                let tasksWrapper = ()=> {
+                let tasksWrapper = async ()=> {
                     for (let task of transitionTasks) {
-                        this.__insertContent(task)
+                        await this.__insertContent(task, true)
                     }
                 }
-                await this.__submitTransitionTask(tasksWrapper);
+                swapPromises.push(this.__submitTransitionTask(tasksWrapper));
             }
+
+            await Promise.all(swapPromises);
 
             this.__trigger(document, "htmx:after:swap", {ctx});
             if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
-            await this.timeout(1);
-            // invoke restore tasks
-            for (let task of tasks) {
-                for (let restore of task.restoreTasks || []) {
-                    restore()
-                }
-            }
-            this.__trigger(document, "htmx:after:restore", { ctx });
             this.__handleAnchorScroll(ctx);
-            // TODO this stuff should be an extension
-            // if (ctx.hx?.triggerafterswap) this.__handleTriggerHeader(ctx.hx.triggerafterswap, ctx.sourceElement);
         }
 
         __processMainSwap(ctx, fragment, partialTasks) {
@@ -1367,7 +1343,7 @@ var htmx = (() => {
             }
         }
 
-        __insertContent(task) {
+        async __insertContent(task, inViewTransition) {
             let {target, swapSpec, fragment} = task;
             if (typeof target === 'string') {
                 target = document.querySelector(target);
@@ -1381,61 +1357,89 @@ var htmx = (() => {
                 fragment.append(...(task.fragment.firstElementChild.content || task.fragment.firstElementChild).childNodes);
             }
 
+            target.classList.add("htmx-swapping")
+            if (!inViewTransition && task.swapSpec?.swap) {
+                await this.timeout(task.swapSpec?.swap)
+            }
             let pantry = this.__handlePreservedElements(fragment);
             let parentNode = target.parentNode;
             let newContent = [...fragment.childNodes]
-            if (swapSpec.style === 'innerHTML') {
-                this.__captureCSSTransitions(task, target);
-                for (const child of target.children) {
-                    this.__cleanup(child)
-                }
-                target.replaceChildren(...fragment.childNodes);
-            } else if (swapSpec.style === 'outerHTML') {
-                if (parentNode) {
-                    this.__captureCSSTransitions(task, parentNode);
-                    this.__insertNodes(parentNode, target, fragment);
-                    this.__cleanup(target)
-                    parentNode.removeChild(target);
-                }
-            } else if (swapSpec.style === 'innerMorph') {
-                this.__morph(target, fragment, true);
-            } else if (swapSpec.style === 'outerMorph') {
-                this.__morph(target, fragment, false);
-            } else if (swapSpec.style === 'beforebegin') {
-                if (parentNode) {
-                    this.__insertNodes(parentNode, target, fragment);
-                }
-            } else if (swapSpec.style === 'afterbegin') {
-                this.__insertNodes(target, target.firstChild, fragment);
-            } else if (swapSpec.style === 'beforeend') {
-                this.__insertNodes(target, null, fragment);
-            } else if (swapSpec.style === 'afterend') {
-                if (parentNode) {
-                    this.__insertNodes(parentNode, target.nextSibling, fragment);
-                }
-            } else if (swapSpec.style === 'delete') {
-                if (parentNode) {
-                    this.__cleanup(target)
-                    parentNode.removeChild(target)
-                }
-                return;
-            } else if (swapSpec.style === 'none') {
-                return;
-            } else {
-                let methods = this.__extMethods.get('handle_swap')
-                let handled = false;
-                for (const method of methods) {
-                    if (method(swapSpec.style, target, fragment)) {
-                        handled = true;
-                        break;
+            let settleTasks = []
+            try {
+                if (swapSpec.style === 'innerHTML') {
+                    settleTasks = this.__startCSSTransitions(fragment, target);
+                    for (const child of target.children) {
+                        this.__cleanup(child)
+                    }
+                    target.replaceChildren(...fragment.childNodes);
+                } else if (swapSpec.style === 'outerHTML') {
+                    if (parentNode) {
+                        settleTasks = this.__startCSSTransitions(fragment, parentNode);
+                        this.__insertNodes(parentNode, target, fragment);
+                        this.__cleanup(target)
+                        parentNode.removeChild(target);
+                    }
+                } else if (swapSpec.style === 'innerMorph') {
+                    this.__morph(target, fragment, true);
+                } else if (swapSpec.style === 'outerMorph') {
+                    this.__morph(target, fragment, false);
+                } else if (swapSpec.style === 'beforebegin') {
+                    if (parentNode) {
+                        this.__insertNodes(parentNode, target, fragment);
+                    }
+                } else if (swapSpec.style === 'afterbegin') {
+                    this.__insertNodes(target, target.firstChild, fragment);
+                } else if (swapSpec.style === 'beforeend') {
+                    this.__insertNodes(target, null, fragment);
+                } else if (swapSpec.style === 'afterend') {
+                    if (parentNode) {
+                        this.__insertNodes(parentNode, target.nextSibling, fragment);
+                    }
+                } else if (swapSpec.style === 'delete') {
+                    if (parentNode) {
+                        this.__cleanup(target)
+                        parentNode.removeChild(target)
+                    }
+                } else if (swapSpec.style === 'none') {
+                    return; // TODO - do we still want logic below to run?
+                } else {
+                    let methods = this.__extMethods.get('handle_swap')
+                    let handled = false;
+                    for (const method of methods) {
+                        if (method(swapSpec.style, target, fragment)) {
+                            handled = true;
+                            break;
+                        }
+                    }
+                    if (!handled) {
+                        throw new Error(`Unknown swap style: ${swapSpec.style}`);
                     }
                 }
-                if (!handled) {
-                    throw new Error(`Unknown swap style: ${swapSpec.style}`);
-                }
+            } finally {
+                target.classList.remove("htmx-swapping")
             }
             this.__restorePreservedElements(pantry);
+
+            this.__trigger(document, "htmx:before:settle", {task, newContent, settleTasks})
+
+            target.classList.add("htmx-settling")
             for (const elt of newContent) {
+                elt.classList?.add?.("htmx-added")
+            }
+
+            // TODO - this needs to be configurable
+            await this.timeout(1)
+
+            // invoke settle tasks
+            target.classList.remove("htmx-settling")
+            for (let settleTask of settleTasks) {
+                settleTask()
+            }
+
+            this.__trigger(document, "htmx:after:settle", {task, newContent, settleTasks})
+
+            for (const elt of newContent) {
+                elt.classList?.remove?.("htmx-added")
                 this.process(elt);
                 this.__handleAutoFocus(elt);
             }
@@ -1448,7 +1452,7 @@ var htmx = (() => {
             }
             on = this.__normalizeElement(on)
             this.__triggerExtensions(on, eventName, detail);
-            return this.trigger(on, eventName, detail, bubbles)
+            return this.trigger(on, this.__maybeAdjustMetaCharacter(eventName), detail, bubbles)
         }
 
         __triggerExtensions(elt, eventName, detail = {}) {
@@ -2176,21 +2180,22 @@ var htmx = (() => {
             }
         }
 
-        __captureCSSTransitions(task, root) {
+        __startCSSTransitions(fragment, root) {
             let idElements = root.querySelectorAll("[id]");
             let existingElementsById = Object.fromEntries([...idElements].map(e => [e.id, e]));
-            let newElementsWithIds = task.fragment.querySelectorAll("[id]");
-            task.restoreTasks = []
+            let newElementsWithIds = fragment.querySelectorAll("[id]");
+            let restoreTasks = []
             for (let elt of newElementsWithIds) {
                 let existing = existingElementsById[elt.id];
                 if (existing?.tagName === elt.tagName) {
                     let clone = elt.cloneNode(false); // shallow clone node
                     this.__copyAttributes(elt, existing, this.config.morphIgnore)
-                    task.restoreTasks.push(()=>{
+                    restoreTasks.push(()=>{
                         this.__copyAttributes(elt, clone, this.config.morphIgnore)
                     })
                 }
             }
+            return restoreTasks;
         }
 
         __normalizeElement(cssOrElement) {
