@@ -283,7 +283,7 @@
 
         <div class="demo-grid">
             <!-- Chat Demo -->
-            <div class="demo-card" hx-ws:connect="ws://localhost:8080/chat" hx-trigger="load" hx-target="#chat" hx-swap="beforeend">
+            <div class="demo-card" hx-ws:connect="/chat" hx-trigger="load" hx-target="#chat" hx-swap="beforeend">
                 <h2>
                     <span class="status-indicator connected"></span>
                     Live Chat
@@ -296,7 +296,7 @@
             </div>
 
             <!-- Notifications -->
-            <div class="demo-card" hx-ws:connect="ws://localhost:8080/notifications" hx-trigger="load" hx-target="#notifications" hx-swap="afterbegin">
+            <div class="demo-card" hx-ws:connect="/notifications" hx-trigger="load" hx-target="#notifications" hx-swap="afterbegin">
                 <h2>
                     <span class="status-indicator connected"></span>
                     Live Notifications
@@ -305,7 +305,7 @@
             </div>
 
             <!-- Counter -->
-            <div class="demo-card" hx-ws:connect="ws://localhost:8080/counter" hx-trigger="load">
+            <div class="demo-card" hx-ws:connect="/counter" hx-trigger="load">
                 <h2>
                     <span class="status-indicator connected"></span>
                     Shared Counter
@@ -319,7 +319,7 @@
             </div>
 
             <!-- Stock Ticker -->
-            <div class="demo-card" hx-ws:connect="ws://localhost:8080/ticker" hx-trigger="load">
+            <div class="demo-card" hx-ws:connect="/ticker" hx-trigger="load">
                 <h2>
                     <span class="status-indicator connected"></span>
                     Stock Ticker
@@ -328,7 +328,7 @@
             </div>
 
             <!-- Dashboard -->
-            <div class="demo-card" hx-ws:connect="ws://localhost:8080/dashboard" hx-trigger="load">
+            <div class="demo-card" hx-ws:connect="/dashboard" hx-trigger="load">
                 <h2>
                     <span class="status-indicator connected"></span>
                     System Dashboard
