@@ -187,7 +187,8 @@ major changes between htmx 2.x and htmx 4.x.
 - `htmx:after:cleanup` - fires after element cleanup completes
 - `htmx:after:history:update` - fires after history state is updated
 - `htmx:after:process` - fires after element processing completes
-- `htmx:after:restore` - fires after restore tasks complete in swap
+- `htmx:before:settle` - fires before settle phase begins
+- `htmx:after:settle` - fires after settle phase completes
 - `htmx:finally:request` - fires in finally block after request (success or error)
 - `htmx:before:sse:stream` - fires before SSE stream begins
 - `htmx:after:sse:stream` - fires after SSE stream ends
