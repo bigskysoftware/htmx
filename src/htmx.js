@@ -1423,7 +1423,7 @@ var htmx = (() => {
             }
             this.__restorePreservedElements(pantry);
 
-            this.__trigger(document, "htmx:before:settle", {task, newContent, settleTasks})
+            this.__trigger(target, "htmx:before:settle", {task, newContent, settleTasks})
 
             for (const elt of newContent) {
                 elt.classList?.add?.("htmx-added")
@@ -1439,7 +1439,7 @@ var htmx = (() => {
                 target.classList.remove("htmx-settling")
             }
 
-            this.__trigger(document, "htmx:after:settle", {task, newContent, settleTasks})
+            this.__trigger(target, "htmx:after:settle", {task, newContent, settleTasks})
 
             for (const elt of newContent) {
                 elt.classList?.remove?.("htmx-added")
