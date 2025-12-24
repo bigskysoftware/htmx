@@ -1295,7 +1295,7 @@ var htmx = (() => {
             let swapPromises = [];
             let transitionTasks = [];
             for (let task of tasks) {
-                if (task.swapSpec?.transition) {
+                if (task.swapSpec?.transition ?? mainSwap?.transition) {
                     transitionTasks.push(task);
                 } else {
                     swapPromises.push(this.__insertContent(task));
@@ -1368,7 +1368,7 @@ var htmx = (() => {
             let settleTasks = []
             try {
                 if (swapSpec.style === 'innerHTML') {
-                    settleTasks = this.__startCSSTransitions(fragment, target);
+                    settleTasks = inViewTransition ? [] : this.__startCSSTransitions(fragment, target);
                     for (const child of target.children) {
                         this.__cleanup(child)
                     }
@@ -1377,7 +1377,7 @@ var htmx = (() => {
                     target.textContent = fragment.textContent;
                 } else if (swapSpec.style === 'outerHTML') {
                     if (parentNode) {
-                        settleTasks = this.__startCSSTransitions(fragment, parentNode);
+                        settleTasks = inViewTransition ? [] : this.__startCSSTransitions(fragment, target);
                         this.__insertNodes(parentNode, target, fragment);
                         this.__cleanup(target)
                         parentNode.removeChild(target);
@@ -1425,18 +1425,18 @@ var htmx = (() => {
 
             this.__trigger(document, "htmx:before:settle", {task, newContent, settleTasks})
 
-            target.classList.add("htmx-settling")
             for (const elt of newContent) {
                 elt.classList?.add?.("htmx-added")
             }
 
-            // TODO - this needs to be configurable
-            await this.timeout(1)
-
-            // invoke settle tasks
-            target.classList.remove("htmx-settling")
-            for (let settleTask of settleTasks) {
-                settleTask()
+            if (!inViewTransition) {
+                target.classList.add("htmx-settling")
+                await this.timeout(swapSpec.settle ?? 1);
+                // invoke settle tasks
+                for (let settleTask of settleTasks) {
+                    settleTask()
+                }
+                target.classList.remove("htmx-settling")
             }
 
             this.__trigger(document, "htmx:after:settle", {task, newContent, settleTasks})
