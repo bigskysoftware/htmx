@@ -2201,9 +2201,9 @@ var htmx = (() => {
                 let existing = existingElementsById[elt.id];
                 if (existing?.tagName === elt.tagName) {
                     let clone = elt.cloneNode(false); // shallow clone node
-                    this.__copyAttributes(elt, existing, this.config.morphIgnore)
+                    this.__copyAttributes(elt, existing)
                     restoreTasks.push(()=>{
-                        this.__copyAttributes(elt, clone, this.config.morphIgnore)
+                        this.__copyAttributes(elt, clone)
                     })
                 }
             }
