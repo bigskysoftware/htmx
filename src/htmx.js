@@ -1353,6 +1353,7 @@ var htmx = (() => {
             if (typeof swapSpec === 'string') {
                 swapSpec = this.__parseSwapSpec(swapSpec);
             }
+            if (swapSpec.style === 'none') return;
             if (swapSpec.strip && fragment.firstElementChild) {
                 fragment = document.createDocumentFragment();
                 fragment.append(...(task.fragment.firstElementChild.content || task.fragment.firstElementChild).childNodes);
@@ -1362,6 +1363,15 @@ var htmx = (() => {
             if (!inViewTransition && task.swapSpec?.swap) {
                 await this.timeout(task.swapSpec?.swap)
             }
+
+            if (swapSpec.style === 'delete') {
+                if (target.parentNode) {
+                    this.__cleanup(target);
+                    target.parentNode.removeChild(target);
+                }
+                return;
+            }
+
             let pantry = this.__handlePreservedElements(fragment);
             let parentNode = target.parentNode;
             let newContent = [...fragment.childNodes]
@@ -1384,8 +1394,10 @@ var htmx = (() => {
                     }
                 } else if (swapSpec.style === 'innerMorph') {
                     this.__morph(target, fragment, true);
+                    newContent = [...target.childNodes];
                 } else if (swapSpec.style === 'outerMorph') {
                     this.__morph(target, fragment, false);
+                    newContent = [target];
                 } else if (swapSpec.style === 'beforebegin') {
                     if (parentNode) {
                         this.__insertNodes(parentNode, target, fragment);
@@ -1398,19 +1410,16 @@ var htmx = (() => {
                     if (parentNode) {
                         this.__insertNodes(parentNode, target.nextSibling, fragment);
                     }
-                } else if (swapSpec.style === 'delete') {
-                    if (parentNode) {
-                        this.__cleanup(target)
-                        parentNode.removeChild(target)
-                    }
-                } else if (swapSpec.style === 'none') {
-                    return; // TODO - do we still want logic below to run?
                 } else {
                     let methods = this.__extMethods.get('handle_swap')
                     let handled = false;
                     for (const method of methods) {
-                        if (method(swapSpec.style, target, fragment)) {
+                        let result = method(swapSpec.style, target, fragment);
+                        if (result) {
                             handled = true;
+                            if (Array.isArray(result)) {
+                                newContent = result;
+                            }
                             break;
                         }
                     }
