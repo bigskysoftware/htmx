@@ -1153,7 +1153,7 @@ An unminified version is also available at `https://cdn.jsdelivr.net/npm/htmx-ex
 While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install htmx extensions is to simply copy them into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-extension-name` (replace `extension-name` with the name of the extension) e.g., https://cdn.jsdelivr.net/npm/htmx-ext-response-targets. Then add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
 
 For npm-style build systems, you can install htmx extensions via [npm](https://www.npmjs.com/) (replace `extension-name` with the name of the extension):
-```shell
+```sh
 npm install htmx-ext-extension-name
 ```
 After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-extension-name/dist/extension-name.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
