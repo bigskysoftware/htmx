@@ -1372,6 +1372,12 @@ var htmx = (() => {
                 return;
             }
 
+            if (swapSpec.style === 'textContent') {
+                target.textContent = fragment.textContent;
+                target.classList.remove("htmx-swapping")
+                return;
+            }
+
             let pantry = this.__handlePreservedElements(fragment);
             let parentNode = target.parentNode;
             let newContent = [...fragment.childNodes]
@@ -1383,8 +1389,6 @@ var htmx = (() => {
                         this.__cleanup(child)
                     }
                     target.replaceChildren(...fragment.childNodes);
-                } else if (swapSpec.style === 'textContent') {
-                    target.textContent = fragment.textContent;
                 } else if (swapSpec.style === 'outerHTML') {
                     if (parentNode) {
                         settleTasks = inViewTransition ? [] : this.__startCSSTransitions(fragment, target);
@@ -1397,7 +1401,7 @@ var htmx = (() => {
                     newContent = [...target.childNodes];
                 } else if (swapSpec.style === 'outerMorph') {
                     this.__morph(target, fragment, false);
-                    newContent = [target];
+                    newContent.push(target);
                 } else if (swapSpec.style === 'beforebegin') {
                     if (parentNode) {
                         this.__insertNodes(parentNode, target, fragment);
