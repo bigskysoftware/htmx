@@ -127,8 +127,6 @@ All other attributes available in htmx.
 | [`htmx:finally:request`](@/events.md#htmx:finally:request) | triggered in the finally block after a request
 | [`htmx:before:swap`](@/events.md#htmx:before:swap) | triggered before a swap is done, allows you to configure the swap
 | [`htmx:after:swap`](@/events.md#htmx:after:swap) | triggered after new content has been swapped in
-| [`htmx:before:partial:swap`](@/events.md#) | triggered before a partial element swap
-| [`htmx:after:partial:swap`](@/events.md#) | triggered after a partial element swap
 | [`htmx:before:restore:history`](@/events.md#htmx:before:restore:history) | triggered before history restoration
 | [`htmx:before:history:update`](@/events.md#htmx:before:history:update) | triggered before history is updated
 | [`htmx:after:history:update`](@/events.md#htmx:after:history:update) | triggered after history has been updated

@@ -155,4 +155,4 @@ With `strip:false`, the entire `<div class="wrapper">` and its contents are swap
 * Due to DOM limitations, it’s not possible to use the `outerHTML` method on the `<body>` element.
   htmx will change `outerHTML` on `<body>` to use `innerHTML`.
 * The default swap delay is 0ms
-* The default settle delay is 20ms
+* The default settle delay is 1ms
