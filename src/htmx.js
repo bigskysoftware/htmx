@@ -1302,11 +1302,11 @@ var htmx = (() => {
                 }
             }
 
-            // submit all transition tasks in the transition queue
+            // submit all transition tasks in the transition queue w/no CSS transitions
             if (transitionTasks.length > 0) {
                 let tasksWrapper = async ()=> {
                     for (let task of transitionTasks) {
-                        await this.__insertContent(task, true)
+                        await this.__insertContent(task, false)
                     }
                 }
                 swapPromises.push(this.__submitTransitionTask(tasksWrapper));
@@ -1344,7 +1344,7 @@ var htmx = (() => {
             }
         }
 
-        async __insertContent(task, inViewTransition) {
+        async __insertContent(task, cssTransition = true) {
             let {target, swapSpec, fragment} = task;
             if (typeof target === 'string') {
                 target = document.querySelector(target);
@@ -1359,7 +1359,7 @@ var htmx = (() => {
             }
 
             target.classList.add("htmx-swapping")
-            if (!inViewTransition && task.swapSpec?.swap) {
+            if (cssTransition && task.swapSpec?.swap) {
                 await this.timeout(task.swapSpec?.swap)
             }
             let pantry = this.__handlePreservedElements(fragment);
@@ -1368,7 +1368,7 @@ var htmx = (() => {
             let settleTasks = []
             try {
                 if (swapSpec.style === 'innerHTML') {
-                    settleTasks = inViewTransition ? [] : this.__startCSSTransitions(fragment, target);
+                    settleTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
                     for (const child of target.children) {
                         this.__cleanup(child)
                     }
@@ -1377,7 +1377,7 @@ var htmx = (() => {
                     target.textContent = fragment.textContent;
                 } else if (swapSpec.style === 'outerHTML') {
                     if (parentNode) {
-                        settleTasks = inViewTransition ? [] : this.__startCSSTransitions(fragment, target);
+                        settleTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
                         this.__insertNodes(parentNode, target, fragment);
                         this.__cleanup(target)
                         parentNode.removeChild(target);
@@ -1429,7 +1429,7 @@ var htmx = (() => {
                 elt.classList?.add?.("htmx-added")
             }
 
-            if (!inViewTransition) {
+            if (cssTransition) {
                 target.classList.add("htmx-settling")
                 await this.timeout(swapSpec.settle ?? 1);
                 // invoke settle tasks
