@@ -24,4 +24,12 @@ describe('hx-preserve attribute', function() {
         await forRequest()
         assert.equal(find('#inp').value, 'modified')
     })
+
+    it('handles hx-preserve when element does not exist in current page', async function () {
+        mockResponse('GET', '/test', '<div id="new-preserved" hx-preserve>New Preserved</div><div>Content</div>')
+        let div = createProcessedHTML('<div hx-get="/test"><div>Original Content</div></div>');
+        div.click()
+        await forRequest()
+        assertTextContentIs('#new-preserved', 'New Preserved')
+    })
 })

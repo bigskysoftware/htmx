@@ -160,7 +160,8 @@ If you need upload progress tracking in htmx 4:
 * `htmx:after:cleanup` - Triggered after element cleanup
 * `htmx:after:history:update` - Triggered after history is updated
 * `htmx:after:process` - Triggered after processing an element
-* `htmx:after:restore` - Triggered after all restore tasks complete
+* `htmx:before:settle` - Triggered before settle phase begins
+* `htmx:after:settle` - Triggered after settle phase completes
 * `htmx:after:viewTransition` - Triggered after view transition completes
 * `htmx:after:sse:message` - Triggered after processing an SSE message
 * `htmx:after:sse:stream` - Triggered after an SSE stream ends

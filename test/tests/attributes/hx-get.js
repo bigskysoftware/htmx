@@ -59,7 +59,7 @@ describe('hx-get attribute', function() {
         let form = createProcessedHTML('<form hx-trigger="click" hx-get="/test?foo=bar#foo" hx-swap="outerHTML"><input name="i1" value="value"/><button id="b1">Click Me!</button></form>');
         form.click()
         await forRequest();
-        playground().innerHTML.should.equal('<div id="foo">Clicked</div>')
+        playground().innerHTML.should.equal('<div id="foo" class="">Clicked</div>')
         lastFetch().url.should.equal('/test?foo=bar&i1=value')
         // TODO: Add assertion for scroll behavior to #foo
     })

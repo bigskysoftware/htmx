@@ -3,7 +3,7 @@ title = "hx-ignore"
 description = "The hx-ignore attribute in htmx will disable htmx processing for a given element and all its children."
 +++
 
-The `hx-disable` attribute will disable htmx processing for a given element and all its children.  This can be 
+The `hx-ignore` attribute will disable htmx processing for a given element and all its children.  This can be 
 useful as a backup for HTML escaping, when you include user generated content in your site, and you want to 
 prevent malicious scripting attacks.
 

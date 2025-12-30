@@ -296,7 +296,7 @@ describe('ajax() unit Tests', function() {
             target: '#target',
             swap: 'innerHTML'
         });
-        assert.equal(div.innerHTML, '<span>inner</span>');
+        assert.equal(div.innerHTML, '<span class="">inner</span>');
     });
 
     it('ajax with swap beforeend', async function() {
@@ -307,6 +307,6 @@ describe('ajax() unit Tests', function() {
             swap: 'beforeend'
         });
         assert.include(div.innerHTML, '<p>old</p>');
-        assert.include(div.innerHTML, '<span>new</span>');
+        assert.include(div.innerHTML, '<span class="">new</span>');
     });
 });

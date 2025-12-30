@@ -209,15 +209,25 @@ This event is triggered after new content has been swapped into the DOM.
 
 * `detail.ctx` - the request context object
 
-### Event - `htmx:after:restore` {#htmx:after:restore}
+### Event - `htmx:before:settle` {#htmx:before:settle}
 
-This event is triggered after all content has been restored to the DOM following a swap operation. This includes after any restore tasks (like CSS transitions) have been completed.
-
-This is useful for performing final cleanup or initialization after all swap-related operations are complete.
+This event is triggered before the settle phase begins, after content has been swapped into the DOM but before CSS transitions are applied.
 
 ##### Details
 
-* `detail.ctx` - the request context object
+* `detail.task` - the swap task being settled
+* `detail.newContent` - array of newly swapped content elements
+* `detail.settleTasks` - array of settle tasks (e.g., CSS transition callbacks)
+
+### Event - `htmx:after:settle` {#htmx:after:settle}
+
+This event is triggered after the settle phase completes, including after any settle tasks (like CSS transitions) have finished.
+
+##### Details
+
+* `detail.task` - the swap task that was settled
+* `detail.newContent` - array of newly settled content elements
+* `detail.settleTasks` - array of settle tasks that were executed
 
 ## History Events
 

@@ -395,6 +395,62 @@ describe('Morph Swap Styles Tests', function() {
         });
     });
 
+    describe('htmx processing during morph', function() {
+        it('processes new htmx attributes added during innerMorph', async function() {
+            mockResponse('GET', '/test', '<button id="btn" hx-get="/click" hx-target="#result">Updated</button><div id="result"></div>');
+            const div = createProcessedHTML('<div id="target"><button id="btn">Original</button><div id="result"></div></div>');
+            const btn = div.querySelector('#btn');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.equal(btn.getAttribute('data-htmx-powered'), 'true', 'New htmx attributes should be processed');
+            
+            mockResponse('GET', '/click', 'Clicked!');
+            btn.click();
+            await htmx.forEvent('htmx:after:swap', 100);
+            
+            assert.equal(div.querySelector('#result').textContent, 'Clicked!', 'New htmx functionality should work');
+        });
+
+        it('processes new htmx attributes added during outerMorph', async function() {
+            mockResponse('GET', '/test', '<button id="btn" hx-get="/click" hx-target="#result">Updated</button>');
+            const container = createProcessedHTML('<div><button id="btn">Original</button><div id="result"></div></div>');
+            const btn = container.querySelector('#btn');
+            
+            await htmx.ajax('GET', '/test', {target: '#btn', swap: 'outerMorph'});
+            
+            assert.equal(btn.getAttribute('data-htmx-powered'), 'true', 'New htmx attributes should be processed');
+            
+            mockResponse('GET', '/click', 'Clicked!');
+            btn.click();
+            await htmx.forEvent('htmx:after:swap', 100);
+            
+            assert.equal(container.querySelector('#result').textContent, 'Clicked!', 'New htmx functionality should work');
+        });
+
+        it('processes new htmx attributes on inserted elements during innerMorph', async function() {
+            mockResponse('GET', '/test', '<button id="existing">Existing</button><button id="new" hx-get="/new">New Button</button>');
+            const div = createProcessedHTML('<div id="target"><button id="existing">Existing</button></div>');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            const newBtn = div.querySelector('#new');
+            assert.isNotNull(newBtn);
+            assert.equal(newBtn.getAttribute('data-htmx-powered'), 'true', 'New inserted element should be processed');
+        });
+
+        it('processes new htmx attributes on inserted elements during outerMorph', async function() {
+            mockResponse('GET', '/test', '<div id="target"><button id="existing">Existing</button><button id="new" hx-get="/new">New Button</button></div>');
+            const container = createProcessedHTML('<div><div id="target"><button id="existing">Existing</button></div></div>');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'outerMorph'});
+            
+            const newBtn = container.querySelector('#new');
+            assert.isNotNull(newBtn);
+            assert.equal(newBtn.getAttribute('data-htmx-powered'), 'true', 'New inserted element should be processed');
+        });
+    });
+
     describe('htmx integration', function() {
         it('preserves data-htmx-powered attribute during innerMorph', async function() {
             mockResponse('GET', '/test', '<button id="btn" hx-get="/click">Updated</button>');
@@ -483,6 +539,38 @@ describe('Morph Swap Styles Tests', function() {
             
             assert.equal(skip.getAttribute('data-value'), 'old');
             assert.equal(morph.getAttribute('data-value'), 'new');
+        });
+    });
+
+    describe('text node handling', function() {
+        it('removes text nodes during morph without error', async function() {
+            mockResponse('GET', '/test', '<div id="child">content</div>');
+            const div = createProcessedHTML('<div id="target">text node<div id="child">old</div></div>');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.isNotNull(div.querySelector('#child'));
+            assert.equal(div.querySelector('#child').textContent, 'content');
+        });
+
+        it('handles mixed text nodes and elements', async function() {
+            mockResponse('GET', '/test', '<span>new</span>');
+            const div = createProcessedHTML('<div id="target">text1<span>old</span>text2</div>');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.isNotNull(div.querySelector('span'));
+            assert.equal(div.querySelector('span').textContent, 'new');
+        });
+
+        it('replaces text nodes with elements', async function() {
+            mockResponse('GET', '/test', '<div id="new">element</div>');
+            const div = createProcessedHTML('<div id="target">just text</div>');
+            
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            
+            assert.isNotNull(div.querySelector('#new'));
+            assert.equal(div.querySelector('#new').textContent, 'element');
         });
     });
 

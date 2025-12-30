@@ -84,12 +84,13 @@ of colons:
 
 ### Swap Events
 
-| Hook Name            | Triggered Event      | Parameters      | Description             |
-| -------------------- | -------------------- | --------------- | ----------------------- |
-| `htmx_before_swap`   | `htmx:before:swap`   | `(elt, detail)` | Before content swap     |
-| `htmx_after_swap`    | `htmx:after:swap`    | `(elt, detail)` | After content swap      |
-| `htmx_after_restore` | `htmx:after:restore` | `(elt, detail)` | After restoring content |
-| `htmx_handle_swap`   | `htmx:handle:swap`   | `(elt, detail)` | Custom swap handler     |
+| Hook Name             | Triggered Event       | Parameters      | Description             |
+| --------------------- | --------------------- | --------------- | ----------------------- |
+| `htmx_before_swap`    | `htmx:before:swap`    | `(elt, detail)` | Before content swap     |
+| `htmx_after_swap`     | `htmx:after:swap`     | `(elt, detail)` | After content swap      |
+| `htmx_before_settle`  | `htmx:before:settle`  | `(elt, detail)` | Before settle phase     |
+| `htmx_after_settle`   | `htmx:after:settle`   | `(elt, detail)` | After settle phase      |
+| `htmx_handle_swap`    | `htmx:handle:swap`    | `(elt, detail)` | Custom swap handler     |
 
 ### History Events
 
