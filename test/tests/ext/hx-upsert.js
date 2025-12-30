@@ -173,5 +173,59 @@ describe('hx-upsert extension', function() {
         assert.equal(div.children[2].id, 'item-1')
     })
 
+    it('hx-upsert tag with basic upsert', async function () {
+        mockResponse('GET', '/test', '<hx-upsert hx-target="#list"><div id="item-2">Two</div></hx-upsert>')
+        let container = createProcessedHTML('<div hx-get="/test"><div id="list"><div id="item-1">One</div></div></div>');
+        container.click()
+        await htmx.timeout(20)
+        let list = container.querySelector('#list')
+        assert.equal(list.children.length, 2)
+        assert.equal(list.querySelector('#item-1').textContent, 'One')
+        assert.equal(list.querySelector('#item-2').textContent, 'Two')
+    })
+
+    it('hx-upsert tag with sort attribute', async function () {
+        mockResponse('GET', '/test', '<hx-upsert hx-target="#list" sort><div id="item-2">Two</div></hx-upsert>')
+        let container = createProcessedHTML('<div hx-get="/test"><div id="list"><div id="item-1">One</div><div id="item-3">Three</div></div></div>');
+        container.click()
+        await htmx.timeout(20)
+        let list = container.querySelector('#list')
+        assert.equal(list.children[0].id, 'item-1')
+        assert.equal(list.children[1].id, 'item-2')
+        assert.equal(list.children[2].id, 'item-3')
+    })
+
+    it('hx-upsert tag with sort="desc"', async function () {
+        mockResponse('GET', '/test', '<hx-upsert hx-target="#list" sort="desc"><div id="item-2">Two</div></hx-upsert>')
+        let container = createProcessedHTML('<div hx-get="/test"><div id="list"><div id="item-3">Three</div><div id="item-1">One</div></div></div>');
+        container.click()
+        await htmx.timeout(20)
+        let list = container.querySelector('#list')
+        assert.equal(list.children[0].id, 'item-3')
+        assert.equal(list.children[1].id, 'item-2')
+        assert.equal(list.children[2].id, 'item-1')
+    })
+
+    it('hx-upsert tag with key attribute', async function () {
+        mockResponse('GET', '/test', '<hx-upsert hx-target="#list" key="data-priority" sort><div id="task-2" data-priority="2">Medium</div></hx-upsert>')
+        let container = createProcessedHTML('<div hx-get="/test"><div id="list"><div id="task-3" data-priority="1">High</div><div id="task-1" data-priority="3">Low</div></div></div>');
+        container.click()
+        await htmx.timeout(20)
+        let list = container.querySelector('#list')
+        assert.equal(list.children[0].getAttribute('data-priority'), '1')
+        assert.equal(list.children[1].getAttribute('data-priority'), '2')
+        assert.equal(list.children[2].getAttribute('data-priority'), '3')
+    })
+
+    it('hx-upsert tag with prepend attribute', async function () {
+        mockResponse('GET', '/test', '<hx-upsert hx-target="#list" prepend><div>No Key</div></hx-upsert>')
+        let container = createProcessedHTML('<div hx-get="/test"><div id="list"><div id="item-1">One</div></div></div>');
+        container.click()
+        await htmx.timeout(20)
+        let list = container.querySelector('#list')
+        assert.equal(list.children[0].textContent, 'No Key')
+        assert.equal(list.children[1].id, 'item-1')
+    })
+
 
 })

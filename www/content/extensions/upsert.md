@@ -80,6 +80,40 @@ The result will be:
 </div>
 ```
 
+### Using `<hx-upsert>` Tags
+
+You can also use `<hx-upsert>` tags in server responses for targeted upserts:
+
+```html
+<div id="main">Main content</div>
+<hx-upsert hx-target="#item-list" key="data-id" sort="desc">
+    <div id="item-2" data-id="2">Updated Item 2</div>
+    <div id="item-4" data-id="4">New Item 4</div>
+</hx-upsert>
+```
+
+The `<hx-upsert>` tag supports:
+- `hx-target` - target selector for the upsert
+- `key` - attribute name for sorting (e.g., `key="data-priority"`)
+- `sort` - sort ascending (use `sort="desc"` for descending)
+- `prepend` - prepend elements without keys
+
+### Using with `<hx-partial>`
+
+You can use `<hx-partial>` with `hx-swap="upsert"` for targeted upserts:
+
+```html
+<hx-partial hx-target="#main" hx-swap="innerHTML">
+    <div>Updated main content</div>
+</hx-partial>
+<hx-partial hx-target="#item-list" hx-swap="upsert sort">
+    <div id="item-2">Updated Item 2</div>
+    <div id="item-5">New Item 5</div>
+</hx-partial>
+```
+
+This allows you to update the main content normally while upserting items in a list, all in a single response.
+
 ## How It Works
 
 The upsert swap style:
@@ -104,12 +138,14 @@ Add `sort` to maintain elements in ascending order by ID:
 
 ```html
 <div hx-get="/items" hx-swap="upsert sort">
-    <div id="item-3">Item 3</div>
     <div id="item-1">Item 1</div>
+    <div id="item-3">Item 3</div>
 </div>
 ```
 
 After receiving `<div id="item-2">Item 2</div>`, the order will be: item-1, item-2, item-3.
+
+**Note:** Sorting only applies to newly inserted elements. The existing elements in the target should already be in sorted order. The sort feature finds the correct position for new elements within the existing sorted list.
 
 ### Descending Sort
 
@@ -127,10 +163,12 @@ Use `key:attr` to sort by a different attribute:
 
 ```html
 <div hx-get="/items" hx-swap="upsert key:data-priority sort">
-    <div id="task-1" data-priority="5">Low Priority</div>
     <div id="task-2" data-priority="1">High Priority</div>
+    <div id="task-1" data-priority="5">Low Priority</div>
 </div>
 ```
+
+New items will be inserted in the correct position based on their `data-priority` value.
 
 ### Prepend Unkeyed Elements
 
