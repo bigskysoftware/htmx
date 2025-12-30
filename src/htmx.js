@@ -1092,10 +1092,12 @@ var htmx = (() => {
             let newPreservedElts = fragment.querySelectorAll?.(`[${this.__prefix('hx-preserve')}]`) || [];
             for (let preservedElt of newPreservedElts) {
                 let currentElt = document.getElementById(preservedElt.id);
-                if (pantry.moveBefore) {
-                    pantry.moveBefore(currentElt, null);
-                } else {
-                    pantry.appendChild(currentElt);
+                if (currentElt) {
+                    if (pantry.moveBefore) {
+                        pantry.moveBefore(currentElt, null);
+                    } else {
+                        pantry.appendChild(currentElt);
+                    }
                 }
             }
             return pantry
@@ -1104,13 +1106,15 @@ var htmx = (() => {
         __restorePreservedElements(pantry) {
             for (let preservedElt of pantry.children) {
                 let newElt = document.getElementById(preservedElt.id);
-                if (newElt.parentNode.moveBefore) {
-                    newElt.parentNode.moveBefore(preservedElt, newElt);
-                } else {
-                    newElt.replaceWith(preservedElt);
+                if (newElt) {
+                    if (newElt.parentNode.moveBefore) {
+                        newElt.parentNode.moveBefore(preservedElt, newElt);
+                    } else {
+                        newElt.replaceWith(preservedElt);
+                    }
+                    this.__cleanup(newElt)
+                    newElt.remove()
                 }
-                this.__cleanup(newElt)
-                newElt.remove()
             }
             pantry.remove();
         }
