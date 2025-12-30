@@ -1645,7 +1645,9 @@ var htmx = (() => {
             if (!path || path === 'false' || path === false) return;
 
             if (path === 'true') {
-                path = ctx.request.action + (ctx.request.anchor ? '#' + ctx.request.anchor : '');
+                let finalUrl = response?.raw?.url || ctx.request.action;
+                let url = new URL(finalUrl, location.href);
+                path = url.pathname + url.search + (ctx.request.anchor ? '#' + ctx.request.anchor : '');
             }
 
             let type = push ? 'push' : 'replace';
