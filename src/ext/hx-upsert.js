@@ -36,7 +36,6 @@
                         let existing = document.getElementById(id);
                         if (existing) {
                             existing.outerHTML = newEl.outerHTML
-                            // api.morph(existing, newEl);
                             continue;
                         }
                     }

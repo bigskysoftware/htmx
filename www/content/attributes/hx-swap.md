@@ -22,6 +22,7 @@ The possible values of this attribute are:
 * `after` or `afterend` - Insert the response after the target element
 * `delete` - Deletes the target element regardless of the response
 * `none`- Does not append content from response (out of band items will still be processed).
+* `upsert` - Updates existing elements by ID and inserts new ones (requires [upsert extension](/extensions/upsert))
 
 These options are based on standard DOM naming and the 
 [`Element.insertAdjacentHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML)
