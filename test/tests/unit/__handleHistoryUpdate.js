@@ -73,4 +73,21 @@ describe('__handleHistoryUpdate unit tests', function() {
         assert.include(window.location.href, '/custom-path')
     })
 
+    it('pushes redirected URL when push is true and response has raw url', function () {
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let ctx = {
+            sourceElement: div,
+            push: 'true',
+            response: { 
+                headers: new Headers(),
+                raw: { url: 'http://localhost/redirected-path?foo=bar' }
+            },
+            request: { action: '/test' }
+        }
+
+        htmx.__handleHistoryUpdate(ctx)
+
+        assert.include(window.location.href, '/redirected-path?foo=bar')
+    })
+
 });
