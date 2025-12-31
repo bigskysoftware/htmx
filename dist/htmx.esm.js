@@ -81,7 +81,8 @@ var htmx = (() => {
                 createRequestContext: this.#createRequestContext.bind(this),
                 collectFormData: this.#collectFormData.bind(this),
                 handleHxVals: this.#handleHxVals.bind(this),
-                insertContent: this.#insertContent.bind(this)
+                insertContent: this.#insertContent.bind(this),
+                morph: this.#morph.bind(this)
             };
             document.addEventListener("DOMContentLoaded", () => {
                 this.#initHistoryHandling();
@@ -455,7 +456,12 @@ var htmx = (() => {
                     url.searchParams.append(key, value);
                 }
 
-                ctx.request.action = url.href;
+                // Keep relative if same origin, otherwise use full URL
+                if (url.origin === location.origin) {
+                    ctx.request.action = url.pathname + url.search;
+                } else {
+                    ctx.request.action = url.href;
+                }
                 ctx.request.body = null;
             } else if (this.#attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body);
@@ -1422,7 +1428,7 @@ var htmx = (() => {
                     let methods = this.#extMethods.get('handle_swap')
                     let handled = false;
                     for (const method of methods) {
-                        let result = method(swapSpec.style, target, fragment);
+                        let result = method(swapSpec.style, target, fragment, swapSpec);
                         if (result) {
                             handled = true;
                             if (Array.isArray(result)) {
