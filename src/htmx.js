@@ -81,7 +81,8 @@ var htmx = (() => {
                 createRequestContext: this.__createRequestContext.bind(this),
                 collectFormData: this.__collectFormData.bind(this),
                 handleHxVals: this.__handleHxVals.bind(this),
-                insertContent: this.__insertContent.bind(this)
+                insertContent: this.__insertContent.bind(this),
+                morph: this.__morph.bind(this)
             };
             document.addEventListener("DOMContentLoaded", () => {
                 this.__initHistoryHandling();
@@ -1422,7 +1423,7 @@ var htmx = (() => {
                     let methods = this.__extMethods.get('handle_swap')
                     let handled = false;
                     for (const method of methods) {
-                        let result = method(swapSpec.style, target, fragment);
+                        let result = method(swapSpec.style, target, fragment, swapSpec);
                         if (result) {
                             handled = true;
                             if (Array.isArray(result)) {
