@@ -1,8 +1,6 @@
 # Changelog
 
-## [4.0.0-alpha6] - TBD
-
-### Breaking Changes
+## [4.0.0-alpha6] - 2025-12-31
 
 * Re-introduced swap/settle mechanism from 2.0 for CSS transitions
 * Extension hooks: `htmx_after_restore` replaced with `htmx_before_settle` and `htmx_after_settle`
