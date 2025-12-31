@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Border Transition Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #toggle-button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background: #3b82f6;
+            color: white;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #toggle-button:hover {
+            background: #2563eb;
+        }
+
+        .red-border {
+            transition: border 200ms ease-in-out;
+            border: 8px solid red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Border Transition Test</h1>
+    <p>Click the button to toggle a thick red border with a 200ms transition.</p>
+
+    <button id="toggle-button">Toggle Border</button>
+
+    <script>
+        const button = document.getElementById('toggle-button');
+
+        button.addEventListener('click', () => {
+            button.insertAdjacentHTML("afterend", "<div>asdfasdf</div>")
+            setTimeout(()=> {
+                button.nextElementSibling.classList.toggle('red-border');
+            }, 0)
+        });
+    </script>
+</body>
+</html>

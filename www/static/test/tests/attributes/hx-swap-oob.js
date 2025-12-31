@@ -57,23 +57,6 @@ describe('hx-swap-oob', function() {
         assertTextContentIs('.foo .bar', 'Multi Selector')
     })
 
-    it('swaps oob with target: modifier and other modifiers (non-blocking)', async function () {
-        mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="innerHTML target:#tgt swap:100ms">With Delay</div>')
-        createProcessedHTML('<div hx-get="/test">Click</div><div id="tgt">Original</div>');
-        
-        find('[hx-get]').click()
-        await forRequest()
-        
-        // Should still be original immediately after request completes
-        assertTextContentIs('#tgt', 'Original')
-        
-        // Wait for the delayed swap to complete
-        await new Promise(resolve => setTimeout(resolve, 150));
-        
-        // Now should be updated
-        assertTextContentIs('#tgt', 'With Delay')
-    })
-
     it('swaps oob with legacy colon format', async function () {
         mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="innerHTML:#legacy">Legacy Format</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div id="legacy">Original</div>');

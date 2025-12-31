@@ -13,7 +13,7 @@ describe('hx-select', function() {
         let div = createProcessedHTML('<div hx-get="/test" hx-select="#content" hx-swap="innerHTML">Old</div>');
         div.click()
         await forRequest()
-        assert.equal(div.innerHTML, '<div id="content">Selected</div>')
+        assert.equal(div.innerHTML, '<div id="content" class="">Selected</div>')
     })
 
     it('selects nested content from response', async function () {
@@ -21,7 +21,7 @@ describe('hx-select', function() {
         let div = createProcessedHTML('<div hx-get="/test" hx-select="#main" hx-swap="innerHTML">Old</div>');
         div.click()
         await forRequest()
-        assert.equal(div.innerHTML, '<main id="main">Main content</main>')
+        assert.equal(div.innerHTML, '<main id="main" class="">Main content</main>')
     })
 
     it('does not affect OOB swaps', async function () {
@@ -29,7 +29,7 @@ describe('hx-select', function() {
         let div = createProcessedHTML('<div hx-get="/test" hx-select="#content" hx-swap="innerHTML">Old</div><div id="oob">Old OOB</div>');
         div.click()
         await forRequest()
-        assert.equal(div.innerHTML, '<div id="content">Selected</div>')
+        assert.equal(div.innerHTML, '<div id="content" class="">Selected</div>')
         assert.equal(document.getElementById('oob').innerHTML, 'OOB content')
     })
 

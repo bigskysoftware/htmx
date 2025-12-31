@@ -76,4 +76,23 @@ describe('hx-swap modifiers', function() {
         assert.isAtLeast(elapsed, 100, 'Should wait at least 100ms')
         assertTextContentIs('#main', 'Main Content')
     })
+
+    it('textContent swap replaces text only', async function () {
+        mockResponse('GET', '/test', '<div><b>Bold</b> Text</div>')
+        createProcessedHTML('<div id="target" hx-get="/test" hx-swap="textContent"><span>Old</span></div>');
+        find('#target').click()
+        await forRequest()
+        assert.equal(find('#target').textContent, 'Bold Text')
+        assert.equal(find('#target').innerHTML, 'Bold Text')
+    })
+
+    it('textContent swap preserves target element', async function () {
+        mockResponse('GET', '/test', '<p>New Text</p>')
+        createProcessedHTML('<div id="target" class="test" hx-get="/test" hx-swap="textContent">Old</div>');
+        find('#target').click()
+        await forRequest()
+        assert.equal(find('#target').tagName, 'DIV')
+        assert.equal(find('#target').className, 'test')
+        assert.equal(find('#target').textContent, 'New Text')
+    })
 })
