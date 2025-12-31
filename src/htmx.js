@@ -447,15 +447,15 @@ var htmx = (() => {
                 return
             } else if (/GET|DELETE/.test(ctx.request.method)) {
                 let url = new URL(ctx.request.action, document.baseURI);
-                
+
                 for (let key of ctx.request.body.keys()) {
                     url.searchParams.delete(key);
                 }
                 for (let [key, value] of ctx.request.body) {
                     url.searchParams.append(key, value);
                 }
-                
-                ctx.request.action = url.pathname + url.search;
+
+                ctx.request.action = url.href;
                 ctx.request.body = null;
             } else if (this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body);
