@@ -456,7 +456,12 @@ var htmx = (() => {
                     url.searchParams.append(key, value);
                 }
 
-                ctx.request.action = url.href;
+                // Keep relative if same origin, otherwise use full URL
+                if (url.origin === location.origin) {
+                    ctx.request.action = url.pathname + url.search;
+                } else {
+                    ctx.request.action = url.href;
+                }
                 ctx.request.body = null;
             } else if (this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body);
