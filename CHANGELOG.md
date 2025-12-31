@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.0.0-alpha6] - TBD
+
+### Breaking Changes
+
+* Re-introduced swap/settle mechanism from 2.0 for CSS transitions
+* Extension hooks: `htmx_after_restore` replaced with `htmx_before_settle` and `htmx_after_settle`
+* Added `upsert` swap style - updates existing elements by ID and inserts new ones ([#3595](https://github.com/bigskysoftware/htmx/pull/3595))
+* Added `textContent` swap style - replaces text content without parsing HTML ([#3593](https://github.com/bigskysoftware/htmx/pull/3593))
+* History now uses response URL when server redirects ([#3608](https://github.com/bigskysoftware/htmx/pull/3608))
+* Fixed `hx-preserve` handling when preserved element ID not found ([#3610](https://github.com/bigskysoftware/htmx/pull/3610))
+* Fixed cross-domain request URL handling
+* Improved morph matching with exact node scan-ahead ([#3591](https://github.com/bigskysoftware/htmx/pull/3591))
+* WebSocket extension improvements ([#3592](https://github.com/bigskysoftware/htmx/pull/3592))
+* Settle events now fire on target element (not document) for better event handling
+* Optimized async handling in `hx-vals` and `hx-headers` ([#3581](https://github.com/bigskysoftware/htmx/pull/3581))
+
 ## [4.0.0-alpha5] - 2025-12-08
 
 * **BREAKING**: View transitions now default to `false` (previously `true`)
