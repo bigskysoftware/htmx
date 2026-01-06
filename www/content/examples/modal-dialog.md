@@ -22,7 +22,7 @@ server then responds with with a dialog that get swapped into an empty `<div>`.
 The `<dialog>` looks like this:
 
 ```html
-<dialog id="modal-dialog" hx-on::after-settle="this.showModal()">
+<dialog id="modal-dialog" closedby="none" hx-on::after-settle="this.showModal()">
     <h1>Modal Dialog</h1>
     This is the modal content. You can put anything here, like text, 
     or a form, or an image.
@@ -32,9 +32,6 @@ The `<dialog>` looks like this:
 </dialog>`
 ```
 
-Note the use of `hx-on::after-settle`. This is needed because in order for the dialog to actually be shown,
-the `showModal` function must be called.
-
 The close button fetches an empty `div` via the `/close` route to replace the dialog when it's closed:
 
 ```html
@@ -42,6 +39,12 @@ The close button fetches an empty `div` via the `/close` route to replace the di
 ```
 
 This essentially "resets" the page, and clicking the button again will open a new dialog.
+
+Note that in the dialog:
+1. We use `hx-on::after-settle`. This is needed because in order for the dialog to actually be shown,
+the `showModal` function must be called.
+2. The `closedby` attribute is set to `none`. If we didn't have this, the user might close the dialog,
+via some mechanism that doesn't trigger the fetch of the `/close` endpoint.
 
 {{ demoenv() }}
 
@@ -72,7 +75,7 @@ dialog {
 	`})
 
 	onGet("/modal", function(request, params){
-	  return `<dialog id="modal-dialog" hx-on::after-settle="this.showModal()">
+	  return `<dialog id="modal-dialog" closedby="none" hx-on::after-settle="this.showModal()">
     <h1>Modal Dialog</h1>
     This is the modal content. You can put anything here, like text, 
     or a form, or an image.
