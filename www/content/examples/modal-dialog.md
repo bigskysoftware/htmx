@@ -7,7 +7,7 @@ Since 2022 the HTML spec has included a `<dialog>` tag and it works well with
 htmx. Consider the following html:
 
 ```html
-`<button
+<button
     class="btn primary" 
     hx-get="/modal"
     hx-target="#modal-placeholder"
@@ -35,7 +35,7 @@ The `<dialog>` looks like this:
 The close button fetches an empty `div` via the `/close` route to replace the dialog when it's closed:
 
 ```html
-<div id="modal-holder"></div>
+<div id="modal-placeholder"></div>
 ```
 
 This essentially "resets" the page, and clicking the button again will open a new dialog.
