@@ -622,6 +622,29 @@ To avoid this issue you can use a `template` tag to encapsulate these elements:
 </template>
 ```
 
+**Important:**  
+When performing out-of-band swaps, the *entire HTML response* (including both the main swap content and any OOB content) must be valid according to HTML placement rules.
+
+This means that even if the OOB element itself is valid, it may still need to be wrapped in a <template> when its sibling elements (including the main swap content) are restricted elements such as <tr>, <tbody>, or <li>. Browsers may otherwise rearrange or discard nodes during parsing, leading to unexpected swap behavior.
+
+For example, if the main swap content contains a `<tbody>` element, and an out-of-band swap targets a `<table>`, the OOB table must still be wrapped in a `<template>`:
+
+```html
+<tbody id="tablebody">
+  <tr><td>Test</td></tr>
+</tbody>
+
+<template>
+  <table id="myOobTable" hx-swap-oob="true">
+    <thead>
+      <tr><th>OOB header</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>OOB row</td></tr>
+    </tbody>
+  </table>
+</template>
+
 #### Selecting Content To Swap
 
 If you want to select a subset of the response HTML to swap into the target, you can use the [hx-select](@/attributes/hx-select.md)
