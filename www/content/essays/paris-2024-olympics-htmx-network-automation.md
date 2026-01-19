@@ -121,7 +121,7 @@ In summary:
 - **SIA**: 95% AI, 5% handwritten code (minor corrections) → **1 day**
 
 The time saved was reinvested in testing, bug fixes, project management, and even a few additions outside the initial scope.
-Moreover the same app was used on the "Tour de France 2025" with minor changes that were made easily thanks to a hypermedia approach.
+Moreover, the same app was used on the "Tour de France 2025" with minor changes that were made easily thanks to the hypermedia approach.
 
 ---
 
