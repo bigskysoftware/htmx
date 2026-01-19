@@ -311,6 +311,12 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
        <img src="/img/rsz_instant_famous.png" style="width:100%;max-width:250px">
     </a>
 </div>
+<div></div>
+<div>
+    <a data-github-account="blacksandsmedia" href="https://hellostake.com/au/referral-code">
+       <img src="/img/stake.jpeg" style="width:100%;max-width:250px">
+    </a>
+</div>
 </div>
 
 <div style="text-align: center;font-style: italic;margin-top: 26px;">ʕ •ᴥ•ʔ made in montana</div>
