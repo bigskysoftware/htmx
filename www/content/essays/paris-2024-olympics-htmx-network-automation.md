@@ -80,7 +80,7 @@ One of the big advantages of the philosophy surrounding HTMX is the notion of Lo
 
 You immediately know that every 600ms, this part of the page is updated with the content returned by the view handling the `/job/progress` endpoint. No mystery for the team taking over development who wants to modify something: everything you need to know is right in front of you.
 
-And that's exactly what HTMX is about: every component, every interaction remains visible, understandable, and self-documented directly in the HTML, this is important for what comes next.
+And that's exactly what HTMX is about: every component, every interaction remains visible, understandable, and self-documented directly in the HTML. This is important for what comes next.
 
 
 
@@ -105,7 +105,7 @@ This drastic code simplification enabled by HTMX, combined with a procedural app
 ---
 
 And this is where it gets interesting.
-For the Private VLAN (PVLAN) network service, the "shape" of the main function is roughly the same as for DIA: input parameters, validation, but interactions with the GUI via HTML fragments, and, if everything is correct, switch configuration.
+For the Private VLAN (PVLAN) network service, the "shape" of the main function is roughly the same as for DIA: input parameters, validation, then interactions with the GUI via HTML fragments, and, if everything is correct, switch configuration.
 
 The difference? PVLAN is simpler to handle: fewer form parameters and a bit less business logic.
 
@@ -121,6 +121,7 @@ In summary:
 - **SIA**: 95% AI, 5% handwritten code (minor corrections) → **1 day**
 
 The time saved was reinvested in testing, bug fixes, project management, and even a few additions outside the initial scope.
+Moreover the same app was used on the "Tour de France 2025" with minor changes that were made easily thanks to a hypermedia approach.
 
 ---
 
