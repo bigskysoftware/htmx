@@ -458,4 +458,22 @@ describe('Server-Sent Events', function() {
 
         stream.close();
     });
+
+    it('only trims single space after colon', async function() {
+        const stream = mockStreamResponse('/sse-whitespace');
+        createProcessedHTML('<button id="ws-btn" hx-get="/sse-whitespace" hx-swap="innerHTML">Whitespace</button>');
+
+        find('#ws-btn').click();
+        await htmx.timeout(1);
+
+        stream.send('   \ttext-with-two-leading-spaces');
+        await waitForEvent('htmx:after:sse:message');
+        assertTextContentIs('#ws-btn', '   \ttext-with-two-leading-spaces');
+
+        stream.send('NoTrim');
+        await waitForEvent('htmx:after:sse:message');
+        assertTextContentIs('#ws-btn', 'NoTrim');
+
+        stream.close();
+    });
 });
