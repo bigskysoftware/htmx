@@ -9,8 +9,6 @@ authors = ["Rodolphe Trujillo"]
 tag = ["posts"]
 +++
 
-# Building Critical Infrastructure with htmx: Network Automation for the Paris 2024 Olympics
-
 ## A Bit of Background
 
 During my 6 years at Cisco, I developed numerous web applications to assist network engineers with highly complex operations, both in terms of the volume of tasks to accomplish and the rigor of procedures to follow. Networking is a specialized field in its own right, where the slightest error can have disastrous consequences: a network failure, even partial, can deprive millions of people of essential services like the ability to make a simple phone call.
