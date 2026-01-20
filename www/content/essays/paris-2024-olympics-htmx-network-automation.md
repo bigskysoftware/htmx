@@ -3,7 +3,7 @@ title = "Building Critical Infrastructure with htmx: Network Automation for the 
 description = """\
   Building critical software infrastructure with htmx, and how the simplification induced by this approach \
   is interesting for AI-assisted development."""
-date = 2025-01-16
+date = 2026-01-16
 authors = ["Rodolphe Trujillo"]
 [taxonomies]
 tag = ["posts"]
