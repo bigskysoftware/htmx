@@ -231,6 +231,62 @@ Extensions will almost certainly need a rewrite. Please see our [Extensions docu
 
 ---
 
+## HTTP Header Changes
+
+htmx 4 makes some changes to the HTTP headers sent with requests and the response headers it processes. If your 
+server-side code relies on htmx headers, you will need to update it.
+
+### Changed Request Headers
+
+| htmx 2.x Header | htmx 4.x Header | Notes                                                                                                                                                    |
+|-----------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `HX-Trigger`    | `HX-Source`     | Now uses element identifier format: `tagName#id` (e.g., `button#submit`) instead of just the element's ID. **This is the replacement for `HX-Trigger`.** |
+| `HX-Target`     | `HX-Target`     | Still present but now uses element identifier format: `tagName#id` instead of just the element's ID                                                      |
+
+`HX-Source` is the direct replacement for `HX-Trigger`. If your server was using `HX-Trigger` to identify which element
+initiated the request, use `HX-Source` in htmx 4. Note that the format has changed from just an ID to `tagName#id`.
+
+### Removed Request Headers
+
+The following request headers have been removed in htmx 4:
+
+| Removed Header    | Notes                                                                                                                             |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `HX-Trigger-Name` | Previously sent the `name` attribute of the triggering element. Use `HX-Source` instead.                                          |
+| `HX-Prompt`       | Previously sent the user's response to `hx-prompt`. Use `hx-confirm` with async JavaScript instead (see attribute changes above). |
+
+#### New Request Headers
+
+| Header            | Description                                                                                                           |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `HX-Request-Type` | Set to `"full"` for full page requests (target is `body` or has `hx-select`) or `"partial"` for partial page requests |
+| `Accept`          | Now explicitly set to `"text/html, text/event-stream"`                                                                |
+
+### Removed Response Headers
+
+The following response headers are no longer processed in htmx 4:
+
+| Removed Header            | Notes                                                                                            |
+|---------------------------|--------------------------------------------------------------------------------------------------|
+| `HX-Trigger-After-Swap`   | Use `HX-Trigger` or custom javascript instead. Timing-specific triggers are no longer supported. |
+| `HX-Trigger-After-Settle` | Use `HX-Trigger` or custom javascript instead. Timing-specific triggers are no longer supported. |
+
+#### Unchanged Headers
+
+The following response headers continue to work the same in htmx 4:
+
+* `HX-Trigger` - Triggers events immediately on response
+* `HX-Location` - Client-side redirect
+* `HX-Push-Url` - Pushes a URL into history
+* `HX-Redirect` - Full page redirect
+* `HX-Refresh` - Refresh the current page
+* `HX-Replace-Url` - Replaces the current URL in history
+* `HX-Retarget` - Change the target element
+* `HX-Reswap` - Change the swap strategy
+* `HX-Reselect` - Change the content selector
+
+---
+
 ## Upgrade Music
 
 This is the official htmx 2.x -> 4.x upgrade music:
