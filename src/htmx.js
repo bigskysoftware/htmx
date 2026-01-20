@@ -1133,18 +1133,18 @@ var htmx = (() => {
             let response = text.replace(/<hx-([a-z]+)(\s+|>)/gi, '<template hx type="$1"$2').replace(/<\/hx-[a-z]+>/gi, '</template>');
             let title = '';
             response = response.replace(/<title[^>]*>[\s\S]*?<\/title>/i, m => (title = this.__parseHTML(m).title, ''));
-            let responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
-            let startTag = responseWithNoHead.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
+            response = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '');
+            let startTag = response.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
             let doc, fragment;
-            if (startTag === 'html') {
+            if (startTag === 'html' || startTag === 'body') {
                 doc = this.__parseHTML(response);
-                fragment = doc.body;
-            } else if (startTag === 'body') {
-                doc = this.__parseHTML(responseWithNoHead);
-                fragment = doc.body;
+                fragment = document.createDocumentFragment();
+                while (doc.body.childNodes.length > 0) {
+                    fragment.append(doc.body.childNodes[0]);
+                }
             } else {
-                doc = this.__parseHTML(`<template>${responseWithNoHead}</template>`);
+                doc = this.__parseHTML(`<template>${response}</template>`);
                 fragment = doc.querySelector('template').content;
             }
             this.__processScripts(fragment);
@@ -1469,6 +1469,7 @@ var htmx = (() => {
                 this.process(elt);
                 this.__handleAutoFocus(elt);
             }
+            
             this.__handleScroll(swapSpec, target);
         }
 
