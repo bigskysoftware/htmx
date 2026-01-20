@@ -255,7 +255,7 @@ The following request headers have been removed in htmx 4:
 | `HX-Trigger-Name` | Previously sent the `name` attribute of the triggering element. Use `HX-Source` instead.                                          |
 | `HX-Prompt`       | Previously sent the user's response to `hx-prompt`. Use `hx-confirm` with async JavaScript instead (see attribute changes above). |
 
-#### New Request Headers
+### New Request Headers
 
 | Header            | Description                                                                                                           |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------|
@@ -271,7 +271,7 @@ The following response headers are no longer processed in htmx 4:
 | `HX-Trigger-After-Swap`   | Use `HX-Trigger` or custom javascript instead. Timing-specific triggers are no longer supported. |
 | `HX-Trigger-After-Settle` | Use `HX-Trigger` or custom javascript instead. Timing-specific triggers are no longer supported. |
 
-#### Unchanged Headers
+### Unchanged Response Headers
 
 The following response headers continue to work the same in htmx 4:
 
