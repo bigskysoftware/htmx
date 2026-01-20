@@ -81,7 +81,7 @@ project and a Bootstrap CSS customized internally by Orange.
 We agreed on an 8-week timeline to cover the need, which involved 3 connectivity services: Direct Internet Access,
 Private VLAN, and Shared Internet Access.
 
-### Web Dev with HTMX
+## Web Dev with HTMX
 
 HTMX is somewhat a return to the roots of web development, and regardless of the web framework: Django, ROR, Symphony...
 You rediscover everything that makes a web framework useful rather than turning it into a mere JSON provider. Sending
@@ -99,7 +99,9 @@ If you ask me what's most striking, it's certainly returning to very simple thin
 <figcaption> Progress bar from RCP Portal </figcaption>
 </figure>
 
-How does this progress bar work? Exactly like [the example in the docs](https://htmx.org/examples/progress-bar/)! 
+How does this progress bar work? 
+
+Exactly like [the example in the docs](https://htmx.org/examples/progress-bar/)! 
 
 Why this choice? Because it's coded in 10 seconds, because the app won't have thousands of users on this internal tool,
 no scaling concerns: you can do good old data polling without any problem.
@@ -107,7 +109,7 @@ no scaling concerns: you can do good old data polling without any problem.
 And the end user? If I use old-school polling, they don't care: what they want is the information. No SSE or WebSocket
 for this use case, I don't need it. And if the need ever arises, the WebSocket (or SSE) plugin is easy to set up.
 
-One of the big advantages of the philosophy surrounding HTMX is the notion of Locality of Behaviour. Let's take this
+One of the big advantages of the philosophy surrounding HTMX is the notion of [Locality of Behaviour](@/essays/locality-of-behaviour.md). Let's take this
 progress bar: if you want to know how it works, just look at the page source. No need to go into documentation or the
 codebase, just a right-click and "View Page Source":
 
@@ -132,7 +134,7 @@ you need to know is right in front of you.
 And that's exactly what HTMX is about: every component, every interaction remains visible, understandable, and
 self-documented directly in the HTML. This is important for what comes next.
 
-### HTMX is "AI friendly"™
+## HTMX is "AI friendly"™
 
 In the early stages of app development, I focused on the most complex network service: DIA (Direct Internet Access). DIA
 for the Olympic Games meant many business parameters with many rules to apply.
@@ -140,6 +142,7 @@ for the Olympic Games meant many business parameters with many rules to apply.
 The DIA creation form calls an endpoint that triggers a very long function, close to 600 lines of code.
 
 Why such a long function?
+
 Because it's more readable and efficient to concentrate the data flow in one place, rather than dispersing it across a
 multitude of layers and patterns.
 
@@ -147,6 +150,7 @@ An application is a wrapper around data: it orchestrates the data flow (data mus
 control do you retain when this flow is obfuscated in complex patterns or dispersed across 2 codebases?
 
 The data flow must remain readable for the developer.
+
 HTMX, by allowing you to manage the GUI directly server-side, makes this flow even clearer. The same endpoint can return
 HTML fragments to signal that certain form data is invalid, or conversely indicate that a service deployment has
 started. You can thus act on any part of the GUI within the same function, while transforming the data to pass it to the
@@ -156,15 +160,7 @@ In a traditional frontend/backend approach, this would be more complex: two appl
 readable data flow.
 
 This drastic code simplification enabled by HTMX, combined with a procedural approach, produces compact and transparent
-logic, easy to navigate for a developer... or for an LLM.
-
-<br/>
-
----
-
-<br/>
-
-This is where it gets interesting.
+logic, easy to navigate for a developer... or for an LLM, as I discovered.
 
 For the Private VLAN (PVLAN) network service, the "shape" of the main function is roughly the same as for DIA: input
 parameters, validation, then interactions with the GUI via HTML fragments, and, if everything is correct, switch
@@ -181,11 +177,7 @@ For the third network service, Shared Internet Access (SIA), even simpler than t
 both the DIA and PVLAN functions. With the magic word *"extrapolation"* in the prompt, the generated code was 95%
 correct.
 
-<br/>
----
-<br/>
-
-In summary:
+## Summary of My Experience
 
 - **DIA**: 0% AI, 100% handwritten code (business logic + GUI + overhaul of the switch configuration task management
   system) → **4 weeks**
@@ -198,15 +190,9 @@ scope.
 Moreover, the same app was used on the "Tour de France 2025" with minor changes that were made easily thanks to the
 hypermedia approach.
 
-<br/>
----
-<br/>
-
-Why is this result possible?
-
-Because the combination of *HTMX + procedural approach* produces naturally readable code, without unnecessary
-abstraction layers. The data flow is clear, concentrated in a single function, and the GUI/server logic is directly
-accessible.
+This result is possible because of the combination of *HTMX + the procedural approach*, which produces naturally 
+readable code, without unnecessary abstraction layers. The data flow is clear, concentrated in a single function, and 
+the GUI/server logic is directly accessible.
 
 For an LLM, this is ideal: it doesn't need to construct context through a complex architecture. It just needs to follow
 the flow and extrapolate it to a new use case. In other words, what's simpler for the developer is also simpler for the
@@ -214,4 +200,5 @@ AI. This is the sense in which HTMX is truly *"AI friendly"™*.
 
 Ultimately, HTMX mainly allowed me to save time and keep my code clear.
 No unnecessary layers, no superfluous complexity: just concrete stuff that works, fast.
-And that's what makes the difference on critical projects.
+
+And that has made a big difference on these critical projects.
