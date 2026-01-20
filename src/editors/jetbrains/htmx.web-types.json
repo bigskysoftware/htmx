@@ -11,9 +11,6 @@
         {
           "name": "hx-action",
           "description": "The `hx-action` attribute specifies the URL to make a request to. This attribute should be used with `hx-method` to specify the HTTP method.\n\n```html\n<button hx-method=\"POST\" hx-action=\"/api/data\">\n  Submit\n</button>\n```\n\nThis provides an alternative to the verb-specific attributes like `hx-get`, `hx-post`, etc.",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-action/"
         },
         {
@@ -43,9 +40,6 @@
         {
           "name": "hx-delete",
           "description": "The `hx-delete` attribute will cause an element to issue a `DELETE` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-delete=\"/account\" hx-target=\"body\">\n  Delete Your Account\n</button>\n```",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-delete/"
         },
         {
@@ -67,9 +61,6 @@
         {
           "name": "hx-get",
           "description": "The `hx-get` attribute will cause an element to issue a `GET` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n  <button hx-get=\"/example\">Get Some HTML</button>\n```",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-get/"
         },
         {
@@ -107,9 +98,6 @@
         {
           "name": "hx-method",
           "description": "The `hx-method` attribute specifies the HTTP method to use for a request. This attribute should be used with `hx-action` to specify the URL.\n\n```html\n<button hx-method=\"POST\" hx-action=\"/api/data\">\n  Submit\n</button>\n```\n\nValid values are: GET, POST, PUT, PATCH, DELETE\n\nThis provides an alternative to the verb-specific attributes like `hx-get`, `hx-post`, etc.",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-method/"
         },
         {
@@ -145,25 +133,16 @@
         {
           "name": "hx-patch",
           "description": "The `hx-patch` attribute will cause an element to issue a `PATCH` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-patch=\"/account\" hx-target=\"body\">\n  Patch Your Account\n</button>\n```",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-patch/"
         },
         {
           "name": "hx-post",
           "description": "The `hx-post` attribute will cause an element to issue a `POST` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-post=\"/account/enable\" hx-target=\"body\">\n  Enable Your Account\n</button>\n```",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-post/"
         },
         {
           "name": "hx-preserve",
           "description": "The `hx-preserve` attribute allows you to keep an element unchanged during HTML replacement.\nElements with `hx-preserve` set are preserved by `id` when htmx updates any ancestor element.\nYou *must* set an unchanging `id` on elements for `hx-preserve` to work.\nThe response requires an element with the same `id`, but its type and other attributes are ignored.",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-preserve/"
         },
         {
@@ -177,9 +156,6 @@
         {
           "name": "hx-put",
           "description": "The `hx-put` attribute will cause an element to issue a `PUT` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-put=\"/account\" hx-target=\"body\">\n  Put Money In Your Account\n</button>\n```",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-put/"
         },
         {
@@ -209,9 +185,6 @@
         {
           "name": "hx-swap-oob",
           "description": "The `hx-swap-oob` attribute allows you to specify that some content in a response should be\nswapped into the DOM somewhere other than the target, that is \"Out of Band\".  This allows you to piggyback updates to other element updates on a response.\n\nConsider the following response HTML:\n\n```html\n<div>\n ...\n</div>\n<div id=\"alerts\" hx-swap-oob=\"true\">\n    Saved!\n</div>",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-swap-oob/"
         },
         {
@@ -234,31 +207,25 @@
           "name": "hx-target",
           "description": "The `hx-target` attribute allows you to target a different element for swapping than the one issuing the AJAX\nrequest.  The value of this attribute can be:\n\n* A CSS query selector of the element to target.\n* `this` which indicates that the element that the `hx-target` attribute is on is the target.\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.\n* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.\n* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.",
           "description-sections": {
-            "Inherited": ""
+            "Inheritance": "Use the :inherited modifier (e.g., `hx-target:inherited`) to make this attribute inherit to child elements"
           },
           "doc-url": "https://htmx.org/attributes/hx-target/"
         },
         {
           "name": "hx-trigger",
           "description": "The `hx-trigger` attribute allows you to specify what triggers an AJAX request.  A trigger\nvalue can be one of the following:\n\n* An event name (e.g. \"click\" or \"my-custom-event\") followed by an event filter and a set of event modifiers\n* A polling definition of the form `every <timing declaration>`\n* A comma-separated list of such events",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-trigger/"
         },
         {
           "name": "hx-validate",
           "description": "The `hx-validate` attribute will cause an element to validate itself by way of the [HTML5 Validation API](@/docs.md#validation)\nbefore it submits a request.\n\nOnly `<form>` elements validate data by default, but other elements do not. Adding `hx-validate=\"true\"` to `<input>`, `<textarea>` or `<select>` enables validation before sending requests.",
-          "description-sections": {
-            "Not Inherited": ""
-          },
           "doc-url": "https://htmx.org/attributes/hx-validate/"
         },
         {
           "name": "hx-vals",
           "description": "The `hx-vals` attribute allows you to add to the parameters that will be submitted with an AJAX request.\n\nBy default, the value of this attribute is a list of name-expression values in [JSON (JavaScript Object Notation)](https://www.json.org/json-en.html)\nformat.\n\nIn htmx 4, you can use the `js:` prefix to evaluate JavaScript expressions:\n\n```html\n<button hx-post=\"/api/data\" hx-vals='js:{token: getAuthToken()}'>\n  Submit\n</button>\n```",
           "description-sections": {
-            "Inherited": ""
+            "Inheritance": "Use the :inherited modifier (e.g., `hx-vals:inherited`) to make this attribute inherit to child elements"
           },
           "doc-url": "https://htmx.org/attributes/hx-vals/"
         }
