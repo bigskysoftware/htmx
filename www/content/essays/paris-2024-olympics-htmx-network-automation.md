@@ -99,7 +99,7 @@ If you ask me what's most striking, it's certainly returning to very simple thin
 <figcaption> Progress bar from RCP Portal </figcaption>
 </figure>
 
-How does this progress bar work? Exactly like the example in the docs: https://htmx.org/examples/progress-bar/
+How does this progress bar work? Exactly like [the example in the docs](https://htmx.org/examples/progress-bar/)! 
 
 Why this choice? Because it's coded in 10 seconds, because the app won't have thousands of users on this internal tool,
 no scaling concerns: you can do good old data polling without any problem.
