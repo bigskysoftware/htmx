@@ -228,6 +228,20 @@ describe('swap() unit tests', function() {
         delete window.testVar;
     })
 
+    it('executes script when wrapped in html tag', async function () {
+        window.testVar = 0;
+        await htmx.swap({"target":"#test-playground", "text":"<html><body><script>window.testVar = 9</script><div>Content</div></body></html>"})
+        window.testVar.should.equal(9);
+        delete window.testVar;
+    })
+
+    it('executes script when wrapped in body tag', async function () {
+        window.testVar = 0;
+        await htmx.swap({"target":"#test-playground", "text":"<body><script>window.testVar = 10</script><div>Content</div></body>"})
+        window.testVar.should.equal(10);
+        delete window.testVar;
+    })
+
     it('replaces attributes when swapping element with same id', async function () {
         createProcessedHTML("<div id='d1' class='old' data-value='1'></div>")
         await htmx.swap({"target":"#d1", "text":"<div id='d1' class='new' data-value='2'>Content</div>", "swap":"outerHTML"})
