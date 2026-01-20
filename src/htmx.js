@@ -1300,7 +1300,7 @@ var htmx = (() => {
                 tasks.unshift(mainSwap);
             }
 
-            if(!this.__trigger(document, "htmx:before:swap", {ctx, tasks})){
+            if(!this.__trigger(ctx.sourceElement, "htmx:before:swap", {ctx, tasks})){
                 return
             }
 
@@ -1326,7 +1326,7 @@ var htmx = (() => {
 
             await Promise.all(swapPromises);
 
-            this.__trigger(document, "htmx:after:swap", {ctx});
+            this.__trigger(ctx.sourceElement, "htmx:after:swap", {ctx});
             if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
             this.__handleAnchorScroll(ctx);
         }
@@ -1573,7 +1573,7 @@ var htmx = (() => {
                 composed: true,
                 originalTarget: on
             });
-            let target = on.isConnected ? on : document;
+            let target = on?.isConnected ? on : document;
             let result = !detail.cancelled && target.dispatchEvent(evt);
             return result
         }
