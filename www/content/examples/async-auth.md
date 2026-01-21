@@ -3,7 +3,7 @@ title = "Async Authentication"
 template = "demo.html"
 +++
 
-This example shows how to implement an an async auth token flow for htmx.
+This example shows how to implement an async auth token flow for htmx.
 
 The technique we will use here will take advantage of the fact that you can delay requests
 using the [`htmx:confirm`](@/events.md#htmx:confirm) event.
