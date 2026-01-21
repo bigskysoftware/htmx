@@ -143,7 +143,7 @@ The idea was to use "id sets" to make smarter decisions regarding which nodes to
 merging changes into the DOM, and I called this idea "idiomorph".  Idiomorph has gone on to be adopted by many other
 web project such as [Hotwire](https://hotwired.dev/).
 
-We strongly considered including it in htmx 2.0, but I decided not too because it worked well as an extension and
+We strongly considered including it in htmx 2.0, but I decided not to because it worked well as an extension and
 htmx 2.0 had already grown larger than I wanted.
 
 In 4.0, with the complexity savings we achieved by moving to `fetch()`, we can now comfortably fit a `morphInner` and
