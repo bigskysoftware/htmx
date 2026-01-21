@@ -30,8 +30,6 @@ The fastest way to install `response-targets` is to load it via a CDN. Remember 
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.4" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
 </head>
-<body hx-ext="response-targets">
-...
 ```
 An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext-response-targets/dist/response-targets.js.
 
