@@ -83,7 +83,7 @@ Private VLAN, and Shared Internet Access.
 
 ## Web Dev with HTMX
 
-HTMX is somewhat a return to the roots of web development, and regardless of the web framework: Django, ROR, Symphony...
+HTMX is somewhat a return to the roots of web development, and regardless of the web framework: Django, ROR, Symfony...
 You rediscover everything that makes a web framework useful rather than turning it into a mere JSON provider. Sending
 HTML directly to the browser, storing the app state directly in the HTML. That's what true REST is, and it's so much
 simpler to manage.
