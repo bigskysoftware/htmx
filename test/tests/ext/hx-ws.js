@@ -460,6 +460,84 @@ describe('hx-ws WebSocket extension', function() {
             assert.include(document.getElementById('content').innerHTML, 'Body');
         });
         
+        it('executes script tags in swapped content', async function() {
+            // Clean up any existing test variable
+            delete window.wsScriptTestValue;
+
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
+                    <div id="content"></div>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({
+                channel: 'ui',
+                format: 'html',
+                payload: '<hx-partial id="content"><div>Content</div><script>window.wsScriptTestValue = "executed";</script></hx-partial>'
+            });
+            await htmx.timeout(20);
+
+            assert.equal(window.wsScriptTestValue, 'executed', 'Script tag should have been executed');
+
+            // Clean up
+            delete window.wsScriptTestValue;
+        });
+
+        it('executes multiple script tags in swapped content', async function() {
+            // Clean up any existing test variables
+            delete window.wsScriptTest1;
+            delete window.wsScriptTest2;
+
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
+                    <div id="content"></div>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({
+                channel: 'ui',
+                format: 'html',
+                payload: '<hx-partial id="content"><script>window.wsScriptTest1 = 1;</script><div>Content</div><script>window.wsScriptTest2 = 2;</script></hx-partial>'
+            });
+            await htmx.timeout(20);
+
+            assert.equal(window.wsScriptTest1, 1, 'First script tag should have been executed');
+            assert.equal(window.wsScriptTest2, 2, 'Second script tag should have been executed');
+
+            // Clean up
+            delete window.wsScriptTest1;
+            delete window.wsScriptTest2;
+        });
+
+        it('preserves script tag attributes when executing', async function() {
+            // Clean up any existing test variable
+            delete window.wsScriptAttrTest;
+
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
+                    <div id="content"></div>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({
+                channel: 'ui',
+                format: 'html',
+                payload: '<hx-partial id="content"><script data-testattr="testvalue">window.wsScriptAttrTest = document.currentScript.getAttribute("data-testattr");</script></hx-partial>'
+            });
+            await htmx.timeout(20);
+
+            assert.equal(window.wsScriptAttrTest, 'testvalue', 'Script should access its own attributes');
+
+            // Clean up
+            delete window.wsScriptAttrTest;
+        });
+
         it('matches request_id for request/response pattern', async function() {
             let container = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test" hx-trigger="load">
