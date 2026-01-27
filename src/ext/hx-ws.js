@@ -511,16 +511,31 @@
         }
         return element;
     }
-    
+
+    function processScriptTags(container) {
+        let scripts = container.querySelectorAll('script');
+        for (let oldScript of scripts) {
+            let newScript = document.createElement('script');
+            for (let attr of oldScript.attributes) {
+                newScript.setAttribute(attr.name, attr.value);
+            }
+            newScript.textContent = oldScript.textContent;
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        }
+    }
+
     function swapWithHtmx(target, content, sourceElement, envelopeSwap) {
         // Determine swap style from envelope, element attribute, or default
         let swapStyle = envelopeSwap || api.attributeValue(sourceElement, 'hx-swap') || htmx.config.defaultSwap;
-        
+
         // Create a document fragment from the HTML content
         let template = document.createElement('template');
         template.innerHTML = content || '';
         let fragment = template.content;
-        
+
+        // Process script tags to ensure they execute
+        processScriptTags(fragment);
+
         // Use htmx's internal insertContent which handles:
         // - All swap styles correctly
         // - Processing new content with htmx.process()
@@ -532,7 +547,7 @@
             swapSpec: swapStyle,  // Can be a string - insertContent will parse it
             fragment: fragment
         };
-        
+
         api.insertContent(task);
     }
     
