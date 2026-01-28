@@ -468,31 +468,17 @@
     // ========================================
     
     function handleHtmlMessage(element, envelope) {
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(envelope.payload || '', 'text/html');
+        let target = resolveTarget(element, envelope.target);
+        let swapStyle = envelope.swap || api.attributeValue(element, 'hx-swap') || htmx.config.defaultSwap;
         
-        // Find all hx-partial elements (legacy format)
-        let partials = doc.querySelectorAll('hx-partial');
-        
-        if (partials.length === 0) {
-            // No partials, treat entire payload as content for element's target
-            let target = resolveTarget(element, envelope.target);
-            if (target) {
-                swapWithHtmx(target, envelope.payload, element, envelope.swap);
-            }
-            return;
-        }
-        
-        // Process each partial
-        for (let partial of partials) {
-            let targetId = partial.getAttribute('id');
-            if (!targetId) continue;
-            
-            let target = document.getElementById(targetId);
-            if (!target) continue;
-            
-            swapWithHtmx(target, partial.innerHTML, element);
-        }
+        // Always call swap even if target is null - partials in payload may have their own targets
+        htmx.swap({
+            sourceElement: element,
+            target: target,
+            swap: swapStyle,
+            text: envelope.payload || '',
+            transition: false
+        });
     }
     
     function resolveTarget(element, envelopeTarget) {
@@ -510,45 +496,6 @@
             return document.querySelector(targetSelector);
         }
         return element;
-    }
-
-    function processScriptTags(container) {
-        let scripts = container.querySelectorAll('script');
-        for (let oldScript of scripts) {
-            let newScript = document.createElement('script');
-            for (let attr of oldScript.attributes) {
-                newScript.setAttribute(attr.name, attr.value);
-            }
-            newScript.textContent = oldScript.textContent;
-            oldScript.parentNode.replaceChild(newScript, oldScript);
-        }
-    }
-
-    function swapWithHtmx(target, content, sourceElement, envelopeSwap) {
-        // Determine swap style from envelope, element attribute, or default
-        let swapStyle = envelopeSwap || api.attributeValue(sourceElement, 'hx-swap') || htmx.config.defaultSwap;
-
-        // Create a document fragment from the HTML content
-        let template = document.createElement('template');
-        template.innerHTML = content || '';
-        let fragment = template.content;
-
-        // Process script tags to ensure they execute
-        processScriptTags(fragment);
-
-        // Use htmx's internal insertContent which handles:
-        // - All swap styles correctly
-        // - Processing new content with htmx.process()
-        // - Preserved elements
-        // - Auto-focus
-        // - Scroll handling
-        let task = {
-            target: target,
-            swapSpec: swapStyle,  // Can be a string - insertContent will parse it
-            fragment: fragment
-        };
-
-        api.insertContent(task);
     }
     
     // ========================================
