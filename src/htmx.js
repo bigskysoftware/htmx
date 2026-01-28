@@ -1222,10 +1222,11 @@ var htmx = (() => {
                 let type = templateElt.getAttribute('type');
                 
                 if (type === 'partial') {
+                    let target = templateElt.getAttribute(this.__prefix('hx-target')) || (templateElt.id ? '#' + CSS.escape(templateElt.id) : null);
                     tasks.push({
                         type: 'partial',
                         fragment: templateElt.content.cloneNode(true),
-                        target: templateElt.getAttribute(this.__prefix('hx-target')),
+                        target,
                         swapSpec: this.__parseSwapSpec(templateElt.getAttribute(this.__prefix('hx-swap')) || this.config.defaultSwap),
                         sourceElement: ctx.sourceElement
                     });
