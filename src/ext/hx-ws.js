@@ -424,10 +424,10 @@
         try {
             envelope = JSON.parse(event.data);
         } catch (e) {
-            // Not JSON, emit unknown message event for parse failures
+            // Not JSON - treat as raw HTML
             let firstElement = entry.elements.values().next().value;
             if (firstElement) {
-                triggerEvent(firstElement, 'htmx:wsUnknownMessage', { data: event.data, parseError: e });
+                handleRawMessage(firstElement, event.data);
             }
             return;
         }
@@ -463,6 +463,36 @@
         triggerEvent(targetElement, 'htmx:after:ws:message', { envelope, element: targetElement });
     }
     
+    // ========================================
+    // RAW (NON-JSON) MESSAGE HANDLING
+    // ========================================
+
+    function handleRawMessage(element, data) {
+        // Fire cancelable event - allows custom handling of non-JSON messages
+        if (!triggerEvent(element, 'htmx:ws:rawMessage', { data: data })) {
+            return;  // Event cancelled - developer handles it
+        }
+
+        // Default behavior: swap as raw HTML
+        let target = resolveTarget(element, null);
+        let targetSelector = api.attributeValue(element, 'hx-target');
+
+        // If no explicit hx-target, use swap:none so we don't wipe the
+        // connection element — but partials in the payload can still
+        // target their own destinations
+        let swapStyle = targetSelector
+            ? (api.attributeValue(element, 'hx-swap') || htmx.config.defaultSwap)
+            : 'none';
+
+        htmx.swap({
+            sourceElement: element,
+            target: target,
+            swap: swapStyle,
+            text: data,
+            transition: false
+        });
+    }
+
     // ========================================
     // HTML PARTIAL HANDLING - Using htmx.swap(ctx)
     // ========================================
