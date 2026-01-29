@@ -415,9 +415,9 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(document.getElementById('content').textContent, 'New');
         });
         
-        it('respects hx-swap attribute', async function() {
+        it('respects hx-swap attribute on partial', async function() {
             let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#list" hx-swap="beforeend">
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#list">
                     <div id="list"><p>Item 1</p></div>
                 </div>
             `);
@@ -427,7 +427,7 @@ describe('hx-ws WebSocket extension', function() {
             ws.simulateMessage({
                 channel: 'ui',
                 format: 'html',
-                payload: '<hx-partial id="list"><p>Item 2</p></hx-partial>'
+                payload: '<hx-partial id="list" hx-swap="beforeend"><p>Item 2</p></hx-partial>'
             });
             await htmx.timeout(20);
             
@@ -1095,7 +1095,7 @@ describe('hx-ws WebSocket extension', function() {
         
         it('handles live notifications pattern', async function() {
             let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/notifications" hx-trigger="load" hx-target="#notifications" hx-swap="afterbegin">
+                <div hx-ws:connect="/ws/notifications" hx-trigger="load" hx-target="#notifications">
                     <div id="notifications"></div>
                 </div>
             `);
@@ -1107,14 +1107,14 @@ describe('hx-ws WebSocket extension', function() {
             ws.simulateMessage({
                 channel: 'ui',
                 format: 'html',
-                payload: '<hx-partial id="notifications"><div class="notif">Notification 1</div></hx-partial>'
+                payload: '<hx-partial id="notifications" hx-swap="afterbegin"><div class="notif">Notification 1</div></hx-partial>'
             });
             await htmx.timeout(20);
             
             ws.simulateMessage({
                 channel: 'ui',
                 format: 'html',
-                payload: '<hx-partial id="notifications"><div class="notif">Notification 2</div></hx-partial>'
+                payload: '<hx-partial id="notifications" hx-swap="afterbegin"><div class="notif">Notification 2</div></hx-partial>'
             });
             await htmx.timeout(20);
             
