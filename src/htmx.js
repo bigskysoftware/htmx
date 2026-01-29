@@ -593,119 +593,125 @@ var htmx = (() => {
 
         async __handleSSE(ctx, elt, response) {
             let config = {...this.config.sse, ...ctx.request.sse}
+            let lastEventId = null, attempt = 0, currentResponse = response, reader = null;
+            let reconnectRequested = false;
+            let delayCanceller = null;
 
-            let waitForVisible = () => new Promise(r => {
-                let onVisible = () => !document.hidden && (document.removeEventListener('visibilitychange', onVisible), r());
-                document.addEventListener('visibilitychange', onVisible);
-            });
-
-            let lastEventId = null, attempt = 0, currentResponse = response;
-            let currentReader = null;
-
-            // Disconnect on visibility change, reconnect when visible (handles iOS killing connections in background)
-            let onVisibilityChange = () => {
-                if (currentReader) currentReader.cancel();
+            let reconnect = () => {
+                if (!elt.isConnected || reconnectRequested) return;
+                reconnectRequested = true;
+                if (delayCanceller) delayCanceller();
+                reader?.cancel();
             };
+
+            let visibilityHandler = () => {
+                if (document.hidden) {
+                    reader?.cancel();
+                } else {
+                    reconnect();
+                }
+            };
+
             if (config.closeOnHide) {
-                document.addEventListener('visibilitychange', onVisibilityChange);
+                document.addEventListener('visibilitychange', visibilityHandler);
             }
 
             try {
-            while (elt.isConnected) {
-                // Handle reconnection for subsequent iterations
-                if (attempt > 0) {
-                    if (!config.reconnect || attempt > config.reconnectMaxAttempts) break;
+                while (elt.isConnected) {
+                    if (attempt > 0 && !reconnectRequested) {
+                        if (!config.reconnect || attempt > config.reconnectMaxAttempts) break;
 
-                    if (config.closeOnHide && document.hidden) {
-                        await waitForVisible();
+                        let delay = Math.min(this.parseInterval(config.reconnectDelay) * Math.pow(2, attempt - 1), this.parseInterval(config.reconnectMaxDelay));
+                        if (config.reconnectJitter > 0) {
+                            let jitterRange = delay * config.reconnectJitter;
+                            let jitter = (Math.random() * 2 - 1) * jitterRange;
+                            delay = Math.max(0, delay + jitter);
+                        }
+                        let reconnectDetail = {attempt, delay, lastEventId, cancelled: false};
+
+                        ctx.status = "reconnecting to stream";
+                        if (!this.__trigger(elt, "htmx:before:sse:reconnect", {
+                            ctx,
+                            reconnect: reconnectDetail
+                        }) || reconnectDetail.cancelled) break;
+
+                        await new Promise(r => {
+                            delayCanceller = r;
+                            setTimeout(r, reconnectDetail.delay);
+                        });
+                        delayCanceller = null;
                         if (!elt.isConnected) break;
+
+                        try {
+                            if (lastEventId) (ctx.request.headers = ctx.request.headers || {})['Last-Event-ID'] = lastEventId;
+                            currentResponse = await fetch(ctx.request.action, ctx.request);
+                        } catch (e) {
+                            ctx.status = "stream error";
+                            this.__trigger(elt, "htmx:error", {ctx, error: e});
+                            attempt++;
+                            continue;
+                        }
                     }
 
-                    let delay = Math.min(this.parseInterval(config.reconnectDelay) * Math.pow(2, attempt - 1), this.parseInterval(config.reconnectMaxDelay));
-                    if (config.reconnectJitter > 0) {
-                        let jitterRange = delay * config.reconnectJitter;
-                        let jitter = (Math.random() * 2 - 1) * jitterRange;
-                        delay = Math.max(0, delay + jitter);
-                    }
-                    let reconnect = {attempt, delay, lastEventId, cancelled: false};
-
-                    ctx.status = "reconnecting to stream";
-                    if (!this.__trigger(elt, "htmx:before:sse:reconnect", {
-                        ctx,
-                        reconnect
-                    }) || reconnect.cancelled) break;
-
-                    await new Promise(r => setTimeout(r, reconnect.delay));
-                    if (!elt.isConnected) break;
+                    // Core streaming logic
+                    if (!this.__trigger(elt, "htmx:before:sse:stream", {ctx})) break;
+                    ctx.status = "streaming";
+                    reconnectRequested = false;
+                    attempt = 0;
 
                     try {
-                        if (lastEventId) (ctx.request.headers = ctx.request.headers || {})['Last-Event-ID'] = lastEventId;
-                        currentResponse = await fetch(ctx.request.action, ctx.request);
+                        reader = currentResponse.body.getReader();
+                        for await (const sseMessage of this.__parseSSE(reader)) {
+                            if (!elt.isConnected || reconnectRequested) break;
+
+                            let msg = {data: sseMessage.data, event: sseMessage.event, id: sseMessage.id, cancelled: false};
+                            if (!this.__trigger(elt, "htmx:before:sse:message", {
+                                ctx,
+                                message: msg
+                            }) || msg.cancelled) continue;
+
+                            if (sseMessage.id) lastEventId = sseMessage.id;
+
+                            // Trigger custom event if `event:` line is present
+                            if (sseMessage.event) {
+                                this.__trigger(elt, sseMessage.event, {data: sseMessage.data, id: sseMessage.id});
+                                // Skip swap for custom events
+                                this.__trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
+                                continue;
+                            }
+
+                            ctx.text = sseMessage.data;
+                            ctx.status = "stream message received";
+
+                            if (!ctx.response.cancelled) {
+                                await this.swap(ctx);
+                                ctx.status = "swapped";
+                            }
+                            this.__trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
+                        }
                     } catch (e) {
                         ctx.status = "stream error";
                         this.__trigger(elt, "htmx:error", {ctx, error: e});
+                    }
+
+                    if (!elt.isConnected) break;
+                    this.__trigger(elt, "htmx:after:sse:stream", {ctx});
+
+                    if (reconnectRequested) {
                         attempt++;
                         continue;
                     }
+
+                    attempt++;
                 }
-
-                // Core streaming logic
-                if (!this.__trigger(elt, "htmx:before:sse:stream", {ctx})) break;
-                ctx.status = "streaming";
-
-                attempt = 0; // Reset on successful connection
-
-                try {
-                    for await (const sseMessage of this.__parseSSE(currentResponse, r => currentReader = r)) {
-                        if (!elt.isConnected) break;
-
-                        let msg = {data: sseMessage.data, event: sseMessage.event, id: sseMessage.id, cancelled: false};
-                        if (!this.__trigger(elt, "htmx:before:sse:message", {
-                            ctx,
-                            message: msg
-                        }) || msg.cancelled) continue;
-
-                        if (sseMessage.id) lastEventId = sseMessage.id;
-
-                        // Trigger custom event if `event:` line is present
-                        if (sseMessage.event) {
-                            this.__trigger(elt, sseMessage.event, {data: sseMessage.data, id: sseMessage.id});
-                            // Skip swap for custom events
-                            this.__trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
-                            continue;
-                        }
-
-                        ctx.text = sseMessage.data;
-                        ctx.status = "stream message received";
-
-                        if (!ctx.response.cancelled) {
-                            await this.swap(ctx);
-                            ctx.status = "swapped";
-                        }
-                        this.__trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
-                    }
-                } catch (e) {
-                    ctx.status = "stream error";
-                    this.__trigger(elt, "htmx:error", {ctx, error: e});
-                } finally {
-                    currentReader = null;
-                }
-
-                if (!elt.isConnected) break;
-                this.__trigger(elt, "htmx:after:sse:stream", {ctx});
-
-                attempt++;
-            }
             } finally {
                 if (config.closeOnHide) {
-                    document.removeEventListener('visibilitychange', onVisibilityChange);
+                    document.removeEventListener('visibilitychange', visibilityHandler);
                 }
             }
         }
 
-        async* __parseSSE(response, setReader) {
-            let reader = response.body.getReader();
-            if (setReader) setReader(reader);
+        async* __parseSSE(reader) {
             let decoder = new TextDecoder();
             let buffer = '';
             let message = {data: '', event: '', id: '', retry: null};
