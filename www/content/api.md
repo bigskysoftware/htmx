@@ -360,7 +360,7 @@ Note that using a [meta tag](@/docs.md#configuring-htmx) is the preferred mechan
   * `reconnectDelay` - number in ms (default: `500`)
   * `reconnectMaxDelay` - number in ms (default: `60000`)
   * `reconnectJitter` - number: jitter factor for reconnect delay (default: `0.3`)
-  * `pauseInBackground` - boolean (default: `false`)
+  * `closeOnHide` - boolean (default: `false`)
 * `morphIgnore` - array: attribute names to ignore when morphing (default: `["data-htmx-powered"]`)
 * `noSwap` - array: HTTP status codes that should not trigger a swap (default: `[204, 304]`)
 * `implicitInheritance` - boolean: inherit attributes automatically without `:inherited` (default: `false`)

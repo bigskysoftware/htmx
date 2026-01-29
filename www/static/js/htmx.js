@@ -110,7 +110,7 @@ var htmx = (() => {
                     reconnectMaxDelay: 60000,
                     reconnectMaxAttempts: 10,
                     reconnectJitter: 0.3,
-                    pauseInBackground: false
+                    closeOnHide: false
                 },
                 morphIgnore: ["data-htmx-powered"],
                 morphScanLimit: 10,
@@ -606,7 +606,7 @@ var htmx = (() => {
                 if (attempt > 0) {
                     if (!config.reconnect || attempt > config.reconnectMaxAttempts) break;
 
-                    if (config.pauseInBackground && document.hidden) {
+                    if (config.closeOnHide && document.hidden) {
                         await waitForVisible();
                         if (!elt.isConnected) break;
                     }
@@ -649,7 +649,7 @@ var htmx = (() => {
                     for await (const sseMessage of this.#parseSSE(currentResponse)) {
                         if (!elt.isConnected) break;
 
-                        if (config.pauseInBackground && document.hidden) {
+                        if (config.closeOnHide && document.hidden) {
                             await waitForVisible();
                             if (!elt.isConnected) break;
                         }

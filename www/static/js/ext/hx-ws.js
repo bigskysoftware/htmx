@@ -57,7 +57,7 @@
             reconnectDelay: 1000,
             reconnectMaxDelay: 30000,
             reconnectJitter: true,
-            // Note: pauseInBackground is NOT implemented. Reconnection continues in background tabs.
+            // Note: closeOnHide is NOT implemented for WebSockets. Reconnection continues in background tabs.
             // To implement visibility-aware behavior, listen for htmx:ws:reconnect and cancel if needed.
             pendingRequestTTL: 30000  // TTL for pending requests in ms
         };

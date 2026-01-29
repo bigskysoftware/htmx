@@ -110,7 +110,7 @@ var htmx = (() => {
                     reconnectMaxDelay: 60000,
                     reconnectMaxAttempts: 10,
                     reconnectJitter: 0.3,
-                    pauseInBackground: false
+                    closeOnHide: false
                 },
                 morphIgnore: ["data-htmx-powered"],
                 morphScanLimit: 10,
@@ -600,13 +600,23 @@ var htmx = (() => {
             });
 
             let lastEventId = null, attempt = 0, currentResponse = response;
+            let currentReader = null;
 
+            // Disconnect on visibility change, reconnect when visible (handles iOS killing connections in background)
+            let onVisibilityChange = () => {
+                if (currentReader) currentReader.cancel();
+            };
+            if (config.closeOnHide) {
+                document.addEventListener('visibilitychange', onVisibilityChange);
+            }
+
+            try {
             while (elt.isConnected) {
                 // Handle reconnection for subsequent iterations
                 if (attempt > 0) {
                     if (!config.reconnect || attempt > config.reconnectMaxAttempts) break;
 
-                    if (config.pauseInBackground && document.hidden) {
+                    if (config.closeOnHide && document.hidden) {
                         await waitForVisible();
                         if (!elt.isConnected) break;
                     }
@@ -646,13 +656,8 @@ var htmx = (() => {
                 attempt = 0; // Reset on successful connection
 
                 try {
-                    for await (const sseMessage of this.__parseSSE(currentResponse)) {
+                    for await (const sseMessage of this.__parseSSE(currentResponse, r => currentReader = r)) {
                         if (!elt.isConnected) break;
-
-                        if (config.pauseInBackground && document.hidden) {
-                            await waitForVisible();
-                            if (!elt.isConnected) break;
-                        }
 
                         let msg = {data: sseMessage.data, event: sseMessage.event, id: sseMessage.id, cancelled: false};
                         if (!this.__trigger(elt, "htmx:before:sse:message", {
@@ -682,6 +687,8 @@ var htmx = (() => {
                 } catch (e) {
                     ctx.status = "stream error";
                     this.__trigger(elt, "htmx:error", {ctx, error: e});
+                } finally {
+                    currentReader = null;
                 }
 
                 if (!elt.isConnected) break;
@@ -689,10 +696,16 @@ var htmx = (() => {
 
                 attempt++;
             }
+            } finally {
+                if (config.closeOnHide) {
+                    document.removeEventListener('visibilitychange', onVisibilityChange);
+                }
+            }
         }
 
-        async* __parseSSE(response) {
+        async* __parseSSE(response, setReader) {
             let reader = response.body.getReader();
+            if (setReader) setReader(reader);
             let decoder = new TextDecoder();
             let buffer = '';
             let message = {data: '', event: '', id: '', retry: null};

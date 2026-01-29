@@ -24,7 +24,7 @@ export interface HtmxConfig {
     reconnectDelay: number;
     reconnectMaxDelay: number;
     reconnectJitter: number;
-    pauseInBackground: boolean;
+    closeOnHide: boolean;
   };
 }
 
