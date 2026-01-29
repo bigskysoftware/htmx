@@ -240,10 +240,25 @@ describe('Morph Swap Styles Tests', function() {
             mockResponse('GET', '/test', '<div><hr id="1"></div>');
             const div = createProcessedHTML('<div id="target"><hr id="1"></div>');
             const hr = div.querySelector('#\\31');
-            
+
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
-            
+
             assert.equal(div.querySelector('#\\31'), hr);
+        });
+
+        it('does not treat empty id="" as a persistent id', async function() {
+            // When both old and new content have <h1 id="">, the empty string should NOT
+            // be treated as a persistent ID that needs to be preserved/matched.
+            // Previously this caused HierarchyRequestError when sibling elements differed,
+            // because the algorithm tried to reuse the h1 based on the "" id match.
+            mockResponse('GET', '/test', '<h1 id="">B</h1><div>Y</div>');
+            const div = createProcessedHTML('<div id="target"><h1 id="">A</h1><section>X</section></div>');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            assert.equal(div.querySelector('h1').textContent, 'B');
+            assert.isNotNull(div.querySelector('div'));
+            assert.isNull(div.querySelector('section'));
         });
     });
 
