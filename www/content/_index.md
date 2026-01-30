@@ -145,6 +145,15 @@ We are happy to announce the release of [Hypermedia Systems](https://hypermedia.
 <a href="https://www.amazon.com/dp/B0C9S88QV6/ref=sr_1_1?crid=1P0I3GXQK32TN"><img src="/img/hypermedia-systems.png" alt="Hypermedia Systems hardcover edition"></a>
 </div>
 
+<h2>swag</h2>
+
+Like htmx? [Get a hoodie 🧥](https://swag.htmx.org/en-usd/collections/hoodies)
+
+Think htmx sucks? [Use the
+mug ☕️](https://swag.htmx.org/en-usd/products/htmx-sucks-mug)
+
+Can't decide? [Browse the swag 🏬](https://swag.htmx.org/)
+
 <h2>sponsors <iframe src="https://github.com/sponsors/bigskysoftware/button" title="Sponsor htmx" height="32" width="114" style="border: 1px solid gray; border-radius: 12px; float:right"></iframe></h2>
 
 
