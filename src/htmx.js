@@ -2176,13 +2176,11 @@ var htmx = (() => {
         __createPersistentIds(oldIdElements, newIdElements) {
             let duplicateIds = new Set(), oldIdTagNameMap = new Map();
             for (const {id, tagName} of oldIdElements) {
-                if (!id) continue; // Skip empty IDs
                 if (oldIdTagNameMap.has(id)) duplicateIds.add(id);
-                else oldIdTagNameMap.set(id, tagName);
+                else if (id) oldIdTagNameMap.set(id, tagName);
             }
             let persistentIds = new Set();
             for (const {id, tagName} of newIdElements) {
-                if (!id) continue; // Skip empty IDs
                 if (persistentIds.has(id)) duplicateIds.add(id);
                 else if (oldIdTagNameMap.get(id) === tagName) persistentIds.add(id);
             }
