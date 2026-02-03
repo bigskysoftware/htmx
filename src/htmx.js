@@ -99,6 +99,7 @@ var htmx = (() => {
                 history: true,
                 mode: 'same-origin',
                 defaultSwap: "innerHTML",
+                defaultFocusScroll: false,
                 indicatorClass: "htmx-indicator",
                 requestClass: "htmx-request",
                 includeIndicatorCSS: true,
@@ -1266,12 +1267,12 @@ var htmx = (() => {
             return tasks;
         }
 
-        __setFocus(elt, start, end) {
+        __setFocus(elt, options, start, end) {
             try {
                 if (start != null && elt.setSelectionRange) {
                     elt.setSelectionRange(start, end);
                 }
-                elt.focus();
+                elt.focus(options);
             } catch (e) {
                 // setSelectionRange or Web component focus may fail so ignore
             }
@@ -1504,7 +1505,8 @@ var htmx = (() => {
             if (focusInfo && !focusInfo.elt.isConnected) {
                 let newElt = document.getElementById(focusInfo.elt.id);
                 if (newElt) {
-                    this.__setFocus(newElt, focusInfo.start, focusInfo.end);
+                    let focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !this.config.defaultFocusScroll };
+                    this.__setFocus(newElt, focusOptions, focusInfo.start, focusInfo.end);
                 }
             }
 
