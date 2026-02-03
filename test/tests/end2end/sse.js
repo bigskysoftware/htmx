@@ -329,7 +329,7 @@ describe('Server-Sent Events', function() {
         assert.equal(reconnectDelays[1], 200, 'Second delay should be exactly 200ms (100 * 2)');
     });
 
-    it('pauseInBackground configuration works', async function() {
+    it('closeOnHide configuration works', async function() {
         this.skip(); // Skip - complex visibility API testing
     });
 

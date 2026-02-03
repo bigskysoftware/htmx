@@ -112,7 +112,7 @@ htmx.config.websockets = {
     reconnectMaxDelay: 30000,     // Max delay (ms)
     reconnectJitter: true,        // Add randomness to delays
     autoConnect: false,           // Connect without hx-trigger
-    pauseInBackground: true       // Pause when tab is hidden
+    closeOnHide: true              // Close stream when tab is hidden
 };
 ```
 

@@ -415,9 +415,9 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(document.getElementById('content').textContent, 'New');
         });
         
-        it('respects hx-swap attribute', async function() {
+        it('respects hx-swap attribute on partial', async function() {
             let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#list" hx-swap="beforeend">
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#list">
                     <div id="list"><p>Item 1</p></div>
                 </div>
             `);
@@ -427,7 +427,7 @@ describe('hx-ws WebSocket extension', function() {
             ws.simulateMessage({
                 channel: 'ui',
                 format: 'html',
-                payload: '<hx-partial id="list"><p>Item 2</p></hx-partial>'
+                payload: '<hx-partial id="list" hx-swap="beforeend"><p>Item 2</p></hx-partial>'
             });
             await htmx.timeout(20);
             
@@ -818,26 +818,93 @@ describe('hx-ws WebSocket extension', function() {
             assert.isTrue(errorFired);
         });
         
-        it('emits htmx:wsUnknownMessage for non-JSON data', async function() {
+        it('swaps non-JSON messages as raw HTML into hx-target', async function() {
             let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/test" hx-trigger="load"></div>
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
+                    <div id="content">Original</div>
+                </div>
             `);
             await htmx.timeout(50);
             
-            let unknownFired = false;
+            let ws = mockWebSocketInstances[0];
+            ws.simulateRawMessage('<hx-partial id="content"><p>Raw HTML update</p></hx-partial>');
+            await htmx.timeout(20);
+            
+            assert.include(document.getElementById('content').innerHTML, 'Raw HTML update');
+        });
+
+        it('uses swap:none for non-JSON messages without hx-target', async function() {
+            let container = createProcessedHTML(`
+                <div id="ws-conn" hx-ws:connect="/ws/test" hx-trigger="load">
+                    <div id="content">Original</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            let ws = mockWebSocketInstances[0];
+            // Send raw HTML without hx-partial targeting — should not wipe connection element
+            ws.simulateRawMessage('<p>Should not appear</p>');
+            await htmx.timeout(20);
+            
+            // Connection element content should be preserved
+            assert.include(document.getElementById('ws-conn').innerHTML, 'Original');
+        });
+
+        it('processes hx-partial in non-JSON messages even without hx-target', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load">
+                    <div id="widget">Old</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            let ws = mockWebSocketInstances[0];
+            ws.simulateRawMessage('<hx-partial id="widget"><p>Updated via partial</p></hx-partial>');
+            await htmx.timeout(20);
+            
+            assert.include(document.getElementById('widget').innerHTML, 'Updated via partial');
+        });
+
+        it('fires cancelable htmx:ws:rawMessage for non-JSON data', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
+                    <div id="content">Original</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            let eventFired = false;
             let receivedData = null;
-            container.addEventListener('htmx:wsUnknownMessage', (e) => {
-                unknownFired = true;
+            container.addEventListener('htmx:ws:rawMessage', (e) => {
+                eventFired = true;
                 receivedData = e.detail.data;
             });
             
             let ws = mockWebSocketInstances[0];
-            // Send raw non-JSON data
-            ws.simulateRawMessage('not valid json {{{');
+            ws.simulateRawMessage('<p>Raw content</p>');
             await htmx.timeout(20);
             
-            assert.isTrue(unknownFired);
-            assert.equal(receivedData, 'not valid json {{{');
+            assert.isTrue(eventFired);
+            assert.equal(receivedData, '<p>Raw content</p>');
+        });
+
+        it('prevents default swap when htmx:ws:rawMessage is cancelled', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
+                    <div id="content">Original</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+            
+            container.addEventListener('htmx:ws:rawMessage', (e) => {
+                e.preventDefault();
+            });
+            
+            let ws = mockWebSocketInstances[0];
+            ws.simulateRawMessage('<hx-partial id="content"><p>Should not appear</p></hx-partial>');
+            await htmx.timeout(20);
+            
+            assert.equal(document.getElementById('content').textContent, 'Original');
         });
     });
     
@@ -1095,7 +1162,7 @@ describe('hx-ws WebSocket extension', function() {
         
         it('handles live notifications pattern', async function() {
             let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/notifications" hx-trigger="load" hx-target="#notifications" hx-swap="afterbegin">
+                <div hx-ws:connect="/ws/notifications" hx-trigger="load" hx-target="#notifications">
                     <div id="notifications"></div>
                 </div>
             `);
@@ -1107,14 +1174,14 @@ describe('hx-ws WebSocket extension', function() {
             ws.simulateMessage({
                 channel: 'ui',
                 format: 'html',
-                payload: '<hx-partial id="notifications"><div class="notif">Notification 1</div></hx-partial>'
+                payload: '<hx-partial id="notifications" hx-swap="afterbegin"><div class="notif">Notification 1</div></hx-partial>'
             });
             await htmx.timeout(20);
             
             ws.simulateMessage({
                 channel: 'ui',
                 format: 'html',
-                payload: '<hx-partial id="notifications"><div class="notif">Notification 2</div></hx-partial>'
+                payload: '<hx-partial id="notifications" hx-swap="afterbegin"><div class="notif">Notification 2</div></hx-partial>'
             });
             await htmx.timeout(20);
             

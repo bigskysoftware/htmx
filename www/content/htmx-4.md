@@ -59,7 +59,7 @@ major changes between htmx 2.x and htmx 4.x.
          reconnectMaxDelay: 60000,
          reconnectMaxAttempts: 10,
          reconnectJitter: 0.3,
-         pauseInBackground: false
+         closeOnHide: false
        }
    }">
    ```
