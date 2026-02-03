@@ -1508,7 +1508,7 @@ var htmx = (function() {
       oobElement.parentNode.removeChild(oobElement)
     } else {
       oobElement.parentNode.removeChild(oobElement)
-      triggerErrorEvent(getDocument().body, 'htmx:oobErrorNoTarget', { content: oobElement })
+      triggerErrorEvent(getDocument().body, 'htmx:oobErrorNoTarget', { content: oobElement, target: selector })
     }
     return oobValue
   }
@@ -3111,7 +3111,7 @@ var htmx = (function() {
       htmx.logger(elt, eventName, detail)
     }
     if (detail.error) {
-      logError(detail.error)
+      logError(detail.error + (detail.target ? ', ' + detail.target : ''))
       triggerEvent(elt, 'htmx:error', { errorInfo: detail })
     }
     let eventResult = elt.dispatchEvent(event)

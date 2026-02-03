@@ -1,12 +1,13 @@
 # Changelog
 
-## [2.0.7] - 2025-10-24
+## [2.0.8] - 2025-10-24
 
 * [Updated](https://github.com/bigskysoftware/htmx/commit/b9336a96fbdcf28550699971dc2218a90c7a4e01) `parseHTML` to use to use the (unfortunately named) [`Document.parseHTMLUnsafe()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/parseHTMLUnsafe_static) 
   method for better Web Components support
 * [Added](https://github.com/bigskysoftware/htmx/commit/83a1449a89b1fcd1c1655039ede02d74d61e4800) `pushURL` option to the `htmx.ajax()` API
 * [Fixed](https://github.com/bigskysoftware/htmx/commit/cd045c3e0eb31776a80e3a4b4c74e37d0631c1f1) `hx-sync` and `htmx:abort` within the Shadow Dom [Issue 3419](https://github.com/bigskysoftware/htmx/issues/3419)
 * [Fixed](https://github.com/bigskysoftware/htmx/commit/04d6c7249b7fd7b8518ddca92e7a70fdcc651b34) a long-standing bug in history support with respect to relative paths [Issue 3449](https://github.com/bigskysoftware/htmx/issues/3449)
+* Once again, this is a release mainly done by @MichaelWest22's heroic work, thank you!
 
 ## [2.0.7] - 2025-09-08
 
