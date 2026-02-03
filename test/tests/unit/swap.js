@@ -290,7 +290,6 @@ describe('swap() unit tests', function() {
     })
 
     it('triggers view transition events with transition:true', async function () {
-        htmx.config.logAll = true;
         if (!document.startViewTransition) {
             this.skip();
             return;
@@ -426,6 +425,77 @@ describe('swap() unit tests', function() {
         })
         find('#target').textContent.should.equal("Hello");
         find('#target_oob').innerText.should.equal("OOB swap!");
+    })
+
+    it('restores focus after innerHTML swap when element has same id', async function () {
+        createProcessedHTML("<input id='focused-input' value='test'>")
+        let input = find('#focused-input')
+        input.focus()
+        input.setSelectionRange(2, 2)
+        
+        await htmx.swap({"target":"#test-playground", "text":"<input id='focused-input' value='test'>"})
+        
+        document.activeElement.id.should.equal('focused-input')
+        document.activeElement.selectionStart.should.equal(2)
+        document.activeElement.selectionEnd.should.equal(2)
+    })
+
+    it('restores focus after outerHTML swap when element has same id', async function () {
+        createProcessedHTML("<div id='container'><input id='focused-input' value='test'></div>")
+        let input = find('#focused-input')
+        input.focus()
+        input.setSelectionRange(1, 3)
+        
+        await htmx.swap({"target":"#container", "text":"<div id='container'><input id='focused-input' value='test'></div>", "swap":"outerHTML"})
+        
+        document.activeElement.id.should.equal('focused-input')
+        document.activeElement.selectionStart.should.equal(1)
+        document.activeElement.selectionEnd.should.equal(3)
+    })
+
+    it('does not restore focus when focused element has no id', async function () {
+        createProcessedHTML("<input value='test'>")
+        let input = playground().querySelector('input')
+        input.focus()
+        
+        await htmx.swap({"target":"#test-playground", "text":"<input value='test'>"})
+        
+        document.activeElement.should.not.equal(input)
+    })
+
+    it('does not restore focus when new content lacks matching id', async function () {
+        createProcessedHTML("<input id='focused-input' value='test'>")
+        let input = find('#focused-input')
+        input.focus()
+        
+        await htmx.swap({"target":"#test-playground", "text":"<input id='different-input' value='test'>"})
+        
+        document.activeElement.id.should.not.equal('focused-input')
+    })
+
+    it('does not restore focus for morph swaps', async function () {
+        createProcessedHTML("<input id='focused-input' value='test'>")
+        let input = find('#focused-input')
+        input.focus()
+        input.setSelectionRange(2, 2)
+        
+        await htmx.swap({"target":"#test-playground", "text":"<input id='focused-input' value='test'>", "swap":"innerMorph"})
+        
+        // Morph should maintain focus naturally, not through restoration
+        document.activeElement.should.equal(input)
+    })
+
+    it('restores focus to textarea after innerHTML swap', async function () {
+        createProcessedHTML("<textarea id='focused-textarea'>hello world</textarea>")
+        let textarea = find('#focused-textarea')
+        textarea.focus()
+        textarea.setSelectionRange(6, 11)
+        
+        await htmx.swap({"target":"#test-playground", "text":"<textarea id='focused-textarea'>hello world</textarea>"})
+        
+        document.activeElement.id.should.equal('focused-textarea')
+        document.activeElement.selectionStart.should.equal(6)
+        document.activeElement.selectionEnd.should.equal(11)
     })
 
 })
