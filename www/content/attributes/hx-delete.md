@@ -24,3 +24,5 @@ This example will cause the `button` to issue a `DELETE` to `/account` and swap 
 * You can control what event triggers the request with the [hx-trigger](@/attributes/hx-trigger.md) attribute
 * You can control the data submitted with the request in various ways, documented here: [Parameters](@/docs.md#parameters)
 * To remove the element following a successful `DELETE`, return a `200` status code with an empty body; if the server responds with a `204`, no swap takes place, documented here: [Requests & Responses](@/docs.md#requests)
+* By default, `hx-delete` will _not_ include the inputs in an enclosing form.  If you wish to do so you will need to include
+  them explicitly with `hx-include="closest form"`

@@ -22,3 +22,5 @@ This example will cause the `button` to issue a `GET` to `/example` and swap the
 * You can control what event triggers the request with the [hx-trigger](@/attributes/hx-trigger.md) attribute
 * You can control the data submitted with the request in various ways, documented here: [Parameters](@/docs.md#parameters)
 * An empty `hx-get:""` will make a get request to the current url and will swap the current HTML page 
+* By default, `hx-get` will _not_ include the inputs in an enclosing form.  If you wish to do so you will need to include
+  them explicitly with `hx-include="closest form"`
