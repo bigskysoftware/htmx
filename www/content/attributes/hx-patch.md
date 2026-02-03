@@ -23,3 +23,4 @@ This example will cause the `button` to issue a `PATCH` to `/account` and swap t
 * You can control the swap strategy by using the [hx-swap](@/attributes/hx-swap.md) attribute
 * You can control what event triggers the request with the [hx-trigger](@/attributes/hx-trigger.md) attribute
 * You can control the data submitted with the request in various ways, documented here: [Parameters](@/docs.md#parameters)
+* By default, `hx-patch` _will_ include the inputs of an enclosing form in the request body
