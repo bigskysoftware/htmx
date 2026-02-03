@@ -408,8 +408,16 @@ var htmx = (() => {
 
             if (this.__shouldCancel(evt)) evt.preventDefault()
 
+            // determine if request uses query params
+            var usesQueryParams = /GET|DELETE/.test(ctx.request.method);
+
+            // Only include *enclosing* form info for request types that do not use
+            // query parameters (can still be included explicitly with hx-include)
+            let form = usesQueryParams
+                ? (elt.matches('form') ? elt : null)
+                : (elt.form || elt.closest("form"))
+
             // Build request body
-            let form = elt.form || elt.closest("form")
             let body = this.__collectFormData(elt, form, evt.submitter, ctx.request.validate)
             if (!body) return  // Validation failed
             let valsResult = this.__handleHxVals(elt, body)
@@ -446,7 +454,7 @@ var htmx = (() => {
                 let data = Object.fromEntries(ctx.request.body);
                 await this.__executeJavaScriptAsync(ctx.sourceElement, data, javascriptContent, false);
                 return
-            } else if (/GET|DELETE/.test(ctx.request.method)) {
+            } else if (usesQueryParams) {
                 let url = new URL(ctx.request.action, document.baseURI);
 
                 for (let key of ctx.request.body.keys()) {
