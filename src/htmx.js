@@ -99,6 +99,7 @@ var htmx = (() => {
                 history: true,
                 mode: 'same-origin',
                 defaultSwap: "innerHTML",
+                defaultFocusScroll: false,
                 indicatorClass: "htmx-indicator",
                 requestClass: "htmx-request",
                 includeIndicatorCSS: true,
@@ -1266,9 +1267,22 @@ var htmx = (() => {
             return tasks;
         }
 
+        __setFocus(elt, options, start, end) {
+            try {
+                if (start != null && elt.setSelectionRange) {
+                    elt.setSelectionRange(start, end);
+                }
+                elt.focus(options);
+            } catch (e) {
+                // setSelectionRange or Web component focus may fail so ignore
+            }
+        }
+
         __handleAutoFocus(elt) {
             let autofocus = this.find(elt, "[autofocus]");
-            autofocus?.focus?.()
+            if (autofocus) {
+                this.__setFocus(autofocus);
+            }
         }
 
         __handleScroll(swapSpec, target) {
@@ -1386,6 +1400,7 @@ var htmx = (() => {
 
         async __insertContent(task, cssTransition = true) {
             let {target, swapSpec, fragment} = task;
+            let swapStyle = swapSpec.style;
             if (typeof target === 'string') {
                 target = document.querySelector(target);
             }
@@ -1393,7 +1408,7 @@ var htmx = (() => {
             if (typeof swapSpec === 'string') {
                 swapSpec = this.__parseSwapSpec(swapSpec);
             }
-            if (swapSpec.style === 'none') return;
+            if (swapStyle === 'none') return;
             if (swapSpec.strip && fragment.firstElementChild) {
                 fragment = document.createDocumentFragment();
                 fragment.append(...(task.fragment.firstElementChild.content || task.fragment.firstElementChild).childNodes);
@@ -1404,7 +1419,7 @@ var htmx = (() => {
                 await this.timeout(task.swapSpec?.swap)
             }
 
-            if (swapSpec.style === 'delete') {
+            if (swapStyle === 'delete') {
                 if (target.parentNode) {
                     this.__cleanup(target);
                     target.parentNode.removeChild(target);
@@ -1412,45 +1427,57 @@ var htmx = (() => {
                 return;
             }
 
-            if (swapSpec.style === 'textContent') {
+            if (swapStyle === 'textContent') {
                 target.textContent = fragment.textContent;
                 target.classList.remove("htmx-swapping")
                 return;
             }
 
-            let pantry = this.__handlePreservedElements(fragment);
-            let parentNode = target.parentNode;
-            let newContent = [...fragment.childNodes]
+            // innerHTML/outerHTML swaps backup focus and handle CSS transitions
+            let focusInfo;
             let settleTasks = []
+            let parentNode = target.parentNode;
+            if (swapStyle === 'innerHTML' || (swapStyle === 'outerHTML' && parentNode)) {
+                let activeElt = document.activeElement;
+                if (activeElt?.id) {
+                    focusInfo = {
+                        elt: activeElt,
+                        start: activeElt.selectionStart,
+                        end: activeElt.selectionEnd
+                    };
+                }
+                settleTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
+            }
+
+            let pantry = this.__handlePreservedElements(fragment);
+            let newContent = [...fragment.childNodes]
             try {
-                if (swapSpec.style === 'innerHTML') {
-                    settleTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
+                if (swapStyle === 'innerHTML') {
                     for (const child of target.children) {
                         this.__cleanup(child)
                     }
                     target.replaceChildren(...fragment.childNodes);
-                } else if (swapSpec.style === 'outerHTML') {
+                } else if (swapStyle === 'outerHTML') {
                     if (parentNode) {
-                        settleTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
                         this.__insertNodes(parentNode, target, fragment);
                         this.__cleanup(target)
                         parentNode.removeChild(target);
                     }
-                } else if (swapSpec.style === 'innerMorph') {
+                } else if (swapStyle === 'innerMorph') {
                     this.__morph(target, fragment, true);
                     newContent = [...target.childNodes];
-                } else if (swapSpec.style === 'outerMorph') {
+                } else if (swapStyle === 'outerMorph') {
                     this.__morph(target, fragment, false);
                     newContent.push(target);
-                } else if (swapSpec.style === 'beforebegin') {
+                } else if (swapStyle === 'beforebegin') {
                     if (parentNode) {
                         this.__insertNodes(parentNode, target, fragment);
                     }
-                } else if (swapSpec.style === 'afterbegin') {
+                } else if (swapStyle === 'afterbegin') {
                     this.__insertNodes(target, target.firstChild, fragment);
-                } else if (swapSpec.style === 'beforeend') {
+                } else if (swapStyle === 'beforeend') {
                     this.__insertNodes(target, null, fragment);
-                } else if (swapSpec.style === 'afterend') {
+                } else if (swapStyle === 'afterend') {
                     if (parentNode) {
                         this.__insertNodes(parentNode, target.nextSibling, fragment);
                     }
@@ -1458,7 +1485,7 @@ var htmx = (() => {
                     let methods = this.__extMethods.get('handle_swap')
                     let handled = false;
                     for (const method of methods) {
-                        let result = method(swapSpec.style, target, fragment, swapSpec);
+                        let result = method(swapStyle, target, fragment, swapSpec);
                         if (result) {
                             handled = true;
                             if (Array.isArray(result)) {
@@ -1468,13 +1495,20 @@ var htmx = (() => {
                         }
                     }
                     if (!handled) {
-                        throw new Error(`Unknown swap style: ${swapSpec.style}`);
+                        throw new Error(`Unknown swap style: ${swapStyle}`);
                     }
                 }
             } finally {
                 target.classList.remove("htmx-swapping")
             }
             this.__restorePreservedElements(pantry);
+            if (focusInfo && !focusInfo.elt.isConnected) {
+                let newElt = document.getElementById(focusInfo.elt.id);
+                if (newElt) {
+                    let focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !this.config.defaultFocusScroll };
+                    this.__setFocus(newElt, focusOptions, focusInfo.start, focusInfo.end);
+                }
+            }
 
             this.__trigger(target, "htmx:before:settle", {task, newContent, settleTasks})
 
