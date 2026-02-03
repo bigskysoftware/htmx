@@ -89,6 +89,11 @@ Any attribute can use the `:inherited` modifier: `hx-boost:inherited`, `hx-heade
 
 As mentioned above, you can revert this behavior by setting `htmx.config.implicitInheritance` to `true`
 
+### GET/DELETE Form Data
+
+In htmx 4 `hx-delete`, like `hx-get`, no longer includes the enclosing form's inputs by
+default. Use `hx-include="closest form"` if you need this behavior.
+
 ---
 
 ## Event Name Changes
