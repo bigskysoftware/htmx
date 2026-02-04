@@ -1982,7 +1982,7 @@ var htmx = (() => {
             let pantry = document.createElement("div");
             pantry.hidden = true;
             document.body.after( pantry);
-            let ctx = {target: oldNode, idMap, persistentIds, pantry};
+            let ctx = {target: oldNode, idMap, persistentIds, pantry, futureMatches: new WeakSet()};
 
             if (innerHTML) {
                 this.__morphChildren(ctx, oldNode, fragment);
@@ -2009,7 +2009,12 @@ var htmx = (() => {
                             while (cursor && cursor !== bestMatch) {
                                 let tempNode = cursor;
                                 cursor = cursor.nextSibling;
-                                this.__removeNode(ctx, tempNode);
+                                // remove nodes unless they match upcoming content in which case move them to end for later use
+                                if (tempNode instanceof Element && (ctx.idMap.has(tempNode) || this.__matchesUpcomingSibling(ctx, tempNode, newChild))) {
+                                    this.__moveBefore(oldParent, tempNode, endPoint);
+                                } else {
+                                    this.__removeNode(ctx, tempNode);
+                                }
                             }
                         }
                         this.__morphNode(bestMatch, newChild, ctx);
@@ -2056,10 +2061,23 @@ var htmx = (() => {
             }
         }
 
+        __matchesUpcomingSibling(ctx, oldElt, startNode) {
+            if (ctx.futureMatches.has(oldElt)) return true;
+            for (let sibling = startNode.nextSibling, i = 0; sibling && i < this.config.morphScanLimit; sibling = sibling.nextSibling, i++) {
+                if (sibling instanceof Element && oldElt.isEqualNode(sibling)) {
+                    ctx.futureMatches.add(oldElt);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         __findBestMatch(ctx, node, startPoint, endPoint) {
-            let softMatch = null, nextSibling = node.nextSibling, siblingMatchCount = 0, displaceMatchCount = 0, scanLimit = this.config.morphScanLimit;
-            // Get ID count for this node to prioritize ID-based matches
+            if (!(node instanceof Element)) return null;
+            let softMatch = null, displaceMatchCount = 0, scanLimit = this.config.morphScanLimit;
             let newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
+            // If node has a non-persistent ID, insert instead of soft matching
+            if (node.id && !newSet) return null;
             let cursor = startPoint;
             while (cursor && cursor != endPoint) {
                 let oldSet = ctx.idMap.get(cursor);
@@ -2076,23 +2094,19 @@ var htmx = (() => {
                 // Stop if too many ID elements would be displaced
                 displaceMatchCount += oldSet?.size || 0;
                 if (displaceMatchCount > nodeMatchCount) break;
-                // Look ahead: if next siblings match exactly, abort to let them match instead
-                if (nextSibling && scanLimit > 0 && cursor.isEqualNode(nextSibling)) {
-                    siblingMatchCount++;
-                    nextSibling = nextSibling.nextSibling;
-                    if (siblingMatchCount >= 2) return null;
-                }
                 // Don't move elements containing focus
                 if (cursor.contains(document.activeElement)) break;
                 // Stop scanning if limit reached and no IDs to match
                 if (--scanLimit < 1 && nodeMatchCount === 0) break;
                 cursor = cursor.nextSibling;
             }
-            return softMatch || null;
+            // Only return fallback softMatch if it does not match upcoming content
+            if (softMatch && this.__matchesUpcomingSibling(ctx, softMatch, node)) return null;
+            return softMatch;
         }
 
         __isSoftMatch(oldNode, newNode) {
-            return oldNode.nodeType === newNode.nodeType && oldNode.tagName === newNode.tagName &&
+            return oldNode instanceof Element && oldNode.tagName === newNode.tagName &&
                 (!oldNode.id || oldNode.id === newNode.id);
         }
 
@@ -2118,20 +2132,11 @@ var htmx = (() => {
         }
 
         __morphNode(oldNode, newNode, ctx) {
-            let type = newNode.nodeType;
-
-            if (type === 1) {
-                if (this.config.morphSkip && oldNode.matches?.(this.config.morphSkip)) return;
-                this.__copyAttributes(oldNode, newNode);
-                if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
-                    oldNode.value = newNode.value;
-                }
+            if (this.config.morphSkip && oldNode.matches?.(this.config.morphSkip)) return;
+            this.__copyAttributes(oldNode, newNode);
+            if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
+                oldNode.value = newNode.value;
             }
-
-            if ((type === 8 || type === 3) && oldNode.nodeValue !== newNode.nodeValue) {
-                oldNode.nodeValue = newNode.nodeValue;
-            }
-            
             let skipChildren = this.config.morphSkipChildren && oldNode.matches?.(this.config.morphSkipChildren);
             if (!skipChildren && !oldNode.isEqualNode(newNode)) this.__morphChildren(ctx, oldNode, newNode);
         }
