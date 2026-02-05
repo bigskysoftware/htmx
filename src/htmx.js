@@ -115,7 +115,9 @@ var htmx = (() => {
                 morphIgnore: ["data-htmx-powered"],
                 morphScanLimit: 10,
                 noSwap: [204, 304],
-                implicitInheritance: false
+                implicitInheritance: false,
+                attributesToSettle: ['class', 'style', 'length', 'width'],
+                defaultSettleDelay: 1
             }
             let metaConfig = document.querySelector('meta[name="htmx-config"]');
             if (metaConfig) {
@@ -1421,17 +1423,17 @@ var htmx = (() => {
             let pantry = this.__handlePreservedElements(fragment);
             let parentNode = target.parentNode;
             let newContent = [...fragment.childNodes]
-            let settleTasks = []
+            let cssTransitionTasks = []
             try {
                 if (swapSpec.style === 'innerHTML') {
-                    settleTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
+                    cssTransitionTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
                     for (const child of target.children) {
                         this.__cleanup(child)
                     }
                     target.replaceChildren(...fragment.childNodes);
                 } else if (swapSpec.style === 'outerHTML') {
                     if (parentNode) {
-                        settleTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
+                        cssTransitionTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
                         this.__insertNodes(parentNode, target, fragment);
                         this.__cleanup(target)
                         parentNode.removeChild(target);
@@ -1476,23 +1478,26 @@ var htmx = (() => {
             }
             this.__restorePreservedElements(pantry);
 
-            this.__trigger(target, "htmx:before:settle", {task, newContent, settleTasks})
+            this.__trigger(target, "htmx:before:settle", {task, newContent, settleTasks: cssTransitionTasks})
 
             for (const elt of newContent) {
                 elt.classList?.add?.("htmx-added")
             }
 
-            if (cssTransition) {
+            if (cssTransition && cssTransitionTasks.length > 0) {
                 target.classList.add("htmx-settling")
-                await this.timeout(swapSpec.settle ?? 1);
+                let settleDelay = swapSpec.settle ?? this.config.defaultSettleDelay;
+                if (settleDelay > 0) {
+                    await this.timeout(settleDelay);
+                }
                 // invoke settle tasks
-                for (let settleTask of settleTasks) {
-                    settleTask()
+                for (let cssTransitionTask of cssTransitionTasks) {
+                    cssTransitionTask()
                 }
                 target.classList.remove("htmx-settling")
             }
 
-            this.__trigger(target, "htmx:after:settle", {task, newContent, settleTasks})
+            this.__trigger(target, "htmx:after:settle", {task, newContent, settleTasks: cssTransitionTasks})
 
             for (const elt of newContent) {
                 elt.classList?.remove?.("htmx-added")
@@ -2252,18 +2257,35 @@ var htmx = (() => {
             let idElements = root.querySelectorAll("[id]");
             let existingElementsById = Object.fromEntries([...idElements].map(e => [e.id, e]));
             let newElementsWithIds = fragment.querySelectorAll("[id]");
-            let restoreTasks = []
+            let cssTransitionTasks = []
             for (let elt of newElementsWithIds) {
                 let existing = existingElementsById[elt.id];
                 if (existing?.tagName === elt.tagName) {
-                    let clone = elt.cloneNode(false); // shallow clone node
-                    this.__copyAttributes(elt, existing)
-                    restoreTasks.push(()=>{
-                        this.__copyAttributes(elt, clone)
-                    })
+                    for (let attr of this.config.attributesToSettle) {
+                        if (attr === 'class') {
+                            // classes are handled specially to preserve classes added between
+                            // the initial swap and the settle
+                            if (elt.className !== existing.className) {
+                                const added = [...elt.classList].filter(c => !existing.classList.contains(c))
+                                const removed = [...existing.classList].filter(c => !elt.classList.contains(c))
+                                elt.className = existing.className; // copy existing classes over
+                                cssTransitionTasks.push(()=>{
+                                    elt.classList.add(...added)
+                                    elt.classList.remove(...removed)
+                                })
+                            }
+                        } else {
+                            let newValue = elt.getAttribute(attr);
+                            let existingValue = existing.getAttribute(attr);
+                            if (newValue !== existingValue) {
+                                elt.setAttribute(attr, existingValue);
+                                cssTransitionTasks.push(()=> elt.setAttribute(attr, newValue))
+                            }
+                        }
+                    }
                 }
             }
-            return restoreTasks;
+            return cssTransitionTasks;
         }
 
         __normalizeElement(cssOrElement) {
