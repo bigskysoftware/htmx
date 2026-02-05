@@ -116,7 +116,8 @@ var htmx = (() => {
                 morphIgnore: ["data-htmx-powered"],
                 morphScanLimit: 10,
                 noSwap: [204, 304],
-                implicitInheritance: false
+                implicitInheritance: false,
+                defaultSettleDelay: 1
             }
             let metaConfig = document.querySelector('meta[name="htmx-config"]');
             if (metaConfig) {
@@ -1433,7 +1434,8 @@ var htmx = (() => {
                 target.classList.remove("htmx-swapping")
                 return;
             }
-
+            
+            let settleDelay = swapSpec.settle ?? this.config.defaultSettleDelay;
             // innerHTML/outerHTML swaps backup focus and handle CSS transitions
             let focusInfo;
             let settleTasks = []
@@ -1447,7 +1449,7 @@ var htmx = (() => {
                         end: activeElt.selectionEnd
                     };
                 }
-                settleTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
+                settleTasks = cssTransition && settleDelay ? this.__startCSSTransitions(fragment, target) : []
             }
 
             let pantry = this.__handlePreservedElements(fragment);
@@ -1519,7 +1521,7 @@ var htmx = (() => {
 
             if (cssTransition) {
                 target.classList.add("htmx-settling")
-                await this.timeout(swapSpec.settle ?? 1);
+                await this.timeout(settleDelay);
                 // invoke settle tasks
                 for (let settleTask of settleTasks) {
                     settleTask()
@@ -2298,6 +2300,13 @@ var htmx = (() => {
                 if (existing?.tagName === elt.tagName) {
                     let clone = elt.cloneNode(false); // shallow clone node
                     this.__copyAttributes(elt, existing)
+                    // Remove x-* attributes so Alpine will process them fresh after swap
+                    for (let i = elt.attributes.length - 1; i >= 0; i--) {
+                        let attr = elt.attributes[i];
+                        if (attr.name.startsWith('x-') || attr.name.startsWith(':') || attr.name.startsWith('@')) {
+                            elt.removeAttribute(attr.name);
+                        }
+                    }
                     restoreTasks.push(()=>{
                         this.__copyAttributes(elt, clone)
                     })
