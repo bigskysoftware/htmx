@@ -2301,11 +2301,8 @@ var htmx = (() => {
                     let clone = elt.cloneNode(false); // shallow clone node
                     this.__copyAttributes(elt, existing)
                     // Remove x-* attributes so Alpine will process them fresh after swap
-                    for (let i = elt.attributes.length - 1; i >= 0; i--) {
-                        let attr = elt.attributes[i];
-                        if (attr.name.startsWith('x-') || attr.name.startsWith(':') || attr.name.startsWith('@')) {
-                            elt.removeAttribute(attr.name);
-                        }
+                    for (let attr of elt.attributes) {
+                        if (/^(x-|[@:])/.test(attr.name)) elt.removeAttribute(attr.name);
                     }
                     restoreTasks.push(()=>{
                         this.__copyAttributes(elt, clone)
