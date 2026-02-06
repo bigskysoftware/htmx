@@ -146,44 +146,55 @@ and include it where necessary with a `<script>` tag:
 <script src="/path/to/htmx.min.js"></script>
 ```
 
-### npm
+### Via npm
 
+#### Package Installation
 For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
 npm install htmx.org@2.0.8
 ```
 
-After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
-For example, you might bundle htmx with some extensions and project-specific code.
+and, for extensions:
+```sh
+npm install htmx-ext-debug@2.0.1
+```
 
-### Webpack
+#### Importing
 
-If you are using webpack to manage your javascript:
+After htmx and any extensions are installed, all you need to do is import `htmx` in your entry point file
+(like `index.js`).
 
-* Install `htmx` via your favourite package manager (like npm or yarn)
-* Add the import to your `index.js`
 
+The simplest option is:
 ```js
 import 'htmx.org';
 ```
 
-If you want to use the global `htmx` variable (recommended), you need to inject it to the window scope:
-
-* Create a custom JS file
-* Import this file to your `index.js` (below the import from step 2)
+If you need access to methods like `htmx.onLoad`, use the following import statement instead:
 
 ```js
-import 'path/to/my_custom.js';
+import htmx from "htmx.org";
 ```
 
-* Then add this code to the file:
+#### Examples
 
 ```js
-window.htmx = require('htmx.org');
+// Option 1
+// After htmx.org is imported you can import extensions.
+import 'htmx.org';
+import 'htmx-ext-debug';
+
+// Option 2
+// After htmx is imported from htmx.org you can import extensions and use the `htmx` object.
+import htmx from "htmx.org";
+import 'htmx-ext-debug';
+htmx.onLoad((content) => {
+    console.log('Hello')
+});
 ```
 
-* Finally, rebuild your bundle
+Finally, rebuild your bundle.
 
 ## AJAX
 
