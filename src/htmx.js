@@ -2300,13 +2300,12 @@ var htmx = (() => {
                 if (existing?.tagName === elt.tagName) {
                     let clone = elt.cloneNode(false); // shallow clone node
                     this.__copyAttributes(elt, existing)
-                    // Remove x-* attributes so Alpine will process them fresh after swap
-                    for (let attr of elt.attributes) {
-                        if (/^(x-|[@:])/.test(attr.name)) elt.removeAttribute(attr.name);
+                    // Allow extensions to handle transition task creation
+                    if (this.__triggerExtensions(elt, "htmx:transition:task", {existing, clone, restoreTasks}) !== false) {
+                        restoreTasks.push(()=>{
+                            this.__copyAttributes(elt, clone)
+                        })
                     }
-                    restoreTasks.push(()=>{
-                        this.__copyAttributes(elt, clone)
-                    })
                 }
             }
             return restoreTasks;
