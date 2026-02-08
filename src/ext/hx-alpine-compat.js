@@ -2,18 +2,29 @@
 // hx-alpine-compat.js
 //
 // Alpine.js compatibility extension for htmx
-// Removes Alpine directives during CSS transitions
-// so Alpine can process elements fresh after swap
+// Initializes Alpine on fragments before swap
+// so Alpine state is applied before CSS transitions
 //==========================================================
 (() => {
     htmx.registerExtension('alpine-compat', {
-        htmx_transition_task: (elt, detail) => {
-            // Remove Alpine directives so Alpine processes them fresh after swap
-            [...elt.attributes].forEach(attr => {
-                if (/^(x-|[@:])/.test(attr.name)) {
-                    elt.removeAttribute(attr.name);
+        htmx_before_swap: (elt, detail) => {
+            if (!window.Alpine?.closestDataStack || !window.Alpine?.initTree) return;
+            
+            let {tasks} = detail;
+            for (let task of tasks) {
+                if (!task.fragment || !task.target) continue;
+                
+                let target = typeof task.target === 'string' 
+                    ? document.querySelector(task.target) 
+                    : task.target;
+                if (!target) continue;
+                
+                let dataStack = window.Alpine.closestDataStack(target);
+                for (let child of task.fragment.children) {
+                    child._x_dataStack = dataStack;
+                    window.Alpine.initTree(child);
                 }
-            });
+            }
         }
     });
 })();
