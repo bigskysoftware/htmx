@@ -384,8 +384,8 @@ describe('swap() unit tests', function() {
             "target":"#target", 
             "text":"<div>Hello me!</div><hx-partial hx-target='#target_oob' hx-swap='innerHTML'><div>OOB swap!</div></hx-partial>"
         })
-        find('#target').innerText.should.equal("Hello me!");
-        find('#target_oob').innerText.should.equal("OOB swap!");
+        find('#target').textContent.should.equal("Hello me!");
+        find('#target_oob').textContent.should.equal("OOB swap!");
     })
 
     it('swaps only partial target when response contains only partial', async function () {
@@ -394,8 +394,8 @@ describe('swap() unit tests', function() {
             "target":"#target", 
             "text":"<hx-partial hx-target='#target_oob' hx-swap='innerHTML'><div>OOB Updated</div></hx-partial>"
         })
-        find('#target').innerText.should.equal("Original");
-        find('#target_oob').innerText.should.equal("OOB Updated");
+        find('#target').textContent.should.equal("Original");
+        find('#target_oob').textContent.should.equal("OOB Updated");
     })
 
     it('does not swap main target when only whitespace and partial present', async function () {
@@ -404,8 +404,8 @@ describe('swap() unit tests', function() {
             "target":"#target", 
             "text":"\n  <hx-partial hx-target='#target_oob' hx-swap='innerHTML'><div>OOB swap!</div></hx-partial>  \n"
         })
-        find('#target').innerText.should.equal("Original");
-        find('#target_oob').innerText.should.equal("OOB swap!");
+        find('#target').textContent.should.equal("Original");
+        find('#target_oob').textContent.should.equal("OOB swap!");
     })
 
     it('swaps both targets when empty element and partial present', async function () {
@@ -415,7 +415,7 @@ describe('swap() unit tests', function() {
             "text":"<p></p><hx-partial hx-target='#target_oob' hx-swap='innerHTML'><div>OOB swap!</div></hx-partial>"
         })
         find('#target').querySelector('p').should.not.be.null;
-        find('#target_oob').innerText.should.equal("OOB swap!");
+        find('#target_oob').textContent.should.equal("OOB swap!");
     })
   
     it('swaps both targets when plain text and partial present', async function () {
