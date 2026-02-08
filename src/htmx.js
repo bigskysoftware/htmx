@@ -1250,6 +1250,7 @@ var htmx = (() => {
                 
                 if (type === 'partial') {
                     let target = templateElt.getAttribute(this.__prefix('hx-target')) || (templateElt.id ? '#' + CSS.escape(templateElt.id) : null);
+                    this.__processScripts(templateElt.content);
                     tasks.push({
                         type: 'partial',
                         fragment: templateElt.content.cloneNode(true),
