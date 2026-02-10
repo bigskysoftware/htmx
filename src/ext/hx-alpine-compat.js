@@ -8,6 +8,7 @@
 (() => {
     let patched = false;
     let api;
+    let deferCount = 0;
     
     function patchAlpine() {
         if (patched || !window.Alpine) return;
@@ -35,10 +36,14 @@
         },
         
         htmx_before_swap: (elt, detail) => {
-            if (!window.Alpine?.closestDataStack || !window.Alpine?.cloneNode) {
+            if (!window.Alpine?.closestDataStack || !window.Alpine?.cloneNode || !window.Alpine?.deferMutations) {
                 return;
             }
-            window.Alpine?.deferMutations?.();
+            if (deferCount === 0) {
+                window.Alpine.deferMutations();
+            }
+            deferCount++;
+            
             let {tasks} = detail;
             for (let task of tasks) {
                 if (!task.fragment || !task.target) continue;
@@ -76,8 +81,13 @@
             }
         },
         
-        'htmx_after_swap': (elt, detail) => {
-            window.Alpine?.flushAndStopDeferringMutations?.();
+        'htmx_finally_request': (elt, detail) => {
+            if (deferCount > 0) {
+                deferCount--;
+                if (deferCount === 0 && window.Alpine?.flushAndStopDeferringMutations) {
+                    window.Alpine.flushAndStopDeferringMutations();
+                }
+            }
         }
     });
 })();
