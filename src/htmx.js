@@ -1434,11 +1434,11 @@ var htmx = (() => {
                 target.classList.remove("htmx-swapping")
                 return;
             }
-            
-            let settleDelay = swapSpec.settle ?? this.config.defaultSettleDelay;
+
             // innerHTML/outerHTML swaps backup focus and handle CSS transitions
             let focusInfo;
             let settleTasks = []
+            let settleDelay = swapSpec.settle ?? this.config.defaultSettleDelay;
             let parentNode = target.parentNode;
             if (swapStyle === 'innerHTML' || (swapStyle === 'outerHTML' && parentNode)) {
                 let activeElt = document.activeElement;
@@ -2307,7 +2307,6 @@ var htmx = (() => {
                 if (existing?.tagName === elt.tagName) {
                     let clone = elt.cloneNode(false); // shallow clone node
                     this.__copyAttributes(elt, existing)
-                    // Allow extensions to handle transition task creation
                     restoreTasks.push(()=>{
                         this.__copyAttributes(elt, clone)
                     })
