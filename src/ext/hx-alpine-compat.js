@@ -63,9 +63,9 @@
         htmx_finally_request: (elt, detail) => {
             if (deferCount > 0) {
                 deferCount--;
-                if (deferCount === 0 && window.Alpine?.flushAndStopDeferringMutations) {
-                    window.Alpine.flushAndStopDeferringMutations();
-                }
+            }
+            if (deferCount === 0 && window.Alpine?.flushAndStopDeferringMutations) {
+                window.Alpine.flushAndStopDeferringMutations();
             }
         }
     });
