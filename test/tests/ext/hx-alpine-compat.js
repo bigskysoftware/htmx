@@ -10,9 +10,10 @@ describe('hx-alpine-compat extension', function() {
         if (!window.Alpine) {
             let alpine = document.createElement('script');
             alpine.defer = true;
-            alpine.src = 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.js';
+            alpine.src = '../test/lib/alpine.js';
             await new Promise(resolve => {
-                alpine.onload = resolve;
+                // Wait for Alpine to fully initialize, not just script load
+                document.addEventListener('alpine:init', resolve, { once: true });
                 document.head.appendChild(alpine);
             });
         }

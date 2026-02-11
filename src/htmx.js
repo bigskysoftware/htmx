@@ -2179,8 +2179,10 @@ var htmx = (() => {
                 oldNode.value = newNode.value;
             }
             let skipChildren = this.config.morphSkipChildren && oldNode.matches?.(this.config.morphSkipChildren);
-            // Template elements need children morphed even if isEqualNode returns true
-            if (!skipChildren && (newNode.tagName === 'TEMPLATE' || !oldNode.isEqualNode(newNode))) this.__morphChildren(ctx, oldNode, newNode);
+            // isEqualNode does not detect template content diff so always morph templates
+            if (!skipChildren && (!oldNode.isEqualNode(newNode) || newNode.tagName === 'TEMPLATE' || newNode.querySelector?.('template'))) {
+                this.__morphChildren(ctx, oldNode, newNode);
+            }
         }
 
         __copyAttributes(destination, source) {
