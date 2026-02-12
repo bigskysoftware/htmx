@@ -82,7 +82,8 @@ var htmx = (() => {
                 collectFormData: this.__collectFormData.bind(this),
                 handleHxVals: this.__handleHxVals.bind(this),
                 insertContent: this.__insertContent.bind(this),
-                morph: this.__morph.bind(this)
+                morph: this.__morph.bind(this),
+                isSoftMatch: this.__isSoftMatch.bind(this)
             };
             document.addEventListener("DOMContentLoaded", () => {
                 this.__initHistoryHandling();
@@ -116,7 +117,8 @@ var htmx = (() => {
                 morphIgnore: ["data-htmx-powered"],
                 morphScanLimit: 10,
                 noSwap: [204, 304],
-                implicitInheritance: false
+                implicitInheritance: false,
+                defaultSettleDelay: 1
             }
             let metaConfig = document.querySelector('meta[name="htmx-config"]');
             if (metaConfig) {
@@ -1437,6 +1439,7 @@ var htmx = (() => {
             // innerHTML/outerHTML swaps backup focus and handle CSS transitions
             let focusInfo;
             let settleTasks = []
+            let settleDelay = swapSpec.settle ?? this.config.defaultSettleDelay;
             let parentNode = target.parentNode;
             if (swapStyle === 'innerHTML' || (swapStyle === 'outerHTML' && parentNode)) {
                 let activeElt = document.activeElement;
@@ -1447,7 +1450,7 @@ var htmx = (() => {
                         end: activeElt.selectionEnd
                     };
                 }
-                settleTasks = cssTransition ? this.__startCSSTransitions(fragment, target) : []
+                settleTasks = cssTransition && settleDelay ? this.__startCSSTransitions(fragment, target) : []
             }
 
             let pantry = this.__handlePreservedElements(fragment);
@@ -1519,7 +1522,7 @@ var htmx = (() => {
 
             if (cssTransition) {
                 target.classList.add("htmx-settling")
-                await this.timeout(swapSpec.settle ?? 1);
+                await this.timeout(settleDelay);
                 // invoke settle tasks
                 for (let settleTask of settleTasks) {
                     settleTask()
@@ -2116,7 +2119,7 @@ var htmx = (() => {
             let cursor = startPoint;
             while (cursor && cursor != endPoint) {
                 let oldSet = ctx.idMap.get(cursor);
-                if (this.__isSoftMatch(cursor, node)) {
+                if (this.#internalAPI.isSoftMatch(cursor, node)) {
                     // Hard match: matching IDs found in both nodes
                     if (oldSet && newSet && [...oldSet].some(id => newSet.has(id))) return cursor;
                     if (!oldSet) {
@@ -2141,8 +2144,14 @@ var htmx = (() => {
         }
 
         __isSoftMatch(oldNode, newNode) {
-            return oldNode instanceof Element && oldNode.tagName === newNode.tagName &&
-                (!oldNode.id || oldNode.id === newNode.id);
+            if (!(oldNode instanceof Element) || oldNode.tagName !== newNode.tagName) {
+                return false;
+            }
+            // If both have Alpine reactive ID bindings, ignore ID mismatch
+            if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
+                return true;
+            }
+            return !oldNode.id || oldNode.id === newNode.id;
         }
 
         __removeNode(ctx, node) {
@@ -2168,12 +2177,19 @@ var htmx = (() => {
 
         __morphNode(oldNode, newNode, ctx) {
             if (this.config.morphSkip && oldNode.matches?.(this.config.morphSkip)) return;
+                
+            // Trigger extension hook - if returns false, skip morphing this node
+            if (!this.__triggerExtensions(oldNode, "htmx:before:morph:node", {oldNode, newNode})) return;
+                
             this.__copyAttributes(oldNode, newNode);
             if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
                 oldNode.value = newNode.value;
             }
             let skipChildren = this.config.morphSkipChildren && oldNode.matches?.(this.config.morphSkipChildren);
-            if (!skipChildren && !oldNode.isEqualNode(newNode)) this.__morphChildren(ctx, oldNode, newNode);
+            // isEqualNode does not detect template content diff so always morph templates
+            if (!skipChildren && (!oldNode.isEqualNode(newNode) || newNode.tagName === 'TEMPLATE' || newNode.querySelector?.('template'))) {
+                this.__morphChildren(ctx, oldNode, newNode);
+            }
         }
 
         __copyAttributes(destination, source) {

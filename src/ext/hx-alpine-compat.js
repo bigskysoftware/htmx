@@ -1,0 +1,83 @@
+//==========================================================
+// hx-alpine-compat.js
+//
+// Alpine.js compatibility extension for htmx
+// Initializes Alpine on fragments before swap
+// and preserves Alpine state during morph operations
+//==========================================================
+(() => {
+    let api;
+    let deferCount = 0;
+
+    htmx.registerExtension('alpine-compat', {
+        init: (internalAPI) => {
+            api = internalAPI;
+            
+            // Override isSoftMatch to handle Alpine reactive IDs
+            let originalIsSoftMatch = api.isSoftMatch;
+            api.isSoftMatch = function(oldNode, newNode) {
+                if (!(oldNode instanceof Element) || oldNode.tagName !== newNode.tagName) {
+                    return false;
+                }
+                // If both have Alpine reactive ID bindings, ignore ID mismatch
+                if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
+                    return true;
+                }
+                return !oldNode.id || oldNode.id === newNode.id;
+            };
+        },
+        
+        htmx_before_swap: (elt, detail) => {
+            if (!window.Alpine?.closestDataStack || !window.Alpine?.cloneNode || !window.Alpine?.deferMutations) {
+                return;
+            }
+            if (deferCount === 0) {
+                window.Alpine.deferMutations();
+            }
+            deferCount++;
+            
+            let {tasks} = detail;
+            for (let task of tasks) {
+                if (task.swapSpec.style === 'innerMorph' || task.swapSpec.style === 'outerMorph') {
+                    if (!task.fragment || !task.target) continue;
+                    
+                    let target = typeof task.target === 'string' 
+                        ? document.querySelector(task.target) 
+                        : task.target;
+                    if (!target) continue;
+                }
+            }
+        },
+        
+        htmx_before_morph_node: (elt, detail) => {
+            if (!window.Alpine?.closestDataStack || !window.Alpine?.cloneNode) {
+                return;
+            }
+            let {oldNode, newNode} = detail;
+            
+            let oldDataStack = window.Alpine.closestDataStack(oldNode);
+            newNode._x_dataStack = oldDataStack;
+            
+            // skip cloneNode for template children that will have errors as they can not have reactive content 
+            if (!oldNode.isConnected) return;
+            
+            window.Alpine.cloneNode(oldNode, newNode);
+            
+            // If both have _x_teleport, morph the teleport target
+            if (oldNode._x_teleport && newNode._x_teleport) {
+                let fragment = document.createDocumentFragment();
+                fragment.append(newNode._x_teleport);
+                api.morph(oldNode._x_teleport, fragment, false);
+            }
+        },
+
+        htmx_finally_request: (elt, detail) => {
+            if (deferCount > 0) {
+                deferCount--;
+            }
+            if (deferCount === 0 && window.Alpine?.flushAndStopDeferringMutations) {
+                window.Alpine.flushAndStopDeferringMutations();
+            }
+        }
+    });
+})();
