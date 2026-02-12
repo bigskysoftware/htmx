@@ -145,7 +145,8 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         }
     });
     
-    it('should use innerHTML swap when restoring history even if default swap is none', async function() {
+    // this test replaces body innerHTML, so we skip it to avoid breaking other tests, but it can be run manually to verify the behavior
+    it.skip('should use innerHTML swap when restoring history even if default swap is none', async function() {
         let originalSwap = htmx.config.defaultSwap;
         htmx.config.defaultSwap = 'none';
         
