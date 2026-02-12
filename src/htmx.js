@@ -82,7 +82,8 @@ var htmx = (() => {
                 collectFormData: this.__collectFormData.bind(this),
                 handleHxVals: this.__handleHxVals.bind(this),
                 insertContent: this.__insertContent.bind(this),
-                morph: this.__morph.bind(this)
+                morph: this.__morph.bind(this),
+                isSoftMatch: this.__isSoftMatch.bind(this)
             };
             document.addEventListener("DOMContentLoaded", () => {
                 this.__initHistoryHandling();
@@ -2118,7 +2119,7 @@ var htmx = (() => {
             let cursor = startPoint;
             while (cursor && cursor != endPoint) {
                 let oldSet = ctx.idMap.get(cursor);
-                if (this.__isSoftMatch(cursor, node)) {
+                if (this.#internalAPI.isSoftMatch(cursor, node)) {
                     // Hard match: matching IDs found in both nodes
                     if (oldSet && newSet && [...oldSet].some(id => newSet.has(id))) return cursor;
                     if (!oldSet) {
@@ -2143,8 +2144,14 @@ var htmx = (() => {
         }
 
         __isSoftMatch(oldNode, newNode) {
-            return oldNode instanceof Element && oldNode.tagName === newNode.tagName &&
-                (!oldNode.id || oldNode.id === newNode.id);
+            if (!(oldNode instanceof Element) || oldNode.tagName !== newNode.tagName) {
+                return false;
+            }
+            // If both have Alpine reactive ID bindings, ignore ID mismatch
+            if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
+                return true;
+            }
+            return !oldNode.id || oldNode.id === newNode.id;
         }
 
         __removeNode(ctx, node) {

@@ -12,6 +12,19 @@
     htmx.registerExtension('alpine-compat', {
         init: (internalAPI) => {
             api = internalAPI;
+            
+            // Override isSoftMatch to handle Alpine reactive IDs
+            let originalIsSoftMatch = api.isSoftMatch;
+            api.isSoftMatch = function(oldNode, newNode) {
+                if (!(oldNode instanceof Element) || oldNode.tagName !== newNode.tagName) {
+                    return false;
+                }
+                // If both have Alpine reactive ID bindings, ignore ID mismatch
+                if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
+                    return true;
+                }
+                return !oldNode.id || oldNode.id === newNode.id;
+            };
         },
         
         htmx_before_swap: (elt, detail) => {
@@ -32,20 +45,6 @@
                         ? document.querySelector(task.target) 
                         : task.target;
                     if (!target) continue;
-                    
-                    // Strip Alpine-generated IDs before morph
-                    if (task.swapSpec.style === 'outerMorph') {
-                        if (target._x_bindings?.id) {
-                            target.removeAttribute('id');
-                        }
-                    }
-                    
-                    // For both innerMorph and outerMorph, strip generated IDs from descendants
-                    target.querySelectorAll('[\\:id], [x-bind\\:id]').forEach(el => {
-                        if (el._x_bindings?.id) {
-                            el.removeAttribute('id');
-                        }
-                    });
                 }
             }
         },
