@@ -144,4 +144,20 @@ describe('hx-push-url and hx-replace-url attributes', function() {
             document.removeEventListener('htmx:before:history:update', handler);
         }
     });
+    
+    it('should use innerHTML swap when restoring history even if default swap is none', async function() {
+        let originalSwap = htmx.config.defaultSwap;
+        htmx.config.defaultSwap = 'none';
+        
+        try {
+            mockResponse('GET', '/restore-test', '<div id="restored">Restored Content</div>');
+            
+            htmx.__restoreHistory('/restore-test');
+            await forRequest();
+            
+            document.body.innerHTML.should.include('Restored Content');
+        } finally {
+            htmx.config.defaultSwap = originalSwap;
+        }
+    });
 });
