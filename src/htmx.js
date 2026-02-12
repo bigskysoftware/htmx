@@ -1710,6 +1710,7 @@ var htmx = (() => {
                 } else {
                     this.ajax('GET', path, {
                         target: 'body',
+                        swap: 'innerHTML',
                         request: {headers: {'HX-History-Restore-Request': 'true'}}
                     });
                 }
