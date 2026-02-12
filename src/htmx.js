@@ -1352,7 +1352,7 @@ var htmx = (() => {
             let swapPromises = [];
             let transitionTasks = [];
             for (let task of tasks) {
-                if (task.swapSpec?.transition ?? mainSwap?.transition) {
+                if (task.swapSpec?.transition ?? mainSwap?.transition ?? ctx.transition !== false) {
                     transitionTasks.push(task);
                 } else {
                     swapPromises.push(this.__insertContent(task));
