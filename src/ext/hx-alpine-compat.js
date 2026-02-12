@@ -25,17 +25,27 @@
             
             let {tasks} = detail;
             for (let task of tasks) {
-                if (!task.fragment || !task.target) continue;
-                
-                let target = typeof task.target === 'string' 
-                    ? document.querySelector(task.target) 
-                    : task.target;
-                if (!target) continue;
-                
-                let dataStack = window.Alpine.closestDataStack(target);
-                for (let child of task.fragment.children) {
-                    child._x_dataStack = dataStack;
-                    window.Alpine.cloneNode(target, child);
+                if (task.swapSpec.style === 'innerMorph' || task.swapSpec.style === 'outerMorph') {
+                    if (!task.fragment || !task.target) continue;
+                    
+                    let target = typeof task.target === 'string' 
+                        ? document.querySelector(task.target) 
+                        : task.target;
+                    if (!target) continue;
+                    
+                    // Strip Alpine-generated IDs before morph
+                    if (task.swapSpec.style === 'outerMorph') {
+                        if (target._x_bindings?.id) {
+                            target.removeAttribute('id');
+                        }
+                    }
+                    
+                    // For both innerMorph and outerMorph, strip generated IDs from descendants
+                    target.querySelectorAll('[\\:id], [x-bind\\:id]').forEach(el => {
+                        if (el._x_bindings?.id) {
+                            el.removeAttribute('id');
+                        }
+                    });
                 }
             }
         },
@@ -45,11 +55,13 @@
                 return;
             }
             let {oldNode, newNode} = detail;
-            if (oldNode.nodeType !== 1) {
-                return;
-            }
-
-            newNode._x_dataStack = window.Alpine.closestDataStack(oldNode);
+            
+            let oldDataStack = window.Alpine.closestDataStack(oldNode);
+            newNode._x_dataStack = oldDataStack;
+            
+            // skip cloneNode for template children that will have errors as they can not have reactive content 
+            if (!oldNode.isConnected) return;
+            
             window.Alpine.cloneNode(oldNode, newNode);
             
             // If both have _x_teleport, morph the teleport target

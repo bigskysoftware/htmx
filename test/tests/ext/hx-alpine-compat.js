@@ -40,7 +40,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves Alpine x-show style attribute during Swap and Settle', async function () {
         mockResponse('GET', '/test', '<div id="content" x-show="show" class="inactive">Content</div>');
-        const div = createProcessedHTML('<div x-data="{ show: false }"><div id="target" hx-get="/test" hx-swap="innerHTML" hx-ext="alpine-compat"><div id="content" x-show="show" class="inactive">Content</div></div></div>');
+        const div = createProcessedHTML('<div x-data="{ show: false }"><div id="target" hx-get="/test" hx-swap="innerHTML"><div id="content" x-show="show" class="inactive">Content</div></div></div>');
         
         await htmx.timeout(50); // Let Alpine initialize and add style="display: none;"
         
@@ -56,7 +56,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves Alpine class binding during Swap and Settle', async function () {
         mockResponse('GET', '/test', '<div id="tab1" :class="{ \'active\': activeTab === \'tab1\' }">Tab 1</div>');
-        const div = createProcessedHTML('<div x-data="{ activeTab: \'tab1\' }"><div id="target" hx-get="/test" hx-swap="innerHTML" hx-ext="alpine-compat"><div id="tab1" :class="{ \'active\': activeTab === \'tab1\' }">Tab 1</div></div></div>');
+        const div = createProcessedHTML('<div x-data="{ activeTab: \'tab1\' }"><div id="target" hx-get="/test" hx-swap="innerHTML"><div id="tab1" :class="{ \'active\': activeTab === \'tab1\' }">Tab 1</div></div></div>');
         
         await htmx.timeout(50); // Let Alpine initialize and add "active" class
         
@@ -72,7 +72,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves Alpine x-show with outerHTML swap', async function () {
         mockResponse('GET', '/test', '<div id="content" x-show="show">New Content</div>');
-        const div = createProcessedHTML('<div x-data="{ show: false }"><div id="content" hx-get="/test" hx-swap="outerHTML" hx-ext="alpine-compat" x-show="show">Old Content</div></div>');
+        const div = createProcessedHTML('<div x-data="{ show: false }"><div id="content" hx-get="/test" hx-swap="outerHTML" x-show="show">Old Content</div></div>');
         
         await htmx.timeout(50);
         
@@ -88,7 +88,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves Alpine state with innerMorph swap', async function () {
         mockResponse('GET', '/test', '<div id="item" x-show="visible">Morphed</div>');
-        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat"><div id="item" x-show="visible">Original</div></div></div>');
+        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="innerMorph"><div id="item" x-show="visible">Original</div></div></div>');
         
         await htmx.timeout(50);
         
@@ -103,8 +103,8 @@ describe('hx-alpine-compat extension', function() {
     })
 
     it('preserves Alpine state with outerMorph swap', async function () {
-        mockResponse('GET', '/test', '<div id="target" hx-get="/test" hx-swap="outerMorph" hx-ext="alpine-compat"><div x-show="visible">Morphed</div></div>');
-        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="outerMorph" hx-ext="alpine-compat"><div x-show="visible">Original</div></div></div>');
+        mockResponse('GET', '/test', '<div id="target" hx-get="/test" hx-swap="outerMorph"><div x-show="visible">Morphed</div></div>');
+        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="outerMorph"><div x-show="visible">Original</div></div></div>');
         
         await htmx.timeout(50);
         
@@ -121,7 +121,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves Alpine state with beforebegin swap', async function () {
         mockResponse('GET', '/test', '<div x-show="visible">Before</div>');
-        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="beforebegin" hx-ext="alpine-compat">Target</div></div>');
+        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="beforebegin">Target</div></div>');
         
         await htmx.timeout(50);
         
@@ -137,7 +137,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves Alpine state with afterbegin swap', async function () {
         mockResponse('GET', '/test', '<div x-show="visible">First Child</div>');
-        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="afterbegin" hx-ext="alpine-compat"><span>Existing</span></div></div>');
+        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="afterbegin"><span>Existing</span></div></div>');
         
         await htmx.timeout(50);
         
@@ -153,7 +153,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves Alpine state with beforeend swap', async function () {
         mockResponse('GET', '/test', '<div x-show="visible">Last Child</div>');
-        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="beforeend" hx-ext="alpine-compat"><span>Existing</span></div></div>');
+        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="beforeend"><span>Existing</span></div></div>');
         
         await htmx.timeout(50);
         
@@ -169,7 +169,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves Alpine state with afterend swap', async function () {
         mockResponse('GET', '/test', '<div x-show="visible">After</div>');
-        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="afterend" hx-ext="alpine-compat">Target</div></div>');
+        const div = createProcessedHTML('<div x-data="{ visible: false }"><div id="target" hx-get="/test" hx-swap="afterend">Target</div></div>');
         
         await htmx.timeout(50);
         
@@ -185,7 +185,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves x-ref during innerMorph swap', async function () {
         mockResponse('GET', '/test', '<span x-ref="myRef">Morphed</span>');
-        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat"><span x-ref="myRef">Original</span></div></div>');
+        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph"><span x-ref="myRef">Original</span></div></div>');
         
         await htmx.timeout(50);
         
@@ -207,8 +207,8 @@ describe('hx-alpine-compat extension', function() {
     })
 
     it('preserves x-ref during outerMorph swap', async function () {
-        mockResponse('GET', '/test', '<div id="target" hx-get="/test" hx-swap="outerMorph" hx-ext="alpine-compat"><span x-ref="myRef">Morphed</span></div>');
-        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><div id="target" hx-get="/test" hx-swap="outerMorph" hx-ext="alpine-compat"><span x-ref="myRef">Original</span></div></div>');
+        mockResponse('GET', '/test', '<div id="target" hx-get="/test" hx-swap="outerMorph"><span x-ref="myRef">Morphed</span></div>');
+        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><div id="target" hx-get="/test" hx-swap="outerMorph"><span x-ref="myRef">Original</span></div></div>');
         
         await htmx.timeout(50);
         
@@ -231,7 +231,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves x-ref when element tag changes from div to span', async function () {
         mockResponse('GET', '/test', '<span x-ref="myRef">Changed to Span</span>');
-        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat"><div x-ref="myRef">Original Div</div></div></div>');
+        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph"><div x-ref="myRef">Original Div</div></div></div>');
         
         await htmx.timeout(50);
         const data = Alpine.$data(div);
@@ -251,7 +251,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves x-ref when element is completely replaced', async function () {
         mockResponse('GET', '/test', '<button x-ref="myRef">Button</button>');
-        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat"><span x-ref="myRef">Span</span></div></div>');
+        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph"><span x-ref="myRef">Span</span></div></div>');
         
         await htmx.timeout(50);
         const data = Alpine.$data(div);
@@ -271,7 +271,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves multiple x-refs during morph', async function () {
         mockResponse('GET', '/test', '<span x-ref="first">New First</span><span x-ref="second">New Second</span>');
-        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.first?.textContent + \'|\' + this.$refs.second?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat"><span x-ref="first">Old First</span><span x-ref="second">Old Second</span></div></div>');
+        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.first?.textContent + \'|\' + this.$refs.second?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph"><span x-ref="first">Old First</span><span x-ref="second">Old Second</span></div></div>');
         
         await htmx.timeout(50);
         const data = Alpine.$data(div);
@@ -293,7 +293,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves x-ref when ref name changes', async function () {
         mockResponse('GET', '/test', '<span x-ref="newRef">New Ref Name</span>');
-        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.oldRef?.textContent || this.$refs.newRef?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat"><span x-ref="oldRef">Old Ref Name</span></div></div>');
+        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.oldRef?.textContent || this.$refs.newRef?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph"><span x-ref="oldRef">Old Ref Name</span></div></div>');
         
         await htmx.timeout(50);
         const data = Alpine.$data(div);
@@ -314,7 +314,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves x-ref with nested structure changes', async function () {
         mockResponse('GET', '/test', '<div><p><span x-ref="nested">Deeply Nested</span></p></div>');
-        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.nested?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat"><span x-ref="nested">Flat</span></div></div>');
+        const div = createProcessedHTML('<div x-data="{ test() { return this.$refs.nested?.textContent; } }"><div id="target" hx-get="/test" hx-swap="innerMorph"><span x-ref="nested">Flat</span></div></div>');
         
         await htmx.timeout(50);
         const data = Alpine.$data(div);
@@ -334,7 +334,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves x-ref when x-data parent is inside morph window', async function () {
         mockResponse('GET', '/test', '<div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><span x-ref="myRef">Morphed</span></div>');
-        const div = createProcessedHTML('<div><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat"><div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><span x-ref="myRef">Original</span></div></div></div>');
+        const div = createProcessedHTML('<div><div id="target" hx-get="/test" hx-swap="innerMorph"><div x-data="{ test() { return this.$refs.myRef?.textContent; } }"><span x-ref="myRef">Original</span></div></div></div>');
         
         await htmx.timeout(50);
         
@@ -362,7 +362,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves x-teleport during innerMorph swap', async function () {
         mockResponse('GET', '/test', '<template x-teleport="#teleport-target"><div id="teleported">Morphed Content</div></template>');
-        const div = createProcessedHTML('<div><div id="teleport-target"></div><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat" x-data><template x-teleport="#teleport-target"><div id="teleported">Original Content</div></template></div></div>');
+        const div = createProcessedHTML('<div><div id="teleport-target"></div><div id="target" hx-get="/test" hx-swap="innerMorph" x-data><template x-teleport="#teleport-target"><div id="teleported">Original Content</div></template></div></div>');
         
         await htmx.timeout(50);
         
@@ -382,7 +382,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves x-teleport when teleport target is outside morph window', async function () {
         mockResponse('GET', '/test', '<template x-teleport="body"><div id="body-teleported">Morphed to Body</div></template>');
-        const div = createProcessedHTML('<div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat" x-data><template x-teleport="body"><div id="body-teleported">Original to Body</div></template></div>');
+        const div = createProcessedHTML('<div id="target" hx-get="/test" hx-swap="innerMorph" x-data><template x-teleport="body"><div id="body-teleported">Original to Body</div></template></div>');
         
         await htmx.timeout(50);
         
@@ -401,7 +401,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('preserves x-teleport with multiple teleports', async function () {
         mockResponse('GET', '/test', '<template x-teleport="#target1"><span>New 1</span></template><template x-teleport="#target2"><span>New 2</span></template>');
-        const div = createProcessedHTML('<div><div id="target1"></div><div id="target2"></div><div id="source" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat" x-data><template x-teleport="#target1"><span>Old 1</span></template><template x-teleport="#target2"><span>Old 2</span></template></div></div>');
+        const div = createProcessedHTML('<div><div id="target1"></div><div id="target2"></div><div id="source" hx-get="/test" hx-swap="innerMorph" x-data><template x-teleport="#target1"><span>Old 1</span></template><template x-teleport="#target2"><span>Old 2</span></template></div></div>');
         
         await htmx.timeout(50);
         
@@ -419,7 +419,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('removes teleported content when template is removed during morph', async function () {
         mockResponse('GET', '/test', '<div>No teleport anymore</div>');
-        const div = createProcessedHTML('<div><div id="teleport-target"></div><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat" x-data><template x-teleport="#teleport-target"><div id="teleported">Original</div></template></div></div>');
+        const div = createProcessedHTML('<div><div id="teleport-target"></div><div id="target" hx-get="/test" hx-swap="innerMorph" x-data><template x-teleport="#teleport-target"><div id="teleported">Original</div></template></div></div>');
         
         await htmx.timeout(50);
         
@@ -441,7 +441,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('adds teleported content when template is added during morph', async function () {
         mockResponse('GET', '/test', '<template x-teleport="#teleport-target"><div id="teleported">New Teleport</div></template>');
-        const div = createProcessedHTML('<div><div id="teleport-target"></div><div id="target" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat" x-data><div>No teleport yet</div></div></div>');
+        const div = createProcessedHTML('<div><div id="teleport-target"></div><div id="target" hx-get="/test" hx-swap="innerMorph" x-data><div>No teleport yet</div></div></div>');
         
         await htmx.timeout(50);
         
@@ -460,7 +460,7 @@ describe('hx-alpine-compat extension', function() {
 
     it('changes teleport target when selector changes during morph', async function () {
         mockResponse('GET', '/test', '<template x-teleport="#target2"><div id="teleported">Moved</div></template>');
-        const div = createProcessedHTML('<div><div id="target1"></div><div id="target2"></div><div id="source" hx-get="/test" hx-swap="innerMorph" hx-ext="alpine-compat" x-data><template x-teleport="#target1"><div id="teleported">Original</div></template></div></div>');
+        const div = createProcessedHTML('<div><div id="target1"></div><div id="target2"></div><div id="source" hx-get="/test" hx-swap="innerMorph" x-data><template x-teleport="#target1"><div id="teleported">Original</div></template></div></div>');
         
         await htmx.timeout(50);
         
@@ -476,5 +476,126 @@ describe('hx-alpine-compat extension', function() {
         // Verify content moved to target2
         assert.equal(div.querySelector('#target1')?.textContent, '');
         assert.equal(div.querySelector('#target2')?.textContent, 'Moved');
+    })
+
+    it('preserves Alpine x-for state during innerMorph swap', async function () {
+        mockResponse('GET', '/todos', '<template x-for="item in items" :key="item"><div x-text="item + \' (morphed)\'"></div></template>');
+        
+        const div = createProcessedHTML(
+            '<div x-data="{ items: [\'a\', \'b\', \'c\'] }">' +
+            '  <div id="list" hx-get="/todos" hx-swap="innerMorph">' +
+            '    <template x-for="item in items" :key="item">' +
+            '      <div x-text="item"></div>' +
+            '    </template>' +
+            '  </div>' +
+            '</div>'
+        );
+        
+        await htmx.timeout(50);
+        
+        const data = Alpine.$data(div);
+        const list = div.querySelector('#list');
+        
+        // Verify items rendered before morph
+        assert.equal(list.querySelectorAll('div').length, 3);
+        
+        list.click();
+        await forRequest();
+        await htmx.timeout(20);
+        
+        // Verify Alpine state preserved and items still render
+        assert.deepEqual(data.items, ['a', 'b', 'c']);
+        assert.equal(list.querySelectorAll('div').length, 3);
+        assert.include(list.textContent, '(morphed)');
+    })
+
+    it('preserves x-id generated IDs during innerMorph and morphs input value', async function () {
+        mockResponse('GET', '/test', '<label :for="$id(\'email\')" :id="$id(\'label\')">Email (morphed):</label><input type="email" :id="$id(\'email\')">');
+        
+        const div = createProcessedHTML(
+            '<div x-data x-id="[\'email\', \'label\']">' +
+            '  <div id="target" hx-get="/test" hx-swap="innerMorph">' +
+            '    <label :for="$id(\'email\')" :id="$id(\'label\')">Email:</label>' +
+            '    <input type="email" :id="$id(\'email\')">' +
+            '  </div>' +
+            '</div>'
+        );
+        
+        await htmx.timeout(50);
+        
+        const input = div.querySelector('input');
+        const label = div.querySelector('label');
+        const originalInputId = input.id;
+        const originalLabelId = label.id;
+        
+        // User types in input
+        input.value = 'user@test.com';
+        
+        // Verify IDs are generated
+        assert.isTrue(originalInputId.length > 0);
+        assert.isTrue(originalLabelId.length > 0);
+        assert.equal(label.getAttribute('for'), originalInputId);
+        
+        const target = div.querySelector('#target');
+        target.click();
+        await forRequest();
+        await htmx.timeout(20);
+        
+        const newInput = div.querySelector('input');
+        const newLabel = div.querySelector('label');
+        
+        // Verify IDs are preserved after morph
+        assert.equal(newInput.id, originalInputId);
+        assert.equal(newLabel.id, originalLabelId);
+        assert.equal(newLabel.getAttribute('for'), originalInputId);
+        
+        // Verify input value was morphed (not replaced)
+        assert.equal(newInput.value, 'user@test.com');
+        assert.include(newLabel.textContent, '(morphed)');
+    })
+
+    it('preserves x-id generated IDs during outerMorph and morphs input value', async function () {
+        mockResponse('GET', '/test', '<div id="target" hx-get="/test" hx-swap="outerMorph"><label :for="$id(\'email\')" :id="$id(\'label\')">Email (morphed):</label><input type="email" :id="$id(\'email\')"></div>');
+        
+        const div = createProcessedHTML(
+            '<div x-data x-id="[\'email\', \'label\']">' +
+            '  <div id="target" hx-get="/test" hx-swap="outerMorph">' +
+            '    <label :for="$id(\'email\')" :id="$id(\'label\')">Email:</label>' +
+            '    <input type="email" :id="$id(\'email\')">' +
+            '  </div>' +
+            '</div>'
+        );
+        
+        await htmx.timeout(50);
+        
+        const input = div.querySelector('input');
+        const label = div.querySelector('label');
+        const originalInputId = input.id;
+        const originalLabelId = label.id;
+        
+        // User types in input
+        input.value = 'user@test.com';
+        
+        // Verify IDs are generated
+        assert.isTrue(originalInputId.length > 0);
+        assert.isTrue(originalLabelId.length > 0);
+        assert.equal(label.getAttribute('for'), originalInputId);
+        
+        const target = div.querySelector('#target');
+        target.click();
+        await forRequest();
+        await htmx.timeout(20);
+        
+        const newInput = div.querySelector('input');
+        const newLabel = div.querySelector('label');
+        
+        // Verify IDs are preserved after morph
+        assert.equal(newInput.id, originalInputId);
+        assert.equal(newLabel.id, originalLabelId);
+        assert.equal(newLabel.getAttribute('for'), originalInputId);
+        
+        // Verify input value was morphed (not replaced)
+        assert.equal(newInput.value, 'user@test.com');
+        assert.include(newLabel.textContent, '(morphed)');
     })
 })
