@@ -1520,7 +1520,7 @@ var htmx = (() => {
                 elt.classList?.add?.("htmx-added")
             }
 
-            if (cssTransition) {
+            if (cssTransition && settleTasks.length > 0) {
                 target.classList.add("htmx-settling")
                 await this.timeout(settleDelay);
                 // invoke settle tasks
