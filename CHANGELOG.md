@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0-alpha7] - 2025-02-XX
+## [4.0.0-alpha7] - 2025-02-12
 
 * Added focus and selection restoration after swaps, matching htmx 2.x behavior ([#3645](https://github.com/bigskysoftware/htmx/pull/3645))
 * Added Alpine.js compatibility extension ([#3654](https://github.com/bigskysoftware/htmx/pull/3654))
