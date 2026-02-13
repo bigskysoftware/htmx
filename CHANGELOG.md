@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.0.0-alpha7] - 2025-02-XX
+
+* Added focus and selection restoration after swaps, matching htmx 2.x behavior ([#3645](https://github.com/bigskysoftware/htmx/pull/3645))
+* Added Alpine.js compatibility extension ([#3654](https://github.com/bigskysoftware/htmx/pull/3654))
+* `hx-get` and `hx-delete` on elements inside forms no longer include enclosing form inputs (use `hx-include="closest form"` if needed)
+* `htmx:before:request` and `htmx:after:request` events now fire on the target element
+* History restoration now always uses `innerHTML` swap ([#3655](https://github.com/bigskysoftware/htmx/pull/3655))
+* Partials now fall back to use the main swap's transition setting ([#3656](https://github.com/bigskysoftware/htmx/pull/3656))
+* Improved morph matching algorithm ([#3647](https://github.com/bigskysoftware/htmx/pull/3647))
+* Fixed morph error with empty `id` attributes ([#3639](https://github.com/bigskysoftware/htmx/pull/3639))
+* Fixed Firefox not handling script tags in templates ([#3650](https://github.com/bigskysoftware/htmx/pull/3650))
+* Fixed full page response parsing for live script support ([#3629](https://github.com/bigskysoftware/htmx/pull/3629))
+* Fixed iOS Safari SSE disconnect when app is backgrounded ([#3640](https://github.com/bigskysoftware/htmx/pull/3640))
+* Fixed SSE field value parsing to only trim first leading space ([#3589](https://github.com/bigskysoftware/htmx/pull/3589))
+* WebSocket extension: added raw HTML message support with cancelable event ([#3641](https://github.com/bigskysoftware/htmx/pull/3641))
+* WebSocket extension: added script tag processing ([#3636](https://github.com/bigskysoftware/htmx/pull/3636), [#3637](https://github.com/bigskysoftware/htmx/pull/3637))
+* WebSocket extension: now uses `htmx.swap()` internally ([#3638](https://github.com/bigskysoftware/htmx/pull/3638))
+
 ## [4.0.0-alpha6] - 2025-12-31
 
 * Re-introduced swap/settle mechanism from 2.0 for CSS transitions
