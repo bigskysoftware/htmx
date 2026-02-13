@@ -121,28 +121,77 @@ describe('__handleTriggerEvent unit tests', function() {
         delete window.testExecuted
     })
 
-    it('appends query params to GET action', async function () {
-        let form = createProcessedHTML('<form><input name="q" value="search"><button hx-get="/test"></button></form>')
-        let button = form.querySelector('button')
-        let ctx = htmx.__createRequestContext(button, new Event('click'))
+    // GET/DELETE on form element itself - includes form data in query params
+    it('GET on form element includes form data in query params', async function () {
+        let form = createProcessedHTML('<form hx-get="/test"><input name="q" value="search"></form>')
+        let ctx = htmx.__createRequestContext(form, new Event('submit'))
         await htmx.__handleTriggerEvent(ctx)
         assert.include(ctx.request.action, '/test?q=search')
     })
 
-    it('sets body to null for GET with params', async function () {
-        let form = createProcessedHTML('<form><input name="q" value="search"><button hx-get="/test"></button></form>')
+    it('DELETE on form element includes form data in query params', async function () {
+        let form = createProcessedHTML('<form hx-delete="/test"><input name="id" value="123"></form>')
+        let ctx = htmx.__createRequestContext(form, new Event('submit'))
+        await htmx.__handleTriggerEvent(ctx)
+        assert.include(ctx.request.action, '/test?id=123')
+    })
+
+    // GET/DELETE on element inside form - excludes enclosing form data
+    it('GET on element inside form excludes enclosing form data', async function () {
+        let form = createProcessedHTML('<form><input name="form_field" value="excluded"><button hx-get="/test" name="btn" value="included"></button></form>')
         let button = form.querySelector('button')
         let ctx = htmx.__createRequestContext(button, new Event('click'))
+        await htmx.__handleTriggerEvent(ctx)
+        assert.notInclude(ctx.request.action, 'form_field')
+        assert.include(ctx.request.action, 'btn=included')
+    })
+
+    it('DELETE on element inside form excludes enclosing form data', async function () {
+        let form = createProcessedHTML('<form><input name="form_field" value="excluded"><button hx-delete="/test" name="btn" value="included"></button></form>')
+        let button = form.querySelector('button')
+        let ctx = htmx.__createRequestContext(button, new Event('click'))
+        await htmx.__handleTriggerEvent(ctx)
+        assert.notInclude(ctx.request.action, 'form_field')
+        assert.include(ctx.request.action, 'btn=included')
+    })
+
+    it('sets body to null for GET requests', async function () {
+        let form = createProcessedHTML('<form hx-get="/test"><input name="q" value="search"></form>')
+        let ctx = htmx.__createRequestContext(form, new Event('submit'))
         await htmx.__handleTriggerEvent(ctx)
         assert.isNull(ctx.request.body)
     })
 
-    it('appends query params to DELETE action', async function () {
-        let form = createProcessedHTML('<form><input name="id" value="123"><button hx-delete="/test"></button></form>')
+    it('sets body to null for DELETE requests', async function () {
+        let form = createProcessedHTML('<form hx-delete="/test"><input name="id" value="123"></form>')
+        let ctx = htmx.__createRequestContext(form, new Event('submit'))
+        await htmx.__handleTriggerEvent(ctx)
+        assert.isNull(ctx.request.body)
+    })
+
+    // POST/PUT/PATCH on element inside form - includes form data in body
+    it('POST on element inside form includes form data in body', async function () {
+        let form = createProcessedHTML('<form><input name="field" value="test"><button hx-post="js:"></button></form>')
         let button = form.querySelector('button')
         let ctx = htmx.__createRequestContext(button, new Event('click'))
         await htmx.__handleTriggerEvent(ctx)
-        assert.include(ctx.request.action, '/test?id=123')
+        assert.equal(ctx.request.body.get('field'), 'test')
+    })
+
+    it('PUT on element inside form includes form data in body', async function () {
+        let form = createProcessedHTML('<form><input name="field" value="test"><button hx-put="js:"></button></form>')
+        let button = form.querySelector('button')
+        let ctx = htmx.__createRequestContext(button, new Event('click'))
+        await htmx.__handleTriggerEvent(ctx)
+        assert.equal(ctx.request.body.get('field'), 'test')
+    })
+
+    it('PATCH on element inside form includes form data in body', async function () {
+        let form = createProcessedHTML('<form><input name="field" value="test"><button hx-patch="js:"></button></form>')
+        let button = form.querySelector('button')
+        let ctx = htmx.__createRequestContext(button, new Event('click'))
+        await htmx.__handleTriggerEvent(ctx)
+        assert.equal(ctx.request.body.get('field'), 'test')
     })
 
     it('converts body to URLSearchParams for POST', async function () {
@@ -188,9 +237,8 @@ describe('__handleTriggerEvent unit tests', function() {
     })
 
     it('appends to existing query string with &', async function () {
-        let form = createProcessedHTML('<form><input name="new" value="val"><button hx-get="/test?existing=1"></button></form>')
-        let button = form.querySelector('button')
-        let ctx = htmx.__createRequestContext(button, new Event('click'))
+        let form = createProcessedHTML('<form hx-get="/test?existing=1"><input name="new" value="val"></form>')
+        let ctx = htmx.__createRequestContext(form, new Event('submit'))
         await htmx.__handleTriggerEvent(ctx)
         assert.include(ctx.request.action, '/test?existing=1&new=val')
     })

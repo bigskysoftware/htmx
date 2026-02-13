@@ -228,6 +228,20 @@ describe('swap() unit tests', function() {
         delete window.testVar;
     })
 
+    it('executes script when wrapped in html tag', async function () {
+        window.testVar = 0;
+        await htmx.swap({"target":"#test-playground", "text":"<html><body><script>window.testVar = 9</script><div>Content</div></body></html>"})
+        window.testVar.should.equal(9);
+        delete window.testVar;
+    })
+
+    it('executes script when wrapped in body tag', async function () {
+        window.testVar = 0;
+        await htmx.swap({"target":"#test-playground", "text":"<body><script>window.testVar = 10</script><div>Content</div></body>"})
+        window.testVar.should.equal(10);
+        delete window.testVar;
+    })
+
     it('replaces attributes when swapping element with same id', async function () {
         createProcessedHTML("<div id='d1' class='old' data-value='1'></div>")
         await htmx.swap({"target":"#d1", "text":"<div id='d1' class='new' data-value='2'>Content</div>", "swap":"outerHTML"})
@@ -276,7 +290,6 @@ describe('swap() unit tests', function() {
     })
 
     it('triggers view transition events with transition:true', async function () {
-        htmx.config.logAll = true;
         if (!document.startViewTransition) {
             this.skip();
             return;
@@ -370,8 +383,8 @@ describe('swap() unit tests', function() {
             "target":"#target", 
             "text":"<div>Hello me!</div><hx-partial hx-target='#target_oob' hx-swap='innerHTML'><div>OOB swap!</div></hx-partial>"
         })
-        find('#target').innerText.should.equal("Hello me!");
-        find('#target_oob').innerText.should.equal("OOB swap!");
+        find('#target').textContent.should.equal("Hello me!");
+        find('#target_oob').textContent.should.equal("OOB swap!");
     })
 
     it('swaps only partial target when response contains only partial', async function () {
@@ -380,8 +393,8 @@ describe('swap() unit tests', function() {
             "target":"#target", 
             "text":"<hx-partial hx-target='#target_oob' hx-swap='innerHTML'><div>OOB Updated</div></hx-partial>"
         })
-        find('#target').innerText.should.equal("Original");
-        find('#target_oob').innerText.should.equal("OOB Updated");
+        find('#target').textContent.should.equal("Original");
+        find('#target_oob').textContent.should.equal("OOB Updated");
     })
 
     it('does not swap main target when only whitespace and partial present', async function () {
@@ -390,8 +403,8 @@ describe('swap() unit tests', function() {
             "target":"#target", 
             "text":"\n  <hx-partial hx-target='#target_oob' hx-swap='innerHTML'><div>OOB swap!</div></hx-partial>  \n"
         })
-        find('#target').innerText.should.equal("Original");
-        find('#target_oob').innerText.should.equal("OOB swap!");
+        find('#target').textContent.should.equal("Original");
+        find('#target_oob').textContent.should.equal("OOB swap!");
     })
 
     it('swaps both targets when empty element and partial present', async function () {
@@ -401,7 +414,7 @@ describe('swap() unit tests', function() {
             "text":"<p></p><hx-partial hx-target='#target_oob' hx-swap='innerHTML'><div>OOB swap!</div></hx-partial>"
         })
         find('#target').querySelector('p').should.not.be.null;
-        find('#target_oob').innerText.should.equal("OOB swap!");
+        find('#target_oob').textContent.should.equal("OOB swap!");
     })
   
     it('swaps both targets when plain text and partial present', async function () {
@@ -412,6 +425,77 @@ describe('swap() unit tests', function() {
         })
         find('#target').textContent.should.equal("Hello");
         find('#target_oob').innerText.should.equal("OOB swap!");
+    })
+
+    it('restores focus after innerHTML swap when element has same id', async function () {
+        createProcessedHTML("<input id='focused-input' value='test'>")
+        let input = find('#focused-input')
+        input.focus()
+        input.setSelectionRange(2, 2)
+        
+        await htmx.swap({"target":"#test-playground", "text":"<input id='focused-input' value='test'>"})
+        
+        document.activeElement.id.should.equal('focused-input')
+        document.activeElement.selectionStart.should.equal(2)
+        document.activeElement.selectionEnd.should.equal(2)
+    })
+
+    it('restores focus after outerHTML swap when element has same id', async function () {
+        createProcessedHTML("<div id='container'><input id='focused-input' value='test'></div>")
+        let input = find('#focused-input')
+        input.focus()
+        input.setSelectionRange(1, 3)
+        
+        await htmx.swap({"target":"#container", "text":"<div id='container'><input id='focused-input' value='test'></div>", "swap":"outerHTML"})
+        
+        document.activeElement.id.should.equal('focused-input')
+        document.activeElement.selectionStart.should.equal(1)
+        document.activeElement.selectionEnd.should.equal(3)
+    })
+
+    it('does not restore focus when focused element has no id', async function () {
+        createProcessedHTML("<input value='test'>")
+        let input = playground().querySelector('input')
+        input.focus()
+        
+        await htmx.swap({"target":"#test-playground", "text":"<input value='test'>"})
+        
+        document.activeElement.should.not.equal(input)
+    })
+
+    it('does not restore focus when new content lacks matching id', async function () {
+        createProcessedHTML("<input id='focused-input' value='test'>")
+        let input = find('#focused-input')
+        input.focus()
+        
+        await htmx.swap({"target":"#test-playground", "text":"<input id='different-input' value='test'>"})
+        
+        document.activeElement.id.should.not.equal('focused-input')
+    })
+
+    it('does not restore focus for morph swaps', async function () {
+        createProcessedHTML("<input id='focused-input' value='test'>")
+        let input = find('#focused-input')
+        input.focus()
+        input.setSelectionRange(2, 2)
+        
+        await htmx.swap({"target":"#test-playground", "text":"<input id='focused-input' value='test'>", "swap":"innerMorph"})
+        
+        // Morph should maintain focus naturally, not through restoration
+        document.activeElement.should.equal(input)
+    })
+
+    it('restores focus to textarea after innerHTML swap', async function () {
+        createProcessedHTML("<textarea id='focused-textarea'>hello world</textarea>")
+        let textarea = find('#focused-textarea')
+        textarea.focus()
+        textarea.setSelectionRange(6, 11)
+        
+        await htmx.swap({"target":"#test-playground", "text":"<textarea id='focused-textarea'>hello world</textarea>"})
+        
+        document.activeElement.id.should.equal('focused-textarea')
+        document.activeElement.selectionStart.should.equal(6)
+        document.activeElement.selectionEnd.should.equal(11)
     })
 
 })

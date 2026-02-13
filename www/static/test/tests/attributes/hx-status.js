@@ -24,7 +24,7 @@ describe('hx-status attribute tests', function() {
         let button = find('button');
         button.click();
         await forRequest();
-        assert.equal(find('#target').innerText, 'Server Error');
+        assert.equal(find('#target').textContent, 'Server Error');
     });
 
     it('can change target based on status', async function() {
@@ -53,8 +53,8 @@ describe('hx-status attribute tests', function() {
         let button = find('button');
         button.click();
         await forRequest();
-        assert.equal(find('#errors').innerText, 'Invalid input');
-        assert.equal(find('#main').innerText, '');
+        assert.equal(find('#errors').textContent, 'Invalid input');
+        assert.equal(find('#main').textContent, '');
     });
 
     it('prefers exact match over wildcard', async function() {
@@ -83,7 +83,7 @@ describe('hx-status attribute tests', function() {
         let button = find('button');
         button.click();
         await forRequest();
-        assert.equal(find('#target').innerText, 'Server Error');
+        assert.equal(find('#target').textContent, 'Server Error');
     });
 
     it('does not apply when status does not match', async function() {
@@ -92,7 +92,7 @@ describe('hx-status attribute tests', function() {
         let button = find('button');
         button.click();
         await forRequest();
-        assert.equal(find('#target').innerText, 'Success');
+        assert.equal(find('#target').textContent, 'Success');
     });
 
     it('can set swap to none on error', async function() {
