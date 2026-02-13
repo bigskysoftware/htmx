@@ -125,6 +125,55 @@ class FetchMock {
         this.mockNetworkError(method, urlPattern, new Error(message));
     }
 
+    // Mock sequential responses that don't resolve until explicitly released
+    // Returns an object with next() to release requests one at a time
+    mockSequentialResponses(method, urlPattern, response, options = {}) {
+        const pendingQueue = [];  // Requests waiting to be resolved
+        const waiters = [];       // next() calls waiting for requests
+
+        // Register a response function that holds requests
+        this.mockResponse(method, urlPattern, () => {
+            return new Promise(resolve => {
+                const responseBody = typeof response === 'string'
+                    ? new MockResponse(response, options)
+                    : response;
+
+                // If there's already a waiter, resolve immediately
+                if (waiters.length > 0) {
+                    const waiter = waiters.shift();
+                    resolve(responseBody);
+                    // Wait for htmx to finish processing, then resolve waiter
+                    setTimeout(() => waiter(), 0);
+                } else {
+                    // Queue this request to be released later
+                    pendingQueue.push({ resolve, responseBody });
+                }
+            });
+        });
+
+        return {
+            // Release next pending request and wait for htmx to finish processing
+            next() {
+                return new Promise(resolve => {
+                    if (pendingQueue.length > 0) {
+                        // Request already waiting, release it
+                        const item = pendingQueue.shift();
+                        item.resolve(item.responseBody);
+                        // Give htmx time to process the response
+                        setTimeout(resolve, 0);
+                    } else {
+                        // No request yet, wait for one to arrive
+                        waiters.push(resolve);
+                    }
+                });
+            },
+            // Get count of pending requests
+            get pendingCount() {
+                return pendingQueue.length;
+            }
+        };
+    }
+
     // Find matching response
     findResponse(method, url) {
         for (let i = this.responses.length - 1; i >= 0; i--) {

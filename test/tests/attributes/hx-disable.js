@@ -30,7 +30,7 @@ describe('hx-disable attribute', function() {
     })
 
     it('multiple requests with same disabled elt are handled properly', async function() {
-        mockResponse('GET', '/test', 'Clicked!')
+        const responses = mockSequentialResponses('GET', '/test', 'Clicked!')
         createProcessedHTML('<button id="b1" hx-get="/test" hx-disable="#b3">Click Me!</button>' +
             '<button id="b2" hx-get="/test" hx-disable="#b3">Click Me!</button>' +
             '<button id="b3">Demo</button>')
@@ -47,15 +47,15 @@ describe('hx-disable attribute', function() {
         b2.click()
         b3.hasAttribute('disabled').should.equal(true)
 
-        // Wait for first request to complete
-        await forRequest()
+        // Release first request and wait for htmx to process
+        await responses.next()
 
-        b3.hasAttribute('disabled').should.equal(true)
+        b3.hasAttribute('disabled').should.equal(true)  // Still disabled, request 2 in flight
 
-        // Wait for second request to complete
-        await forRequest()
+        // Release second request and wait for htmx to process
+        await responses.next()
 
-        b3.hasAttribute('disabled').should.equal(false)
+        b3.hasAttribute('disabled').should.equal(false)  // Now re-enabled
     })
 
     it('multiple elts can be disabled', async function() {
