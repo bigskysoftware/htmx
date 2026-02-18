@@ -271,7 +271,7 @@ var htmx = (() => {
                 if (!action) {
                     for (let verb of this.#verbs) {
                         let verbAction = this.__attributeValue(elt, "hx-" + verb);
-                        if (verbAction) {
+                        if (verbAction != null) {
                             action = verbAction;
                             method = verb;
                             break;

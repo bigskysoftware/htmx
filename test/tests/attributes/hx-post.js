@@ -18,4 +18,14 @@ describe('hx-post attribute', function() {
         btn.innerHTML.should.equal('Posted!')
     })
 
+    it('issues a POST request with empty string action (current URL)', async function() {
+        mockResponse('POST', /^$/, 'Posted!')
+        let btn = createProcessedHTML('<button hx-post="">Click Me!</button>')
+        btn.click()
+        await forRequest()
+        fetchMock.calls[0].request.method.should.equal('POST');
+        fetchMock.calls[0].url.should.equal('');
+        btn.innerHTML.should.equal('Posted!')
+    })
+
 })
