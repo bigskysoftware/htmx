@@ -36,7 +36,10 @@
             let ctx = api.createRequestContext(elt, evt);
             let form = elt.form || elt.closest("form");
             let body = api.collectFormData(elt, form, evt.submitter);
-            api.handleHxVals(elt, body);
+            let valsResult = api.getAttributeObject(elt, 'hx-vals', obj => {
+                for (let key in obj) body.set(key, obj[key]);
+            });
+            if (valsResult) await valsResult;
 
             let action = ctx.request.action.replace?.(/#.*$/, '');
 

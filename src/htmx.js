@@ -81,7 +81,7 @@ var htmx = (() => {
                 determineMethodAndAction: this.__determineMethodAndAction.bind(this),
                 createRequestContext: this.__createRequestContext.bind(this),
                 collectFormData: this.__collectFormData.bind(this),
-                handleHxVals: this.__handleHxVals.bind(this),
+                getAttributeObject: this.__getAttributeObject.bind(this),
                 insertContent: this.__insertContent.bind(this),
                 morph: this.__morph.bind(this),
                 isSoftMatch: this.__isSoftMatch.bind(this),
