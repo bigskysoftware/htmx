@@ -53,13 +53,13 @@ major changes between htmx 2.x and htmx 4.x.
    ```html
    <!-- Global defaults -->
    <meta name="htmx-config" content="{
-       streams:{
+       sse:{
          reconnect: false,
          reconnectDelay: 500,
          reconnectMaxDelay: 60000,
-         reconnectMaxAttempts: 10,
+         reconnectMaxAttempts: Infinity,
          reconnectJitter: 0.3,
-         closeOnHide: false
+         pauseOnBackground: false
        }
    }">
    ```
@@ -68,7 +68,7 @@ major changes between htmx 2.x and htmx 4.x.
   <!-- Overrides global default -->
   <div hx-get="/events" 
        hx-trigger="load"
-       hx-config="{stream: {reconnect: true}}"
+       hx-config="{sse: {reconnect: true}}"
   ```
 
 ### View Transitions

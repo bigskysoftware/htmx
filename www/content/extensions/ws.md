@@ -210,11 +210,13 @@ Configure the extension via `htmx.config.websockets`:
 
 ```javascript
 htmx.config.websockets = {
-    reconnect: true,           // Enable auto-reconnect (default: true)
-    reconnectDelay: 1000,      // Initial reconnect delay in ms (default: 1000)
-    reconnectMaxDelay: 30000,  // Maximum reconnect delay in ms (default: 30000)
-    reconnectJitter: true,     // Add randomization to delays (default: true)
-    pendingRequestTTL: 30000   // Time-to-live for pending requests in ms (default: 30000)
+    reconnect: true,              // Enable auto-reconnect (default: true)
+    reconnectDelay: 500,          // Initial reconnect delay in ms (default: 500)
+    reconnectMaxDelay: 60000,     // Maximum reconnect delay in ms (default: 60000)
+    reconnectMaxAttempts: Infinity,// Maximum reconnect attempts (default: Infinity)
+    reconnectJitter: 0.3,         // Jitter factor 0-1 for randomizing delays (default: 0.3)
+    pauseOnBackground: true,            // Pause connection when tab is backgrounded (default: true)
+    pendingRequestTTL: 30000      // Time-to-live for pending requests in ms (default: 30000)
 };
 ```
 
@@ -223,15 +225,15 @@ htmx.config.websockets = {
 The extension uses exponential backoff with optional jitter:
 
 - **Base formula**: `delay = min(reconnectDelay × 2^(attempts-1), reconnectMaxDelay)`
-- **Jitter**: Adds ±25% randomization to avoid thundering herd
+- **Jitter**: Adds ±30% randomization to avoid thundering herd
 - **Reset**: Attempts counter resets to 0 on successful connection
 
 Example reconnection delays with defaults:
-- Attempt 1: ~1000ms
-- Attempt 2: ~2000ms
-- Attempt 3: ~4000ms
-- Attempt 4: ~8000ms
-- Attempt 5+: ~30000ms (capped)
+- Attempt 1: ~500ms
+- Attempt 2: ~1000ms
+- Attempt 3: ~2000ms
+- Attempt 4: ~4000ms
+- Attempt 5+: ~60000ms (capped)
 
 ### Connection Triggers
 

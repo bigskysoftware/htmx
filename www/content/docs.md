@@ -965,7 +965,7 @@ Each SSE message with a `data:` line (and no `event:` line) is processed like a 
 
 Like [fetch-event-source](https://github.com/Azure/fetch-event-source), htmx's custom SSE implementation supports
 request bodies, custom headers, and all HTTP methods (not just GET), and Page Visibility API
-integration (using the `closeOnHide` option).
+integration (using the `pauseOnBackground` option).
 
 ### Basic Usage
 
@@ -1042,27 +1042,27 @@ You can configure the global streaming config in `htmx.config.sse`:
 <meta name="htmx-config" content='{
   "sse": {
     "reconnect": false,
-    "reconnectMaxAttempts": 10,
+    "reconnectMaxAttempts": Infinity,
     "reconnectDelay": 500,
     "reconnectMaxDelay": 60000,
     "reconnectJitter": 0.3,
-    "closeOnHide": false
+    "pauseOnBackground": false
   }
 }'>
 ```
 
 - `reconnect`: Boolean to enable/disable reconnection (default: `false`)
-- `reconnectMaxAttempts`: Maximum reconnection attempts (default: `10`)
+- `reconnectMaxAttempts`: Maximum reconnection attempts (default: `Infinity`)
 - `reconnectDelay`: Initial reconnect delay in ms (default: `500`)
 - `reconnectMaxDelay`: Max backoff delay in ms (default: `60000`)
 - `reconnectJitter`: Jitter factor for randomizing delays (default: `0.3`)
-- `closeOnHide`: Close the SSE stream when the page becomes hidden (default: `false`). When the page becomes visible again and `reconnect` is enabled, the stream automatically reconnects. This handles mobile browsers (especially iOS Safari) that kill background TCP connections without firing error events.
+- `pauseOnBackground`: Pause the connection when the tab is backgrounded (default: `false`). Automatically reconnects when the tab becomes visible again. Handles mobile browsers (especially iOS Safari) that kill background TCP connections without firing error events.
 
 
 You can override these settings per-element using `hx-config`:
 ```html
 <button hx-get="/stream"
-        hx-config='{"sse": {"reconnect": true, "reconnectMaxAttempts": 10, "reconnectDelay": 1000, "closeOnHide": true}}'>
+        hx-config='{"sse": {"reconnect": true, "reconnectMaxAttempts": 10, "reconnectDelay": 1000, "pauseOnBackground": true}}'>
     Start
 </button>
 ```
@@ -1732,7 +1732,6 @@ They are listed below:
 | `htmx.config.inlineScriptNonce`   | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                                                                                                                                                                        |
 | `htmx.config.inlineStyleNonce`    | defaults to `''`, meaning that no nonce will be added to inline styles                                                                                                                                                                                                                                                         |
 | `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,optimistic'`)                                                                                                                                                                                                                             |
-| `htmx.config.sse`                 | configuration for Server-Sent Events (SSE) streams. An object with the following properties: `reconnect` (default: `false`), `reconnectMaxAttempts` (default: `10`), `reconnectDelay` (default: `500`ms), `reconnectMaxDelay` (default: `60000`ms), `reconnectJitter` (default: `0.3`), `closeOnHide` (default: `false`) |
 | `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute names to ignore when morphing elements                                                                                                                                                                                                                                 |
 | `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                                                                                            |
 | `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                                                                                              |
