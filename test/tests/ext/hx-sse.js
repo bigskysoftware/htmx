@@ -1,4 +1,30 @@
-describe('Server-Sent Events', function() {
+describe('hx-sse SSE extension', function() {
+
+    let extBackup;
+
+    before(async () => {
+        extBackup = backupExtensions();
+        clearExtensions();
+
+        htmx.config.extensions = 'sse';
+        htmx.__approvedExt = 'sse';
+
+        let script = document.createElement('script');
+        script.src = '../src/ext/hx-sse.js';
+        await new Promise(resolve => {
+            script.onload = resolve;
+            document.head.appendChild(script);
+        });
+
+        if (!htmx.__registeredExt.has('sse')) {
+            throw new Error('SSE extension failed to register - check approval');
+        }
+    });
+
+    after(() => {
+        restoreExtensions(extBackup);
+    });
+
     afterEach(function() {
         cleanupTest()
     })
@@ -28,9 +54,11 @@ describe('Server-Sent Events', function() {
         let reconnectAttempts = 0;
         let reconnectDelays = [];
 
-        document.addEventListener('htmx:before:sse:reconnect', (e) => {
-            reconnectAttempts++;
-            reconnectDelays.push(e.detail.reconnect.delay);
+        document.addEventListener('htmx:before:sse:connection', (e) => {
+            if (e.detail.connection.attempt > 0) {
+                reconnectAttempts++;
+                reconnectDelays.push(e.detail.connection.delay);
+            }
         });
 
         find('button').click();
@@ -40,16 +68,11 @@ describe('Server-Sent Events', function() {
         await waitForEvent('htmx:after:sse:message');
         assertTextContentIs('button', 'first');
 
-        const reconnectPromise = waitForEvent('htmx:before:sse:reconnect');
-
         stream.close();
-        await waitForEvent('htmx:after:sse:stream');
-        await reconnectPromise;
+        await waitForEvent('htmx:after:sse:connection');
 
         assert.equal(reconnectAttempts, 1, 'Should attempt to reconnect');
         assert.equal(reconnectDelays[0], 50, 'First reconnect should use initial delay (reconnectDelay)');
-
-        await waitForEvent('htmx:before:sse:stream');
 
         stream.send('second');
         await waitForEvent('htmx:after:sse:message');
@@ -64,8 +87,10 @@ describe('Server-Sent Events', function() {
         createProcessedHTML('<button hx-get="/with-id" hx-config="sse.reconnect:true sse.reconnectDelay:50ms sse.reconnectMaxAttempts:2" hx-swap="innerHTML">Connect</button>');
 
         let lastEventIdSent = null;
-        document.addEventListener('htmx:before:sse:reconnect', (e) => {
-            lastEventIdSent = e.detail.reconnect.lastEventId;
+        document.addEventListener('htmx:before:sse:connection', (e) => {
+            if (e.detail.connection.attempt > 0) {
+                lastEventIdSent = e.detail.connection.lastEventId;
+            }
         });
 
         find('button').click();
@@ -77,15 +102,10 @@ describe('Server-Sent Events', function() {
 
         await new Promise(r => setTimeout(r, 50));
 
-        const reconnectPromise = waitForEvent('htmx:before:sse:reconnect', 5000);
-
         stream.close();
-        await waitForEvent('htmx:after:sse:stream');
-        await reconnectPromise;
+        await waitForEvent('htmx:after:sse:connection', 5000);
 
         assert.equal(lastEventIdSent, 'msg-123', 'Should send last event ID on reconnect');
-
-        await waitForEvent('htmx:before:sse:stream');
 
         const lastCall = lastFetch();
         assert.equal(lastCall.request.headers['Last-Event-ID'], 'msg-123', 'Last-Event-ID header should be set');
@@ -97,18 +117,18 @@ describe('Server-Sent Events', function() {
         const stream = mockStreamResponse('/cancelable');
         createProcessedHTML('<button hx-get="/cancelable" hx-swap="innerHTML">Go</button>');
 
-        let beforeStreamFired = false;
+        let beforeConnectFired = false;
         let beforeMessageFired = false;
         let afterMessageFired = false;
 
-        document.addEventListener('htmx:before:sse:stream', () => { beforeStreamFired = true; });
+        document.addEventListener('htmx:before:sse:connection', () => { beforeConnectFired = true; });
         document.addEventListener('htmx:before:sse:message', () => { beforeMessageFired = true; });
         document.addEventListener('htmx:after:sse:message', () => { afterMessageFired = true; });
 
         find('button').click();
         await htmx.timeout(1);
 
-        assert.isTrue(beforeStreamFired, 'before:sse:stream should fire');
+        assert.isTrue(beforeConnectFired, 'before:sse:connect should fire');
 
         stream.send('test');
         await waitForEvent('htmx:after:sse:message');
@@ -196,12 +216,12 @@ describe('Server-Sent Events', function() {
         createProcessedHTML('<button hx-get="/max-attempts" hx-config="sse.reconnect:true sse.reconnectDelay:20ms sse.reconnectMaxAttempts:2" hx-swap="innerHTML">Connect</button>');
 
         let reconnectAttempts = 0;
-        document.addEventListener('htmx:before:sse:reconnect', () => {
-            reconnectAttempts++;
+        document.addEventListener('htmx:before:sse:connection', (e) => {
+            if (e.detail.connection.attempt > 0) reconnectAttempts++;
         });
 
         find('button').click();
-        await waitForEvent('htmx:after:sse:stream');
+        await waitForEvent('htmx:before:sse:connection');
 
         await new Promise(r => setTimeout(r, 150));
 
@@ -229,12 +249,12 @@ describe('Server-Sent Events', function() {
         createProcessedHTML('<button hx-get="/max-delay" hx-config="sse.reconnect:true sse.reconnectDelay:20ms sse.reconnectMaxDelay:60ms sse.reconnectJitter:0" hx-swap="innerHTML">Connect</button>');
 
         let reconnectDelays = [];
-        document.addEventListener('htmx:before:sse:reconnect', (e) => {
-            reconnectDelays.push(e.detail.reconnect.delay);
+        document.addEventListener('htmx:before:sse:connection', (e) => {
+            if (e.detail.connection.attempt > 0) reconnectDelays.push(e.detail.connection.delay);
         });
 
         find('button').click();
-        await waitForEvent('htmx:after:sse:stream');
+        await waitForEvent('htmx:before:sse:connection');
 
         await new Promise(r => setTimeout(r, 350));
 
@@ -266,12 +286,12 @@ describe('Server-Sent Events', function() {
         createProcessedHTML('<button hx-get="/jitter-test" hx-config="sse.reconnect:true, sse.reconnectDelay:100ms, sse.reconnectJitter:0.5, sse.reconnectMaxAttempts: 5" hx-swap="innerHTML">Connect</button>');
 
         let reconnectDelays = [];
-        document.addEventListener('htmx:before:sse:reconnect', (e) => {
-            reconnectDelays.push(e.detail.reconnect.delay);
+        document.addEventListener('htmx:before:sse:connection', (e) => {
+            if (e.detail.connection.attempt > 0) reconnectDelays.push(e.detail.connection.delay);
         });
 
         find('button').click();
-        await waitForEvent('htmx:after:sse:stream');
+        await waitForEvent('htmx:before:sse:connection');
 
         // Wait for multiple reconnects
         await new Promise(r => setTimeout(r, 800));
@@ -313,12 +333,12 @@ describe('Server-Sent Events', function() {
         createProcessedHTML('<button hx-get="/no-jitter" hx-config="sse.reconnect:true, sse.reconnectDelay:100ms, sse.reconnectJitter:0, sse.reconnectMaxAttempts:3" hx-swap="innerHTML">Connect</button>');
 
         let reconnectDelays = [];
-        document.addEventListener('htmx:before:sse:reconnect', (e) => {
-            reconnectDelays.push(e.detail.reconnect.delay);
+        document.addEventListener('htmx:before:sse:connection', (e) => {
+            if (e.detail.connection.attempt > 0) reconnectDelays.push(e.detail.connection.delay);
         });
 
         find('button').click();
-        await waitForEvent('htmx:after:sse:stream');
+        await waitForEvent('htmx:before:sse:connection');
 
         await new Promise(r => setTimeout(r, 450));
 
@@ -329,7 +349,7 @@ describe('Server-Sent Events', function() {
         assert.equal(reconnectDelays[1], 200, 'Second delay should be exactly 200ms (100 * 2)');
     });
 
-    it('closeOnHide configuration works', async function() {
+    it('pauseOnBackground configuration works', async function() {
         this.skip(); // Skip - complex visibility API testing
     });
 
@@ -473,6 +493,131 @@ describe('Server-Sent Events', function() {
         stream.send('NoTrim');
         await waitForEvent('htmx:after:sse:message');
         assertTextContentIs('#ws-btn', 'NoTrim');
+
+        stream.close();
+    });
+
+    it('hx-sse:connect auto-connects on load and streams', async function() {
+        const stream = mockStreamResponse('/connect-test');
+        createProcessedHTML('<div hx-sse:connect="/connect-test" hx-swap="innerHTML">Waiting</div>');
+
+        await htmx.timeout(1);
+
+        stream.send('connected!');
+        await waitForEvent('htmx:after:sse:message');
+        assertTextContentIs('div', 'connected!');
+
+        stream.close();
+    });
+
+    it('hx-sse:connect enables reconnect by default', async function() {
+        const stream = mockStreamResponse('/connect-reconnect');
+        createProcessedHTML('<div hx-sse:connect="/connect-reconnect" hx-swap="innerHTML">Waiting</div>');
+
+        await htmx.timeout(1);
+
+        stream.send('first');
+        await waitForEvent('htmx:after:sse:message');
+        assertTextContentIs('div', 'first');
+
+        let reconnectFired = false;
+        document.addEventListener('htmx:before:sse:connection', (e) => {
+            if (e.detail.connection.attempt > 0) reconnectFired = true;
+        });
+
+        stream.close();
+        await waitForEvent('htmx:after:sse:connection');
+
+        assert.isTrue(reconnectFired, 'connect should reconnect by default');
+    });
+
+    it('hx-sse:connect with hx-trigger="load delay:100ms" delays connection', async function() {
+        const stream = mockStreamResponse('/delayed');
+        createProcessedHTML('<div hx-sse:connect="/delayed" hx-trigger="load delay:100ms" hx-swap="innerHTML">Waiting</div>');
+
+        // Should NOT have connected yet
+        await htmx.timeout(10);
+        stream.send('too early');
+        await htmx.timeout(10);
+        assertTextContentIs('div', 'Waiting');
+
+        // Wait for delay to elapse + connection
+        await htmx.timeout(150);
+
+        stream.send('delayed!');
+        await waitForEvent('htmx:after:sse:message');
+        assertTextContentIs('div', 'delayed!');
+
+        stream.close();
+    });
+
+    it('hx-sse:connect with hx-trigger="click" connects on click', async function() {
+        const stream = mockStreamResponse('/on-click');
+        createProcessedHTML('<button hx-sse:connect="/on-click" hx-trigger="click" hx-swap="innerHTML">Click me</button>');
+
+        // Should NOT have connected yet
+        await htmx.timeout(10);
+        assertTextContentIs('button', 'Click me');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.send('clicked!');
+        await waitForEvent('htmx:after:sse:message');
+        assertTextContentIs('button', 'clicked!');
+
+        stream.close();
+    });
+
+    it('hx-sse:connect with hx-trigger="click once" only connects once', async function() {
+        let fetchCount = 0;
+        fetchMock.mockResponse('GET', '/once-test', () => {
+            fetchCount++;
+            let ctrl;
+            const body = new ReadableStream({ start(c) { ctrl = c; } });
+            const response = new MockResponse(body, {
+                headers: { 'Content-Type': 'text/event-stream' }
+            });
+            response.body = body;
+            return response;
+        });
+
+        createProcessedHTML('<button hx-sse:connect="/once-test" hx-trigger="click once" hx-swap="innerHTML">Click</button>');
+
+        find('button').click();
+        await htmx.timeout(10);
+        assert.equal(fetchCount, 1, 'First click should connect');
+
+        find('button').click();
+        await htmx.timeout(10);
+        assert.equal(fetchCount, 1, 'Second click should be ignored (once modifier)');
+    });
+
+    it('hx-sse:connect with hx-target swaps into correct target', async function() {
+        const stream = mockStreamResponse('/targeted');
+        createProcessedHTML('<div><button hx-sse:connect="/targeted" hx-target="#output">Go</button><span id="output">empty</span></div>');
+
+        await htmx.timeout(1);
+
+        stream.send('targeted!');
+        await waitForEvent('htmx:after:sse:message');
+        assertTextContentIs('#output', 'targeted!');
+
+        stream.close();
+    });
+
+    it('hx-sse:connect respects hx-swap style', async function() {
+        const stream = mockStreamResponse('/append-test');
+        createProcessedHTML('<div hx-sse:connect="/append-test" hx-swap="beforeend">start</div>');
+
+        await htmx.timeout(1);
+
+        stream.send('<span>1</span>');
+        await waitForEvent('htmx:after:sse:message');
+        stream.send('<span>2</span>');
+        await waitForEvent('htmx:after:sse:message');
+
+        assertTextContentIs('div', 'start12');
 
         stream.close();
     });
