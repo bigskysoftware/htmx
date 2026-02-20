@@ -54,12 +54,12 @@
     function getConfig() {
         const defaults = {
             reconnect: true,
-            reconnectDelay: 1000,
-            reconnectMaxDelay: 30000,
-            reconnectJitter: true,
-            // Note: closeOnHide is NOT implemented for WebSockets. Reconnection continues in background tabs.
-            // To implement visibility-aware behavior, listen for htmx:ws:reconnect and cancel if needed.
-            pendingRequestTTL: 30000  // TTL for pending requests in ms
+            reconnectDelay: 500,
+            reconnectMaxDelay: 60000,
+            reconnectMaxAttempts: Infinity,
+            reconnectJitter: 0.3,
+            pauseOnBackground: true,
+            pendingRequestTTL: 30000
         };
         return { ...defaults, ...(htmx.config.websockets || {}) };
     }
@@ -130,14 +130,30 @@
         };
         
         // Fire cancelable event BEFORE storing in registry
-        if (!triggerEvent(element, 'htmx:before:ws:connect', { url: normalizedUrl })) {
-            // Event was cancelled - don't create connection or store entry
+        let connectDetail = {attempt: 0, delay: 0, url: normalizedUrl, cancelled: false};
+        if (!triggerEvent(element, 'htmx:before:ws:connection', {connection: connectDetail}) || connectDetail.cancelled) {
             return null;
         }
         
         // Event passed - now store in registry and create socket
         connectionRegistry.set(normalizedUrl, entry);
         createWebSocket(normalizedUrl, entry);
+
+        let config = getConfig();
+        if (config.pauseOnBackground) {
+            entry.visibilityHandler = () => {
+                if (document.hidden) {
+                    if (entry.socket && entry.socket.readyState === WebSocket.OPEN) {
+                        entry.socket.close();
+                    }
+                } else if (!entry.socket || entry.socket.readyState === WebSocket.CLOSED) {
+                    entry.reconnectAttempts = 0;
+                    createWebSocket(normalizedUrl, entry);
+                }
+            };
+            document.addEventListener('visibilitychange', entry.visibilityHandler);
+        }
+
         return entry;
     }
     
@@ -171,7 +187,7 @@
                 entry.reconnectAttempts = 0;
                 
                 if (firstElement) {
-                    triggerEvent(firstElement, 'htmx:after:ws:connect', { url, socket: entry.socket });
+                    triggerEvent(firstElement, 'htmx:after:ws:connection', { url, socket: entry.socket });
                 }
             };
             
@@ -195,6 +211,10 @@
                 if (!connectionRegistry.has(url)) return;
                 
                 let config = getConfig();
+                // If pauseOnBackground triggered the close, the visibility handler
+                // will reconnect on tab show — skip normal reconnect logic
+                if (config.pauseOnBackground && document.hidden) return;
+
                 if (config.reconnect && entry.refCount > 0) {
                     scheduleReconnect(url, entry);
                 } else {
@@ -224,27 +244,39 @@
     
     function scheduleReconnect(url, entry) {
         let config = getConfig();
-        
-        // Increment attempts FIRST, then calculate delay
+
         entry.reconnectAttempts++;
-        let attempts = entry.reconnectAttempts;
-        
-        let delay = Math.min(
-            (config.reconnectDelay || 1000) * Math.pow(2, attempts - 1),
-            config.reconnectMaxDelay || 30000
-        );
-        
-        if (config.reconnectJitter) {
-            delay = delay * (0.75 + Math.random() * 0.5);
+        let attempt = entry.reconnectAttempts;
+
+        if (!config.reconnect || attempt > config.reconnectMaxAttempts) {
+            cleanupPendingRequests(entry);
+            connectionRegistry.delete(url);
+            return;
         }
-        
+
+        let delay = Math.min(
+            config.reconnectDelay * Math.pow(2, attempt - 1),
+            config.reconnectMaxDelay
+        );
+
+        if (config.reconnectJitter > 0) {
+            let jitterRange = delay * config.reconnectJitter;
+            delay = Math.max(0, delay + (Math.random() * 2 - 1) * jitterRange);
+        }
+
+        let firstElement = entry.elements.values().next().value;
+        if (firstElement) {
+            let detail = {attempt, delay, url, cancelled: false};
+            if (!triggerEvent(firstElement, 'htmx:before:ws:connection', {connection: detail}) || detail.cancelled) {
+                cleanupPendingRequests(entry);
+                connectionRegistry.delete(url);
+                return;
+            }
+            delay = detail.delay;
+        }
+
         entry.reconnectTimer = setTimeout(() => {
             if (entry.refCount > 0) {
-                let firstElement = entry.elements.values().next().value;
-                if (firstElement) {
-                    // attempts now means "this is attempt number N"
-                    triggerEvent(firstElement, 'htmx:ws:reconnect', { url, attempts });
-                }
                 createWebSocket(url, entry);
             }
         }, delay);
@@ -263,6 +295,9 @@
         if (entry.refCount <= 0) {
             if (entry.reconnectTimer) {
                 clearTimeout(entry.reconnectTimer);
+            }
+            if (entry.visibilityHandler) {
+                document.removeEventListener('visibilitychange', entry.visibilityHandler);
             }
             cleanupPendingRequests(entry);
             if (entry.socket && entry.socket.readyState === WebSocket.OPEN) {
@@ -324,18 +359,15 @@
         }
         
         if (!url) {
-            // Emit error event instead of console.error
-            triggerEvent(element, 'htmx:wsSendError', { 
-                element, 
-                error: 'No WebSocket connection found for element' 
-            });
+            triggerEvent(element, 'htmx:ws:error', {
+                url: null, error: 'No WebSocket connection found for element'            });
             return;
         }
-        
+
         let normalizedUrl = normalizeWebSocketUrl(url);
         let entry = connectionRegistry.get(normalizedUrl);
         if (!entry || !entry.socket || entry.socket.readyState !== WebSocket.OPEN) {
-            triggerEvent(element, 'htmx:wsSendError', { url: normalizedUrl, error: 'Connection not open' });
+            triggerEvent(element, 'htmx:ws:error', { url: normalizedUrl, error: 'Connection not open' });
             return;
         }
         
@@ -403,7 +435,7 @@
             
             triggerEvent(element, 'htmx:after:ws:send', { data: detail.data, url: normalizedUrl });
         } catch (error) {
-            triggerEvent(element, 'htmx:wsSendError', { url: normalizedUrl, error });
+            triggerEvent(element, 'htmx:ws:error', { url: normalizedUrl, error });
         }
     }
     
@@ -420,60 +452,47 @@
     // ========================================
     
     function handleMessage(entry, event) {
-        let envelope;
+        let envelope = null;
         try {
             envelope = JSON.parse(event.data);
-        } catch (e) {
-            // Not JSON - treat as raw HTML
-            let firstElement = entry.elements.values().next().value;
-            if (firstElement) {
-                handleRawMessage(firstElement, event.data);
-            }
-            return;
-        }
-        
-        // Apply defaults for channel and format
-        envelope.channel = envelope.channel || 'ui';
-        envelope.format = envelope.format || 'html';
-        
+        } catch (e) {}
+
         // Find target element for this message
         let targetElement = null;
-        if (envelope.request_id && entry.pendingRequests.has(envelope.request_id)) {
+        if (envelope?.request_id && entry.pendingRequests.has(envelope.request_id)) {
             targetElement = entry.pendingRequests.get(envelope.request_id).element;
             entry.pendingRequests.delete(envelope.request_id);
         } else {
-            // Use first element in the connection
             targetElement = entry.elements.values().next().value;
         }
-        
-        // Emit before:message event (cancelable)
-        if (!triggerEvent(targetElement, 'htmx:before:ws:message', { envelope, element: targetElement })) {
+
+        // All messages go through before/after:ws:message (cancelable)
+        if (!triggerEvent(targetElement, 'htmx:before:ws:message', { envelope, data: event.data, element: targetElement })) {
             return;
         }
-        
-        // Route based on channel
-        if (envelope.channel === 'ui' && envelope.format === 'html') {
-            handleHtmlMessage(targetElement, envelope);
+
+        if (envelope) {
+            // JSON message — route based on channel
+            envelope.channel = envelope.channel || 'ui';
+            envelope.format = envelope.format || 'html';
+
+            if (envelope.channel === 'ui' && envelope.format === 'html') {
+                handleHtmlMessage(targetElement, envelope);
+            }
+            // Non-ui messages: no auto-swap, users handle via after:ws:message
         } else {
-            // Any non-ui/html message emits htmx:wsMessage for application handling
-            // This is extensible - apps can handle json, audio, binary, custom channels, etc.
-            triggerEvent(targetElement, 'htmx:wsMessage', { ...envelope, element: targetElement });
+            // Raw (non-JSON) message — swap as HTML
+            handleRawMessage(targetElement, event.data);
         }
-        
-        triggerEvent(targetElement, 'htmx:after:ws:message', { envelope, element: targetElement });
+
+        triggerEvent(targetElement, 'htmx:after:ws:message', { envelope, data: event.data, element: targetElement });
     }
-    
+
     // ========================================
     // RAW (NON-JSON) MESSAGE HANDLING
     // ========================================
 
     function handleRawMessage(element, data) {
-        // Fire cancelable event - allows custom handling of non-JSON messages
-        if (!triggerEvent(element, 'htmx:ws:rawMessage', { data: data })) {
-            return;  // Event cancelled - developer handles it
-        }
-
-        // Default behavior: swap as raw HTML
         let target = resolveTarget(element, null);
         let targetSelector = api.attributeValue(element, 'hx-target');
 
@@ -547,104 +566,51 @@
         let connectUrl = getWsAttribute(element, 'connect');
         if (!connectUrl) return;
 
-        element._htmx = element._htmx || {};
-        element._htmx.wsInitialized = true;
-        
-        let triggerSpec = api.attributeValue(element, 'hx-trigger');
-        
-        if (!triggerSpec) {
-            // No trigger specified - connect immediately (default behavior)
-            // This is the most common use case: connect when element appears
+        let specString = api.attributeValue(element, 'hx-trigger') || 'load';
+        api.onTrigger(element, specString, () => {
+            if (element._htmx?.wsUrl) return;
             let entry = getOrCreateConnection(connectUrl, element);
             if (entry) {
+                element._htmx = element._htmx || {};
                 element._htmx.wsUrl = entry.url;
             }
-        } else {
-            // Connect based on explicit trigger
-            // Note: We only support bare event names for connection triggers.
-            // Modifiers like once, delay, throttle, from, target are NOT supported
-            // for connection establishment. Use htmx:before:ws:connect event for
-            // custom connection control logic.
-            let specs = api.parseTriggerSpecs(triggerSpec);
-            if (specs.length > 0) {
-                let spec = specs[0];
-                if (spec.name === 'load') {
-                    // Explicit load trigger - connect immediately
-                    let entry = getOrCreateConnection(connectUrl, element);
-                    if (entry) {
-                        element._htmx.wsUrl = entry.url;
-                    }
-                } else {
-                    // Set up event listener for other triggers (bare event name only)
-                    element.addEventListener(spec.name, () => {
-                        if (!element._htmx?.wsUrl) {
-                            let entry = getOrCreateConnection(connectUrl, element);
-                            if (entry) {
-                                element._htmx.wsUrl = entry.url;
-                            }
-                        }
-                    }, { once: true });
-                }
-            }
-        }
+        });
+        element._htmx = element._htmx || {};
+        element._htmx.wsInitialized = true;
     }
     
     function initializeSendElement(element) {
         if (element._htmx?.wsSendInitialized) return;
 
         let sendAttr = getWsAttribute(element, 'send');
-        // Only treat as URL if it looks like one (not "", "true", etc.)
         let sendUrl = looksLikeUrl(sendAttr) ? sendAttr : null;
-        let triggerSpec = api.attributeValue(element, 'hx-trigger');
-        
-        if (!triggerSpec) {
-            // Default trigger based on element type
-            triggerSpec = element.matches('form') ? 'submit' :
+        let specString = api.attributeValue(element, 'hx-trigger');
+        if (!specString) {
+            specString = element.matches('form') ? 'submit' :
                          element.matches('input:not([type=button]),select,textarea') ? 'change' :
                          'click';
         }
-        
-        // Note: We only support bare event names for send triggers.
-        // Modifiers like once, delay, throttle, from, target are NOT supported.
-        // For complex trigger logic, use htmx:before:ws:send to implement custom behavior.
-        let specs = api.parseTriggerSpecs(triggerSpec);
-        if (specs.length > 0) {
-            let spec = specs[0];
-            
-            let handler = async (evt) => {
-                // Prevent default for forms
-                if (element.matches('form') && evt.type === 'submit') {
-                    evt.preventDefault();
+
+        api.onTrigger(element, specString, async (evt) => {
+            if (element.matches('form') && evt.type === 'submit') {
+                evt.preventDefault();
+            }
+            if (sendUrl && !element._htmx?.wsUrl) {
+                let entry = getOrCreateConnection(sendUrl, element);
+                if (entry) {
+                    element._htmx = element._htmx || {};
+                    element._htmx.wsUrl = entry.url;
                 }
-                
-                // If this element has its own URL, ensure connection exists
-                if (sendUrl) {
-                    if (!element._htmx?.wsUrl) {
-                        let entry = getOrCreateConnection(sendUrl, element);
-                        if (entry) {
-                            element._htmx.wsUrl = entry.url;
-                        }
-                    }
-                }
-                
-                await sendMessage(element, evt);
-            };
-            
-            element.addEventListener(spec.name, handler);
-            element._htmx = element._htmx || {};
-            element._htmx.wsSendInitialized = true;
-            element._htmx.wsSendHandler = handler;
-            element._htmx.wsSendEvent = spec.name;
-        }
+            }
+            await sendMessage(element, evt);
+        });
+        element._htmx = element._htmx || {};
+        element._htmx.wsSendInitialized = true;
     }
     
     function cleanupElement(element) {
         if (element._htmx?.wsUrl) {
             decrementRef(element._htmx.wsUrl, element);
-        }
-        
-        if (element._htmx?.wsSendHandler) {
-            element.removeEventListener(element._htmx.wsSendEvent, element._htmx.wsSendHandler);
         }
     }
     
@@ -732,12 +698,14 @@
                     connectionRegistry.clear(); // Clear first to prevent reconnects
                     
                     entries.forEach(entry => {
-                        entry.refCount = 0; // Prevent pending timeouts from reconnecting
+                        entry.refCount = 0;
                         if (entry.reconnectTimer) {
                             clearTimeout(entry.reconnectTimer);
                         }
+                        if (entry.visibilityHandler) {
+                            document.removeEventListener('visibilitychange', entry.visibilityHandler);
+                        }
                         if (entry.socket) {
-                            // Remove listeners if possible or just close
                             entry.socket.close();
                         }
                         entry.elements.clear();

@@ -154,7 +154,33 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(50);
             assert.equal(mockWebSocketInstances.length, 1);
         });
-        
+
+        it('connects with delay modifier', async function() {
+            createProcessedHTML('<div hx-ws:connect="/ws/test" hx-trigger="load delay:100ms"></div>');
+            await htmx.timeout(20);
+            assert.equal(mockWebSocketInstances.length, 0, 'Should not connect before delay');
+            await htmx.timeout(120);
+            assert.equal(mockWebSocketInstances.length, 1, 'Should connect after delay');
+        });
+
+        it('connects on click once modifier', async function() {
+            let div = createProcessedHTML('<div hx-ws:connect="/ws/test" hx-trigger="click once"></div>');
+            await htmx.timeout(20);
+            assert.equal(mockWebSocketInstances.length, 0, 'Should not connect before click');
+
+            div.click();
+            await htmx.timeout(50);
+            assert.equal(mockWebSocketInstances.length, 1, 'Should connect on first click');
+
+            // Reset to check that second click doesn't create new connection attempt
+            // (once modifier removes the listener after first fire)
+            div._htmx.wsUrl = null;
+            div._htmx.wsInitialized = false;
+            div.click();
+            await htmx.timeout(50);
+            assert.equal(mockWebSocketInstances.length, 1, 'Second click should not reconnect (once modifier)');
+        });
+
         it('reuses connection for same URL', async function() {
             let container = createProcessedHTML(`
                 <div>
@@ -312,6 +338,23 @@ describe('hx-ws WebSocket extension', function() {
             assert.isTrue(urlEndsWith(mockWebSocketInstances[0].url, '/ws/direct'), 'URL should end with /ws/direct');
         });
         
+        it('send respects delay modifier', async function() {
+            let div = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load">
+                    <button id="delayed-btn" hx-ws:send hx-trigger="click delay:100ms">Send</button>
+                </div>
+            `);
+            await htmx.timeout(50);
+            let ws = mockWebSocketInstances[0];
+
+            document.getElementById('delayed-btn').click();
+            await htmx.timeout(20);
+            assert.isUndefined(ws.lastSent, 'Should not send before delay');
+
+            await htmx.timeout(120);
+            assert.isDefined(ws.lastSent, 'Should send after delay');
+        });
+
         it('includes element id in message context', async function() {
             let div = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test" hx-trigger="load">
@@ -572,19 +615,21 @@ describe('hx-ws WebSocket extension', function() {
     
     describe('Custom Channels', function() {
         
-        it('emits event for non-ui channel messages', async function() {
+        it('emits after:ws:message for non-ui channel messages without swapping', async function() {
             let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/test" hx-trigger="load"></div>
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
+                    <div id="content">Original</div>
+                </div>
             `);
             await htmx.timeout(50);
-            
+
             let eventFired = false;
-            let eventDetail = null;
-            container.addEventListener('htmx:wsMessage', (e) => {
+            let eventEnvelope = null;
+            container.addEventListener('htmx:after:ws:message', (e) => {
                 eventFired = true;
-                eventDetail = e.detail;
+                eventEnvelope = e.detail.envelope;
             });
-            
+
             let ws = mockWebSocketInstances[0];
             ws.simulateMessage({
                 channel: 'audio',
@@ -592,9 +637,10 @@ describe('hx-ws WebSocket extension', function() {
                 payload: 'base64data'
             });
             await htmx.timeout(20);
-            
+
             assert.isTrue(eventFired);
-            assert.equal(eventDetail.channel, 'audio');
+            assert.equal(eventEnvelope.channel, 'audio');
+            assert.equal(document.getElementById('content').textContent, 'Original', 'Non-ui messages should not swap');
         });
         
         it('does not auto-swap JSON channel messages', async function() {
@@ -734,24 +780,26 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(mockWebSocketInstances.length, 1);
         });
         
-        it('emits htmx:ws:reconnect on reconnection attempt', async function() {
+        it('emits htmx:before:ws:connection with attempt > 0 on reconnect', async function() {
             htmx.config.websockets = { reconnect: true, reconnectDelay: 50 };
-            
+
             let container = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test" hx-trigger="load"></div>
             `);
-            
-            let reconnectFired = false;
-            container.addEventListener('htmx:ws:reconnect', () => {
-                reconnectFired = true;
+
+            let reconnectAttempt = null;
+            container.addEventListener('htmx:before:ws:connection', (e) => {
+                if (e.detail.connection.attempt > 0) {
+                    reconnectAttempt = e.detail.connection.attempt;
+                }
             });
-            
+
             await htmx.timeout(50);
             let firstWs = mockWebSocketInstances[0];
             firstWs.close();
             await htmx.timeout(100);
-            
-            assert.isTrue(reconnectFired);
+
+            assert.equal(reconnectAttempt, 1);
         });
         
         it('uses exponential backoff for reconnection', async function() {
@@ -767,8 +815,10 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(50);
             
             let reconnectTimes = [];
-            container.addEventListener('htmx:ws:reconnect', () => {
-                reconnectTimes.push(Date.now());
+            container.addEventListener('htmx:before:ws:connection', (e) => {
+                if (e.detail.connection.attempt > 0) {
+                    reconnectTimes.push(Date.now());
+                }
             });
             
             // First close
@@ -793,16 +843,16 @@ describe('hx-ws WebSocket extension', function() {
             assert.isTrue(secondDelay >= firstDelay, 'Second delay should be >= first delay');
         });
         
-        it('emits htmx:wsSendError when send fails', async function() {
+        it('emits htmx:ws:error when send fails', async function() {
             let container = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test" hx-trigger="load">
                     <button hx-ws:send hx-trigger="click">Send</button>
                 </div>
             `);
             await htmx.timeout(50);
-            
+
             let errorFired = false;
-            container.addEventListener('htmx:wsSendError', () => {
+            container.addEventListener('htmx:ws:error', () => {
                 errorFired = true;
             });
             
@@ -865,45 +915,48 @@ describe('hx-ws WebSocket extension', function() {
             assert.include(document.getElementById('widget').innerHTML, 'Updated via partial');
         });
 
-        it('fires cancelable htmx:ws:rawMessage for non-JSON data', async function() {
+        it('fires htmx:before:ws:message for non-JSON data with envelope=null', async function() {
             let container = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
                     <div id="content">Original</div>
                 </div>
             `);
             await htmx.timeout(50);
-            
+
             let eventFired = false;
             let receivedData = null;
-            container.addEventListener('htmx:ws:rawMessage', (e) => {
+            let receivedEnvelope = 'not-set';
+            container.addEventListener('htmx:before:ws:message', (e) => {
                 eventFired = true;
                 receivedData = e.detail.data;
+                receivedEnvelope = e.detail.envelope;
             });
-            
+
             let ws = mockWebSocketInstances[0];
             ws.simulateRawMessage('<p>Raw content</p>');
             await htmx.timeout(20);
-            
+
             assert.isTrue(eventFired);
             assert.equal(receivedData, '<p>Raw content</p>');
+            assert.isNull(receivedEnvelope, 'envelope should be null for raw messages');
         });
 
-        it('prevents default swap when htmx:ws:rawMessage is cancelled', async function() {
+        it('prevents swap when htmx:before:ws:message is cancelled for raw data', async function() {
             let container = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
                     <div id="content">Original</div>
                 </div>
             `);
             await htmx.timeout(50);
-            
-            container.addEventListener('htmx:ws:rawMessage', (e) => {
-                e.preventDefault();
+
+            container.addEventListener('htmx:before:ws:message', (e) => {
+                if (!e.detail.envelope) e.preventDefault();
             });
-            
+
             let ws = mockWebSocketInstances[0];
             ws.simulateRawMessage('<hx-partial id="content"><p>Should not appear</p></hx-partial>');
             await htmx.timeout(20);
-            
+
             assert.equal(document.getElementById('content').textContent, 'Original');
         });
     });
@@ -950,7 +1003,7 @@ describe('hx-ws WebSocket extension', function() {
             htmx.config.websockets = { 
                 reconnect: true, 
                 reconnectDelay: 100,
-                reconnectJitter: true
+                reconnectJitter: 0.3
             };
             
             let container = createProcessedHTML(`
@@ -965,46 +1018,296 @@ describe('hx-ws WebSocket extension', function() {
             
             assert.isTrue(mockWebSocketInstances.length > 1);
         });
+
+        it('reconnectMaxAttempts limits reconnection attempts on consecutive failures', async function() {
+            htmx.config.websockets = {
+                reconnect: true,
+                reconnectDelay: 20,
+                reconnectMaxAttempts: 2,
+                reconnectJitter: 0
+            };
+
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load"></div>
+            `);
+            await htmx.timeout(50);
+
+            let reconnectCount = 0;
+            container.addEventListener('htmx:before:ws:connection', (e) => {
+                if (e.detail.connection.attempt > 0) reconnectCount++;
+            });
+
+            // Close the first connection — this triggers reconnect attempt 1
+            let ws = mockWebSocketInstances[0];
+            ws.close();
+            await htmx.timeout(50);
+
+            // The reconnected socket auto-opens (mock behavior), which resets
+            // attempts to 0. Close it immediately before it opens to simulate
+            // consecutive failures. Override mock to not auto-open.
+            for (let i = 1; i < mockWebSocketInstances.length; i++) {
+                let reconnectedWs = mockWebSocketInstances[i];
+                // Close immediately to prevent the open handler from resetting attempts
+                reconnectedWs.readyState = mockWebSocket.CLOSED;
+                reconnectedWs.triggerEvent('close', { code: 1006, reason: '', target: reconnectedWs });
+            }
+
+            // Wait for remaining reconnect attempts to exhaust
+            await htmx.timeout(200);
+
+            assert.equal(reconnectCount, 2, 'Should fire before:ws:connection for exactly 2 reconnect attempts');
+        });
+
+        it('reconnectJitter with numeric factor varies delays', async function() {
+            htmx.config.websockets = {
+                reconnect: true,
+                reconnectDelay: 100,
+                reconnectMaxAttempts: 5,
+                reconnectJitter: 0.5
+            };
+
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load"></div>
+            `);
+            await htmx.timeout(50);
+
+            let delays = [];
+            container.addEventListener('htmx:before:ws:connection', (e) => {
+                if (e.detail.connection.attempt > 0) {
+                    delays.push(e.detail.connection.delay);
+                }
+            });
+
+            let ws = mockWebSocketInstances[mockWebSocketInstances.length - 1];
+            ws.close();
+            await htmx.timeout(200);
+
+            assert.isAtLeast(delays.length, 1, 'Should have at least 1 reconnect');
+            // With jitter 0.5, first delay should be in range [50, 150]
+            assert.isAtLeast(delays[0], 50, 'Delay should be >= 50 (100 - 50)');
+            assert.isAtMost(delays[0], 150, 'Delay should be <= 150 (100 + 50)');
+        });
+
+        it('reconnectJitter of 0 produces exact base delay', async function() {
+            htmx.config.websockets = {
+                reconnect: true,
+                reconnectDelay: 20,
+                reconnectMaxAttempts: 3,
+                reconnectJitter: 0
+            };
+
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load"></div>
+            `);
+            await htmx.timeout(50);
+
+            let delays = [];
+            container.addEventListener('htmx:before:ws:connection', (e) => {
+                if (e.detail.connection.attempt > 0) {
+                    delays.push(e.detail.connection.delay);
+                }
+            });
+
+            // Each reconnect succeeds (mock auto-opens), so reconnectAttempts
+            // resets to 0 — each subsequent close starts at attempt 1 again
+            let ws = mockWebSocketInstances[mockWebSocketInstances.length - 1];
+            ws.close();
+            await htmx.timeout(50);
+
+            ws = mockWebSocketInstances[mockWebSocketInstances.length - 1];
+            ws.close();
+            await htmx.timeout(50);
+
+            assert.isAtLeast(delays.length, 2, 'Should have at least 2 reconnects');
+            assert.equal(delays[0], 20, 'First delay should be exactly 20ms');
+            assert.equal(delays[1], 20, 'Second delay should also be 20ms (attempts reset on successful open)');
+        });
+
+        it('htmx:before:ws:connection allows modifying reconnect delay', async function() {
+            htmx.config.websockets = {
+                reconnect: true,
+                reconnectDelay: 500,
+                reconnectMaxAttempts: 2,
+                reconnectJitter: 0
+            };
+
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load"></div>
+            `);
+            await htmx.timeout(50);
+
+            // Override delay to be very short
+            container.addEventListener('htmx:before:ws:connection', (e) => {
+                if (e.detail.connection.attempt > 0) {
+                    e.detail.connection.delay = 10;
+                }
+            });
+
+            let ws = mockWebSocketInstances[0];
+            ws.close();
+            // With original 500ms delay this would timeout, but we override to 10ms
+            await htmx.timeout(50);
+
+            assert.isTrue(mockWebSocketInstances.length > 1, 'Should reconnect with modified delay');
+        });
+
+        it('htmx:ws:error fires for send failures with error message', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load">
+                    <button hx-ws:send hx-trigger="click">Send</button>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            let errorMsg = null;
+            container.addEventListener('htmx:ws:error', (e) => {
+                errorMsg = e.detail.error;
+            });
+
+            mockWebSocketInstances[0].close();
+            await htmx.timeout(20);
+
+            container.querySelector('button').click();
+            await htmx.timeout(20);
+
+            assert.equal(errorMsg, 'Connection not open');
+        });
+
+        it('raw messages go through before/after:ws:message with envelope=null', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
+                    <div id="content">Original</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            let beforeDetail = null;
+            let afterDetail = null;
+            container.addEventListener('htmx:before:ws:message', (e) => {
+                beforeDetail = e.detail;
+            });
+            container.addEventListener('htmx:after:ws:message', (e) => {
+                afterDetail = e.detail;
+            });
+
+            let ws = mockWebSocketInstances[0];
+            ws.simulateRawMessage('<hx-partial id="content"><p>Updated</p></hx-partial>');
+            await htmx.timeout(20);
+
+            assert.isNotNull(beforeDetail, 'before:ws:message should fire for raw messages');
+            assert.isNull(beforeDetail.envelope, 'envelope should be null for raw messages');
+            assert.equal(beforeDetail.data, '<hx-partial id="content"><p>Updated</p></hx-partial>');
+
+            assert.isNotNull(afterDetail, 'after:ws:message should fire for raw messages');
+            assert.isNull(afterDetail.envelope, 'envelope should be null in after event too');
+        });
+
+        it('JSON messages go through before/after:ws:message with envelope', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load" hx-target="#content">
+                    <div id="content"></div>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            let beforeDetail = null;
+            container.addEventListener('htmx:before:ws:message', (e) => {
+                beforeDetail = e.detail;
+            });
+
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({
+                channel: 'ui',
+                format: 'html',
+                payload: '<hx-partial id="content">New</hx-partial>'
+            });
+            await htmx.timeout(20);
+
+            assert.isNotNull(beforeDetail, 'before:ws:message should fire');
+            assert.isNotNull(beforeDetail.envelope, 'envelope should be set for JSON messages');
+            assert.equal(beforeDetail.envelope.channel, 'ui');
+            assert.isString(beforeDetail.data, 'data should be the raw JSON string');
+        });
     });
-    
+
     // ========================================
     // 7. EVENT EMISSION TESTS
     // ========================================
     
     describe('Event Emission', function() {
         
-        it('emits htmx:before:ws:connect before connection', async function() {
+        it('emits htmx:before:ws:connection before connection', async function() {
             let beforeFired = false;
+            let attempt = null;
             let container = document.createElement('div');
             container.innerHTML = '<div hx-ws:connect="/ws/test" hx-trigger="load"></div>';
-            
-            container.addEventListener('htmx:before:ws:connect', () => {
+
+            container.addEventListener('htmx:before:ws:connection', (e) => {
                 beforeFired = true;
+                attempt = e.detail.connection.attempt;
             });
-            
+
             document.body.appendChild(container);
             htmx.process(container);
             await htmx.timeout(20);
-            
+
             assert.isTrue(beforeFired);
+            assert.equal(attempt, 0, 'Initial connection should have attempt=0');
             container.remove();
         });
-        
-        it('emits htmx:after:ws:connect after connection', async function() {
+
+        it('emits htmx:after:ws:connection after connection', async function() {
             let afterFired = false;
             let container = document.createElement('div');
             container.innerHTML = '<div hx-ws:connect="/ws/test" hx-trigger="load"></div>';
-            
-            container.addEventListener('htmx:after:ws:connect', () => {
+
+            container.addEventListener('htmx:after:ws:connection', () => {
                 afterFired = true;
             });
-            
+
             document.body.appendChild(container);
             htmx.process(container);
             await htmx.timeout(50);
-            
+
             assert.isTrue(afterFired);
             container.remove();
+        });
+
+        it('can cancel initial connection via htmx:before:ws:connection', async function() {
+            let container = document.createElement('div');
+            container.innerHTML = '<div hx-ws:connect="/ws/test" hx-trigger="load"></div>';
+
+            container.addEventListener('htmx:before:ws:connection', (e) => {
+                e.detail.connection.cancelled = true;
+            });
+
+            document.body.appendChild(container);
+            htmx.process(container);
+            await htmx.timeout(50);
+
+            assert.equal(mockWebSocketInstances.length, 0, 'Connection should be cancelled');
+            container.remove();
+        });
+
+        it('can cancel reconnection via htmx:before:ws:connection', async function() {
+            htmx.config.websockets = { reconnect: true, reconnectDelay: 50 };
+
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-trigger="load"></div>
+            `);
+
+            container.addEventListener('htmx:before:ws:connection', (e) => {
+                if (e.detail.connection.attempt > 0) {
+                    e.detail.connection.cancelled = true;
+                }
+            });
+
+            await htmx.timeout(50);
+            let firstWs = mockWebSocketInstances[0];
+            firstWs.close();
+            await htmx.timeout(150);
+
+            assert.equal(mockWebSocketInstances.length, 1, 'Should not reconnect when cancelled');
         });
         
         it('emits htmx:before:ws:send before sending', async function() {
