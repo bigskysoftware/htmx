@@ -423,8 +423,11 @@ var htmx = (() => {
             // Build request body
             let body = this.__collectFormData(elt, form, evt.submitter, ctx.request.validate)
             if (!body) return  // Validation failed
-            let valsResult = this.__handleHxVals(elt, body)
-            if (valsResult) await valsResult  // Only await if it returned a promise
+            let valsResult = this.__getAttributeObject(elt, "hx-vals", obj => {
+                ctx.vals = obj;
+                for (let key in obj) body.set(key, obj[key]);
+            });
+            if (valsResult) await valsResult; // Only await if it returned a promise
             if (ctx.values) {
                 for (let k in ctx.values) {
                     body.delete(k);
@@ -1898,12 +1901,6 @@ var htmx = (() => {
                 // Synchronous path - return the parsed object directly
                 callback(this.__parseConfig(attrValue));
             }
-        }
-
-        __handleHxVals(elt, body) {
-            return this.__getAttributeObject(elt, "hx-vals", obj => {
-                for (let key in obj) body.set(key, obj[key]);
-            });
         }
 
         __stringHyperscriptStyleSelector(selector) {
