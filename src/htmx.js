@@ -529,8 +529,7 @@ var htmx = (() => {
                     return
                 }
 
-                let isSSE = response.headers.get("Content-Type")?.includes('text/event-stream');
-                if (isSSE) {
+                if (ctx.isSSE) {
                     // SSE response
                     await this.__handleSSE(ctx, elt, response);
                 } else {
