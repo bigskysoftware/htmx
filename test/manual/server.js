@@ -2,8 +2,14 @@ const http = require('http');
 const fs = require('fs').promises;
 
 const serve = (file, type = 'text/html') => async (req, res) => {
-    res.writeHead(200, { 'Content-Type': type });
-    res.end(await fs.readFile(file));
+    try {
+        const content = await fs.readFile(file);
+        res.writeHead(200, { 'Content-Type': type });
+        res.end(content);
+    } catch (err) {
+        res.writeHead(404);
+        res.end('Not Found');
+    }
 };
 
 const sse = (handler) => (req, res) => {
@@ -16,10 +22,11 @@ const sse = (handler) => (req, res) => {
 };
 
 const routes = {
-    '/':               serve('test/manual/index.html'),
+    '/':               (req, res) => { res.writeHead(302, {'Location': '/sse'}); res.end(); },
     '/sse':            serve('test/manual/sse.html'),
     '/ios-sse':        serve('test/manual/ios-sse.html'),
     '/htmx.js':        serve('src/htmx.js', 'application/javascript'),
+    '/ext/hx-sse.js':  serve('src/ext/hx-sse.js', 'application/javascript'),
 
     '/heartbeat': sse((req, res) => {
         let count = 0;
@@ -113,8 +120,10 @@ http.createServer(async (req, res) => {
         try {
             await handler(req, res);
         } catch (err) {
-            res.writeHead(500);
-            res.end('Server Error');
+            if (!res.headersSent) {
+                res.writeHead(500);
+                res.end('Server Error');
+            }
         }
     } else {
         res.writeHead(404);

@@ -157,6 +157,19 @@ This event is triggered before an AJAX request is issued. If you call `preventDe
 
 * `detail.ctx` - the request context object
 
+### Event - `htmx:before:response` {#htmx:before:response}
+
+This event is triggered after a fetch response is received but before the response body is consumed. This allows extensions to intercept the raw response (e.g., to handle streaming content types like `text/event-stream`).
+
+If you call `preventDefault()`, the normal response processing (body consumption, swap) will be skipped.
+
+##### Details
+
+* `detail.ctx` - the request context object containing:
+  * `ctx.response.raw` - the raw [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) object (body not yet consumed)
+  * `ctx.response.status` - the HTTP status code
+  * `ctx.response.headers` - the response headers
+
 ### Event - `htmx:after:request` {#htmx:after:request}
 
 **Replaces:** `htmx:afterRequest`
@@ -324,71 +337,4 @@ This event is triggered after a View Transition completes.
 
 ## Server-Sent Events (SSE)
 
-### Event - `htmx:before:sse:stream` {#htmx:before:sse:stream}
-
-This event is triggered before an SSE (Server-Sent Events) stream is processed. You can call `preventDefault()` to cancel the stream processing.
-
-##### Details
-
-* `detail.ctx` - the request context object
-* `detail.stream` - the SSE stream configuration
-
-### Event - `htmx:after:sse:stream` {#htmx:after:sse:stream}
-
-This event is triggered after an SSE stream ends (either naturally or due to error/cancellation).
-
-##### Details
-
-* `detail.ctx` - the request context object
-
-### Event - `htmx:before:sse:message` {#htmx:before:sse:message}
-
-This event is triggered before each SSE message is processed. You can set `detail.message.cancelled = true` to skip processing this message.
-
-```javascript
-document.body.addEventListener('htmx:before:sse:message', function(evt) {
-  // Skip messages of certain type
-  if (evt.detail.message.event === 'heartbeat') {
-    evt.detail.message.cancelled = true;
-  }
-});
-```
-
-##### Details
-
-* `detail.ctx` - the request context object
-* `detail.message` - the SSE message object with properties:
-  * `data` - the message data
-  * `event` - the event type (if specified)
-  * `id` - the message ID (if specified)
-  * `cancelled` - set to `true` to skip this message
-
-### Event - `htmx:after:sse:message` {#htmx:after:sse:message}
-
-This event is triggered after an SSE message has been processed and swapped.
-
-##### Details
-
-* `detail.ctx` - the request context object
-* `detail.message` - the SSE message object
-
-### Event - `htmx:before:sse:reconnect` {#htmx:before:sse:reconnect}
-
-This event is triggered before reconnecting to an SSE stream (when using `continuous` mode). You can set `detail.reconnect.cancelled = true` to prevent the reconnection.
-
-```javascript
-document.body.addEventListener('htmx:before:sse:reconnect', function(evt) {
-  // Stop reconnecting after 10 attempts
-  if (evt.detail.reconnect.attempt > 10) {
-    evt.detail.reconnect.cancelled = true;
-  }
-});
-```
-
-##### Details
-
-* `detail.ctx` - the request context object
-* `detail.reconnect` - the reconnection configuration with properties:
-  * `attempt` - the reconnection attempt number
-  * `delay` - the delay before reconnection (in milliseconds)
-  * `cancelled` - set to `true` to cancel the reconnection
+SSE is supported via the [SSE extension](/extensions/sse). See the [extension documentation](/extensions/sse#events) for SSE-specific events.

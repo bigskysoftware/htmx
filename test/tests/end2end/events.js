@@ -87,5 +87,29 @@ describe('htmx events', function() {
         assert.isTrue(bubbledToDocument)
     })
 
+    it('htmx:before:response fires with ctx after fetch', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let firedCtx = null
+        div.addEventListener('htmx:before:response', (e) => {
+            firedCtx = e.detail.ctx
+        })
+        div.click()
+        await forRequest()
+        assert.isNotNull(firedCtx, 'should fire with ctx')
+        assert.equal(firedCtx.response.status, 200)
+    })
+
+    it('htmx:before:response cancellation prevents swap', async function () {
+        mockResponse('GET', '/test', 'Should not appear')
+        let div = createProcessedHTML('<div hx-get="/test">Original</div>')
+        div.addEventListener('htmx:before:response', (e) => {
+            e.preventDefault()
+        })
+        div.click()
+        await forRequest()
+        assertTextContentIs('div', 'Original')
+    })
+
     // TODO - verify shape of details in these events
 })

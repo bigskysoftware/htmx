@@ -952,128 +952,9 @@ As such, the normal HTML accessibility recommendations apply.  For example:
 * Associate text labels with all form fields
 * Maximize the readability of your application with appropriate fonts, contrast, etc.
 
-## Streaming Responses
+## Server-Sent Events (SSE)
 
-htmx 4 has built-in support for Streaming Responses Server-Sent Events (SSE).
-
-The typical `hx-get`, `hx-post`, `hx-put`, `hx-patch`, or `hx-delete` attributes can trigger a streaming response. When 
-the server responds with `Content-Type: text/event-stream` instead of `Content-Type: text/html`, htmx automatically 
-handles the stream. 
-
-Each SSE message with a `data:` line (and no `event:` line) is processed like a regular htmx response, respecting 
-`hx-target`, `hx-select`, and `hx-swap` attributes.
-
-Like [fetch-event-source](https://github.com/Azure/fetch-event-source), htmx's custom SSE implementation supports
-request bodies, custom headers, and all HTTP methods (not just GET), and Page Visibility API
-integration (using the `closeOnHide` option).
-
-### Basic Usage
-
-```html
-<button hx-get="/stream" hx-target="#stream-output" hx-swap="innerHTML">
-    Stream Response
-</button>
-
-<div id="stream-output"></div>
-```
-
-The server sends SSE messages with `data:` lines:
-```
-data: H
-
-data: He
-
-// ...
-
-data: Hello partner!
-
-```
-
-Each message replaces the target element's content. The stream processes until the connection closes, then stops. 
-No reconnection occurs by default.
-
-### Stream Reconnection
-
-Stream reconnection behavior is controlled via `hx-config`. By default, reconnection is disabled (`reconnect: false`).
-
-To enable automatic reconnection when the connection drops:
-
-```html
-<body hx-get="/updates" hx-config='{ "sse": { "reconnect": true } }' hx-trigger="load">
-    ...
-</body>
-```
-
-When enabled, htmx will reconnect automatically with exponential backoff.
-
-**Note:** Reconnection is primarily intended for use with `<hx-partial>` to enable real-time
-updates to multiple parts of the page via a permanently open SSE connection.
-
-### Custom Events
-
-SSE `event:` lines trigger custom DOM events. When an `event:` line is present, htmx fires that event instead of 
-performing a normal swap. 
-
-Use this for lightweight updates without swapping DOM elements.
-
-```html
-<button hx-get="/progress"
-        hx-on:progress="find('#bar').style.width = event.detail.data + '%'">
-    Start
-</button>
-```
-
-Server sends custom events:
-
-```
-event: progress
-data: 50
-
-event: progress
-data: 100
-
-```
-
-### Configuration
-
-You can configure the global streaming config in `htmx.config.sse`:
-
-```html
-<meta name="htmx-config" content='{
-  "sse": {
-    "reconnect": false,
-    "reconnectMaxAttempts": 10,
-    "reconnectDelay": 500,
-    "reconnectMaxDelay": 60000,
-    "reconnectJitter": 0.3,
-    "closeOnHide": false
-  }
-}'>
-```
-
-- `reconnect`: Boolean to enable/disable reconnection (default: `false`)
-- `reconnectMaxAttempts`: Maximum reconnection attempts (default: `10`)
-- `reconnectDelay`: Initial reconnect delay in ms (default: `500`)
-- `reconnectMaxDelay`: Max backoff delay in ms (default: `60000`)
-- `reconnectJitter`: Jitter factor for randomizing delays (default: `0.3`)
-- `closeOnHide`: Close the SSE stream when the page becomes hidden (default: `false`). When the page becomes visible again and `reconnect` is enabled, the stream automatically reconnects. This handles mobile browsers (especially iOS Safari) that kill background TCP connections without firing error events.
-
-
-You can override these settings per-element using `hx-config`:
-```html
-<button hx-get="/stream"
-        hx-config='{"sse": {"reconnect": true, "reconnectMaxAttempts": 10, "reconnectDelay": 1000, "closeOnHide": true}}'>
-    Start
-</button>
-```
-
-### Events
-
-- `htmx:before:sse:stream`: Fired before processing stream
-- `htmx:before:sse:message`: Fired before each message swap. Cancel with `event.detail.message.cancelled = true`
-- `htmx:after:sse:message`: Fired after each message swap
-- `htmx:after:sse:stream`: Fired when stream ends
-- `htmx:before:sse:reconnect`: Fired before reconnection attempt. Cancel with `event.detail.reconnect.cancelled = true`
+SSE is supported via the [SSE extension](/extensions/sse). See the [extension documentation](/extensions/sse) for full details on configuration, events, and usage.
 
 ## Web Sockets
 
@@ -1732,7 +1613,6 @@ They are listed below:
 | `htmx.config.inlineScriptNonce`   | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                                                                                                                                                                        |
 | `htmx.config.inlineStyleNonce`    | defaults to `''`, meaning that no nonce will be added to inline styles                                                                                                                                                                                                                                                         |
 | `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,optimistic'`)                                                                                                                                                                                                                             |
-| `htmx.config.sse`                 | configuration for Server-Sent Events (SSE) streams. An object with the following properties: `reconnect` (default: `false`), `reconnectMaxAttempts` (default: `10`), `reconnectDelay` (default: `500`ms), `reconnectMaxDelay` (default: `60000`ms), `reconnectJitter` (default: `0.3`), `closeOnHide` (default: `false`) |
 | `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute names to ignore when morphing elements                                                                                                                                                                                                                                 |
 | `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                                                                                            |
 | `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                                                                                              |

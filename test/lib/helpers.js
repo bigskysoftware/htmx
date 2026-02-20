@@ -164,6 +164,10 @@ function mockStreamResponse(url) {
       let msg = (event ? `event: ${event}\n` : '') + (id ? `id: ${id}\n` : '') + `data: ${data}\n\n`;
       ctrl.enqueue(enc.encode(msg));
     },
+    sendRaw(raw) {
+      const ctrl = controllers[controllers.length - 1];
+      if (ctrl) ctrl.enqueue(enc.encode(raw));
+    },
     close: () => {
       // Close the most recent controller
       const ctrl = controllers[controllers.length - 1];

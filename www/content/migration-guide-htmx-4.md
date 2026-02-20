@@ -168,11 +168,6 @@ If you need upload progress tracking in htmx 4:
 * `htmx:before:settle` - Triggered before settle phase begins
 * `htmx:after:settle` - Triggered after settle phase completes
 * `htmx:after:viewTransition` - Triggered after view transition completes
-* `htmx:after:sse:message` - Triggered after processing an SSE message
-* `htmx:after:sse:stream` - Triggered after an SSE stream ends
-* `htmx:before:sse:message` - Triggered before processing an SSE message
-* `htmx:before:sse:reconnect` - Triggered before reconnecting to SSE stream
-* `htmx:before:sse:stream` - Triggered before processing an SSE stream
 * `htmx:finally:request` - Always triggered after request completes (success or error)
 
 ---
@@ -265,7 +260,7 @@ The following request headers have been removed in htmx 4:
 | Header            | Description                                                                                                           |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `HX-Request-Type` | Set to `"full"` for full page requests (target is `body` or has `hx-select`) or `"partial"` for partial page requests |
-| `Accept`          | Now explicitly set to `"text/html, text/event-stream"`                                                                |
+| `Accept`          | Now explicitly set to `"text/html"`                                                                                   |
 
 ### Removed Response Headers
 
@@ -289,6 +284,126 @@ The following response headers continue to work the same in htmx 4:
 * `HX-Retarget` - Change the target element
 * `HX-Reswap` - Change the swap strategy
 * `HX-Reselect` - Change the content selector
+
+---
+
+## Server-Sent Events (SSE) Extension
+
+The htmx 2.x SSE extension (`htmx-ext-sse`) has been rewritten for htmx 4.
+
+### What Changed
+
+The 2.x extension was built around `EventSource` and had its own swap mechanism (`sse-swap`) that operated
+outside of htmx's normal request/response pipeline. The 4.x extension removes all of that. It hooks into
+htmx's standard request pipeline instead: any htmx request that receives a `Content-Type: text/event-stream`
+response is automatically streamed as SSE. Swapping uses the same `hx-swap`, `hx-target`, etc. attributes
+as any other htmx response.
+
+This means:
+- **Unnamed messages** (no `event:` field) are swapped into the DOM using htmx's normal swap pipeline.
+- **Named messages** (with an `event:` field) are dispatched as DOM events on the source element. They are not swapped.
+- `sse-swap` is gone entirely. There is no equivalent, because the extension no longer has its own swap system.
+
+### Loading the Extension
+
+**htmx 2.x:**
+```html
+<script src="htmx.js"></script>
+<script src="htmx-ext-sse.js"></script>
+<body hx-ext="sse">
+```
+
+**htmx 4.x:**
+```html
+<meta name="htmx-config" content='{"extensions": "sse"}'>
+<script src="htmx.js"></script>
+<script src="ext/hx-sse.js"></script>
+```
+
+htmx 4 uses the `extensions` config for approval instead of `hx-ext` attributes.
+
+### Connecting and Swapping Unnamed Messages
+
+**htmx 2.x:**
+```html
+<div hx-ext="sse" sse-connect="/chatroom" sse-swap="message">
+    Contents of this box will be updated in real time
+    with every SSE message received from the chatroom.
+</div>
+```
+
+**htmx 4.x:**
+```html
+<div hx-sse:connect="/chatroom">
+    Contents of this box will be updated in real time
+    with every SSE message received from the chatroom.
+</div>
+```
+
+`hx-sse:connect` replaces `hx-ext="sse"` + `sse-connect`. Unnamed messages are swapped automatically
+using htmx's normal swap pipeline, so `sse-swap="message"` is no longer needed.
+
+### Named Events
+
+In the 2.x extension, `sse-swap="EventName"` would swap the data from a named event directly into an element.
+In the 4.x extension, named events are not swapped. They are dispatched as DOM events on the source element
+and bubble up the DOM. You can use them to trigger htmx requests:
+
+**htmx 2.x:**
+```html
+<div hx-ext="sse" sse-connect="/event-stream">
+    <div hx-get="/chatroom" hx-trigger="sse:chatter">
+        ...
+    </div>
+</div>
+```
+
+**htmx 4.x:**
+```html
+<div hx-sse:connect="/event-stream">
+    <div hx-get="/chatroom" hx-trigger="chatter from:body">
+        ...
+    </div>
+</div>
+```
+
+Named SSE events become regular DOM events, no `sse:` prefix needed. Since events are dispatched on the
+source element and bubble up (not down to children), child elements use `from:body` to listen.
+
+### Closing a Connection
+
+**htmx 2.x:**
+```html
+<div hx-ext="sse" sse-connect="/stream" sse-close="done">
+    Streaming until server sends "done"...
+</div>
+```
+
+**htmx 4.x:**
+```html
+<div hx-sse:connect="/stream" hx-sse:close="done">
+    Streaming until server sends "done"...
+</div>
+```
+
+### Event Changes
+
+| htmx 2.x Event             | htmx 4.x Event                    | Notes                                        |
+|-----------------------------|------------------------------------|----------------------------------------------|
+| `htmx:sseOpen`             | `htmx:after:sse:connection`        | `detail.connection.attempt === 0` for initial |
+| `htmx:sseError`            | `htmx:sse:error`                   | `detail.error` contains the error             |
+| `htmx:sseBeforeMessage`    | `htmx:before:sse:message`          | Set `detail.message.cancelled = true` to skip |
+| `htmx:sseMessage`          | `htmx:after:sse:message`           |                                               |
+| `htmx:sseClose`            | `htmx:sse:close`                   | `detail.reason` indicates why                 |
+
+### Other Changes
+
+* **No more `EventSource`**: uses `fetch()` + `ReadableStream`, enabling POST requests, custom headers, and cookies.
+* **Reconnection**: `hx-sse:connect` reconnects automatically with exponential backoff. Configure via `hx-config`.
+* **Background tab handling**: pauses streams when the tab is backgrounded, reconnects when visible (configurable via `pauseOnBackground`).
+* **Any HTTP method**: `hx-post`, `hx-put`, etc. all work with SSE responses. The extension intercepts any response with `Content-Type: text/event-stream`.
+
+See the [SSE extension documentation](/extensions/sse) for complete details.
 
 ---
 

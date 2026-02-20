@@ -1,256 +1,242 @@
 +++
-title = "htmx Server Sent Event (SSE) Extension"
+title = "htmx Server-Sent Events (SSE) Extension"
 +++
 
-The `Server Sent Events` extension connects to
-an [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) directly
-from HTML. It manages the connections to your web server, listens for server events, and then swaps their contents into
-your htmx webpage in real-time.
+The SSE extension adds support for [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) streaming to htmx. It works by intercepting any htmx response with `Content-Type: text/event-stream` and streaming SSE messages into the DOM in real-time.
 
-SSE is a lightweight alternative to WebSockets that works over existing HTTP connections, so it is easy to use through
-proxy servers and firewalls. Remember, SSE is a uni-directional service, so you cannot send any messages to an SSE
-server once the connection has been established. If you need bi-directional communication, then you should consider
-using [WebSockets](@/extensions/ws.md) instead.
-
-This extension replaces the experimental `hx-sse` attribute built into previous versions of htmx. For help migrating
-from older versions, see the migration guide at the bottom of this page.
-
-Use the following attributes to configure how SSE connections behave:
-
-* `sse-connect="<url>"` - The URL of the SSE server.
-* `sse-swap="<message-name>"` - The name of the message to swap into the DOM.
-* `hx-trigger="sse:<message-name>"` - SSE messages can also trigger HTTP callbacks using
-  the [`hx-trigger`](https://htmx.org/attributes/hx-trigger) attribute.
-* `sse-close=<message-name>` - To close the EventStream gracefully when that message is received. This might be helpful
-  if you want to send information to a client that will eventually stop.
+SSE is a lightweight alternative to WebSockets that works over existing HTTP connections, making it easy to use through proxy servers and firewalls. SSE is uni-directional: the server pushes data to the client. If you need bi-directional communication, consider [WebSockets](@/extensions/ws.md) instead.
 
 ## Installing
 
-The fastest way to install `sse` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
-```HTML
+Include the extension script after htmx and approve it:
+
+```html
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-sse@2.2.4" integrity="sha384-A986SAtodyH8eg8x8irJnYUk7i9inVQqYigD6qZ9evobksGNIXfeFvDwLSHcp31N" crossorigin="anonymous"></script>
+    <script src="/path/to/htmx.js"></script>
+    <script src="/path/to/ext/hx-sse.js"></script>
 </head>
-<body hx-ext="sse">
-```
-An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext-sse/dist/sse.js.
-
-While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `sse` is to simply copy it into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-sse`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
-
-For npm-style build systems, you can install `sse` via [npm](https://www.npmjs.com/):
-```bash
-npm install htmx-ext-sse
-```
-After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-sse/dist/sse.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
-
-If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
-- Install `htmx.org` and `htmx-ext-sse` via npm
-- Import both packages to your `index.js`
-```JS
-import `htmx.org`;
-import `htmx-ext-sse`; 
 ```
 
-## Usage
+Approve the extension via meta tag:
 
 ```html
+<meta name="htmx-config" content='{"extensions": "sse"}'>
+```
 
-<div hx-ext="sse" sse-connect="/chatroom" sse-swap="message">
-    Contents of this box will be updated in real time
-    with every SSE message received from the chatroom.
+## How It Works
+
+The SSE extension hooks into htmx's request pipeline. When any htmx request receives a response with `Content-Type: text/event-stream`, the extension takes over and streams SSE messages into the DOM instead of performing a normal swap.
+
+This means **any `hx-get`, `hx-post`, etc. that returns an SSE stream will just work**, no special attributes needed beyond loading the extension.
+
+## `hx-sse:connect`
+
+For persistent SSE connections (auto-connect on load, reconnect on failure), use `hx-sse:connect`:
+
+```html
+<!-- Auto-connects on load, streams messages into the div -->
+<div hx-sse:connect="/stream">
+    Waiting for messages...
 </div>
 ```
 
-### Connecting to an SSE Server
+`hx-sse:connect` is convenience sugar for a well-preconfigured `hx-get`. It defaults to:
+- **Trigger**: `load` (connects immediately)
+- **Reconnect**: enabled with exponential backoff
+- **Pause on background**: closes the stream when the tab is backgrounded, reconnects when visible
 
-To connect to an SSE server, use the `hx-ext="sse"` attribute to install the extension on that HTML element, then
-add `sse-connect="<url>"` to the element to make the connection.
+### Using with Standard Attributes
 
-When designing your server application, remember that SSE works just like any HTTP request. Although you cannot send any
-messages to the server after you have established a connection, you can send parameters to the server along with your
-request. So, instead of making an SSE connection to your server at `https://my-server/chat-updates` you can also connect
-to `https://my-server/chat-updates?friends=true&format=detailed`. This allows your server to customize its responses to
-what your client needs.
+`hx-sse:connect` works with all standard htmx attributes:
 
-### Receiving Named Events
+```html
+<!-- Swap into a different target -->
+<button hx-sse:connect="/notifications" hx-target="#alerts">
+    Start Notifications
+</button>
+<div id="alerts"></div>
 
-SSE messages consist of an event name and a data packet. No other metadata is allowed in the message. Here is an
-example:
+<!-- Append messages instead of replacing -->
+<div hx-sse:connect="/log" hx-swap="beforeend">
+    <h3>Log:</h3>
+</div>
+```
+
+### Trigger Modifiers
+
+All standard `hx-trigger` modifiers are supported:
+
+```html
+<!-- Connect after a delay -->
+<div hx-sse:connect="/stream" hx-trigger="load delay:2s">
+
+<!-- Connect on click -->
+<button hx-sse:connect="/stream" hx-trigger="click">Start</button>
+
+<!-- Connect on click, only once -->
+<button hx-sse:connect="/stream" hx-trigger="click once">Start</button>
+```
+
+### Using Standard htmx Attributes
+
+Since the extension intercepts based on Content-Type, any htmx request that returns `text/event-stream` will be streamed automatically:
+
+```html
+<!-- hx-get, hx-post, etc. all work -->
+<div hx-get="/stream" hx-trigger="load">
+    Waiting...
+</div>
+
+<button hx-post="/generate" hx-target="#output">
+    Generate
+</button>
+```
+
+The difference is that `hx-sse:connect` enables reconnection and `pauseOnBackground` by default, while standard attributes do not.
+
+## `hx-sse:close`
+
+Use `hx-sse:close` to gracefully close an SSE connection when a specific named event is received from the server:
+
+```html
+<div hx-sse:connect="/stream" hx-sse:close="done">
+    Streaming until server sends "done"...
+</div>
+```
+
+When the server sends `event: done`, the connection is closed and an `htmx:sse:close` event is fired with `detail.reason === "message"`.
+
+## Named Events
+
+SSE messages with an `event:` field are dispatched as DOM events on the source element rather than being swapped:
 
 ```txt
-event: EventName
-data: <div>Content to swap into your HTML page.</div>
-```
-
-We'll use the `sse-swap` attribute to listen for this event and swap its contents into our webpage.
-
-```html
-
-<div hx-ext="sse" sse-connect="/event-source" sse-swap="EventName"></div>
-```
-
-Notice that the name `EventName` from the server's message must match the value in the `sse-swap` attribute. Your server
-can use as many different event names as necessary, but be careful: browsers can only listen for events that have been
-explicitly named. So, if your server sends an event named `ChatroomUpdate` but your browser is only listening for events
-named `ChatUpdate` then the extra event will be discarded.
-
-### Receiving Unnamed Events
-
-SSE messages can also be sent without any event name. In this case, the browser uses the default name `message` in its
-place. The same rules specified above still apply. If your server sends an unnamed message, then you must listen for it
-by including `sse-swap="message"`. There is no option for using a catch-all name. Here's how this looks:
-
-```txt
-data: <div>Content to swap into your HTML page.</div>
+event: notification
+data: {"title": "New message", "body": "Hello!"}
 ```
 
 ```html
-
-<div hx-ext="sse" sse-connect="/event-source" sse-swap="message"></div>
-```
-
-### Receiving Multiple Events
-
-You can also listen to multiple events (named or unnamed) from a single EventSource. Listeners must be either 1) the
-same element that contains the `hx-ext` and `sse-connect` attributes, or 2) child elements of the element containing
-the `hx-ext` and `sse-connect` attributes.
-
-```html
-
-Multiple events in the same element
-<div hx-ext="sse" sse-connect="/server-url" sse-swap="event1,event2"></div>
-
-Multiple events in different elements (from the same source).
-<div hx-ext="sse" sse-connect="/server-url">
-    <div sse-swap="event1"></div>
-    <div sse-swap="event2"></div>
+<div hx-sse:connect="/events"
+     hx-on:notification="alert(event.detail.data)">
 </div>
 ```
 
-### Trigger Server Callbacks
+Messages without an `event:` field are swapped into the DOM as HTML content.
 
-When a connection for server sent events has been established, child elements can listen for these events by using the
-special [`hx-trigger`](https://htmx.org/attributes/hx-trigger) syntax `sse:<event_name>`. This, when combined with
-an `hx-get` or similar will trigger the element to make a request.
+## Configuration
 
-Here is an example:
+Configure SSE behavior globally via `htmx.config.sse` or per-element via `hx-config`:
 
 ```html
-
-<div hx-ext="sse" sse-connect="/event_stream">
-    <div hx-get="/chatroom" hx-trigger="sse:chatter">
-        ...
-    </div>
-</div>
-```
-
-This example establishes an SSE connection to the `event_stream` end point which then triggers
-a `GET` to the `/chatroom` url whenever the `chatter` event is seen.
-
-### Automatic Reconnection
-
-If the SSE Event Stream is closed unexpectedly, browsers are supposed to attempt to reconnect automatically. However, in
-rare situations this does not work and your browser can be left hanging. This extension adds its own reconnection
-logic (using an [exponential-backoff algorithm](https://en.wikipedia.org/wiki/Exponential_backoff)) on top of the
-browser's automatic reconnection, so that your SSE streams will always be as reliable as possible.
-
-### Testing SSE Connections with the Demo Server
-
-Htmx includes a demo SSE server written in Node.js that will help you to see SSE in action, and begin bootstrapping your
-own SSE code. It is located in the /test/ws-sse folder of
-the [`htmx-extensions`](https://github.com/bigskysoftware/htmx-extensions) repository. Look at /test/ws-sse/README.md
-for instructions on running and using the test server.
-
-### Migrating from Previous Versions
-
-Previous versions of htmx used a built-in tag `hx-sse` to implement Server Sent Events. This code has been migrated into
-an extension instead. Here are the steps you need to take to migrate to this version:
-
-| Old Attribute                  | New Attribute            | Comments                                                                                                                                                                                        |
-|--------------------------------|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `hx-sse=""`                    | `hx-ext="sse"`           | Use the `hx-ext="sse"` attribute to install the SSE extension into any HTML element.                                                                                                            |
-| `hx-sse="connect:<url>"`       | `sse-connect="<url>"`    | Add a new attribute `sse-connect` to the tag that specifies the URL of the Event Stream.  This attribute must be in the same tag as the `hx-ext` attribute.                                     |
-| `hx-sse="swap:<EventName>"`    | `sse-swap="<EventName>"` | Add a new attribute `sse-swap` to any elements that will be swapped in via the SSE extension.  This attribute must be placed **on** or **inside of** the tag containing the `hx-ext` attribute. |
-| `hx-trigger="sse:<EventName>"` | NO CHANGE                | any `hx-trigger` attributes do not need to change.  The extension will identify these attributes and add listeners for any events prefixed with `sse:`                                          |
-
-### Listening to events dispatched by this extension
-
-This extension dispatches several events. You can listen for these events like so:
-
-```javascript
-document.body.addEventListener('htmx:sseBeforeMessage', function (e) {
-    // do something before the event data is swapped in
-})
-```
-
-Each event object has a `detail` field that contains details of the event.
-
-#### `htmx:sseOpen`
-
-This event is dispatched when an SSE connection has been successfully established.
-
-##### Details
-
-* `detail.elt` - The element on which the SSE connection was setup. This is the element which has the `sse-connect`
-  attribute.
-* `detail.source` - The [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) object.
-
-#### `htmx:sseError`
-
-This event is dispatched when an SSE connection could not be established.
-
-##### Details
-
-* `detail.error` - The error that occurred while creating
-  an [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource).
-* `detail.source` - The [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource).
-
-#### `htmx:sseBeforeMessage`
-
-This event is dispatched just before the SSE event data is swapped into the DOM. If you don't want to swap
-call `preventDefault()` on the event. Additionally the `detail` field is
-a [MessageEvent](https://developer.mozilla.org/en-US/docs/Web/API/EventSource/message_event) - this is the event created
-by [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) when it receives an SSE message.
-
-##### Details
-
-* `detail.elt` - The swap target.
-
-#### `htmx:sseMessage`
-
-This event is dispatched after the SSE event data has been swapped into the DOM. The `detail` field is
-a [MessageEvent](https://developer.mozilla.org/en-US/docs/Web/API/EventSource/message_event) - this is the event created
-by [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) when it receives an SSE message.
-
-#### `htmx:sseClose`
-
-This event is dispatched in three different closing scenario. To control for the scenario the user can control for the
-evt.detail.sseclose property.
-
-```javascript
-document.body.addEventListener('htmx:sseClose', function (e) {
-    const reason = e.detail.type
-    switch (reason) {
-        case "nodeMissing":
-            // Parent node is missing and therefore connection was closed
-        ...
-        case "nodeReplaced":
-            // Parent node replacement caused closing of connection
-        ...
-        case "message":
-            // connection was closed due to reception of message sse-close
-        ...
+<!-- Global config -->
+<meta name="htmx-config" content='{
+    "sse": {
+        "reconnect": true,
+        "reconnectDelay": 500,
+        "reconnectMaxDelay": 60000,
+        "reconnectMaxAttempts": 50,
+        "reconnectJitter": 0.3,
+        "pauseOnBackground": false
     }
-})
+}'>
+
+<!-- Per-element override -->
+<div hx-sse:connect="/stream" hx-config='{"sse": {"reconnect": false}}'>
 ```
 
-##### Details
+| Option | Default (`hx-sse:connect`) | Default (`hx-get`) | Description |
+|--------|---------------------------|---------------------|-------------|
+| `reconnect` | `true` | `false` | Auto-reconnect on stream end |
+| `reconnectDelay` | `500` | `500` | Initial reconnect delay (ms) |
+| `reconnectMaxDelay` | `60000` | `60000` | Maximum reconnect delay (ms) |
+| `reconnectMaxAttempts` | `Infinity` | `Infinity` | Maximum reconnection attempts |
+| `reconnectJitter` | `0.3` | `0.3` | Jitter factor (0-1) for delay randomization |
+| `pauseOnBackground` | `true` | `false` | Close the stream when the tab is backgrounded, reconnect when visible |
 
-* `detail.elt` - The swap target.
+### Reconnection Strategy
 
-### Additional SSE Resources
+The extension uses exponential backoff with jitter:
 
-* [Wikipedia](https://en.wikipedia.org/wiki/Server-sent_events)
-* [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
-* [Can I Use?](https://caniuse.com/eventsource)
+- **Formula**: `delay = min(reconnectDelay × 2^(attempt-1), reconnectMaxDelay)`
+- **Jitter**: Adds ±`reconnectJitter` randomization to avoid thundering herd
+- **Last-Event-ID**: Automatically sent on reconnection if the server provided message IDs
+
+## Events
+
+### `htmx:before:sse:connection`
+
+Fired before a connection attempt (initial or reconnection). Set `detail.connection.cancelled = true` to prevent the connection.
+
+For reconnections (`detail.connection.attempt > 0`), you can also modify `detail.connection.delay` to change the backoff delay.
+
+```javascript
+document.body.addEventListener('htmx:before:sse:connection', function(evt) {
+    if (evt.detail.connection.attempt > 10) {
+        evt.detail.connection.cancelled = true;
+    }
+});
+```
+
+* `detail.connection.attempt` - attempt number (`0` = initial, `> 0` = reconnection)
+* `detail.connection.delay` - the delay before connection (ms), modifiable
+* `detail.connection.url` - the SSE endpoint URL
+* `detail.connection.lastEventId` - the last event ID received
+* `detail.connection.cancelled` - set to `true` to cancel
+
+### `htmx:after:sse:connection`
+
+Fired after a successful connection (or reconnection) to the SSE stream.
+
+* `detail.connection.attempt` - attempt number (`0` = initial, `> 0` = reconnection)
+* `detail.connection.url` - the SSE endpoint URL
+* `detail.connection.status` - the HTTP status code
+* `detail.connection.lastEventId` - the last event ID received
+
+### `htmx:before:sse:message`
+
+Fired before each SSE message is processed. All fields are modifiable. Changes to `data` or `event` affect how the message is handled.
+
+```javascript
+document.body.addEventListener('htmx:before:sse:message', function(evt) {
+    // Skip heartbeats
+    if (evt.detail.message.event === 'heartbeat') {
+        evt.detail.message.cancelled = true;
+    }
+
+    // Transform data before swap
+    evt.detail.message.data = sanitize(evt.detail.message.data);
+});
+```
+
+* `detail.message.data` - the message data (modifiable)
+* `detail.message.event` - the event type (modifiable)
+* `detail.message.id` - the message ID (if specified)
+* `detail.message.cancelled` - set to `true` to skip
+
+### `htmx:after:sse:message`
+
+Fired after an SSE message has been processed.
+
+* `detail.message` - same shape as `htmx:before:sse:message`
+
+### `htmx:sse:error`
+
+Fired when a stream error occurs.
+
+* `detail.error` - the error object
+
+### `htmx:sse:close`
+
+Fired when an SSE connection is closed.
+
+* `detail.reason` - why the connection was closed:
+  * `"message"` - closed by `hx-sse:close` matching a named event
+  * `"removed"` - the element was removed from the DOM
+  * `"ended"` - the stream ended naturally or reconnection was exhausted
+  * `"cancelled"` - the initial connection was cancelled via `htmx:before:sse:connection`
+  * `"cleanup"` - closed during element cleanup (e.g., parent swap)
+
+## Additional Resources
+
+* [MDN: Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
+* [HTML Spec: Server-sent events](https://html.spec.whatwg.org/multipage/server-sent-events.html)
