@@ -663,7 +663,7 @@ var htmx = (() => {
             for (let spec of specs) {
                 spec.handler = handler
                 spec.listeners = []
-                spec.values = {}
+                spec.values = new WeakMap()
 
                 let [eventName, filter] = this.__extractFilter(spec.name);
 
