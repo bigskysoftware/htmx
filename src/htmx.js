@@ -1473,8 +1473,7 @@ var htmx = (() => {
                 detail,
                 cancelable: true,
                 bubbles,
-                composed: true,
-                originalTarget: on
+                composed: true
             });
             let target = on?.isConnected ? on : document;
             let result = !detail.cancelled && target.dispatchEvent(evt);
