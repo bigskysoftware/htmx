@@ -1555,8 +1555,6 @@ var htmx = (() => {
                         request: {headers: {'HX-History-Restore-Request': 'true'}}
                     });
                 }
-            } else if (elt.tagName === "FORM") {
-                return elt.method !== 'dialog' &&  this.__isSameOrigin(elt.action);
             }
         }
 
