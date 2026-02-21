@@ -123,6 +123,7 @@ All other attributes available in htmx.
 | [`htmx:after:cleanup`](@/events.md#htmx:after:cleanup) | triggered after htmx has cleaned up an element
 | [`htmx:config:request`](@/events.md#htmx:config:request) | triggered before the request, allows you to customize parameters, headers
 | [`htmx:before:request`](@/events.md#htmx:before:request) | triggered before an AJAX request is made
+| [`htmx:before:response`](@/events.md#htmx:before:response) | triggered after fetch response received, before body is consumed
 | [`htmx:after:request`](@/events.md#htmx:after:request) | triggered after an AJAX request has completed
 | [`htmx:finally:request`](@/events.md#htmx:finally:request) | triggered in the finally block after a request
 | [`htmx:before:swap`](@/events.md#htmx:before:swap) | triggered before a swap is done, allows you to configure the swap
@@ -136,11 +137,6 @@ All other attributes available in htmx.
 | [`htmx:confirm`](@/events.md#htmx:confirm) | triggered after a trigger occurs on an element, allows you to cancel (or delay) issuing the AJAX request
 | [`htmx:before:viewTransition`](@/events.md#htmx:before:viewTransition) | triggered before a view transition
 | [`htmx:after:viewTransition`](@/events.md#htmx:after:viewTransition) | triggered after a view transition
-| [`htmx:before:sse:stream`](@/events.md#htmx:before:sse:stream) | triggered before an SSE stream is processed
-| [`htmx:after:sse:stream`](@/events.md#htmx:after:sse:stream) | triggered after an SSE stream ends
-| [`htmx:before:sse:message`](@/events.md#htmx:before:sse:message) | triggered before an SSE message is processed
-| [`htmx:after:sse:message`](@/events.md#htmx:after:sse:message) | triggered after an SSE message is processed
-| [`htmx:before:sse:reconnect`](@/events.md#htmx:before:sse:reconnect) | triggered before reconnecting to an SSE stream
 
 </div>
 
@@ -190,7 +186,6 @@ listed below:
 | `htmx.config.inlineScriptNonce`   | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                                                                                                                                                                        |
 | `htmx.config.inlineStyleNonce`    | defaults to `''`, meaning that no nonce will be added to inline styles                                                                                                                                                                                                                                                         |
 | `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,optimistic'`)                                                                                                                                                                                                                             |
-| `htmx.config.sse`                 | configuration for Server-Sent Events (SSE) streams. An object with the following properties: `reconnect` (default: `false`), `reconnectMaxAttempts` (default: `10`), `reconnectDelay` (default: `500`ms), `reconnectMaxDelay` (default: `60000`ms), `reconnectJitter` (default: `0.3`), `closeOnHide` (default: `false`) |
 | `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute names to ignore when morphing elements (see [Morphing](@/morphing.md))                                                                                                                                                                                                  |
 | `htmx.config.morphScanLimit`      | defaults to `10`, limits how many siblings to scan when matching elements during morphing. Increase for better accuracy with long lists without IDs (see [Morphing](@/morphing.md))                                                                                                                                               |
 | `htmx.config.morphSkip`           | defaults to `undefined`, CSS selector for elements that should be completely skipped during morphing (see [Morphing](@/morphing.md))                                                                                                                                                                                               |

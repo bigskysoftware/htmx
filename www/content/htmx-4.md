@@ -46,30 +46,11 @@ major changes between htmx 2.x and htmx 4.x.
 - `outerMorph` - morphs the target element itself
 - Does a better job of preserving local state when targeting large DOM trees
 
-### Built-in Streaming Response Support
-- Streaming functionality/SSE now built into core htmx
-- Improved event handling and reconnection logic 
-- Configure globally using `<meta name="htmx-config">`
-   ```html
-   <!-- Global defaults -->
-   <meta name="htmx-config" content="{
-       streams:{
-         reconnect: false,
-         reconnectDelay: 500,
-         reconnectMaxDelay: 60000,
-         reconnectMaxAttempts: 10,
-         reconnectJitter: 0.3,
-         closeOnHide: false
-       }
-   }">
-   ```
-- Or per-element using `hx-config` attribute
-  ```html
-  <!-- Overrides global default -->
-  <div hx-get="/events" 
-       hx-trigger="load"
-       hx-config="{stream: {reconnect: true}}"
-  ```
+### Server-Sent Events Extension
+- SSE support is provided via the [SSE extension](/extensions/sse)
+- Uses Fetch + ReadableStream instead of EventSource (supports POST, custom headers, cookies)
+- Two modes: one-off streams via `hx-get` returning `text/event-stream`, persistent connections via `hx-sse:connect`
+- See the [SSE extension documentation](/extensions/sse) for configuration and events
 
 ### View Transitions
 - View Transitions API enabled by default (maybe not!)
@@ -190,11 +171,6 @@ major changes between htmx 2.x and htmx 4.x.
 - `htmx:before:settle` - fires before settle phase begins
 - `htmx:after:settle` - fires after settle phase completes
 - `htmx:finally:request` - fires in finally block after request (success or error)
-- `htmx:before:sse:stream` - fires before SSE stream begins
-- `htmx:after:sse:stream` - fires after SSE stream ends
-- `htmx:before:sse:message` - fires before processing SSE message
-- `htmx:after:sse:message` - fires after processing SSE message
-- `htmx:before:sse:reconnect` - fires before attempting SSE reconnection
 - `htmx:before:viewTransition` - fires before view transition starts
 - `htmx:after:viewTransition` - fires after view transition completes
 

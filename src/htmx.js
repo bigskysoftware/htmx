@@ -83,7 +83,8 @@ var htmx = (() => {
                 handleHxVals: this.__handleHxVals.bind(this),
                 insertContent: this.__insertContent.bind(this),
                 morph: this.__morph.bind(this),
-                isSoftMatch: this.__isSoftMatch.bind(this)
+                isSoftMatch: this.__isSoftMatch.bind(this),
+                onTrigger: this.__onTrigger.bind(this)
             };
             document.addEventListener("DOMContentLoaded", () => {
                 this.__initHistoryHandling();
@@ -106,14 +107,6 @@ var htmx = (() => {
                 includeIndicatorCSS: true,
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
-                sse: {
-                    reconnect: false,
-                    reconnectDelay: 500,
-                    reconnectMaxDelay: 60000,
-                    reconnectMaxAttempts: 10,
-                    reconnectJitter: 0.3,
-                    closeOnHide: false
-                },
                 morphIgnore: ["data-htmx-powered"],
                 morphScanLimit: 10,
                 noSwap: [204, 304],
@@ -300,7 +293,6 @@ var htmx = (() => {
                 this.__initializeTriggers(elt);
                 this.__initializeAbortListener(elt)
                 this.__trigger(elt, "htmx:after:init", {}, true)
-                this.__trigger(elt, "load", {}, false)
             }
         }
 
@@ -372,7 +364,7 @@ var htmx = (() => {
                 "HX-Request": "true",
                 "HX-Source": this.__buildIdentifier(elt),
                 "HX-Current-URL": location.href,
-                "Accept": "text/html, text/event-stream"
+                "Accept": "text/html"
             };
             if (this.__isBoosted(elt)) {
                 headers["HX-Boosted"] = "true"
@@ -519,31 +511,22 @@ var htmx = (() => {
                     headers: response.headers,
                 }
                 this.__extractHxHeaders(ctx);
-                ctx.isSSE = response.headers.get("Content-Type")?.includes('text/event-stream');
-                if (!ctx.isSSE) {
-                    ctx.text = await response.text();
-                }
+                if (!this.__trigger(elt, "htmx:before:response", {ctx})) return;
+                ctx.text = await response.text();
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
 
                 if(this.__handleHeadersAndMaybeReturnEarly(ctx)){
                     return
                 }
 
-                let isSSE = response.headers.get("Content-Type")?.includes('text/event-stream');
-                if (isSSE) {
-                    // SSE response
-                    await this.__handleSSE(ctx, elt, response);
-                } else {
-                    // HTTP response
-                    if (ctx.status === "issuing") {
-                        if (ctx.hx.retarget) ctx.target = ctx.hx.retarget;
-                        if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;
-                        if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
-                        ctx.status = "response received";
-                        this.__handleStatusCodes(ctx);
-                        await this.swap(ctx);
-                        ctx.status = "swapped";
-                    }
+                if (ctx.status === "issuing") {
+                    if (ctx.hx.retarget) ctx.target = ctx.hx.retarget;
+                    if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;
+                    if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
+                    ctx.status = "response received";
+                    this.__handleStatusCodes(ctx);
+                    await this.swap(ctx);
+                    ctx.status = "swapped";
                 }
 
             } catch (error) {
@@ -599,180 +582,6 @@ var htmx = (() => {
             if(ctx.response?.headers?.get?.("Etag")) {
                 ctx.sourceElement._htmx ||= {}
                 ctx.sourceElement._htmx.etag = ctx.response.headers.get("Etag");
-            }
-        }
-
-        async __handleSSE(ctx, elt, response) {
-            let config = {...this.config.sse, ...ctx.request.sse}
-            let lastEventId = null, attempt = 0, currentResponse = response, reader = null;
-            let reconnectRequested = false;
-            let delayCanceller = null;
-
-            let reconnect = () => {
-                if (!elt.isConnected || reconnectRequested) return;
-                reconnectRequested = true;
-                if (delayCanceller) delayCanceller();
-                reader?.cancel();
-            };
-
-            let visibilityHandler = () => {
-                if (document.hidden) {
-                    reader?.cancel();
-                } else {
-                    reconnect();
-                }
-            };
-
-            if (config.closeOnHide) {
-                document.addEventListener('visibilitychange', visibilityHandler);
-            }
-
-            try {
-                while (elt.isConnected) {
-                    if (attempt > 0 && !reconnectRequested) {
-                        if (!config.reconnect || attempt > config.reconnectMaxAttempts) break;
-
-                        let delay = Math.min(this.parseInterval(config.reconnectDelay) * Math.pow(2, attempt - 1), this.parseInterval(config.reconnectMaxDelay));
-                        if (config.reconnectJitter > 0) {
-                            let jitterRange = delay * config.reconnectJitter;
-                            let jitter = (Math.random() * 2 - 1) * jitterRange;
-                            delay = Math.max(0, delay + jitter);
-                        }
-                        let reconnectDetail = {attempt, delay, lastEventId, cancelled: false};
-
-                        ctx.status = "reconnecting to stream";
-                        if (!this.__trigger(elt, "htmx:before:sse:reconnect", {
-                            ctx,
-                            reconnect: reconnectDetail
-                        }) || reconnectDetail.cancelled) break;
-
-                        await new Promise(r => {
-                            delayCanceller = r;
-                            setTimeout(r, reconnectDetail.delay);
-                        });
-                        delayCanceller = null;
-                        if (!elt.isConnected) break;
-
-                        try {
-                            if (lastEventId) (ctx.request.headers = ctx.request.headers || {})['Last-Event-ID'] = lastEventId;
-                            currentResponse = await fetch(ctx.request.action, ctx.request);
-                        } catch (e) {
-                            ctx.status = "stream error";
-                            this.__trigger(elt, "htmx:error", {ctx, error: e});
-                            attempt++;
-                            continue;
-                        }
-                    }
-
-                    // Core streaming logic
-                    if (!this.__trigger(elt, "htmx:before:sse:stream", {ctx})) break;
-                    ctx.status = "streaming";
-                    reconnectRequested = false;
-                    attempt = 0;
-
-                    try {
-                        reader = currentResponse.body.getReader();
-                        for await (const sseMessage of this.__parseSSE(reader)) {
-                            if (!elt.isConnected || reconnectRequested) break;
-
-                            let msg = {data: sseMessage.data, event: sseMessage.event, id: sseMessage.id, cancelled: false};
-                            if (!this.__trigger(elt, "htmx:before:sse:message", {
-                                ctx,
-                                message: msg
-                            }) || msg.cancelled) continue;
-
-                            if (sseMessage.id) lastEventId = sseMessage.id;
-
-                            // Trigger custom event if `event:` line is present
-                            if (sseMessage.event) {
-                                this.__trigger(elt, sseMessage.event, {data: sseMessage.data, id: sseMessage.id});
-                                // Skip swap for custom events
-                                this.__trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
-                                continue;
-                            }
-
-                            ctx.text = sseMessage.data;
-                            ctx.status = "stream message received";
-
-                            if (!ctx.response.cancelled) {
-                                await this.swap(ctx);
-                                ctx.status = "swapped";
-                            }
-                            this.__trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
-                        }
-                    } catch (e) {
-                        ctx.status = "stream error";
-                        this.__trigger(elt, "htmx:error", {ctx, error: e});
-                    }
-
-                    if (!elt.isConnected) break;
-                    this.__trigger(elt, "htmx:after:sse:stream", {ctx});
-
-                    if (reconnectRequested) {
-                        attempt++;
-                        continue;
-                    }
-
-                    attempt++;
-                }
-            } finally {
-                if (config.closeOnHide) {
-                    document.removeEventListener('visibilitychange', visibilityHandler);
-                }
-            }
-        }
-
-        async* __parseSSE(reader) {
-            let decoder = new TextDecoder();
-            let buffer = '';
-            let message = {data: '', event: '', id: '', retry: null};
-
-            try {
-                while (true) {
-                    let {done, value} = await reader.read();
-                    if (done) break;
-
-                    // Decode chunk and add to buffer
-                    buffer += decoder.decode(value, {stream: true});
-                    let lines = buffer.split('\n');
-                    // Keep incomplete line in buffer
-                    buffer = lines.pop() || '';
-
-                    for (let line of lines) {
-                        // Empty line or carriage return indicates end of message
-                        if (!line || line === '\r') {
-                            if (message.data) {
-                                yield message;
-                                message = {data: '', event: '', id: '', retry: null};
-                            }
-                            continue;
-                        }
-
-                        // Parse field: value
-                        let colonIndex = line.indexOf(':');
-                        if (colonIndex <= 0) continue;
-
-                        let field = line.slice(0, colonIndex);
-
-                        let value = line.slice(colonIndex + 1)
-                        if (value[0] === ' ') value = value.slice(1);
-
-                        if (field === 'data') {
-                            message.data += (message.data ? '\n' : '') + value;
-                        } else if (field === 'event') {
-                            message.event = value;
-                        } else if (field === 'id') {
-                            message.id = value;
-                        } else if (field === 'retry') {
-                            let retryValue = parseInt(value, 10);
-                            if (!isNaN(retryValue)) {
-                                message.retry = retryValue;
-                            }
-                        }
-                    }
-                }
-            } finally {
-                reader.releaseLock();
             }
         }
 
@@ -835,10 +644,24 @@ var htmx = (() => {
                     elt.matches("input:not([type=button]),select,textarea") ? "change" :
                         "click";
             }
-            elt._htmx.triggerSpecs = this.__parseTriggerSpecs(specString)
-            elt._htmx.listeners = []
-            for (let spec of elt._htmx.triggerSpecs) {
-                spec.handler = initialHandler
+            this.__onTrigger(elt, specString, initialHandler)
+        }
+
+        // Wire up trigger listeners with full modifier support (delay, throttle, once, etc.)
+        __onTrigger(elt, specString, handler) {
+            let specs = this.__parseTriggerSpecs(specString)
+            let listeners = []
+
+            // Ensure element is registered for cleanup
+            if (!elt._htmx) {
+                elt._htmx = {}
+                elt.setAttribute('data-htmx-powered', 'true')
+            }
+            elt._htmx.triggerSpecs = (elt._htmx.triggerSpecs || []).concat(specs)
+            elt._htmx.listeners = elt._htmx.listeners || []
+
+            for (let spec of specs) {
+                spec.handler = handler
                 spec.listeners = []
                 spec.values = {}
 
@@ -969,11 +792,25 @@ var htmx = (() => {
                     }
                 }
 
+                // load: fire handler directly (no listener needed)
+                if (eventName === 'load') {
+                    let loadHandler = spec.handler
+                    loadHandler(new CustomEvent('load'))
+                    continue
+                }
+
                 for (let fromElt of fromElts) {
                     let listenerInfo = {fromElt, eventName, handler: spec.handler};
                     elt._htmx.listeners.push(listenerInfo)
                     spec.listeners.push(listenerInfo)
+                    listeners.push(listenerInfo)
                     fromElt.addEventListener(eventName, spec.handler);
+                }
+            }
+
+            return () => {
+                for (let l of listeners) {
+                    l.fromElt.removeEventListener(l.eventName, l.handler)
                 }
             }
         }
@@ -1658,16 +1495,20 @@ var htmx = (() => {
                 return Promise.reject(new Error('Source not found'));
             }
 
-            // Resolve target, defaulting to body only if no source or target provided
-            let target = this.__resolveTarget(document.body, context.target || sourceElt);
-            if (!target) {
-                return Promise.reject(new Error('Target not found'));
+            // Resolve explicit target if provided; otherwise __createRequestContext
+            // will resolve from hx-target on the source element
+            if (context.target) {
+                let target = this.__resolveTarget(document.body, context.target);
+                if (!target) {
+                    return Promise.reject(new Error('Target not found'));
+                }
+                sourceElt ||= target;
             }
-
-            sourceElt ||= target;
+            sourceElt ||= document.body;
 
             let ctx = this.__createRequestContext(sourceElt, context.event || {});
-            Object.assign(ctx, context, {target});
+            Object.assign(ctx, context);
+            if (context.target) ctx.target = this.__resolveTarget(document.body, context.target);
             Object.assign(ctx.request, {action: path, method: verb.toUpperCase()});
             if (context.headers) Object.assign(ctx.request.headers, context.headers);
 

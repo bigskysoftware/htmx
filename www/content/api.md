@@ -354,13 +354,6 @@ Note that using a [meta tag](@/docs.md#configuring-htmx) is the preferred mechan
 * `inlineScriptNonce` - string: nonce to add to inline scripts (default: `''`)
 * `inlineStyleNonce` - string: nonce to add to inline styles (default: `''`)
 * `extensions` - string: comma-separated list of extensions to load (default: `''`)
-* `sse` - object: SSE/streaming configuration properties:
-  * `reconnect` - boolean: whether to reconnect on disconnect (default: `false`)
-  * `reconnectMaxAttempts` - number (default: `10`)
-  * `reconnectDelay` - number in ms (default: `500`)
-  * `reconnectMaxDelay` - number in ms (default: `60000`)
-  * `reconnectJitter` - number: jitter factor for reconnect delay (default: `0.3`)
-  * `closeOnHide` - boolean (default: `false`)
 * `morphIgnore` - array: attribute names to ignore when morphing (default: `["data-htmx-powered"]`)
 * `noSwap` - array: HTTP status codes that should not trigger a swap (default: `[204, 304]`)
 * `implicitInheritance` - boolean: inherit attributes automatically without `:inherited` (default: `false`)
@@ -378,13 +371,6 @@ htmx.config.defaultSwap = 'outerHTML';
 
 // set custom attribute prefix
 htmx.config.prefix = 'data-hx-';
-
-// configure SSE streams
-htmx.config.sse = {
-  reconnect: true,
-  reconnectMaxAttempts: 10,
-  reconnectDelay: 1000
-};
 ```
 
 ## Deprecated / Removed Methods
@@ -402,7 +388,7 @@ The following methods from htmx 2.x have been removed in htmx 4.x. Use the nativ
 * `htmx.off()` - use `removeEventListener()`
 * `htmx.removeExtension()` - extensions are event-based, no removal needed
 * `htmx.values()` - access FormData directly
-* `htmx.createEventSource` - removed (SSE is built-in)
+* `htmx.createEventSource` - removed (use [SSE extension](/extensions/sse))
 * `htmx.createWebSocket` - removed (use extensions)
 
 See the [migration guide](/migration-guide-htmx-4#javascript-api-changes) for more details on migrating from htmx 2.x to 4.x.

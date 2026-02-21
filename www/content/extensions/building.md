@@ -78,6 +78,7 @@ of colons:
 | ---------------------- | ---------------------- | --------------- | -------------------------------- |
 | `htmx_config_request`  | `htmx:config:request`  | `(elt, detail)` | Configure request before sending |
 | `htmx_before_request`  | `htmx:before:request`  | `(elt, detail)` | Before request is sent           |
+| `htmx_before_response` | `htmx:before:response` | `(elt, detail)` | After fetch, before body consumed |
 | `htmx_after_request`   | `htmx:after:request`   | `(elt, detail)` | After request completes          |
 | `htmx_finally_request` | `htmx:finally:request` | `(elt, detail)` | Always called after request      |
 | `htmx_error`           | `htmx:error`           | `(elt, detail)` | On request error                 |
@@ -101,16 +102,6 @@ of colons:
 | `htmx_after_push_into_history`    | `htmx:after:push:into:history`    | `(elt, detail)` | After pushing to history      |
 | `htmx_after_replace_into_history` | `htmx:after:replace:into:history` | `(elt, detail)` | After replacing history       |
 | `htmx_before_restore_history`     | `htmx:before:restore:history`     | `(elt, detail)` | Before restoring from history |
-
-### SSE Events
-
-| Hook Name                   | Triggered Event             | Parameters      | Description                   |
-| --------------------------- | --------------------------- | --------------- | ----------------------------- |
-| `htmx_before_sse_reconnect` | `htmx:before:sse:reconnect` | `(elt, detail)` | Before SSE reconnection       |
-| `htmx_before_sse_stream`    | `htmx:before:sse:stream`    | `(elt, detail)` | Before SSE stream starts      |
-| `htmx_after_sse_stream`     | `htmx:after:sse:stream`     | `(elt, detail)` | After SSE stream ends         |
-| `htmx_before_sse_message`   | `htmx:before:sse:message`   | `(elt, detail)` | Before processing SSE message |
-| `htmx_after_sse_message`    | `htmx:after:sse:message`    | `(elt, detail)` | After processing SSE message  |
 
 ### View Transition Events
 
