@@ -221,4 +221,41 @@ describe('__issueRequest unit tests', function() {
         assert.isTrue(request2Started)
     })
 
+    it('aborts request after timeout fires', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none" hx-config="timeout:50"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = (url, opts) => new Promise((_, reject) => {
+            opts.signal.addEventListener('abort', () => {
+                reject(new DOMException('The operation was aborted', 'AbortError'))
+            })
+        })
+
+        let errorFired = false
+        div.addEventListener('htmx:error', () => errorFired = true)
+
+        await htmx.__issueRequest(ctx)
+        assert.isTrue(errorFired)
+        assert.isTrue(ctx.request.signal.aborted)
+    })
+
+    it('htmx:abort event aborts in-flight request', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = (url, opts) => new Promise((_, reject) => {
+            setTimeout(() => htmx.trigger(div, 'htmx:abort'), 10)
+            opts.signal.addEventListener('abort', () => {
+                reject(new DOMException('The operation was aborted', 'AbortError'))
+            })
+        })
+
+        let errorFired = false
+        div.addEventListener('htmx:error', () => errorFired = true)
+
+        await htmx.__issueRequest(ctx)
+        assert.isTrue(errorFired)
+        assert.isTrue(ctx.request.signal.aborted)
+    })
+
 });

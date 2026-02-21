@@ -15,7 +15,7 @@ var htmx = (() => {
                 if (queueStrategy === "replace" || (queueStrategy !== "abort" && this.#c.queueStrategy === "abort")) {
                     this.#q.map(value => value.status = "dropped");
                     this.#q = []
-                    this.#c.request.abort();
+                    this.#c.request?.abort?.();
                     this.#c = ctx
                     return true
                 } else if (queueStrategy === "queue all") {
@@ -48,7 +48,7 @@ var htmx = (() => {
         }
 
         abort() {
-            this.#c?.abort?.()
+            this.#c.request?.abort?.()
         }
 
         more() {
@@ -592,7 +592,7 @@ var htmx = (() => {
             } else {
                 timeoutInterval = this.config.defaultTimeout;
             }
-            ctx.requestTimeout = setTimeout(() => ctx.abort?.(), timeoutInterval);
+            ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.(), timeoutInterval);
         }
 
         __determineSyncStrategy(elt) {

@@ -170,12 +170,11 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let queue = htmx.__getRequestQueue(div)
 
         let ctx = htmx.__createRequestContext(div, new Event('click'))
-        ctx.abort = () => { ctx.aborted = true }
         queue.issue(ctx, 'queue first')
 
         queue.abort()
 
-        assert.isTrue(ctx.aborted)
+        assert.isTrue(ctx.request.signal.aborted)
     })
 
     it('returns same queue for same element', function () {
