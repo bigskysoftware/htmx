@@ -258,6 +258,40 @@ describe('__issueRequest unit tests', function() {
         assert.isTrue(ctx.request.signal.aborted)
     })
 
+    it('does not crash when scroll target selector matches nothing', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML scroll:top scrollTarget:#nonexistent"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers(),
+            text: async () => '<div>Response</div>'
+        })
+
+        let errorFired = false
+        div.addEventListener('htmx:error', () => errorFired = true)
+
+        await htmx.__issueRequest(ctx)
+        assert.isFalse(errorFired)
+    })
+
+    it('does not crash when show target selector matches nothing', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML show:top showTarget:#nonexistent"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers(),
+            text: async () => '<div>Response</div>'
+        })
+
+        let errorFired = false
+        div.addEventListener('htmx:error', () => errorFired = true)
+
+        await htmx.__issueRequest(ctx)
+        assert.isFalse(errorFired)
+    })
+
     it('throws clean error for unknown swap style with no extensions', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="foobar"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
