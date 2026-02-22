@@ -605,7 +605,7 @@ var htmx = (() => {
             if (syncValue && syncValue.includes(":")) {
                 let strings = syncValue.split(":");
                 let selector = strings[0];
-                syncElt = this.__findOrWarn(elt, selector, "hx-sync");
+                syncElt = this.__findOrWarn(elt, selector, "hx-sync") || elt;
             }
             return syncElt._htmxRequestQueue ||= new ReqQ()
         }
@@ -1844,7 +1844,6 @@ var htmx = (() => {
             let result = this.__findAllExt(elt, selector, thisAttr)[0]
             if (!result) {
                 console.warn(`htmx: '${selector}' on ${thisAttr} did not match any element`)
-                return elt
             }
             return result
         }
