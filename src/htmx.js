@@ -2008,7 +2008,7 @@ var htmx = (() => {
                     parentNode.moveBefore(element, after);
                     return
                 } catch (e) {
-                    // ignore and insertBefore insteat
+                    // ignore and insertBefore instead
                 }
             }
             parentNode.insertBefore(element, after);
