@@ -658,7 +658,7 @@ var htmx = (() => {
                 elt.setAttribute('data-htmx-powered', 'true')
             }
             elt._htmx.triggerSpecs = (elt._htmx.triggerSpecs || []).concat(specs)
-            elt._htmx.listeners = elt._htmx.listeners || []
+            elt._htmx.listeners ||= []
 
             for (let spec of specs) {
                 spec.handler = handler
@@ -1599,13 +1599,17 @@ var htmx = (() => {
                 if (attr.startsWith(searchString)) {
                     let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
-                    node.addEventListener(evtName, async (evt) => {
+                    let handler = node.addEventListener(evtName, async (evt) => {
                         try {
                             await this.__executeJavaScriptAsync(node, {"event": evt}, code, false)
                         } catch (e) {
                             console.error(e);
                         }
                     });
+                    // ensure listeners collection is initialized and push for cleanup
+                    node._htmx ||= {}
+                    node._htmx.listeners ||= []
+                    node._htmx.listeners.push({fromElt: node, eventName: evtName, handler});
                 }
             }
         }
