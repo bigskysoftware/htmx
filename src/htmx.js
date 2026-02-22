@@ -382,7 +382,7 @@ var htmx = (() => {
             if (selector instanceof Element) {
                 return selector;
             } else if (selector != null) {
-                return this.__findExt(elt, selector, "hx-target");
+                return this.__findOrWarn(elt, selector, "hx-target");
             } else if (this.__isBoosted(elt)) {
                 return document.body
             } else {
@@ -605,7 +605,7 @@ var htmx = (() => {
             if (syncValue && syncValue.includes(":")) {
                 let strings = syncValue.split(":");
                 let selector = strings[0];
-                syncElt = this.__findExt(elt, selector, "hx-sync");
+                syncElt = this.__findOrWarn(elt, selector, "hx-sync");
             }
             return syncElt._htmxRequestQueue ||= new ReqQ()
         }
@@ -680,7 +680,7 @@ var htmx = (() => {
                 if (eventName === 'intersect' || eventName === "revealed") {
                     let observerOptions = {}
                     if (spec.opts?.root) {
-                        observerOptions.root = this.__findExt(elt, spec.opts.root)
+                        observerOptions.root = this.__findOrWarn(elt, spec.opts.root)
                     }
                     if (spec.opts?.threshold) {
                         observerOptions.threshold = parseFloat(spec.opts.threshold)
@@ -1837,6 +1837,15 @@ var htmx = (() => {
             } else {
                 return document
             }
+        }
+
+        __findOrWarn(elt, selector, thisAttr) {
+            let result = this.__findAllExt(elt, selector, thisAttr)[0]
+            if (!result) {
+                console.warn(`htmx: '${selector}' on ${thisAttr} did not match any element`)
+                return elt
+            }
+            return result
         }
 
         __findExt(eltOrSelector, selector, thisAttr) {
