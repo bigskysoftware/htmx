@@ -29,8 +29,9 @@ If you send an `htmx:abort` event to an element making a request, it will abort 
 This event is fired on every trigger for a request (not just on elements that have a hx-confirm attribute).
 It allows you to cancel (or delay) issuing the AJAX request.
 If you call `preventDefault()` on the event, it will not issue the given request.
-The `detail` object contains a function, `evt.detail.issueRequest(skipConfirmation=false)`, that can be used to issue the actual AJAX request at a later point.
-Combining these two features allows you to create an asynchronous confirmation dialog.
+The `detail` object contains two functions: `evt.detail.issueRequest()` to confirm and issue the request, and `evt.detail.dropRequest()` to cancel it. This allows you to create an asynchronous confirmation dialog.
+
+**Important:** If you call `preventDefault()`, you **must** call either `issueRequest()` or `dropRequest()` — failing to do so will leave the request pending indefinitely.
 
 ```javascript
 document.body.addEventListener('htmx:confirm', function(evt) {
@@ -40,7 +41,9 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 
   // Your custom confirmation logic here
   if (confirm("Are you sure?")) {
-    evt.detail.issueRequest(true); // true to skip built-in confirm
+    evt.detail.issueRequest();
+  } else {
+    evt.detail.dropRequest();
   }
 });
 ```
@@ -48,7 +51,8 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 ##### Details
 
 * `detail.elt` - the element in question
-* `detail.issueRequest(skipConfirmation=false)` - function to issue the request
+* `detail.issueRequest()` - function to confirm and issue the request
+* `detail.dropRequest()` - function to cancel the request
 * `detail.path` - the path of the request
 * `detail.target` - the element that triggered the request
 * `detail.triggeringEvent` - the original event that triggered this request

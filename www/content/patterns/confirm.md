@@ -49,8 +49,9 @@ which is then picked up by `hx-trigger`.
       text: `I ask you... ${e.detail.question}`
     }).then(function(result) {
       if (result.isConfirmed) {
-        // If the user confirms, we manually issue the request
-        e.detail.issueRequest(true); // true to skip the built-in window.confirm()
+        e.detail.issueRequest();
+      } else {
+        e.detail.dropRequest();
       }
     })
   })
@@ -62,7 +63,7 @@ which is then picked up by `hx-trigger`.
 ```
 
 We add some javascript to invoke Sweet Alert 2 on a click, asking for confirmation.  If the user confirms
-the dialog, we trigger the request by calling the `issueRequest` method. We pass `skipConfirmation=true` as argument to skip `window.confirm`.
+the dialog, we trigger the request by calling `issueRequest()`. If they dismiss it, we call `dropRequest()` to cancel.
 
 This allows to use `hx-confirm`'s value in the prompt which is convenient
 when the question depends on the element e.g. a django list:

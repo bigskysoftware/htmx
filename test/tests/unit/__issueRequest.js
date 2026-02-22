@@ -120,6 +120,25 @@ describe('__issueRequest unit tests', function() {
         window.confirm = originalConfirm
     })
 
+    it('cancels request when dropRequest called after htmx:confirm preventDefault', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none" hx-confirm="Are you sure?"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        div.addEventListener('htmx:confirm', (e) => {
+            e.preventDefault()
+            e.detail.dropRequest()
+        })
+
+        let fetchCalled = false
+        ctx.fetch = async () => {
+            fetchCalled = true
+            return { status: 200, headers: new Headers(), text: async () => '' }
+        }
+
+        await htmx.__issueRequest(ctx)
+        assert.isFalse(fetchCalled)
+    })
+
     it('creates response object with correct structure', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))

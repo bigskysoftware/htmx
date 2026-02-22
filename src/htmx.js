@@ -489,10 +489,9 @@ var htmx = (() => {
             try {
                 // Handle confirmation
                 if (ctx.confirm) {
-                    let issueRequest = null;
                     let confirmed = await new Promise(resolve => {
-                        issueRequest = resolve;
-                        if (this.__trigger(elt, "htmx:confirm", {ctx, issueRequest: (skip) => issueRequest?.(skip !== false)})) {
+                        let detail = {ctx, issueRequest: () => resolve(true), dropRequest: () => resolve(false)};
+                        if (this.__trigger(elt, "htmx:confirm", detail)) {
                             let js = this.__extractJavascriptContent(ctx.confirm);
                             resolve(js ? this.__executeJavaScriptAsync(elt, {}, js, true) : window.confirm(ctx.confirm));
                         }
