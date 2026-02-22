@@ -1600,13 +1600,14 @@ var htmx = (() => {
                 if (attr.startsWith(searchString)) {
                     let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
-                    let handler = node.addEventListener(evtName, async (evt) => {
+                    let handler = async (evt) => {
                         try {
                             await this.__executeJavaScriptAsync(node, {"event": evt}, code, false)
                         } catch (e) {
                             console.error(e);
                         }
-                    });
+                    };
+                    node.addEventListener(evtName, handler);
                     // ensure listeners collection is initialized and push for cleanup
                     node._htmx ||= {}
                     node._htmx.listeners ||= []
