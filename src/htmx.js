@@ -1603,7 +1603,7 @@ var htmx = (() => {
                         try {
                             await this.__executeJavaScriptAsync(node, {"event": evt}, code, false)
                         } catch (e) {
-                            console.log(e);
+                            console.error(e);
                         }
                     });
                 }
