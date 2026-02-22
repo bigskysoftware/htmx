@@ -258,4 +258,22 @@ describe('__issueRequest unit tests', function() {
         assert.isTrue(ctx.request.signal.aborted)
     })
 
+    it('throws clean error for unknown swap style with no extensions', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="foobar"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers(),
+            text: async () => '<div>Response</div>'
+        })
+
+        let capturedError = null
+        div.addEventListener('htmx:error', (e) => capturedError = e.detail.error)
+
+        await htmx.__issueRequest(ctx)
+        assert.isNotNull(capturedError)
+        assert.include(capturedError.message, 'Unknown swap style')
+    })
+
 });

@@ -1323,7 +1323,7 @@ var htmx = (() => {
                         this.__insertNodes(parentNode, target.nextSibling, fragment);
                     }
                 } else {
-                    let methods = this.__extMethods.get('handle_swap')
+                    let methods = this.__extMethods.get('handle_swap') || []
                     let handled = false;
                     for (const method of methods) {
                         let result = method(swapStyle, target, fragment, swapSpec);
