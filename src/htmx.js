@@ -13,7 +13,7 @@ var htmx = (() => {
             } else {
                 // Replace strategy OR current is abortable: abort current and issue new
                 if (queueStrategy === "replace" || (queueStrategy !== "abort" && this.#c.queueStrategy === "abort")) {
-                    this.#q.map(value => value.status = "dropped");
+                    this.#q.forEach(value => value.status = "dropped");
                     this.#q = []
                     this.#c.request?.abort?.();
                     this.#c = ctx
@@ -25,7 +25,7 @@ var htmx = (() => {
                     // ignore the request
                     ctx.status = "dropped";
                 } else if (queueStrategy === "queue last") {
-                    this.#q.map(value => value.status = "dropped");
+                    this.#q.forEach(value => value.status = "dropped");
                     this.#q = [ctx]
                     ctx.status = "queued";
                 } else if (this.#q.length === 0 && queueStrategy !== "abort") {
