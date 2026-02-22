@@ -13,9 +13,9 @@ var htmx = (() => {
             } else {
                 // Replace strategy OR current is abortable: abort current and issue new
                 if (queueStrategy === "replace" || (queueStrategy !== "abort" && this.#c.queueStrategy === "abort")) {
-                    this.#q.map(value => value.status = "dropped");
+                    this.#q.forEach(value => value.status = "dropped");
                     this.#q = []
-                    this.#c.request.abort();
+                    this.#c.request?.abort?.();
                     this.#c = ctx
                     return true
                 } else if (queueStrategy === "queue all") {
@@ -25,7 +25,7 @@ var htmx = (() => {
                     // ignore the request
                     ctx.status = "dropped";
                 } else if (queueStrategy === "queue last") {
-                    this.#q.map(value => value.status = "dropped");
+                    this.#q.forEach(value => value.status = "dropped");
                     this.#q = [ctx]
                     ctx.status = "queued";
                 } else if (this.#q.length === 0 && queueStrategy !== "abort") {
@@ -48,7 +48,7 @@ var htmx = (() => {
         }
 
         abort() {
-            this.#c?.abort?.()
+            this.#c.request?.abort?.()
         }
 
         more() {
@@ -83,7 +83,8 @@ var htmx = (() => {
                 handleHxVals: this.#handleHxVals.bind(this),
                 insertContent: this.#insertContent.bind(this),
                 morph: this.#morph.bind(this),
-                isSoftMatch: this.#isSoftMatch.bind(this)
+                isSoftMatch: this.#isSoftMatch.bind(this),
+                onTrigger: this.#onTrigger.bind(this)
             };
             document.addEventListener("DOMContentLoaded", () => {
                 this.#initHistoryHandling();
@@ -93,7 +94,7 @@ var htmx = (() => {
 
         #initHtmxConfig() {
             this.config = {
-                version: '4.0.0-alpha7',
+                version: '4.0.0-beta1',
                 logAll: false,
                 prefix: "",
                 transitions: false,
@@ -106,14 +107,6 @@ var htmx = (() => {
                 includeIndicatorCSS: true,
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
-                sse: {
-                    reconnect: false,
-                    reconnectDelay: 500,
-                    reconnectMaxDelay: 60000,
-                    reconnectMaxAttempts: 10,
-                    reconnectJitter: 0.3,
-                    closeOnHide: false
-                },
                 morphIgnore: ["data-htmx-powered"],
                 morphScanLimit: 10,
                 noSwap: [204, 304],
@@ -271,7 +264,7 @@ var htmx = (() => {
                 if (!action) {
                     for (let verb of this.#verbs) {
                         let verbAction = this.#attributeValue(elt, "hx-" + verb);
-                        if (verbAction) {
+                        if (verbAction != null) {
                             action = verbAction;
                             method = verb;
                             break;
@@ -300,7 +293,6 @@ var htmx = (() => {
                 this.#initializeTriggers(elt);
                 this.#initializeAbortListener(elt)
                 this.#trigger(elt, "htmx:after:init", {}, true)
-                this.#trigger(elt, "load", {}, false)
             }
         }
 
@@ -372,7 +364,7 @@ var htmx = (() => {
                 "HX-Request": "true",
                 "HX-Source": this.#buildIdentifier(elt),
                 "HX-Current-URL": location.href,
-                "Accept": "text/html, text/event-stream"
+                "Accept": "text/html"
             };
             if (this.#isBoosted(elt)) {
                 headers["HX-Boosted"] = "true"
@@ -412,7 +404,7 @@ var htmx = (() => {
             if (this.#shouldCancel(evt)) evt.preventDefault()
 
             // determine if request uses query params
-            var usesQueryParams = /GET|DELETE/.test(ctx.request.method);
+            let usesQueryParams = /GET|DELETE/.test(ctx.request.method);
 
             // Only include *enclosing* form info for request types that do not use
             // query parameters (can still be included explicitly with hx-include)
@@ -519,31 +511,22 @@ var htmx = (() => {
                     headers: response.headers,
                 }
                 this.#extractHxHeaders(ctx);
-                ctx.isSSE = response.headers.get("Content-Type")?.includes('text/event-stream');
-                if (!ctx.isSSE) {
-                    ctx.text = await response.text();
-                }
+                if (!this.#trigger(elt, "htmx:before:response", {ctx})) return;
+                ctx.text = await response.text();
                 if (!this.#trigger(elt, "htmx:after:request", {ctx})) return;
 
                 if(this.#handleHeadersAndMaybeReturnEarly(ctx)){
                     return
                 }
 
-                let isSSE = response.headers.get("Content-Type")?.includes('text/event-stream');
-                if (isSSE) {
-                    // SSE response
-                    await this.#handleSSE(ctx, elt, response);
-                } else {
-                    // HTTP response
-                    if (ctx.status === "issuing") {
-                        if (ctx.hx.retarget) ctx.target = ctx.hx.retarget;
-                        if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;
-                        if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
-                        ctx.status = "response received";
-                        this.#handleStatusCodes(ctx);
-                        await this.swap(ctx);
-                        ctx.status = "swapped";
-                    }
+                if (ctx.status === "issuing") {
+                    if (ctx.hx.retarget) ctx.target = ctx.hx.retarget;
+                    if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;
+                    if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
+                    ctx.status = "response received";
+                    this.#handleStatusCodes(ctx);
+                    await this.swap(ctx);
+                    ctx.status = "swapped";
                 }
 
             } catch (error) {
@@ -602,180 +585,6 @@ var htmx = (() => {
             }
         }
 
-        async #handleSSE(ctx, elt, response) {
-            let config = {...this.config.sse, ...ctx.request.sse}
-            let lastEventId = null, attempt = 0, currentResponse = response, reader = null;
-            let reconnectRequested = false;
-            let delayCanceller = null;
-
-            let reconnect = () => {
-                if (!elt.isConnected || reconnectRequested) return;
-                reconnectRequested = true;
-                if (delayCanceller) delayCanceller();
-                reader?.cancel();
-            };
-
-            let visibilityHandler = () => {
-                if (document.hidden) {
-                    reader?.cancel();
-                } else {
-                    reconnect();
-                }
-            };
-
-            if (config.closeOnHide) {
-                document.addEventListener('visibilitychange', visibilityHandler);
-            }
-
-            try {
-                while (elt.isConnected) {
-                    if (attempt > 0 && !reconnectRequested) {
-                        if (!config.reconnect || attempt > config.reconnectMaxAttempts) break;
-
-                        let delay = Math.min(this.parseInterval(config.reconnectDelay) * Math.pow(2, attempt - 1), this.parseInterval(config.reconnectMaxDelay));
-                        if (config.reconnectJitter > 0) {
-                            let jitterRange = delay * config.reconnectJitter;
-                            let jitter = (Math.random() * 2 - 1) * jitterRange;
-                            delay = Math.max(0, delay + jitter);
-                        }
-                        let reconnectDetail = {attempt, delay, lastEventId, cancelled: false};
-
-                        ctx.status = "reconnecting to stream";
-                        if (!this.#trigger(elt, "htmx:before:sse:reconnect", {
-                            ctx,
-                            reconnect: reconnectDetail
-                        }) || reconnectDetail.cancelled) break;
-
-                        await new Promise(r => {
-                            delayCanceller = r;
-                            setTimeout(r, reconnectDetail.delay);
-                        });
-                        delayCanceller = null;
-                        if (!elt.isConnected) break;
-
-                        try {
-                            if (lastEventId) (ctx.request.headers = ctx.request.headers || {})['Last-Event-ID'] = lastEventId;
-                            currentResponse = await fetch(ctx.request.action, ctx.request);
-                        } catch (e) {
-                            ctx.status = "stream error";
-                            this.#trigger(elt, "htmx:error", {ctx, error: e});
-                            attempt++;
-                            continue;
-                        }
-                    }
-
-                    // Core streaming logic
-                    if (!this.#trigger(elt, "htmx:before:sse:stream", {ctx})) break;
-                    ctx.status = "streaming";
-                    reconnectRequested = false;
-                    attempt = 0;
-
-                    try {
-                        reader = currentResponse.body.getReader();
-                        for await (const sseMessage of this.#parseSSE(reader)) {
-                            if (!elt.isConnected || reconnectRequested) break;
-
-                            let msg = {data: sseMessage.data, event: sseMessage.event, id: sseMessage.id, cancelled: false};
-                            if (!this.#trigger(elt, "htmx:before:sse:message", {
-                                ctx,
-                                message: msg
-                            }) || msg.cancelled) continue;
-
-                            if (sseMessage.id) lastEventId = sseMessage.id;
-
-                            // Trigger custom event if `event:` line is present
-                            if (sseMessage.event) {
-                                this.#trigger(elt, sseMessage.event, {data: sseMessage.data, id: sseMessage.id});
-                                // Skip swap for custom events
-                                this.#trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
-                                continue;
-                            }
-
-                            ctx.text = sseMessage.data;
-                            ctx.status = "stream message received";
-
-                            if (!ctx.response.cancelled) {
-                                await this.swap(ctx);
-                                ctx.status = "swapped";
-                            }
-                            this.#trigger(elt, "htmx:after:sse:message", {ctx, message: msg});
-                        }
-                    } catch (e) {
-                        ctx.status = "stream error";
-                        this.#trigger(elt, "htmx:error", {ctx, error: e});
-                    }
-
-                    if (!elt.isConnected) break;
-                    this.#trigger(elt, "htmx:after:sse:stream", {ctx});
-
-                    if (reconnectRequested) {
-                        attempt++;
-                        continue;
-                    }
-
-                    attempt++;
-                }
-            } finally {
-                if (config.closeOnHide) {
-                    document.removeEventListener('visibilitychange', visibilityHandler);
-                }
-            }
-        }
-
-        async* #parseSSE(reader) {
-            let decoder = new TextDecoder();
-            let buffer = '';
-            let message = {data: '', event: '', id: '', retry: null};
-
-            try {
-                while (true) {
-                    let {done, value} = await reader.read();
-                    if (done) break;
-
-                    // Decode chunk and add to buffer
-                    buffer += decoder.decode(value, {stream: true});
-                    let lines = buffer.split('\n');
-                    // Keep incomplete line in buffer
-                    buffer = lines.pop() || '';
-
-                    for (let line of lines) {
-                        // Empty line or carriage return indicates end of message
-                        if (!line || line === '\r') {
-                            if (message.data) {
-                                yield message;
-                                message = {data: '', event: '', id: '', retry: null};
-                            }
-                            continue;
-                        }
-
-                        // Parse field: value
-                        let colonIndex = line.indexOf(':');
-                        if (colonIndex <= 0) continue;
-
-                        let field = line.slice(0, colonIndex);
-
-                        let value = line.slice(colonIndex + 1)
-                        if (value[0] === ' ') value = value.slice(1);
-
-                        if (field === 'data') {
-                            message.data += (message.data ? '\n' : '') + value;
-                        } else if (field === 'event') {
-                            message.event = value;
-                        } else if (field === 'id') {
-                            message.id = value;
-                        } else if (field === 'retry') {
-                            let retryValue = parseInt(value, 10);
-                            if (!isNaN(retryValue)) {
-                                message.retry = retryValue;
-                            }
-                        }
-                    }
-                }
-            } finally {
-                reader.releaseLock();
-            }
-        }
-
         #initTimeout(ctx) {
             let timeoutInterval;
             if (ctx.request.timeout) {
@@ -783,7 +592,7 @@ var htmx = (() => {
             } else {
                 timeoutInterval = this.config.defaultTimeout;
             }
-            ctx.requestTimeout = setTimeout(() => ctx.abort?.(), timeoutInterval);
+            ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.(), timeoutInterval);
         }
 
         #determineSyncStrategy(elt) {
@@ -835,12 +644,26 @@ var htmx = (() => {
                     elt.matches("input:not([type=button]),select,textarea") ? "change" :
                         "click";
             }
-            elt._htmx.triggerSpecs = this.#parseTriggerSpecs(specString)
-            elt._htmx.listeners = []
-            for (let spec of elt._htmx.triggerSpecs) {
-                spec.handler = initialHandler
+            this.#onTrigger(elt, specString, initialHandler)
+        }
+
+        // Wire up trigger listeners with full modifier support (delay, throttle, once, etc.)
+        #onTrigger(elt, specString, handler) {
+            let specs = this.#parseTriggerSpecs(specString)
+            let listeners = []
+
+            // Ensure element is registered for cleanup
+            if (!elt._htmx) {
+                elt._htmx = {}
+                elt.setAttribute('data-htmx-powered', 'true')
+            }
+            elt._htmx.triggerSpecs = (elt._htmx.triggerSpecs || []).concat(specs)
+            elt._htmx.listeners = elt._htmx.listeners || []
+
+            for (let spec of specs) {
+                spec.handler = handler
                 spec.listeners = []
-                spec.values = {}
+                spec.values = new WeakMap()
 
                 let [eventName, filter] = this.#extractFilter(spec.name);
 
@@ -969,11 +792,25 @@ var htmx = (() => {
                     }
                 }
 
+                // load: fire handler directly (no listener needed)
+                if (eventName === 'load') {
+                    let loadHandler = spec.handler
+                    loadHandler(new CustomEvent('load'))
+                    continue
+                }
+
                 for (let fromElt of fromElts) {
                     let listenerInfo = {fromElt, eventName, handler: spec.handler};
                     elt._htmx.listeners.push(listenerInfo)
                     spec.listeners.push(listenerInfo)
+                    listeners.push(listenerInfo)
                     fromElt.addEventListener(eventName, spec.handler);
+                }
+            }
+
+            return () => {
+                for (let l of listeners) {
+                    l.fromElt.removeEventListener(l.eventName, l.handler)
                 }
             }
         }
@@ -1352,7 +1189,7 @@ var htmx = (() => {
             let swapPromises = [];
             let transitionTasks = [];
             for (let task of tasks) {
-                if (task.swapSpec?.transition ?? mainSwap?.transition ?? ctx.transition !== false) {
+                if (task.swapSpec?.transition ?? mainSwap?.transition ?? (ctx.transition !== false)) {
                     transitionTasks.push(task);
                 } else {
                     swapPromises.push(this.#insertContent(task));
@@ -1486,7 +1323,7 @@ var htmx = (() => {
                         this.#insertNodes(parentNode, target.nextSibling, fragment);
                     }
                 } else {
-                    let methods = this.#extMethods.get('handle_swap')
+                    let methods = this.#extMethods.get('handle_swap') || []
                     let handled = false;
                     for (const method of methods) {
                         let result = method(swapStyle, target, fragment, swapSpec);
@@ -1636,8 +1473,7 @@ var htmx = (() => {
                 detail,
                 cancelable: true,
                 bubbles,
-                composed: true,
-                originalTarget: on
+                composed: true
             });
             let target = on?.isConnected ? on : document;
             let result = !detail.cancelled && target.dispatchEvent(evt);
@@ -1658,16 +1494,20 @@ var htmx = (() => {
                 return Promise.reject(new Error('Source not found'));
             }
 
-            // Resolve target, defaulting to body only if no source or target provided
-            let target = this.#resolveTarget(document.body, context.target || sourceElt);
-            if (!target) {
-                return Promise.reject(new Error('Target not found'));
+            // Resolve explicit target if provided; otherwise #createRequestContext
+            // will resolve from hx-target on the source element
+            if (context.target) {
+                let target = this.#resolveTarget(document.body, context.target);
+                if (!target) {
+                    return Promise.reject(new Error('Target not found'));
+                }
+                sourceElt ||= target;
             }
-
-            sourceElt ||= target;
+            sourceElt ||= document.body;
 
             let ctx = this.#createRequestContext(sourceElt, context.event || {});
-            Object.assign(ctx, context, {target});
+            Object.assign(ctx, context);
+            if (context.target) ctx.target = this.#resolveTarget(document.body, context.target);
             Object.assign(ctx.request, {action: path, method: verb.toUpperCase()});
             if (context.headers) Object.assign(ctx.request.headers, context.headers);
 
@@ -1714,8 +1554,6 @@ var htmx = (() => {
                         request: {headers: {'HX-History-Restore-Request': 'true'}}
                     });
                 }
-            } else if (elt.tagName === "FORM") {
-                return elt.method !== 'dialog' &&  this.#isSameOrigin(elt.action);
             }
         }
 
@@ -1757,7 +1595,7 @@ var htmx = (() => {
 
         #handleHxOnAttributes(node) {
             for (let attr of node.getAttributeNames()) {
-                var searchString = this.#maybeAdjustMetaCharacter(this.#prefix("hx-on:"));
+                let searchString = this.#maybeAdjustMetaCharacter(this.#prefix("hx-on:"));
                 if (attr.startsWith(searchString)) {
                     let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
@@ -1765,7 +1603,7 @@ var htmx = (() => {
                         try {
                             await this.#executeJavaScriptAsync(node, {"event": evt}, code, false)
                         } catch (e) {
-                            console.log(e);
+                            console.error(e);
                         }
                     });
                 }
@@ -2170,7 +2008,7 @@ var htmx = (() => {
                     parentNode.moveBefore(element, after);
                     return
                 } catch (e) {
-                    // ignore and insertBefore insteat
+                    // ignore and insertBefore instead
                 }
             }
             parentNode.insertBefore(element, after);
