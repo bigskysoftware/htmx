@@ -781,9 +781,9 @@ var htmx = (() => {
                     spec.handler = (evt) => {
                         let trigger = false
                         for (let fromElt of fromElts) {
-                            if (spec.values[fromElt] !== fromElt.value) {
+                            if (spec.values.get(fromElt) !== fromElt.value) {
                                 trigger = true
-                                spec.values[fromElt] = fromElt.value
+                                spec.values.set(fromElt, fromElt.value);
                             }
                         }
                         if (trigger) {
