@@ -1892,7 +1892,7 @@ var htmx = (() => {
             }
             insertionPoint ||= oldParent.firstChild;
 
-            for (const newChild of newParent.childNodes) {
+            for (const newChild of [...newParent.childNodes]) {
                 if (insertionPoint && insertionPoint != endPoint) {
                     let bestMatch = this.__findBestMatch(ctx, newChild, insertionPoint, endPoint);
                     if (bestMatch) {
@@ -1934,16 +1934,15 @@ var htmx = (() => {
                     continue;
                 }
 
-                let tempChild;
                 if (ctx.idMap.has(newChild)) {
-                    tempChild = document.createElement(newChild.tagName);
-                    oldParent.insertBefore(tempChild, insertionPoint);
-                    this.__morphNode(tempChild, newChild, ctx);
+                    let placeholder = document.createElement(newChild.tagName);
+                    oldParent.insertBefore(placeholder, insertionPoint);
+                    this.__morphNode(placeholder, newChild, ctx);
+                    insertionPoint = placeholder.nextSibling;
                 } else {
-                    tempChild = document.importNode(newChild, true);
-                    oldParent.insertBefore(tempChild, insertionPoint);
+                    oldParent.insertBefore(newChild, insertionPoint);
+                    insertionPoint = newChild.nextSibling;
                 }
-                insertionPoint = tempChild.nextSibling;
             }
 
             while (insertionPoint && insertionPoint != endPoint) {
