@@ -1118,7 +1118,7 @@ var htmx = (() => {
         }
 
         __handleAutoFocus(elt) {
-            let autofocus = this.find(elt, "[autofocus]");
+            let autofocus = elt.querySelector?.("[autofocus]");
             if (autofocus) {
                 this.__setFocus(autofocus);
             }
