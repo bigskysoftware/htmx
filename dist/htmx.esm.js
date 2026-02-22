@@ -373,7 +373,7 @@ var htmx = (() => {
         }
 
         #handleHxHeaders(elt, headers) {
-            return this.#getAttributeObject(elt, "hx-headers", obj => {
+            return this.#handleAttributeObject(elt, "hx-headers", obj => {
                 for (let key in obj) headers[key] = String(obj[key]);
             });
         }
@@ -489,10 +489,9 @@ var htmx = (() => {
             try {
                 // Handle confirmation
                 if (ctx.confirm) {
-                    let issueRequest = null;
                     let confirmed = await new Promise(resolve => {
-                        issueRequest = resolve;
-                        if (this.#trigger(elt, "htmx:confirm", {ctx, issueRequest: (skip) => issueRequest?.(skip !== false)})) {
+                        let detail = {ctx, issueRequest: () => resolve(true), dropRequest: () => resolve(false)};
+                        if (this.#trigger(elt, "htmx:confirm", detail)) {
                             let js = this.#extractJavascriptContent(ctx.confirm);
                             resolve(js ? this.#executeJavaScriptAsync(elt, {}, js, true) : window.confirm(ctx.confirm));
                         }
@@ -658,7 +657,7 @@ var htmx = (() => {
                 elt.setAttribute('data-htmx-powered', 'true')
             }
             elt._htmx.triggerSpecs = (elt._htmx.triggerSpecs || []).concat(specs)
-            elt._htmx.listeners = elt._htmx.listeners || []
+            elt._htmx.listeners ||= []
 
             for (let spec of specs) {
                 spec.handler = handler
@@ -781,9 +780,9 @@ var htmx = (() => {
                     spec.handler = (evt) => {
                         let trigger = false
                         for (let fromElt of fromElts) {
-                            if (spec.values[fromElt] !== fromElt.value) {
+                            if (spec.values.get(fromElt) !== fromElt.value) {
                                 trigger = true
-                                spec.values[fromElt] = fromElt.value
+                                spec.values.set(fromElt, fromElt.value);
                             }
                         }
                         if (trigger) {
@@ -1128,15 +1127,17 @@ var htmx = (() => {
         #handleScroll(swapSpec, target) {
             if (swapSpec.scroll) {
                 let scrollTarget = swapSpec.scrollTarget ? this.#findExt(swapSpec.scrollTarget) : target;
-                if (swapSpec.scroll === 'top') {
-                    scrollTarget.scrollTop = 0;
-                } else if (swapSpec.scroll === 'bottom'){
-                    scrollTarget.scrollTop = scrollTarget.scrollHeight;
+                if (scrollTarget) {
+                    if (swapSpec.scroll === 'top') {
+                        scrollTarget.scrollTop = 0;
+                    } else if (swapSpec.scroll === 'bottom'){
+                        scrollTarget.scrollTop = scrollTarget.scrollHeight;
+                    }
                 }
             }
             if (swapSpec.show) {
                 let showTarget = swapSpec.showTarget ? this.#findExt(swapSpec.showTarget) : target;
-                showTarget.scrollIntoView(swapSpec.show === 'top')
+                showTarget?.scrollIntoView(swapSpec.show === 'top')
             }
         }
 
@@ -1599,13 +1600,17 @@ var htmx = (() => {
                 if (attr.startsWith(searchString)) {
                     let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
-                    node.addEventListener(evtName, async (evt) => {
+                    let handler = node.addEventListener(evtName, async (evt) => {
                         try {
                             await this.#executeJavaScriptAsync(node, {"event": evt}, code, false)
                         } catch (e) {
                             console.error(e);
                         }
                     });
+                    // ensure listeners collection is initialized and push for cleanup
+                    node._htmx ||= {}
+                    node._htmx.listeners ||= []
+                    node._htmx.listeners.push({fromElt: node, eventName: evtName, handler});
                 }
             }
         }
@@ -1718,7 +1723,7 @@ var htmx = (() => {
             }
         }
 
-        #getAttributeObject(elt, attrName, callback) {
+        #handleAttributeObject(elt, attrName, callback) {
             let attrValue = this.#attributeValue(elt, attrName);
             if (!attrValue) return null;
 
@@ -1739,7 +1744,7 @@ var htmx = (() => {
         }
 
         #handleHxVals(elt, body) {
-            return this.#getAttributeObject(elt, "hx-vals", obj => {
+            return this.#handleAttributeObject(elt, "hx-vals", obj => {
                 for (let key in obj) body.set(key, obj[key]);
             });
         }
