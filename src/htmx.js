@@ -404,7 +404,7 @@ var htmx = (() => {
             if (this.__shouldCancel(evt)) evt.preventDefault()
 
             // determine if request uses query params
-            var usesQueryParams = /GET|DELETE/.test(ctx.request.method);
+            let usesQueryParams = /GET|DELETE/.test(ctx.request.method);
 
             // Only include *enclosing* form info for request types that do not use
             // query parameters (can still be included explicitly with hx-include)
@@ -1595,7 +1595,7 @@ var htmx = (() => {
 
         __handleHxOnAttributes(node) {
             for (let attr of node.getAttributeNames()) {
-                var searchString = this.__maybeAdjustMetaCharacter(this.__prefix("hx-on:"));
+                let searchString = this.__maybeAdjustMetaCharacter(this.__prefix("hx-on:"));
                 if (attr.startsWith(searchString)) {
                     let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
