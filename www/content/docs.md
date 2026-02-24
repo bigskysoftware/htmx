@@ -438,6 +438,26 @@ mechanism you can create your own CSS transition like so:
 }
 ```
 
+If you want to avoid briefly flashing an indicator for fast requests, you can use a CSS
+`transition-delay`. The indicator will only appear if the request takes longer than the delay:
+
+```css
+.htmx-indicator{
+    opacity:0;
+}
+.htmx-request .htmx-indicator{
+    opacity:1;
+    transition: opacity 200ms ease-in 500ms;
+}
+.htmx-request.htmx-indicator{
+    opacity:1;
+    transition: opacity 200ms ease-in 500ms;
+}
+```
+
+If the request completes before the 500ms delay, the `htmx-request` class is removed and the
+indicator never becomes visible.
+
 If you want the `htmx-request` class added to a different element, you can use the [hx-indicator](@/attributes/hx-indicator.md)
 attribute with a CSS selector to do so:
 

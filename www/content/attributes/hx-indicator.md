@@ -68,6 +68,23 @@ CSS.  Here is an example that uses `display` rather than opacity (Note that we u
     }
 ```
 
+You can also delay showing an indicator using CSS `transition-delay` to avoid flashing it for
+fast requests:
+
+```css
+    .my-indicator{
+        opacity:0;
+    }
+    .htmx-request .my-indicator,
+    .htmx-request.my-indicator{
+        opacity:1;
+        transition: opacity 200ms ease-in 500ms;
+    }
+```
+
+If the request completes before the 500ms delay, the `htmx-request` class is removed and the
+indicator never becomes visible.
+
 Note that the target of the `hx-indicator` selector need not be the exact element that you
 want to show: it can be any element in the parent hierarchy of the indicator.
 
