@@ -253,8 +253,9 @@ This event is triggered before history is updated. You can modify the path or pr
 
 ##### Details
 
-* `detail.ctx` - the request context object
-* `detail.path` - the path to be saved in history
+* `detail.history` - object with `type` (`"push"` or `"replace"`) and `path`
+* `detail.sourceElement` - the element that triggered the request
+* `detail.response` - the response object
 
 ### Event - `htmx:after:history:update` {#htmx:after:history:update}
 
@@ -262,7 +263,9 @@ This event is triggered after history has been updated.
 
 ##### Details
 
-* `detail.ctx` - the request context object
+* `detail.history` - object with `type` (`"push"` or `"replace"`) and `path`
+* `detail.sourceElement` - the element that triggered the request
+* `detail.response` - the response object
 
 ### Event - `htmx:after:push:into:history` {#htmx:after:push:into:history}
 
