@@ -15,12 +15,13 @@ htmx extensions are split into two categories:
 
 ## Core Extensions
 
-| Name                                             | Description                                                                                                                                                                                |
-|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [head-support](/extensions/head-support)         | Provides support for merging head tag information (styles, etc.) in htmx requests                                                                                                          |
-| [hx-preload](/extensions/preload)                | This extension allows you to load HTML fragments into your browser's cache before they are requested by the user, so that additional pages appear to users to load nearly instantaneously. |
-| [hx-optimistic](/extensions/optimistic)          | This extension allows you to load HTML fragments into your browser's cache before they are requested by the user, so that additional pages appear to users to load nearly instantaneously. |
-| [ws](/extensions/ws)                             | Provides bi-directional communication with [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) servers directly from HTML |
+| Name                                                  | Description                                                                                                                                                                                |
+|-------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [head-support](/extensions/head-support)              | Provides support for merging head tag information (styles, etc.) in htmx requests                                                                                                          |
+| [hx-browser-indicator](/extensions/browser-indicator) | Shows the browser's native loading indicator (tab spinner) during htmx requests                                                                                                          |
+| [hx-preload](/extensions/preload)                     | This extension allows you to load HTML fragments into your browser's cache before they are requested by the user, so that additional pages appear to users to load nearly instantaneously. |
+| [hx-optimistic](/extensions/optimistic)               | This extension allows you to load HTML fragments into your browser's cache before they are requested by the user, so that additional pages appear to users to load nearly instantaneously. |
+| [ws](/extensions/ws)                                  | Provides bi-directional communication with [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) servers directly from HTML |
 
 ## Community Extensions
 
