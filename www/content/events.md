@@ -68,9 +68,11 @@ This event is triggered before htmx initializes a DOM node and processes its `hx
 
 ### Event - `htmx:after:init` {#htmx:after:init}
 
-**Replaces:** `htmx:afterProcessNode`, `htmx:afterOnLoad`, `htmx:load`
+**Replaces:** `htmx:afterProcessNode`, `htmx:afterOnLoad`
 
 This event is triggered after htmx has initialized a DOM node. Note that this event is also triggered when htmx is first initialized, with the document body as the target.
+
+For processing new content (the old `htmx:load` use case), use `htmx:after:process` instead — that is the event `htmx.onLoad()` listens to.
 
 ##### Details
 
