@@ -1619,6 +1619,8 @@ They are listed below:
 | `htmx.config.history`             | defaults to `true`, whether to enable history support (push/replace URL).  Set to `"reload"` to do a hard browser reload on history navigations.                         |
 | `htmx.config.mode`                | defaults to `'same-origin'`, the fetch mode for AJAX requests. Can be `'cors'`, `'no-cors'`, or `'same-origin'`                                                          |
 | `htmx.config.defaultSwap`         | defaults to `innerHTML`                                                                                                                                                  |
+| `htmx.config.defaultFocusScroll`  | defaults to `false`, whether to scroll to the focused element after a swap                                                                                               |
+| `htmx.config.defaultSettleDelay`  | defaults to `1` (ms), the delay between the swap and the settle phase                                                                                                    |
 | `htmx.config.indicatorClass`      | defaults to `htmx-indicator`                                                                                                                                             |
 | `htmx.config.requestClass`        | defaults to `htmx-request`                                                                                                                                               |
 | `htmx.config.includeIndicatorCSS` | defaults to `true` (determines if the indicator styles are loaded)                                                                                                       |
