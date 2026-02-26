@@ -153,7 +153,7 @@ All other attributes available in htmx.
 | [`htmx.findAll()`](@/api.md#findAll)  | Finds all elements matching a given selector (supports extended selectors)
 | [`htmx.forEvent()`](@/api.md#)  | Returns a promise that resolves when the specified event fires
 | [`htmx.on()`](@/api.md#on)  | Creates an event listener on the given element or document
-| [`htmx.onLoad()`](@/api.md#onLoad)  | Adds a callback handler for the `htmx:after:init` event
+| [`htmx.onLoad()`](@/api.md#onLoad)  | Adds a callback handler for the `htmx:after:process` event
 | [`htmx.parseInterval()`](@/api.md#parseInterval)  | Parses an interval declaration into a millisecond value
 | [`htmx.process()`](@/api.md#process)  | Processes the given element and its children, hooking up any htmx behavior
 | [`htmx.swap()`](@/api.md#swap)  | Performs swapping of HTML content
