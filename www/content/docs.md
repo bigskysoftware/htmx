@@ -544,8 +544,6 @@ htmx includes built-in morphing swaps via `innerMorph` and `outerMorph`. Morphin
 
 See the [Morphing documentation](@/morphing.md) for details on how morphing works, configuration options (`morphIgnore`, `morphSkip`, `morphSkipChildren`), and best practices.
 
-htmx also supports the [idiomorph extension](@/extensions/idiomorph.md) which provides a more advanced morphing algorithm.
-
 Consider this HTML:
 
 ```html
@@ -1154,12 +1152,11 @@ To restrict which extensions can register, use an allow list:
 
 ### Core Extensions
 
-htmx supports a few core extensions, which are supported by the htmx development team:
+htmx supports some core extensions, which are supported by the htmx development team:
 
-* [head-support](/extensions/head-support) - support for merging head tag information (styles, etc.) in htmx requests
-* [ws](/extensions/ws) - support for [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
+{{ include(path="content/extensions/core-extensions-table.html") }}
 
-You can see all available extensions on the [Extensions](/extensions) page.
+See the [Extensions](/extensions) page for more information
 
 ### Creating Extensions
 

@@ -210,10 +210,6 @@ When the server returns updated HTML with `user-id="456"`, the `user-card` eleme
 
 **When NOT to use morphing:** Resetting forms, clearing user input, or when simple replacement is faster.
 
-## Morphing vs. Idiomorph Extension
-
-The built-in morphing is sufficient for most applications. The [idiomorph extension](@/extensions/idiomorph.md) provides a more advanced algorithm for complex DOM transformations.
-
 ## Best Practices
 
 1. **Use stable IDs** for elements you want preserved - they can be moved anywhere and will still match

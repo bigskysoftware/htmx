@@ -15,17 +15,7 @@ htmx extensions are split into two categories:
 
 ## Core Extensions
 
-| Name                                               | Description                                                                                                                                                                                |
-|----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [alpine-compat](/extensions/alpine-compat)         | Alpine.js compatibility — initializes Alpine on fragments before swap and preserves Alpine state during morph operations                                                                   |
-| [browser-indicator](/extensions/browser-indicator) | Shows the browser's native loading indicator (tab spinner) during htmx requests                                                                                                            |
-| [htmx-2-compat](/extensions/htmx-2-compat)         | htmx 2.0 backwards compatibility — restores implicit inheritance, old event names, and previous error-swapping defaults                                                                    |
-| [head-support](/extensions/head-support)           | Provides support for merging head tag information (styles, etc.) in htmx requests                                                                                                          |
-| [optimistic](/extensions/optimistic)               | Immediately shows expected content from a template before the server responds, then replaces it with the actual response on completion                                                     |
-| [preload](/extensions/preload)                     | Triggers requests early (on mouseover or mousedown) so the response is cached by the time the user clicks, making pages appear to load nearly instantaneously                              |
-| [sse](/extensions/sse)                             | Adds support for [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) streaming to htmx                                                               |
-| [upsert](/extensions/upsert)                       | Adds an `upsert` swap strategy that updates existing elements by ID and inserts new ones, preserving elements not in the response                                                          |
-| [ws](/extensions/ws)                               | Provides bi-directional communication with [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications) servers directly from HTML |
+{{ include(path="content/extensions/core-extensions-table.html") }}
 
 ## Community Extensions
 
