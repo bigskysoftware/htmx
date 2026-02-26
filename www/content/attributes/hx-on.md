@@ -65,24 +65,6 @@ in HTML attributes, you may use dashes in the place of colons for both the long 
 
 ```
 
-### hx-on (deprecated)
-The value is an event name, followed by a colon `:`, followed by the script:
-
-```html
-<button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')">
-    Get Info!
-</button>
-```
-
-Multiple handlers can be defined by putting them on new lines:
-```html
-<button hx-get="/info" hx-on="htmx:beforeRequest: alert('Making a request!')
-                              htmx:afterRequest: alert('Done making a request!')">
-    Get Info!
-</button>
-```
-
-
 ### Symbols
 
 Like `onevent`, two symbols are made available to event handler scripts:
