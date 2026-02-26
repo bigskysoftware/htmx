@@ -96,7 +96,6 @@ htmx_after_init: (elt) => {
 - `getSelectors()` was used to tell htmx which elements to process
 - In htmx 4, all elements are processed and you check attributes in hooks
 - This is more flexible as you can check any condition, not just selectors
-- Note: SSE is now built into htmx 4 core, no extension needed
 
 ---
 
