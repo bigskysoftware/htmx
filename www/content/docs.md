@@ -1176,7 +1176,7 @@ Htmx has an extensive [events mechanism](@/reference.md#events), which doubles a
 If you want to register for a given htmx event you can use:
 
 ```js
-document.body.addEventListener('htmx:after:init', function(evt) {
+document.body.addEventListener('htmx:after:process', function(evt) {
     myJavascriptLib.init(evt.detail.elt);
 });
 ```
@@ -1184,26 +1184,26 @@ document.body.addEventListener('htmx:after:init', function(evt) {
 or, if you would prefer, you can use the following htmx helper:
 
 ```javascript
-htmx.on("htmx:after:init", function(evt) {
+htmx.on("htmx:after:process", function(evt) {
     myJavascriptLib.init(evt.detail.elt);
 });
 ```
 
-The `htmx:load` event is fired every time an element is loaded into the DOM by htmx, and is effectively the equivalent
- to the normal `load` event.
+### Initialize A 3rd Party Library With Events {#init_3rd_party_with_events}
+
+The `htmx:after:process` event is fired every time an element is processed by htmx, and is effectively the equivalent
+to the normal `load` event.
 
 Some common uses for htmx events are:
 
-### Initialize A 3rd Party Library With Events {#init_3rd_party_with_events}
-
-Using the `htmx:load` event to initialize content is so common that htmx provides a helper function:
+Using the `htmx:after:process` event to initialize content is so common that htmx provides a helper function:
 
 ```javascript
 htmx.onLoad(function(target) {
     myJavascriptLib.init(target);
 });
 ```
-This does the same thing as the first example, but is a little cleaner.
+This does the same thing as the earliers examples, but is a little cleaner.
 
 ### Configure a Request With Events {#config_request_with_events}
 
