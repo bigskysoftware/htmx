@@ -59,6 +59,13 @@ inputs by default. Use [`hx-include`](/attributes/hx-include)`="closest form"` i
 Out-of-band ([`hx-swap-oob`](/attributes/hx-swap-oob)) and partial swaps now happen *after* the main content swap,
 rather than before as in htmx 2.
 
+### Default Timeout
+
+htmx 4 sets a default request timeout of 60 seconds (`htmx.config.defaultTimeout = 60000`).
+
+- In htmx 2, the default timeout was `0` (no timeout), meaning requests could hang indefinitely
+- Set `htmx.config.defaultTimeout` to `0` to restore the old behavior
+
 ### Extension Loading
 
 Extensions no longer use the `hx-ext` attribute. They are activated by including the script file and approving them
@@ -160,6 +167,22 @@ All events now provide a consistent `ctx` object with request/response informati
 
 - Easier to access request/response information in event handlers
 - More predictable event handling across the request lifecycle
+
+### Etag / Conditional Requests
+
+htmx 4 has built-in support for `Etag`-based conditional requests.
+
+- When a response includes an `Etag` header, htmx stores it on the source element
+- Subsequent requests from that element automatically include an `If-None-Match` header
+- `304 Not Modified` responses do not swap by default, avoiding unnecessary DOM updates
+
+### JSX-Compatible Attribute Names
+
+The new `metaCharacter` config option allows replacing `:` in attribute names with a custom character for
+frameworks that don't support colons in attribute names.
+
+- Example: setting `htmx.config.metaCharacter = "-"` allows `hx-ws-connect` instead of `hx-ws:connect`
+- Useful for JSX/TSX, Vue, and other template systems with strict attribute name rules
 
 ### Server-Sent Events Extension
 

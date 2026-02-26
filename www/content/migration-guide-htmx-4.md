@@ -12,6 +12,7 @@ backwards compatibility where possible but this upgrade will require more work t
 - [Biggest Changes](#biggest-changes)
 - [Attribute Changes](#attribute-changes)
 - [Out-of-Band Swap Order](#out-of-band-swap-order)
+- [Configuration Changes](#configuration-changes)
 - [Event Name Changes](#event-name-changes)
 - [JavaScript API Changes](#javascript-api-changes)
 - [HTTP Header Changes](#http-header-changes)
@@ -58,7 +59,7 @@ The following attributes have been removed:
 |-------------------|-------------------------------------------------------------------|
 | `hx-vars`         | Use [`hx-vals`](/attributes/hx-vals) with `js:` prefix             |
 | `hx-params`       | Use `htmx:config:request` event to filter parameters              |
-| `hx-prompt`       | Use [`hx-confirm`](/attributes/hx-confirm) with async JavaScript function |
+| `hx-prompt`       | Use [`hx-confirm`](/attributes/hx-confirm) with `js:` prefix (e.g. `hx-confirm="js:myAsyncFn()"`) |
 | `hx-ext`          | Extensions now work via event listeners                           |
 | `hx-disinherit`   | No longer needed (inheritance is explicit)                        |
 | `hx-inherit`      | No longer needed (inheritance is explicit)                        |
@@ -110,6 +111,70 @@ default. Use [`hx-include`](/attributes/hx-include)`="closest form"` if you need
 In htmx 2, out-of-band ([`hx-swap-oob`](/attributes/hx-swap-oob)) elements were swapped *before* the main content. In htmx 4,
 the main content is swapped first, and OOB/`hx-partial` elements are swapped *after*. This is generally
 more intuitive but may affect code that relied on the previous ordering.
+
+---
+
+## Configuration Changes
+
+If you customize `htmx.config`, you will need to update your configuration for htmx 4.
+
+### Renamed Config Keys
+
+| htmx 2.x | htmx 4.x | Notes |
+|-----------|----------|-------|
+| `defaultSwapStyle` | `defaultSwap` | Default: `"innerHTML"` |
+| `globalViewTransitions` | `transitions` | Default: `false` |
+| `historyEnabled` | `history` | Default: `true` |
+| `includeIndicatorStyles` | `includeIndicatorCSS` | Default: `true` |
+| `timeout` | `defaultTimeout` | Default changed (see below) |
+
+### Changed Defaults
+
+| Config | htmx 2 default | htmx 4 default | Impact |
+|--------|----------------|----------------|--------|
+| `defaultTimeout` | `0` (no timeout) | `60000` (60 seconds) | Requests that previously had no timeout will now timeout after 60 seconds |
+| `defaultSettleDelay` | `20` | `1` | Settle phase is shorter |
+
+### Removed Config Keys
+
+The following configuration keys have been removed in htmx 4:
+
+| Removed Key | Notes |
+|-------------|-------|
+| `addedClass` | Hardcoded to `"htmx-added"` |
+| `allowEval` | Removed |
+| `allowNestedOobSwaps` | Removed |
+| `allowScriptTags` | Removed |
+| `attributesToSettle` | Removed |
+| `defaultSwapDelay` | Removed |
+| `disableSelector` | Use [`hx-ignore`](/attributes/hx-ignore) instead |
+| `getCacheBusterParam` | Removed |
+| `historyCacheSize` | History no longer uses localStorage |
+| `ignoreTitle` | Use `ignoreTitle` swap modifier instead |
+| `methodsThatUseUrlParams` | GET and DELETE use URL params |
+| `refreshOnHistoryMiss` | History always does a full page request |
+| `responseHandling` | Use [`hx-status`](/attributes/hx-status) and `htmx.config.noSwap` instead |
+| `scrollBehavior` | Removed |
+| `scrollIntoViewOnBoost` | Removed |
+| `selfRequestsOnly` | Use `htmx.config.mode` (`'same-origin'` by default) |
+| `settlingClass` | Hardcoded to `"htmx-settling"` |
+| `swappingClass` | Hardcoded to `"htmx-swapping"` |
+| `triggerSpecsCache` | Removed |
+| `useTemplateFragments` | Removed |
+| `withCredentials` | Use `hx-config` to set fetch options |
+| `wsBinaryType` | WebSocket extension handles this |
+| `wsReconnectDelay` | Use `htmx.config.websockets` instead |
+
+### `data-hx-*` Attribute Prefix
+
+In htmx 2, both `hx-*` and `data-hx-*` attributes were recognized automatically. In htmx 4, only `hx-*`
+is recognized by default. If you use `data-hx-*` attributes, set the prefix in your config:
+
+```html
+<meta name="htmx-config" content='{"prefix": "data-hx-"}'>
+```
+
+**Note:** When using a custom prefix, *all* htmx attributes must use that prefix.
 
 ---
 
@@ -182,6 +247,7 @@ If you need upload progress tracking in htmx 4:
 * `htmx:after:cleanup` - Triggered after element cleanup
 * `htmx:after:history:update` - Triggered after history is updated
 * `htmx:after:process` - Triggered after processing an element
+* `htmx:before:response` - Triggered after response headers are available but before the body is read (cancellable)
 * `htmx:before:settle` - Triggered before settle phase begins
 * `htmx:after:settle` - Triggered after settle phase completes
 * `htmx:after:viewTransition` - Triggered after view transition completes
@@ -201,6 +267,9 @@ The following JavaScript API methods have been removed in htmx 4:
 |--------------------------|---------------------------------------------------|
 | `htmx.addClass()`        | Use native `element.classList.add()`              |
 | `htmx.closest()`         | Use native `element.closest()`                    |
+| `htmx.createEventSource` | SSE extension handles this                        |
+| `htmx.createWebSocket`   | WebSocket extension handles this                  |
+| `htmx.defineExtension()`  | Use `htmx.registerExtension()` (renamed)          |
 | `htmx.location()`        | Use `htmx.ajax()` instead                         |
 | `htmx.logAll()`          | Set `htmx.config.logAll = true`                   |
 | `htmx.logNone()`         | Set `htmx.config.logAll = false`                  |
@@ -210,6 +279,7 @@ The following JavaScript API methods have been removed in htmx 4:
 | `htmx.removeClass()`     | Use native `element.classList.remove()`           |
 | `htmx.removeExtension()` | Extensions are now event-based, no removal needed |
 | `htmx.toggleClass()`     | Use native `element.classList.toggle()`           |
+| `htmx.values()`          | Use native `FormData` or collect values manually  |
 
 ### Retained API Methods
 
@@ -224,7 +294,7 @@ These methods continue to exist in htmx 4:
 * `htmx.on(eventName, handler)` - Add event listener
 * `htmx.parseInterval(str)` - Parse interval strings like "1s", "500ms"
 * `htmx.process(element)` - Process htmx attributes on an element
-* `htmx.swap()` - Swap content into the DOM
+* `htmx.swap(ctx)` - Swap content into the DOM (signature changed: now takes a request context object)
 * `htmx.takeClass(element, className, container)` - Take a class from sibling elements
 * `htmx.trigger(element, eventName, detail)` - Trigger custom events
 
