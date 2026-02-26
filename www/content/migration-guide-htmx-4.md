@@ -11,6 +11,7 @@ backwards compatibility where possible but this upgrade will require more work t
 
 - [Biggest Changes](#biggest-changes)
 - [Attribute Changes](#attribute-changes)
+- [Out-of-Band Swap Order](#out-of-band-swap-order)
 - [Event Name Changes](#event-name-changes)
 - [JavaScript API Changes](#javascript-api-changes)
 - [HTTP Header Changes](#http-header-changes)
@@ -103,6 +104,12 @@ As mentioned above, you can revert this behavior by setting `htmx.config.implici
 
 In htmx 4 `hx-delete`, like `hx-get`, no longer includes the enclosing form's inputs by
 default. Use `hx-include="closest form"` if you need this behavior.
+
+### Out-of-Band Swap Order
+
+In htmx 2, out-of-band (`hx-swap-oob`) elements were swapped *before* the main content. In htmx 4,
+the main content is swapped first, and OOB/`hx-partial` elements are swapped *after*. This is generally
+more intuitive but may affect code that relied on the previous ordering.
 
 ---
 
