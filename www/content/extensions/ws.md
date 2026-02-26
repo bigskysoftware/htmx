@@ -412,7 +412,7 @@ Server sends targeted updates:
 {"target": "#memory-usage", "payload": "<span>2.3 GB</span>"}
 ```
 
-## Migrating from Previous Versions
+## Upgrading from htmx 2.x
 
 ### Attribute Changes
 
