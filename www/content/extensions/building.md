@@ -15,8 +15,8 @@ If you're migrating an extension from htmx 2.x, here's a quick reference:
 | `getSelectors()`                      | `htmx_after_init`     | Check `api.attributeValue(elt, "attr")` instead of returning selectors.                |
 | `onEvent(name, evt)`                  | Specific hooks        | Replace with `htmx_before_request`, `htmx_after_swap`, etc. (use underscores)          |
 | `transformResponse(text, xhr, elt)`   | `htmx_after_request`  | Modify `detail.ctx.text` directly (check if exists first as not set for SSE responses) |
-| `isInlineSwap(swapStyle)`             | Not needed            | Move logic into `htmx_handle_swap`. For OOB outer swaps, use `detail.unstripped`       |
-| `handleSwap(style, target, fragment)` | `htmx_handle_swap`    | Access via `detail.swapSpec.style` and `detail.fragment`, return false                 |
+| `isInlineSwap(swapStyle)`             | Not needed            | Move logic into `handle_swap`. For OOB outer swaps, use `detail.unstripped`            |
+| `handleSwap(style, target, fragment)` | `handle_swap`         | Args are `(swapStyle, target, fragment, swapSpec)`, return truthy if handled            |
 | `encodeParameters(xhr, params, elt)`  | `htmx_config_request` | Modify `detail.ctx.request.body` (FormData) and headers directly                       |
 
 For detailed migration examples, see the
@@ -91,7 +91,7 @@ of colons:
 | `htmx_after_swap`     | `htmx:after:swap`     | `(elt, detail)` | After content swap      |
 | `htmx_before_settle`  | `htmx:before:settle`  | `(elt, detail)` | Before settle phase     |
 | `htmx_after_settle`   | `htmx:after:settle`   | `(elt, detail)` | After settle phase      |
-| `htmx_handle_swap`    | `htmx:handle:swap`    | `(elt, detail)` | Custom swap handler     |
+| `handle_swap`         | _(direct call)_       | `(swapStyle, target, fragment, swapSpec)` | Custom swap handler     |
 
 ### History Events
 
@@ -197,9 +197,8 @@ Extensions can implement custom swap strategies:
 
 ```javascript
 htmx.registerExtension("my-swap", {
-    htmx_handle_swap: (target, detail) => {
-        let { swapSpec, fragment } = detail;
-        if (swapSpec.style === "my-custom-swap") {
+    handle_swap: (swapStyle, target, fragment, swapSpec) => {
+        if (swapStyle === "my-custom-swap") {
             // Implement custom swap logic
             target.appendChild(fragment);
             return true; // Handled
@@ -274,7 +273,7 @@ htmx.defineExtension("old", {  // Note: htmx 2.x used defineExtension with diffe
 htmx.registerExtension("new", {
     htmx_before_request: (elt, detail) => {},
     htmx_after_request: (elt, detail) => {},
-    htmx_handle_swap: (elt, detail) => {},
+    handle_swap: (swapStyle, target, fragment, swapSpec) => {},
 });
 ```
 
