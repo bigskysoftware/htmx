@@ -527,8 +527,8 @@ You can modify this by using the [hx-swap](@/attributes/hx-swap.md) attribute wi
 
 | Name                        | Description                                                                                                                               |
 |-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| `outerHTML`                 | the default, replaces the entire target element with the returned content                                                                 |
-| `innerHTML`                 | puts the content inside the target element                                                                                                |
+| `innerHTML`                 | the default, puts the content inside the target element                                                                                   |
+| `outerHTML`                 | replaces the entire target element with the returned content                                                                              |
 | `beforebegin` (or `before`) | prepends the content before the target in the target's parent element                                                                     |
 | `afterbegin` (or `prepend`) | prepends the content before the first child inside the target                                                                             |
 | `beforeend` (or `append`)   | appends the content after the last child inside the target                                                                                |
@@ -1069,15 +1069,14 @@ In this example:
 htmx includes headers in the requests it makes:
 
 
-| Header                       | Description                                                                                          |
-|------------------------------|------------------------------------------------------------------------------------------------------|
-| `HX-Boosted`                 | indicates that the request is via an element using [hx-boost](@/attributes/hx-boost.md)              |
-| `HX-Current-URL`             | the current URL of the browser                                                                       |
-| `HX-History-Restore-Request` | "true" if the request is for history restoration after a miss in the local history cache             |
-| `HX-Request`                 | always "true" except on history restore requests if `htmx.config.historyRestoreAsHxRequest' disabled |
-| `HX-Request-Type`            | "partial" for targeted swaps, "full" when targeting `body` or using `hx-select`                      |
-| `HX-Source`                  | identifier of the triggering element in format `tag#id` (e.g., `button#submit`)                      |
-| `HX-Target`                  | identifier of the target element in format `tag#id` (e.g., `div#results`)                            |
+| Header                       | Description                                                                             |
+|------------------------------|-----------------------------------------------------------------------------------------|
+| `HX-Boosted`                 | indicates that the request is via an element using [hx-boost](@/attributes/hx-boost.md) |
+| `HX-Current-URL`             | the current URL of the browser                                                          |
+| `HX-Request`                 | always "true" except on history restore requests                                        |
+| `HX-Request-Type`            | "partial" for targeted swaps, "full" when targeting `body` or using `hx-select`         |
+| `HX-Source`                  | identifier of the triggering element in format `tag#id` (e.g., `button#submit`)         |
+| `HX-Target`                  | identifier of the target element in format `tag#id` (e.g., `div#results`)               |
 
 #### Request Type Header
 
@@ -1090,11 +1089,10 @@ This allows servers to optimize responses by returning only the necessary HTML f
 
 #### Source and Target Headers
 
-The `HX-Source` and `HX-Target` headers identify elements using a simple format: `tag#id?name`
+The `HX-Source` and `HX-Target` headers identify elements using a simple format: `tag#id`
 
 - **tag**: The element's tag name (e.g., `button`, `div`, `form`)
 - **id**: The element's `id` attribute (empty if not present)
-- **name**: The element's `name` attribute (empty if not present)
 
 Delimiters (`#` and `?`) are always present for easy parsing.
 
@@ -1119,8 +1117,6 @@ htmx supports htmx-specific response headers:
 | `HX-Retarget`                                        | a CSS selector that updates the target of the content update to a different element on the page                                                                                        |
 | `HX-Reselect`                                        | a CSS selector that allows you to choose which part of the response is used to be swapped in. Overrides an existing [`hx-select`](@/attributes/hx-select.md) on the triggering element |
 | [`HX-Trigger`](@/headers/hx-trigger.md)              | allows you to trigger client-side events                                                                                                                                               |
-| [`HX-Trigger-After-Settle`](@/headers/hx-trigger.md) | allows you to trigger client-side events after the settle step                                                                                                                         |
-| [`HX-Trigger-After-Swap`](@/headers/hx-trigger.md)   | allows you to trigger client-side events after the swap step                                                                                                                           |
 
 For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](@/headers/hx-trigger.md).
 
@@ -1615,25 +1611,25 @@ They are listed below:
 
 <div class="info-table">
 
-| Config Variable                   | Info                                                                                                                                                                                                                                                                                                                           |
-|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `htmx.config.logAll`              | defaults to `false`, if set to `true` htmx will log all events to the console for debugging                                                                                                                                                                                                                                    |
-| `htmx.config.prefix`              | defaults to `""` (empty string), allows you to use a custom prefix for htmx attributes (e.g., `"data-hx-"` to use `data-hx-get` instead of `hx-get`)                                                                                                                                                                           |
-| `htmx.config.transitions`         | defaults to `true`, whether to use view transitions when swapping content (if browser supports it)                                                                                                                                                                                                                             |
-| `htmx.config.history`             | defaults to `true`, whether to enable history support (push/replace URL).  Set to `"reload"` to do a hard browser reload on history navigations.                                                                                                                                                                               |
-| `htmx.config.mode`                | defaults to `'same-origin'`, the fetch mode for AJAX requests. Can be `'cors'`, `'no-cors'`, or `'same-origin'`                                                                                                                                                                                                                |
-| `htmx.config.defaultSwap`         | defaults to `innerHTML`                                                                                                                                                                                                                                                                                                        |
-| `htmx.config.indicatorClass`      | defaults to `htmx-indicator`                                                                                                                                                                                                                                                                                                   |
-| `htmx.config.requestClass`        | defaults to `htmx-request`                                                                                                                                                                                                                                                                                                     |
-| `htmx.config.includeIndicatorCSS` | defaults to `true` (determines if the indicator styles are loaded)                                                                                                                                                                                                                                                             |
-| `htmx.config.defaultTimeout`      | defaults to `60000` (60 seconds), the number of milliseconds a request can take before automatically being terminated                                                                                                                                                                                                          |
-| `htmx.config.inlineScriptNonce`   | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                                                                                                                                                                        |
-| `htmx.config.inlineStyleNonce`    | defaults to `''`, meaning that no nonce will be added to inline styles                                                                                                                                                                                                                                                         |
-| `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,optimistic'`)                                                                                                                                                                                                                             |
-| `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute names to ignore when morphing elements                                                                                                                                                                                                                                 |
-| `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                                                                                            |
-| `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                                                                                              |
-| `htmx.config.metaCharacter`       | defaults to `undefined`, allows you to use a custom character instead of `:` for attribute modifiers (e.g., `-` to use `hx-get-inherited` instead of `hx-get:inherited`)                                                                                                                                                       |
+| Config Variable                   | Info                                                                                                                                                                     |
+|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `htmx.config.logAll`              | defaults to `false`, if set to `true` htmx will log all events to the console for debugging                                                                              |
+| `htmx.config.prefix`              | defaults to `""` (empty string), allows you to use a custom prefix for htmx attributes (e.g., `"data-hx-"` to use `data-hx-get` instead of `hx-get`)                     |
+| `htmx.config.transitions`         | defaults to `false`, whether to use view transitions when swapping content (if browser supports it)                                                                      |
+| `htmx.config.history`             | defaults to `true`, whether to enable history support (push/replace URL).  Set to `"reload"` to do a hard browser reload on history navigations.                         |
+| `htmx.config.mode`                | defaults to `'same-origin'`, the fetch mode for AJAX requests. Can be `'cors'`, `'no-cors'`, or `'same-origin'`                                                          |
+| `htmx.config.defaultSwap`         | defaults to `innerHTML`                                                                                                                                                  |
+| `htmx.config.indicatorClass`      | defaults to `htmx-indicator`                                                                                                                                             |
+| `htmx.config.requestClass`        | defaults to `htmx-request`                                                                                                                                               |
+| `htmx.config.includeIndicatorCSS` | defaults to `true` (determines if the indicator styles are loaded)                                                                                                       |
+| `htmx.config.defaultTimeout`      | defaults to `60000` (60 seconds), the number of milliseconds a request can take before automatically being terminated                                                    |
+| `htmx.config.inlineScriptNonce`   | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                  |
+| `htmx.config.inlineStyleNonce`    | defaults to `''`, meaning that no nonce will be added to inline styles                                                                                                   |
+| `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,optimistic'`)                                                                       |
+| `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute names to ignore when morphing elements                                                                           |
+| `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                      |
+| `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                        |
+| `htmx.config.metaCharacter`       | defaults to `undefined`, allows you to use a custom character instead of `:` for attribute modifiers (e.g., `-` to use `hx-get-inherited` instead of `hx-get:inherited`) |
 </div>
 
 You can set them directly in JavaScript, or you can use a `meta` tag:
