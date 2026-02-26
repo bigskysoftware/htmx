@@ -17,8 +17,7 @@ the `click` trigger.
 
 For forms the request will be converted into a `GET` or `POST`, based on the method in the `method` attribute
 and will be triggered by a `submit`.  Again, the target will be the `body` of the page, and the `innerHTML`
-swap will be used. The url will _not_ be pushed, however, and no history entry will be created. (You can use the 
-[hx-push-url](@/attributes/hx-push-url.md) attribute if you want the url to be pushed.)
+swap will be used. The url will be pushed into the history, just like boosted links.
 
 Here is an example of some boosted links:
 
