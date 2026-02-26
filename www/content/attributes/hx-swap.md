@@ -7,7 +7,7 @@ description = """\
 
 The `hx-swap` attribute allows you to specify how the response will be swapped in relative to the
 [target](@/attributes/hx-target.md) of an AJAX request. If you do not specify the option, the default is
-`htmx.config.defaultSwapStyle` (`innerHTML`).
+`htmx.config.defaultSwap` (`innerHTML`).
 
 The possible values of this attribute are:
 

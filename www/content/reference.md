@@ -201,5 +201,5 @@ listed below:
 You can set them directly in javascript, or you can use a `meta` tag:
 
 ```html
-<meta name="htmx-config" content='{"defaultSwapStyle":"outerHTML"}'>
+<meta name="htmx-config" content='{"defaultSwap":"outerHTML"}'>
 ```
