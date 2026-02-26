@@ -50,14 +50,9 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 
 ##### Details
 
-* `detail.elt` - the element in question
+* `detail.ctx` - the request context object
 * `detail.issueRequest()` - function to confirm and issue the request
 * `detail.dropRequest()` - function to cancel the request
-* `detail.path` - the path of the request
-* `detail.target` - the element that triggered the request
-* `detail.triggeringEvent` - the original event that triggered this request
-* `detail.verb` - the verb of the request (e.g. `GET`)
-* `detail.question` - the question from `hx-confirm` attribute (if present)
 
 ## Lifecycle Events
 
