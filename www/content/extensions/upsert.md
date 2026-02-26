@@ -9,8 +9,8 @@ The `upsert` extension adds a new swap style that intelligently updates existing
 ### Via CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta1/dist/htmx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta1/dist/ext/hx-upsert.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/ext/hx-upsert.js"></script>
 ```
 
 ### Download
@@ -27,7 +27,7 @@ Download the files and include them in your project:
 For npm-style build systems:
 
 ```sh
-npm install htmx.org@4.0.0-beta1
+npm install htmx.org@4.0.0-alpha7
 ```
 
 Then include both files:

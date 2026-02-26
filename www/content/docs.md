@@ -99,13 +99,13 @@ The fastest way to get going with htmx is to load it via a CDN.
 Just add this to your head tag and you can get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta1/dist/htmx.min.js" integrity="sha384-uDLI8Mv1KcRh+Za7i2nwUodeZ0rvISbr6BprTTQjDhK2xH8/fG3S/qK/EWEojy0w" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/htmx.min.js" integrity="sha384-uDLI8Mv1KcRh+Za7i2nwUodeZ0rvISbr6BprTTQjDhK2xH8/fG3S/qK/EWEojy0w" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available as well:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta1/dist/htmx.js" integrity="sha384-Y1lHHseTlIFBIgxXdZWjY3MDGHzeH42M2D+cjqZMbCKOzgI41IZxdHgmP0IpOP0P" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/htmx.js" integrity="sha384-Y1lHHseTlIFBIgxXdZWjY3MDGHzeH42M2D+cjqZMbCKOzgI41IZxdHgmP0IpOP0P" crossorigin="anonymous"></script>
 ```
 
 While this CDN-based approach is quick and easy, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
@@ -114,7 +114,7 @@ While this CDN-based approach is quick and easy, you may want to consider [not u
 
 The next easiest way to install htmx is to copy it into your project, an option called [vendoring](@/essays/vendoring.md).
 
-Download `htmx.min.js` <a download href="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta1/dist/htmx.min.js">from jsDelivr</a> 
+Download `htmx.min.js` <a download href="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/htmx.min.js">from jsDelivr</a> 
 and hen add it to the appropriate directory in your project and include it where necessary with a `<script>` tag:
 
 ```html
