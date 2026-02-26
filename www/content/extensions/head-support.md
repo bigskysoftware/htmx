@@ -15,42 +15,16 @@ a feature of the library.  This extension addresses that shortcoming.
 
 ## Installing
 
-The fastest way to install `head-support` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
-```HTML
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-head-support@2.0.5" integrity="sha384-cvMqHzjCJsOHgGuyB3sWXaUSv/Krm0BdzjuI1rtkjCbL1l1oHJx+cHyVRJhyuEz0" crossorigin="anonymous"></script>
-</head>
-<body hx-ext="head-support">
-...
-```
-An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext-head-support/dist/head-support.js.
+Include the extension after htmx:
 
-While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `head-support` is to simply copy it into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-head-support`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
-
-For npm-style build systems, you can install `head-support` via [npm](https://www.npmjs.com/):
-```bash
-npm install htmx-ext-head-support
-```
-After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-head-support/dist/head-support.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
-
-If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
-- Install `htmx.org` and `htmx-ext-head-support` via npm
-- Import both packages to your `index.js`
-```JS
-import `htmx.org`;
-import `htmx-ext-head-support`; 
+```html
+<script src="/path/to/htmx.js"></script>
+<script src="/path/to/ext/head-support.js"></script>
 ```
 
 ## Usage
 
-```html
-<body hx-ext="head-support">
-...
-</body>
-```
-
-With this installed, all responses that htmx receives that contain a `head` tag in them (even if they are not complete
+All responses that htmx receives that contain a `head` tag in them (even if they are not complete
 HTML documents with a root `<html>` element) will be processed.
 
 How the head tag is handled depends on the type of htmx request.

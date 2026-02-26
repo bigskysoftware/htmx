@@ -46,8 +46,6 @@ import htmx from 'htmx.org';
 import 'htmx.org/dist/ext/hx-upsert';
 ```
 
-The extension registers automatically when loaded. No `hx-ext` attribute is needed in htmx 4.
-
 ## Usage
 
 Once loaded, simply use `hx-swap="upsert"` to apply the upsert behavior:

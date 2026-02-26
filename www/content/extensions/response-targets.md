@@ -24,31 +24,11 @@ The value of each attribute can be:
 
 ## Installing
 
-The fastest way to install `response-targets` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
-```HTML
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.4" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
-</head>
-<body hx-ext="response-targets">
-...
-```
-An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext-response-targets/dist/response-targets.js.
+Include the extension after htmx:
 
-While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `response-targets` is to simply copy it into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-response-targets`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
-
-For npm-style build systems, you can install `response-targets` via [npm](https://www.npmjs.com/):
-```bash
-npm install htmx-ext-response-targets
-```
-After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-response-targets/dist/response-targets.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
-
-If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
-- Install `htmx.org` and `htmx-ext-response-targets` via npm
-- Import both packages to your `index.js`
-```JS
-import `htmx.org`;
-import `htmx-ext-response-targets`; 
+```html
+<script src="/path/to/htmx.js"></script>
+<script src="/path/to/ext/response-targets.js"></script>
 ```
 
 ## Configure (optional)
@@ -89,7 +69,6 @@ Here is an example that targets a `div` for normal (200) response but another `d
 for 404 (not found) response, and yet another for all 5xx response codes:
 
 ```html
-<div hx-ext="response-targets">
 <div id="response-div"></div>
 <button hx-post="/register"
 hx-target="#response-div"
@@ -99,7 +78,6 @@ Register!
 </button>
 <div id="serious-errors"></div>
 <div id="not-found"></div>
-</div>
 ```
 
 * The response from the `/register` URL will replace contents of the `div` with the
@@ -115,7 +93,6 @@ Sometimes you may not want to handle 5xx and 4xx errors separately, in which cas
 can use `hx-target-error`:
 
 ```html
-<div hx-ext="response-targets">
 <div id="response-div"></div>
 <button hx-post="/register"
 hx-target="#response-div"
@@ -123,7 +100,6 @@ hx-target-error="#any-errors">
 Register!
 </button>
 <div id="any-errors"></div>
-</div>
 ```
 
 2xx codes will be handled as in the previous example. However, when the response code is 5xx
@@ -156,9 +132,7 @@ may instead use the `x` character, e.g., `hx-target-4xx`._
 * `hx-target-…` will honor `HX-Retarget` by default and will prefer it over any
 calculated target but it can be changed by disabling the
 `htmx.config.responseTargetPrefersRetargetHeader` configuration option.
-* To avoid surprises the `hx-ext` attribute used to enable this extension should be
-placed on a parent element containing elements with `hx-target-…` and `hx-target`
-attributes.
+* `hx-target-…` attributes should be placed on or above elements with `hx-target` attributes.
 
 ## See also
 

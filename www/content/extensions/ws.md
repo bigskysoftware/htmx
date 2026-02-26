@@ -18,7 +18,6 @@ The fastest way to install the WebSocket extension is to load it via a CDN. Incl
 </head>
 ```
 
-The extension is automatically active once loaded—no `hx-ext` attribute required.
 
 For npm-style build systems:
 ```bash
@@ -421,7 +420,6 @@ Server sends targeted updates:
 |----------------|----------------|-------|
 | `ws-connect="<url>"` | `hx-ws:connect="<url>"` | Or `hx-ws-connect` for JSX |
 | `ws-send` | `hx-ws:send` | Or `hx-ws-send` for JSX |
-| `hx-ext="ws"` | Not required | Extension auto-registers when loaded |
 
 The old `ws-connect` and `ws-send` attributes still work but emit a deprecation warning.
 

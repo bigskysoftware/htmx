@@ -22,11 +22,9 @@ Include the extension after htmx:
 Add `hx-browser-indicator="true"` to elements whose requests should show the browser indicator:
 
 ```html
-<body hx-ext="browser-indicator">
-    <button hx-get="/api/data" hx-browser-indicator="true">
-        Load Data
-    </button>
-</body>
+<button hx-get="/api/data" hx-browser-indicator="true">
+    Load Data
+</button>
 ```
 
 While the request is in flight, the browser's tab spinner will be active just like a normal page load.

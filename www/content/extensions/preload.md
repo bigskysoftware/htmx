@@ -12,41 +12,21 @@ unused requests. Use this extension carefully!
 
 ## Installing
 
-The fastest way to install `preload` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
-```HTML
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/htmx-ext-preload@2.1.2" integrity="sha384-PRIcY6hH1Y5784C76/Y8SqLyTanY9rnI3B8F3+hKZFNED55hsEqMJyqWhp95lgfk" crossorigin="anonymous"></script>
-</head>
-<body hx-ext="preload">
-...
-```
-An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext-preload/dist/preload.js.
+Include the extension after htmx:
 
-While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `preload` is to simply copy it into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-preload`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
-
-For npm-style build systems, you can install `preload` via [npm](https://www.npmjs.com/):
-```bash
-npm install htmx-ext-preload
-```
-After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-preload/dist/preload.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.
-
-If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
-- Install `htmx.org` and `htmx-ext-preload` via npm
-- Import both packages to your `index.js`
-```JS
-import `htmx.org`;
-import `htmx-ext-preload`; 
+```html
+<script src="/path/to/htmx.js"></script>
+<script src="/path/to/ext/hx-preload.js"></script>
 ```
 
 ## Usage
 
-Register the extension with htmx using the `hx-ext` attribute. Then, add a `preload` attribute to any hyperlinks
+Add a `preload` attribute to any hyperlinks
 and `hx-get` elements you want to preload. By default, resources will be loaded as soon as the `mousedown` event begins,
 giving your application a roughly 100-200ms head start on serving responses. See configuration below for other options.
 
 ```html
-<body hx-ext="preload">
+<body>
 <h1>What Works</h2>
     <a href="/server/1" preload>WILL BE requested using a standard XMLHttpRequest() and default options (below)</a>
     <button hx-get="/server/2" preload>WILL BE requested with additional htmx headers.</button>
@@ -67,7 +47,7 @@ you preload many more resources than you need.
 
 ```html
 
-<body hx-ext="preload">
+<body>
 <ul preload>
     <li><a href="/server/1">This will be preloaded because of the attribute in the node above.</a>
     <li><a href="/server/2">This will also be preloaded for the same reason.</a>
@@ -93,7 +73,7 @@ preload images as well, use the following syntax.
 
 ```html
 
-<div hx-ext="preload">
+<div>
     <a href="/my-next-page" preload="mouseover" preload-images="true">Next Page</a>
 </div>
 ```
@@ -139,7 +119,7 @@ trigger preloads as soon as an object has been processed by htmx.
 
 ```html
 
-<body hx-ext="preload">
+<body>
 <button hx-get="/server" preload="preload:init" hx-target="idLoadMore">Load More</a>
     <div id="idLoadMore">
         Content for this DIV will be preloaded as soon as the page is ready.
