@@ -325,11 +325,11 @@ document.body.addEventListener('htmx:error', function(evt) {
 
 **Replaces:** `htmx:beforeTransition`
 
-This event is triggered before a [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) wrapped swap occurs. If you call `preventDefault()`, the View Transition will not occur and normal swapping will happen instead.
+This event is triggered before a [View Transition](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API) wrapped swap occurs.
 
 ##### Details
 
-* `detail.ctx` - the request context object
+* `detail.task` - the swap function that will be executed within the view transition
 
 ### Event - `htmx:after:viewTransition` {#htmx:after:viewTransition}
 
