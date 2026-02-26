@@ -15,6 +15,7 @@ backwards compatibility where possible but this upgrade will require more work t
 - [JavaScript API Changes](#javascript-api-changes)
 - [HTTP Header Changes](#http-header-changes)
 - [Extension Changes](#extension-changes)
+- [Upgrade Music](#upgrade-music)
 
 ## Biggest Changes
 
@@ -334,4 +335,4 @@ See the [Extension Migration Guide](/extensions/migration-guide) for details on 
 
 This is the official htmx 2.x -> 4.x upgrade music:
 
-<iframe width="1023" height="644" src="https://www.youtube.com/embed/j4fFd0dejqk" title="Playtime Is Over" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/j4fFd0dejqk" title="Playtime Is Over" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
