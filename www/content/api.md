@@ -144,7 +144,7 @@ htmx.on("htmx:after:swap", function(evt){
 
 ### Method - `htmx.onLoad()` {#onLoad}
 
-Adds a callback for the `htmx:after:init` event. This can be used to process new content, for example initializing the content with a javascript library.
+Adds a callback for the `htmx:after:process` event. This can be used to process new content, for example initializing the content with a javascript library.
 
 ##### Parameters
 
