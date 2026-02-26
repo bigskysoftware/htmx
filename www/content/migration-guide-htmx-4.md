@@ -40,11 +40,11 @@ Making these to changes will make many htmx 2-based applications work with htmx 
 
 | htmx 2.x          | htmx 4.x     | Notes                                                                    |
 |-------------------|--------------|--------------------------------------------------------------------------|
-| `hx-disabled-elt` | `hx-disable` | Before upgrading, audit usage of `hx-disable` attribute (see note below) |
+| `hx-disabled-elt` | [`hx-disable`](/attributes/hx-disable) | Before upgrading, audit usage of `hx-disable` attribute (see note below) |
 
 **Important Note on `hx-disable`:**
 
-In htmx 2, `hx-disable` disables htmx processing. In htmx 4, `hx-ignore` serves this purpose. Before upgrading:
+In htmx 2, `hx-disable` disables htmx processing. In htmx 4, [`hx-ignore`](/attributes/hx-ignore) serves this purpose. Before upgrading:
 
 1. Search for any usage of `hx-disable` in your htmx 2 codebase
 2. Rename `hx-disable` → `hx-ignore`
@@ -56,13 +56,13 @@ The following attributes have been removed:
 
 | Removed Attribute | htmx 4 Alternative                                                |
 |-------------------|-------------------------------------------------------------------|
-| `hx-vars`         | Use `hx-vals` with `js:` prefix                                   |
+| `hx-vars`         | Use [`hx-vals`](/attributes/hx-vals) with `js:` prefix             |
 | `hx-params`       | Use `htmx:config:request` event to filter parameters              |
-| `hx-prompt`       | Use `hx-confirm` with async JavaScript function                   |
+| `hx-prompt`       | Use [`hx-confirm`](/attributes/hx-confirm) with async JavaScript function |
 | `hx-ext`          | Extensions now work via event listeners                           |
 | `hx-disinherit`   | No longer needed (inheritance is explicit)                        |
 | `hx-inherit`      | No longer needed (inheritance is explicit)                        |
-| `hx-request`      | Use `hx-config`                                                   |
+| `hx-request`      | Use [`hx-config`](/attributes/hx-config)                           |
 | `hx-history`      | Removed (history is no longer stored in local storage)            |
 | `hx-history-elt`  | Removed (history uses target element)                             |
 
@@ -70,9 +70,9 @@ The following attributes have been removed:
 
 | Attribute       | Purpose                                            |
 |-----------------|----------------------------------------------------|
-| `hx-action`     | Specifies URL (use with `hx-method`)               |
-| `hx-method`     | Specifies HTTP method (use with `hx-action`)       |
-| `hx-config`     | Configure request behavior with JSON               |
+| [`hx-action`](/attributes/hx-action)   | Specifies URL (use with [`hx-method`](/attributes/hx-method))     |
+| [`hx-method`](/attributes/hx-method)   | Specifies HTTP method (use with [`hx-action`](/attributes/hx-action)) |
+| [`hx-config`](/attributes/hx-config)   | Configure request behavior with JSON               |
 
 ### Attribute Inheritance Changes
 
@@ -96,18 +96,18 @@ After (htmx 4):
 </div>
 ```
 
-Any attribute can use the `:inherited` modifier: `hx-boost:inherited`, `hx-headers:inherited`, `hx-target:inherited`, etc.
+Any attribute can use the `:inherited` modifier: [`hx-boost`](/attributes/hx-boost)`:inherited`, [`hx-headers`](/attributes/hx-headers)`:inherited`, [`hx-target`](/attributes/hx-target)`:inherited`, etc.
 
 As mentioned above, you can revert this behavior by setting `htmx.config.implicitInheritance` to `true`
 
 ### GET/DELETE Form Data
 
-In htmx 4 `hx-delete`, like `hx-get`, no longer includes the enclosing form's inputs by
-default. Use `hx-include="closest form"` if you need this behavior.
+In htmx 4 [`hx-delete`](/attributes/hx-delete), like [`hx-get`](/attributes/hx-get), no longer includes the enclosing form's inputs by
+default. Use [`hx-include`](/attributes/hx-include)`="closest form"` if you need this behavior.
 
 ### Out-of-Band Swap Order
 
-In htmx 2, out-of-band (`hx-swap-oob`) elements were swapped *before* the main content. In htmx 4,
+In htmx 2, out-of-band ([`hx-swap-oob`](/attributes/hx-swap-oob)) elements were swapped *before* the main content. In htmx 4,
 the main content is swapped first, and OOB/`hx-partial` elements are swapped *after*. This is generally
 more intuitive but may affect code that relied on the previous ordering.
 
@@ -270,13 +270,13 @@ The following request headers have been removed in htmx 4:
 | Removed Header    | Notes                                                                                                                             |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | `HX-Trigger-Name` | Previously sent the `name` attribute of the triggering element. Use `HX-Source` instead.                                          |
-| `HX-Prompt`       | Previously sent the user's response to `hx-prompt`. Use `hx-confirm` with async JavaScript instead (see attribute changes above). |
+| `HX-Prompt`       | Previously sent the user's response to `hx-prompt`. Use [`hx-confirm`](/attributes/hx-confirm) with async JavaScript instead (see attribute changes above). |
 
 ### New Request Headers
 
 | Header            | Description                                                                                                           |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------|
-| `HX-Request-Type` | Set to `"full"` for full page requests (target is `body` or has `hx-select`) or `"partial"` for partial page requests |
+| `HX-Request-Type` | Set to `"full"` for full page requests (target is `body` or has [`hx-select`](/attributes/hx-select)) or `"partial"` for partial page requests |
 | `Accept`          | Now explicitly set to `"text/html"`                                                                                   |
 
 ### Removed Response Headers
