@@ -50,19 +50,14 @@ If you wish to handle multiple different events, you can simply add multiple att
 </button>
 ```
 
-Finally, in order to make this feature compatible with some templating languages (e.g. [JSX](https://react.dev/learn/writing-markup-with-jsx)) that do not like having a colon (`:`)
-in HTML attributes, you may use dashes in the place of colons for both the long form and the shorthand form:
+If you need to use dashes instead of colons (e.g. for compatibility with [JSX](https://react.dev/learn/writing-markup-with-jsx)),
+you can set `htmx.config.metaCharacter` to `"-"` and then use dashes in place of colons:
 
 ```html
-<!-- These two are equivalent -->
+<!-- With metaCharacter set to "-" -->
 <button hx-get="/info" hx-on-htmx-before-request="alert('Making a request!')">
     Get Info!
 </button>
-
-<button hx-get="/info" hx-on--before-request="alert('Making a request!')">
-    Get Info!
-</button>
-
 ```
 
 ### Symbols
