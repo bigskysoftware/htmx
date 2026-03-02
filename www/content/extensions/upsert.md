@@ -6,44 +6,13 @@ The `upsert` extension adds a new swap style that intelligently updates existing
 
 ## Installing
 
-### Via CDN
+Just include the extension script after htmx:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/htmx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/ext/hx-upsert.js"></script>
-```
-
-### Download
-
-Download the files and include them in your project:
-
-```html
-<script src="/path/to/htmx.min.js"></script>
-<script src="/path/to/hx-upsert.js"></script>
-```
-
-### npm
-
-For npm-style build systems:
-
-```sh
-npm install htmx.org@4.0.0-alpha7
-```
-
-Then include both files:
-
-```html
-<script src="node_modules/htmx.org/dist/htmx.min.js"></script>
-<script src="node_modules/htmx.org/dist/ext/hx-upsert.js"></script>
-```
-
-### Module Imports
-
-When using module bundlers:
-
-```javascript
-import htmx from 'htmx.org';
-import 'htmx.org/dist/ext/hx-upsert';
+<head>
+    <script src="/path/to/htmx.js"></script>
+    <script src="/path/to/ext/hx-upsert.js"></script>
+</head>
 ```
 
 ## Usage
