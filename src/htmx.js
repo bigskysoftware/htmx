@@ -178,6 +178,7 @@ var htmx = (() => {
         }
 
         __attributeValue(elt, name, defaultVal, eltCollector) {
+            let unprefixed = name;
             name = this.__prefix(name);
             let appendName = name + this.__maybeAdjustMetaCharacter(":append");
             let inheritName = name + (this.config.implicitInheritance ? "" : this.__maybeAdjustMetaCharacter(":inherited"));
@@ -200,7 +201,7 @@ var htmx = (() => {
                     eltCollector(appendValue, elt);
                 }
                 if (parent) {
-                    let inherited = this.__attributeValue(parent, name, undefined, eltCollector);
+                    let inherited = this.__attributeValue(parent, unprefixed, undefined, eltCollector);
                     return inherited ? (inherited + "," + appendValue).replace(/[{}]/g, '') : appendValue;
                 }
                 return appendValue;
@@ -208,7 +209,7 @@ var htmx = (() => {
 
             let parent = elt.parentNode?.closest?.(`[${CSS.escape(inheritName)}],[${CSS.escape(inheritAppendName)}]`);
             if (parent) {
-                let val = this.__attributeValue(parent, name, undefined, eltCollector);
+                let val = this.__attributeValue(parent, unprefixed, undefined, eltCollector);
                 if (!eltCollector && val && this.config.implicitInheritance) {
                     this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
                 }

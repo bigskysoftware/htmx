@@ -67,4 +67,19 @@ describe('htmx.config.prefix functionality', function() {
         let result = htmx.__prefix("hx-get");
         assert.equal(result, "hx-get");
     });
+
+    it('custom prefix works with attribute inheritance', function() {
+        htmx.config.prefix = "data-hx-";
+
+        let container = createDisconnectedHTML(
+            '<div data-hx-target:inherited="#output">' +
+            '  <button data-hx-get="/test">Click</button>' +
+            '</div>'
+        );
+        let button = container.querySelector('button');
+        let targetValue = htmx.__attributeValue(button, "hx-target");
+        assert.equal(targetValue, "#output");
+
+        htmx.config.prefix = "";
+    });
 });
