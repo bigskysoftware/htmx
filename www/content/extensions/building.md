@@ -44,17 +44,18 @@ htmx.registerExtension("my-ext", {
 });
 ```
 
-## Extension Approval
+## Loading Extensions
 
-Extensions can be approved via the `extensions` config option in a meta tag:
+Extensions are loaded by including the script file. They apply page-wide automatically.
+
+To restrict which extensions can register, use the `extensions` config as a whitelist:
 
 ```html
 <meta name="htmx-config" content='{"extensions": "my-ext,another-ext"}'>
 ```
 
-If this is set then only approved extensions will be loaded. This prevents
-unauthorized extensions from running. By default without this config set in a
-meta tag all extensions will be approved.
+When this config is set, only the listed extensions will be loaded. Without it, all registered
+extensions are active.
 
 ## Event Hooks
 
@@ -281,6 +282,6 @@ Key differences:
 
 - Event-based hooks instead of method callbacks
 - Underscores in hook names (not colons)
-- Extensions must be approved via config
+- Extensions load by including the script (config whitelist is optional)
 - Access to full request context via `detail.ctx`
 - Internal API provided via `init` hook

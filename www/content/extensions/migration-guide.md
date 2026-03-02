@@ -453,7 +453,7 @@ htmx_config_request: (elt, detail) => {
 
 1. **Event-based hooks** instead of single `onEvent` callback
 2. **Underscores** in hook names (not colons)
-3. **Extension approval** required via meta tag
+3. **No `hx-ext`** — extensions load by including the script (config whitelist is optional)
 4. **Detail object** contains full context (`detail.ctx`)
 5. **Internal API** provided via `init` hook
 6. **No `getSelectors()`** - use element-level hooks instead

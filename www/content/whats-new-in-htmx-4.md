@@ -68,13 +68,17 @@ htmx 4 sets a default request timeout of 60 seconds (`htmx.config.defaultTimeout
 
 ### Extension Loading
 
-Extensions no longer use the `hx-ext` attribute. They are activated by including the script file and approving them
-via config:
+Extensions no longer use the `hx-ext` attribute. They are activated by including the script file:
+
+```html
+<script src="/path/to/htmx.js"></script>
+<script src="/path/to/ext/hx-sse.js"></script>
+```
+
+To restrict which extensions can load, use the `extensions` config as a whitelist:
 
 ```html
 <meta name="htmx-config" content='{"extensions": "sse, ws"}'>
-<script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/hx-sse.js"></script>
 ```
 
 ## New Features

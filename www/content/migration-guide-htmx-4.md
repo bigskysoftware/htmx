@@ -311,7 +311,7 @@ Extensions in htmx 4 use a new event-based hook system instead of the callback-b
 - Method renamed: `htmx.defineExtension()` → `htmx.registerExtension()`
 - Event-based hooks instead of callback methods
 - Hook names use underscores: `htmx_before_request` instead of `onEvent`
-- Extensions must be approved via config
+- Extensions load by including the script (config whitelist is optional)
 - Full request context available via `detail.ctx`
 
 Extensions will almost certainly need a rewrite. Please see our [Extensions documentation](https://htmx.org/extensions/) and [Extension Migration Guide](https://htmx.org/extensions/migration-guide) for more information.
@@ -378,13 +378,17 @@ The following response headers continue to work the same in htmx 4:
 
 ### Loading Extensions
 
-htmx 4 no longer uses the `hx-ext` attribute. Extensions are activated by including the script file and
-approving them via config:
+htmx 4 no longer uses the `hx-ext` attribute. Extensions are activated by including the script file:
+
+```html
+<script src="/path/to/htmx.js"></script>
+<script src="/path/to/ext/hx-sse.js"></script>
+```
+
+To restrict which extensions can register, use the `extensions` config as a whitelist:
 
 ```html
 <meta name="htmx-config" content='{"extensions": "sse, ws"}'>
-<script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/hx-sse.js"></script>
 ```
 
 ### Server-Sent Events (SSE)
