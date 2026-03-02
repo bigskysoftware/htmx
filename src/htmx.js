@@ -979,7 +979,7 @@ var htmx = (() => {
         }
 
         __restorePreservedElements(pantry) {
-            for (let preservedElt of pantry.children) {
+            for (let preservedElt of [...pantry.children]) {
                 let newElt = document.getElementById(preservedElt.id);
                 if (newElt) {
                     if (newElt.parentNode.moveBefore) {
