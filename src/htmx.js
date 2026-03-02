@@ -2141,7 +2141,7 @@ var htmx = (() => {
                     await document.startViewTransition(task).finished;
                     this.__trigger(document, "htmx:after:viewTransition", {task})
                 } else {
-                    task();
+                    await task();
                 }
             } catch (e) {
                 // Transitions can be skipped/aborted - this is normal
