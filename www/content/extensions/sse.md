@@ -8,19 +8,13 @@ SSE is a lightweight alternative to WebSockets that works over existing HTTP con
 
 ## Installing
 
-Include the extension script after htmx and approve it:
+Just include the extension script after htmx:
 
 ```html
 <head>
     <script src="/path/to/htmx.js"></script>
     <script src="/path/to/ext/hx-sse.js"></script>
 </head>
-```
-
-Approve the extension via meta tag:
-
-```html
-<meta name="htmx-config" content='{"extensions": "sse"}'>
 ```
 
 ## How It Works
