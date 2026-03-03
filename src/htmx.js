@@ -959,7 +959,7 @@ var htmx = (() => {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
                     if (spec.throttleTimeout) clearTimeout(spec.throttleTimeout);
-                    Missing: spec.observer?.disconnect()
+                    spec.observer?.disconnect()
                 }
                 for (let listenerInfo of elt._htmx.listeners || []) {
                     listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler);
