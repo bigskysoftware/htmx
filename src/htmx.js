@@ -543,6 +543,7 @@ var htmx = (() => {
                 ctx.status = "error: " + error;
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
+                clearTimeout(ctx.requestTimeout);
                 this.__hideIndicators(indicators);
                 this.__enableElements(disableElements);
                 this.__trigger(elt, "htmx:finally:request", {ctx})
@@ -837,8 +838,11 @@ var htmx = (() => {
                 let triggers = this.__parseConfig(value);
                 for (let name in triggers) {
                     let detail = triggers[name];
-                    if (detail?.target) elt = this.find(detail.target) || elt;
-                    this.trigger(elt, name, typeof detail === 'object' ? detail : {value: detail});
+                    let target = elt;
+                    if (detail?.target) {
+                        target = this.find(detail.target);
+                    }
+                    this.trigger(target, name, typeof detail === 'object' ? detail : {value: detail});
                 }
             } else {
                 value.split(',').forEach(name => this.trigger(elt, name.trim(), {}));
