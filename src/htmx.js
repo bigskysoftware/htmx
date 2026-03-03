@@ -1622,8 +1622,8 @@ var htmx = (() => {
         }
 
         __handleHxOnAttributes(node) {
+            let searchString = this.__maybeAdjustMetaCharacter(this.__prefix("hx-on:"));
             for (let attr of node.getAttributeNames()) {
-                let searchString = this.__maybeAdjustMetaCharacter(this.__prefix("hx-on:"));
                 if (attr.startsWith(searchString)) {
                     let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
