@@ -224,6 +224,7 @@ var htmx = (() => {
         }
 
         __parseConfig(configString) {
+            if (!configString) return {};
             if (configString[0] === '{') return JSON.parse(configString);
             let configPattern = /(?:"([^"]+)"|([^\s,:]+))(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
             return [...configString.matchAll(configPattern)].reduce((result, match) => {
