@@ -483,6 +483,25 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(container.querySelector('#result').textContent, 'Clicked!', 'htmx actions on new div should work');
         });
 
+        it('removes htmx behavior when hx-get is removed during morph', async function() {
+            mockResponse('GET', '/click', 'Clicked!');
+            mockResponse('GET', '/test', '<button id="btn">Plain button</button><div id="result"></div>');
+            const div = createProcessedHTML('<div id="target"><button id="btn" hx-get="/click" hx-target="#result">Active</button><div id="result"></div></div>');
+            const btn = div.querySelector('#btn');
+
+            // morph removes hx-get
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            // hx-get attribute should be gone
+            assert.isNull(btn.getAttribute('hx-get'), 'hx-get attribute should be removed by morph');
+
+            // clicking should NOT issue a request
+            let callsBefore = fetchMock.calls.length;
+            btn.click();
+            await htmx.timeout(50);
+            assert.equal(fetchMock.calls.length, callsBefore, 'No request should be issued after hx-get is removed');
+        });
+
     });
 
     describe('htmx integration', function() {

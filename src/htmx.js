@@ -2054,7 +2054,12 @@ var htmx = (() => {
             // Trigger extension hook - if returns false, skip morphing this node
             if (!this.__triggerExtensions(oldNode, "htmx:before:morph:node", {oldNode, newNode})) return;
                 
-            this.__copyAttributes(oldNode, newNode);
+            let htmxChanged = this.__copyAttributes(oldNode, newNode);
+            if (htmxChanged && oldNode._htmx) {
+                this.__cleanup(oldNode);
+                delete oldNode._htmx;
+                delete oldNode._htmxOnProcessed;
+            }
             if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
                 oldNode.value = newNode.value;
             }
@@ -2067,20 +2072,25 @@ var htmx = (() => {
 
         __copyAttributes(destination, source) {
             let attributesToIgnore = this.config.morphIgnore || [];
+            let prefix = this.__prefix("hx-");
+            let htmxChanged = false;
             for (const attr of source.attributes) {
                 if (!attributesToIgnore.includes(attr.name) && destination.getAttribute(attr.name) !== attr.value) {
                     destination.setAttribute(attr.name, attr.value);
                     if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
                         destination.value = attr.value;
                     }
+                    if (attr.name.startsWith(prefix)) htmxChanged = true;
                 }
             }
             for (let i = destination.attributes.length - 1; i >= 0; i--) {
                 let attr = destination.attributes[i];
                 if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.includes(attr.name)) {
                     destination.removeAttribute(attr.name);
+                    if (attr.name.startsWith(prefix)) htmxChanged = true;
                 }
             }
+            return htmxChanged;
         }
 
         __populateIdMapWithTree(idMap, persistentIds, root, elements) {
