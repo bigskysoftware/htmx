@@ -227,9 +227,14 @@ var htmx = (() => {
                 if (value === 'true') value = true;
                 else if (value === 'false') value = false;
                 else if (/^\d+$/.test(value)) value = parseInt(value);
+                if (keyPath.some(this.__internalField)) return result;
                 keyPath.slice(0, -1).reduce((obj, key) => obj[key] ??= {}, result)[keyPath.at(-1)] = value;
                 return result;
             }, {});
+        }
+
+        __internalField(k) {
+            return k === '__proto__' || k === 'constructor' || k === 'prototype';
         }
 
         __mergeConfig(configString, target) {
