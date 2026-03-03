@@ -607,7 +607,8 @@ var htmx = (() => {
 
         __determineSyncStrategy(elt) {
             let syncValue = this.__attributeValue(elt, "hx-sync");
-            return syncValue?.split(":")[1] || "queue first";
+            if (!syncValue) return "queue first";
+            return syncValue.split(":").pop();
         }
 
         __getRequestQueue(elt) {
