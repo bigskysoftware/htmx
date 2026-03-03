@@ -1254,7 +1254,6 @@ var htmx = (() => {
 
         async __insertContent(task, cssTransition = true) {
             let {target, swapSpec, fragment} = task;
-            let swapStyle = swapSpec.style;
             if (typeof target === 'string') {
                 target = document.querySelector(target);
             }
@@ -1262,6 +1261,7 @@ var htmx = (() => {
             if (typeof swapSpec === 'string') {
                 swapSpec = this.__parseSwapSpec(swapSpec);
             }
+            let swapStyle = swapSpec.style;
             if (swapStyle === 'none') return;
             if (swapSpec.strip && fragment.firstElementChild) {
                 fragment = document.createDocumentFragment();
