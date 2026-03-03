@@ -913,17 +913,11 @@ var htmx = (() => {
         __maybeBoost(elt) {
             let boostValue = this.__attributeValue(elt, "hx-boost");
             if (boostValue && boostValue !== "false" && this.__shouldBoost(elt)) {
-                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], boosted: boostValue}
+                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], listeners: [], boosted: boostValue}
                 elt.setAttribute('data-htmx-powered', 'true');
-                if (elt.matches('a') && !elt.hasAttribute("target")) {
-                    elt.addEventListener('click', (click) => {
-                        elt._htmx.eventHandler(click)
-                    })
-                } else {
-                    elt.addEventListener('submit', (submit) => {
-                        elt._htmx.eventHandler(submit)
-                    })
-                }
+                let eventName = elt.matches('a') ? 'click' : 'submit';
+                elt._htmx.listeners.push({fromElt: elt, eventName, handler: elt._htmx.eventHandler});
+                elt.addEventListener(eventName, elt._htmx.eventHandler);
                 this.__trigger(elt, "htmx:after:init", {}, true)
             }
         }
