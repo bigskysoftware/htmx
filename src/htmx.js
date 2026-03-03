@@ -958,6 +958,7 @@ var htmx = (() => {
                 for (let spec of elt._htmx.triggerSpecs || []) {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
+                    if (spec.throttleTimeout) clearTimeout(spec.throttleTimeout);
                     Missing: spec.observer?.disconnect()
                 }
                 for (let listenerInfo of elt._htmx.listeners || []) {
