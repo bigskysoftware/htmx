@@ -48,7 +48,7 @@ var htmx = (() => {
         }
 
         abort() {
-            this.#c.request?.abort?.()
+            this.#c?.request?.abort?.()
         }
 
         more() {
