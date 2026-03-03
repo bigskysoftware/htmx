@@ -1576,20 +1576,28 @@ var htmx = (() => {
             }
         }
 
-        __handleHistoryUpdate(ctx) {
+        __resolveHistoryAction(ctx) {
             let {sourceElement, push, replace, hx, response} = ctx;
-            if (hx?.push || hx?.pushurl || hx?.replaceurl) {
-                push = hx.push || hx.pushurl;
+
+            // allow headers to override history action
+            if (hx?.pushurl || hx?.replaceurl) {
+                push = hx.pushurl;
                 replace = hx.replaceurl;
             }
 
+            // normalize "false" to null
+            if (push === 'false' || push === false) push = null;
+            if (replace === 'false' || replace === false) replace = null;
+
+            // if this is a boosted element, default to pushing
             if (!push && !replace && this.__isBoosted(sourceElement)) {
                 push = 'true';
             }
 
-            let path = push || replace;
-            if (!path || path === 'false' || path === false) return;
+            if (!push && !replace) return null;
 
+            let path = push || replace;
+            // if the path is simply "true" normalize to the current path
             if (path === 'true') {
                 let finalUrl = response?.raw?.url || ctx.request.action;
                 let url = new URL(finalUrl, location.href);
@@ -1597,17 +1605,23 @@ var htmx = (() => {
             }
 
             let type = push ? 'push' : 'replace';
+            return {type, path};
+        }
+
+        __handleHistoryUpdate(ctx) {
+            let action = this.__resolveHistoryAction(ctx);
+            if (!action) return;
 
             let historyDetail = {
-                history: {type, path},
-                sourceElement,
-                response
+                history: action,
+                sourceElement: ctx.sourceElement,
+                response: ctx.response
             };
             if (!this.__trigger(document, "htmx:before:history:update", historyDetail)) return;
-            if (type === 'push') {
-                this.__pushUrlIntoHistory(path);
+            if (action.type === 'push') {
+                this.__pushUrlIntoHistory(action.path);
             } else {
-                this.__replaceUrlInHistory(path);
+                this.__replaceUrlInHistory(action.path);
             }
             this.__trigger(document, "htmx:after:history:update", historyDetail);
         }
