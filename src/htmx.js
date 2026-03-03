@@ -549,7 +549,7 @@ var htmx = (() => {
 
                 requestQueue.finish()
                 if (requestQueue.more()) {
-                    // TODO is it OK to not await here?  try/catch?
+                    // intentionally not awaited — __issueRequest has its own try/catch
                     this.__issueRequest(requestQueue.next())
                 }
             }
