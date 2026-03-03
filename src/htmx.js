@@ -1937,9 +1937,10 @@ var htmx = (() => {
                 }
 
                 if (newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
+                    let escapedId = CSS.escape(newChild.id);
                     let target = (ctx.target.id === newChild.id && ctx.target) ||
-                        ctx.target.querySelector(`[id="${newChild.id}"]`) ||
-                        ctx.pantry.querySelector(`[id="${newChild.id}"]`);
+                        ctx.target.querySelector(`[id="${escapedId}"]`) ||
+                        ctx.pantry.querySelector(`[id="${escapedId}"]`);
                     let elementId = target.id;
                     let element = target;
                     while ((element = element.parentNode)) {
