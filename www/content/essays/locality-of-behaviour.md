@@ -1,9 +1,14 @@
 +++
 title = "Locality of Behaviour (LoB)"
+description = """\
+  Carson Gross explores the Locality of Behaviour (LoB) principle, which emphasizes making the behavior of code units \
+  obvious on inspection to enhance maintainability. He discusses the tradeoffs between LoB and other software design \
+  principles like DRY and SoC, offering insights on balancing clarity, abstraction, and maintainability in modern \
+  development."""
 date = 2020-05-29
 updated = 2023-01-20
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

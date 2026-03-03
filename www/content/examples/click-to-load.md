@@ -9,10 +9,10 @@ the final row:
 ```html
 <tr id="replaceMe">
   <td colspan="3">
-    <button class='btn' hx-get="/contacts/?page=2"
+    <button class='btn primary' hx-get="/contacts/?page=2"
                         hx-target="#replaceMe"
                         hx-swap="outerHTML">
-         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg">
+         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg" alt="">
     </button>
   </td>
 </tr>
@@ -82,10 +82,10 @@ results (which will contain a button to load the *next* page of results).  And s
       return `<tr id="replaceMe">
   <td colspan="3">
     <center>
-      <button class='btn' hx-get="/contacts/?page=${page + 1}"
+      <button class='btn primary' hx-get="/contacts/?page=${page + 1}"
                        hx-target="#replaceMe"
                        hx-swap="outerHTML">
-         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg">
+         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg" alt="">
        </button>
     </center>
   </td>

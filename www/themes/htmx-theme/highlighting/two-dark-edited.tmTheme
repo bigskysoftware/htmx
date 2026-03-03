@@ -797,7 +797,7 @@
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>new_subl obejct key</string>
+			<string>new_subl object key</string>
 			<key>scope</key>
 			<string>source.js                       meta.group.braces.round                            meta.group.braces.curly                           constant.other.object.key.js                         punctuation.separator.key-value.js</string>
 			<key>settings</key>
@@ -830,7 +830,7 @@
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>new_subl variabel function method</string>
+			<string>new_subl variable function method</string>
 			<key>scope</key>
 			<string>source.js                       meta.function-call.method.without-arguments.js                       variable.function.js</string>
 			<key>settings</key>

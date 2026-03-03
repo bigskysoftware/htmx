@@ -1,5 +1,9 @@
 +++
 title = "hx-confirm"
+description = """\
+  The hx-confirm attribute in htmx provides a way to add confirmation dialogs before executing requests, allowing \
+  you to protect users from accidental destructive actions. This documentation explains how to implement confirmation \
+  prompts and customize their behavior through event handling."""
 +++
 
 The `hx-confirm` attribute allows you to confirm an action before issuing a request.  This can be useful

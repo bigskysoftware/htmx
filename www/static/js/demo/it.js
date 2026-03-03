@@ -82,8 +82,8 @@
             });
 
             log('demo:htmx-loading', "loading htmx & hyperscript...")
-            addScript("https://unpkg.com/htmx.org");
-            addScript("https://unpkg.com/hyperscript.org");
+            addScript("https://cdn.jsdelivr.net/npm/htmx.org");
+            addScript("https://cdn.jsdelivr.net/npm/hyperscript.org");
             initHtmxAndHyperscript();
         }
     }
@@ -91,7 +91,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         disableThings();
         log('demo:mock-request-loading', "loading mock-request library...")
-        addScript("https://unpkg.com/mock-requests@1.3.2/index.js");
+        addScript("https://cdn.jsdelivr.net/npm/mock-requests@1.3.2/index.js");
         initMockRequests();
     }, false);
 })();

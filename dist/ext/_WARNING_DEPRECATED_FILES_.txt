@@ -1,0 +1,5 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! THESE FILES ARE DEPRECATED AND UNSUPPORTED !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+SEE README.md FOR MORE DETAILS

@@ -7,7 +7,7 @@ A question that often comes up when people are first working with htmx is:
 
 > "I need to update other content on the screen.  How do I do this?" 
 
-There are multiple ways to do so, and in this example will walk you through some of them.
+There are multiple ways to do so, and in this example we will walk you through some of them.
 
 We'll use the following basic UI to discuss this concept: a simple table of contacts, and a form below it
 to add new contacts to the table using [hx-post](@/attributes/hx-post.md).
@@ -42,7 +42,7 @@ to add new contacts to the table using [hx-post](@/attributes/hx-post.md).
 The problem here is that when you submit a new contact in the form, you want the contact table above to refresh and
 include the contact that was just added by the form.
 
-What solutions to we have?
+What solutions do we have?
 
 ## Solution 1: Expand the Target {#expand}
 
@@ -120,30 +120,25 @@ Using this approach, the HTML doesn't need to change from the original setup at 
 Instead of modifying something on the front end, in your response to the `POST` to `/contacts` you would include some additional content:
 
 ```html
-<tr hx-swap-oob="beforeend:#contacts-table">
+<tbody hx-swap-oob="beforeend:#contacts-table">
+  <tr>
     <td>Joe Smith</td>
     <td>joe@smith.com</td>
-</tr>
-<form hx-post="/contacts">
-  <label>
-    Name
-        <input name="name" type="text">  
-  </label>
-  <label>
-    Email
-        <input name="email" type="email">  
-  </label>
-</form>
+  </tr>
+</tbody>
+
+<label>
+  Name
+      <input name="name" type="text">
+</label>
+<label>
+  Email
+      <input name="email" type="email">
+</label>
 ```
 
 This content uses the [hx-swap-oob](@/attributes/hx-swap-oob.md) attribute to append itself to the `#contacts-table`, updating
 the table after a contact is added successfully.
-
-Note that because we are using table rows here, we must enable template fragment parsing (thus sacrificing IE11 compatibility)
-
-```javascript
-  htmx.config.useTemplateFragments = true;
-```
 
 ## Solution 3: Triggering Events {#events}
 
@@ -199,7 +194,7 @@ A final approach is to use REST-ful path dependencies to refresh the table.  Int
 to htmx, had [path-based dependencies](https://intercoolerjs.org/docs.html#dependencies) integrated into the 
 library.  
  
-htmx dropped this as a core feature, but supports an extension, [path deps](@/extensions/path-deps.md), that gives you 
+htmx dropped this as a core feature, but supports an extension, [path deps](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/path-deps/README.md), that gives you 
 similar functionality.
  
 Updating our example to use the extension would involve loading the extension javascript and then

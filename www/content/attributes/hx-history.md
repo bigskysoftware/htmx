@@ -1,5 +1,9 @@
 +++
 title = "hx-history"
+description = """\
+  The hx-history attribute in htmx allows you to prevent sensitive page data from being stored in the browser's \
+  localStorage cache during history navigation, ensuring that the page state is retrieved from the server instead when \
+  navigating through history."""
 +++
 
 Set the `hx-history` attribute to `false` on any element in the current document, or any html fragment loaded into the current document by htmx, to prevent sensitive data being saved to the localStorage cache when htmx takes a snapshot of the page state. 

@@ -1,5 +1,6 @@
 +++
 title = "hx-select"
+description = "The hx-select attribute in htmx allows you to select the content you want swapped from a response."
 +++
 
 The `hx-select` attribute allows you to select the content you want swapped from a response.  The value of
@@ -9,7 +10,7 @@ Here is an example that selects a subset of the response content:
 
 ```html
 <div>
-    <button hx-get="/info" hx-select="#info-details" hx-swap="outerHTML">
+    <button hx-get="/info" hx-select="#info-detail" hx-swap="outerHTML">
         Get Info!
     </button>
 </div>

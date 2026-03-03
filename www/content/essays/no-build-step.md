@@ -1,8 +1,14 @@
 +++
 title = "Why htmx Does Not Have a Build Step"
+description = """\
+  In this essay, Alexander Petros explores the reasons why the htmx JavaScript library does not include a build step, \
+  detailing the benefits of its simple, dependency-free structure. He highlights the longevity of plain JavaScript, \
+  the improved debugging experience, enforced code clarity, and the tradeoffs of avoiding tools like TypeScript or \
+  ES6. Alexander also acknowledges the potential limitations of this approach and discusses how these tradeoffs align \
+  with htmx's goals of simplicity and developer choice in web development."""
 date = 2023-08-19
+authors = ["Alexander Petros"]
 [taxonomies]
-author = ["Alexander Petros"]
 tag = ["posts"]
 +++
 
@@ -15,7 +21,7 @@ The best reason to write a library in plain JavaScript is that it lasts forever.
 
 Of course, most people's experience with JavaScript is that it ages like milk. Reopen a node repository after 3 months and you'll find that your project is mired in a flurry of security warnings, backwards-incompatible library "upgrades," and a frontend framework whose cultural peak was the exact moment you started the project and is now widely considered tech debt. Who's to blame for this situation is for someone else to decide, but, in any case, you can eliminate this entire problem class by not having any dependencies beyond the JavaScript runtime.
 
-A popular way to write JavaScript today is compile it from TypeScript (which I will use frequently as an example, because TypeScript is probably the [best reason](https://en.wikipedia.org/wiki/Straw_man#Steelmanning) to use a build system). TypeScript does not run natively in web browsers, so TypeScript code is not protected by [ECMA's](https://developer.mozilla.org/en-US/docs/Glossary/ECMA) fanatical devotion to backwards compatibility. Like any dependency, new major TypeScript versions are not guaranteed to be backwards compatible with the previous ones. They might be! But if they aren't, then you need to do maintenance if you want to use the modern development toolchain.
+A popular way to write JavaScript today is to compile it from TypeScript (which I will use frequently as an example, because TypeScript is probably the [best reason](https://en.wikipedia.org/wiki/Straw_man#Steelmanning) to use a build system). TypeScript does not run natively in web browsers, so TypeScript code is not protected by [ECMA's](https://developer.mozilla.org/en-US/docs/Glossary/ECMA) fanatical devotion to backwards compatibility. Like any dependency, new major TypeScript versions are not guaranteed to be backwards compatible with the previous ones. They might be! But if they aren't, then you need to do maintenance if you want to use the modern development toolchain.
 
 Maintenance is a cost paid for with labor, and open-source codebases are the projects that can least afford to pay it. Opting not to use a build step drastically minimizes the labor required to keep htmx up-to-date. This experience has been borne out by [intercooler.js](https://intercoolerjs.org), the predecessor to htmx which is maintained indefinitely with (as I understand) very little effort. When htmx 1.0 was released, TypeScript was at version 4.1; when intercooler.js was released, TypeScript was pre-1.0. Would code written in those TypeScript versions compile unmodified in today's TypeScript compiler (version 5.1 at the time of writing)? Maybe, maybe not.
 
@@ -60,6 +66,6 @@ This makes doing certain things with htmx very difficult. The [idiomorph algorit
 # Final Thoughts
 This essay might be better titled "Why htmx Doesn't Have a Build Step <em>Right Now</em>." As previously mentioned, circumstances change and these tradeoffs can be revisited at any time! One issue we're exploring at the moment has to do with releases. When htmx cuts releases, it uses a few different shell commands to populate the `dist` directory with minified and compressed versions of `htmx.js` (pedants are welcome to point out that this is obviously, in some sense, a build step). In the future, we might expand that script to auto-generate the [Universal Module Definition](https://github.com/umdjs/umd). Or we might have new distribution needs that require an even more involved setup. Who knows!
 
-One of the core values of htmx is that it gives you *choice* in a web development ecosystem that has for the last decade been dominated by an increasingly complex JavaScript stack. Once you no longer have an enormous codebase of frontend JavaScript, there is far less pressure to adopt JavaScript on the backend. You can write backends in Python, Go, even NodeJS, and it doesn't matter to htmx—every mainstream language has mature solutions for formatting HTML. This is the principle of [Hypermedia On Whatever you'd Like (HOWL)](https://htmx.org/essays/hypermedia-on-whatever-youd-like/).
+One of the core values of htmx is that it gives you *choice* in a web development ecosystem that has for the last decade been dominated by an increasingly complex JavaScript stack. Once you no longer have an enormous codebase of frontend JavaScript, there is far less pressure to adopt JavaScript on the backend. You can write backends in Python, Go, even Node.js, and it doesn't matter to htmx—every mainstream language has mature solutions for formatting HTML. This is the principle of [Hypermedia On Whatever you'd Like (HOWL)](https://htmx.org/essays/hypermedia-on-whatever-youd-like/).
 
-Writing JavaScript with no build process is one of the options available to you once you no longer require NextJS or SvelteKit to manage the spiraling complexity of SPA frameworks. That choice makes sense for htmx development today, and it may or may not make sense for your app too.
+Writing JavaScript with no build process is one of the options available to you once you no longer require Next.js or SvelteKit to manage the spiraling complexity of SPA frameworks. That choice makes sense for htmx development today, and it may or may not make sense for your app too.

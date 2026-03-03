@@ -1,9 +1,14 @@
 +++
 title = "REST Copypasta"
+description = """\
+  These page provides some pre-written critiques of the common misuse of the term 'REST' in modern web development, \
+  contrasting it with the true REST architecture defined by Roy Fielding. Copy these ready-made responses to helpfully \
+  explain how JSON/RPC is often mislabeled as REST and highlight the role of hypermedia and API specifications in \
+  defining REST-ful systems. You will surely not make any enemies or regret posting these responses in any way."""
 date = 2023-06-26
 updated = 2023-06-26
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 [extra]
 show_title = false

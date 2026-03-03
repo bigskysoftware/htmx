@@ -1,9 +1,14 @@
 +++
 title = "A Response To &quot;Have Single-Page Apps Ruined the Web?&quot;"
+description = """\
+  In this essay, Carson Gross gives an analysis of Rich Harris's talk 'Have Single-Page Apps Ruined the Web?', \
+  exploring the debate between Single-Page Applications (SPAs) and Multi-Page Applications (MPAs). Carson examines \
+  Harris's criticisms of both approaches and proposes hypermedia-oriented solutions using htmx, while discussing the \
+  broader implications for web development architecture and the future role of JavaScript in web applications."""
 date = 2021-12-24
 updated = 2022-05-27
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

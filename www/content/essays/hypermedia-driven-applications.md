@@ -1,9 +1,13 @@
 +++
 title = "Hypermedia-Driven Applications"
+description = """\
+  In this essay, Carson Gross explains the Hypermedia-Driven Application (HDA) architecture, which combines the \
+  simplicity of traditional Multi-Page Applications with the enhanced user experience of Single-Page Applications by \
+  extending HTML infrastructure through declarative syntax and hypermedia-based server interactions."""
 date = 2022-02-06
 updated = 2022-10-18
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -48,7 +52,7 @@ Consider the htmx [Active Search](@/examples/active-search.md) example:
 <h3> 
   Search Contacts 
   <span class="htmx-indicator"> 
-    <img src="/img/bars.svg"/> Searching... 
+    <img src="/img/bars.svg" alt=""/> Searching... 
    </span> 
 </h3>
 <input class="form-control" type="search" 

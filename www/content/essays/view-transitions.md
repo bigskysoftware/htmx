@@ -1,9 +1,16 @@
 +++
 template = "demo.html"
 title = "View Transitions"
+description = """\
+  Carson Gross explores the evolution of web applications and the significance of view transitions in improving user \
+  experience. He discusses the limitations of traditional web design, where full-page refreshes create an unpleasant \
+  experience, and how modern technologies like CSS transitions and the View Transition API aim to enhance aesthetic \
+  smoothness. Carson explains how htmx leverages the View Transition API to bring seamless transitions to \
+  hypermedia-driven applications, offering an alternative to single-page applications (SPAs) and highlighting its \
+  potential once widely available in HTML."""
 date = 2023-04-11
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 
@@ -18,7 +25,7 @@ the application, even if it has feature-parity with an SPA version:
 > delete a contact. This is because every user interaction (link click or form submission) requires a full page
 > refresh, with a whole new HTML document to process after each action.
 >
-> *–Hypermedia Systems - [Chapter 5](https://hypermedia.systems/book/extending-html-as-hypermedia/)*
+> *–Hypermedia Systems - [Chapter 4](https://hypermedia.systems/extending-html-as-hypermedia/)*
 
 This jarring "ka-chunk" between webpages, often with a [Flash of Unstyled Content](https://webkit.org/blog/66/the-fouc-problem/)
 has been with us forever and, while modern browsers have improved the situation somewhat (while, unfortunately, also making
@@ -81,7 +88,7 @@ Now, that's my kind of API.
 As luck would have it, it's trivial to wrap this API around the regular htmx swapping model, which allows us to
 start exploring View Transitions in htmx, even before it's generally available in HTML! 
 
-And, as of [htmx 1.9.0](https://unpkg.com/htmx.org@1.9.0), you can start experimenting with the API by adding the 
+And, as of [htmx 1.9.0](https://cdn.jsdelivr.net/npm/htmx.org@1.9.0), you can start experimenting with the API by adding the 
 `transition:true` attribute to an [`hx-swap`](/attributes/hx-swap) attribute.
 
 ## A Practical Example

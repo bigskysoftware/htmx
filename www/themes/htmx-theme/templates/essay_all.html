@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if section.title -%}
+    {% set html_title = "&lt;/&gt; htmx ~ " ~ section.title -%}
+  {% endif -%}
+  {% set section = get_section(path="essays/_index.md") %}
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ get_url(path="/essays/atom.xml", trailing_slash=false) }}">
+{% endblock title %}
+
+
+{% block content %}
+<style>
+ol { list-style-type: none; margin: 0; }
+time { padding-right: 10px; }
+</style>
+
+<h1>All Essays</h1>
+
+<h2>htmx Essays</h2>
+<ol>
+{% for page in section.pages %}
+  <li>
+   <time datetime={{page.date}}>{{ page.date | date(format="%b %d, %Y") }}</time>
+   <a href="{{ page.permalink | safe }}">{{ page.title | safe }}</a>
+  </li>
+{% endfor %}
+</ol>
+
+<h2>Ye Olde Intercooler.js Essays</h2>
+<ol>
+  <li>
+   <time datetime="2016-02-17">Jan 14, 2020</time>
+   <a href="https://intercoolerjs.org/2020/01/14/taking-html-seriously">Take HTML Seriously</a>
+  </li>
+  <li>
+   <time datetime="2016-05-08">May 08, 2016</time>
+   <a href="https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html">HATEOAS Is For Humans</a>
+  </li>
+  <li>
+   <time datetime="2016-02-17">Feb 17, 2016</time>
+   <a href="https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html">The API Churn/Security Trade-off</a>
+  </li>
+  <li>
+   <time datetime="2016-02-17">Jan 18, 2016</time>
+   <a href="https://intercoolerjs.org/2016/01/18/rescuing-rest.html">Rescuing REST From the API Winter</a>
+  </li>
+</ol>
+
+{% endblock content %}
+

@@ -1,5 +1,8 @@
 +++
 title = "hx-patch"
+description = """\
+  The hx-patch attribute in htmx will cause an element to issue a PATCH request to the specified URL and swap the \
+  returned HTML into the DOM using a swap strategy."""
 +++
 
 The `hx-patch` attribute will cause an element to issue a `PATCH` to the specified URL and swap

@@ -8,7 +8,7 @@ state that looks like this:
 
 ```html
 <div hx-get="/graph" hx-trigger="load">
-  <img  alt="Result loading..." class="htmx-indicator" width="150" src="/img/bars.svg"/>
+  <img alt="Result loading..." class="htmx-indicator" width="150" src="/img/bars.svg"/>
 </div>
 ```
 
@@ -54,7 +54,7 @@ img {
     // templates
     function lazyTemplate(page) {
       return `<div hx-get="/graph" hx-trigger="load">
-  <img  alt="Result loading..." class="htmx-indicator" width="150" src="/img/bars.svg"/>
+  <img alt="Result loading..." class="htmx-indicator" width="150" src="/img/bars.svg"/>
 </div>`;
     }
 </script>

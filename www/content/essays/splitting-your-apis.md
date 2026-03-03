@@ -1,9 +1,13 @@
 +++
 title = "Splitting Your Data &amp; Application APIs: Going Further"
+description = """\
+  If you split your API into Data and Application APIs, you should consider changing your Application API from JSON to \
+  Hypermedia (HTML) and using a hypermedia-oriented library like htmx to reap the benefits of the hypermedia model \
+  (simplicity, reliability, and flexibility)."""
 date = 2021-09-16
 updated = 2022-02-06
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

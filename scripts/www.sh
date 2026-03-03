@@ -18,5 +18,3 @@ cp -r "./src" "$STATIC_ROOT/src"
 
 # copy the current htmx to the main website
 cp "src/htmx.js" "www/themes/htmx-theme/static/js/htmx.js"
-cp "src/ext/class-tools.js" "www/themes/htmx-theme/static/js/class-tools.js"
-cp "src/ext/preload.js" "www/themes/htmx-theme/static/js/preload.js"

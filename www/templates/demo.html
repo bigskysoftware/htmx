@@ -4,6 +4,14 @@
   {% set html_title = "&lt;/&gt; htmx ~ Examples ~ " ~ page.title %}
 {% endblock title %}
 
+{% block description %}
+  {%- if page.description -%}
+    {{- page.description | safe -}}
+  {%- else -%}
+    {{- super() -}}
+  {%- endif -%}
+{% endblock description %}
+
 {% block content %}
   {% if page.extra and page.extra.show_title is defined %}
     {% set show_title = page.extra.show_title %}
@@ -11,7 +19,7 @@
     {% set show_title = true %}
   {% endif %}
   {% if show_title %}<h1>{{ page.title | safe }}</h1>{% endif %}
-  <script src="https://unpkg.com/sinon@9.0.2/pkg/sinon.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sinon@9.0.2/pkg/sinon.js"></script>
   <script src="/js/demo.js"></script>
   {{ page.content | safe }}
 {% endblock content %}

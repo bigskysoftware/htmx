@@ -1,9 +1,15 @@
 +++
 title = "Hypermedia-Friendly Scripting"
+description = """\
+  In this essay, Carson Gross discusses hypermedia-friendly scripting approaches for web applications, explaining how \
+  to incorporate JavaScript while maintaining REST architectural principles and HATEOAS (Hypermedia as the Engine of \
+  Application State). Carson outlines key guidelines for using scripting to enhance hypermedia-driven applications \
+  without undermining their fundamental REST-ful architecture, covering topics like client-side state management, \
+  event communication, and the islands architecture pattern."""
 date = 2022-11-17
 updated = 2022-11-29
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

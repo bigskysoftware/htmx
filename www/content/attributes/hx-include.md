@@ -1,5 +1,6 @@
 +++
 title = "hx-include"
+description = "The hx-include attribute in htmx allows you to include additional element values in an AJAX request."
 +++
 
 The `hx-include` attribute allows you to include additional element values in an AJAX request. The value of this
@@ -14,7 +15,7 @@ attribute can be:
 * `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.
   (e.g. `next .error` will target the closest following sibling element with `error` class)
 * `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
-  (e.g `previous .error` will target the closest previous sibling with `error` class)
+  (e.g. `previous .error` will target the closest previous sibling with `error` class)
 
 Here is an example that includes a separate input value:
 
@@ -30,7 +31,20 @@ Here is an example that includes a separate input value:
 This is a little contrived as you would typically enclose both of these elements in a `form` and submit
 the value automatically, but it demonstrates the concept.
 
-Note that if you include a non-input element, all input elements enclosed in that element will be included.
+Note that you can also use the `inherit` keyword to inherit parent values for inclusion and add additional values:
+
+```html
+<main hx-include="#hidden-input">
+    ...
+    <button hx-post="/example" hx-include="inherit, [name='email']">
+        Post It!
+    </button>
+    Enter email: <input name="email" type="email"/>
+</main>
+```
+
+
+Finally, note that if you include a non-input element, all input elements enclosed in that element will be included.
 
 ## Notes
 
@@ -51,3 +65,4 @@ Note that if you include a non-input element, all input elements enclosed in tha
   to [document.querySelectorAll](https://developer.mozilla.org/docs/Web/API/Document/querySelectorAll) and will include
   multiple elements, while the extended selectors such as `find` or `next` only return a single element at most to
   include
+* `hx-include` will ignore disabled inputs

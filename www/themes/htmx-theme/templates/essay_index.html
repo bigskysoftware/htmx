@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if section.title -%}
+    {% set html_title = "&lt;/&gt; htmx ~ " ~ section.title -%}
+  {% endif -%}
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ get_url(path="/essays/atom.xml", trailing_slash=false) }}">
+{% endblock title %}
+
+
+{% block content %}
+  <style>
+  ol { list-style-type: none; margin: 0; }
+  time { padding-right: 10px; }
+  </style>
+
+  <h3>
+    <a class="zola-anchor" href="#most-recent" aria-label="Anchor link for: most-recent">#</a>
+    Most Recent
+  </h3>
+
+  <ol>
+  {% for page in section.pages | slice(end=5) %}
+    <li>
+     <time datetime={{page.date}}>{{ page.date | date(format="%b %d, %Y") }}</time>
+     <a href="{{ page.permalink | safe }}">{{ page.title }}</a>
+    </li>
+  {% endfor %}
+  </ol>
+  <a href="/essays/all" style="display: block; padding-top: 10px">See all essays</a>
+
+  {{ section.content | safe }}
+  <div style="padding-top: 120px;padding-bottom:40px;text-align: center">
+    &lt;/&gt;
+  </div>
+{% endblock content %}

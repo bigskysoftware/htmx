@@ -1,9 +1,14 @@
 +++
 title = "Model/View/Controller (MVC)"
+description = """\
+  Carson Gross give an introduction to the Model/View/Controller (MVC) design pattern and its relevance to modern web \
+  development. He explores MVC concepts, its historical adoption in frameworks like Ruby on Rails, and practical \
+  examples of its implementation in Python with Flask. Carson explains how separating concerns with MVC can reduce \
+  code duplication, support both JSON APIs and hypermedia, and maintain flexibility in application design."""
 date = 2024-01-16
 updated = 2024-01-16
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

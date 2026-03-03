@@ -25,13 +25,13 @@ title = "htmx webring"
 <table id="nav-table" style="border: black 4px double; text-align: center">
 <tr>
   <td class="built-with-tds" style="border: 1px black solid">
-    <img width="200px" src="/img/createdwith.jpeg">
+    <img width="200px" src="/img/createdwith.jpeg" alt="Site created with htmx, The Right Way.">
   </td>
   <td  width="70%" style="text-align: center; font-size: 20px; border: 1px black solid">
      This Great <a href="https://htmx.org">htmx</a> Webring site is owned by <a href="https://bigsky.software">Your Name Here</a>.
   </td>
   <td class="built-with-tds" style="; border: 1px black solid"">
-    <img width="200px" src="/img/createdwith.jpeg">
+    <img width="200px" src="/img/createdwith.jpeg" alt="Site created with htmx, The Right Way.">
   </td>
 </tr>
 <tr>
@@ -73,7 +73,7 @@ title = "htmx webring"
              hide the #webring
              transition #site-table's height to 100% over 300ms then 
              hide me then
-             show #return-to-webring">List Sites</a><a id="return-to-webring"
+             show #return-to-webring">List Sites</a><a href="#" id="return-to-webring"
         style="display: none"
         _="on click 
              transition #site-table's height to 0px over 800ms then
@@ -81,7 +81,7 @@ title = "htmx webring"
              transition the #webring's opacity to 100%
              hide me then
              show #show-sites">Return To Webring</a>]
-   <img src="/img/navigator.gif"
+   <img src="/img/navigator.gif" alt=""
         _="on click from .nav-link
               log 'here'
               transition my opacity to 100%
@@ -107,6 +107,14 @@ title = "htmx webring"
   <tr><td><a rel="nofollow" target="_blank" href="https://xrss.infogulch.com">XRSS</a></td><td>A simple RSS reader inspired by Google Reader</td></tr>
   <tr><td><a rel="nofollow" target="_blank" href="https://openunited.com/">OpenUnited</a></td><td>A Digital Talent match-making platform</td></tr>
   <tr><td><a rel="nofollow" target="_blank" href="https://gophemeral.com">Gophemeral</a></td><td>Share secrets securely!</td></tr>
+  <tr><td><a rel="nofollow" target="_blank" href="https://www.thomasricci.dev">thomasricci.dev</a></td><td>Super fast portfolio website</td></tr>
+  <tr><td><a rel="nofollow" target="_blank" href="https://signup.casa">Signup Casa</a></td><td>Simple, convenient sign-up forms.</td></tr>
+  <tr><td><a rel="nofollow" target="_blank" href="https://recipes.musicavis.ca">Recipya</a></td><td>A clean, simple and powerful recipe manager your whole family can enjoy.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://statusnook.com">Statusnook</a></td><td>Effortlessly deploy a status page and start monitoring endpoints in minutes.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://photoquest.wedding/ ">PhotoQuest</a></td><td>The interactive wedding photo game for unique moments that connect.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://todo.dankstuff.net/">DankTodo</a></td><td>The First Ever HTMX C (Ulfius) Todo App in History!</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://dankmuzikk.com/">DankMuzikk</a></td><td>Create, share and play music playlists with the fully hypermedia music player.</td></tr>
+  <tr><td><a rel="noopener" target="_blank" href="https://danklyrics.com/">DankLyrics</a></td><td>A lyrics finder API, Website and Go package.</td></tr>
 </tbody>
 </table>
 </div>

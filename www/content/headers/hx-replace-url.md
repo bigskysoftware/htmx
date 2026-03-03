@@ -1,5 +1,8 @@
 +++
 title = "HX-Replace-Url Response Header"
+description = """\
+  Use the HX-Replace-Url response header in htmx to replace the current URL in the browser location history without \
+  creating a new history entry."""
 +++
 
 The `HX-Replace-Url` header allows you to replace the current URL in the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
@@ -13,3 +16,7 @@ The possible values for this header are:
 1. A URL to replace the current URL in the location bar.
    This may be relative or absolute, as per [`history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState), but must have the same origin as the current URL.
 2. `false`, which prevents the browser’s current URL from being updated.
+
+## Notes
+
+Response headers are not processed on 3xx response codes. see [Response Headers](@/docs.md#response-headers)

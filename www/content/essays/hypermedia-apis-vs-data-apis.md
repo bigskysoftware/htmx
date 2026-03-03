@@ -1,9 +1,14 @@
 +++
 title = "Hypermedia APIs vs. Data APIs"
+description = """\
+  In this essay, Carson Gross explores the fundamental differences between hypermedia APIs and data APIs, He explains \
+  how hypermedia APIs, which return HTML over HTTP, can embrace frequent changes due to their self-describing nature, \
+  while data APIs require more stability and versioning to avoid breaking client code. Carson argues that these \
+  distinct characteristics should inform different design approaches for each type of API."""
 date = 2021-07-17
 updated = 2022-04-07
+authors = ["Carson Gross"]
 [taxonomies]
-author = ["Carson Gross"]
 tag = ["posts"]
 +++
 

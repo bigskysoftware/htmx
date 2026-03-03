@@ -3,20 +3,20 @@ title = "Modal Dialogs in Bootstrap"
 template = "demo.html"
 +++
 
-Many CSS toolkits include styles (and Javascript) for creating modal dialog boxes. 
+Many CSS toolkits include styles (and Javascript) for creating modal dialog boxes.
 This example shows how to use HTMX alongside original JavaScript provided by Bootstrap.
 
-We start with a button that triggers the dialog, along with a DIV at the bottom of your 
+We start with a button that triggers the dialog, along with a DIV at the bottom of your
 markup where the dialog will be loaded:
 
 ```html
-<button 
-    hx-get="/modal" 
-    hx-target="#modals-here" 
-    hx-trigger="click" 
-    data-bs-toggle="modal" 
+<button
+    hx-get="/modal"
+    hx-target="#modals-here"
+    hx-trigger="click"
+    data-bs-toggle="modal"
     data-bs-target="#modals-here"
-    class="btn btn-primary">Open Modal</button>
+    class="btn primary">Open Modal</button>
 
 <div id="modals-here"
     class="modal modal-blur fade"
@@ -74,15 +74,15 @@ tabindex="-1">
 
     // routes
     init("/demo", function(request, params) {
-		return `<button 
-	hx-get="/modal" 
-	hx-target="#modals-here" 
+		return `<button
+	hx-get="/modal"
+	hx-target="#modals-here"
 	hx-trigger="click"
     data-bs-toggle="modal"
     data-bs-target="#modals-here"
-	class="btn btn-primary">Open Modal</button>
+	class="btn primary">Open Modal</button>
 	`})
-		
+
 	onGet("/modal", function(request, params){
 	  return `<div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">

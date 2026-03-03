@@ -1,5 +1,8 @@
 +++
 title = "hx-select-oob"
+description = """\
+  The hx-select-oob attribute in htmx allows you to select content from a response to be swapped in via an out-of-band \
+  swap. The value of this attribute is comma separated list of elements to be swapped out of band."""
 +++
 
 The `hx-select-oob` attribute allows you to select content from a response to be swapped in via an out-of-band swap.  
@@ -25,7 +28,7 @@ which will replace the entire button in the DOM, and, in addition, pick out an e
 in the response and swap it in for div in the DOM with the same ID.
 
 Each value in the comma separated list of values can specify any valid [`hx-swap`](@/attributes/hx-swap.md)
-strategy by separating the selector and the swap strategy with a `:`.
+strategy by separating the selector and the swap strategy with a `:`, with the strategy otherwise defaulting to `outerHTML`.
 
 For example, to prepend the alert content instead of replacing it:
 

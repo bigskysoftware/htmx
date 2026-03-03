@@ -1,5 +1,8 @@
 +++
 title = "hx-delete"
+description = """\
+  The hx-delete attribute in htmx will cause an element to issue a DELETE request to the specified URL and swap the \
+  returned HTML into the DOM using a swap strategy."""
 +++
 
 The `hx-delete` attribute will cause an element to issue a `DELETE` to the specified URL and swap
