@@ -86,10 +86,15 @@ var htmx = (() => {
                 isSoftMatch: this.__isSoftMatch.bind(this),
                 onTrigger: this.__onTrigger.bind(this)
             };
-            document.addEventListener("DOMContentLoaded", () => {
-                this.__initHistoryHandling();
+            let init = () => {
+                this.__initHistoryHandling()
                 this.process(document.body)
-            })
+            };
+            if (document.readyState === 'loading') {
+                document.addEventListener("DOMContentLoaded", init)
+            } else {
+                init()
+            }
         }
 
         __initHtmxConfig() {
