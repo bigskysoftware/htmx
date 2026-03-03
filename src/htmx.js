@@ -293,7 +293,7 @@ var htmx = (() => {
             } else {
                 let action = evt.submitter?.getAttribute?.("formAction") || elt.getAttribute("action");
                 let method = evt.submitter?.getAttribute?.("formMethod") || elt.getAttribute("method") || "GET";
-                return {action, method}
+                return {action, method.toUpperCase()}
             }
         }
 
