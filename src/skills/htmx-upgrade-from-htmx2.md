@@ -1,5 +1,5 @@
 ---
-name: upgrade-from-htmx2
+name: htmx-upgrade-from-htmx2
 description: Use when helping a user upgrade or migrate their codebase from htmx 2.x to htmx 4.x. Covers attribute renames, event name changes, config updates, header changes, extension migration, and step-by-step upgrade workflow.
 ---
 
