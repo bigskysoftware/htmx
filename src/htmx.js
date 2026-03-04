@@ -771,6 +771,14 @@ var htmx = (() => {
                     }, this.parseInterval(interval));
                 }
 
+                if (spec.consume) {
+                    let original = spec.handler
+                    spec.handler = (evt) => {
+                        evt.stopPropagation()
+                        original(evt)
+                    }
+                }
+
                 if (filter) {
                     let original = spec.handler
                     spec.handler = (evt) => {
@@ -784,14 +792,6 @@ var htmx = (() => {
                 let fromElts = [elt];
                 if (spec.from) {
                     fromElts = this.__findAllExt(elt, spec.from)
-                }
-
-                if (spec.consume) {
-                    let original = spec.handler
-                    spec.handler = (evt) => {
-                        evt.stopPropagation()
-                        original(evt)
-                    }
                 }
 
                 if (spec.changed) {
