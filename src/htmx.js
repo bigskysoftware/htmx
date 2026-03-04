@@ -1296,11 +1296,9 @@ var htmx = (() => {
             if (swapStyle === 'innerHTML' || (swapStyle === 'outerHTML' && parentNode)) {
                 let activeElt = document.activeElement;
                 if (activeElt?.id) {
-                    focusInfo = {
-                        elt: activeElt,
-                        start: activeElt.selectionStart,
-                        end: activeElt.selectionEnd
-                    };
+                    let start, end;
+                    try { start = activeElt.selectionStart; end = activeElt.selectionEnd; } catch (e) {}
+                    focusInfo = { elt: activeElt, start, end };
                 }
                 settleTasks = cssTransition && settleDelay ? this.__startCSSTransitions(fragment, target) : []
             }
