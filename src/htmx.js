@@ -67,6 +67,7 @@ var htmx = (() => {
         #verbs = ["get", "post", "put", "patch", "delete"];
         #hxOnQuery
         #transitionQueue
+        #historyAbort
         #processingTransition
 
         constructor() {
@@ -1552,8 +1553,9 @@ var htmx = (() => {
             }
             window.addEventListener('popstate', (event) => {
                 if (event.state && event.state.htmx) {
+                    this.#historyAbort?.abort();
                     this.__restoreHistory();
-                } 
+                }
             });
         }
 
@@ -1575,10 +1577,14 @@ var htmx = (() => {
                 if (this.config.history === "reload") {
                     location.reload();
                 } else {
+                    this.#historyAbort = new AbortController();
                     this.ajax('GET', path, {
                         target: 'body',
                         swap: 'innerHTML',
-                        request: {headers: {'HX-History-Restore-Request': 'true'}}
+                        request: {
+                            headers: {'HX-History-Restore-Request': 'true'},
+                            signal: this.#historyAbort.signal
+                        }
                     });
                 }
             }
