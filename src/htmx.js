@@ -501,11 +501,9 @@ var htmx = (() => {
             if (!requestQueue.issue(ctx, syncStrategy)) return
 
             ctx.status = "issuing"
-            this.__initTimeout(ctx);
 
-            let indicators = this.__showIndicators(elt);
-            let disableElements = this.__disableElements(elt);
-
+            let indicators = [];
+            let disableElements = [];
             try {
                 // Handle confirmation
                 if (ctx.confirm) {
@@ -518,7 +516,12 @@ var htmx = (() => {
                     });
                     if (!confirmed) return;
                 }
-                
+
+                // initialize timeout & indicators after confirmation
+                this.__initTimeout(ctx);
+                indicators = this.__showIndicators(elt);
+                disableElements = this.__disableElements(elt);
+
                 ctx.fetch ||= window.fetch.bind(window)
                 if (!this.__trigger(elt, "htmx:before:request", {ctx})) return;
 
