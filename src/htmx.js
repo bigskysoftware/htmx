@@ -233,7 +233,6 @@ var htmx = (() => {
                 if (value === 'true') value = true;
                 else if (value === 'false') value = false;
                 else if (/^\d+$/.test(value)) value = parseInt(value);
-                if (keyPath.some(this.__internalField)) return result;
                 keyPath.slice(0, -1).reduce((obj, key) => obj[key] ??= {}, result)[keyPath.at(-1)] = value;
                 return result;
             }, {});
@@ -246,6 +245,7 @@ var htmx = (() => {
         __mergeConfig(configString, target) {
             let parsed = this.__parseConfig(configString);
             for (let key in parsed) {
+                if (this.__internalField(key)) continue;
                 let val = parsed[key];
                 if (val && typeof val === 'object' && !Array.isArray(val) && target[key]) {
                     Object.assign(target[key], val);
