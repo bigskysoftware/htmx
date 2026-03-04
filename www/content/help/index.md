@@ -7,7 +7,7 @@ title = "Help"
 <!-- Primary Help Channels -->
 <div class="not-prose grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
   <a href="/discord" class="scan-lines group relative p-8 flex flex-col gap-4 border border-neutral-200 hover:border-blue-500/40 dark:border-neutral-800 dark:hover:border-blue-500/50 rounded-[3px] transition no-underline">
-    <iconify-icon icon="pixel:discord" class="text-6xl text-neutral-700 dark:text-neutral-300"></iconify-icon>
+    <iconify-icon icon="ic:baseline-discord" class="text-6xl text-neutral-700 dark:text-neutral-300"></iconify-icon>
     <div>
       <h3 class="text-2xl font-os9 text-blue-600 dark:text-blue-400 group-hover:underline transition mb-2">
         Discord

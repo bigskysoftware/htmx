@@ -1,0 +1,50 @@
+---
+interface Props {
+    url: string;
+    title: string;
+    description?: string;
+}
+
+const {url, title, description} = Astro.props;
+const hasLinks = Astro.slots.has('links');
+---
+
+{/* Switch selector to target the 'a' strictly inside the 'h2' */}
+<div class="group relative isolate flex flex-col rounded-xl overflow-hidden transition outline-hidden
+    bg-linear-to-b from-neutral-25 to-neutral-50 dark:from-neutral-910 dark:to-neutral-920
+    border border-neutral-200 dark:border-neutral-800
+    shadow-3d-neutral-300 dark:shadow-3d-neutral-900 shadow-3d-depth-[0px]
+    has-[h2_a:hover:not(:active)]:-translate-y-1 has-[h2_a:hover:not(:active)]:shadow-3d-depth-[6px]
+    has-[h2_a:hover]:from-neutral-50 has-[h2_a:hover]:to-neutral-100
+    has-[h2_a:hover]:dark:from-neutral-900 has-[h2_a:hover]:dark:to-neutral-910
+    has-[h2_a:hover]:border-neutral-400
+    dark:has-[h2_a:hover]:border-neutral-600
+    has-[h2_a:focus-visible]:ring-2
+    has-[h2_a:focus-visible]:ring-offset-2
+    has-[h2_a:focus-visible]:ring-blue-600
+    dark:has-[h2_a:focus-visible]:ring-blue-400
+    has-[h2_a:active]:translate-y-0 has-[h2_a:active]:shadow-3d-depth-[2px]">
+
+    <div class="relative h-40 lg:h-44 w-full flex items-center justify-center transition">
+        <slot/>
+    </div>
+
+    <div class="flex flex-col p-5 bg-white/50 dark:bg-neutral-920/50 border-t border-neutral-150 dark:border-neutral-900 has-[h2_a:hover]:border-neutral-200 has-[h2_a:hover]:dark:border-neutral-850 transition">
+        <h2 class="font-bold text-lg text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-neutral-100 transition mb-2">
+            <a href={url} class="outline-hidden">
+                {title}
+                <span class="absolute inset-0 z-10"></span>
+            </a>
+        </h2>
+        {description && (
+                <p class="text-sm text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-800 dark:group-interact:text-neutral-350 leading-relaxed transition">
+                    {description}
+                </p>
+        )}
+        {hasLinks && (
+                <div class="relative mt-4 z-20">
+                    <slot name="links"/>
+                </div>
+        )}
+    </div>
+</div>

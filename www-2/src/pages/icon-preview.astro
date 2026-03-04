@@ -1,0 +1,66 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GridBackground from '../components/GridBackground.astro';
+import CategoryCard from '../components/CategoryCard.astro';
+---
+
+<Layout title="Icon Preview">
+    <GridBackground/>
+
+    <div class="max-w-4xl mx-auto px-6 py-20">
+        <h1 class="text-2xl font-bold mb-8 text-neutral-700 dark:text-neutral-300">CategoryCard Preview</h1>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <CategoryCard
+                    url="#"
+                    title="Installation"
+                    description="Get htmx up and running in your project"
+            >
+                <div class="h-full [&>svg]:h-full [&>svg]:w-auto
+                    text-neutral-300 dark:text-neutral-700
+                    group-hover:text-neutral-400 dark:group-hover:text-neutral-500
+                    [--accent:var(--color-neutral-300)] dark:[--accent:var(--color-neutral-700)]
+                    group-hover:[--accent:var(--color-neutral-600)] dark:group-hover:[--accent:var(--color-neutral-300)]">
+                    <svg viewBox="0 0 128 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <style>
+                            .accent { fill: var(--accent); stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+                            .accent-body { fill: var(--accent); fill-opacity: 0.4; stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+                        </style>
+                        <!-- Window -->
+                        <rect x="24" y="44" width="80" height="40" rx="4" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="32" cy="52" r="1.5" fill="currentColor"/>
+                        <circle cx="37" cy="52" r="1.5" fill="currentColor"/>
+                        <circle cx="42" cy="52" r="1.5" fill="currentColor"/>
+                        <!-- Package -->
+                        <path class="accent-body" d="M57 20l7-4 7 4v8l-7 4-7-4z" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path class="accent" d="M57 20l7 4 7-4M64 24v8" style="fill: none" stroke-width="1" stroke-linejoin="round"/>
+                        <!-- Arrow -->
+                        <path class="accent" d="M64 40v18M60 54l4 4 4-4" style="fill: none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Target -->
+                        <rect class="accent" x="52" y="62" width="24" height="4" rx="1"/>
+                    </svg>
+                </div>
+            </CategoryCard>
+
+            <CategoryCard
+                    url="#"
+                    title="Example Card 2"
+                    description="Another card for comparison"
+            >
+                <span class="text-7xl transition icon-[mdi--file-document-outline] text-neutral-400 dark:text-neutral-600 group-interact:text-neutral-900 dark:group-interact:text-neutral-100"></span>
+            </CategoryCard>
+
+            <CategoryCard
+                    url="#"
+                    title="Example Card 3"
+                    description="With code preview style"
+            >
+                <div class="font-mono text-xl sm:text-2xl flex items-center justify-center gap-[1px]">
+                    <span class="text-neutral-600 dark:text-neutral-400 font-bold group-interact:text-blue-600 dark:group-interact:text-blue-400 transition-colors">hx-get</span>
+                    <span class="text-neutral-400 dark:text-neutral-500">=</span>
+                    <span class="text-neutral-400 dark:text-neutral-500 group-interact:text-neutral-600 dark:group-interact:text-neutral-300 transition-colors">"..."</span>
+                </div>
+            </CategoryCard>
+        </div>
+    </div>
+</Layout>

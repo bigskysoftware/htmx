@@ -1,0 +1,101 @@
+---
+import {Image} from 'astro:assets';
+import {getCollection} from 'astro:content';
+import bssBars from '../assets/img/bss-bars.png';
+
+interface Props {
+    class?: string;
+    containerClass?: string;
+    contentClass?: string;
+}
+
+const {
+    class: className,
+    containerClass = "px-4 sm:px-6 lg:px-8",
+    contentClass = "max-w-2xl lg:max-w-5xl mx-auto"
+} = Astro.props;
+
+const navigationSections = [
+    {
+        name: "Links",
+        items: [
+            {name: "docs", url: "/docs"},
+            {name: "reference", url: "/reference"},
+            {name: "examples", url: "/examples"},
+            {name: "essays", url: "/essays"},
+            {name: "about", url: "/about"},
+        ]
+    },
+    {
+        name: "Community",
+        items: (await getCollection('community')).map(communityLink => ({
+            name: communityLink.data.name,
+            url: communityLink.data.url,
+            iconClass: communityLink.data.iconClass,
+        }))
+    },
+    {
+        name: "Resources",
+        items: (await getCollection('resources')).map(resourceLink => ({
+            name: resourceLink.data.name,
+            url: resourceLink.data.url,
+            iconClass: resourceLink.data.iconClass,
+        }))
+    },
+];
+---
+
+<footer class:list={["text-xs sm:text-sm border-t border-neutral-200 dark:border-neutral-850 bg-neutral-10 dark:bg-neutral-920 mt-16 sm:mt-24 py-12 sm:py-16 z-30", className]}>
+    <div class:list={[containerClass]}>
+        <div class:list={[contentClass]}>
+            <!-- Navigation Sections + Haiku -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8 sm:gap-8 lg:gap-12">
+                {navigationSections.map((section) => (
+                        <div>
+                            <h2 class="tracking-wide uppercase text-neutral-900 dark:text-neutral-100 mb-4 sm:mb-6">
+                                {section.name}
+                            </h2>
+                            <ul class:list={["space-y-2 sm:space-y-3", section.name === 'Links' ? 'font-chicago' : 'font-medium']}>
+                                {section.items.map((link) => (
+                                        <li>
+                                            <a href={link.url}
+                                               target={link.url?.startsWith('http') ? "_blank" : undefined}
+                                               rel={link.url?.startsWith('http') ? "noopener noreferrer" : undefined}
+                                               title={`Go to <b>${link.url}</b>`}
+                                               class="text-neutral-500 dark:text-neutral-450 interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition inline-flex items-center gap-3">
+                                                {link.iconClass && <i class={`${link.iconClass} text-base`}></i>}
+                                                {link.name}
+                                            </a>
+                                        </li>
+                                ))}
+                            </ul>
+                        </div>
+                ))}
+
+                <!-- Haiku -->
+                <div>
+                    <h2 class="tracking-wide uppercase text-neutral-900 dark:text-neutral-100 mb-4 sm:mb-6">
+                        Haiku
+                    </h2>
+                    <p class="italic text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-loose">
+                        javascript fatigue:<br>longing for a hypertext<br>already in hand
+                    </p>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="flex gap-3 mt-12 sm:mt-16 text-neutral-500">
+                <span class="flex items-center gap-1.5">
+                    &copy; {new Date().getFullYear()}
+                    <a href="https://bigsky.software" target="_blank" rel="noopener noreferrer"
+                       title="Go to Big Sky Software's website"
+                       class="group inline-flex items-center gap-1.5 interact:text-blue-600 dark:interact:text-blue-300 interact:underline sm:transition">
+                        <Image src={bssBars} alt="Big Sky Software" class="size-3 mx-1 group-interact:brightness-125"
+                               loading="lazy"/>
+                        Big Sky Software
+                    </a>
+                </span>
+            </div>
+        </div>
+    </div>
+</footer>

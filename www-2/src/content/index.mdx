@@ -1,0 +1,31 @@
+---
+title: "htmx ~ high power tools for HTML"
+description: "htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext"
+---
+import { getCollection } from 'astro:content';
+import CDNGenerator from "../components/CDNGenerator.astro";
+import EasterEggs from "../components/EasterEggs.astro";
+import Sponsors from "../components/Sponsors.astro";
+import Hero from "../components/Hero.astro";
+
+export const sponsors = (await getCollection('sponsors')).map(sponsor => sponsor.data);
+
+<div class="not-prose">
+
+<EasterEggs/>
+
+<Hero/>
+
+<Sponsors sponsors={sponsors} />
+
+<footer class="text-center py-16">
+    <p class="text-neutral-600 dark:text-neutral-400 font-chicago text-sm mb-4">
+        htmx is the successor to <a href="http://intercoolerjs.org"
+                                    class="text-blue-600 dark:text-blue-400 interact:underline">intercooler.js</a>
+    </p>
+    <p class="text-neutral-500 dark:text-neutral-500 text-sm">
+        ʕ •ᴥ•ʔ made in montana
+    </p>
+</footer>
+
+</div>

@@ -1,0 +1,97 @@
+---
+title: "Patterns"
+insert_anchor_links: "heading"
+
+name: "Loading"
+patterns: [
+    { url: "/patterns/click-to-load", icon = "mdi:cursor-pointer", title = "Click to Load", description = "Load content when you click an element"},
+    { url: "/patterns/infinite-scroll", icon = "mdi:arrow-expand-down", title = "Infinite Scroll", description = "Load content when you scroll to bottom" },
+    { url: "/patterns/lazy-load", icon = "bitcoin-icons:visible-filled", title = "Lazy Load", description = "Load content after the page renders" },
+    { url: "/patterns/progress-bar", icon = "vaadin:progressbar", title = "Progress Bar", description = "Show progress bar during background job" }
+]
+
+name: "Forms"
+patterns: [
+    { url: "/patterns/active-search", icon = "mdi:magnify", title = "Active Search", description = "Filter search results as you type" },
+    { url: "/patterns/active-validation", icon = "mdi:check", title = "Active Validation", description = "Validate form input as you type" },
+    { url: "/patterns/value-select", icon = "mdi:form-dropdown", title = "Linked Selects", description = "Update select options via another select" },
+    { url: "/patterns/file-upload", icon = "ic:round-file-upload", title = "File Upload", description = "Upload files with progress and validation" },
+    { url: "/patterns/reset-on-submit", icon = "mdi:eraser", title = "Reset on Submit", description = "Clear form inputs after submission" }
+]
+
+name: "Records"
+patterns: [
+    { url: "/patterns/edit-in-place", icon = "material-symbols:edit", title = "Edit in Place", description = "Update a record without page refresh" },
+    { url: "/patterns/delete-in-place", icon = "material-symbols:delete", title = "Delete in Place", description = "Remove a record without page refresh" },
+    { url: "/patterns/bulk-actions", icon = "mdi:checkbox-multiple-marked", title = "Bulk Actions", description = "Perform actions on multiple records" },
+    { url: "/patterns/drag-to-reorder", icon = "solar:reorder-linear", title = "Drag to Reorder", description = "Change order of records with drag and drop" }
+]
+
+name: "Display"
+patterns: [
+    { url: "/patterns/dialogs", icon = "vaadin:modal-list", title = "Dialogs", description = "Show modals and popups on demand" },
+    { url: "/patterns/animations", icon = "mdi:animation", title = "Animations", description = "Animate content as it swaps in" },
+    { url: "/patterns/tabs", icon = "mdi:tab", title = "Tabs", description = "Switch between content panels using tabs" }
+]
+
+name: "Real-time"
+patterns: [
+    { url: "/patterns/one-off-streams", icon = "cil:stream", title = "One-Off Streams", description = "Stream incremental updates until completion" },
+    { url: "/patterns/continuous-streams", icon = "circum:stream-on", title = "Continuous Streams", description = "Push updates to page via persistent connection" },
+    { url: "/patterns/polling", icon = "bi:arrow-repeat", title = "Polling", description = "Check for updates at regular intervals" },
+    { url: "/patterns/websocket-sync", icon = "fluent:cloud-bidirectional-20-regular", title = "Bidirectional Sync", description = "Exchange data in real-time with server" }
+]
+
+name: "Advanced"
+patterns: [
+    { url: "/patterns/update-other-content", icon = "mdi:sync", title = "Multiple Swaps", description = "Update multiple elements on the page at once" },
+    { url: "/patterns/keyboard-shortcuts", icon = "mdi:keyboard", title = "Keyboard Shortcuts", description = "Bind keyboard shortcuts to interactive elements" },
+    { url: "/patterns/modify-requests", icon = "mdi:globe-arrow-right", title = "Modify Requests", description = "Customize requests before they send" }
+]
+---
+
+Common UX patterns implemented with htmx. Copy and adapt for your project.
+
+<div class="not-prose mt-8">
+
+[//]: # (TODO: migrate to Astro to not require doing stuff like this)
+{{ pattern_groups() }}
+
+</div>
+
+<a href="/migration-guide-hotwire-turbo" class="not-prose group mt-8 p-4 text-xs flex items-center gap-4 bg-[#5BD8E5]/5 border border-[#5BD8E5]/25 hover:border-[#5BD8E5]/75 dark:hover:border-[#5BD8E5]/40 rounded-[3px] transition">
+    <!-- Hotwire Logo -->
+    <svg class="size-8" width="32" height="32" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#5CD8E5">
+        <path d="M9.56852 30C9.56511 26.8506 10.2914 23.7556 11.6756 20.9528C12.0902 20.1134 12.2975 19.6937 12.256 19.4195C12.2174 19.1644 12.0999 18.9753 11.8882 18.8277C11.6608 18.6692 11.2256 18.6692 10.3552 18.6692H1.41176C0.917599 18.6692 0.670518 18.6692 0.481772 18.7653C0.315747 18.8499 0.180765 18.9849 0.0961706 19.1509C0 19.3397 1.99791e-10 19.5868 1.99791e-10 20.0809V58.1679C-3.56516e-06 58.4093 0.0477119 58.6484 0.140403 58.8713C0.233095 59.0943 0.368934 59.2967 0.540113 59.4669C0.711291 59.6372 0.914432 59.7719 1.13786 59.8634C1.36128 59.9549 1.60059 60.0013 1.84201 60H58.1678C58.6537 60 59.1197 59.807 59.4633 59.4634C59.8069 59.1198 59.9999 58.6538 59.9999 58.1679V51.8432C59.9999 51.3491 59.9999 51.102 59.9037 50.9132C59.8191 50.7472 59.6841 50.6122 59.5181 50.5276C59.3294 50.4315 59.0823 50.4315 58.5881 50.4315H29.9999C24.5812 50.4315 19.3844 48.2789 15.5527 44.4472C11.7211 40.6156 9.56852 35.4188 9.56852 30Z"></path>
+        <path d="M39.1503 30.8662C41.1033 30.6502 43.0206 30.1851 44.8555 29.4822V29.4125C45.3982 29.2448 45.9847 29.2923 46.4932 29.5454C47.0018 29.7985 47.3934 30.2376 47.5868 30.7717C47.7802 31.3058 47.7605 31.8939 47.5319 32.4139C47.3033 32.9339 46.8833 33.3459 46.359 33.5645C43.688 34.6173 40.855 35.2001 37.9853 35.2871H37.4775C36.9653 35.9997 36.3553 36.6365 35.6654 37.1789C36.8401 38.3313 38.1391 39.3498 39.5386 40.2157C40.0324 40.5286 40.3817 41.0249 40.5096 41.5953C40.6375 42.1658 40.5336 42.7637 40.2206 43.2575C39.9077 43.7513 39.4114 44.1006 38.841 44.2285C38.2705 44.3564 37.6726 44.2525 37.1788 43.9396C35.0088 42.6156 33.0601 40.9592 31.4039 39.0308C30.9391 39.0994 30.4697 39.1326 29.9999 39.1304H29.1038C29.1745 39.8644 29.2942 40.5929 29.4623 41.311C29.6017 41.9382 29.7809 42.5954 29.9999 43.3023C30.1131 43.7096 30.2434 44.0712 30.3821 44.4564C30.4265 44.5796 30.4718 44.7053 30.5177 44.8357C30.6617 45.2298 30.6895 45.6571 30.5977 46.0666C30.506 46.4761 30.2985 46.8507 29.9999 47.1457C29.7733 47.3718 29.502 47.5481 29.2034 47.6634C28.9605 47.7498 28.7045 47.7936 28.4467 47.7928C28.0011 47.7962 27.5651 47.6637 27.1969 47.4128C26.8286 47.162 26.5456 46.8048 26.3856 46.3889C25.7728 44.7567 25.3031 43.0743 24.9817 41.3607C24.7338 40.092 24.627 38.7997 24.6631 37.5074C23.9549 36.99 23.3187 36.3806 22.7713 35.6953C21.6315 36.8686 20.6294 38.168 19.7842 39.5685C19.582 39.8793 19.3042 40.1338 18.9768 40.3079C18.6494 40.4821 18.2831 40.5702 17.9123 40.5642C17.517 40.5656 17.1286 40.4604 16.788 40.2598C16.4474 40.0592 16.1671 39.7706 15.9765 39.4242C15.786 39.0778 15.6924 38.6865 15.7054 38.2914C15.7184 37.8963 15.8375 37.512 16.0504 37.1789C17.3747 35.0033 19.0348 33.0509 20.9691 31.3939C20.8972 30.9327 20.8606 30.4667 20.8596 30C20.8596 29.8506 20.872 29.7013 20.8845 29.5519C20.8969 29.4026 20.9093 29.2532 20.9093 29.1039C18.9244 29.3268 16.9767 29.8054 15.1145 30.5277C14.5652 30.7284 13.9587 30.7027 13.4284 30.4562C12.8981 30.2097 12.4874 29.7627 12.2867 29.2134C12.086 28.6641 12.1118 28.0576 12.3582 27.5273C12.6047 26.997 13.0518 26.5864 13.601 26.3857C16.4269 25.2464 19.4456 24.6616 22.4925 24.6631C23.0043 23.9503 23.6144 23.3134 24.3046 22.7713C23.1256 21.634 21.8231 20.6321 20.4215 19.7843C19.9525 19.4598 19.6271 18.9666 19.5132 18.4078C19.3994 17.8489 19.506 17.2677 19.8106 16.7856C20.1153 16.3036 20.5945 15.9579 21.1481 15.8209C21.7017 15.6839 22.2869 15.7661 22.7812 16.0505C24.9578 17.3774 26.9131 19.0371 28.5761 20.9691C29.3334 20.847 30.1036 20.8269 30.8662 20.9094C30.8066 20.1436 30.7002 19.3821 30.5476 18.6293C30.3982 18.012 30.219 17.3449 29.9999 16.6379C29.8506 16.1102 29.6813 15.6422 29.4822 15.1145C29.3398 14.7185 29.3128 14.2902 29.4045 13.8794C29.4961 13.4687 29.7026 13.0925 29.9999 12.7946C30.2263 12.5658 30.5023 12.392 30.8064 12.2868C31.0784 12.1868 31.3674 12.1415 31.6568 12.1535C31.9463 12.1655 32.2306 12.2345 32.4933 12.3566C32.756 12.4787 32.9921 12.6515 33.1878 12.8651C33.3836 13.0786 33.5353 13.3288 33.6342 13.6011C34.2423 15.2348 34.7119 16.9168 35.0381 18.6293C35.2785 19.9023 35.382 21.1975 35.3468 22.4925C36.0614 22.9984 36.6987 23.6055 37.2386 24.2947C38.3931 23.1218 39.4118 21.8226 40.2754 20.4215C40.5883 19.9277 41.0846 19.5784 41.655 19.4505C42.2255 19.3226 42.8234 19.4265 43.3172 19.7395C43.811 20.0524 44.1603 20.5487 44.2882 21.1191C44.4161 21.6896 44.3122 22.2875 43.9992 22.7813C42.6752 24.9542 41.0189 26.9062 39.0905 28.5662C39.1993 29.328 39.2193 30.0998 39.1503 30.8662ZM34.8987 30.3983V30H34.9385C34.9245 29.0863 34.6592 28.1941 34.1719 27.4212C34.043 27.2069 33.8964 27.0037 33.7337 26.8138C33.053 26.0132 32.1364 25.4486 31.1151 25.2008C30.8665 25.1408 30.6134 25.1009 30.3584 25.0813H29.9601C29.0502 25.0834 28.1583 25.3348 27.3813 25.8082C27.1675 25.9461 26.9614 26.0957 26.764 26.2562C25.9671 26.9384 25.406 27.8549 25.1609 28.8749C25.101 29.1201 25.061 29.3699 25.0414 29.6216V30.0199C25.0435 30.9298 25.2949 31.8217 25.7683 32.5987C25.9038 32.8142 26.0535 33.0204 26.2163 33.216C26.6345 33.7126 27.1475 34.1208 27.7254 34.4165C28.3033 34.7123 28.9344 34.8898 29.5817 34.9386H29.98C30.8899 34.9365 31.7818 34.6851 32.5588 34.2117C32.7731 34.0829 32.9763 33.9363 33.1662 33.7736C33.6658 33.3552 34.0764 32.841 34.374 32.2613C34.6716 31.6815 34.85 31.0481 34.8987 30.3983Z"></path>
+        <path d="M58.1678 0H1.84201C1.35348 0 0.884958 0.194069 0.539513 0.539513C0.194069 0.884958 1.99791e-10 1.35348 1.99791e-10 1.84201V8.15675C1.99791e-10 8.65092 0 8.898 0.0961706 9.08674C0.180765 9.25277 0.315747 9.38775 0.481772 9.47235C0.670518 9.56852 0.917599 9.56852 1.41176 9.56852H29.9999C33.6968 9.57103 37.3238 10.5761 40.4947 12.4766C43.6657 14.3771 46.2619 17.102 48.0069 20.3611C49.7519 23.6202 50.5804 27.2916 50.4042 30.9842C50.27 33.7965 49.5569 36.5409 48.3201 39.0493C47.9068 39.8877 47.7001 40.3068 47.7417 40.5808C47.7804 40.8358 47.898 41.0249 48.1096 41.1724C48.3369 41.3308 48.7715 41.3308 49.6408 41.3308H58.5383C59.0325 41.3308 59.2796 41.3308 59.4683 41.2346C59.6343 41.15 59.7693 41.0151 59.8539 40.849C59.9501 40.6603 59.9501 40.4132 59.9501 39.9191V1.84201C59.9529 1.36291 59.7679 0.901772 59.4347 0.557448C59.1015 0.213124 58.6468 0.0130114 58.1678 0Z"></path>
+      </g>
+    </svg>
+    <div>
+        <h2>Migrating from Hotwire / Turbo ?</h2>
+        <p class="mt-1">
+            See the 
+            <span class="font-semibold text-blue-600 dark:text-blue-400 group-hover:underline transition">
+                migration guide
+            </span> 
+            for common patterns.
+        </p>
+    </div>
+</a>
+
+
+<a href="/server-examples" class="not-prose group mt-8 p-4 text-xs flex items-center gap-4 border border-neutral-200 hover:border-neutral-400 dark:border-neutral-800 dark:hover:border-neutral-700 rounded-[3px] transition">
+    <!-- GitHub Logo -->
+    <iconify-icon icon="mdi:github" class="size-8" height="none"></iconify-icon>
+    <div>
+        <h2>Server-side Integration Examples</h2>
+        <p class="mt-1">
+            See the 
+            <span class="font-semibold text-blue-600 dark:text-blue-400 group-hover:underline transition">
+                server examples
+            </span>
+            for htmx integration with various languages.
+        </p>
+    </div>
+</a>

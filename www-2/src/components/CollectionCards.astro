@@ -1,0 +1,127 @@
+---
+import {getFolder} from '../lib/content';
+import CategoryCard from './CategoryCard.astro';
+import ThumbnailSvg from './ThumbnailSvg.astro';
+
+interface Props {
+    collection: string;
+    grouped?: boolean;
+}
+
+const {collection, grouped = false} = Astro.props;
+
+const folder = await getFolder(collection);
+
+const hasSubfolders = folder.subfolders.length > 0;
+
+// Grouped mode: show subfolders as sections with their files
+// Flat mode: show subfolders as cards, or files if no subfolders
+const items = !grouped && hasSubfolders
+    ? folder.subfolders.sort((a, b) => a.id.localeCompare(b.id))
+    : folder.subfiles.sort((a, b) => a.id.localeCompare(b.id));
+
+const groups = grouped && hasSubfolders
+    ? folder.subfolders.sort((a, b) => a.id.localeCompare(b.id))
+    : null;
+
+// Load all thumbnails as raw SVG strings (for currentColor support)
+const thumbnailModules = import.meta.glob('/src/assets/img/thumbnails/**/*.svg', {
+    query: '?raw',
+    import: 'default',
+    eager: true
+}) as Record<string, string>;
+
+const getThumbnail = (path: string | undefined): string | null => {
+    if (!path) return null;
+    const fullPath = `/src/assets/img/thumbnails/${path}`;
+    return thumbnailModules[fullPath] || null;
+};
+
+// Reference category code previews
+const getReferencePreview = (slug: string) => {
+    switch (slug) {
+        case 'attributes':
+            return {type: 'html', code: 'hx-get', value: '"..."'};
+        case 'headers':
+            return {type: 'http', code: 'HX-Request', value: 'true'};
+        case 'events':
+            return {type: 'event', code: 'htmx', value: 'confirm'};
+        case 'config':
+            return {type: 'config', code: 'htmx.config', value: 'debug'};
+        case 'methods':
+            return {type: 'js', code: 'htmx.ajax'};
+        default:
+            return null;
+    }
+};
+---
+
+{groups ? (
+<div class="my-10 not-prose space-y-12">
+    {groups.map((group) => (
+            <section>
+                <h2 class="flex items-center gap-3 mb-6 font-sans text-xs uppercase font-medium tracking-widest text-neutral-500 dark:text-neutral-450">
+                    {group.frontmatter.title}
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {group.subfiles.sort((a, b) => a.id.localeCompare(b.id)).map((item) => {
+                        const thumbnail = getThumbnail(item.frontmatter.thumbnail);
+                        return (
+                                <CategoryCard
+                                        url={item.url}
+                                        title={item.frontmatter.title}
+                                        description={item.frontmatter.description}
+                                >
+                                    {thumbnail ? (
+                                            <ThumbnailSvg svg={thumbnail}/>
+                                    ) : (
+                                            <span class="text-7xl transition icon-[mdi--file-document-outline] text-neutral-400 dark:text-neutral-600 group-interact:text-neutral-900 dark:group-interact:text-neutral-100"></span>
+                                    )}
+                                </CategoryCard>
+                        );
+                    })}
+                </div>
+            </section>
+    ))}
+</div>
+    ) : (
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10 not-prose">
+    {items.map((item) => {
+        const thumbnail = getThumbnail(item.frontmatter.thumbnail);
+        const refPreview = collection === 'reference' ? getReferencePreview(item.slug) : null;
+
+        return (
+                <CategoryCard
+                        url={item.url}
+                        title={item.frontmatter.title}
+                        description={item.frontmatter.description}
+                >
+                    {thumbnail ? (
+                            <ThumbnailSvg svg={thumbnail}/>
+                    ) : refPreview ? (
+                            <div class="font-mono text-xl sm:text-2xl flex items-center justify-center gap-[1px]">
+                                <span class="text-neutral-600 dark:text-neutral-400 font-bold group-interact:text-blue-600 dark:group-interact:text-blue-400 transition-colors">{refPreview.code}</span>
+                                {refPreview.type === 'html' &&
+                                        <><span class="text-neutral-400 dark:text-neutral-500">=</span><span
+                                                class="text-neutral-400 dark:text-neutral-500 group-interact:text-neutral-600 dark:group-interact:text-neutral-300 transition-colors">{refPreview.value}</span>
+                                        </>}
+                                {refPreview.type === 'http' &&
+                                        <><span class="text-neutral-400 dark:text-neutral-500">:</span><span
+                                                class="text-neutral-400 dark:text-neutral-500 group-interact:text-neutral-600 dark:group-interact:text-neutral-300 transition-colors ml-1.5">{refPreview.value}</span>
+                                        </>}
+                                {refPreview.type === 'js' &&
+                                        <span class="text-neutral-400 dark:text-neutral-500 group-interact:text-neutral-600 dark:group-interact:text-neutral-300 transition-colors">(...)</span>}
+                                {(refPreview.type === 'event' || refPreview.type === 'config') &&
+                                        <>
+                                            <span class="text-neutral-400 dark:text-neutral-500">{refPreview.type === 'config' ? '.' : ':'}</span><span
+                                                class="text-neutral-400 dark:text-neutral-500 group-interact:text-neutral-600 dark:group-interact:text-neutral-300 transition-colors">{refPreview.value}</span>
+                                        </>}
+                            </div>
+                    ) : (
+                            <span class="text-7xl transition icon-[mdi--file-document-outline] text-neutral-400 dark:text-neutral-600 group-interact:text-neutral-900 dark:group-interact:text-neutral-100"></span>
+                    )}
+                </CategoryCard>
+        );
+    })}
+</div>
+    )}

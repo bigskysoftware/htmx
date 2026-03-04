@@ -1,0 +1,46 @@
+---
+import '../assets/css/input.css';
+
+import Head from "../components/Head.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import Search from "../components/Search.astro";
+import GridBackground from "../components/GridBackground.astro";
+
+interface Props {
+    title?: string;
+    description?: string;
+    image?: string;
+    cameraStyle?: string;
+}
+
+const {title, description, image, cameraStyle} = Astro.props;
+const isHomePage = Astro.url.pathname === '/';
+---
+
+<!doctype html>
+<html lang="en">
+
+<Head {title} {description} {image}/>
+
+<body hx-boost:inherited="true"
+      hx-swap:inherited="innerMorph"
+      class="group/body pt-(--header-height) has-[#mobile-navigation-toggle:checked]:overflow-hidden has-[dialog[open]]:overflow-hidden">
+
+{isHomePage &&
+        <GridBackground style={cameraStyle}/>}
+
+<slot name="header">
+    <Header/>
+</slot>
+
+<slot/>
+
+<slot name="footer">
+    <Footer/>
+</slot>
+
+<Search/>
+
+</body>
+</html>

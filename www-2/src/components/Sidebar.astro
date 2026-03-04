@@ -1,0 +1,110 @@
+---
+import type {ContentFolder, ContentFile} from '../lib/content.ts';
+
+interface Props {
+    folder: ContentFolder;
+    file?: ContentFile;
+}
+
+const {folder, file} = Astro.props;
+const currentUrl = Astro.url.pathname;
+
+// Check if this is the reference collection for monospace styling
+const isReference = folder.folder === 'reference';
+const isDocumentation = folder.folder === 'docs';
+const isExamples = folder.folder === 'examples';
+---
+
+<aside id="sidebar" class="fixed top-(--header-height) inset-x-0 isolate z-30 group/sidebar">
+
+    <nav id="sidebar-nav" aria-label="Sidebar Navigation" class="
+            bg-neutral-25 dark:bg-neutral-920 overflow-y-auto border-neutral-200 dark:border-neutral-850 transition
+            px-3 sm:px-5 lg:px-6
+            pb-10
+            max-lg:absolute max-lg:top-full max-lg:inset-x-0 max-lg:z-30
+            max-lg:h-[calc(100lvh-var(--header-height))]
+            max-lg:overscroll-contain
+            max-lg:opacity-0 max-lg:pointer-events-none max-lg:duration-200
+            [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-100 [html:has(#sidebar-toggle-mobile:checked)_&]:pointer-events-auto
+            lg:fixed lg:top-(--header-height) lg:left-0 lg:bottom-0 lg:w-[320px] lg:border-r
+         ">
+
+        <div class="h-7 shrink-0"></div>
+
+        {/* Collection header (static, non-interactive) */}
+        <h2 class="font-sans text-[0.675rem] uppercase font-medium tracking-widest text-neutral-500 dark:text-neutral-450 px-0.5 mb-6">
+            {folder.frontmatter.title}
+        </h2>
+
+        {/* Overview link */}
+        <a href={folder.url}
+           class:list={[
+               "block px-3 py-2 mb-2 text-sm rounded-md transition truncate",
+               currentUrl === folder.url
+                   ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
+                   : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
+           ]}>
+            Overview
+        </a>
+
+        {folder.subfolders.map((subFolder) => {
+            const files = subFolder.subfiles;
+            // Open section if it contains current, previous, or next page
+
+            const containsCurrentPage = files.some((f: ContentFile) => currentUrl === f.url);
+
+            return (
+                    <details class="group/section w-full not-first-of-type:mt-2 no-morph"
+                             open={containsCurrentPage}
+                             name={subFolder.folder}>
+                        <summary class="sticky top-0 z-40 py-2 rounded-md
+                                       bg-neutral-25 dark:bg-neutral-920
+                                       list-none select-none
+                                       flex items-center justify-between gap-2
+                                       [&::-webkit-details-marker]:hidden
+                                       transition cursor-pointer
+                                       text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200
+                                       px-3">
+
+                            <h3 class:list={[
+                                "font-sans text-sm truncate tracking-wide transition min-w-0",
+                                containsCurrentPage
+                                    ? "font-semibold text-neutral-900 dark:text-neutral-100"
+                                    : "text-neutral-600 dark:text-neutral-400 group-hover/section:text-neutral-800 dark:group-hover/section:text-neutral-200"
+                            ]}
+                                set:html={subFolder.frontmatter.title}/><i
+                                class="icon-[mdi--chevron-down] size-4.5 transition group-open/section:rotate-180 text-neutral-400 dark:text-neutral-500 shrink-0"></i>
+                        </summary>
+
+                        {files.length > 0 && (
+                                <ul class="space-y-0.5 border-l border-neutral-150 dark:border-neutral-850 ml-3 pl-3 mt-1 mb-4">
+                                    {files.map((file: ContentFile) => {
+                                        const isActive = currentUrl === file.url;
+                                        return (
+                                                <li>
+                                                    <a href={file.url}
+                                                       title={file.frontmatter.description}
+                                                       aria-current={isActive ? 'page' : undefined}
+                                                       class:list={[
+                                                           "block px-3 py-2 text-sm rounded-md transition truncate",
+                                                           // Conditional styling based on collection
+
+                                                           isReference && "font-mono",
+                                                           isActive
+                                                               ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
+                                                               : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
+                                                       ]}>
+                                                        <span set:html={file.frontmatter.title}/>
+                                                    </a>
+                                                </li>
+                                        );
+                                    })}
+                                </ul>
+                        )}
+                    </details>
+            );
+        })}
+    </nav>
+
+    <input id="sidebar-toggle-mobile" type="checkbox" class="sr-only" _="on click from <a/> set my.checked to false">
+</aside>

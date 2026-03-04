@@ -1,0 +1,38 @@
+---
+import type {CollectionEntry} from 'astro:content';
+import {Image} from 'astro:assets';
+
+interface Props {
+    team: CollectionEntry<'team'>['data'][];
+}
+
+const {team} = Astro.props;
+
+// Import all team images dynamically
+const images = import.meta.glob('/src/assets/img/team/*.png', {eager: true});
+---
+{team.map((member) => {
+    const imagePath = member.image;
+    const imageModule = images[imagePath] as any;
+
+    return (
+    <div class="group border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/30 interact:bg-neutral-100 dark:interact:bg-neutral-800/50 rounded-[3px] p-6 transition flex flex-col items-center text-center">
+        <div class="w-32 h-32 rounded-full overflow-hidden mb-4 bg-neutral-200 dark:bg-neutral-800">
+            <Image src={imageModule.default} alt={member.name} class="w-full h-full object-cover" width={128}
+                   height={128}/>
+        </div>
+        <h3 class="text-xl font-chicago text-neutral-900 dark:text-neutral-100 mb-3">
+            {member.name}
+        </h3>
+        <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mb-4" set:html={member.content}></p>
+        {member.github && (
+                <a href={`https://github.com/${member.github}`} target="_blank" rel="noopener noreferrer"
+                   title={`Go to github.com/${member.github}`}
+                   class="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-400 interact:text-neutral-900 dark:interact:text-neutral-100 font-chicago interact:underline underline-offset-6 transition no-underline">
+                    <i class="icon-[mdi--github] size-4"></i>
+                    <span>{member.github}</span>
+                </a>
+        )}
+    </div>
+        );
+    })}

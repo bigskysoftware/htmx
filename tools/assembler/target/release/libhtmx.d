@@ -1,0 +1,1 @@
+/Users/chris/Projects/htmx/tools/assembler/target/release/libhtmx.rlib: /Users/chris/Projects/htmx/tools/assembler/src/assembly.rs /Users/chris/Projects/htmx/tools/assembler/src/lib.rs /Users/chris/Projects/htmx/tools/assembler/src/wasm.rs

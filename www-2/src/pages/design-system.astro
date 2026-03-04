@@ -1,0 +1,314 @@
+---
+import Layout from "../layouts/Layout.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+
+// Manual headings for TOC
+const headings = [
+    {depth: 2, slug: "brand", text: "Brand & Logo"},
+    {depth: 2, slug: "colors", text: "Colors"},
+    {depth: 2, slug: "typography", text: "Typography"},
+    {depth: 2, slug: "icons", text: "Icons"},
+    {depth: 2, slug: "components", text: "Components"},
+    {depth: 2, slug: "effects", text: "Effects"},
+];
+
+// Color tokens
+const COLORS_NEUTRAL = [
+    {class: "bg-neutral-10", name: "10", label: "Body (Light)"},
+    {class: "bg-neutral-50", name: "50"},
+    {class: "bg-neutral-200", name: "200", label: "Border (Light)"},
+    {class: "bg-neutral-500", name: "500"},
+    {class: "bg-neutral-850", name: "850", label: "Border (Dark)"},
+    {class: "bg-neutral-910", name: "910", label: "Card BG (Dark)"},
+    {class: "bg-neutral-920", name: "920", label: "Body (Dark)"},
+];
+
+const COLORS_BLUE = [
+    {class: "bg-blue-400", name: "400", label: "Primary (Dark)"},
+    {class: "bg-blue-600", name: "600", label: "Primary (Light)"},
+    {class: "bg-blue-700", name: "700", label: "Logo Blue"},
+];
+
+// Icons we actually use
+const ICONS = [
+    {name: 'search', class: 'icon-[ic--baseline-search]'},
+    {name: 'github', class: 'icon-[mdi--github]'},
+    {name: 'discord', class: 'icon-[ic--baseline-discord]'},
+    {name: 'menu-open', class: 'icon-[mdi--menu-open]'},
+    {name: 'menu-close', class: 'icon-[mdi--menu-close]'},
+    {name: 'chevron-down', class: 'icon-[mdi--chevron-down]'},
+    {name: 'arrow-left', class: 'icon-[mdi--arrow-left]'},
+    {name: 'arrow-right', class: 'icon-[mdi--arrow-right]'},
+    {name: 'book-open', class: 'icon-[mdi--book-open-page-variant]'},
+    {name: 'code-braces', class: 'icon-[mdi--code-braces]'},
+    {name: 'flask', class: 'icon-[mdi--flask-outline]'},
+    {name: 'rocket', class: 'icon-[mdi--rocket-launch]'},
+    {name: 'puzzle', class: 'icon-[mdi--puzzle]'},
+    {name: 'shield', class: 'icon-[mdi--shield-check]'},
+    {name: 'wrench', class: 'icon-[mdi--wrench]'},
+    {name: 'broadcast', class: 'icon-[mdi--broadcast]'},
+];
+---
+
+<Layout title="Design System">
+
+    <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-center max-w-[1440px]">
+        <article
+                class="pt-8 sm:pt-12 flex-1 w-full max-w-prose prose prose-htmx prose-sm sm:prose-base dark:prose-invert">
+
+            <h1><i class="icon-[mdi--palette-outline] translate-y-[3px] me-3"></i> Design System</h1>
+
+            <p class="lead">
+                Visual patterns and components. Copy markup from DevTools.
+            </p>
+
+            <!-- BRAND & LOGO -->
+            <section id="brand">
+                <h2>Brand & Logo</h2>
+                <p>Closing tag + wordmark. Blue accent on slash and x.</p>
+
+                <div class="not-prose space-y-8">
+                    <div class="p-12 border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 flex items-center justify-center">
+                        <span class="text-5xl sm:text-7xl font-bold font-mono text-neutral-900 dark:text-neutral-100 select-none">
+                            &lt;<b class="text-blue-700 dark:text-blue-400">/</b>&gt;<span class="ms-3 font-chicago">htm<b
+                                class="text-blue-700 dark:text-blue-400">x</b></span>
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="p-8 border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 flex flex-col items-center">
+                            <span class="text-4xl font-mono font-bold text-neutral-900 dark:text-neutral-100 mb-3">
+                                &lt;<b class="text-blue-700 dark:text-blue-400">/</b>&gt;
+                            </span>
+                            <span class="text-xs font-mono text-neutral-500">Logomark</span>
+                        </div>
+                        <div class="p-8 border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 flex flex-col items-center">
+                            <span class="text-4xl font-chicago text-neutral-900 dark:text-neutral-100 mb-3">
+                                htm<b class="text-blue-700 dark:text-blue-400">x</b>
+                            </span>
+                            <span class="text-xs font-mono text-neutral-500">Wordmark</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COLORS -->
+            <section id="colors">
+                <h2>Colors</h2>
+                <p>Neutral scale for backgrounds and text. Blue as accent.</p>
+
+                <div class="not-prose space-y-12">
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-neutral-500 font-mono mb-6">Neutral
+                            Scale</h3>
+                        <div class="grid grid-cols-4 sm:grid-cols-7 gap-4">
+                            {COLORS_NEUTRAL.map(color => (
+                                    <div class="space-y-2">
+                                        <div class={`h-12 w-full rounded-sm border border-black/5 dark:border-white/5 ${color.class}`}></div>
+                                        <div class="px-1">
+                                            <div class="text-xs font-mono text-neutral-900 dark:text-neutral-300">{color.name}</div>
+                                            {color.label &&
+                                                    <div class="text-[10px] text-neutral-500">{color.label}</div>}
+                                        </div>
+                                    </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-neutral-500 font-mono mb-6">Blue
+                            Accent</h3>
+                        <div class="grid grid-cols-3 gap-4 max-w-xs">
+                            {COLORS_BLUE.map(color => (
+                                    <div class="space-y-2">
+                                        <div class={`h-12 w-full rounded-sm border border-black/5 dark:border-white/5 ${color.class}`}></div>
+                                        <div class="px-1">
+                                            <div class="text-xs font-mono text-neutral-900 dark:text-neutral-300">{color.name}</div>
+                                            {color.label &&
+                                                    <div class="text-[10px] text-neutral-500">{color.label}</div>}
+                                        </div>
+                                    </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TYPOGRAPHY -->
+            <section id="typography">
+                <h2>Typography</h2>
+                <p>Three typefaces define our hierarchy.</p>
+
+                <div class="not-prose space-y-16">
+                    <!-- Typefaces -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="p-6 border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900">
+                            <div class="text-6xl mb-4 font-chicago text-neutral-900 dark:text-neutral-100">Ag</div>
+                            <h3 class="font-bold mb-1 text-neutral-900 dark:text-neutral-200">ChicagoFLF</h3>
+                            <p class="text-xs text-neutral-500 font-mono mb-4">Headings & Display</p>
+                            <p class="font-chicago text-xl leading-normal text-neutral-600 dark:text-neutral-400">
+                                The quick brown fox jumps over the lazy dog.
+                            </p>
+                        </div>
+                        <div class="p-6 border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900">
+                            <div class="text-6xl mb-4 font-sans font-medium text-neutral-900 dark:text-neutral-100">Ag
+                            </div>
+                            <h3 class="font-bold mb-1 text-neutral-900 dark:text-neutral-200">Inter</h3>
+                            <p class="text-xs text-neutral-500 font-mono mb-4">UI & Body Text</p>
+                            <p class="font-sans text-xl leading-normal text-neutral-600 dark:text-neutral-400">
+                                The quick brown fox jumps over the lazy dog.
+                            </p>
+                        </div>
+                        <div class="p-6 border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900">
+                            <div class="text-6xl mb-4 font-mono text-neutral-900 dark:text-neutral-100">Ag</div>
+                            <h3 class="font-bold mb-1 text-neutral-900 dark:text-neutral-200">JetBrains Mono</h3>
+                            <p class="text-xs text-neutral-500 font-mono mb-4">Code & Technical</p>
+                            <p class="font-mono text-xl leading-normal text-neutral-600 dark:text-neutral-400">
+                                The quick brown fox jumps over the lazy dog.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Type Scale -->
+                    <div class="space-y-8 border-l-2 border-neutral-200 dark:border-neutral-800 pl-8">
+                        <div class="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
+                            <div class="text-xs text-neutral-400 dark:text-neutral-500 font-mono">H1 / ChicagoFLF</div>
+                            <h1 class="md:col-span-3 text-4xl md:text-5xl font-chicago text-neutral-900 dark:text-neutral-100">
+                                High Power Tools</h1>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
+                            <div class="text-xs text-neutral-400 dark:text-neutral-500 font-mono">H2 / ChicagoFLF</div>
+                            <h2 class="md:col-span-3 text-3xl md:text-4xl font-chicago text-neutral-900 dark:text-neutral-100">
+                                Why htmx?</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 items-baseline gap-4">
+                            <div class="text-xs text-neutral-400 dark:text-neutral-500 font-mono">H3 / ChicagoFLF</div>
+                            <h3 class="md:col-span-3 text-2xl md:text-3xl font-chicago text-neutral-900 dark:text-neutral-100">
+                                Server Sent Events</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ICONS -->
+            <section id="icons">
+                <h2>Icons</h2>
+                <p>Iconify via Tailwind. Sets: <code>mdi</code>, <code>pixel</code>, <code>ion</code>.</p>
+
+                <div class="not-prose grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-4">
+                    {ICONS.map(icon => (
+                            <div class="flex flex-col items-center p-4 border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900">
+                                <span class={`${icon.class} text-2xl text-neutral-700 dark:text-neutral-300 mb-2`}></span>
+                                <span class="text-[10px] font-mono text-neutral-400 truncate w-full text-center">{icon.name}</span>
+                            </div>
+                    ))}
+                </div>
+            </section>
+
+            <!-- COMPONENTS -->
+            <section id="components">
+                <h2>Components</h2>
+                <p>Common UI patterns.</p>
+
+                <div class="not-prose space-y-16">
+
+                    <!-- Search Input -->
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-neutral-500 font-mono mb-6">Search
+                            Input</h3>
+                        <div class="max-w-sm">
+                            <button type="button"
+                                    class="relative group flex items-center min-h-[44px] min-w-[200px] w-full bg-white dark:bg-neutral-900 border border-neutral-200 hover:border-neutral-300 dark:border-neutral-800 rounded-[5px] py-2 pl-9 pr-3 text-base font-sans text-neutral-400 outline-hidden focus-visible:border-blue-700 focus-visible:ring-1 focus-visible:ring-blue-700 dark:focus-visible:border-blue-300 dark:focus-visible:ring-blue-300 transition shadow-xs cursor-text">
+                                <i class="icon-[ic--baseline-search] absolute left-3 pointer-events-none text-sm text-neutral-400"></i>
+                                <span>Search...</span>
+                                <kbd class="absolute right-3 top-1/2 -translate-y-1/2 font-chicago text-xs text-neutral-400">⌘
+                                    K</kbd>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Callouts -->
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-neutral-500 font-mono mb-6">
+                            Callouts</h3>
+                        <div class="space-y-4">
+                            <div class="flex gap-4 p-4 bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-500 rounded-r-lg">
+                                <i class="icon-[mdi--information-outline] text-xl shrink-0 text-blue-600 dark:text-blue-400 mt-0.5"></i>
+                                <div>
+                                    <div class="font-bold text-sm font-chicago text-blue-800 dark:text-blue-300 mb-1">
+                                        Note
+                                    </div>
+                                    <p class="text-sm text-blue-800/80 dark:text-blue-100/80">Informational callout for
+                                        tips and context.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-yellow-50 dark:bg-yellow-950/30 border-l-4 border-yellow-500 rounded-r-lg">
+                                <i class="icon-[mdi--alert-outline] text-xl shrink-0 text-yellow-600 dark:text-yellow-400 mt-0.5"></i>
+                                <div>
+                                    <div class="font-bold text-sm font-chicago text-yellow-800 dark:text-yellow-300 mb-1">
+                                        Warning
+                                    </div>
+                                    <p class="text-sm text-yellow-800/80 dark:text-yellow-100/80">Warning callout for
+                                        caveats.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Code Block -->
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-neutral-500 font-mono mb-6">Code
+                            Block</h3>
+                        <div class="border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 overflow-hidden">
+                            <div class="flex gap-1.5 px-4 py-2.5 bg-neutral-50 dark:bg-neutral-920 border-b border-neutral-100 dark:border-neutral-800">
+                                <div class="size-2.5 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                                <div class="size-2.5 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                                <div class="size-2.5 rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                            </div>
+                            <pre class="p-4 text-sm font-mono overflow-x-auto text-neutral-800 dark:text-neutral-200"><code><span
+                                    class="text-blue-700 dark:text-blue-400">&lt;button</span> <span
+                                    class="text-neutral-500">hx-get</span>=<span
+                                    class="text-green-700 dark:text-green-400">"/clicked"</span>
+        <span class="text-neutral-500">hx-swap</span>=<span
+                                        class="text-green-700 dark:text-green-400">"outerHTML"</span><span
+                                        class="text-blue-700 dark:text-blue-400">&gt;</span>
+    Click Me
+<span class="text-blue-700 dark:text-blue-400">&lt;/button&gt;</span></code></pre>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- EFFECTS -->
+            <section id="effects">
+                <h2>Effects</h2>
+                <p>Background patterns.</p>
+
+                <div class="not-prose grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div class="p-8 border border-neutral-200 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-900 flex flex-col items-center justify-center relative overflow-hidden min-h-[200px]">
+                        <div class="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.03)_2px,rgba(0,0,0,0.03)_4px)] dark:bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(255,255,255,0.02)_2px,rgba(255,255,255,0.02)_4px)] pointer-events-none"></div>
+                        <span class="text-4xl font-bold font-mono text-neutral-900 dark:text-neutral-100 relative z-10 mb-2">SCANLINES</span>
+                        <code class="text-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-500 px-2 py-1 rounded relative z-10 font-mono">CSS
+                            pattern</code>
+                    </div>
+
+                    <div class="p-8 border border-neutral-200 dark:border-neutral-800 rounded-lg bg-neutral-900 flex flex-col items-center justify-center relative overflow-hidden min-h-[200px]">
+                        <div class="absolute inset-0 opacity-30 bg-[linear-gradient(to_right,rgba(59,130,246,0.3)_1px,transparent_1px),linear-gradient(to_bottom,rgba(59,130,246,0.3)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+                        <div class="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-blue-900/40 to-transparent"></div>
+                        <span class="text-2xl font-chicago text-white relative z-10 mb-2">Synthwave Grid</span>
+                        <code class="text-xs bg-neutral-800 text-neutral-400 px-2 py-1 rounded relative z-10 font-mono">Dark
+                            mode BG</code>
+                    </div>
+                </div>
+            </section>
+
+        </article>
+
+        <!-- Table of Contents -->
+        <div class="hidden xl:block xl:w-60 shrink-0 lg:ml-8 lg:-me-8 xl:ml-12 xl:-me-12 2xl:ml-16 2xl:-me-16">
+            <TableOfContents headings={headings}/>
+        </div>
+    </div>
+
+</Layout>

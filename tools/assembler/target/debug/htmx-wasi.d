@@ -1,0 +1,1 @@
+/Users/chris/Projects/htmx/tools/assembler/target/debug/htmx-wasi: /Users/chris/Projects/htmx/tools/assembler/src/assembly.rs /Users/chris/Projects/htmx/tools/assembler/src/lib.rs /Users/chris/Projects/htmx/tools/assembler/src/wasi_main.rs /Users/chris/Projects/htmx/tools/assembler/src/wasm.rs

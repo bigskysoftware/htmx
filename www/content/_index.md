@@ -2,15 +2,15 @@
 insert_anchor_links = "heading"
 +++
 
-<!-- Hero Section -->
+<!-- IndexHero Section -->
 <div id="hero-section" class="not-prose pt-8 pb-12 sm:pt-16 sm:pb-24 w-screen relative left-1/2 -ml-[50vw] overflow-hidden">
     <div id="hero" class="relative text-center transition starting:opacity-0 duration-500">
       <!-- Logo -->
       <div id="hero-logo" class="relative inline-block">
-          <h3 class="text-8xl font-sans font-bold whitespace-nowrap text-neutral-900 dark:text-neutral-100 dark:text-shadow-3d-blue-600 scan-lines">
-            &lt;<b class="text-blue-600 dark:brightness-125">/</b>&gt; <span class="ms-4 max-sm:hidden">htm<b class="text-blue-600 dark:brightness-125">x</b></span>
+          <h3 class="text-8xl font-sans font-bold whitespace-nowrap text-neutral-900 dark:text-neutral-100 dark:text-shadow-3d-blue-700 scan-lines">
+            &lt;<b class="text-blue-700 dark:brightness-125">/</b>&gt; <span class="ms-4 max-sm:hidden">htm<b class="text-blue-700 dark:brightness-125">x</b></span>
           </h3>
-          <sub id="hero-subtitle" class="text-[1.075rem] max-sm:hidden absolute left-3/4 -bottom-4 italic dark:text-shadow-3d-blue-600 whitespace-nowrap transition starting:translate-y-4 starting:opacity-0 delay-250 duration-500">
+          <sub id="hero-subtitle" class="text-[1.075rem] max-sm:hidden absolute left-3/4 -bottom-4 italic dark:text-shadow-3d-blue-700 whitespace-nowrap transition starting:translate-y-4 starting:opacity-0 delay-250 duration-500">
             high power tools for HTML
           </sub>
       </div>

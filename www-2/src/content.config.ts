@@ -1,0 +1,149 @@
+import {defineCollection, z} from "astro:content";
+import {glob, file} from "astro/loaders";
+import {slugify} from "./lib/utils.ts";
+import yaml from "js-yaml";
+
+const pages = defineCollection({
+    loader: glob({base: "./src/content", pattern: "{index,about}.mdx"}),
+    schema: z.object({
+        title: z.string(),
+        description: z.string(),
+        breadcrumbs: z.array(z.object({
+            label: z.string(),
+            href: z.string().optional(),
+        })).optional(),
+            }).strict(),
+});
+
+const docs = defineCollection({
+    loader: glob({base: "./src/content", pattern: "docs{.md,.mdx,/**/*.md,/**/*.mdx}"}),
+    schema: z.object({
+        title: z.string(),
+        description: z.string().optional(),
+                thumbnail: z.string().optional(),
+    }).strict(),
+});
+
+const reference = defineCollection({
+    loader: glob({base: "./src/content/reference", pattern: "{*.md,**/*.md}"}),
+    schema: z.object({
+        title: z.string(),
+        description: z.string().optional(),
+            }).strict(),
+});
+
+const examples = defineCollection({
+    loader: glob({base: "./src/content/examples", pattern: "{*.md,**/*.md}"}),
+    schema: z.object({
+        title: z.string(),
+        description: z.string().optional(),
+        image: z.string().optional(),
+            }).strict(),
+});
+
+const essays = defineCollection({
+    loader: glob({base: "./src/content/essays", pattern: "{index.mdx,**/*.md,**/*.mdx}"}),
+    schema: z.object({
+        title: z.string(),
+        description: z.string().optional(),
+                created: z.date().optional(),
+        modified: z.date().optional(),
+        authors: z.array(z.string()).optional(),
+    }).strict(),
+});
+
+const sponsors = defineCollection({
+    loader: file('src/content/sponsors.yaml', {
+        parser: (fileContent) => (yaml.load(fileContent) as any[]).map((sponsor) => (
+            {
+                ...sponsor,
+                id: slugify(sponsor.name),
+                url: sponsor.tracking !== false
+                    ? `${sponsor.url}?utm_source=htmx&utm_medium=sponsorship&utm_campaign=${sponsor.tier}-sponsor-${new Date().getFullYear()}`
+                    : sponsor.url,
+            }))
+    }),
+    schema: z.object({
+        id: z.string(), // generated from `name`
+        name: z.string(),
+        url: z.string().url(),
+        github: z.string().optional(),
+        image: z.string(),
+        tier: z.enum(['bronze', 'silver', 'gold', 'platinum']),
+        tracking: z.boolean().default(true),
+    }).strict(),
+});
+
+const community = defineCollection({
+    loader: file('src/content/community.yaml', {
+        parser: (fileContent) => (yaml.load(fileContent) as any[]).map((item) => ({...item, id: slugify(item.name)}))
+    }),
+    schema: z.object({
+        id: z.string(), // generated from `name`
+        name: z.string(),
+        description: z.string(),
+        iconClass: z.string(),
+        url: z.string(),
+    }).strict(),
+})
+
+const resources = defineCollection({
+    loader: file('src/content/resources.yaml', {
+        parser: (fileContent) => (yaml.load(fileContent) as any[]).map((resource) => ({
+            ...resource,
+            id: slugify(resource.name)
+        }))
+    }),
+    schema: z.object({
+        id: z.string(), // generated from `name`
+        name: z.string(),
+        description: z.string(),
+        iconClass: z.string(),
+        url: z.string(),
+    }).strict(),
+})
+
+const team = defineCollection({
+    loader: file('src/content/team.yaml', {
+        parser: (fileContent) => (yaml.load(fileContent) as any[]).map((member) => ({
+            ...member,
+            id: slugify(member.name)
+        }))
+    }),
+    schema: z.object({
+        id: z.string(), // generated from `name`
+        name: z.string(),
+        image: z.string(),
+        github: z.string().optional(),
+        content: z.string(),
+    }).passthrough(),
+})
+
+const podcasts = defineCollection({
+    loader: file('src/content/podcasts.yaml', {
+        parser: (fileContent) => (yaml.load(fileContent) as any[]).map((podcast) => ({
+            ...podcast,
+            id: slugify(podcast.name)
+        }))
+    }),
+    schema: z.object({
+        id: z.string(), // generated from `name`
+        name: z.string(),
+        url: z.string().url(),
+    }).strict(),
+})
+
+
+export const collections = {
+    pages,
+    docs,
+    reference,
+    examples,
+    essays,
+    sponsors,
+    community,
+    resources,
+    team,
+    podcasts,
+};
+

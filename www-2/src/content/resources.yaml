@@ -1,0 +1,16 @@
+# Resource Links
+
+- name: Books
+  description: Learn about hypermedia and htmx
+  iconClass: "icon-[mdi--book-open-page-variant]"
+  url: /about#books
+
+- name: Podcasts
+  description: Listen to htmx discussions and interviews
+  iconClass: "icon-[lucide--audio-lines]"
+  url: /about#podcasts
+
+- name: RSS
+  description: Subscribe to htmx updates
+  iconClass: "icon-[mdi--rss]"
+  url: /rss.xml

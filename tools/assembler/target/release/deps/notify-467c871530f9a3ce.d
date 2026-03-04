@@ -1,0 +1,12 @@
+/Users/chris/Projects/htmx/tools/assembler/target/release/deps/notify-467c871530f9a3ce.d: /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/lib.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/fsevent.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/null.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/poll.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/config.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/error.rs
+
+/Users/chris/Projects/htmx/tools/assembler/target/release/deps/libnotify-467c871530f9a3ce.rlib: /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/lib.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/fsevent.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/null.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/poll.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/config.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/error.rs
+
+/Users/chris/Projects/htmx/tools/assembler/target/release/deps/libnotify-467c871530f9a3ce.rmeta: /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/lib.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/fsevent.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/null.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/poll.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/config.rs /Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/error.rs
+
+/Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/lib.rs:
+/Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/fsevent.rs:
+/Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/null.rs:
+/Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/poll.rs:
+/Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/config.rs:
+/Users/chris/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/notify-7.0.0/src/error.rs:

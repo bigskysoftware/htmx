@@ -1,0 +1,122 @@
+---
+import type {CollectionEntry} from "astro:content";
+
+interface Props {
+    sponsors: CollectionEntry<'sponsors'>['data'][];
+}
+
+import { Image } from 'astro:assets';
+
+const { sponsors } = Astro.props;
+
+const sponsorLogos = import.meta.glob('/src/assets/img/sponsors/*.{svg,png,jpg,jpeg,webp}', { eager: true });
+
+const sponsorsByTier = sponsors.reduce((acc, sponsor) => {
+    if (!acc[sponsor.tier]) acc[sponsor.tier] = [];
+    acc[sponsor.tier].push(sponsor);
+    return acc;
+}, {} as Record<string, typeof sponsors>);
+
+const tiers = Object.keys(sponsorsByTier);
+---
+
+<section id="sponsors-section" class="not-prose py-16 sm:py-24" aria-labelledby="sponsors-heading">
+    <div class="max-w-7xl mx-auto">
+        <header class="sm:text-center mb-12">
+            <h2 id="sponsors-heading" class="text-4xl sm:text-5xl font-chicago text-neutral-900 dark:text-neutral-100 mb-4">
+                sponsors
+            </h2>
+            <p class="text-lg sm:text-xl text-neutral-700 dark:text-neutral-300 mb-8">
+                Thank you to all our generous <a
+                    href="https://github.com/sponsors/bigskysoftware?o=esb"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-blue-700 dark:text-blue-300 interact:underline">
+                sponsors
+            </a>!
+            </p>
+        </header>
+
+        {tiers.map(tier => {
+            const tierSponsors = sponsorsByTier[tier];
+
+            return (
+                    <div class="not-first:mt-12 sm:not-first:mt-16">
+                        <h3 id={`${tier}-sponsors-heading`}
+                            class:list={[
+                                'inline-flex items-center gap-4 mb-6 sm:mb-8 font-chicago font-bold',
+                                { 'text-blue-700 dark:text-blue-400': tier === 'platinum' },
+                                { 'text-neutral-700 dark:text-neutral-300': tier === 'silver' }
+                            ]}>
+                            <span aria-hidden="true">{tier === 'platinum' ? '◆' : '★'}</span>
+                            <span class="uppercase tracking-wide">
+                                {tier} Sponsor{tierSponsors.length > 1 ? 's' : ''}
+                            </span>
+                        </h3>
+
+                        <ul class:list={[
+                            'grid gap-4 list-none p-0 m-0',
+                            { 'grid-cols-1': tier === 'platinum' },
+                            { 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3': tier === 'silver' }
+                        ]}>
+                            {tierSponsors.map((sponsor) => {
+                                const logo = (sponsorLogos[sponsor.image] as any)?.default;
+                                const isSvg = sponsor.image.endsWith('.svg');
+                                const SvgComponent = isSvg ? logo : null;
+
+                                if (!logo) return null;
+
+                                return (
+                                    <li class:list={[
+                                        'group bg-neutral-10 dark:bg-neutral-910 border border-neutral-100 interact:border-neutral-400 dark:border-neutral-850 dark:interact:border-neutral-700 rounded-[5px] sm:transition',
+                                        { 'min-h-[180px]': tier === 'platinum' },
+                                        { 'min-h-[120px]': tier === 'silver' }
+                                    ]}>
+                                        <a href={sponsor.url} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${sponsor.name} website`}
+                                           class:list={[
+                                               'flex items-center justify-center w-full h-full',
+                                               { 'p-8': tier === 'platinum', 'p-6': tier !== 'platinum' }
+                                           ]}>
+                                            {isSvg ? (
+                                                <SvgComponent
+                                                    role="presentation"
+                                                    aria-label={`${sponsor.name} Logo`}
+                                                    class:list={[
+                                                        'object-contain pointer-events-none',
+                                                        { 'max-h-[80px] w-[360px]': tier === 'platinum' },
+                                                        { 'max-h-[55px] w-[180px]': tier === 'silver' }
+                                                    ]}
+                                                    width="100%"
+                                                    height="auto"
+                                                />
+                                            ) : (
+                                                <Image
+                                                    src={logo}
+                                                    alt={`${sponsor.name} Logo`}
+                                                    class:list={[
+                                                        'object-contain pointer-events-none',
+                                                        { 'max-h-[80px] w-[360px]': tier === 'platinum' },
+                                                        { 'max-h-[55px] w-[180px]': tier === 'silver' }
+                                                    ]}
+                                                    width={tier === 'platinum' ? 360 : 180}
+                                                    height={tier === 'platinum' ? 80 : 55}
+                                                />
+                                            )}
+                                        </a>
+                                    </li>
+                                )})}
+                        </ul>
+                    </div>
+            );
+        })}
+    </div>
+    <div class="flex justify-center w-full mt-24">
+        <a href="https://github.com/sponsors/bigskysoftware?o=esb"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="os9-button inline-flex items-center gap-2 px-6 py-2.5">
+            <i class="icon-[tabler--heart-filled] text-red-500" aria-hidden="true"></i>
+            Sponsor htmx
+        </a>
+    </div>
+</section>

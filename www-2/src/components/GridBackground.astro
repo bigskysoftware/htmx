@@ -1,0 +1,116 @@
+---
+/**
+    * GridBackground - Animated grid with 3D camera system
+    *
+    * The grid is a continuous space. Camera position determines what we see.
+    * All movement is GPU-accelerated (transform only).
+    *
+    * CSS Variables (set via style prop):
+    *   --cam-x: horizontal position (default: 0)
+    *   --cam-y: vertical position (default: 0)
+    *   --cam-z: depth, negative = away (default: -100px for 3D)
+    *   --cam-pitch: rotation in degrees (default: 55deg for 3D, 0 for flat)
+    *   --cam-scale: zoom level (default: 0.9 for 3D, 1 for flat)
+    *   --grid-opacity: line opacity (default: 0.04)
+    *
+    * Usage:
+    *   <GridBackground />
+    *   <!-- 3D perspective, centered -->
+    *
+    *   <GridBackground style="--cam-x: 300px; --cam-y: 280px; --cam-pitch: 0deg; --cam-z: 0; --cam-scale: 1;" />
+    *   <!-- Flat view at specific position -->
+    */
+
+interface Props {
+    style?: string;
+    class?: string;
+}
+
+const {style, class: className} = Astro.props;
+---
+
+<div
+        id="synthwave"
+        class:list={['fixed inset-0 pointer-events-none -z-10 perspective-[1000px]', className]}
+        style={style}
+        aria-hidden="true"
+>
+    <!-- Grid plane with 3D transform -->
+    <div class="grid-plane absolute inset-0 transform-3d transition duration-700 ease-out">
+        <!-- Grid pattern - oversized, uses translate for GPU-accelerated alignment -->
+        <div class="grid-pattern absolute transition duration-700 ease-out"></div>
+    </div>
+</div>
+
+<style>
+    /*
+     * CAMERA SYSTEM
+     *
+     * Simple grid coordinates (1 = first cell at content top-left):
+     *   --grid-col: column number (1, 2, 3...)
+     *   --grid-row: row number (1, 2, 3...)
+     *
+     * The --grid-origin values are the calibrated offset to position
+     * the first grid cell at the content's top-left corner.
+     */
+    #synthwave {
+        /* Grid coordinates (1-indexed) */
+        --grid-col: 1;
+        --grid-row: 1;
+
+        /* Calibrated offset: positions first grid cell at content top-left */
+        --grid-origin-x: -2287px;
+        --grid-origin-y: -1263px;
+
+        /* Grid cell sizes */
+        --cell-x: var(--grid-cell-x, 307px);
+        --cell-y: var(--grid-cell-y, 304px);
+
+        /* Final camera position: origin + (col-1) * cell */
+        --cam-x: calc(var(--grid-origin-x) + (var(--grid-col) - 1) * var(--cell-x));
+        --cam-y: calc(var(--grid-origin-y) + (var(--grid-row) - 1) * var(--cell-y));
+
+        /* 3D settings */
+        --cam-z: -100px;
+        --cam-pitch: 55deg;
+        --cam-scale: 0.9;
+        --grid-opacity: 0.04;
+    }
+
+    /*
+     * GRID PLANE - the transformed container
+     */
+    .grid-plane {
+        overflow: visible;
+        transform-origin: center center;
+        transform: translate3d(-0.75rem, 2.125rem, var(--cam-z, -100px)) rotateX(var(--cam-pitch, 55deg)) scale(var(--cam-scale, 0.9));
+    }
+
+    /*
+     * GRID PATTERN - oversized to ensure coverage after 3D transforms
+     * Uses translate for GPU-accelerated movement (not background-position)
+     */
+    .grid-pattern {
+        top: -100vh;
+        bottom: -100vh;
+        left: -100vw;
+        right: -100vw;
+
+        /* GPU-accelerated position via translate (negated: positive cam-x = camera moves right = grid moves left) */
+        transform: translate(calc(var(--cam-x, 0px) * -1), calc(var(--cam-y, 0px) * -1));
+
+        background-image: linear-gradient(to right, currentColor 1px, transparent 1px),
+        linear-gradient(to bottom, currentColor 1px, transparent 1px);
+        background-size: var(--grid-cell-x, 307px) var(--grid-cell-y, 304px);
+        background-position: 0 0; /* NEVER CHANGES - predictable grid lines */
+
+        /* Grid color - dark on light bg, light on dark bg */
+        color: rgb(0 0 0 / var(--grid-opacity, 0.04));
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .grid-pattern {
+            color: rgb(255 255 255 / var(--grid-opacity, 0.04));
+        }
+    }
+</style>

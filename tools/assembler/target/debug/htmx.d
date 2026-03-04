@@ -1,0 +1,1 @@
+/Users/chris/Projects/htmx/tools/assembler/target/debug/htmx: /Users/chris/Projects/htmx/tools/assembler/src/assembly.rs /Users/chris/Projects/htmx/tools/assembler/src/demo_ui.rs /Users/chris/Projects/htmx/tools/assembler/src/lib.rs /Users/chris/Projects/htmx/tools/assembler/src/main.rs /Users/chris/Projects/htmx/tools/assembler/src/wasm.rs

@@ -1,0 +1,14 @@
+---
+import {getEntry, render} from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const page = (await getEntry('pages', 'about'))!;
+const {Content} = await render(page);
+const {title, description} = page.data;
+---
+
+<Layout {title} {description}>
+    <div class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert">
+        <Content/>
+    </div>
+</Layout>

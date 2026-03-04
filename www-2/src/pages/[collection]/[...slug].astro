@@ -1,0 +1,55 @@
+---
+import { getFolder } from '../../lib/content.ts';
+import ContentLayout from '../../layouts/ContentLayout.astro';
+
+export async function getStaticPaths() {
+    const collections = ['docs', 'reference', 'examples', 'essays'] as const;
+    const paths = [];
+
+    for (const collection of collections) {
+        const folder = await getFolder(collection);
+
+        // Add index page (root of collection)
+        paths.push({
+            params: { collection, slug: undefined },
+            props: { folder }
+        });
+
+        // Add all file pages with prev/next
+        const files = folder.allFiles;
+        files.forEach((file, index) => {
+            paths.push({
+                params: { collection, slug: file.slug },
+                props: {
+                    file: {
+                        ...file,
+                        prev: index > 0 ? files[index - 1] : undefined,
+                        next: index < files.length - 1 ? files[index + 1] : undefined
+                    },
+                    folder
+                }
+            });
+        });
+    }
+
+    return paths;
+}
+
+const { file, folder } = Astro.props;
+
+// Get headings if available
+let headings = [];
+if (file) {
+    const rendered = await file.render();
+    headings = rendered.headings;
+} else if (folder) {
+    // For index pages, build synthetic TOC from subfolders
+    headings = folder.subfolders.map(f => ({
+        depth: 2,
+        slug: f.slug,
+        text: f.frontmatter.title
+    }));
+}
+---
+
+<ContentLayout {file} {folder} {headings} />

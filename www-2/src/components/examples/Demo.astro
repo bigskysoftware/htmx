@@ -1,0 +1,38 @@
+---
+
+---
+
+<script is:inline src="/js/fetch-mock.js"></script>
+<script is:inline>
+  function init(path, response) {
+    onGet(path, response);
+    _hyperscript.evaluate(`put \`<div hx-get="${path}" hx-trigger="load" hx-swap="outerHTML transition:false"></div>\` into #demo-content`)
+  }
+  const routes = [];
+  function onGet(path, handler) { routes.push({ method: 'GET', url: path, handler }); }
+  function onPost(path, handler) { routes.push({ method: 'POST', url: path, handler }); }
+  function onPut(path, handler) { routes.push({ method: 'PUT', url: path, handler }); }
+  function onDelete(path, handler) { routes.push({ method: 'DELETE', url: path, handler }); }
+</script>
+
+<div class="not-prose my-8 max-w-4xl mx-auto">
+    <div class="border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+        <!-- Window Header -->
+        <div class="flex items-center gap-4 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-900 border-b border-neutral-300 dark:border-neutral-800">
+            <div class="flex gap-1.5">
+                <div class="size-2 rounded-full bg-neutral-300 dark:bg-neutral-700/75"></div>
+                <div class="size-2 rounded-full bg-neutral-300 dark:bg-neutral-700/75"></div>
+                <div class="size-2 rounded-full bg-neutral-300 dark:bg-neutral-700/75"></div>
+            </div>
+            <span class="text-[0.675rem] font-medium text-neutral-500 dark:text-neutral-500/80 tracking-widest translate-y-px">
+                DEMO
+            </span>
+        </div>
+        <!-- Content -->
+        <div class="p-6">
+            <div id="demo-content">
+                <!-- Dynamic content gets loaded here -->
+            </div>
+        </div>
+    </div>
+</div>

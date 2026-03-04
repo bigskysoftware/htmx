@@ -1,0 +1,223 @@
+---
+import Layout from './Layout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import type {ContentFile, ContentFolder} from '../lib/content';
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+    file?: ContentFile;
+    folder?: ContentFolder;
+    headings?: any[];
+}
+
+const {
+    file,
+    folder,
+    headings = []
+} = Astro.props;
+
+// Auto-detect whether this is an index page or detail page
+// Index pages have only folder, detail pages have both file and folder
+const isIndex = !file;
+const data = isIndex ? folder : file;
+
+if (!data) {
+    throw new Error('ContentLayout requires either file or folder prop');
+}
+
+// Auto-derive collection from the data
+const collection = data.folder as 'docs' | 'reference' | 'examples';
+
+// We always have folder available (passed from page)
+const sidebarFolder = folder;
+
+// Render content
+const {Content} = await data.render();
+
+const {title, description} = data.frontmatter;
+
+// Show TOC only on detail pages with headings
+const includeTableOfContents = !isIndex && headings && headings.length > 0;
+
+// Show pagination only on detail pages with prev/next
+const includePagination = !isIndex && file && (file.prev || file.next);
+
+// Show the right column if either TOC or pagination is needed
+const includeRightColumn = includeTableOfContents || includePagination;
+
+// Get section grouping label (second breadcrumb, after collection)
+const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : null;
+
+// Index pages: flat view, first card aligned with grid cell (1,1)
+const cameraStyle = isIndex ? {
+    // Grid coordinates: col 1, row 1 = first cell at content top-left
+    // Flat view: pitch 0, z 0, scale 1
+    docs: '--grid-col: 1; --grid-row: 1; --cam-pitch: 0deg; --cam-z: 0; --cam-scale: 1;',
+    reference: '--grid-col: 1; --grid-row: 1; --cam-pitch: 0deg; --cam-z: 0; --cam-scale: 1;',
+    examples: '--grid-col: 1; --grid-row: 1; --cam-pitch: 0deg; --cam-z: 0; --cam-scale: 1;'
+}[collection] : undefined;
+---
+
+<Layout {title} {description} {cameraStyle}>
+
+    {sidebarFolder && (
+            <Header slot="header">
+                <!-- Sidebar Toggle -->
+                <label slot="before-logo"
+                       class="lg:hidden flex items-center justify-center size-10 cursor-pointer select-none rounded-xs text-neutral-600 dark:text-neutral-400 interact:text-neutral-800 dark:interact:text-neutral-100 sm:transition"
+                       for="sidebar-toggle-mobile"
+                       aria-label="Toggle Sidebar"
+                       aria-controls="sidebar-nav"
+                       role="button"
+                       tabindex="0">
+                    <i class="size-5 icon-[mdi--menu-open]
+                              transition-opacity duration-200
+                              [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-0"></i>
+                    <i class="size-5 icon-[mdi--menu-close]
+                              absolute transition-opacity duration-200 opacity-0
+                              [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-100"></i>
+                </label>
+            </Header>
+
+            <Sidebar folder={sidebarFolder} file={file}/>
+    )}
+
+    <div id="content-wrapper"
+         class:list={["group/page", sidebarFolder && "lg:pl-72"]}
+         data-collection={collection || undefined}
+         data-has-sidebar={sidebarFolder && true}>
+        <main id="main-content" class="flex-1">
+            <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-center max-w-[1440px]">
+
+                <!-- Main Content Area -->
+                <div class:list={["pt-8 sm:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", isIndex ? "max-w-4xl" : "max-w-prose"]}
+                >
+                    {isIndex ? (
+                        /* INDEX PAGE: Render MDX content with prose styling */
+                            <div class="index-content prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
+                                <Content/>
+                                <slot/>
+                            </div>
+                    ) : (
+                        /* DETAIL PAGE: Article wrapper with pagination */
+                            <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
+
+                                {grouping && (
+                                        <p class="text-xs font-semibold uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-5 sm:mb-7">
+                                            {grouping.label}
+                                        </p>
+                                )}
+
+                                {/* Slots for custom content wrappers */}
+                                <slot name="before-content"/>
+
+                                <Content/>
+
+                                <slot name="after-content"/>
+
+                                {/* Pagination */}
+                                {includePagination && (
+                                        <nav class="not-prose mt-16">
+                                            <div class="grid gap-4 sm:grid-cols-2">
+                                                {file.prev ? (
+                                                                <a href={file.prev.url}
+                                                                   class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-850 interact:bg-neutral-50 dark:interact:bg-neutral-900 interact:border-neutral-300 dark:interact:border-neutral-700 rounded-xl transition shadow-3d-neutral-300 dark:shadow-3d-neutral-850 shadow-3d-depth-[0px] [&:hover:not(:active)]:-translate-y-1 [&:hover:not(:active)]:shadow-3d-depth-[6px] active:translate-y-0 active:shadow-3d-depth-[2px]">
+                                                                    <i class="icon-[mdi--chevron-left] text-2xl text-neutral-400 group-interact:text-neutral-800 dark:group-interact:text-neutral-200 transition-colors shrink-0 mt-0.5"></i>
+                                                                    <div class="flex-1 min-w-0">
+                                                                        {file.prev.breadcrumbs.length > 2 && (
+                                                                                <div class="text-[10px] uppercase tracking-wider font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-400 mb-2 transition-colors">
+                                                                                    {file.prev.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
+                                                                                </div>
+                                                                        )}
+                                                                        <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-neutral-100 transition-colors"
+                                                                            set:html={file.prev.frontmatter.title}></h4>
+                                                                        {file.prev.frontmatter.description &&
+                                                                                <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-neutral-600 dark:group-interact:text-neutral-400 mt-2 line-clamp-2 leading-relaxed transition-colors">{file.prev.frontmatter.description}</div>}
+                                                                    </div>
+                                                                </a>
+                                                    ) :
+                                                        <div></div>}
+
+                                                {file.next && (
+                                                        <a href={file.next.url}
+                                                           class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-850 interact:bg-neutral-50 dark:interact:bg-neutral-900 interact:border-neutral-300 dark:interact:border-neutral-700 rounded-xl transition shadow-3d-neutral-300 dark:shadow-3d-neutral-850 shadow-3d-depth-[0px] [&:hover:not(:active)]:-translate-y-1 [&:hover:not(:active)]:shadow-3d-depth-[6px] active:translate-y-0 active:shadow-3d-depth-[2px]">
+                                                            <div class="flex-1 min-w-0">
+                                                                {file.next.breadcrumbs.length > 2 && (
+                                                                        <div class="text-[10px] uppercase tracking-widest text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-400 mb-2 transition-colors">
+                                                                            {file.next.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
+                                                                        </div>
+                                                                )}
+                                                                <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-neutral-100 transition-colors"
+                                                                    set:html={file.next.frontmatter.title}></h4>
+                                                                {file.next.frontmatter.description &&
+                                                                        <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-neutral-600 dark:group-interact:text-neutral-400 mt-2 line-clamp-2 leading-relaxed transition-colors">{file.next.frontmatter.description}</div>}
+                                                            </div>
+                                                            <i class="icon-[mdi--chevron-right] text-2xl text-neutral-400 group-interact:text-neutral-800 dark:group-interact:text-neutral-200 transition-colors shrink-0 mt-0.5"></i>
+                                                        </a>
+                                                )}
+                                            </div>
+                                        </nav>
+                                )}
+                            </article>
+                    )}
+                </div>
+
+                <!-- Right Column (Table of Contents) -->
+                {includeRightColumn && (
+                        <aside class="hidden xl:flex xl:flex-col xl:w-60 shrink-0 xl:ml-16 xl:-me-16 self-start sticky top-(--header-height) max-h-[calc(100vh-var(--header-height))] pt-12 pr-4 overflow-hidden">
+                            {includePagination && (
+                                    <div class:list={["shrink-0", includeTableOfContents && "mb-8"]}>
+                                        <div class="flex gap-2">
+                                            {[
+                                                {link: file.prev, label: 'Previous', icon: 'icon-[mdi--chevron-left]'},
+                                                {
+                                                    link: file.next,
+                                                    label: 'Next',
+                                                    icon: 'icon-[mdi--chevron-right]',
+                                                    reverse: true
+                                                }
+                                            ].map(({link, label, icon, reverse}) => {
+                                                const Tag = link ? 'a' : 'span';
+                                                return (
+                                                        <Tag
+                                                                href={link?.url}
+                                                                title={link?.frontmatter.title}
+                                                                class:list={[
+                                                                    "flex-1 group flex items-center gap-2 p-2 text-xs font-medium border rounded-[5px] transition select-none",
+                                                                    reverse && "flex-row-reverse",
+                                                                    link
+                                                                        ? "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-50 dark:interact:bg-neutral-900 interact:border-neutral-300 dark:interact:border-neutral-700 interact:text-neutral-900 dark:interact:text-neutral-100 shadow-3d-neutral-300 dark:shadow-3d-neutral-850 shadow-3d-depth-[0px] [&:hover:not(:active)]:-translate-y-0.5 [&:hover:not(:active)]:shadow-3d-depth-[3px] active:translate-y-0 active:shadow-3d-depth-[1px]"
+                                                                        : "border-transparent bg-neutral-50 dark:bg-neutral-900/50 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
+                                                                ]}>
+                                                            <i class:list={[icon, "size-4", link ? "text-neutral-400 group-hover:text-inherit transition-colors" : "opacity-50"]}></i>
+                                                            <span class="flex-1 inline-flex justify-center">{label}</span>
+                                                        </Tag>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                            )}
+                            {includeTableOfContents && (
+                                    <>
+                                        <h2 class="shrink-0 text-[0.675rem] font-sans tracking-wide uppercase text-neutral-500 mb-2">
+                                            On this page
+                                        </h2>
+                                        <div class="flex-1 min-h-0 overflow-y-auto scrollbar-subtle mask-t-from-99% mask-b-from-98%">
+                                            <TableOfContents {headings}/>
+                                        </div>
+                                    </>
+                            )}
+                        </aside>
+                )}
+            </div>
+        </main>
+    </div>
+
+    <Footer slot="footer"
+            class:list={[sidebarFolder && "lg:pl-72"]}
+            containerClass="px-4 sm:px-6 lg:px-12 xl:px-8"
+            contentClass="mx-auto max-w-4xl"
+    />
+</Layout>

@@ -7,3 +7,4 @@ test/scratch/scratch.html
 .vscode
 /coverage
 /tmp
+.syncthing.*
