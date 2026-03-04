@@ -1548,7 +1548,7 @@ var htmx = (() => {
         __initHistoryHandling() {
             if (!this.config.history) return;
             if (!history.state) {
-                history.replaceState({htmx: true}, '', location.pathname + location.search + location.hash);
+                history.replaceState({htmx: true}, '', location.href);
             }
             window.addEventListener('popstate', (event) => {
                 if (event.state && event.state.htmx) {
