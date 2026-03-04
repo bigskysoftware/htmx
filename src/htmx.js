@@ -1288,12 +1288,6 @@ var htmx = (() => {
                 return;
             }
 
-            if (swapStyle === 'textContent') {
-                target.textContent = fragment.textContent;
-                target.classList.remove("htmx-swapping")
-                return;
-            }
-
             // innerHTML/outerHTML swaps backup focus and handle CSS transitions
             let focusInfo;
             let settleTasks = []
@@ -1319,6 +1313,11 @@ var htmx = (() => {
                         this.__cleanup(child)
                     }
                     target.replaceChildren(...fragment.childNodes);
+                } else if (swapStyle === 'textContent') {
+                    for (const child of target.querySelectorAll('[data-htmx-powered]')) {
+                        this.__cleanup(child)
+                    }
+                    target.textContent = fragment.textContent;
                 } else if (swapStyle === 'outerHTML') {
                     if (parentNode) {
                         this.__insertNodes(parentNode, target, fragment);
