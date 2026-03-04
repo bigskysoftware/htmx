@@ -298,7 +298,7 @@ var htmx = (() => {
             }
         }
 
-        __initHtmxInternalProp(elt) {
+        __ensureHtmxInternalProp(elt) {
             if (!elt._htmx) {
                 elt._htmx = { listeners: [], triggerSpecs: [], requests: [] };
                 elt.setAttribute('data-htmx-powered', 'true');
@@ -308,7 +308,7 @@ var htmx = (() => {
 
         __initializeElement(elt) {
             if (this.__shouldInitialize(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
-                let htmx = this.__initHtmxInternalProp(elt);
+                let htmx = this.__ensureHtmxInternalProp(elt);
                 htmx.eventHandler = this.__createHtmxEventHandler(elt);
                 this.__initializeTriggers(elt);
                 this.__initializeAbortListener(elt)
@@ -366,7 +366,7 @@ var htmx = (() => {
             if (configAttr) {
                 this.__mergeConfig(configAttr, ctx.request);
                 if (ctx.request.etag) {
-                    (sourceElement._htmx ||= {}).etag ||= ctx.request.etag
+                    this.__ensureHtmxInternalProp(sourceElement).etag ||= ctx.request.etag
                 }
             }
             if (sourceElement._htmx?.etag) {
@@ -600,8 +600,7 @@ var htmx = (() => {
                 return true // TODO this seems legit
             }
             if(ctx.response?.headers?.get?.("Etag")) {
-                ctx.sourceElement._htmx ||= {}
-                ctx.sourceElement._htmx.etag = ctx.response.headers.get("Etag");
+                this.__ensureHtmxInternalProp(ctx.sourceElement).etag = ctx.response.headers.get("Etag");
             }
         }
 
@@ -673,7 +672,7 @@ var htmx = (() => {
             let specs = this.__parseTriggerSpecs(specString)
             let listeners = []
 
-            let htmx = this.__initHtmxInternalProp(elt);
+            let htmx = this.__ensureHtmxInternalProp(elt);
             htmx.triggerSpecs = htmx.triggerSpecs.concat(specs)
 
             for (let spec of specs) {
@@ -918,7 +917,7 @@ var htmx = (() => {
         __maybeBoost(elt) {
             let boostValue = this.__attributeValue(elt, "hx-boost");
             if (boostValue && boostValue !== "false" && this.__shouldBoost(elt)) {
-                let htmx = this.__initHtmxInternalProp(elt);
+                let htmx = this.__ensureHtmxInternalProp(elt);
                 htmx.eventHandler = this.__createHtmxEventHandler(elt);
                 htmx.boosted = boostValue;
                 let eventName = elt.matches('a') ? 'click' : 'submit';
@@ -1640,7 +1639,7 @@ var htmx = (() => {
                         }
                     };
                     node.addEventListener(evtName, handler);
-                    this.__initHtmxInternalProp(node).listeners.push({fromElt: node, eventName: evtName, handler});
+                    this.__ensureHtmxInternalProp(node).listeners.push({fromElt: node, eventName: evtName, handler});
                 }
             }
         }

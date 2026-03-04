@@ -52,7 +52,7 @@ describe('htmx.config.prefix functionality', function() {
         let called = 0;
         let btn = createDisconnectedHTML('<button>Click</button>');
         btn.setAttribute('data-hx-trigger', 'click');
-        htmx.__initHtmxInternalProp(btn);
+        htmx.__ensureHtmxInternalProp(btn);
         htmx.__initializeTriggers(btn, () => called++);
 
         btn.click();
