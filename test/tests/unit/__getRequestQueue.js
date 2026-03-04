@@ -139,7 +139,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
         queue.issue(ctx2, 'queue all')
 
-        queue.finish()
+        queue.finish(ctx1)
         let next = queue.next()
 
         assert.equal(next, ctx2)
@@ -155,7 +155,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
         queue.issue(ctx2, 'queue all')
 
-        queue.finish()
+        queue.finish(ctx1)
         queue.next()
 
         // Should now allow a new request
