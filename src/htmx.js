@@ -233,6 +233,7 @@ var htmx = (() => {
                 if (value === 'true') value = true;
                 else if (value === 'false') value = false;
                 else if (/^\d+$/.test(value)) value = parseInt(value);
+                if (keyPath.some(k => this.__internalField(k))) return result;
                 keyPath.slice(0, -1).reduce((obj, key) => obj[key] ??= {}, result)[keyPath.at(-1)] = value;
                 return result;
             }, {});

@@ -81,4 +81,16 @@ describe('__parseConfig unit tests', function() {
         assert.equal(config.delay, '100ms')
     })
 
+    it('blocks __proto__ pollution via dotted keys', function () {
+        let before = ({}).polluted;
+        htmx.__parseConfig('__proto__.polluted: true');
+        assert.equal(({}).polluted, before);
+    })
+
+    it('blocks constructor pollution via dotted keys', function () {
+        let before = ({}).hacked;
+        htmx.__parseConfig('constructor.prototype.hacked: true');
+        assert.equal(({}).hacked, before);
+    })
+
 });
