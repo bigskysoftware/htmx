@@ -298,10 +298,18 @@ var htmx = (() => {
             }
         }
 
+        __initHtmxInternalProp(elt) {
+            if (!elt._htmx) {
+                elt._htmx = { listeners: [], triggerSpecs: [], requests: [] };
+                elt.setAttribute('data-htmx-powered', 'true');
+            }
+            return elt._htmx;
+        }
+
         __initializeElement(elt) {
             if (this.__shouldInitialize(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
-                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt)}
-                elt.setAttribute('data-htmx-powered', 'true');
+                let htmx = this.__initHtmxInternalProp(elt);
+                htmx.eventHandler = this.__createHtmxEventHandler(elt);
                 this.__initializeTriggers(elt);
                 this.__initializeAbortListener(elt)
                 this.__trigger(elt, "htmx:after:init", {}, true)
@@ -665,13 +673,8 @@ var htmx = (() => {
             let specs = this.__parseTriggerSpecs(specString)
             let listeners = []
 
-            // Ensure element is registered for cleanup
-            if (!elt._htmx) {
-                elt._htmx = {}
-                elt.setAttribute('data-htmx-powered', 'true')
-            }
-            elt._htmx.triggerSpecs = (elt._htmx.triggerSpecs || []).concat(specs)
-            elt._htmx.listeners ||= []
+            let htmx = this.__initHtmxInternalProp(elt);
+            htmx.triggerSpecs = htmx.triggerSpecs.concat(specs)
 
             for (let spec of specs) {
                 spec.handler = handler
@@ -904,18 +907,20 @@ var htmx = (() => {
             for (let child of this.__queryEltAndDescendants(elt, this.#boostSelector)) {
                 this.__maybeBoost(child);
             }
-            this.__handleHxOnAttributes(elt);
+            let hxOnNodes = [elt];
             let iter = this.#hxOnQuery.evaluate(elt)
             let node = null
-            while (node = iter.iterateNext()) this.__handleHxOnAttributes(node)
+            while (node = iter.iterateNext()) hxOnNodes.push(node)
+            for (let hxOnNode of hxOnNodes) this.__handleHxOnAttributes(hxOnNode)
             this.__trigger(elt, "htmx:after:process");
         }
 
         __maybeBoost(elt) {
             let boostValue = this.__attributeValue(elt, "hx-boost");
             if (boostValue && boostValue !== "false" && this.__shouldBoost(elt)) {
-                elt._htmx = {eventHandler: this.__createHtmxEventHandler(elt), requests: [], listeners: [], boosted: boostValue}
-                elt.setAttribute('data-htmx-powered', 'true');
+                let htmx = this.__initHtmxInternalProp(elt);
+                htmx.eventHandler = this.__createHtmxEventHandler(elt);
+                htmx.boosted = boostValue;
                 let eventName = elt.matches('a') ? 'click' : 'submit';
                 elt._htmx.listeners.push({fromElt: elt, eventName, handler: elt._htmx.eventHandler});
                 elt.addEventListener(eventName, elt._htmx.eventHandler);
@@ -1627,13 +1632,15 @@ var htmx = (() => {
                 if (attr.startsWith(searchString)) {
                     let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
-                    node.addEventListener(evtName, async (evt) => {
+                    let handler = async (evt) => {
                         try {
                             await this.__executeJavaScriptAsync(node, {"event": evt}, code, false)
                         } catch (e) {
                             console.error(e);
                         }
-                    });
+                    };
+                    node.addEventListener(evtName, handler);
+                    this.__initHtmxInternalProp(node).listeners.push({fromElt: node, eventName: evtName, handler});
                 }
             }
         }

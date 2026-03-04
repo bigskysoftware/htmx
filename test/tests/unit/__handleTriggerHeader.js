@@ -94,7 +94,7 @@ describe('__handleTriggerHeader unit tests', function() {
         assert.isTrue(eventFired)
     })
 
-    it('falls back to provided element if target not found', function () {
+    it('silently skips if target not found', function () {
         let eventFired = false
         let container = createProcessedHTML('<div></div>')
 
@@ -102,7 +102,7 @@ describe('__handleTriggerHeader unit tests', function() {
 
         htmx.__handleTriggerHeader('{"myEvent": {"target": "#nonexistent", "data": "test"}}', container)
 
-        assert.isTrue(eventFired)
+        assert.isFalse(eventFired)
     })
 
     it('uses document.body if element is not connected', function () {
