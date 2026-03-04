@@ -1891,10 +1891,12 @@ var htmx = (() => {
         }
 
         __initializeAbortListener(elt) {
-            elt.addEventListener("htmx:abort", () => {
+            let handler = () => {
                 let requestQueue = this.__getRequestQueue(elt);
                 requestQueue.abort();
-            })
+            };
+            elt.addEventListener("htmx:abort", handler);
+            elt._htmx.listeners.push({fromElt: elt, eventName: "htmx:abort", handler});
         }
 
         __morph(oldNode, fragment, innerHTML) {
