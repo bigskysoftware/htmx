@@ -310,6 +310,7 @@ var htmx = (() => {
         __initializeElement(elt) {
             if (this.__shouldInitialize(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
                 let htmx = this.__ensureHtmxInternalProp(elt);
+                htmx.initialized = true;
                 htmx.eventHandler = this.__createHtmxEventHandler(elt);
                 this.__initializeTriggers(elt);
                 this.__initializeAbortListener(elt)
@@ -813,8 +814,7 @@ var htmx = (() => {
 
                 // load: fire handler directly (no listener needed)
                 if (eventName === 'load') {
-                    let loadHandler = spec.handler
-                    loadHandler(new CustomEvent('load'))
+                    spec.handler(new CustomEvent('load'))
                     continue
                 }
 
@@ -904,24 +904,29 @@ var htmx = (() => {
         process(elt) {
             if (!elt || this.__ignore(elt)) return;
             if (!this.__trigger(elt, "htmx:before:process")) return
+            let hxOnNodes = [elt];
+            let iter = this.#hxOnQuery.evaluate(elt)
+            let node = null
+            while (node = iter.iterateNext()) hxOnNodes.push(node)
+            for (let hxOnNode of hxOnNodes) {
+                if (!this.__ignore(hxOnNode)) {
+                    this.__handleHxOnAttributes(hxOnNode)
+                }
+            }
             for (let child of this.__queryEltAndDescendants(elt, this.#actionSelector)) {
                 this.__initializeElement(child);
             }
             for (let child of this.__queryEltAndDescendants(elt, this.#boostSelector)) {
                 this.__maybeBoost(child);
             }
-            let hxOnNodes = [elt];
-            let iter = this.#hxOnQuery.evaluate(elt)
-            let node = null
-            while (node = iter.iterateNext()) hxOnNodes.push(node)
-            for (let hxOnNode of hxOnNodes) if (!this.__ignore(hxOnNode)) this.__handleHxOnAttributes(hxOnNode)
             this.__trigger(elt, "htmx:after:process");
         }
 
         __maybeBoost(elt) {
             let boostValue = this.__attributeValue(elt, "hx-boost");
-            if (boostValue && boostValue !== "false" && this.__shouldBoost(elt)) {
+            if (boostValue && boostValue !== "false" && this.__shouldBoost(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
                 let htmx = this.__ensureHtmxInternalProp(elt);
+                htmx.initialized = true;
                 htmx.eventHandler = this.__createHtmxEventHandler(elt);
                 htmx.boosted = boostValue;
                 let eventName = elt.matches('a') ? 'click' : 'submit';
@@ -955,7 +960,7 @@ var htmx = (() => {
         }
 
         __shouldInitialize(elt) {
-            return !elt._htmx && !this.__ignore(elt);
+            return !elt._htmx?.initialized && !this.__ignore(elt);
         }
 
         __cleanup(elt) {

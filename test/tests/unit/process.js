@@ -78,6 +78,12 @@ describe('process() unit tests', function() {
         assert.isNull(button.getAttribute('fired'))
     })
 
+    it('hx-on:htmx:after:init fires during process', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-on:htmx:after:init="this.setAttribute(\'inited\', \'true\')"></div>')
+        htmx.process(div)
+        assert.equal(div.getAttribute('inited'), 'true')
+    })
+
     it('skips processing if htmx:before:process is cancelled', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         div.removeAttribute('data-htmx-powered')
