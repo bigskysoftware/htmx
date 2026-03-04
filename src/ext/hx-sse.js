@@ -114,8 +114,7 @@
             delayCanceller: null,
             visibilityHandler: null
         };
-        element._htmx = element._htmx || {};
-        element._htmx.sse = state;
+        api.htmxProp(element).sse = state;
 
         let reconnect = () => {
             if (!element.isConnected || reconnectRequested) return;

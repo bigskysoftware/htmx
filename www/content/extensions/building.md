@@ -161,6 +161,7 @@ Available internal API methods:
 - `createRequestContext(elt, evt)` - Create request context object
 - `collectFormData(elt, form, submitter)` - Collect form data
 - `handleHxVals(elt, body)` - Process hx-vals attribute
+- `htmxProp(elt)` - Ensure element has `_htmx` internal data and `data-htmx-powered` attribute, returns `_htmx` object
 
 ## Request Context
 

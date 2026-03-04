@@ -84,7 +84,8 @@ var htmx = (() => {
                 insertContent: this.__insertContent.bind(this),
                 morph: this.__morph.bind(this),
                 isSoftMatch: this.__isSoftMatch.bind(this),
-                onTrigger: this.__onTrigger.bind(this)
+                onTrigger: this.__onTrigger.bind(this),
+                htmxProp: this.__htmxProp.bind(this)
             };
             let init = () => {
                 this.__initHistoryHandling()
@@ -299,7 +300,7 @@ var htmx = (() => {
             }
         }
 
-        __ensureHtmxInternalProp(elt) {
+        __htmxProp(elt) {
             if (!elt._htmx) {
                 elt._htmx = { listeners: [], triggerSpecs: [], requests: [] };
                 elt.setAttribute('data-htmx-powered', 'true');
@@ -309,9 +310,9 @@ var htmx = (() => {
 
         __initializeElement(elt) {
             if (this.__shouldInitialize(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
-                let htmx = this.__ensureHtmxInternalProp(elt);
-                htmx.initialized = true;
-                htmx.eventHandler = this.__createHtmxEventHandler(elt);
+                let htmxProp = this.__htmxProp(elt);
+                htmxProp.initialized = true;
+                htmxProp.eventHandler = this.__createHtmxEventHandler(elt);
                 this.__initializeTriggers(elt);
                 this.__initializeAbortListener(elt)
                 this.__trigger(elt, "htmx:after:init", {}, true)
@@ -368,7 +369,7 @@ var htmx = (() => {
             if (configAttr) {
                 this.__mergeConfig(configAttr, ctx.request);
                 if (ctx.request.etag) {
-                    this.__ensureHtmxInternalProp(sourceElement).etag ||= ctx.request.etag
+                    this.__htmxProp(sourceElement).etag ||= ctx.request.etag
                 }
             }
             if (sourceElement._htmx?.etag) {
@@ -605,7 +606,7 @@ var htmx = (() => {
                 return true // TODO this seems legit
             }
             if(ctx.response?.headers?.get?.("Etag")) {
-                this.__ensureHtmxInternalProp(ctx.sourceElement).etag = ctx.response.headers.get("Etag");
+                this.__htmxProp(ctx.sourceElement).etag = ctx.response.headers.get("Etag");
             }
         }
 
@@ -677,8 +678,7 @@ var htmx = (() => {
             let specs = this.__parseTriggerSpecs(specString)
             let listeners = []
 
-            let htmx = this.__ensureHtmxInternalProp(elt);
-            htmx.triggerSpecs = htmx.triggerSpecs.concat(specs)
+            this.__htmxProp(elt).triggerSpecs.push(...specs)
 
             for (let spec of specs) {
                 spec.handler = handler
@@ -925,10 +925,10 @@ var htmx = (() => {
         __maybeBoost(elt) {
             let boostValue = this.__attributeValue(elt, "hx-boost");
             if (boostValue && boostValue !== "false" && this.__shouldBoost(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
-                let htmx = this.__ensureHtmxInternalProp(elt);
-                htmx.initialized = true;
-                htmx.eventHandler = this.__createHtmxEventHandler(elt);
-                htmx.boosted = boostValue;
+                let htmxProp = this.__htmxProp(elt);
+                htmxProp.initialized = true;
+                htmxProp.eventHandler = this.__createHtmxEventHandler(elt);
+                htmxProp.boosted = boostValue;
                 let eventName = elt.matches('a') ? 'click' : 'submit';
                 elt._htmx.listeners.push({fromElt: elt, eventName, handler: elt._htmx.eventHandler});
                 elt.addEventListener(eventName, elt._htmx.eventHandler);
@@ -1648,7 +1648,7 @@ var htmx = (() => {
                         }
                     };
                     node.addEventListener(evtName, handler);
-                    this.__ensureHtmxInternalProp(node).listeners.push({fromElt: node, eventName: evtName, handler});
+                    this.__htmxProp(node).listeners.push({fromElt: node, eventName: evtName, handler});
                 }
             }
         }
