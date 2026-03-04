@@ -665,7 +665,7 @@ var htmx = (() => {
             let specString = this.__attributeValue(elt, "hx-trigger");
             if (!specString) {
                 specString = elt.matches("form") ? "submit" :
-                    elt.matches("input:not([type=button]),select,textarea") ? "change" :
+                    elt.matches("input:not([type=button]):not([type=submit]),select,textarea") ? "change" :
                         "click";
             }
             this.__onTrigger(elt, specString, initialHandler)
