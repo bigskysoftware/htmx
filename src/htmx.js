@@ -914,7 +914,7 @@ var htmx = (() => {
             let iter = this.#hxOnQuery.evaluate(elt)
             let node = null
             while (node = iter.iterateNext()) hxOnNodes.push(node)
-            for (let hxOnNode of hxOnNodes) this.__handleHxOnAttributes(hxOnNode)
+            for (let hxOnNode of hxOnNodes) if (!this.__ignore(hxOnNode)) this.__handleHxOnAttributes(hxOnNode)
             this.__trigger(elt, "htmx:after:process");
         }
 
