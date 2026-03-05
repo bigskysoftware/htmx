@@ -10,7 +10,7 @@
 import { getFolder } from '../../lib/content.ts';
 
 export async function getStaticPaths() {
-    const collections = ['docs', 'reference', 'examples'] as const;
+    const collections = ['docs', 'reference', 'patterns'] as const;
     const paths = [];
 
     for (const collection of collections) {

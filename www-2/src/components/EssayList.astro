@@ -1,0 +1,76 @@
+---
+import {getFolder} from '../lib/content';
+
+const folder = await getFolder('essays');
+
+// Get all essays (flat files, no subfolders)
+const essays = folder.subfiles
+    .filter(f => f.frontmatter.title)
+    .sort((a, b) => {
+        const dateA = new Date(a.frontmatter.created || 0);
+        const dateB = new Date(b.frontmatter.created || 0);
+        return dateB.getTime() - dateA.getTime(); // newest first
+    });
+
+// Group by year
+const grouped = new Map<number, typeof essays>();
+for (const essay of essays) {
+    const year = essay.frontmatter.created
+        ? new Date(essay.frontmatter.created).getFullYear()
+        : 0;
+    if (!grouped.has(year)) grouped.set(year, []);
+    grouped.get(year)!.push(essay);
+}
+
+const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+};
+
+const getAuthors = (essay: typeof essays[0]): string => {
+    const authors = essay.frontmatter.authors;
+    if (Array.isArray(authors) && authors.length > 0) return authors.join(', ');
+    return 'Carson Gross';
+};
+---
+
+<div class="relative my-10 not-prose">
+    <div class="space-y-8">
+        {[...grouped.entries()].map(([year, yearEssays]) => (
+            <div>
+                <div class="flex items-center gap-4 mb-3">
+                    <span class="font-chicago text-sm tracking-wide text-neutral-400 dark:text-neutral-600 tabular-nums">{year}</span>
+                    <div class="flex-1 h-px bg-neutral-200 dark:bg-neutral-850"></div>
+                </div>
+
+                <div class="flex flex-col">
+                    {yearEssays.map((essay) => (
+                        <a href={essay.url}
+                           class="group/essay flex items-center gap-4 px-3 py-2 -mx-3 rounded-[2px] no-underline transition
+                                  text-sm text-neutral-800 dark:text-neutral-200
+                                  interact:text-white interact:bg-blue-600 dark:interact:bg-blue-600">
+
+                            <span class="hidden sm:block shrink-0 w-16 text-xs font-mono tabular-nums text-neutral-400 dark:text-neutral-600 group-interact/essay:text-blue-200 transition">
+                                {formatDate(essay.frontmatter.created)}
+                            </span>
+
+                            <span class="flex-1 min-w-0 font-chicago text-sm leading-snug truncate">
+                                {essay.frontmatter.title}
+                            </span>
+
+                            <span class="hidden md:block shrink-0 text-xs text-neutral-400 dark:text-neutral-600 group-interact/essay:text-blue-200 transition text-right">
+                                {getAuthors(essay)}
+                            </span>
+
+                            <span class="hidden lg:block shrink-0 opacity-0 group-interact/essay:opacity-100 transition text-white"
+                                  aria-hidden="true">
+                                &rarr;
+                            </span>
+                        </a>
+                    ))}
+                </div>
+            </div>
+        ))}
+    </div>
+</div>

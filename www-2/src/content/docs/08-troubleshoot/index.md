@@ -1,4 +1,4 @@
 ---
 title: "Troubleshoot"
-description: "Debug issues and configure htmx"
+description: "Debugging tools, logging, and configuration"
 ---

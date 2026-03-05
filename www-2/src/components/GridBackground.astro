@@ -1,116 +1,127 @@
 ---
 /**
-    * GridBackground - Animated grid with 3D camera system
-    *
-    * The grid is a continuous space. Camera position determines what we see.
-    * All movement is GPU-accelerated (transform only).
-    *
-    * CSS Variables (set via style prop):
-    *   --cam-x: horizontal position (default: 0)
-    *   --cam-y: vertical position (default: 0)
-    *   --cam-z: depth, negative = away (default: -100px for 3D)
-    *   --cam-pitch: rotation in degrees (default: 55deg for 3D, 0 for flat)
-    *   --cam-scale: zoom level (default: 0.9 for 3D, 1 for flat)
-    *   --grid-opacity: line opacity (default: 0.04)
-    *
-    * Usage:
-    *   <GridBackground />
-    *   <!-- 3D perspective, centered -->
-    *
-    *   <GridBackground style="--cam-x: 300px; --cam-y: 280px; --cam-pitch: 0deg; --cam-z: 0; --cam-scale: 1;" />
-    *   <!-- Flat view at specific position -->
-    */
+ * GridBackground
+ *
+ * "3d"   — fixed tilted perspective grid (landing page)
+ * "flat" — absolute grid aligned to card columns, extending beyond with fade
+ */
 
 interface Props {
-    style?: string;
-    class?: string;
+    mode?: '3d' | 'flat';
 }
 
-const {style, class: className} = Astro.props;
+const { mode = '3d' } = Astro.props;
 ---
 
-<div
-        id="synthwave"
-        class:list={['fixed inset-0 pointer-events-none -z-10 perspective-[1000px]', className]}
-        style={style}
+{mode === '3d' ? (
+    <div
+        class="fixed inset-0 pointer-events-none -z-10 perspective-[1000px]"
         aria-hidden="true"
->
-    <!-- Grid plane with 3D transform -->
-    <div class="grid-plane absolute inset-0 transform-3d transition duration-700 ease-out">
-        <!-- Grid pattern - oversized, uses translate for GPU-accelerated alignment -->
-        <div class="grid-pattern absolute transition duration-700 ease-out"></div>
+    >
+        <div class="grid-plane absolute inset-0">
+            <div class="grid-pattern-3d absolute"></div>
+        </div>
     </div>
-</div>
+) : (
+    <div class="flat-grid pointer-events-none -z-10" aria-hidden="true">
+    </div>
+)}
 
-<style>
-    /*
-     * CAMERA SYSTEM
-     *
-     * Simple grid coordinates (1 = first cell at content top-left):
-     *   --grid-col: column number (1, 2, 3...)
-     *   --grid-row: row number (1, 2, 3...)
-     *
-     * The --grid-origin values are the calibrated offset to position
-     * the first grid cell at the content's top-left corner.
-     */
-    #synthwave {
-        /* Grid coordinates (1-indexed) */
-        --grid-col: 1;
-        --grid-row: 1;
+<script is:inline>
+    function alignFlatGrids() {
+        document.querySelectorAll('.flat-grid').forEach(bg => {
+            const container = bg.parentElement;
+            if (!container) return;
 
-        /* Calibrated offset: positions first grid cell at content top-left */
-        --grid-origin-x: -2287px;
-        --grid-origin-y: -1263px;
+            const grid = container.querySelector('.grid');
+            const firstCard = grid?.firstElementChild;
+            if (!grid || !firstCard) return;
 
-        /* Grid cell sizes */
-        --cell-x: var(--grid-cell-x, 307px);
-        --cell-y: var(--grid-cell-y, 304px);
+            // gap-6 in Tailwind is 24px
+            const gap = 24;
+            // Half gap (12px) + half line width (1px for a 2px line) to perfectly center it
+            const alignOffset = (gap / 2) + 1;
 
-        /* Final camera position: origin + (col-1) * cell */
-        --cam-x: calc(var(--grid-origin-x) + (var(--grid-col) - 1) * var(--cell-x));
-        --cam-y: calc(var(--grid-origin-y) + (var(--grid-row) - 1) * var(--cell-y));
+            // 1. Get exact rendered dimensions of the card
+            const cardRect = firstCard.getBoundingClientRect();
+            const cellW = cardRect.width + gap;
+            const cellH = cardRect.height + gap;
 
-        /* 3D settings */
-        --cam-z: -100px;
-        --cam-pitch: 55deg;
-        --cam-scale: 0.9;
-        --grid-opacity: 0.04;
+            // 2. Calculate pixel offset between the grid and the background wrapper
+            const gridRect = grid.getBoundingClientRect();
+            const bgRect = bg.getBoundingClientRect();
+
+            // 3. Offset the background position by the difference, minus our alignment offset
+            const offsetX = (gridRect.left - bgRect.left) - alignOffset;
+            const offsetY = (gridRect.top - bgRect.top) - alignOffset;
+
+            const el = bg;
+            el.style.setProperty('--cell-w', cellW + 'px');
+            el.style.setProperty('--cell-h', cellH + 'px');
+            el.style.setProperty('--bg-x', offsetX + 'px');
+            el.style.setProperty('--bg-y', offsetY + 'px');
+        });
     }
 
-    /*
-     * GRID PLANE - the transformed container
-     */
+    // Run after DOM is ready and on resize
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', alignFlatGrids);
+    } else {
+        alignFlatGrids();
+    }
+    window.addEventListener('resize', alignFlatGrids);
+
+    // Re-run after htmx morph navigation (guard against duplicate listeners)
+    if (!window._flatGridHtmxBound) {
+        window._flatGridHtmxBound = true;
+        document.body.addEventListener('htmx:after:swap', alignFlatGrids);
+    }
+</script>
+
+<style>
+    :root {
+        --grid-line-color: rgb(0 0 0 / 0.06);
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --grid-line-color: rgb(255 255 255 / 0.07);
+        }
+    }
+
+    /* ---- 3D MODE (don't touch) ---- */
     .grid-plane {
         overflow: visible;
         transform-origin: center center;
-        transform: translate3d(-0.75rem, 2.125rem, var(--cam-z, -100px)) rotateX(var(--cam-pitch, 55deg)) scale(var(--cam-scale, 0.9));
+        transform: translateZ(-100px) rotateX(55deg) scale(0.9);
     }
 
-    /*
-     * GRID PATTERN - oversized to ensure coverage after 3D transforms
-     * Uses translate for GPU-accelerated movement (not background-position)
-     */
-    .grid-pattern {
-        top: -100vh;
-        bottom: -100vh;
-        left: -100vw;
-        right: -100vw;
-
-        /* GPU-accelerated position via translate (negated: positive cam-x = camera moves right = grid moves left) */
-        transform: translate(calc(var(--cam-x, 0px) * -1), calc(var(--cam-y, 0px) * -1));
-
-        background-image: linear-gradient(to right, currentColor 1px, transparent 1px),
-        linear-gradient(to bottom, currentColor 1px, transparent 1px);
-        background-size: var(--grid-cell-x, 307px) var(--grid-cell-y, 304px);
-        background-position: 0 0; /* NEVER CHANGES - predictable grid lines */
-
-        /* Grid color - dark on light bg, light on dark bg */
-        color: rgb(0 0 0 / var(--grid-opacity, 0.04));
+    .grid-pattern-3d {
+        inset: -100vh -100vw;
+        background-image:
+            linear-gradient(to right, currentColor 1px, transparent 1px),
+            linear-gradient(to bottom, currentColor 1px, transparent 1px);
+        background-size: 307px 304px;
+        background-position: center center;
+        mask-image: radial-gradient(ellipse 50% 70% at 50% 50%, black 10%, transparent 80%);
+        color: var(--grid-line-color);
     }
 
-    @media (prefers-color-scheme: dark) {
-        .grid-pattern {
-            color: rgb(255 255 255 / var(--grid-opacity, 0.04));
-        }
+    /* ---- FLAT MODE ---- */
+    .flat-grid {
+        position: absolute;
+        top: -200px;
+        bottom: -200px;
+        left: -3000px;
+        right: -3000px;
+
+        background-image:
+            linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
+
+        /* Driven entirely by JS variables */
+        background-size: var(--cell-w, 307px) var(--cell-h, 320px);
+        background-position: var(--bg-x, 0px) var(--bg-y, 0px);
+
+        mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, black 10%, transparent 70%);
     }
 </style>

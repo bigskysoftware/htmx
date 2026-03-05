@@ -28,7 +28,7 @@ if (!data) {
 }
 
 // Auto-derive collection from the data
-const collection = data.folder as 'docs' | 'reference' | 'examples';
+const collection = data.folder as 'docs' | 'reference' | 'patterns';
 
 // We always have folder available (passed from page)
 const sidebarFolder = folder;
@@ -50,17 +50,9 @@ const includeRightColumn = includeTableOfContents || includePagination;
 // Get section grouping label (second breadcrumb, after collection)
 const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : null;
 
-// Index pages: flat view, first card aligned with grid cell (1,1)
-const cameraStyle = isIndex ? {
-    // Grid coordinates: col 1, row 1 = first cell at content top-left
-    // Flat view: pitch 0, z 0, scale 1
-    docs: '--grid-col: 1; --grid-row: 1; --cam-pitch: 0deg; --cam-z: 0; --cam-scale: 1;',
-    reference: '--grid-col: 1; --grid-row: 1; --cam-pitch: 0deg; --cam-z: 0; --cam-scale: 1;',
-    examples: '--grid-col: 1; --grid-row: 1; --cam-pitch: 0deg; --cam-z: 0; --cam-scale: 1;'
-}[collection] : undefined;
 ---
 
-<Layout {title} {description} {cameraStyle}>
+<Layout {title} {description}>
 
     {sidebarFolder && (
             <Header slot="header">
@@ -96,10 +88,11 @@ const cameraStyle = isIndex ? {
                 >
                     {isIndex ? (
                         /* INDEX PAGE: Render MDX content with prose styling */
-                            <div class="index-content prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
+                            <div class="index-content prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none relative z-0">
                                 <Content/>
                                 <slot/>
                             </div>
+
                     ) : (
                         /* DETAIL PAGE: Article wrapper with pagination */
                             <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">

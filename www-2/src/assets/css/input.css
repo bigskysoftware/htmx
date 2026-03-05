@@ -59,35 +59,6 @@
 }
 
 @layer base {
-    /*
-     * CARD DIMENSIONS (used by CategoryCard and GridBackground)
-     * TODO: Grid alignment is broken on mobile, revisit later.
-     * Ideally, grid tile size should be the source of truth, not card size.
-     */
-    :root {
-        --card-gap: 24px;
-        --card-cols: 3;
-        --card-container: 896px; /* max-w-4xl */
-        --card-width: calc((var(--card-container) - (var(--card-cols) - 1) * var(--card-gap)) / var(--card-cols));
-        --card-image-height: 100px;
-        --card-content-height: 90px;
-        --card-height: calc(var(--card-image-height) + var(--card-content-height));
-
-        /* Grid cell = card + gap */
-        --grid-cell-x: calc(var(--card-width) + var(--card-gap));
-        --grid-cell-y: calc(var(--card-height) + var(--card-gap));
-
-        @media (min-width: 640px) {
-            --card-image-height: 140px;
-            --card-content-height: 110px;
-        }
-
-        @media (min-width: 1024px) {
-            --card-image-height: 160px;
-            --card-content-height: 120px;
-        }
-    }
-
     /* Body styles */
     body {
         overflow-x: hidden;

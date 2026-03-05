@@ -1,4 +1,4 @@
 ---
 title: "Security"
-description: "Secure apps and configure caching"
+description: "Guard against vulnerabilities and configure caching"
 ---

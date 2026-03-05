@@ -32,13 +32,12 @@ const reference = defineCollection({
             }).strict(),
 });
 
-const examples = defineCollection({
-    loader: glob({base: "./src/content/examples", pattern: "{*.md,**/*.md}"}),
+const patterns = defineCollection({
+    loader: glob({base: "./src/content/patterns", pattern: "{index.md,index.mdx,**/*.md,**/*.mdx}"}),
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
-        image: z.string().optional(),
-            }).strict(),
+    }).strict(),
 });
 
 const essays = defineCollection({
@@ -138,7 +137,7 @@ export const collections = {
     pages,
     docs,
     reference,
-    examples,
+    patterns,
     essays,
     sponsors,
     community,

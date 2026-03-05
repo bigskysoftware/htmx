@@ -2,6 +2,7 @@
 import {getFolder} from '../lib/content';
 import CategoryCard from './CategoryCard.astro';
 import ThumbnailSvg from './ThumbnailSvg.astro';
+import GridBackground from './GridBackground.astro';
 
 interface Props {
     collection: string;
@@ -85,7 +86,9 @@ const getReferencePreview = (slug: string) => {
     ))}
 </div>
     ) : (
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10 not-prose">
+<div class="relative my-10 not-prose">
+    <GridBackground mode="flat" />
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-0">
     {items.map((item) => {
         const thumbnail = getThumbnail(item.frontmatter.thumbnail);
         const refPreview = collection === 'reference' ? getReferencePreview(item.slug) : null;
@@ -123,5 +126,6 @@ const getReferencePreview = (slug: string) => {
                 </CategoryCard>
         );
     })}
+    </div>
 </div>
     )}

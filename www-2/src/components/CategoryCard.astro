@@ -13,8 +13,6 @@ const hasLinks = Astro.slots.has('links');
 <div class="group relative isolate flex flex-col rounded-xl overflow-hidden transition outline-hidden
     bg-linear-to-b from-neutral-25 to-neutral-50 dark:from-neutral-910 dark:to-neutral-920
     border border-neutral-200 dark:border-neutral-800
-    shadow-3d-neutral-300 dark:shadow-3d-neutral-900 shadow-3d-depth-[0px]
-    has-[h2_a:hover:not(:active)]:-translate-y-1 has-[h2_a:hover:not(:active)]:shadow-3d-depth-[6px]
     has-[h2_a:hover]:from-neutral-50 has-[h2_a:hover]:to-neutral-100
     has-[h2_a:hover]:dark:from-neutral-900 has-[h2_a:hover]:dark:to-neutral-910
     has-[h2_a:hover]:border-neutral-400
@@ -22,8 +20,7 @@ const hasLinks = Astro.slots.has('links');
     has-[h2_a:focus-visible]:ring-2
     has-[h2_a:focus-visible]:ring-offset-2
     has-[h2_a:focus-visible]:ring-blue-600
-    dark:has-[h2_a:focus-visible]:ring-blue-400
-    has-[h2_a:active]:translate-y-0 has-[h2_a:active]:shadow-3d-depth-[2px]">
+    dark:has-[h2_a:focus-visible]:ring-blue-400">
 
     <div class="relative h-40 lg:h-44 w-full flex items-center justify-center transition">
         <slot/>

@@ -69,7 +69,7 @@ function toBreadcrumb(url: string): string[] {
 }
 
 // Collections to index (must have _index.md)
-const COLLECTIONS = ['docs', 'reference', 'examples', 'essays'];
+const COLLECTIONS = ['docs', 'reference', 'patterns', 'essays'];
 
 export const GET: APIRoute = async () => {
     const results: any[] = [];
