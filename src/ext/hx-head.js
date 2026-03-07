@@ -11,7 +11,37 @@
         //console.log(arguments)
     }
 
-    function mergeHead(newContent, defaultMergeStrategy) {
+    // Appends a new head node, returning a promise for render-critical resources
+    // (blocking scripts, stylesheets) or null for fire-and-forget resources.
+    function appendNode(newNode) {
+        let newElt = document.createElement(newNode.tagName)
+        for (const attr of newNode.attributes) newElt.setAttribute(attr.name, attr.value)
+        newElt.textContent = newNode.textContent
+
+        // stylesheet — await CSSOM or content will flash unstyled
+        if (newNode.tagName === "LINK" && newNode.rel === "stylesheet") {
+            return new Promise(resolve => {
+                newElt.onload = resolve
+                newElt.onerror = resolve  // failed stylesheet shouldn't block swap
+                document.head.appendChild(newElt)
+            })
+        }
+
+        // blocking external script (no async/defer) — must init before swap
+        if (newNode.tagName === "SCRIPT" && newNode.src && !newNode.async && !newNode.defer) {
+            return new Promise((resolve, reject) => {
+                newElt.onload = resolve
+                newElt.onerror = reject
+                document.head.appendChild(newElt)
+            })
+        }
+
+        // meta, title, base, preload/prefetch/icon links, async scripts — fire-and-forget
+        document.head.appendChild(newElt)
+        return null
+    }
+
+    async function mergeHead(newContent, defaultMergeStrategy) {
 
         if (newContent && newContent.indexOf('<head') > -1) {
             const htmlDoc = document.createElement("html")
@@ -27,13 +57,14 @@
                 let removed = []
                 let preserved = []
                 let nodesToAppend = []
+                let deferred = []
 
                 htmlDoc.innerHTML = headTag
                 let newHeadTag = htmlDoc.querySelector("head")
                 let currentHead = document.head
 
                 if (newHeadTag == null) {
-                    return
+                    return []
                 }
 
                 // put all new head elements into a Map, by their outerHTML
@@ -84,13 +115,15 @@
                 nodesToAppend.push(...srcToNewHeadNodes.values())
                 log("to append: ", nodesToAppend)
 
+                // defer scripts need the swapped DOM to exist — split them out
                 for (const newNode of nodesToAppend) {
-                    log("adding: ", newNode)
-                    let newElt = document.createRange().createContextualFragment(newNode.outerHTML)
-                    log(newElt)
-                    if (htmx.trigger(document.body, "htmx:before:head:add", {headElement: newElt}) !== false) {
-                        currentHead.appendChild(newElt)
-                        added.push(newElt)
+                    if (newNode.tagName === "SCRIPT" && newNode.defer) deferred.push(newNode)
+                    else {
+                        log("adding: ", newNode)
+                        if (htmx.trigger(document.body, "htmx:before:head:add", {headElement: newNode}) !== false) {
+                            await appendNode(newNode)
+                            added.push(newNode)
+                        }
                     }
                 }
 
@@ -107,22 +140,33 @@
                     kept: preserved,
                     removed: removed
                 })
+
+                return deferred
             }
         }
+        return []
     }
 
     htmx.registerExtension("hx-head", {
         init: (internalAPI) => {
             api = internalAPI;
         },
-        htmx_after_swap: (elt, detail) => {
+        htmx_before_response: (elt, detail) => {
             let ctx = detail.ctx
             let target = ctx.target
             // TODO - is there a better way to handle this?  it used to be based on if the element was boosted
             let defaultMergeStrategy = target === document.body ? "merge" : "append";
             if (htmx.trigger(document.body, "htmx:before:head:merge", detail)) {
-                mergeHead(ctx.text, defaultMergeStrategy)
+                let realText = ctx.response.raw.text.bind(ctx.response.raw)
+                ctx.response.raw.text = async () => {
+                    let text = await realText()
+                    ctx._deferredHeadScripts = await mergeHead(text, defaultMergeStrategy)
+                    return text
+                }
             }
+        },
+        htmx_after_swap: (elt, detail) => {
+            for (const node of detail.ctx._deferredHeadScripts || []) appendNode(node)
         }
     })
 

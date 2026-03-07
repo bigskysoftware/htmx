@@ -3,7 +3,7 @@ title = "htmx Head Tag Support Extension"
 +++
 
 The `head-support` extension adds support for [head tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head)
-in responses to htmx requests.
+in responses to htmx requests with intelligent resource loading and FOUC prevention.
 
 htmx began as a library focused on _partial replacement_ of HTML within the `body` tag.  As such, merging additional
 information such as the head tag was not a focus of the library.  (This is in contrast with, for example, TurboLinks,
@@ -27,21 +27,49 @@ Include the extension after htmx:
 All responses that htmx receives that contain a `head` tag in them (even if they are not complete
 HTML documents with a root `<html>` element) will be processed.
 
-How the head tag is handled depends on the type of htmx request.
+How the head tag is handled depends on the swap target:
 
-If the htmx request is from a boosted element, then the following merge algorithm is used:
+* If the swap target is `document.body`, the **merge** strategy is used
+* For all other targets, the **append** strategy is used
+
+### Merge Strategy
 
 * Elements that exist in the current head as exact textual matches will be left in place
 * Elements that do not exist in the current head will be added at the end of the head tag
 * Elements that exist in the current head, but not in the new head will be removed from the head
 
-If the htmx request is from a non-boosted element, then all content will be _appended_ to the existing head element.
+### Append Strategy
 
-If you wish to override this behavior in either case, you can place the `hx-head` attribute on the new `<head>` tag,
+* All new head elements will be appended to the existing head element
+* Existing elements are preserved unless marked for re-evaluation
+
+If you wish to override this behavior, you can place the `hx-head` attribute on the new `<head>` tag,
 with either of the following two values:
 
 * `merge` - follow the merging algorithm outlined above
 * `append` - append the elements to the existing head
+
+## Resource Loading
+
+The extension intelligently handles different types of head elements:
+
+### Render-Critical Resources (Loaded Before Swap)
+
+* **Stylesheets** (`<link rel="stylesheet">`) - Awaited to prevent FOUC (Flash of Unstyled Content)
+* **Blocking Scripts** (`<script src="..." >` without `async` or `defer`) - Awaited to ensure dependencies load
+
+### Fire-and-Forget Resources (Loaded Immediately)
+
+* **Meta tags** - Added immediately
+* **Title tags** - Added immediately  
+* **Base tags** - Added immediately
+* **Preload/Prefetch links** - Added immediately
+* **Async scripts** (`<script async>`) - Added immediately
+* **Inline scripts** (`<script>` without `src`) - Added immediately
+
+### Deferred Resources (Loaded After Swap)
+
+* **Deferred Scripts** (`<script defer>`) - Executed after DOM swap completes
 
 ### Controlling Merge Behavior
 
@@ -79,10 +107,10 @@ Then the following operations will occur:
 
 * `<link rel="stylesheet" href="https://the.missing.style">` will be left alone
 * `<link rel="stylesheet" href="/css/site1.css">` will be removed from the head
-* `<link rel="stylesheet" href="/css/site2.css">` will be added to the head
+* `<link rel="stylesheet" href="/css/site2.css">` will be added to the head (awaited before swap)
 * `<script src="/js/script1.js"></script>` will be removed from the head
 * `<script src="/js/script2.js"></script>` will be left alone
-* `<script src="/js/script3.js"></script>` will be added to the head
+* `<script src="/js/script3.js"></script>` will be added to the head (awaited before swap)
 
 The final head element will look like this:
 
@@ -99,12 +127,12 @@ The final head element will look like this:
 
 This extension triggers the following events:
 
-* `htmx:removingHeadElement` - triggered when a head element is about to be removed, with the element being removed
+* `htmx:before:head:remove` - triggered when a head element is about to be removed, with the element being removed
 available in `event.detail.headElement`.  If `preventDefault()` is invoked on the event, the element will not be removed.
-* `htmx:addingHeadElement` - triggered when a head element is about to be added, with the element being added
+* `htmx:before:head:add` - triggered when a head element is about to be added, with the element being added
 available in `event.detail.headElement`.  If `preventDefault()` is invoked on the event, the element will not be added.
-* `htmx:afterHeadMerge` - triggered after a head tag merge has occurred, with the following values available in the event `detail`:
-* `added` - added head elements
-* `kept` -  kept head elements
-* `removed` -  removed head elements
-* `htmx:beforeHeadMerge` - triggered before a head merge occurs
+* `htmx:after:head:merge` - triggered after a head tag merge has occurred, with the following values available in the event `detail`:
+  * `added` - added head elements
+  * `kept` -  kept head elements
+  * `removed` -  removed head elements
+* `htmx:before:head:merge` - triggered before a head merge occurs
