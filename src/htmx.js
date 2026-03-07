@@ -677,8 +677,6 @@ var htmx = (() => {
         // Wire up trigger listeners with full modifier support (delay, throttle, once, etc.)
         __onTrigger(elt, specString, handler) {
             let specs = this.__parseTriggerSpecs(specString)
-            let listeners = []
-
             this.__htmxProp(elt).triggerSpecs.push(...specs)
 
             for (let spec of specs) {
@@ -823,14 +821,7 @@ var htmx = (() => {
                     let listenerInfo = {fromElt, eventName, handler: spec.handler};
                     elt._htmx.listeners.push(listenerInfo)
                     spec.listeners.push(listenerInfo)
-                    listeners.push(listenerInfo)
                     fromElt.addEventListener(eventName, spec.handler);
-                }
-            }
-
-            return () => {
-                for (let l of listeners) {
-                    l.fromElt.removeEventListener(l.eventName, l.handler)
                 }
             }
         }
