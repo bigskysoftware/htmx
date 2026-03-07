@@ -269,11 +269,13 @@ await htmx.forEvent("htmx:after:swap", 5000);
 
 ### Method - `htmx.timeout()` {#timeout}
 
-Returns a promise that resolves after the specified time.
+Returns a promise that resolves after the specified time.  If `ms` is `0`, `undefined`, or not a positive number,
+returns `undefined` rather than a Promise.  This means `await htmx.timeout(0)` does not yield to the microtask queue,
+which is intentional for internal callers that want synchronous continuation when no delay is configured.
 
 ##### Parameters
 
-* `ms` - time in milliseconds to wait
+* `ms` - time in milliseconds to wait (must be a positive number to return a Promise)
 
 ##### Example
 
