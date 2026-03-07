@@ -967,7 +967,6 @@ var htmx = (() => {
         __cleanup(elt) {
             if (elt._htmx) {
                 this.__trigger(elt, "htmx:before:cleanup")
-                if (elt._htmx.interval) clearInterval(elt._htmx.interval);
                 for (let spec of elt._htmx.triggerSpecs || []) {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
