@@ -141,12 +141,12 @@
         }
 
         let connectDetail = {attempt: 0, delay: 0, url: ctx.request.action, lastEventId: null, cancelled: false};
-        if (!htmx.trigger(element, 'htmx:before:sse:connection', {connection: connectDetail}) || connectDetail.cancelled) {
+        if (!api.triggerHtmxEvent(element, 'htmx:before:sse:connection', {connection: connectDetail}) || connectDetail.cancelled) {
             cleanup(element, 'cancelled');
             return;
         }
 
-        htmx.trigger(element, 'htmx:after:sse:connection', {
+        api.triggerHtmxEvent(element, 'htmx:after:sse:connection', {
             connection: {attempt: 0, url: ctx.request.action, status: ctx.response.status, lastEventId: null}
         });
 
@@ -181,7 +181,7 @@
                     }
 
                     let detail = {attempt, delay, url: ctx.request.action, lastEventId, cancelled: false};
-                    if (!htmx.trigger(element, 'htmx:before:sse:connection', {connection: detail}) || detail.cancelled) break;
+                    if (!api.triggerHtmxEvent(element, 'htmx:before:sse:connection', {connection: detail}) || detail.cancelled) break;
 
                     await new Promise(r => {
                         delayCanceller = r;
@@ -203,14 +203,14 @@
                         });
                     } catch (e) {
                         if (ac.signal.aborted) break;
-                        htmx.trigger(element, 'htmx:sse:error', {error: e});
+                        api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e});
                         reconnectRequested = false;
                         attempt++;
                         continue;
                     }
 
                     if (!currentResponse.ok) {
-                        htmx.trigger(element, 'htmx:sse:error', {
+                        api.triggerHtmxEvent(element, 'htmx:sse:error', {
                             error: new Error(`SSE reconnect failed with status ${currentResponse.status}`),
                             status: currentResponse.status
                         });
@@ -219,7 +219,7 @@
                         continue;
                     }
 
-                    htmx.trigger(element, 'htmx:after:sse:connection', {
+                    api.triggerHtmxEvent(element, 'htmx:after:sse:connection', {
                         connection: {attempt, url: ctx.request.action, status: currentResponse.status, lastEventId}
                     });
                     attempt = 0;
@@ -236,7 +236,7 @@
                         if (!element.isConnected || reconnectRequested) break;
 
                         let detail = {data: msg.data, event: msg.event, id: msg.id, cancelled: false};
-                        if (!htmx.trigger(element, 'htmx:before:sse:message', {message: detail}) || detail.cancelled) continue;
+                        if (!api.triggerHtmxEvent(element, 'htmx:before:sse:message', {message: detail}) || detail.cancelled) continue;
 
                         if (msg.id) {
                             lastEventId = msg.id;
@@ -246,7 +246,7 @@
 
                         if (detail.event) {
                             htmx.trigger(element, detail.event, {data: detail.data, id: detail.id});
-                            htmx.trigger(element, 'htmx:after:sse:message', {message: detail});
+                            api.triggerHtmxEvent(element, 'htmx:after:sse:message', {message: detail});
 
                             // hx-sse:close="eventname" — close connection on matching event
                             let closeEvent = api.attributeValue(element, 'hx-sse:close');
@@ -260,11 +260,11 @@
                         // Swap content using the ctx from core (target/swap already resolved)
                         ctx.text = detail.data;
                         await htmx.swap(ctx);
-                        htmx.trigger(element, 'htmx:after:sse:message', {message: detail});
+                        api.triggerHtmxEvent(element, 'htmx:after:sse:message', {message: detail});
                     }
                 } catch (e) {
                     if (!state.abortController?.signal?.aborted) {
-                        htmx.trigger(element, 'htmx:sse:error', {error: e});
+                        api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e});
                     }
                 }
 
@@ -310,7 +310,7 @@
             document.removeEventListener('visibilitychange', state.visibilityHandler);
         }
         delete element._htmx.sse;
-        htmx.trigger(element, 'htmx:sse:close', {reason: reason || 'cleanup'});
+        api.triggerHtmxEvent(element, 'htmx:sse:close', {reason: reason || 'cleanup'});
     }
 
     // ========================================
@@ -330,7 +330,7 @@
 
             // Take over — core will return without calling response.text()
             handleSSEResponse(ctx).catch(e => {
-                htmx.trigger(element, 'htmx:sse:error', {error: e});
+                api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e});
                 cleanup(element);
             });
             return false;
@@ -338,8 +338,8 @@
 
         htmx_after_process: (element) => {
             processElement(element);
-            // Find hx-sse:connect descendants (respects prefix + metaCharacter config)
-            let attr = CSS.escape((htmx.config.prefix || 'hx-') + 'sse' + (htmx.config.metaCharacter || ':') + 'connect');
+            let mc = htmx.config.metaCharacter || ':';
+            let attr = CSS.escape((htmx.config.prefix || 'hx-') + 'sse' + mc + 'connect');
             element.querySelectorAll(`[${attr}]`).forEach(processElement);
         },
 

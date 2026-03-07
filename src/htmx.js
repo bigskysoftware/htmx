@@ -86,7 +86,8 @@ var htmx = (() => {
                 morph: this.__morph.bind(this),
                 isSoftMatch: this.__isSoftMatch.bind(this),
                 onTrigger: this.__onTrigger.bind(this),
-                htmxProp: this.__htmxProp.bind(this)
+                htmxProp: this.__htmxProp.bind(this),
+                triggerHtmxEvent: this.__trigger.bind(this)
             };
             let init = () => {
                 this.__initHistoryHandling()
@@ -186,7 +187,7 @@ var htmx = (() => {
 
         __attributeValue(elt, name, defaultVal, eltCollector) {
             let unprefixed = name;
-            name = this.__prefix(name);
+            name = this.__maybeAdjustMetaCharacter(this.__prefix(name));
             let appendName = name + this.__maybeAdjustMetaCharacter(":append");
             let inheritName = name + (this.config.implicitInheritance ? "" : this.__maybeAdjustMetaCharacter(":inherited"));
             let inheritAppendName = name + this.__maybeAdjustMetaCharacter(":inherited:append");

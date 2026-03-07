@@ -41,10 +41,10 @@
     
     // Build selector for WS attributes
     function buildWsSelector(attrName) {
-        let colonAttr = buildAttrName(':' + attrName);
+        let mc = htmx.config.metaCharacter || ':';
+        let mcAttr = buildAttrName(mc + attrName);
         let hyphenAttr = buildAttrName('-' + attrName);
-        // Escape colon for CSS selector
-        return `[${colonAttr.replace(':', '\\:')}],[${hyphenAttr}]`;
+        return `[${CSS.escape(mcAttr)}],[${hyphenAttr}]`;
     }
     
     // ========================================
@@ -534,7 +534,7 @@
     
     function triggerEvent(element, eventName, detail = {}) {
         if (!element) return true;
-        return htmx.trigger(element, eventName, detail);
+        return api.triggerHtmxEvent(element, eventName, detail);
     }
     
     // ========================================
