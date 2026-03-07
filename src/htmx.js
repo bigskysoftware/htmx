@@ -303,7 +303,7 @@ var htmx = (() => {
 
         __htmxProp(elt) {
             if (!elt._htmx) {
-                elt._htmx = { listeners: [], triggerSpecs: [], requests: [] };
+                elt._htmx = { listeners: [], triggerSpecs: [] };
                 elt.setAttribute('data-htmx-powered', 'true');
             }
             return elt._htmx;
