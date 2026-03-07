@@ -547,8 +547,7 @@
         let connectUrl = getWsAttribute(element, 'connect');
         if (!connectUrl) return;
 
-        element._htmx = element._htmx || {};
-        element._htmx.wsInitialized = true;
+        api.htmxProp(element).wsInitialized = true;
         
         let triggerSpec = api.attributeValue(element, 'hx-trigger');
         
@@ -631,10 +630,10 @@
             };
             
             element.addEventListener(spec.name, handler);
-            element._htmx = element._htmx || {};
-            element._htmx.wsSendInitialized = true;
-            element._htmx.wsSendHandler = handler;
-            element._htmx.wsSendEvent = spec.name;
+            let htmxProp = api.htmxProp(element);
+            htmxProp.wsSendInitialized = true;
+            htmxProp.wsSendHandler = handler;
+            htmxProp.wsSendEvent = spec.name;
         }
     }
     
