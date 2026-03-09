@@ -52,6 +52,17 @@ const essays = defineCollection({
     }).strict(),
 });
 
+const interviews = defineCollection({
+    loader: glob({base: "./src/content/interviews", pattern: "{index.mdx,**/*.md,**/*.mdx}"}),
+    schema: z.object({
+        title: z.string(),
+        description: z.string().optional(),
+        created: z.date().optional(),
+        modified: z.date().optional(),
+        authors: z.array(z.string()).optional(),
+    }).strict(),
+});
+
 const sponsors = defineCollection({
     loader: file('src/content/sponsors.yaml', {
         parser: (fileContent) => (yaml.load(fileContent) as any[]).map((sponsor) => (
@@ -141,6 +152,7 @@ export const collections = {
     reference,
     patterns,
     essays,
+    interviews,
     sponsors,
     community,
     resources,
