@@ -215,7 +215,7 @@ function find(selector) {
 // ==============================================================================
 
 function assertPropertyIs(css, property, content) {
-  let elt = find(css);
+  let elt = playground().querySelector(css);
   if (!elt) {
     assert.fail("Could not find element with css '" + css + "' in :\n\n" + playground().innerHTML + "\n\n")
   }
