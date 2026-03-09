@@ -48,7 +48,7 @@ const essays = defineCollection({
                 created: z.date().optional(),
         modified: z.date().optional(),
         authors: z.array(z.string()).optional(),
-        tags: z.array(z.enum(['foundations', 'why-hypermedia', 'case-studies', 'guides', 'simplicity', 'meta'])).optional(),
+        tags: z.array(z.enum(['foundations', 'the-case-for-hypermedia', 'case-studies', 'guides', 'simplicity', 'about-htmx'])).optional(),
     }).strict(),
 });
 
@@ -98,21 +98,6 @@ const community = defineCollection({
     }).strict(),
 })
 
-const resources = defineCollection({
-    loader: file('src/content/resources.yaml', {
-        parser: (fileContent) => (yaml.load(fileContent) as any[]).map((resource) => ({
-            ...resource,
-            id: slugify(resource.name)
-        }))
-    }),
-    schema: z.object({
-        id: z.string(), // generated from `name`
-        name: z.string(),
-        description: z.string(),
-        iconClass: z.string(),
-        url: z.string(),
-    }).strict(),
-})
 
 const team = defineCollection({
     loader: file('src/content/team.yaml', {
@@ -155,8 +140,7 @@ export const collections = {
     interviews,
     sponsors,
     community,
-    resources,
-    team,
+team,
     podcasts,
 };
 

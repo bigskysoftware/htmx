@@ -36,11 +36,11 @@ const navigationSections = [
     },
     {
         name: "Resources",
-        items: (await getCollection('resources')).map(resourceLink => ({
-            name: resourceLink.data.name,
-            url: resourceLink.data.url,
-            iconClass: resourceLink.data.iconClass,
-        }))
+        items: [
+            {name: "Interviews", url: "/interviews", iconClass: "icon-[mdi--account-voice]"},
+            {name: "Book", url: "https://hypermedia.systems", iconClass: "icon-[mdi--book-open-page-variant]"},
+            {name: "RSS", url: "/rss.xml", iconClass: "icon-[mdi--rss]"},
+        ]
     },
 ];
 ---
