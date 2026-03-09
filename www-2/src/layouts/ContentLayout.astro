@@ -2,6 +2,7 @@
 import Layout from './Layout.astro';
 import Sidebar from '../components/Sidebar.astro';
 import TableOfContents from '../components/TableOfContents.astro';
+import EssayHeader from '../components/EssayHeader.astro';
 import type {ContentFile, ContentFolder} from '../lib/content';
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -29,6 +30,7 @@ if (!data) {
 
 // Auto-derive collection from the data
 const collection = data.folder as 'docs' | 'reference' | 'patterns';
+const isEssay = collection === 'essays';
 
 // We always have folder available (passed from page)
 const sidebarFolder = folder;
@@ -97,10 +99,24 @@ const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : nul
                         /* DETAIL PAGE: Article wrapper with pagination */
                             <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
 
-                                {grouping && (
-                                        <p class="text-xs font-semibold uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-5 sm:mb-7">
-                                            {grouping.label}
-                                        </p>
+                                {/* Title from frontmatter */}
+                                <h1 set:html={title} />
+
+                                {/* Essay metadata */}
+                                {isEssay && (
+                                    <EssayHeader
+                                        authors={file.frontmatter.authors}
+                                        created={file.frontmatter.created}
+                                        modified={file.frontmatter.modified}
+                                        tags={file.frontmatter.tags}
+                                    />
+                                )}
+
+                                {/* Section grouping label (for non-essay nested pages) */}
+                                {!isEssay && grouping && (
+                                    <p class="text-xs font-semibold uppercase tracking-widest text-neutral-550 dark:text-neutral-450 -mt-4 mb-6">
+                                        {grouping.label}
+                                    </p>
                                 )}
 
                                 {/* Slots for custom content wrappers */}
@@ -116,18 +132,20 @@ const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : nul
                                             <div class="grid gap-4 sm:grid-cols-2">
                                                 {file.prev ? (
                                                                 <a href={file.prev.url}
-                                                                   class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-850 interact:bg-neutral-50 dark:interact:bg-neutral-900 interact:border-neutral-300 dark:interact:border-neutral-700 rounded-xl transition shadow-3d-neutral-300 dark:shadow-3d-neutral-850 shadow-3d-depth-[0px] [&:hover:not(:active)]:-translate-y-1 [&:hover:not(:active)]:shadow-3d-depth-[6px] active:translate-y-0 active:shadow-3d-depth-[2px]">
-                                                                    <i class="icon-[mdi--chevron-left] text-2xl text-neutral-400 group-interact:text-neutral-800 dark:group-interact:text-neutral-200 transition-colors shrink-0 mt-0.5"></i>
+                                                                   class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-800 rounded-xl transition
+                                                                   interact:bg-blue-100 dark:interact:bg-blue-800/30
+                                                                   interact:border-blue-300 dark:interact:border-blue-400/40">
+                                                                    <i class="icon-[mdi--chevron-left] text-2xl text-neutral-400 group-interact:text-blue-600 dark:group-interact:text-blue-300 transition shrink-0 mt-0.5"></i>
                                                                     <div class="flex-1 min-w-0">
                                                                         {file.prev.breadcrumbs.length > 2 && (
-                                                                                <div class="text-[10px] uppercase tracking-wider font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-400 mb-2 transition-colors">
+                                                                                <div class="text-[10px] uppercase tracking-wider font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-blue-700 dark:group-interact:text-blue-200 mb-2 transition">
                                                                                     {file.prev.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
                                                                                 </div>
                                                                         )}
-                                                                        <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-neutral-100 transition-colors"
+                                                                        <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-blue-700 dark:group-interact:text-white transition"
                                                                             set:html={file.prev.frontmatter.title}></h4>
                                                                         {file.prev.frontmatter.description &&
-                                                                                <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-neutral-600 dark:group-interact:text-neutral-400 mt-2 line-clamp-2 leading-relaxed transition-colors">{file.prev.frontmatter.description}</div>}
+                                                                                <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-blue-900/70 dark:group-interact:text-blue-100 mt-2 line-clamp-2 leading-relaxed transition">{file.prev.frontmatter.description}</div>}
                                                                     </div>
                                                                 </a>
                                                     ) :
@@ -135,19 +153,21 @@ const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : nul
 
                                                 {file.next && (
                                                         <a href={file.next.url}
-                                                           class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-850 interact:bg-neutral-50 dark:interact:bg-neutral-900 interact:border-neutral-300 dark:interact:border-neutral-700 rounded-xl transition shadow-3d-neutral-300 dark:shadow-3d-neutral-850 shadow-3d-depth-[0px] [&:hover:not(:active)]:-translate-y-1 [&:hover:not(:active)]:shadow-3d-depth-[6px] active:translate-y-0 active:shadow-3d-depth-[2px]">
+                                                           class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-800 rounded-xl transition
+                                                           interact:bg-blue-100 dark:interact:bg-blue-800/30
+                                                           interact:border-blue-300 dark:interact:border-blue-400/40">
                                                             <div class="flex-1 min-w-0">
                                                                 {file.next.breadcrumbs.length > 2 && (
-                                                                        <div class="text-[10px] uppercase tracking-widest text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-400 mb-2 transition-colors">
+                                                                        <div class="text-[10px] uppercase tracking-widest text-neutral-600 dark:text-neutral-400 group-interact:text-blue-700 dark:group-interact:text-blue-200 mb-2 transition">
                                                                             {file.next.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
                                                                         </div>
                                                                 )}
-                                                                <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-neutral-100 transition-colors"
+                                                                <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-blue-700 dark:group-interact:text-white transition"
                                                                     set:html={file.next.frontmatter.title}></h4>
                                                                 {file.next.frontmatter.description &&
-                                                                        <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-neutral-600 dark:group-interact:text-neutral-400 mt-2 line-clamp-2 leading-relaxed transition-colors">{file.next.frontmatter.description}</div>}
+                                                                        <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-blue-900/70 dark:group-interact:text-blue-100 mt-2 line-clamp-2 leading-relaxed transition">{file.next.frontmatter.description}</div>}
                                                             </div>
-                                                            <i class="icon-[mdi--chevron-right] text-2xl text-neutral-400 group-interact:text-neutral-800 dark:group-interact:text-neutral-200 transition-colors shrink-0 mt-0.5"></i>
+                                                            <i class="icon-[mdi--chevron-right] text-2xl text-neutral-400 group-interact:text-blue-600 dark:group-interact:text-blue-300 transition shrink-0 mt-0.5"></i>
                                                         </a>
                                                 )}
                                             </div>
@@ -181,10 +201,10 @@ const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : nul
                                                                     "flex-1 group flex items-center gap-2 p-2 text-xs font-medium border rounded-[5px] transition select-none",
                                                                     reverse && "flex-row-reverse",
                                                                     link
-                                                                        ? "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-50 dark:interact:bg-neutral-900 interact:border-neutral-300 dark:interact:border-neutral-700 interact:text-neutral-900 dark:interact:text-neutral-100 shadow-3d-neutral-300 dark:shadow-3d-neutral-850 shadow-3d-depth-[0px] [&:hover:not(:active)]:-translate-y-0.5 [&:hover:not(:active)]:shadow-3d-depth-[3px] active:translate-y-0 active:shadow-3d-depth-[1px]"
+                                                                        ? "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 interact:bg-blue-100 dark:interact:bg-blue-800/30 interact:border-blue-300 dark:interact:border-blue-400/40 interact:text-blue-700 dark:interact:text-white"
                                                                         : "border-transparent bg-neutral-50 dark:bg-neutral-900/50 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
                                                                 ]}>
-                                                            <i class:list={[icon, "size-4", link ? "text-neutral-400 group-hover:text-inherit transition-colors" : "opacity-50"]}></i>
+                                                            <i class:list={[icon, "size-4", link ? "text-neutral-400 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition" : "opacity-50"]}></i>
                                                             <span class="flex-1 inline-flex justify-center">{label}</span>
                                                         </Tag>
                                                 );
