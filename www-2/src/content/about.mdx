@@ -7,10 +7,15 @@ import { getCollection } from 'astro:content';
 import Team from '../components/about/Team.astro';
 
 export const team = (await getCollection('team')).map(member => member.data);
-export const allLinks = await getCollection('resources');
-export const communityLinks = allLinks.filter(link => link.data.category === 'community').map(link => link.data);
-export const resourceLinks = allLinks.filter(link => link.data.category === 'resources').map(link => link.data);
+export const communityLinks = (await getCollection('community')).map(link => link.data);
 export const podcasts = (await getCollection('podcasts')).map(podcast => podcast.data);
+export const interviews = (await getCollection('interviews'))
+    .filter(entry => entry.id !== 'index')
+    .sort((a, b) => {
+        const dateA = new Date(a.data.created || 0);
+        const dateB = new Date(b.data.created || 0);
+        return dateB.getTime() - dateA.getTime();
+    });
 
 htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext.
 
@@ -18,25 +23,6 @@ htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Event
 
 <div class="not-prose grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     <Team team={team} />
-</div>
-
-## Community
-
-<div class="not-prose grid grid-cols-1 md:grid-cols-2 gap-6">
-    {communityLinks.map((link) => (
-        <a href={link.url}
-           target={link.url.startsWith('http') ? "_blank" : undefined}
-           rel={link.url.startsWith('http') ? "noopener noreferrer" : undefined}
-           class="group border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/30 interact:bg-neutral-100 dark:interact:bg-neutral-800/50 rounded-[3px] p-6 transition-colors flex items-center gap-4 no-underline">
-            <div class="shrink-0 flex items-center justify-center">
-                <i class={`${link.iconClass} size-8 text-neutral-600 dark:text-neutral-400`}></i>
-            </div>
-            <div>
-                <h3 class="text-lg font-chicago text-neutral-900 dark:text-neutral-100 mb-1 group-interact:text-blue-600 dark:group-interact:text-blue-600 transition">{link.name}</h3>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">{link.description}</p>
-            </div>
-        </a>
-    ))}
 </div>
 
 ## Books
@@ -56,21 +42,14 @@ htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Event
     </a>
 </div>
 
-## Resources
+## Interviews
 
-<div class="not-prose grid grid-cols-1 md:grid-cols-2 gap-6">
-    {resourceLinks.map((link) => (
-        <a href={link.url}
-           target={link.url.startsWith('http') ? "_blank" : undefined}
-           rel={link.url.startsWith('http') ? "noopener noreferrer" : undefined}
-           class="group border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/30 interact:bg-neutral-100 dark:interact:bg-neutral-800/50 rounded-[3px] p-6 transition-colors flex items-center gap-4 no-underline">
-            <div class="shrink-0 flex items-center justify-center">
-                <i class={`${link.iconClass} size-8 text-neutral-600 dark:text-neutral-400`}></i>
-            </div>
-            <div>
-                <h3 class="text-lg font-chicago text-neutral-900 dark:text-neutral-100 mb-1 group-interact:text-blue-600 dark:group-interact:text-blue-600 transition">{link.name}</h3>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400">{link.description}</p>
-            </div>
+<div class="not-prose columns-1 sm:columns-2 gap-x-6 gap-y-2">
+    {interviews.map((interview, index) => (
+        <a href={`/interviews/${interview.id}`}
+           class="group flex items-baseline gap-3 py-1.5 px-2 -mx-2 rounded no-underline interact:bg-neutral-100 dark:interact:bg-neutral-800/50 break-inside-avoid mb-1">
+            <span class="text-neutral-400 dark:text-neutral-600 text-xs font-mono tabular-nums shrink-0 select-none">{String(index + 1).padStart(2, '0')}</span>
+            <span class="text-neutral-700 dark:text-neutral-300 group-interact:text-blue-600 dark:group-interact:text-blue-600 text-sm leading-snug">{interview.data.title}</span>
         </a>
     ))}
 </div>
@@ -85,6 +64,25 @@ htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Event
            class="group flex items-baseline gap-3 py-1.5 px-2 -mx-2 rounded no-underline interact:bg-neutral-100 dark:interact:bg-neutral-800/50 break-inside-avoid mb-1">
             <span class="text-neutral-400 dark:text-neutral-600 text-xs font-mono tabular-nums shrink-0 select-none">{String(index + 1).padStart(2, '0')}</span>
             <span class="text-neutral-700 dark:text-neutral-300 group-interact:text-blue-600 dark:group-interact:text-blue-600 text-sm leading-snug">{podcast.name}</span>
+        </a>
+    ))}
+</div>
+
+## Community
+
+<div class="not-prose grid grid-cols-1 md:grid-cols-2 gap-6">
+    {communityLinks.map((link) => (
+        <a href={link.url}
+           target={link.url.startsWith('http') ? "_blank" : undefined}
+           rel={link.url.startsWith('http') ? "noopener noreferrer" : undefined}
+           class="group border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/30 interact:bg-neutral-100 dark:interact:bg-neutral-800/50 rounded-[3px] p-6 transition-colors flex items-center gap-4 no-underline">
+            <div class="shrink-0 flex items-center justify-center">
+                <i class={`${link.iconClass} size-8 text-neutral-600 dark:text-neutral-400`}></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-chicago text-neutral-900 dark:text-neutral-100 mb-1 group-interact:text-blue-600 dark:group-interact:text-blue-600 transition">{link.name}</h3>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">{link.description}</p>
+            </div>
         </a>
     ))}
 </div>

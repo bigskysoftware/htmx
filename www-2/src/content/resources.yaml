@@ -1,14 +1,14 @@
-# Resource Links
+# Resource Links (shown in footer)
 
-- name: Books
+- name: Interviews
+  description: Conversations with hypermedia creators
+  iconClass: "icon-[mdi--account-voice]"
+  url: /interviews
+
+- name: Book
   description: Learn about hypermedia and htmx
   iconClass: "icon-[mdi--book-open-page-variant]"
-  url: /about#books
-
-- name: Podcasts
-  description: Listen to htmx discussions and interviews
-  iconClass: "icon-[lucide--audio-lines]"
-  url: /about#podcasts
+  url: https://hypermedia.systems
 
 - name: RSS
   description: Subscribe to htmx updates
