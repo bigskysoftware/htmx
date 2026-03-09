@@ -3,12 +3,16 @@ import { getCollection } from 'astro:content';
 
 interface Props {
     authors?: string[];
-    created?: Date;
-    modified?: Date;
+    created?: Date | string;
+    modified?: Date | string;
     tags?: string[];
 }
 
-const { authors, created, modified, tags } = Astro.props;
+const { authors, created: rawCreated, modified: rawModified, tags } = Astro.props;
+
+// Ensure dates are Date objects (frontmatter may pass strings or Dates)
+const created = rawCreated ? (rawCreated instanceof Date ? rawCreated : new Date(rawCreated)) : undefined;
+const modified = rawModified ? (rawModified instanceof Date ? rawModified : new Date(rawModified)) : undefined;
 
 // Look up author URLs from team.yaml
 const team = await getCollection('team');
