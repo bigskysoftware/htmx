@@ -48,6 +48,7 @@ const essays = defineCollection({
                 created: z.date().optional(),
         modified: z.date().optional(),
         authors: z.array(z.string()).optional(),
+        tags: z.array(z.enum(['foundations', 'why-hypermedia', 'case-studies', 'guides', 'simplicity', 'meta'])).optional(),
     }).strict(),
 });
 
@@ -114,6 +115,7 @@ const team = defineCollection({
         name: z.string(),
         image: z.string(),
         github: z.string().optional(),
+        url: z.string().url().optional(),
         content: z.string(),
     }).passthrough(),
 })

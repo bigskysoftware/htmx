@@ -31,6 +31,7 @@
 - name: Carson Gross
   image: /src/assets/img/team/grug.png
   github: bigskysoftware
+  url: https://www.cs.montana.edu/users/grug/
   content: |
     An <a href="https://www.cs.montana.edu/users/grug/" target="_blank" rel="noopener noreferrer" class="font-semibold text-blue-600 dark:text-blue-400 hover:underline underline-offset-4 transition">academic</a> with no real-world coding experience.
 
