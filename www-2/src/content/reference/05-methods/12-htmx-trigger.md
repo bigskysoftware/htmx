@@ -3,8 +3,6 @@ title: "htmx.trigger()"
 description: "Trigger custom events"
 ---
 
-# **`htmx.trigger()`**
-
 The `htmx.trigger()` function dispatches a custom event on an element.
 
 ## Syntax

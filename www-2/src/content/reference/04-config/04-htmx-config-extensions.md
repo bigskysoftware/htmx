@@ -3,8 +3,6 @@ title: "htmx.config.extensions"
 description: "Comma-separated list of extensions to load"
 ---
 
-# **`htmx.config.extensions`**
-
 Comma-separated list of htmx extensions to automatically load.
 
 **Default:** `""`

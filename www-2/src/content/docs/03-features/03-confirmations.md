@@ -3,8 +3,6 @@ title: "Confirmations"
 description: "Require user confirmation before issuing requests"
 ---
 
-# Confirming Requests
-
 Often you will want to confirm an action before issuing a request. htmx supports the [
 `hx-confirm`](/reference/attributes/hx-confirm)
 attribute, which allows you to confirm an action using a simple javascript dialog:

@@ -3,8 +3,6 @@ title: "HX-Boosted"
 description: "Indicates a boosted navigation request"
 ---
 
-# HX-Boosted
-
 Set to `true` when the request comes from a boosted element via `hx-boost`.
 
 Boosted elements are regular links and forms that htmx intercepts to enhance.

@@ -3,8 +3,6 @@ title: "Web Components"
 description: "Use htmx inside Web Components and Shadow DOM"
 ---
 
-# Web Components
-
 htmx doesn't automatically scan inside web components' shadow DOM. You must manually initialize it.
 
 After creating your shadow DOM, call [`htmx.process`](/api.md#process):

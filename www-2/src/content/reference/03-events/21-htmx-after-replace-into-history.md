@@ -3,8 +3,6 @@ title: "htmx:after:replace:into:history"
 description: "After a replace state action"
 ---
 
-# **`htmx:after:replace:into:history`**
-
 Fired specifically after a `history.replaceState()` operation (replaces current history entry).
 
 ## When It Fires

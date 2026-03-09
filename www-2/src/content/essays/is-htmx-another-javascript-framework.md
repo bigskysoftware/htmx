@@ -3,6 +3,7 @@ title: "Is htmx Just Another JavaScript Framework?"
 description: "Alexander Petros give a thoughtful exploration of htmx's relationship to traditional JavaScript frameworks, examining how its HTML-first approach and narrow focus on network requests sets it apart. He argues that while htmx exhibits framework-like qualities in how it shapes application architecture, its deep integration with HTML's native capabilities and lack of dependencies makes it a more sustainable choice for building long-lasting web applications."
 created: 2024-01-10
 authors: ["Alexander Petros"]
+tags: ["why-hypermedia"]
 ---
 
 One of the most common criticisms of htmx, usually from people hearing about it for the first time, goes like this:

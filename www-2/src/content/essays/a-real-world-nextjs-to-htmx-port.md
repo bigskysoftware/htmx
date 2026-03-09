@@ -4,6 +4,7 @@ description: "In this case study, Pouria Ezzati examines how migrating a URL sho
 created: 2024-11-07
 modified: 2024-11-07
 authors: [ "Pouria Ezzati" ]
+tags: ["case-studies"]
 ---
 
 Over 6 years ago, I created [an open source URL shortener](https://github.com/thedevs-network/kutt) with Next.js and

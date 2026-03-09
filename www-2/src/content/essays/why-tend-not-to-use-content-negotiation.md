@@ -4,6 +4,7 @@ description: "In this essay, Carson Gross explores his preference for separating
 created: 2023-11-18
 modified: 2023-11-18
 authors: [ "Carson Gross" ]
+tags: ["guides"]
 ---
 
 I have written a lot about Hypermedia APIs vs. Data (JSON) APIs,

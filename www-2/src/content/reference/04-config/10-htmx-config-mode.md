@@ -3,8 +3,6 @@ title: "htmx.config.mode"
 description: "Set request mode for fetch API"
 ---
 
-# **`htmx.config.mode`**
-
 Sets the `mode` option for fetch requests.
 
 **Default:** `"same-origin"`

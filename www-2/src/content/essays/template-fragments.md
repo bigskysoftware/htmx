@@ -4,6 +4,7 @@ description: "In this essay, Carson Gross explores the concept of template fragm
 created: 2022-08-03
 modified: 2023-03-18
 authors: ["Carson Gross"]
+tags: ["guides"]
 ---
 
 Template fragments are a relatively rare Server Side Rendering (SSR) template library feature that allow you to render a

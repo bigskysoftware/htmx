@@ -3,8 +3,6 @@ title: "htmx:before:cleanup"
 description: "Before htmx removes element data"
 ---
 
-# **`htmx:before:cleanup`**
-
 Fired before htmx removes listeners and internal data from an element.
 
 ## When It Fires

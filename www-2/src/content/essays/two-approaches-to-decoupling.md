@@ -4,6 +4,7 @@ description: "Carson Gross explores two different approaches to decoupling in we
 created: 2022-05-01
 modified: 2022-05-01
 authors: ["Carson Gross"]
+tags: ["foundations"]
 ---
 
 > The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on

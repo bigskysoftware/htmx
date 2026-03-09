@@ -3,8 +3,6 @@ title: "htmx.config.logAll"
 description: "Log all htmx events to console"
 ---
 
-# **`htmx.config.logAll`**
-
 When set to `true`, htmx will log all events to the console.
 
 **Default:** `false`

@@ -3,8 +3,6 @@ title: "htmx.ajax()"
 description: "Issues an htmx-style ajax request"
 ---
 
-# **`htmx.ajax()`**
-
 The `htmx.ajax()` function issues an AJAX request with htmx semantics.
 
 ## Syntax

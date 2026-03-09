@@ -3,8 +3,6 @@ title: "hx-post"
 description: "Issue POST request to specified URL"
 ---
 
-# hx-post
-
 The `hx-post` attribute will cause an element to issue a `POST` to the specified URL and swap
 the HTML into the DOM using a swap strategy.
 

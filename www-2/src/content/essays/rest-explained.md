@@ -4,6 +4,7 @@ description: "In this essay, Carson Gross presents the core concepts of REST (Re
 created: 2021-07-13
 modified: 2022-02-06
 authors: ["Carson Gross"]
+tags: ["foundations"]
 ---
 
 There is no topic that generates more confusion in web development than the idea of Representational State Transfer,

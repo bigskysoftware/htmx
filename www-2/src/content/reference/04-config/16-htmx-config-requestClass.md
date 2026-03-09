@@ -3,8 +3,6 @@ title: "htmx.config.requestClass"
 description: "CSS class applied during requests"
 ---
 
-# **`htmx.config.requestClass`**
-
 CSS class automatically applied to the element making a request.
 
 **Default:** `"htmx-request"`

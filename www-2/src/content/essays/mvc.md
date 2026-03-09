@@ -4,6 +4,7 @@ description: "Carson Gross give an introduction to the Model/View/Controller (MV
 created: 2024-01-16
 modified: 2024-01-16
 authors: [ "Carson Gross" ]
+tags: ["guides"]
 ---
 
 A common objection I see to using htmx and hypermedia is something along the lines of:

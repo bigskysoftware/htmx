@@ -3,8 +3,6 @@ title: "hx-trigger"
 description: "Specify event that triggers request"
 ---
 
-# hx-trigger
-
 The `hx-trigger` attribute allows you to specify what triggers an AJAX request.
 
 ## Syntax

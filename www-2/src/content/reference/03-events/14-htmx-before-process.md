@@ -3,8 +3,6 @@ title: "htmx:before:process"
 description: "Before htmx processes a DOM node"
 ---
 
-# **`htmx:before:process`**
-
 Fired before htmx begins processing a DOM node or subtree to attach htmx behaviors.
 
 ## When It Fires

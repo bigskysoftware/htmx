@@ -3,8 +3,6 @@ title: "Debugging"
 description: "Debug htmx issues with browser dev tools"
 ---
 
-# Debugging Tools
-
 Declarative and event driven programming with htmx (or any other declarative language) can be a wonderful and highly
 productive
 activity, but one disadvantage when compared with imperative approaches is that it can be trickier to debug.

@@ -3,8 +3,6 @@ title: "Synchronization"
 description: "Coordinate requests between multiple elements"
 ---
 
-# Synchronization
-
 Often you want to coordinate the requests between two elements. For example, you may want a request from one element
 to supersede the request of another element, or to wait until the other element's request has finished.
 

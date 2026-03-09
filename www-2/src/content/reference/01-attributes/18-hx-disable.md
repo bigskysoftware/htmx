@@ -3,8 +3,6 @@ title: "hx-disable"
 description: "Disable elements during request"
 ---
 
-# hx-disable
-
 The `hx-disable` attribute allows you to specify elements that will have the `disabled` attribute
 added to them for the duration of the request.
 

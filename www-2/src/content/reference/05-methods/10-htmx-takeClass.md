@@ -3,8 +3,6 @@ title: "htmx.takeClass()"
 description: "Move a class to a specific element"
 ---
 
-# **`htmx.takeClass()`**
-
 The `htmx.takeClass()` function removes a class from all sibling elements and adds it to the target element.
 
 ## Syntax

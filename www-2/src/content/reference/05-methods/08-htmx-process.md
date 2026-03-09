@@ -3,8 +3,6 @@ title: "htmx.process()"
 description: "Process htmx attributes on element"
 ---
 
-# **`htmx.process()`**
-
 Processes htmx attributes on the specified element and its descendants, initializing htmx functionality.
 
 ## Syntax

@@ -4,6 +4,7 @@ description: "In this essay, Carson Gross explores HATEOAS (Hypermedia as the En
 created: 2021-10-16
 modified: 2022-02-06
 authors: [ "Carson Gross" ]
+tags: ["foundations"]
 #show_title: false
 #show_author: false
 ---

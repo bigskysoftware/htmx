@@ -4,6 +4,7 @@ description: "If you split your API into Data and Application APIs, you should c
 created: 2021-09-16
 modified: 2022-02-06
 authors: ["Carson Gross"]
+tags: ["guides"]
 ---
 
 **TLDR:** If you split your API into Data and Application

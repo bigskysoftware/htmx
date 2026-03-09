@@ -4,6 +4,7 @@ description: "In this essay, Carson Gross explores the fundamental differences b
 created: 2021-07-17
 modified: 2022-04-07
 authors: [ "Carson Gross" ]
+tags: ["foundations"]
 ---
 
 A *hypermedia* API is an API that returns [hypermedia](https://en.wikipedia.org/wiki/Hypermedia), typically HTML over

@@ -4,6 +4,7 @@ description: "In this guide, Carson Gross provides ten practical tips to help de
 created: 2022-06-13
 modified: 2023-06-13
 authors: ["Carson Gross"]
+tags: ["guides"]
 ---
 
 Building web applications using traditional Server-Side Rendering (SSR) or, saying the same thing another way, building

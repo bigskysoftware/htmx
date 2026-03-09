@@ -3,8 +3,6 @@ title: "Boosting"
 description: "Convert regular links and forms to use AJAX"
 ---
 
-# Boosting
-
 Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/reference/attributes/hx-boost) attribute. This
 attribute will convert all anchor tags and forms into AJAX requests that, by default, target the body of the page.
 

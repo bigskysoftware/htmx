@@ -3,8 +3,6 @@ title: "htmx:after:viewTransition"
 description: "After View Transition completes"
 ---
 
-# **`htmx:after:viewTransition`**
-
 Fired after a View Transition animation completes.
 
 ## When It Fires

@@ -4,6 +4,7 @@ description: "These page provides some pre-written critiques of the common misus
 created: 2023-06-26
 modified: 2023-06-26
 authors: [ "Carson Gross" ]
+tags: ["foundations"]
 #show_title: false
 #show_author: false
 ---

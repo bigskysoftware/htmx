@@ -4,8 +4,6 @@ description: "Learn to think in hypermedia rather than client-side state"
 thumbnail: "docs/mental-model.svg"
 ---
 
-# Mental Model
-
 <!-- TODO: Add section for developers coming from React/Vue/Svelte -
      cover the mindset shift from "client builds UI from JSON" to
      "server sends ready-to-render HTML". Address common misconceptions

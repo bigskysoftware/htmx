@@ -3,8 +3,6 @@ title: "htmx:after:init"
 description: "After an element is fully initialized"
 ---
 
-# **`htmx:after:init`**
-
 Fired after an element has been fully initialized and all event listeners have been attached.
 
 ## When It Fires

@@ -3,8 +3,6 @@ title: "htmx:after:cleanup"
 description: "After listeners and data are removed"
 ---
 
-# **`htmx:after:cleanup`**
-
 Fired after htmx has removed all listeners and internal data from an element.
 
 ## When It Fires

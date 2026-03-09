@@ -3,8 +3,6 @@ title: "hx-status"
 description: "Handle responses by status code"
 ---
 
-# hx-status
-
 The `hx-status` attribute allows you to specify different swap behaviors based on the HTTP status code of the response.
 
 This attribute uses a pattern matching syntax where you specify the status code(s) followed by the swap configuration.

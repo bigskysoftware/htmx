@@ -3,8 +3,6 @@ title: "If-None-Match"
 description: "ETag from previous response for caching"
 ---
 
-# If-None-Match
-
 Sent when the element has a cached ETag from a previous response.
 
 Use this for conditional requests. Return `304 Not Modified` if content hasn't changed to save bandwidth.

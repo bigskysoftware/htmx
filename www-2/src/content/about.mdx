@@ -12,8 +12,6 @@ export const communityLinks = allLinks.filter(link => link.data.category === 'co
 export const resourceLinks = allLinks.filter(link => link.data.category === 'resources').map(link => link.data);
 export const podcasts = (await getCollection('podcasts')).map(podcast => podcast.data);
 
-# About
-
 htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext.
 
 ## Team

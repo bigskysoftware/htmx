@@ -3,6 +3,7 @@ title: "Web Components Work Great with htmx"
 description: "This essay by Alexander Petros explores how Web Components can be integrated seamlessly with htmx, a library that enables dynamic web pages through HTML. It discusses the flexibility of htmx in handling interactive elements like Web Components alongside traditional server-driven approaches, such as multi-page apps. By using the example of an editable carnival ride table, Alexander demonstrates how Web Components simplify functionality without the need for heavy JavaScript frameworks, highlighting their compatibility with htmx's DOM-based lifecycle. Alexander also addresses potential challenges and how htmx manages them efficiently."
 created: 2024-11-13
 authors: ["Alexander Petros"]
+tags: ["guides"]
 ---
 
 People interested in htmx often ask us about component libraries.

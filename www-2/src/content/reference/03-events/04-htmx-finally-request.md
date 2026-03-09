@@ -3,8 +3,6 @@ title: "htmx:finally:request"
 description: "At the end of request lifecycle"
 ---
 
-# **`htmx:finally:request`**
-
 Fired at the very end of the request cycle, whether successful or failed.
 
 ## When It Fires

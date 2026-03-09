@@ -3,8 +3,6 @@ title: "hx-put"
 description: "Issue PUT request to specified URL"
 ---
 
-# hx-put
-
 The `hx-put` attribute will cause an element to issue a `PUT` to the specified URL and swap
 the HTML into the DOM using a swap strategy.
 

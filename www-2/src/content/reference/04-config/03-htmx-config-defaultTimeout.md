@@ -3,8 +3,6 @@ title: "htmx.config.defaultTimeout"
 description: "Default timeout for requests in milliseconds"
 ---
 
-# **`htmx.config.defaultTimeout`**
-
 Default timeout for all htmx requests.
 
 **Default:** `60000` (60 seconds)

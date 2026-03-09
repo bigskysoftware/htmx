@@ -3,8 +3,6 @@ title: "htmx.config.morphIgnore"
 description: "Attributes to ignore during morphing"
 ---
 
-# **`htmx.config.morphIgnore`**
-
 Array of attribute names to ignore when morphing DOM elements.
 
 **Default:** `["data-htmx-powered"]`

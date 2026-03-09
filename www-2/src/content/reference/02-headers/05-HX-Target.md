@@ -3,8 +3,6 @@ title: "HX-Target"
 description: "The element that will receive the response"
 ---
 
-# HX-Target
-
 The `HX-Target` header identifies the element that will receive the response.
 
 This header is only included when a target is specified.

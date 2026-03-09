@@ -3,8 +3,6 @@ title: "hx-select-oob"
 description: "Select content for out-of-band swap"
 ---
 
-# hx-select-oob
-
 The `hx-select-oob` attribute allows you to select content from a response to be swapped in via an out-of-band (OOB)
 swap, separate from the main content swap.
 

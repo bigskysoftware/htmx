@@ -3,8 +3,6 @@ title: "hx-swap-oob"
 description: "Swap element out of band"
 ---
 
-# hx-swap-oob
-
 The `hx-swap-oob` attribute allows you to specify that some content in a response should be
 swapped into the DOM somewhere other than the target, that is "Out of Band". This allows you to piggyback updates to
 other element updates on a response.

@@ -3,8 +3,6 @@ title: "Client-Side Scripting"
 description: "Use events and hx-on to integrate JavaScript"
 ---
 
-# Client-Side Scripting
-
 <details class="warning">
 <summary>Changes in htmx 4.0</summary>
 

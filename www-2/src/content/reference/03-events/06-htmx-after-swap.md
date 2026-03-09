@@ -3,8 +3,6 @@ title: "htmx:after:swap"
 description: "After content is swapped into DOM"
 ---
 
-# **`htmx:after:swap`**
-
 Fired after new content has been swapped into the DOM.
 
 ## When It Fires

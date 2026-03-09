@@ -3,6 +3,7 @@ title: "View Transitions"
 description: "Carson Gross explores the evolution of web applications and the significance of view transitions in improving user experience. He discusses the limitations of traditional web 01-frontend, where full-page refreshes create an unpleasant experience, and how modern technologies like CSS transitions and the View Transition API aim to enhance aesthetic smoothness. Carson explains how htmx leverages the View Transition API to bring seamless transitions to hypermedia-driven applications, offering an alternative to single-page applications (SPAs) and highlighting its potential once widely available in HTML."
 created: 2023-04-11
 authors: [ "Carson Gross" ]
+tags: ["guides"]
 ---
 
 We have asserted, for a while now, that a major reason that many people have adopted the SPA architecture for web

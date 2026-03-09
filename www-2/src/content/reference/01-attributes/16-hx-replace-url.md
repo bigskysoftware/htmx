@@ -3,8 +3,6 @@ title: "hx-replace-url"
 description: "Replace current URL in browser history"
 ---
 
-# hx-replace-url
-
 The `hx-replace-url` attribute allows you to replace the current url of the
 browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
 

@@ -4,6 +4,7 @@ description: "Carson Gross explores the Locality of Behaviour (LoB) principle, w
 created: 2020-05-29
 modified: 2023-01-20
 authors: [ "Carson Gross" ]
+tags: ["simplicity"]
 ---
 
 > "The primary feature for easy maintenance is locality: Locality is that characteristic of source code that enables a

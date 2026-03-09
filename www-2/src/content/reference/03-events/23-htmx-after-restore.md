@@ -3,8 +3,6 @@ title: "htmx:after:restore"
 description: "After preserved elements are restored"
 ---
 
-# **`htmx:after:restore`**
-
 Fired after elements marked with `hx-preserve` have been moved back into their original positions.
 
 ## When It Fires

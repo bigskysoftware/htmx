@@ -3,8 +3,6 @@ title: "htmx.config.includeIndicatorCSS"
 description: "Include default indicator CSS"
 ---
 
-# **`htmx.config.includeIndicatorCSS`**
-
 When set to `true`, htmx includes default CSS for the indicator class.
 
 **Default:** `true`

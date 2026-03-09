@@ -4,6 +4,7 @@ description: "This article provides a critical analysis of htmx, a web developme
 created: 2024-02-01
 modified: 2024-04-01
 authors: ["Carson Gross"]
+tags: ["meta"]
 ---
 
 I have been following [htmx](https://htmx.org) for a while now. I thought it was a somewhat funny/cringey meme

@@ -3,8 +3,6 @@ title: "intersect"
 description: "Element enters viewport"
 ---
 
-# **`intersect`**
-
 Fired when an element enters the viewport, detected via IntersectionObserver.
 
 ## When It Fires

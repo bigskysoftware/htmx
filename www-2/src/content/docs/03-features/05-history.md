@@ -3,8 +3,6 @@ title: "History"
 description: "Integrate with browser history and navigation"
 ---
 
-# History Support
-
 <details class="warning">
 <summary>Changes in htmx 4.0</summary>
 

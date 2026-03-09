@@ -3,8 +3,6 @@ title: "hx-config"
 description: "Configure request behavior with JSON"
 ---
 
-# hx-config
-
 The `hx-config` attribute allows you to configure request behavior using JSON.
 
 ## Syntax

@@ -3,8 +3,6 @@ title: "hx-action"
 description: "Specify URL to receive request"
 ---
 
-# hx-action
-
 The `hx-action` attribute specifies the URL that will receive the request.
 
 ## Syntax

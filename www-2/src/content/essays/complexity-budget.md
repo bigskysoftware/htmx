@@ -4,6 +4,7 @@ description: "In this essay, Carson Gross explores the concept of a complexity b
 created: 2020-10-29
 modified: 2024-01-21
 authors: ["Carson Gross"]
+tags: ["simplicity"]
 ---
 
 Every software project involves managing a complexity budget.

@@ -3,8 +3,6 @@ title: "CSS Transitions"
 description: "Animate content changes with CSS transitions"
 ---
 
-# CSS Transitions
-
 htmx makes it easy to
 use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without
 javascript. Consider this HTML content:

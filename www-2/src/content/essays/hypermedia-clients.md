@@ -4,6 +4,7 @@ description: "In this essay, Carson Gross explores the critical but often overlo
 created: 2023-01-28
 modified: 2023-01-29
 authors: ["Carson Gross"]
+tags: ["foundations"]
 ---
 
 Often, when we are being insufferably pedantic in [online discussions](https://news.ycombinator.com/item?id=32141027)

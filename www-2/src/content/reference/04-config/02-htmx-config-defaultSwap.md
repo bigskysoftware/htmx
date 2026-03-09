@@ -3,8 +3,6 @@ title: "htmx.config.defaultSwap"
 description: "Default swap method for responses"
 ---
 
-# **`htmx.config.defaultSwap`**
-
 Sets the default swap method when `hx-swap` is not specified.
 
 **Default:** `"innerHTML"`

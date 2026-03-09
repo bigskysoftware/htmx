@@ -3,8 +3,6 @@ title: "Using Extensions"
 description: "Install and activate htmx extensions in your app"
 ---
 
-# Using Extensions
-
 In htmx 4, extensions hook into standard events rather than callback extension points. They are lightweight with no
 performance penalty.
 

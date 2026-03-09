@@ -3,8 +3,6 @@ title: "htmx.config.sse"
 description: "Server-Sent Events configuration"
 ---
 
-# **`htmx.config.sse`**
-
 Configuration object for Server-Sent Events (SSE) behavior.
 
 **Default:**

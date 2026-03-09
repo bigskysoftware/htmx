@@ -3,8 +3,6 @@ title: "htmx:after:request"
 description: "After response is received"
 ---
 
-# **`htmx:after:request`**
-
 Fired immediately after the `fetch()` call resolves and the response is received.
 
 ## When It Fires

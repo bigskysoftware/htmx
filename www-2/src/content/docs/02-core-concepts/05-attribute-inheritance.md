@@ -3,8 +3,6 @@ title: "Attribute Inheritance"
 description: "Hoist attributes to parents to reduce repetition"
 ---
 
-# Attribute Inheritance
-
 <details class="warning">
 <summary>Changes in htmx 4.0</summary>
 
@@ -29,7 +27,6 @@ Consider the following htmx:
 Here we have a duplicate `hx-confirm` attribute.
 
 We can hoist this attribute to a parent element using the `:inherited` modifier:
-
 
 ```html
 <div hx-confirm:inherited="Are you sure?">

@@ -3,8 +3,6 @@ title: "hx-vals"
 description: "Add values to request parameters"
 ---
 
-# hx-vals
-
 Adds values to the parameters that will be submitted with the request.
 
 ## Syntax

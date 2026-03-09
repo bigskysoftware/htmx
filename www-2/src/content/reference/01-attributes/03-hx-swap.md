@@ -3,8 +3,6 @@ title: "hx-swap"
 description: "Specify the method for swap"
 ---
 
-# hx-swap
-
 Controls where the response content goes.
 
 Defaults to `innerHTML` (configurable via [`htmx.config.defaultSwapStyle`](/reference/javascript-api/htmx-config-defaultSwap))

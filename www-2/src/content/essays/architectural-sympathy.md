@@ -4,9 +4,8 @@ description: "In this essay, Carson Gross explores architectural sympathy as a s
 created: 2023-04-06
 modified: 2023-04-06
 authors: [ "Carson Gross" ]
+tags: ["meta"]
 ---
-
-# Mechanical Sympathy & Architectural Sympathy
 
 > You don’t have to be an engineer to be a racing driver, but you do have to have Mechanical Sympathy.
 

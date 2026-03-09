@@ -3,8 +3,6 @@ title: "htmx.on()"
 description: "Listen for htmx events"
 ---
 
-# **`htmx.on()`**
-
 The `htmx.on()` function registers an event listener for htmx events.
 
 ## Syntax

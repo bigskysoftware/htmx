@@ -3,8 +3,6 @@ title: "htmx.onLoad()"
 description: "Execute callback when elements are loaded"
 ---
 
-# **`htmx.onLoad()`**
-
 The `htmx.onLoad()` function registers a callback to execute when new content is processed by htmx.
 
 ## Syntax

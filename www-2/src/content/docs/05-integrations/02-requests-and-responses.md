@@ -3,8 +3,6 @@ title: "HTTP Integration"
 description: "Work with HTTP headers and response status codes"
 ---
 
-# HTTP Headers & Status Codes
-
 Htmx expects responses to the AJAX requests it makes to be HTML, typically HTML fragments (although a full HTML
 document, matched with a [hx-select](/reference/attributes/hx-select) tag can be useful too).
 

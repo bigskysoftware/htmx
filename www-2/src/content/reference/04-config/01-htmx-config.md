@@ -3,8 +3,6 @@ title: "htmx.config"
 description: "Configure htmx behavior globally"
 ---
 
-# **`htmx.config`**
-
 The `htmx.config` object holds the current htmx configuration. You can modify it in JavaScript or set values using a `<meta>` tag.
 
 ## Configuration via Meta Tag

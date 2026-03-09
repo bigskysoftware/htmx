@@ -3,8 +3,6 @@ title: "hx-preload"
 description: "Preload content before user triggers request"
 ---
 
-# hx-preload
-
 **Note:** This is an extension attribute. To use it, you must include the preload extension.
 
 The `hx-preload` attribute allows you to preload content before the user actually triggers the request, improving

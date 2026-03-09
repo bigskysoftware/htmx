@@ -3,8 +3,6 @@ title: "htmx.registerExtension()"
 description: "Register htmx extension"
 ---
 
-# **`htmx.registerExtension()`**
-
 Registers an htmx extension. Alias for `htmx.defineExtension()`.
 
 ## Syntax

@@ -3,8 +3,6 @@ title: "Caching"
 description: "Set up HTTP caching with ETags for performance"
 ---
 
-# Caching
-
 htmx works with standard [HTTP caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching)
 mechanisms out of the box.
 

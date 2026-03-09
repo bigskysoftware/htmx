@@ -3,8 +3,6 @@ title: "hx-preserve"
 description: "Preserve element during swaps"
 ---
 
-# hx-preserve
-
 The `hx-preserve` attribute allows you to keep an element unchanged during HTML replacement.
 Elements with `hx-preserve` set are preserved by `id` when htmx updates any ancestor element.
 You *must* set an unchanging `id` on elements for `hx-preserve` to work.

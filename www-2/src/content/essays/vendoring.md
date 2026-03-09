@@ -4,6 +4,7 @@ description: "Carson Gross explores the concept of 'vendoring' in software devel
 created: 2025-01-27
 modified: 2025-01-27
 authors: [ "Carson Gross" ]
+tags: ["simplicity", "guides"]
 ---
 
 "Vendoring" software is a technique where you copy the source of another project directly into your own project.

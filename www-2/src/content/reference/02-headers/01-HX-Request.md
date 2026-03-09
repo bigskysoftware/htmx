@@ -3,8 +3,6 @@ title: "HX-Request"
 description: "Indicates a request was made by htmx"
 ---
 
-# HX-Request
-
 The `HX-Request` header indicates the request was made by htmx.
 
 It's value is always `true`.

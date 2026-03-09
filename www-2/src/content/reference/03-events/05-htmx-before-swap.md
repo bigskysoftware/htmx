@@ -3,8 +3,6 @@ title: "htmx:before:swap"
 description: "Before content is swapped into DOM"
 ---
 
-# **`htmx:before:swap`**
-
 Fired after response content is parsed but before it's inserted or swapped into the DOM.
 
 ## When It Fires

@@ -4,6 +4,7 @@ description: "In this essay, Sahil Lavingia, CEO of Gumroad, explains why the co
 created: 2024-09-30
 modified: 2024-09-30
 authors: ["Sahil Lavingia"]
+tags: ["case-studies"]
 ---
 
 At Gumroad, we recently embarked on a new project called [Helper](https://helper.ai). As the CEO, I was initially quite

@@ -3,6 +3,7 @@ title: "Why htmx Does Not Have a Build Step"
 description: "In this essay, Alexander Petros explores the reasons why the htmx JavaScript library does not include a build step, detailing the benefits of its simple, dependency-free structure. He highlights the longevity of plain JavaScript, the improved debugging experience, enforced code clarity, and the tradeoffs of avoiding tools like TypeScript or ES6. Alexander also acknowledges the potential limitations of this approach and discusses how these tradeoffs align with htmx's goals of simplicity and developer choice in web development."
 created: 2023-08-19
 authors: ["Alexander Petros"]
+tags: ["simplicity"]
 ---
 
 A recurring question from some htmx contributors is why htmx isn't written in TypeScript, or, for that matter, why htmx

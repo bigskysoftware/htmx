@@ -3,8 +3,6 @@ title: "htmx:process:{type}"
 description: "Custom template processing"
 ---
 
-# **`htmx:process:{type}`**
-
 Internal event fired when a `<template>` tag has a custom `type` attribute that needs processing.
 
 ## When It Fires

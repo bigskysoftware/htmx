@@ -3,8 +3,6 @@ title: "hx-encoding"
 description: "Set request encoding type"
 ---
 
-# hx-encoding
-
 The `hx-encoding` attribute allows you to switch the request encoding from the usual `application/x-www-form-urlencoded`
 encoding to `multipart/form-data`, usually to support file uploads in an ajax request.
 

@@ -4,6 +4,7 @@ description: "In this collection of tweets, Carson Gross explores unconventional
 created: 2024-12-07
 modified: 2024-12-07
 authors: [ "Carson Gross" ]
+tags: ["simplicity"]
 ---
 
 ## Or, Watching Myself Lose My Mind In Real Time...

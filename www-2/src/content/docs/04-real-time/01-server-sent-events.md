@@ -3,8 +3,6 @@ title: "Streaming Responses"
 description: "Stream server updates using Server-Sent Events"
 ---
 
-# Streaming Responses
-
 htmx 4 has built-in support for Streaming Responses Server-Sent Events (SSE).
 
 The typical `hx-get`, `hx-post`, `hx-put`, `hx-patch`, or `hx-delete` attributes can trigger a streaming response. When

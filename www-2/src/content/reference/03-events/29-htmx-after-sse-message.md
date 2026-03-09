@@ -3,8 +3,6 @@ title: "htmx:after:sse:message"
 description: "After SSE message is processed"
 ---
 
-# **`htmx:after:sse:message`**
-
 Fired after an SSE message has been processed and swapped into the DOM.
 
 ## When It Fires

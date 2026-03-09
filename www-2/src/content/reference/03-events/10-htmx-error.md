@@ -3,8 +3,6 @@ title: "htmx:error"
 description: "When an error occurs during request"
 ---
 
-# **`htmx:error`**
-
 Fired when an exception occurs during the request or swap process.
 
 ## When It Fires

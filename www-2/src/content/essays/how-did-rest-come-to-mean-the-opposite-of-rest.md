@@ -4,6 +4,7 @@ description: "In this article, Carson Gross explores how the term REST (Represen
 created: 2022-07-18
 modified: 2022-11-26
 authors: ["Carson Gross"]
+tags: ["foundations"]
 ---
 
 <style>

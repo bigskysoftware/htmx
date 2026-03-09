@@ -3,8 +3,6 @@ title: "hx-patch"
 description: "Issue PATCH request to specified URL"
 ---
 
-# hx-patch
-
 The `hx-patch` attribute will cause an element to issue a `PATCH` to the specified URL and swap
 the HTML into the DOM using a swap strategy.
 

@@ -3,8 +3,6 @@ title: "HX-Source"
 description: "Identifies the element that triggered the request"
 ---
 
-# HX-Source
-
 Contains the element that triggered the request. Format is `tag#id` like `button#submit`.
 
 Elements without an ID use only the tag name like `div` or `form`.

@@ -4,8 +4,6 @@ description: "Install htmx via CDN, npm, or direct download"
 thumbnail: "docs/installation.svg"
 ---
 
-# Installation
-
 htmx is a single JavaScript file. No dependencies. No build step required.
 
 ## Method 1: CDN (Fastest)

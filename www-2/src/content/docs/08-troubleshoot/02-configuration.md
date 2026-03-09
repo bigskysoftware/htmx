@@ -3,8 +3,6 @@ title: "Configuration"
 description: "Configure htmx's global settings and options"
 ---
 
-# Configuration Options
-
 Htmx has configuration options that can be accessed either programmatically or declaratively.
 
 They are listed below:

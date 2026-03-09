@@ -4,6 +4,7 @@ description: "In this article, Carson Gross compares several alternative librari
 created: 2025-01-12
 modified: 2024-01-12
 authors: [ "Carson Gross" ]
+tags: ["meta"]
 ---
 
 [htmx](/) is only one of many different libraries & frameworks that take the

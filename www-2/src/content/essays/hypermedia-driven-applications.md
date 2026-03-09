@@ -4,6 +4,7 @@ description: "In this essay, Carson Gross explains the Hypermedia-Driven Applica
 created: 2022-02-06
 modified: 2022-10-18
 authors: ["Carson Gross"]
+tags: ["foundations"]
 ---
 
 ## Genesis

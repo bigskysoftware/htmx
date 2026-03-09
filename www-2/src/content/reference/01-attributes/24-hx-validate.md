@@ -3,8 +3,6 @@ title: "hx-validate"
 description: "Validate before submitting request"
 ---
 
-# hx-validate
-
 The `hx-validate` attribute will cause an element to validate itself by way of
 the [HTML5 Validation API](/docs.md#validation)
 before it submits a request.

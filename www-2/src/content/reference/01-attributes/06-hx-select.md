@@ -3,8 +3,6 @@ title: "hx-select"
 description: "Select content to swap from response"
 ---
 
-# hx-select
-
 The `hx-select` attribute allows you to select the content you want swapped from a response. The value of
 this attribute is a CSS query selector of the element or elements to select from the response.
 

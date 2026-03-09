@@ -3,8 +3,6 @@ title: "Multi-Target Updates"
 description: "Update multiple elements from a single response"
 ---
 
-# Multi-Target Updates
-
 ## The Problem
 
 htmx requests normally update one target element. Sometimes you need to update multiple parts of the page at once.

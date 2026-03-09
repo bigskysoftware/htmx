@@ -3,8 +3,6 @@ title: "htmx:after:implicitInheritance"
 description: "After implicit inheritance is applied"
 ---
 
-# **`htmx:after:implicitInheritance`**
-
 Internal event fired when htmx handles implicit attribute inheritance from parent to child elements.
 
 ## When It Fires

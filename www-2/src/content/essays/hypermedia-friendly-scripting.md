@@ -4,6 +4,7 @@ description: "In this essay, Carson Gross discusses hypermedia-friendly scriptin
 created: 2022-11-17
 modified: 2022-11-29
 authors: ["Carson Gross"]
+tags: ["guides"]
 ---
 
 > The final addition to our constraint set for REST comes from the code-on-demand style of Section 3.5.3 (Figure 5-8).

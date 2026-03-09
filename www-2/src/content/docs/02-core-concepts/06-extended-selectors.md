@@ -3,8 +3,6 @@ title: "Extended Selectors"
 description: "Use CSS selectors extended with relative targeting"
 ---
 
-# Extended Selectors
-
 Extended selectors let you target elements in flexible ways.
 
 Use them with [`hx-target`](/reference/attributes/hx-target), [`hx-sync`](/reference/attributes/hx-sync), and other attributes that accept selectors.

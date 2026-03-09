@@ -3,8 +3,6 @@ title: "htmx.parseInterval()"
 description: "Parse time intervals to milliseconds"
 ---
 
-# **`htmx.parseInterval()`**
-
 The `htmx.parseInterval()` function parses time interval strings into milliseconds.
 
 ## Syntax

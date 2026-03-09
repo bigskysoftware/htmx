@@ -3,8 +3,6 @@ title: "htmx.config.noSwap"
 description: "HTTP status codes that skip swap"
 ---
 
-# **`htmx.config.noSwap`**
-
 Array of HTTP status codes for which htmx will not perform a content swap.
 
 **Default:** `[204, 304]`

@@ -3,8 +3,6 @@ title: "load"
 description: "Fired immediately after initialization"
 ---
 
-# **`load`**
-
 Fired immediately after element initialization, mimicking the standard DOM `load` event.
 
 ## When It Fires

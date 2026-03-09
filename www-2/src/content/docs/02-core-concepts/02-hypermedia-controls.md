@@ -3,8 +3,6 @@ title: "Hypermedia Controls"
 description: "Understand the request-response cycle from trigger to swap"
 ---
 
-# Hypermedia Controls
-
 htmx extends HTML with attributes that control how requests are made and how responses update the page.
 
 ## Making Requests
@@ -113,7 +111,6 @@ attribute to specify which event will cause the request.
 
 Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
 
-
 ```html
 <div hx-post="/mouse_entered" hx-trigger="mouseenter">
     Mouse Trap
@@ -124,7 +121,6 @@ Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
 
 A trigger can also have additional modifiers that change its behavior. For example, if you want a request to only
 happen once, you can use the `once` modifier for the trigger:
-
 
 ```html
 <div hx-post="/mouse_entered" hx-trigger="mouseenter once">
@@ -147,7 +143,6 @@ Multiple triggers can be specified in the [hx-trigger](/reference/attributes/hx-
 
 You can use these features to implement many common UX patterns, such as [Active Search](/patterns/active-search):
 
-
 ```html
 <input type="text"
        name="q"
@@ -169,7 +164,6 @@ Trigger filters allow you to place a filtering javascript expression after the e
 if the filter does not return true.
 
 Here is an example that triggers only on a Shift-Click of the element
-
 
 ```html
 <div hx-get="/shift_clicked" hx-trigger="click[shiftKey]">
@@ -202,7 +196,6 @@ resource-light because it does not maintain a constant network connection, and i
 
 In htmx you can implement polling via the `every` syntax in the [`hx-trigger`](/reference/attributes/hx-trigger) attribute:
 
-
 ```html
 <div hx-get="/news" hx-trigger="every 2s"></div>
 ```
@@ -215,7 +208,6 @@ This tells htmx:
 
 Another technique that can be used to achieve polling in htmx is "load polling", where an element specifies
 a `load` trigger along with a delay, and replaces itself with the response:
-
 
 ```html
 <div hx-get="/messages"
@@ -241,7 +233,6 @@ invisible but present in the DOM.
 When htmx issues a request, it will put a `htmx-request` class onto an element (either the requesting element or
 another element, if specified). The `htmx-request` class will cause a child element with the `htmx-indicator` class
 on it to transition to an opacity of `1`, showing the indicator.
-
 
 ```html
 <button hx-get="/click">
@@ -273,7 +264,6 @@ mechanism you can create your own CSS transition like so:
 If you want the `htmx-request` class added to a different element, you can use
 the [hx-indicator](/reference/attributes/hx-indicator)
 attribute with a CSS selector to do so:
-
 
 ```html
 <div>
@@ -364,8 +354,6 @@ preserving things like focus, video state, etc. by mutating existing nodes in-pl
 cost of more CPU.
 
 Consider this HTML:
-
-
 
 ```html
 <div id="video-elt">

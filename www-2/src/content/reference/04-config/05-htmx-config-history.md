@@ -3,8 +3,6 @@ title: "htmx.config.history"
 description: "Enable history support"
 ---
 
-# **`htmx.config.history`**
-
 When set to `true`, htmx will manage browser history for navigation.
 
 **Default:** `true`

@@ -3,8 +3,6 @@ title: "Best Practices"
 description: "Protect your htmx application from common attacks"
 ---
 
-# Best Practices
-
 htmx allows you to define logic directly in your DOM. This has a number of advantages, the largest being
 [Locality of Behavior](/essays/locality-of-behaviour), which makes your system easier to understand and
 maintain.

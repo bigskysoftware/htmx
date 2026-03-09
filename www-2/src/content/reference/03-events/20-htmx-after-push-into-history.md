@@ -3,8 +3,6 @@ title: "htmx:after:push:into:history"
 description: "After a push state action"
 ---
 
-# **`htmx:after:push:into:history`**
-
 Fired specifically after a `history.pushState()` operation (creates new history entry).
 
 ## When It Fires

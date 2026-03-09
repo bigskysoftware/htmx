@@ -3,8 +3,6 @@ title: "htmx:confirm"
 description: "Show confirmation dialog before request"
 ---
 
-# **`htmx:confirm`**
-
 Fired when `hx-confirm` is present on an element, allowing custom confirmation dialogs.
 
 ## When It Fires

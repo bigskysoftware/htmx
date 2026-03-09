@@ -3,8 +3,6 @@ title: "htmx.forEvent()"
 description: "Wait for an event with optional timeout"
 ---
 
-# **`htmx.forEvent()`**
-
 The `htmx.forEvent()` function creates a promise that resolves when a specific event fires.
 
 ## Syntax

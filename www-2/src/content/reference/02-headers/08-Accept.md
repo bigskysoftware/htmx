@@ -3,8 +3,6 @@ title: "Accept"
 description: "Content types htmx accepts from the server"
 ---
 
-# Accept
-
 Set to `text/html, text/event-stream` on all htmx requests.
 
 This tells the server that htmx accepts both HTML and SSE streams.

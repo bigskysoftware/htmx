@@ -3,6 +3,7 @@ title: "Web Security Basics (with htmx)"
 description: "This guide by Alexander Petros provides essential web security best practices for building applications with htmx, focusing on safe handling of dynamic, user-generated content. It covers fundamental principles such as using only trusted routes, employing auto-escaping template engines, and securing cookies to prevent common vulnerabilities like Cross-Site Scripting (XSS) and Cross-Site Request Forgery (CSRF). Aimed at developers familiar with backend server construction, it emphasizes security techniques that are easy to implement and crucial for protecting user data in dynamic web applications."
 created: 2024-02-06
 authors: ["Alexander Petros"]
+tags: ["guides"]
 ---
 
 As htmx has gotten more popular, it's reached communities who have never written server-generated HTML before. Dynamic

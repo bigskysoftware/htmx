@@ -3,8 +3,6 @@ title: "htmx:after:history:update"
 description: "After browser history is updated"
 ---
 
-# **`htmx:after:history:update`**
-
 Fired after htmx has updated the browser history state.
 
 ## When It Fires

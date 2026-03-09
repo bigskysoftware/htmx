@@ -3,8 +3,6 @@ title: "hx-optimistic"
 description: "Show optimistic content during request"
 ---
 
-# hx-optimistic
-
 **Note:** This is an extension attribute. To use it, you must include the optimistic extension.
 
 The `hx-optimistic` attribute allows you to show optimistic content immediately while a request is in flight, providing

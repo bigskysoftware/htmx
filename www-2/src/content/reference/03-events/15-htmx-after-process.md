@@ -3,8 +3,6 @@ title: "htmx:after:process"
 description: "After htmx processes a DOM node"
 ---
 
-# **`htmx:after:process`**
-
 Fired after htmx has finished processing a DOM node or subtree.
 
 ## When It Fires

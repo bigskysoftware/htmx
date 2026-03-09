@@ -4,6 +4,7 @@ description: "David Guillot at Contexte gave what we are calling 'The Mother of 
 created: 2022-09-29
 modified: 2022-10-15
 authors: ["Carson Gross"]
+tags: ["case-studies"]
 ---
 
 It is all well and good talking about [REST & HATEOAS](/essays/hateoas) in theory or describing the
