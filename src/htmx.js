@@ -398,7 +398,7 @@ var htmx = (() => {
         }
 
         __handleHxHeaders(elt, headers) {
-            return this.__handleAttributeObject(elt, "hx-headers", obj => {
+            return this.__getAttributeObject(elt, "hx-headers", obj => {
                 for (let key in obj) headers[key] = String(obj[key]);
             });
         }
@@ -1769,7 +1769,7 @@ var htmx = (() => {
             }
         }
 
-        __handleAttributeObject(elt, attrName, callback) {
+        __getAttributeObject(elt, attrName, callback) {
             let attrValue = this.__attributeValue(elt, attrName);
             if (!attrValue) return null;
 
