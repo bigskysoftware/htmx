@@ -15,8 +15,8 @@ export async function getStaticPaths() {
             props: { folder }
         });
 
-        // Add all file pages with prev/next
         const files = folder.allFiles;
+
         files.forEach((file, index) => {
             paths.push({
                 params: { collection, slug: file.slug },

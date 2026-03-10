@@ -76,6 +76,13 @@ export default defineConfig({
         "/patterns/modal-custom": "/patterns/display/dialogs",
         "/patterns/modal-uikit": "/patterns/display/dialogs",
         "/patterns/edit-row": "/patterns/records/edit-in-place",
+
+        // Old site: interviews were under /essays/
+        "/essays/interviews/henning-koch": "/interviews/henning-koch",
+        "/essays/interviews/makinde-adeagbo": "/interviews/makinde-adeagbo",
+        "/essays/interviews/chris-wanstrath": "/interviews/chris-wanstrath",
+        "/essays/interviews/mike-amundsen": "/interviews/mike-amundsen",
+        "/essays/interviews/leonard-richardson": "/interviews/leonard-richardson",
     },
 
     integrations: [mdx()],

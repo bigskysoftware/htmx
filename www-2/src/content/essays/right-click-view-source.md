@@ -4,7 +4,7 @@ description: "In this essay, Carson Gross explores the significance of the #View
 created: 2023-09-21
 modified: 2023-09-21
 authors: ["Carson Gross"]
-tags: ["why-hypermedia"]
+tags: ["the-case-for-hypermedia"]
 ---
 
 > Not for nothing, Hypercard presaged the web's critical "#ViewSource" affordance, which allowed people to copy,

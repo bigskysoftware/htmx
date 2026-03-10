@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { TAG_ORDER } from '../lib/content';
 
 interface Props {
     authors?: string[];
@@ -21,15 +22,10 @@ const authorInfo = (authors || []).map(name => {
     return { name, url: member?.data.url };
 });
 
-// Tag display labels (matches EssayList.astro)
-const tagLabels: Record<string, string> = {
-    'foundations': 'Foundations',
-    'why-hypermedia': 'Why Hypermedia',
-    'case-studies': 'Case Studies',
-    'guides': 'Guides',
-    'simplicity': 'Simplicity',
-    'meta': 'Meta',
-};
+// Tag display labels (from shared TAG_ORDER)
+const tagLabels: Record<string, string> = Object.fromEntries(
+    TAG_ORDER.map(t => [t.tag, t.label])
+);
 
 const formatDate = (date: Date) =>
     date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -38,10 +34,11 @@ const showModified = modified && created &&
     modified.toDateString() !== created.toDateString();
 ---
 
-<div class="not-prose mb-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-500 dark:text-neutral-450">
+<div class="not-prose mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-500 dark:text-neutral-450">
     {/* Authors */}
     {authorInfo.length > 0 && (
-        <span class="flex items-center gap-1">
+        <span class="flex items-center gap-1.5">
+            <i class="icon-[mdi--account-outline] size-4 shrink-0" aria-hidden="true"></i>
             {authorInfo.map((author, i) => (
                 <>
                     {i > 0 && <span>, </span>}
@@ -49,49 +46,42 @@ const showModified = modified && created &&
                         <a href={author.url}
                            target="_blank"
                            rel="noopener noreferrer"
-                           class="font-medium text-neutral-700 dark:text-neutral-300 interact:text-blue-600 dark:interact:text-blue-400 transition underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 interact:decoration-blue-400">
+                           class="interact:text-blue-600 dark:interact:text-blue-400 interact:underline underline-offset-4 transition">
                             {author.name}
                         </a>
                     ) : (
-                        <span class="font-medium text-neutral-700 dark:text-neutral-300">{author.name}</span>
+                        <span>{author.name}</span>
                     )}
                 </>
             ))}
         </span>
     )}
 
-    {/* Separator */}
-    {authorInfo.length > 0 && created && (
-        <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
-    )}
-
     {/* Dates */}
     {created && (
-        <time datetime={created.toISOString().slice(0, 10)}>
-            {formatDate(created)}
-        </time>
-    )}
-    {showModified && (
-        <>
-            <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
-            <span>
-                Updated <time datetime={modified.toISOString().slice(0, 10)}>{formatDate(modified)}</time>
-            </span>
-        </>
+        <span class="flex items-center gap-1.5">
+            <i class="icon-[mdi--calendar-outline] size-4 shrink-0" aria-hidden="true"></i>
+            <time datetime={created.toISOString().slice(0, 10)}>
+                {formatDate(created)}
+            </time>
+            {showModified && (
+                <span>
+                    (updated <time datetime={modified.toISOString().slice(0, 10)}>{formatDate(modified)}</time>)
+                </span>
+            )}
+        </span>
     )}
 
     {/* Tags */}
     {tags && tags.length > 0 && (
-        <>
-            <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
-            <span class="flex items-center gap-1.5">
-                {tags.map((tag, i) => (
-                    <>
-                        {i > 0 && <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>}
-                        <span class="text-xs">{tagLabels[tag] || tag}</span>
-                    </>
-                ))}
-            </span>
-        </>
+        <span class="flex items-center gap-1.5">
+            <i class="icon-[mdi--tag-outline] size-4 shrink-0" aria-hidden="true"></i>
+            {tags.map((tag, i) => (
+                <>
+                    {i > 0 && <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>}
+                    <span>{tagLabels[tag] || tag}</span>
+                </>
+            ))}
+        </span>
     )}
 </div>

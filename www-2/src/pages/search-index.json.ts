@@ -2,6 +2,7 @@ import type {APIRoute} from 'astro';
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
 
+import {getCollection} from 'astro:content';
 import {getFolder} from '../lib/content';
 
 /**
@@ -52,24 +53,9 @@ function extractSections(markdown: string): Array<{title: string, anchor: string
     return sections;
 }
 
-/**
- * Convert folder path to breadcrumb: /reference/attributes/hx-get → ["Attributes"]
- */
-function toBreadcrumb(url: string): string[] {
-    const parts = url.split('/').filter(Boolean);
-    if (parts.length <= 2) return [];
-
-    return parts.slice(1, -1).map(part =>
-        part
-            .replace(/^\d+-/, '')
-            .split('-')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ')
-    );
-}
-
 // Collections to index (must have _index.md)
-const COLLECTIONS = ['docs', 'reference', 'patterns', 'essays'];
+const COLLECTIONS = ['docs', 'reference', 'patterns', 'essays', 'interviews'];
+
 
 export const GET: APIRoute = async () => {
     const results: any[] = [];
@@ -81,7 +67,7 @@ export const GET: APIRoute = async () => {
                 const files = folder.allFiles;
                 if (!files?.length) return;
 
-                const collection = collectionId.charAt(0).toUpperCase() + collectionId.slice(1);
+                const collection = folder.frontmatter.title;
 
                 // Add the collection index page itself
                 results.push({
@@ -108,7 +94,10 @@ export const GET: APIRoute = async () => {
                         } catch {}
                     }
 
-                    const breadcrumb = toBreadcrumb(file.url);
+                    // Use breadcrumbs from content system (skip first=collection, last=current page)
+                    const breadcrumb = file.breadcrumbs
+                        .slice(1, -1)
+                        .map(b => b.label);
 
                     results.push({
                         id: file.url,
@@ -137,6 +126,21 @@ export const GET: APIRoute = async () => {
             }
         })
     );
+
+    // Standalone pages from the `pages` content collection
+    const pages = await getCollection('pages');
+    for (const page of pages) {
+        const url = page.id === 'index' ? '/' : `/${page.id.replace(/\/index$/, '')}`;
+        results.push({
+            id: url,
+            url,
+            title: page.data.title,
+            description: page.data.description || '',
+            parent: null,
+            collection: page.data.title,
+            breadcrumb: []
+        });
+    }
 
     return new Response(
         JSON.stringify({results}),

@@ -3,10 +3,136 @@ title: Essays
 description: "Perspectives on htmx, hypermedia, and simpler web development."
 ---
 
+import {getCollection} from 'astro:content';
 import EssayList from '../../components/EssayList.astro';
+import LinkList from '../../components/LinkList.astro';
+
+export const essayCount = (await getCollection('essays')).length;
+
+export const hypermediaAndRest = [
+    {title: "HATEOAS", url: "/essays/hateoas"},
+    {title: "How Did REST Come To Mean The Opposite of REST?", url: "/essays/how-did-rest-come-to-mean-the-opposite-of-rest"},
+    {title: "Two Approaches To Decoupling", url: "/essays/two-approaches-to-decoupling"},
+    {title: "Hypermedia Clients", url: "/essays/hypermedia-clients"},
+    {title: "HATEOAS Is For Humans", url: "https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html", author: "Carson Gross", date: "2016-05-08"},
+    {title: "Taking HTML Seriously", url: "https://intercoolerjs.org/2020/01/14/taking-html-seriously", author: "Carson Gross", date: "2020-01-14"},
+    {title: "The #ViewSource Affordance", url: "/essays/right-click-view-source"},
+];
+
+export const whyHypermedia = [
+    {title: "Hypermedia On Whatever you'd Like (HOWL)", url: "/essays/hypermedia-on-whatever-youd-like"},
+    {title: "A Response To \"Have SPAs Ruined The Web\"", url: "/essays/a-response-to-rich-harris"},
+    {title: "When To Use Hypermedia?", url: "/essays/when-to-use-hypermedia"},
+    {title: "The API Churn/Security Trade-off", url: "https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html", author: "Carson Gross", date: "2016-02-17"},
+    {title: "Does Hypermedia Scale?", url: "/essays/does-hypermedia-scale"},
+];
+
+export const realWorld = [
+    {title: "Building Critical Infrastructure with htmx: Network Automation for the Paris 2024 Olympics", url: "/essays/paris-2024-olympics-htmx-network-automation"},
+    {title: "A Real World React to htmx Port", url: "/essays/a-real-world-react-to-htmx-port"},
+    {title: "Another Real World React to htmx Port", url: "/essays/another-real-world-react-to-htmx-port"},
+    {title: "A Real World wasm to htmx Port", url: "/essays/a-real-world-wasm-to-htmx-port"},
+    {title: "Next.js to htmx — A Real World Example", url: "/essays/a-real-world-nextjs-to-htmx-port"},
+    {title: "You Can't Build Interactive Web Apps Except as Single Page Applications… And Other Myths", url: "/essays/you-cant"},
+];
+
+export const onTheOtherHand = [
+    {title: "htmx sucks", url: "/essays/htmx-sucks"},
+    {title: "Why Gumroad Didn't Choose htmx", url: "/essays/why-gumroad-didnt-choose-htmx"},
+    {title: "A Modest Critique of htmx", url: "https://chrisdone.com/posts/htmx-critique/", author: "Chris Done"},
+    {title: "A Modest Critique of htmx (Response)", url: "https://news.ycombinator.com/item?id=41782080"},
+    {title: "I tried HTMX, then ditched it", url: "https://ajmoon.com/posts/mesh-i-tried-htmx-then-ditched-it", author: "AJ Moon"},
+    {title: "Alternatives", url: "/essays/alternatives"},
+];
+
+export const buildingHypermediaApps = [
+    {title: "Hypermedia-Driven Applications (HDAs)", url: "/essays/hypermedia-driven-applications"},
+    {title: "Web Security Basics (with htmx)", url: "/essays/web-security-basics-with-htmx"},
+    {title: "Hypermedia Friendly Scripting", url: "/essays/hypermedia-friendly-scripting"},
+    {title: "10 Tips For Building SSR/HDA applications", url: "/essays/tips-for-SSR-HDA-apps"},
+    {title: "Why I Tend Not To Use Content Negotiation", url: "/essays/why-tend-not-to-use-content-negotiation"},
+    {title: "Template Fragments", url: "/essays/template-fragments"},
+    {title: "Web Components Work Great with htmx", url: "/essays/webcomponents-work-great"},
+    {title: "View Transitions", url: "/essays/view-transitions"},
+    {title: "Model/View/Controller", url: "/essays/mvc"},
+    {title: "Is Rendering JSON More Efficient Than Rendering HTML?", url: "https://github.com/1cg/html-json-speed-comparison", author: "Carson Gross"},
+    {title: "Is JSON Smaller Than HTML?", url: "https://github.com/1cg/html-json-size-comparison", author: "Carson Gross"},
+];
+
+export const complexityBad = [
+    {title: "The Grug Brained Developer", url: "https://grugbrain.dev", author: "Carson Gross"},
+    {title: "Codin' Dirty", url: "/essays/codin-dirty"},
+    {title: "Locality of Behavior (LoB)", url: "/essays/locality-of-behaviour"},
+    {title: "Complexity Budget", url: "/essays/complexity-budget"},
+    {title: "Why htmx Does Not Have a Build Step", url: "/essays/no-build-step"},
+    {title: "Is htmx Just Another JavaScript Framework?", url: "/essays/is-htmx-another-javascript-framework"},
+    {title: "htmx Implementation Deep Dive", url: "https://www.youtube.com/watch?v=javGxN-h9VQ", author: "Carson Gross"},
+    {title: "Vendoring", url: "/essays/vendoring"},
+];
+
+export const research = [
+    {title: "A File Structure For The Complex, The Changing and the Indeterminate", url: "https://dl.acm.org/doi/pdf/10.1145/800197.806036", author: "Ted Nelson", date: "1965"},
+    {title: "The Mother Of All Demos", url: "https://www.youtube.com/watch?v=B6rKUf9DWRI", author: "Doug Engelbart", date: "1968"},
+    {title: "The First Web Page", url: "http://info.cern.ch/hypertext/WWW/TheProject.html", date: "1991"},
+    {title: "Architectural Styles and the Design of Network-based Software Architectures", url: "https://ics.uci.edu/~fielding/pubs/dissertation/top.htm", author: "Roy Fielding", date: "2000"},
+    {title: "State of the Art Review on Hypermedia Issues and Applications", url: "https://web.archive.org/web/20240428215142/https://paul.luon.net/hypermedia/index.html", date: "2006"},
+    {title: "How Primer has changed the way we write JavaScript for the better at Facebook", url: "https://youtu.be/BZmfCjtv6cM", author: "Makinde Adeagbo & Tom Occhino", date: "2010"},
+    {title: "Hypermedia Controls: Feral to Formal", url: "https://dl.acm.org/doi/pdf/10.1145/3648188.3675127", author: "ACM HT'24", date: "2024"},
+    {title: "Preserving REST-ful Visibility Of Rich Web Applications With Generalized Hypermedia Controls", url: "https://hypermedia.cs.montana.edu/papers/preserving-restful.pdf", author: "ACM SIGWEB Newsletter", date: "2024"},
+];
+
 
 # {frontmatter.title}
 
-{frontmatter.description}
+<p class="text-neutral-600 dark:text-neutral-400">{frontmatter.description}</p>
 
-<EssayList />
+<h2 class="not-prose font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mt-8 mb-4">Most Recent</h2>
+
+<EssayList limit={5} featured />
+
+<div class="not-prose mt-4">
+    <a href="/essays/all" class="group/all inline-flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500 no-underline transition interact:underline interact:text-blue-700 dark:interact:text-blue-300">
+        Show all {essayCount} essays <i class="icon-[mdi--arrow-right] size-3 translate-y-px transition group-interact/all:translate-x-0.5"></i>
+    </a>
+</div>
+
+<div class="not-prose grid grid-cols-1 sm:grid-cols-2 gap-x-8 mt-12">
+    <div>
+        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-4">Hypermedia and REST</h2>
+        <LinkList items={hypermediaAndRest} />
+    </div>
+    <div>
+        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-4">Why Hypermedia?</h2>
+        <LinkList items={whyHypermedia} />
+    </div>
+</div>
+
+<div class="not-prose grid grid-cols-1 sm:grid-cols-2 gap-x-8 mt-12">
+    <div>
+        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-4">Real World</h2>
+        <LinkList items={realWorld} />
+    </div>
+    <div>
+        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-4">On The Other Hand…</h2>
+        <LinkList items={onTheOtherHand} />
+    </div>
+</div>
+
+<div class="not-prose grid grid-cols-1 sm:grid-cols-2 gap-x-8 mt-12">
+    <div>
+        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-4">Building Hypermedia Apps</h2>
+        <LinkList items={buildingHypermediaApps} />
+    </div>
+    <div>
+        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-4">Complexity Very, Very Bad</h2>
+        <LinkList items={complexityBad} />
+    </div>
+</div>
+
+<h2 class="not-prose font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mt-12 mb-4">Hypermedia Research</h2>
+
+<LinkList items={research} />
+
+<h2 class="not-prose font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mt-12 mb-4">Memes</h2>
+
+Memes now have [their own page](/memes).

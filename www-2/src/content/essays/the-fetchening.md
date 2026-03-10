@@ -3,7 +3,7 @@ title: "The fetch()ening"
 description: "You know, technically, I never said anything about a version four"
 created: 2025-11-01
 authors: ["Carson Gross"]
-tags: ["meta"]
+tags: []
 ---
 
 ![Stop trying to make fetch() happen](/img/fetch.png)

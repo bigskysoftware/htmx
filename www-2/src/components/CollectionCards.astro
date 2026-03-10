@@ -61,7 +61,7 @@ const getReferencePreview = (slug: string) => {
 <div class="my-10 not-prose space-y-12">
     {groups.map((group) => (
             <section>
-                <h2 class="flex items-center gap-3 mb-6 font-sans text-xs uppercase font-medium tracking-widest text-neutral-500 dark:text-neutral-450">
+                <h2 class="flex items-center gap-3 font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-6">
                     {group.frontmatter.title}
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -76,7 +76,7 @@ const getReferencePreview = (slug: string) => {
                                     {thumbnail ? (
                                             <ThumbnailSvg svg={thumbnail}/>
                                     ) : (
-                                            <span class="text-7xl transition icon-[mdi--file-document-outline] text-neutral-400 dark:text-neutral-600 group-interact:text-neutral-900 dark:group-interact:text-neutral-100"></span>
+                                            <span class="text-7xl transition icon-[mdi--file-document-outline] text-neutral-400 dark:text-neutral-600 group-interact:text-neutral-600 dark:group-interact:text-neutral-300"></span>
                                     )}
                                 </CategoryCard>
                         );
@@ -86,7 +86,7 @@ const getReferencePreview = (slug: string) => {
     ))}
 </div>
     ) : (
-<div class="relative my-10 not-prose">
+<div class="relative my-10 not-prose overflow-x-clip">
     <GridBackground mode="flat" />
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-0">
     {items.map((item) => {
@@ -103,7 +103,7 @@ const getReferencePreview = (slug: string) => {
                             <ThumbnailSvg svg={thumbnail}/>
                     ) : refPreview ? (
                             <div class="font-mono text-xl sm:text-2xl flex items-center justify-center gap-[1px]">
-                                <span class="text-neutral-600 dark:text-neutral-400 font-bold group-interact:text-blue-600 dark:group-interact:text-blue-400 transition-colors">{refPreview.code}</span>
+                                <span class="text-neutral-600 dark:text-neutral-400 font-bold group-interact:text-neutral-900 dark:group-interact:text-neutral-200 transition-colors">{refPreview.code}</span>
                                 {refPreview.type === 'html' &&
                                         <><span class="text-neutral-400 dark:text-neutral-500">=</span><span
                                                 class="text-neutral-400 dark:text-neutral-500 group-interact:text-neutral-600 dark:group-interact:text-neutral-300 transition-colors">{refPreview.value}</span>
@@ -121,7 +121,7 @@ const getReferencePreview = (slug: string) => {
                                         </>}
                             </div>
                     ) : (
-                            <span class="text-7xl transition icon-[mdi--file-document-outline] text-neutral-400 dark:text-neutral-600 group-interact:text-neutral-900 dark:group-interact:text-neutral-100"></span>
+                            <span class="text-7xl transition icon-[mdi--file-document-outline] text-neutral-400 dark:text-neutral-600 group-interact:text-neutral-600 dark:group-interact:text-neutral-300"></span>
                     )}
                 </CategoryCard>
         );

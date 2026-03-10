@@ -58,10 +58,10 @@ const isCurrent = (url?: string) => {
             </a>
 
             <!-- Version Selector -->
-            <div class="hidden sm:inline-flex items-center relative group/version">
+            <div class="inline-flex items-center relative group/version">
                 <select
                         aria-label="Select htmx version"
-                        class="appearance-none bg-transparent pl-2 pr-5 py-1 text-xs font-chicago rounded-sm text-neutral-500 dark:text-neutral-450 interact:text-neutral-900 dark:interact:text-neutral-100 cursor-pointer outline-hidden sm:transition border border-transparent interact:border-neutral-200 dark:interact:border-neutral-800"
+                        class="appearance-none bg-transparent pl-2 pr-5 py-1 text-xs font-chicago rounded-sm text-neutral-500 dark:text-neutral-450 interact:text-neutral-900 dark:interact:text-neutral-100 cursor-pointer outline-hidden sm:transition border border-transparent interact:border-neutral-200 dark:interact:border-neutral-800 translate-y-0.5"
                         onchange="window.location.href = this.value"
                 >
                     <option value="/" selected>v4</option>
@@ -102,13 +102,11 @@ const isCurrent = (url?: string) => {
                 <div class="flex-1">
                     <button
                             type="button"
-                            class="relative group flex items-center min-h-[44px] min-w-[200px] w-full bg-linear-to-b from-neutral-25 to-neutral-50 dark:from-neutral-910 dark:to-neutral-920
+                            class="relative group flex items-center min-h-[44px] min-w-[200px] w-full bg-white dark:bg-neutral-910
     border border-neutral-200 dark:border-neutral-800 rounded-[5px] py-2 px-3 text-base font-sans text-neutral-400
-    hover:from-neutral-50 hover:to-neutral-100
-    hover:dark:from-neutral-900 hover:dark:to-neutral-910
-    hover:border-neutral-400 dark:hover:border-neutral-600
-    hover:not-active:shadow-3d-depth-[6px]
-    outline-hidden focus-visible:border-blue-700 focus-visible:ring-1 focus-visible:ring-blue-700 dark:focus-visible:border-blue-300 dark:focus-visible:ring-blue-300 sm:transition cursor-pointer"
+    interact:bg-neutral-100 dark:interact:bg-neutral-800/50
+    interact:border-neutral-400 dark:interact:border-neutral-600
+    outline-hidden sm:transition cursor-pointer"
                             aria-label="Open Search"
                             hx-preserve="true"
                             _="on click
@@ -118,13 +116,13 @@ const isCurrent = (url?: string) => {
                                  halt the event
                                  trigger click
                                end">
-                        <i class="icon-[ic--baseline-search] size-5 text-neutral-400 group-focus-visible:text-blue-700 dark:group-focus-visible:text-blue-400 sm:transition"
+                        <i class="icon-[ic--baseline-search] size-5 text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition"
                            aria-hidden="true"></i>
-                        <span class="text-sm mx-2">Open Search</span>
+                        <span class="text-sm mx-2 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition">Open Search</span>
                         <kbd
                                 id="search-shortcut-hint"
                                 aria-hidden="true"
-                                class="ms-auto pe-1 font-chicago text-xs sm:transition"
+                                class="ms-auto pe-1 font-chicago text-xs group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition"
                                 _="init if navigator.platform.toLowerCase() contains 'mac' put '⌘ K' into me"
                         >Ctrl K</kbd>
                     </button>
@@ -138,7 +136,7 @@ const isCurrent = (url?: string) => {
                    target="_blank"
                    rel="noopener noreferrer"
                    class="flex px-3 py-2 group sm:transition">
-                    <i class="icon-[ic--baseline-discord] size-5.5 scale-[1.1] text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-800 dark:group-interact:text-neutral-100 sm:transition"
+                    <i class="icon-[ic--baseline-discord] size-5.5 scale-[1.1] text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white sm:transition"
                        aria-hidden="true"></i>
                 </a>
                 <!-- Desktop: Github -->
@@ -148,7 +146,7 @@ const isCurrent = (url?: string) => {
                    target="_blank"
                    rel="noopener noreferrer"
                    class="flex ml-3 px-3 py-2 group sm:transition">
-                    <i class="icon-[mdi--github] size-5.5 text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-800 dark:group-interact:text-neutral-100 sm:transition"
+                    <i class="icon-[mdi--github] size-5.5 text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white sm:transition"
                        aria-hidden="true"></i>
                 </a>
             </div>
@@ -162,7 +160,7 @@ const isCurrent = (url?: string) => {
                     class="flex items-center justify-center size-10 text-neutral-600 dark:text-neutral-400 rounded-xs outline-hidden"
                     aria-label="Search"
                     _="on click showModal() from the first of <search-index > dialog/>">
-                <i class="icon-[ic--baseline-search] size-4 sm:size-5" aria-hidden="true"></i>
+                <i class="icon-[ic--baseline-search] size-5 sm:size-6" aria-hidden="true"></i>
             </button>
             <!-- Mobile: Navigation -->
             <label class="flex items-center justify-center size-10 cursor-pointer rounded-xs outline-hidden"

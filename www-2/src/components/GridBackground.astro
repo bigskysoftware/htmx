@@ -15,7 +15,7 @@ const { mode = '3d' } = Astro.props;
 
 {mode === '3d' ? (
     <div
-        class="fixed inset-0 pointer-events-none -z-10 perspective-[1000px]"
+        class="fixed inset-0 pointer-events-none -z-10 perspective-[800px] starting:opacity-0 transition duration-500"
         aria-hidden="true"
     >
         <div class="grid-plane absolute inset-0">
@@ -23,7 +23,7 @@ const { mode = '3d' } = Astro.props;
         </div>
     </div>
 ) : (
-    <div class="flat-grid pointer-events-none -z-10" aria-hidden="true">
+    <div class="flat-grid pointer-events-none -z-10 starting:opacity-0 transition duration-500" aria-hidden="true">
     </div>
 )}
 
@@ -91,16 +91,16 @@ const { mode = '3d' } = Astro.props;
     /* ---- 3D MODE (don't touch) ---- */
     .grid-plane {
         overflow: visible;
-        transform-origin: center center;
-        transform: translateZ(-100px) rotateX(55deg) scale(0.9);
+        transform-origin: center 50%;
+        transform: translateZ(-390px) rotateX(67deg) scale(0.7);
     }
 
     .grid-pattern-3d {
         inset: -100vh -100vw;
         background-image:
-            linear-gradient(to right, currentColor 1px, transparent 1px),
-            linear-gradient(to bottom, currentColor 1px, transparent 1px);
-        background-size: 307px 304px;
+            linear-gradient(to right, currentColor 2px, transparent 2px),
+            linear-gradient(to bottom, currentColor 2px, transparent 2px);
+        background-size: 260px 260px;
         background-position: center center;
         mask-image: radial-gradient(ellipse 50% 70% at 50% 50%, black 10%, transparent 80%);
         color: var(--grid-line-color);
@@ -119,7 +119,7 @@ const { mode = '3d' } = Astro.props;
             linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
 
         /* Driven entirely by JS variables */
-        background-size: var(--cell-w, 307px) var(--cell-h, 320px);
+        background-size: var(--cell-w, 280px) var(--cell-h, 320px);
         background-position: var(--bg-x, 0px) var(--bg-y, 0px);
 
         mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, black 10%, transparent 70%);

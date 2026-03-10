@@ -1,0 +1,21 @@
+<svg viewBox="0 0 128 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .accent { fill: var(--accent); stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+        .accent-body { fill: var(--accent); fill-opacity: 0.4; stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+    </style>
+
+    <!-- Base block (muted) -->
+    <rect x="40" y="44" width="48" height="28" rx="3" stroke="currentColor" stroke-width="1" stroke-opacity="0.3"/>
+    <line x1="40" y1="52" x2="88" y2="52" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+
+    <!-- Plug-in block sliding in from top -->
+    <rect class="accent-body" x="50" y="24" width="28" height="22" rx="3" stroke-width="1.5"/>
+
+    <!-- Plug prongs -->
+    <line class="accent" x1="58" y1="46" x2="58" y2="52" style="fill: none" stroke-width="2" stroke-linecap="round"/>
+    <line class="accent" x1="70" y1="46" x2="70" y2="52" style="fill: none" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Plus icon in plug block -->
+    <line class="accent" x1="64" y1="31" x2="64" y2="41" style="fill: none" stroke-width="1.5" stroke-linecap="round"/>
+    <line class="accent" x1="59" y1="36" x2="69" y2="36" style="fill: none" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

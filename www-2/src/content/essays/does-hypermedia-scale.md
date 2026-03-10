@@ -4,7 +4,7 @@ description: "In this essay, Carson Gross examines whether Hypermedia-Driven App
 created: 2023-11-06
 modified: 2023-11-06
 authors: ["Carson Gross"]
-tags: ["why-hypermedia"]
+tags: ["the-case-for-hypermedia"]
 ---
 
 One objection that we sometimes hear to htmx and hypermedia is some variation of the following:

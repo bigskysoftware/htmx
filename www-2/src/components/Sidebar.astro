@@ -32,7 +32,7 @@ const isPatterns = folder.folder === 'patterns';
         <div class="h-7 shrink-0"></div>
 
         {/* Collection header (static, non-interactive) */}
-        <h2 class="font-sans text-[0.675rem] uppercase font-medium tracking-widest text-neutral-500 dark:text-neutral-450 px-0.5 mb-6">
+        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 px-0.5 mb-6">
             {folder.frontmatter.title}
         </h2>
 
@@ -47,10 +47,9 @@ const isPatterns = folder.folder === 'patterns';
             Overview
         </a>
 
+        {/* Grouped files (subfolders with their files) */}
         {folder.subfolders.map((subFolder) => {
             const files = subFolder.subfiles;
-            // Open section if it contains current, previous, or next page
-
             const containsCurrentPage = files.some((f: ContentFile) => currentUrl === f.url);
 
             return (
@@ -87,8 +86,6 @@ const isPatterns = folder.folder === 'patterns';
                                                        aria-current={isActive ? 'page' : undefined}
                                                        class:list={[
                                                            "block px-3 py-2 text-sm rounded-md transition truncate",
-                                                           // Conditional styling based on collection
-
                                                            isReference && "font-mono",
                                                            isActive
                                                                ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
@@ -102,6 +99,24 @@ const isPatterns = folder.folder === 'patterns';
                                 </ul>
                         )}
                     </details>
+            );
+        })}
+
+        {/* Direct files (not nested in subfolders) */}
+        {folder.subfiles.map((f: ContentFile) => {
+            const isActive = currentUrl === f.url;
+            return (
+                <a href={f.url}
+                   title={f.frontmatter.description}
+                   aria-current={isActive ? 'page' : undefined}
+                   class:list={[
+                       "block px-3 py-2 text-sm rounded-md transition truncate",
+                       isActive
+                           ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
+                           : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
+                   ]}>
+                    <span set:html={f.frontmatter.title}/>
+                </a>
             );
         })}
     </nav>

@@ -3,9 +3,11 @@ import Layout from './Layout.astro';
 import Sidebar from '../components/Sidebar.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import EssayHeader from '../components/EssayHeader.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import type {ContentFile, ContentFolder} from '../lib/content';
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import GridBackground from "../components/GridBackground.astro";
 
 interface Props {
     file?: ContentFile;
@@ -21,8 +23,8 @@ const {
 
 // Auto-detect whether this is an index page or detail page
 // Index pages have only folder, detail pages have both file and folder
-const isIndex = !file;
-const data = isIndex ? folder : file;
+const isContentIndex = !file;
+const data = isContentIndex ? folder : file;
 
 if (!data) {
     throw new Error('ContentLayout requires either file or folder prop');
@@ -32,8 +34,8 @@ if (!data) {
 const collection = data.folder as 'docs' | 'reference' | 'patterns';
 const isEssay = collection === 'essays';
 
-// We always have folder available (passed from page)
-const sidebarFolder = folder;
+// Show sidebar when the collection has grouped structure (subfolders)
+const hasSidebar = !!(folder?.subfolders?.length);
 
 // Render content
 const {Content} = await data.render();
@@ -41,54 +43,54 @@ const {Content} = await data.render();
 const {title, description} = data.frontmatter;
 
 // Show TOC only on detail pages with headings
-const includeTableOfContents = !isIndex && headings && headings.length > 0;
+const includeTableOfContents = !isContentIndex && headings && headings.length > 0;
 
 // Show pagination only on detail pages with prev/next
-const includePagination = !isIndex && file && (file.prev || file.next);
+const includePagination = !isContentIndex && file && (file.prev || file.next);
 
 // Show the right column if either TOC or pagination is needed
 const includeRightColumn = includeTableOfContents || includePagination;
-
-// Get section grouping label (second breadcrumb, after collection)
-const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : null;
 
 ---
 
 <Layout {title} {description}>
 
-    {sidebarFolder && (
-            <Header slot="header">
-                <!-- Sidebar Toggle -->
-                <label slot="before-logo"
-                       class="lg:hidden flex items-center justify-center size-10 cursor-pointer select-none rounded-xs text-neutral-600 dark:text-neutral-400 interact:text-neutral-800 dark:interact:text-neutral-100 sm:transition"
-                       for="sidebar-toggle-mobile"
-                       aria-label="Toggle Sidebar"
-                       aria-controls="sidebar-nav"
-                       role="button"
-                       tabindex="0">
-                    <i class="size-5 icon-[mdi--menu-open]
-                              transition-opacity duration-200
-                              [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-0"></i>
-                    <i class="size-5 icon-[mdi--menu-close]
-                              absolute transition-opacity duration-200 opacity-0
-                              [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-100"></i>
-                </label>
-            </Header>
+    {!isContentIndex && <GridBackground mode="3d" />}
 
-            <Sidebar folder={sidebarFolder} file={file}/>
-    )}
+    <Header slot="header">
+        {hasSidebar && (
+            <label slot="before-logo"
+                   class="lg:hidden flex items-center justify-center size-10 cursor-pointer select-none rounded-xs text-neutral-600 dark:text-neutral-400 interact:text-neutral-800 dark:interact:text-neutral-100 sm:transition"
+                   for="sidebar-toggle-mobile"
+                   aria-label="Toggle Sidebar"
+                   aria-controls="sidebar-nav"
+                   role="button"
+                   tabindex="0">
+                <i class="size-5 icon-[mdi--menu-open]
+                          transition-opacity duration-200
+                          [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-0"></i>
+                <i class="size-5 icon-[mdi--menu-close]
+                          absolute transition-opacity duration-200 opacity-0
+                          [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-100"></i>
+            </label>
+        )}
+    </Header>
+
+    {hasSidebar && <Sidebar folder={folder} file={file}/>}
 
     <div id="content-wrapper"
-         class:list={["group/page", sidebarFolder && "lg:pl-72"]}
+         class:list={["group/page", hasSidebar && "lg:pl-72"]}
          data-collection={collection || undefined}
-         data-has-sidebar={sidebarFolder && true}>
+         data-has-sidebar={hasSidebar}>
         <main id="main-content" class="flex-1">
             <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-center max-w-[1440px]">
 
                 <!-- Main Content Area -->
-                <div class:list={["pt-8 sm:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", isIndex ? "max-w-4xl" : "max-w-prose"]}
+                <div class:list={["pt-8 sm:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", isContentIndex && hasSidebar ? "max-w-4xl" : "max-w-prose"]}
                 >
-                    {isIndex ? (
+                    <Breadcrumbs breadcrumbs={data.breadcrumbs} />
+
+                    {isContentIndex ? (
                         /* INDEX PAGE: Render MDX content with prose styling */
                             <div class="index-content prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none relative z-0">
                                 <Content/>
@@ -112,13 +114,6 @@ const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : nul
                                     />
                                 )}
 
-                                {/* Section grouping label (for non-essay nested pages) */}
-                                {!isEssay && grouping && (
-                                    <p class="text-xs font-semibold uppercase tracking-widest text-neutral-550 dark:text-neutral-450 -mt-4 mb-6">
-                                        {grouping.label}
-                                    </p>
-                                )}
-
                                 {/* Slots for custom content wrappers */}
                                 <slot name="before-content"/>
 
@@ -133,19 +128,19 @@ const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : nul
                                                 {file.prev ? (
                                                                 <a href={file.prev.url}
                                                                    class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-800 rounded-xl transition
-                                                                   interact:bg-blue-100 dark:interact:bg-blue-800/30
-                                                                   interact:border-blue-300 dark:interact:border-blue-400/40">
-                                                                    <i class="icon-[mdi--chevron-left] text-2xl text-neutral-400 group-interact:text-blue-600 dark:group-interact:text-blue-300 transition shrink-0 mt-0.5"></i>
+                                                                   interact:bg-neutral-100 dark:interact:bg-neutral-800/30
+                                                                   interact:border-neutral-400 dark:interact:border-neutral-600">
+                                                                    <i class="icon-[mdi--chevron-left] text-2xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0 mt-0.5"></i>
                                                                     <div class="flex-1 min-w-0">
                                                                         {file.prev.breadcrumbs.length > 2 && (
-                                                                                <div class="text-[10px] uppercase tracking-wider font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-blue-700 dark:group-interact:text-blue-200 mb-2 transition">
+                                                                                <div class="text-xs uppercase tracking-wider font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mb-2 transition">
                                                                                     {file.prev.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
                                                                                 </div>
                                                                         )}
-                                                                        <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-blue-700 dark:group-interact:text-white transition"
+                                                                        <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-white transition line-clamp-2"
                                                                             set:html={file.prev.frontmatter.title}></h4>
                                                                         {file.prev.frontmatter.description &&
-                                                                                <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-blue-900/70 dark:group-interact:text-blue-100 mt-2 line-clamp-2 leading-relaxed transition">{file.prev.frontmatter.description}</div>}
+                                                                                <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-2 line-clamp-2 leading-relaxed transition">{file.prev.frontmatter.description}</div>}
                                                                     </div>
                                                                 </a>
                                                     ) :
@@ -154,20 +149,20 @@ const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : nul
                                                 {file.next && (
                                                         <a href={file.next.url}
                                                            class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-800 rounded-xl transition
-                                                           interact:bg-blue-100 dark:interact:bg-blue-800/30
-                                                           interact:border-blue-300 dark:interact:border-blue-400/40">
+                                                           interact:bg-neutral-100 dark:interact:bg-neutral-800/30
+                                                           interact:border-neutral-400 dark:interact:border-neutral-600">
                                                             <div class="flex-1 min-w-0">
                                                                 {file.next.breadcrumbs.length > 2 && (
-                                                                        <div class="text-[10px] uppercase tracking-widest text-neutral-600 dark:text-neutral-400 group-interact:text-blue-700 dark:group-interact:text-blue-200 mb-2 transition">
+                                                                        <div class="text-xs uppercase tracking-widest text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mb-2 transition">
                                                                             {file.next.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
                                                                         </div>
                                                                 )}
-                                                                <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-blue-700 dark:group-interact:text-white transition"
+                                                                <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-white transition line-clamp-2"
                                                                     set:html={file.next.frontmatter.title}></h4>
                                                                 {file.next.frontmatter.description &&
-                                                                        <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-blue-900/70 dark:group-interact:text-blue-100 mt-2 line-clamp-2 leading-relaxed transition">{file.next.frontmatter.description}</div>}
+                                                                        <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-2 line-clamp-2 leading-relaxed transition">{file.next.frontmatter.description}</div>}
                                                             </div>
-                                                            <i class="icon-[mdi--chevron-right] text-2xl text-neutral-400 group-interact:text-blue-600 dark:group-interact:text-blue-300 transition shrink-0 mt-0.5"></i>
+                                                            <i class="icon-[mdi--chevron-right] text-2xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0 mt-0.5"></i>
                                                         </a>
                                                 )}
                                             </div>
@@ -179,7 +174,10 @@ const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : nul
 
                 <!-- Right Column (Table of Contents) -->
                 {includeRightColumn && (
-                        <aside class="hidden xl:flex xl:flex-col xl:w-60 shrink-0 xl:ml-16 xl:-me-16 self-start sticky top-(--header-height) max-h-[calc(100vh-var(--header-height))] pt-12 pr-4 overflow-hidden">
+                        <aside class:list={[
+                    "hidden xl:flex xl:flex-col xl:w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) max-h-[calc(100vh-var(--header-height))] pt-12 pr-4 overflow-hidden",
+                    hasSidebar ? "xl:-me-16" : "xl:-me-[19rem]",
+                ]}>
                             {includePagination && (
                                     <div class:list={["shrink-0", includeTableOfContents && "mb-8"]}>
                                         <div class="flex gap-2">
@@ -201,10 +199,10 @@ const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : nul
                                                                     "flex-1 group flex items-center gap-2 p-2 text-xs font-medium border rounded-[5px] transition select-none",
                                                                     reverse && "flex-row-reverse",
                                                                     link
-                                                                        ? "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 interact:bg-blue-100 dark:interact:bg-blue-800/30 interact:border-blue-300 dark:interact:border-blue-400/40 interact:text-blue-700 dark:interact:text-white"
+                                                                        ? "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-800/30 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white"
                                                                         : "border-transparent bg-neutral-50 dark:bg-neutral-900/50 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
                                                                 ]}>
-                                                            <i class:list={[icon, "size-4", link ? "text-neutral-400 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition" : "opacity-50"]}></i>
+                                                            <i class:list={[icon, "size-4", link ? "text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-200 transition" : "opacity-50"]}></i>
                                                             <span class="flex-1 inline-flex justify-center">{label}</span>
                                                         </Tag>
                                                 );
@@ -229,7 +227,7 @@ const grouping = file && file.breadcrumbs.length > 2 ? file.breadcrumbs[1] : nul
     </div>
 
     <Footer slot="footer"
-            class:list={[sidebarFolder && "lg:pl-72"]}
+            class:list={[hasSidebar && "lg:pl-72"]}
             containerClass="px-4 sm:px-6 lg:px-12 xl:px-8"
             contentClass="mx-auto max-w-4xl"
     />

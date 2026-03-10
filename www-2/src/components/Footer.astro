@@ -37,8 +37,9 @@ const navigationSections = [
     {
         name: "Resources",
         items: [
-            {name: "Interviews", url: "/about#interviews", iconClass: "icon-[mdi--account-voice]"},
-            {name: "Podcasts", url: "/about#podcasts", iconClass: "icon-[lucide--audio-lines]"},
+            {name: "Interviews", url: "/interviews", iconClass: "icon-[mdi--account-voice]"},
+            {name: "Podcasts", url: "/podcasts", iconClass: "icon-[lucide--audio-lines]"},
+            {name: "Memes", url: "/memes", iconClass: "icon-[mdi--emoticon-cool-outline]"},
             {name: "Book", url: "https://hypermedia.systems", iconClass: "icon-[mdi--book-open-page-variant]"},
             {name: "RSS", url: "/rss.xml", iconClass: "icon-[mdi--rss]"},
         ]
@@ -46,7 +47,7 @@ const navigationSections = [
 ];
 ---
 
-<footer class:list={["text-xs sm:text-sm border-t border-neutral-200 dark:border-neutral-850 bg-neutral-10 dark:bg-neutral-920 mt-16 sm:mt-24 py-12 sm:py-16 relative z-10", className]}>
+<footer class:list={["text-sm border-t border-neutral-200 dark:border-neutral-850 bg-neutral-10 dark:bg-neutral-920 mt-16 sm:mt-24 py-12 sm:py-16 relative z-10", className]}>
     <div class:list={[containerClass]}>
         <div class:list={[contentClass]}>
             <!-- Navigation Sections + Haiku -->
@@ -56,7 +57,7 @@ const navigationSections = [
                             <h2 class="tracking-wide uppercase text-neutral-900 dark:text-neutral-100 mb-4 sm:mb-6">
                                 {section.name}
                             </h2>
-                            <ul class:list={["space-y-2 sm:space-y-3", section.name === 'Links' ? 'font-chicago' : 'font-medium']}>
+                            <ul class:list={["space-y-3", section.name === 'Links' ? 'font-chicago' : 'font-medium']}>
                                 {section.items.map((link) => (
                                         <li>
                                             <a href={link.url}

@@ -4,7 +4,7 @@ description: "In this essay, Carson Gross discusses his advice to young people i
 created: 2026-02-27
 modified: 2026-02-27
 authors: ["Carson Gross"]
-tags: ["meta"]
+tags: []
 ---
 
 I teach computer science at [Montana State University](https://www.cs.montana.edu).  I am the father of three sons who

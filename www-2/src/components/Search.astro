@@ -3,7 +3,7 @@
 </script>
 
 <search-index id="global-search" src="/search-index.json"
-              highlight="<mark class='bg-yellow-300 dark:bg-amber-600 text-neutral-900 dark:text-white font-bold rounded-xs px-0.5 box-decoration-clone'>$1</mark>"
+              highlight="<mark class='bg-blue-700 dark:bg-blue-300 text-white dark:text-neutral-900 font-bold px-0.5 box-decoration-clone'>$1</mark>"
               class="group/search">
     <dialog id="search-modal"
             class="fixed top-4 bottom-4 inset-x-4 sm:top-[12vh] sm:bottom-[12vh] bg-transparent open:flex items-start justify-center w-full h-auto
@@ -66,9 +66,7 @@
                                         const coll = result.collection || '';
                                         result.subcategory = result.breadcrumb?.[0] || '';
                                         result.collectionId = coll.toLowerCase();
-                                        result.titleFont = result.collectionId === 'reference'
-                                            ? 'font-mono text-[0.8125rem] tracking-normal font-medium'
-                                            : 'font-chicago text-sm';
+                                        result.titleFont = 'font-chicago text-sm';
                                         return result;
                                     });
                                 end
@@ -144,21 +142,19 @@
                                            border-transparent bg-transparent text-neutral-600 dark:text-neutral-400
 
                                            /* Active / Checked State */
-                                           peer-checked:bg-linear-to-b peer-checked:from-neutral-50 peer-checked:to-neutral-100
-                                           dark:peer-checked:from-neutral-800 dark:peer-checked:to-neutral-850
+                                           peer-checked:bg-neutral-50 dark:peer-checked:bg-neutral-800/50
 
                                            peer-checked:border-neutral-300 dark:peer-checked:border-neutral-600
-                                           peer-checked:text-neutral-900 dark:peer-checked:text-neutral-100
-                                           peer-checked:shadow-sm"
+                                           peer-checked:text-neutral-900 dark:peer-checked:text-neutral-100"
                                     aria-hidden="true">
 
                                 <div class="flex flex-col flex-1 min-w-0">
-                                    <nav class="flex items-center gap-2 mb-1 text-[10px] font-semibold uppercase tracking-wider
-                                                text-neutral-400 dark:text-neutral-500
+                                    <nav class="flex items-center gap-2 mb-1 text-xs
+                                                text-neutral-500 dark:text-neutral-450
                                                 group-has-checked/result:text-neutral-600 dark:group-has-checked/result:text-neutral-400 transition-colors">
                                         <span>${item.collection}</span>
                                         @if item.subcategory
-                                        <i class="icon-[mdi--chevron-right] text-[12px] opacity-70"></i>
+                                        <span class="text-neutral-300 dark:text-neutral-700 select-none">/</span>
                                         <span>${item.subcategory}</span>
                                         @end
                                     </nav>

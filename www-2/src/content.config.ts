@@ -4,7 +4,7 @@ import {slugify} from "./lib/utils.ts";
 import yaml from "js-yaml";
 
 const pages = defineCollection({
-    loader: glob({base: "./src/content", pattern: "{index,about}.mdx"}),
+    loader: glob({base: "./src/content", pattern: "{index,about,memes,podcasts,essays/index,interviews/index}.mdx"}),
     schema: z.object({
         title: z.string(),
         description: z.string(),
@@ -33,7 +33,7 @@ const reference = defineCollection({
 });
 
 const patterns = defineCollection({
-    loader: glob({base: "./src/content/patterns", pattern: "{index.md,index.mdx,**/*.md,**/*.mdx}"}),
+    loader: glob({base: "./src/content/patterns", pattern: "{*.md,*.mdx,**/*.md,**/*.mdx}"}),
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
@@ -41,19 +41,19 @@ const patterns = defineCollection({
 });
 
 const essays = defineCollection({
-    loader: glob({base: "./src/content/essays", pattern: "{index.mdx,**/*.md,**/*.mdx}"}),
+    loader: glob({base: "./src/content/essays", pattern: ["{*.md,*.mdx,**/*.md,**/*.mdx}", "!index.mdx"]}),
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
                 created: z.date().optional(),
         modified: z.date().optional(),
-        authors: z.array(z.string()).optional(),
-        tags: z.array(z.enum(['foundations', 'the-case-for-hypermedia', 'case-studies', 'guides', 'simplicity', 'about-htmx'])).optional(),
+        authors: z.array(z.string()).min(1),
+        tags: z.array(z.enum(['foundations', 'the-case-for-hypermedia', 'case-studies', 'guides', 'simplicity'])).optional(),
     }).strict(),
 });
 
 const interviews = defineCollection({
-    loader: glob({base: "./src/content/interviews", pattern: "{index.mdx,**/*.md,**/*.mdx}"}),
+    loader: glob({base: "./src/content/interviews", pattern: "{*.md,*.mdx,**/*.md,**/*.mdx}"}),
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
@@ -116,19 +116,6 @@ const team = defineCollection({
     }).passthrough(),
 })
 
-const podcasts = defineCollection({
-    loader: file('src/content/podcasts.yaml', {
-        parser: (fileContent) => (yaml.load(fileContent) as any[]).map((podcast) => ({
-            ...podcast,
-            id: slugify(podcast.name)
-        }))
-    }),
-    schema: z.object({
-        id: z.string(), // generated from `name`
-        name: z.string(),
-        url: z.string().url(),
-    }).strict(),
-})
 
 
 export const collections = {
@@ -141,6 +128,5 @@ export const collections = {
     sponsors,
     community,
 team,
-    podcasts,
 };
 

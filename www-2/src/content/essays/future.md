@@ -4,7 +4,7 @@ description: "In this essay, Carson Gross and Alex Petros discuss htmx's future 
 created: 2025-01-01
 modified: 2025-01-01
 authors: ["Carson Gross", "Alex Petros"]
-tags: ["meta"]
+tags: []
 ---
 
 ## In The Beginning...

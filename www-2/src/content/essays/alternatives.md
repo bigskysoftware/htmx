@@ -2,9 +2,9 @@
 title: "Alternatives to htmx"
 description: "In this article, Carson Gross compares several alternative libraries and frameworks to htmx that embrace a hypermedia-oriented approach to web development. Carson explores established solutions like Unpoly and Hotwire Turbo, as well as emerging projects like Triptych and htmz, providing developers with a comprehensive overview of hypermedia-driven application development options beyond htmx."
 created: 2025-01-12
-modified: 2024-01-12
+modified: 2025-01-12
 authors: [ "Carson Gross" ]
-tags: ["meta"]
+tags: ["the-case-for-hypermedia"]
 ---
 
 [htmx](/) is only one of many different libraries & frameworks that take the

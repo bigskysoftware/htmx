@@ -1,0 +1,45 @@
+---
+import type { Breadcrumb } from '../lib/content';
+
+interface Props {
+    breadcrumbs: Breadcrumb[];
+}
+
+const { breadcrumbs } = Astro.props;
+const allCrumbs: Breadcrumb[] = [{label: 'Home', href: '/'}, ...breadcrumbs];
+const isLast = (i: number) => i === allCrumbs.length - 1;
+const parent = allCrumbs.slice(0, -1).reverse().find(c => c.href) || null;
+---
+
+{allCrumbs.length > 1 && (
+    <nav aria-label="Breadcrumb" class="mb-6">
+        {/* Mobile: show parent link only */}
+        {parent && (
+            <a href={parent.href}
+               class="sm:hidden inline-flex items-center gap-1 -ml-1 py-1.5 pr-2 text-sm text-neutral-500 dark:text-neutral-450 transition interact:underline interact:text-blue-700 dark:interact:text-blue-300 rounded-sm">
+                <i class="icon-[mdi--chevron-left] text-lg shrink-0" aria-hidden="true"></i>
+                <span class="truncate max-w-[30ch]" set:html={parent.label} />
+            </a>
+        )}
+
+        {/* Desktop: full breadcrumb trail */}
+        <ol class="hidden sm:flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-500 dark:text-neutral-450">
+            {allCrumbs.map((crumb, i) => (
+                <li class="flex items-center gap-3">
+                    {i > 0 && (
+                        <span class="text-neutral-300 dark:text-neutral-700 select-none" aria-hidden="true">/</span>
+                    )}
+                    {crumb.href && !isLast(i) ? (
+                        <a href={crumb.href}
+                           class="transition interact:underline interact:text-blue-700 dark:interact:text-blue-300"
+                           set:html={crumb.label} />
+                    ) : (
+                        <span class:list={[isLast(i) && "font-bold text-neutral-700 dark:text-neutral-300 truncate max-w-[40ch]"]}
+                              aria-current={isLast(i) ? "page" : undefined}
+                              set:html={crumb.label} />
+                    )}
+                </li>
+            ))}
+        </ol>
+    </nav>
+)}

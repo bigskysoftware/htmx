@@ -4,7 +4,7 @@ description: "Carson Gross explores the fascinating lore of htmx, from its playf
 created: 2024-12-17
 modified: 2024-12-17
 authors: ["Carson Gross"]
-tags: ["meta"]
+tags: []
 ---
 
 <center style="padding: 12px">
