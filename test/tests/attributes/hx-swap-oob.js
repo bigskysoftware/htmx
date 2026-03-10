@@ -64,4 +64,12 @@ describe('hx-swap-oob', function() {
         await forRequest()
         assertTextContentIs('#legacy', 'Legacy Format')
     })
+
+    it('swaps oob to all elements matching a class selector', async function () {
+        mockResponse('GET', '/test', '<div>Main</div><div hx-swap-oob="innerHTML:.target">Updated</div>')
+        createProcessedHTML('<div hx-get="/test">Click</div><div class="target">A</div><div class="target">B</div>');
+        find('[hx-get]').click()
+        await forRequest()
+        playground().querySelectorAll('.target').forEach(el => el.innerText.should.equal('Updated'))
+    })
 })

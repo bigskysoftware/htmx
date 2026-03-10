@@ -493,6 +493,12 @@ describe('swap() unit tests', function() {
         find('#d1').innerText.should.equal('New')
     })
 
+    it('swaps partial to all elements matching a class selector', async function () {
+        createProcessedHTML("<div class='target'>A</div><div class='target'>B</div>")
+        await htmx.swap({"target":"#test-playground", "text":"<hx-partial hx-target='.target' hx-swap='innerHTML'>Updated</hx-partial>"})
+        playground().querySelectorAll('.target').forEach(el => el.innerText.should.equal('Updated'))
+    })
+
     it('restores focus to textarea after innerHTML swap', async function () {
         createProcessedHTML("<textarea id='focused-textarea'>hello world</textarea>")
         let textarea = find('#focused-textarea')

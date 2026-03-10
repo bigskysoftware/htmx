@@ -1274,7 +1274,15 @@ var htmx = (() => {
         async __insertContent(task, cssTransition = true) {
             let {target, swapSpec, fragment} = task;
             if (typeof target === 'string') {
-                target = document.querySelector(target);
+                await Promise.all(
+                    [...document.querySelectorAll(target)].map((t) =>
+                        this.__insertContent(
+                        { ...task, target: t, fragment: task.fragment.cloneNode(true) },
+                        cssTransition,
+                        )
+                    )
+                );
+                return;
             }
             if (!target) return;
             if (typeof swapSpec === 'string') {
