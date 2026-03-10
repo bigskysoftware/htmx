@@ -543,6 +543,7 @@ var htmx = (() => {
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
 
                 if(this.__handleHeadersAndMaybeReturnEarly(ctx)){
+                    ctx.keepIndicators = true;
                     return
                 }
 
@@ -561,9 +562,11 @@ var htmx = (() => {
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
                 clearTimeout(ctx.requestTimeout);
-                this.__hideIndicators(indicators);
-                this.__enableElements(disableElements);
                 this.__trigger(elt, "htmx:finally:request", {ctx})
+                if (!ctx.keepIndicators) {
+                    this.__hideIndicators(indicators);
+                    this.__enableElements(disableElements);
+                }
 
                 requestQueue.finish()
                 if (requestQueue.more()) {
