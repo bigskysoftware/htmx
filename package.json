@@ -57,11 +57,9 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "@web/test-runner": "^0.20.2",
-    "@web/test-runner-playwright": "^0.11.0",
+    "@web/test-runner-playwright": "^0.11.1",
     "brotli-cli": "^2.1.1",
-    "chai": "^4.5.0",
-    "mocha": "^11.7.4",
-    "terser": "^5.36.0",
-    "ws": "^8.18.3"
+    "terser": "^5.46.0",
+    "ws": "^8.19.0"
   }
 }
