@@ -38,6 +38,7 @@
 
         // meta, title, base, preload/prefetch/icon links, async scripts — fire-and-forget
         document.head.appendChild(newElt)
+        if (newNode._preloadHint) newElt.addEventListener("load", () => newNode._preloadHint.remove(), {once: true})
         return null
     }
 
@@ -117,8 +118,17 @@
 
                 // defer scripts need the swapped DOM to exist — split them out
                 for (const newNode of nodesToAppend) {
-                    if (newNode.tagName === "SCRIPT" && newNode.defer) deferred.push(newNode)
-                    else {
+                    if (newNode.tagName === "SCRIPT" && newNode.defer) {
+                        deferred.push(newNode)
+                        if (newNode.src) {
+                            let hint = document.createElement("link")
+                            hint.rel = newNode.type === "module" ? "modulepreload" : "preload"
+                            hint.as = "script"
+                            hint.href = newNode.src
+                            document.head.appendChild(hint)
+                            newNode._preloadHint = hint
+                        }
+                    } else {
                         log("adding: ", newNode)
                         if (htmx.trigger(document.body, "htmx:before:head:add", {headElement: newNode}) !== false) {
                             await appendNode(newNode)

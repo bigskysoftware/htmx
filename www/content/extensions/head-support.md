@@ -2,7 +2,7 @@
 title = "htmx Head Tag Support Extension"
 +++
 
-The `head-support` extension adds support for [head tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head)
+The `hx-head` extension adds support for [head tags](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head)
 in responses to htmx requests with intelligent resource loading and FOUC prevention.
 
 htmx began as a library focused on _partial replacement_ of HTML within the `body` tag.  As such, merging additional
@@ -19,7 +19,7 @@ Include the extension after htmx:
 
 ```html
 <script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/head-support.js"></script>
+<script src="/path/to/ext/hx-head.js"></script>
 ```
 
 ## Usage
@@ -69,7 +69,7 @@ The extension intelligently handles different types of head elements:
 
 ### Deferred Resources (Loaded After Swap)
 
-* **Deferred Scripts** (`<script defer>`) - Executed after DOM swap completes
+* **Deferred Scripts** (`<script defer>`) - Executed after DOM swap completes. A `<link rel="preload">` (or `rel="modulepreload"` for ES modules) hint is temporarily injected immediately when the deferred script is identified, so the browser can fetch it in parallel rather than waiting until after the swap fires.
 
 ### Controlling Merge Behavior
 
