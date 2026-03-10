@@ -163,7 +163,7 @@ var htmx = (() => {
         }
 
         __queryEltAndDescendants(elt, selector) {
-            let results = [...elt.querySelectorAll(selector)];
+            let results = [...(elt.querySelectorAll?.(selector) ?? [])];
             if (elt.matches?.(selector)) {
                 results.unshift(elt);
             }
@@ -1019,10 +1019,6 @@ var htmx = (() => {
             let response = text.replace(/<hx-([a-z]+)(\s+|>)/gi, '<template hx type="$1"$2').replace(/<\/hx-[a-z]+>/gi, '</template>');
             let title = '';
             response = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, m => (title = this.__parseHTML(m).title, ''));
-            if (!title) {
-                let m = response.match(/<title[\s>]([\s\S]*?)<\/title>/i);
-                if (m && !response.slice(0, m.index).includes('<svg')) title = m[1].trim();
-            }
             let startTag = response.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
             let doc, fragment;
@@ -1036,6 +1032,15 @@ var htmx = (() => {
                 doc = this.__parseHTML(`<template>${response}</template>`);
                 fragment = doc.querySelector('template').content;
             }
+
+            if (!title) {
+                let titleElt = fragment.querySelector('title:not(svg title)');
+                if (titleElt) {
+                    title = titleElt.textContent;
+                    titleElt.remove();
+                }
+            }
+
             this.__processScripts(fragment);
 
             return {
@@ -1139,7 +1144,7 @@ var htmx = (() => {
         }
 
         __handleAutoFocus(elt) {
-            let autofocus = elt.querySelector?.("[autofocus]");
+            let autofocus = this.__queryEltAndDescendants(elt, '[autofocus]')[0];
             if (autofocus) {
                 this.__setFocus(autofocus);
             }
@@ -1211,7 +1216,7 @@ var htmx = (() => {
             let swapPromises = [];
             let transitionTasks = [];
             for (let task of tasks) {
-                if (task.swapSpec?.transition ?? mainSwap?.transition ?? (ctx.transition !== false)) {
+                if (task.swapSpec?.transition ?? mainSwap?.transition ?? ctx.transition) {
                     transitionTasks.push(task);
                 } else {
                     swapPromises.push(this.__insertContent(task));
@@ -1254,7 +1259,7 @@ var htmx = (() => {
                     target: this.__resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
                     swapSpec,
                     sourceElement: ctx.sourceElement,
-                    transition: (ctx.transition !== false) && (swapSpec.transition !== false)
+                    transition: ctx.transition && swapSpec.transition !== false
                 };
                 return mainSwap;
             }
@@ -1590,14 +1595,14 @@ var htmx = (() => {
                 replace = hx.replaceurl;
             }
 
+            // if this is a boosted element, default to pushing
+            if (push == null && replace == null && this.__isBoosted(sourceElement)) {
+                push = 'true';
+            }
+            
             // normalize "false" to null
             if (push === 'false' || push === false) push = null;
             if (replace === 'false' || replace === false) replace = null;
-
-            // if this is a boosted element, default to pushing
-            if (!push && !replace && this.__isBoosted(sourceElement)) {
-                push = 'true';
-            }
 
             if (!push && !replace) return null;
 
@@ -1927,13 +1932,15 @@ var htmx = (() => {
             }
             insertionPoint ||= oldParent.firstChild;
 
-            for (const newChild of [...newParent.childNodes]) {
+            let newChild = newParent.firstChild;
+            while (newChild) {
+                let matchedNode;
                 if (insertionPoint && insertionPoint != endPoint) {
-                    let bestMatch = this.__findBestMatch(ctx, newChild, insertionPoint, endPoint);
-                    if (bestMatch) {
-                        if (bestMatch !== insertionPoint) {
+                    matchedNode = this.__findBestMatch(ctx, newChild, insertionPoint, endPoint);
+                    if (matchedNode) {
+                        if (matchedNode !== insertionPoint) {
                             let cursor = insertionPoint;
-                            while (cursor && cursor !== bestMatch) {
+                            while (cursor && cursor !== matchedNode) {
                                 let tempNode = cursor;
                                 cursor = cursor.nextSibling;
                                 // remove nodes unless they match upcoming content in which case move them to end for later use
@@ -1944,32 +1951,33 @@ var htmx = (() => {
                                 }
                             }
                         }
-                        this.__morphNode(bestMatch, newChild, ctx);
-                        insertionPoint = bestMatch.nextSibling;
-                        continue;
                     }
                 }
 
-                if (newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
+                if (!matchedNode && newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
                     let escapedId = CSS.escape(newChild.id);
-                    let target = (ctx.target.id === newChild.id && ctx.target) ||
+                    matchedNode = (ctx.target.id === newChild.id && ctx.target) ||
                         ctx.target.querySelector(`[id="${escapedId}"]`) ||
                         ctx.pantry.querySelector(`[id="${escapedId}"]`);
-                    let elementId = target.id;
-                    let element = target;
+                    let element = matchedNode;
                     while ((element = element.parentNode)) {
                         let idSet = ctx.idMap.get(element);
                         if (idSet) {
-                            idSet.delete(elementId);
+                            idSet.delete(matchedNode.id);
                             if (!idSet.size) ctx.idMap.delete(element);
                         }
                     }
-                    this.__moveBefore(oldParent, target, insertionPoint);
-                    this.__morphNode(target, newChild, ctx);
-                    insertionPoint = target.nextSibling;
+                    this.__moveBefore(oldParent, matchedNode, insertionPoint);
+                }
+
+                if (matchedNode) {
+                    this.__morphNode(matchedNode, newChild, ctx);
+                    insertionPoint = matchedNode.nextSibling;
+                    newChild = newChild.nextSibling;
                     continue;
                 }
 
+                let nextNewChild = newChild.nextSibling;
                 if (ctx.idMap.has(newChild)) {
                     let placeholder = document.createElement(newChild.tagName);
                     oldParent.insertBefore(placeholder, insertionPoint);
@@ -1979,6 +1987,7 @@ var htmx = (() => {
                     oldParent.insertBefore(newChild, insertionPoint);
                     insertionPoint = newChild.nextSibling;
                 }
+                newChild = nextNewChild;
             }
 
             while (insertionPoint && insertionPoint != endPoint) {
