@@ -1,6 +1,7 @@
 ---
 title: "History"
 description: "Integrate with browser history and navigation"
+keywords: ["back button", "pushState", "replaceState", "navigation", "SPA"]
 ---
 
 <details class="warning">

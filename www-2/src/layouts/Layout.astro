@@ -9,15 +9,16 @@ interface Props {
     title?: string;
     description?: string;
     image?: string;
+    keywords?: string[];
 }
 
-const {title, description, image} = Astro.props;
+const {title, description, image, keywords} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
 
-<Head {title} {description} {image}/>
+<Head {title} {description} {image} {keywords}/>
 
 <body hx-boost:inherited="true"
       hx-swap:inherited="innerMorph"

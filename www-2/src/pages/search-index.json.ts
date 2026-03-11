@@ -75,10 +75,34 @@ export const GET: APIRoute = async () => {
                     url: folder.url,
                     title: folder.frontmatter.title,
                     description: folder.frontmatter.description || '',
+                    keywords: folder.frontmatter.keywords?.join(', ') || '',
                     parent: null,
                     collection,
                     breadcrumb: []
                 });
+
+                // Add subfolder entries (e.g., Reference > Headers, Docs > Getting Started)
+                const addSubfolders = (parentFolder: typeof folder) => {
+                    for (const subfolder of parentFolder.subfolders) {
+                        const breadcrumb = subfolder.breadcrumbs
+                            .slice(1, -1)
+                            .map(b => b.label);
+
+                        results.push({
+                            id: subfolder.url,
+                            url: subfolder.url,
+                            title: subfolder.frontmatter.title,
+                            description: subfolder.frontmatter.description || '',
+                            keywords: subfolder.frontmatter.keywords?.join(', ') || '',
+                            parent: null,
+                            collection,
+                            breadcrumb
+                        });
+
+                        addSubfolders(subfolder);
+                    }
+                };
+                addSubfolders(folder);
 
                 for (const file of files) {
                     let sections: Array<{title: string, anchor: string, content: string}> = [];
@@ -99,11 +123,14 @@ export const GET: APIRoute = async () => {
                         .slice(1, -1)
                         .map(b => b.label);
 
+                    const keywords = file.frontmatter.keywords?.join(', ') || '';
+
                     results.push({
                         id: file.url,
                         url: file.url,
                         title: file.frontmatter.title,
                         description: file.frontmatter.description || '',
+                        keywords,
                         parent: null,
                         collection,
                         breadcrumb

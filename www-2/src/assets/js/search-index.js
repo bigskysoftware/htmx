@@ -225,14 +225,59 @@ class SearchIndex extends HTMLElement {
             }
         }
 
-        // Sort results to prioritize exact case matches in title
+        // Supplement: add any keyword matches FlexSearch may have missed
+        // (e.g. very short queries like "ws" that FlexSearch can't tokenize)
+        const queryLower = trimmedQuery.toLowerCase();
+        for (const doc of this.rawData) {
+            if (seen.has(doc.id) || !doc.keywords) continue;
+            const kw = doc.keywords.toLowerCase().split(/,\s*/);
+            if (kw.includes(queryLower)) {
+                seen.add(doc.id);
+                const tpl = this.highlight;
+                results.push(tpl ? this._highlight(doc, trimmedQuery, tpl) : doc);
+            }
+        }
+
+        // Sort results by relevance.
+        // Priority: exact title > exact keyword > partial title match.
+        // Case-sensitive is tried first so "HX-Trigger" (header) beats
+        // "hx-trigger" (attribute). Case-insensitive is used as a fallback so
+        // "headers" still finds "Headers".
         results.sort((a, b) => {
-            const aTitle = a.title?.replace(/<[^>]*>/g, '') || '';
-            const bTitle = b.title?.replace(/<[^>]*>/g, '') || '';
-            const aExact = aTitle.includes(trimmedQuery);
-            const bExact = bTitle.includes(trimmedQuery);
-            if (aExact && !bExact) return -1;
-            if (!aExact && bExact) return 1;
+            const aRaw = a.title?.replace(/<[^>]*>/g, '') || '';
+            const bRaw = b.title?.replace(/<[^>]*>/g, '') || '';
+            const aLower = aRaw.toLowerCase();
+            const bLower = bRaw.toLowerCase();
+
+            // Keywords: split comma-separated string, check if query matches any keyword
+            const aKw = (a.keywords || '').toLowerCase().split(/,\s*/);
+            const bKw = (b.keywords || '').toLowerCase().split(/,\s*/);
+            const aHasKw = aKw.includes(queryLower);
+            const bHasKw = bKw.includes(queryLower);
+
+            // 1. Case-sensitive exact title match
+            const aExact = aRaw === trimmedQuery;
+            const bExact = bRaw === trimmedQuery;
+            if (aExact !== bExact) return aExact ? -1 : 1;
+
+            // 2. Case-insensitive exact title match
+            const aExactI = aLower === queryLower;
+            const bExactI = bLower === queryLower;
+            if (aExactI !== bExactI) return aExactI ? -1 : 1;
+
+            // 3. Exact keyword match (curated aliases like "sse", "ws")
+            if (aHasKw !== bHasKw) return aHasKw ? -1 : 1;
+
+            // 4. Case-sensitive title contains
+            const aContains = aRaw.includes(trimmedQuery);
+            const bContains = bRaw.includes(trimmedQuery);
+            if (aContains !== bContains) return aContains ? -1 : 1;
+
+            // 5. Case-insensitive title contains
+            const aContainsI = aLower.includes(queryLower);
+            const bContainsI = bLower.includes(queryLower);
+            if (aContainsI !== bContainsI) return aContainsI ? -1 : 1;
+
             return 0;
         });
 
@@ -258,11 +303,28 @@ class SearchIndex extends HTMLElement {
         );
         const wrap = (str) => typeof str === 'string' ? str.replace(pattern, template) : str;
 
-        return {
+        const highlighted = {
             ...doc,
             title: wrap(doc.title),
             description: wrap(doc.description)
         };
+
+        // If nothing was highlighted in title or description, this was a
+        // keyword-only match (e.g. "ws" → "Web Sockets"). Show the matching
+        // keyword so the user understands why this result appeared.
+        if (highlighted.title === doc.title && highlighted.description === doc.description && doc.keywords) {
+            const queryLower = query.toLowerCase();
+            const kw = doc.keywords.split(/,\s*/);
+            const match = kw.find(k => k.toLowerCase() === queryLower);
+            if (match) {
+                const kwTag = template.replace('$1', match);
+                highlighted.description = highlighted.description
+                    ? `${kwTag} · ${highlighted.description}`
+                    : kwTag;
+            }
+        }
+
+        return highlighted;
     }
 
     clear() {

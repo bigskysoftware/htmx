@@ -1,6 +1,7 @@
 ---
 title: "Boosting"
 description: "Convert regular links and forms to use AJAX"
+keywords: ["boost", "hx-boost", "progressive enhancement", "AJAX links"]
 ---
 
 Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/reference/attributes/hx-boost) attribute. This

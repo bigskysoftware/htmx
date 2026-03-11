@@ -1,6 +1,7 @@
 ---
 title: "CSS Transitions"
 description: "Animate content changes with CSS transitions"
+keywords: ["animations", "animate", "fade", "transition", "view transitions"]
 ---
 
 htmx makes it easy to

@@ -1,6 +1,7 @@
 ---
 title: "Synchronization"
 description: "Coordinate requests between multiple elements"
+keywords: ["sync", "race condition", "abort", "queue", "debounce", "throttle"]
 ---
 
 Often you want to coordinate the requests between two elements. For example, you may want a request from one element

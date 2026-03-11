@@ -1,6 +1,7 @@
 ---
 title: "Configuration"
 description: "Configure htmx's global settings and options"
+keywords: ["config", "settings", "options", "htmx.config", "meta tag"]
 ---
 
 Htmx has configuration options that can be accessed either programmatically or declaratively.

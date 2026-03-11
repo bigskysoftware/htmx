@@ -1,6 +1,7 @@
 ---
 title: "Debugging"
 description: "Debug htmx issues with browser dev tools"
+keywords: ["debug", "devtools", "console", "logging", "logAll", "troubleshoot"]
 ---
 
 Declarative and event driven programming with htmx (or any other declarative language) can be a wonderful and highly

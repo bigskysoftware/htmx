@@ -4,7 +4,7 @@ import {slugify} from "./lib/utils.ts";
 import yaml from "js-yaml";
 
 const pages = defineCollection({
-    loader: glob({base: "./src/content", pattern: "{index,about,memes,podcasts,essays/index,interviews/index}.mdx"}),
+    loader: glob({base: "./src/content", pattern: "{index,about,essays/index,interviews/index,podcasts/index,memes/index}.mdx"}),
     schema: z.object({
         title: z.string(),
         description: z.string(),
@@ -21,6 +21,7 @@ const docs = defineCollection({
         title: z.string(),
         description: z.string().optional(),
                 thumbnail: z.string().optional(),
+        keywords: z.array(z.string()).optional(),
     }).strict(),
 });
 
@@ -29,6 +30,7 @@ const reference = defineCollection({
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
+        keywords: z.array(z.string()).optional(),
             }).strict(),
 });
 
@@ -37,6 +39,7 @@ const patterns = defineCollection({
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
+        keywords: z.array(z.string()).optional(),
     }).strict(),
 });
 
@@ -48,7 +51,8 @@ const essays = defineCollection({
                 created: z.date().optional(),
         modified: z.date().optional(),
         authors: z.array(z.string()).min(1),
-        tags: z.array(z.enum(['foundations', 'the-case-for-hypermedia', 'case-studies', 'guides', 'simplicity'])).optional(),
+        tags: z.array(z.enum(['foundations', 'the-case-for-hypermedia', 'case-studies', 'guides', 'simplicity', 'counterpoints'])).optional(),
+        keywords: z.array(z.string()).optional(),
     }).strict(),
 });
 
@@ -60,6 +64,7 @@ const interviews = defineCollection({
         created: z.date().optional(),
         modified: z.date().optional(),
         authors: z.array(z.string()).optional(),
+        keywords: z.array(z.string()).optional(),
     }).strict(),
 });
 

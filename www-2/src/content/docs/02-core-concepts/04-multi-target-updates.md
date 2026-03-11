@@ -1,6 +1,7 @@
 ---
 title: "Multi-Target Updates"
 description: "Update multiple elements from a single response"
+keywords: ["oob", "out of band", "multiple swaps", "swap-oob"]
 ---
 
 ## The Problem

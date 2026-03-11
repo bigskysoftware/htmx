@@ -1,6 +1,7 @@
 ---
 title: "HTTP Integration"
 description: "Work with HTTP headers and response status codes"
+keywords: ["status code", "error handling", "response", "request", "AJAX", "XHR", "fetch"]
 ---
 
 Htmx expects responses to the AJAX requests it makes to be HTML, typically HTML fragments (although a full HTML

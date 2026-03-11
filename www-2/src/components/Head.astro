@@ -3,13 +3,21 @@ interface Props {
     title?: string;
     description?: string;
     image?: string;
+    keywords?: string[];
 }
+
+const SITE_KEYWORDS = 'htmx, hypermedia, ajax, html, javascript, frontend, web development, hateoas, rest, websockets, server sent events, declarative';
 
 const {
     title = "htmx",
     description = "htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext\n\nhtmx is small (~10k min.gz'd), dependency-free, extendable, IE11 compatible & has reduced code base sizes by 67% when compared with react",
     image = "/img/og-image.png",
+    keywords,
 } = Astro.props;
+
+const metaKeywords = keywords?.length
+    ? `${keywords.join(', ')}, ${SITE_KEYWORDS}`
+    : SITE_KEYWORDS;
 ---
 
 <head>
@@ -25,7 +33,7 @@ const {
     <!-- SEO & Page Meta -->
     <meta name="description" content={description.trim()}>
     <meta name="keywords"
-          content="htmx, hypermedia, ajax, html, javascript, frontend, web development, hateoas, rest, websockets, server sent events, declarative">
+          content={metaKeywords}>
     <meta name="robots" content="index, follow">
     <meta name="author" content="Big Sky Software">
     <meta name="generator" content="Astro">
@@ -96,9 +104,4 @@ const {
     <script>document.addEventListener('touchstart', function () {
     }, {passive: true});</script>
 
-    <script is:inline>
-        if (/mac/i.test(navigator.userAgent)) {
-            document.body.setAttribute('data-macos', '');
-        }
-    </script>
 </head>

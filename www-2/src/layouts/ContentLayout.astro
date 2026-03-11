@@ -31,7 +31,7 @@ if (!data) {
 }
 
 // Auto-derive collection from the data
-const collection = data.folder as 'docs' | 'reference' | 'patterns';
+const collection = data.folder as 'docs' | 'reference' | 'patterns' | 'essays';
 const isEssay = collection === 'essays';
 
 // Show sidebar when the collection has grouped structure (subfolders)
@@ -40,7 +40,7 @@ const hasSidebar = !!(folder?.subfolders?.length);
 // Render content
 const {Content} = await data.render();
 
-const {title, description} = data.frontmatter;
+const {title, description, keywords} = data.frontmatter;
 
 // Show TOC only on detail pages with headings
 const includeTableOfContents = !isContentIndex && headings && headings.length > 0;
@@ -53,9 +53,9 @@ const includeRightColumn = includeTableOfContents || includePagination;
 
 ---
 
-<Layout {title} {description}>
+<Layout {title} {description} {keywords}>
 
-    {!isContentIndex && <GridBackground mode="3d" />}
+    {(!isContentIndex || !hasSidebar) && <GridBackground mode="3d" />}
 
     <Header slot="header">
         {hasSidebar && (
@@ -86,7 +86,7 @@ const includeRightColumn = includeTableOfContents || includePagination;
             <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-center max-w-[1440px]">
 
                 <!-- Main Content Area -->
-                <div class:list={["pt-8 sm:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", isContentIndex && hasSidebar ? "max-w-4xl" : "max-w-prose"]}
+                <div class:list={["pt-8 sm:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", !isContentIndex ? "max-w-prose" : "max-w-4xl"]}
                 >
                     <Breadcrumbs breadcrumbs={data.breadcrumbs} />
 
@@ -110,7 +110,7 @@ const includeRightColumn = includeTableOfContents || includePagination;
                                         authors={file.frontmatter.authors}
                                         created={file.frontmatter.created}
                                         modified={file.frontmatter.modified}
-                                        tags={file.frontmatter.tags}
+                                        fileId={file.id}
                                     />
                                 )}
 
@@ -128,12 +128,12 @@ const includeRightColumn = includeTableOfContents || includePagination;
                                                 {file.prev ? (
                                                                 <a href={file.prev.url}
                                                                    class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-800 rounded-xl transition
-                                                                   interact:bg-neutral-100 dark:interact:bg-neutral-800/30
+                                                                   interact:bg-neutral-75 dark:interact:bg-neutral-875
                                                                    interact:border-neutral-400 dark:interact:border-neutral-600">
                                                                     <i class="icon-[mdi--chevron-left] text-2xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0 mt-0.5"></i>
                                                                     <div class="flex-1 min-w-0">
                                                                         {file.prev.breadcrumbs.length > 2 && (
-                                                                                <div class="text-xs uppercase tracking-wider font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mb-2 transition">
+                                                                                <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mb-2 transition">
                                                                                     {file.prev.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
                                                                                 </div>
                                                                         )}
@@ -149,11 +149,11 @@ const includeRightColumn = includeTableOfContents || includePagination;
                                                 {file.next && (
                                                         <a href={file.next.url}
                                                            class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-800 rounded-xl transition
-                                                           interact:bg-neutral-100 dark:interact:bg-neutral-800/30
+                                                           interact:bg-neutral-75 dark:interact:bg-neutral-875
                                                            interact:border-neutral-400 dark:interact:border-neutral-600">
                                                             <div class="flex-1 min-w-0">
                                                                 {file.next.breadcrumbs.length > 2 && (
-                                                                        <div class="text-xs uppercase tracking-widest text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mb-2 transition">
+                                                                        <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mb-2 transition">
                                                                             {file.next.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
                                                                         </div>
                                                                 )}
@@ -199,8 +199,8 @@ const includeRightColumn = includeTableOfContents || includePagination;
                                                                     "flex-1 group flex items-center gap-2 p-2 text-xs font-medium border rounded-[5px] transition select-none",
                                                                     reverse && "flex-row-reverse",
                                                                     link
-                                                                        ? "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-800/30 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white"
-                                                                        : "border-transparent bg-neutral-50 dark:bg-neutral-900/50 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
+                                                                        ? "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white"
+                                                                        : "border-transparent bg-neutral-50 dark:bg-neutral-930 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
                                                                 ]}>
                                                             <i class:list={[icon, "size-4", link ? "text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-200 transition" : "opacity-50"]}></i>
                                                             <span class="flex-1 inline-flex justify-center">{label}</span>

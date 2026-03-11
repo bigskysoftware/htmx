@@ -1,6 +1,7 @@
 ---
 title: "Client-Side Scripting"
 description: "Use events and hx-on to integrate JavaScript"
+keywords: ["javascript", "js", "scripting", "hyperscript", "_hyperscript", "alpine"]
 ---
 
 <details class="warning">

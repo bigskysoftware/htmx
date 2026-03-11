@@ -1,6 +1,7 @@
 ---
 title: "Streaming Responses"
 description: "Stream server updates using Server-Sent Events"
+keywords: ["sse", "server-sent events", "event stream", "streaming"]
 ---
 
 htmx 4 has built-in support for Streaming Responses Server-Sent Events (SSE).
