@@ -3630,7 +3630,8 @@ var htmx = (function() {
     (elt.tagName === 'INPUT' && getRawAttribute(elt, 'type') === 'submit')) {
       const button = internalData.lastButtonClicked || (/** @type HTMLInputElement|HTMLButtonElement */(elt))
       const name = getRawAttribute(button, 'name')
-      addValueToFormData(name, button.value, priorityFormData)
+      const selectedFormData = verb === 'get' ? formData : priorityFormData
+      addValueToFormData(name, button.value, selectedFormData)
     }
 
     // include any explicit includes
