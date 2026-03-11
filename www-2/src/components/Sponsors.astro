@@ -6,6 +6,7 @@ interface Props {
 }
 
 import { Image } from 'astro:assets';
+import Card from './Card.astro';
 
 const { sponsors } = Astro.props;
 
@@ -45,7 +46,7 @@ const tiers = Object.keys(sponsorsByTier);
                         <h3 id={`${tier}-sponsors-heading`}
                             class:list={[
                                 'inline-flex items-center gap-4 mb-6 sm:mb-8 font-chicago font-bold',
-                                { 'text-blue-700 dark:text-blue-400': tier === 'platinum' },
+                                { 'text-blue-700 dark:text-blue-350': tier === 'platinum' },
                                 { 'text-neutral-700 dark:text-neutral-300': tier === 'silver' }
                             ]}>
                             <span aria-hidden="true">{tier === 'platinum' ? '◆' : '★'}</span>
@@ -67,43 +68,41 @@ const tiers = Object.keys(sponsorsByTier);
                                 if (!logo) return null;
 
                                 return (
-                                    <li class:list={[
-                                        'group bg-neutral-10 dark:bg-neutral-910 border border-neutral-100 interact:border-neutral-400 dark:border-neutral-850 dark:interact:border-neutral-700 rounded-[5px] sm:transition',
-                                        { 'min-h-[180px]': tier === 'platinum' },
-                                        { 'min-h-[120px]': tier === 'silver' }
-                                    ]}>
-                                        <a href={sponsor.url} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${sponsor.name} website`}
-                                           class:list={[
-                                               'flex items-center justify-center w-full h-full',
-                                               { 'p-8': tier === 'platinum', 'p-6': tier !== 'platinum' }
-                                           ]}>
-                                            {isSvg ? (
-                                                <SvgComponent
-                                                    role="presentation"
-                                                    aria-label={`${sponsor.name} Logo`}
-                                                    class:list={[
-                                                        'object-contain pointer-events-none',
-                                                        { 'max-h-[80px] w-[360px]': tier === 'platinum' },
-                                                        { 'max-h-[55px] w-[180px]': tier === 'silver' }
-                                                    ]}
-                                                    width="100%"
-                                                    height="auto"
-                                                />
-                                            ) : (
-                                                <Image
-                                                    src={logo}
-                                                    alt={`${sponsor.name} Logo`}
-                                                    class:list={[
-                                                        'object-contain pointer-events-none',
-                                                        { 'max-h-[80px] w-[360px]': tier === 'platinum' },
-                                                        { 'max-h-[55px] w-[180px]': tier === 'silver' }
-                                                    ]}
-                                                    width={tier === 'platinum' ? 360 : 180}
-                                                    height={tier === 'platinum' ? 80 : 55}
-                                                />
-                                            )}
-                                        </a>
-                                    </li>
+                                        <li>
+                                            <Card as="a" href={sponsor.url} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${sponsor.name} website`}
+                                                  class:list={[
+                                                      'flex items-center justify-center w-full h-full group relative after:absolute after:inset-0 after:rounded-lg after:border after:border-transparent after:hover:border-neutral-300 dark:after:hover:border-neutral-600 after:hover:shadow-xs after:transition',
+                                                      { 'p-8': tier === 'platinum', 'p-6': tier !== 'platinum' },
+                                                      { 'min-h-[180px]': tier === 'platinum' },
+                                                      { 'min-h-[120px]': tier === 'silver' }
+                                                  ]}>
+                                                {isSvg ? (
+                                                        <SvgComponent
+                                                                role="presentation"
+                                                                aria-label={`${sponsor.name} Logo`}
+                                                                class:list={[
+                                                                    'object-contain pointer-events-none',
+                                                                    { 'max-h-[80px] w-[360px]': tier === 'platinum' },
+                                                                    { 'max-h-[55px] w-[180px]': tier === 'silver' }
+                                                                ]}
+                                                                width="100%"
+                                                                height="auto"
+                                                        />
+                                                ) : (
+                                                        <Image
+                                                                src={logo}
+                                                                alt={`${sponsor.name} Logo`}
+                                                                class:list={[
+                                                                    'object-contain pointer-events-none',
+                                                                    { 'max-h-[80px] w-[360px]': tier === 'platinum' },
+                                                                    { 'max-h-[55px] w-[180px]': tier === 'silver' }
+                                                                ]}
+                                                                width={tier === 'platinum' ? 360 : 180}
+                                                                height={tier === 'platinum' ? 80 : 55}
+                                                        />
+                                                )}
+                                            </Card>
+                                        </li>
                                 )})}
                         </ul>
                     </div>

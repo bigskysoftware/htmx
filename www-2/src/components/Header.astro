@@ -39,7 +39,7 @@ const isCurrent = (url?: string) => {
             <a href="/" aria-label="HTMX Homepage"
                class="group/logo text-xl sm:text-[1.375rem] lg:text-2xl whitespace-nowrap font-mono tracking-tight font-extrabold inline-flex items-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 shrink-0 sm:transition rounded-sm outline-hidden">
                 <span aria-hidden="true">&lt;</span>
-                <b class="relative text-blue-700 dark:text-blue-400 sm:transition" aria-hidden="true">
+                <b class="relative text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition" aria-hidden="true">
                     <span class="group-interact/logo:opacity-0 sm:transition">/</span>
                     <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 sm:transition">-</span>
                 </b>
@@ -49,10 +49,10 @@ const isCurrent = (url?: string) => {
                 </span>
                 <span class="font-chicago ms-2 inline-block relative">
                     <span class="group-interact/logo:opacity-0 sm:transition">
-                        htm<b class="text-blue-700 dark:text-blue-400">x</b>
+                        htm<b class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition">x</b>
                     </span>
                     <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 group-interact/logo:underline sm:transition">
-                        hom<b class="text-blue-700 dark:text-blue-400">e</b>
+                        hom<b class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition">e</b>
                     </span>
                 </span>
             </a>
@@ -92,7 +92,7 @@ const isCurrent = (url?: string) => {
             </div>
             <!-- Desktop: Status Bar -->
             <div id="status-bar" aria-hidden="true"
-                 class="hidden 2xl:block flex-1 text-center text-xs xl:text-sm text-neutral-700 dark:text-neutral-300 translate-y-0.5 truncate min-w-0"
+                 class="hidden 2xl:block flex-1 text-center text-xs xl:text-sm text-neutral-700 dark:text-neutral-300 translate-y-0.5 truncate min-w-0 max-w-xs"
                  _="on mouseenter from <[title]/> put event.target's @title into me
               on mouseleave from <[title]/> put '' into me">
             </div>

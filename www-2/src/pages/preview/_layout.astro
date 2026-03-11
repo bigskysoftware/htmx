@@ -96,7 +96,7 @@ const sidebarItems = [
                             <div>
                                 <h3 class="font-chicago text-base text-neutral-900 dark:text-neutral-100 mb-4 px-3">
                                     <a href={`/${section.slug}`}
-                                       class="interact:text-blue-700 dark:interact:text-blue-400 transition-colors">
+                                       class="interact:text-blue-700 dark:interact:text-blue-300 transition-colors">
                                         {section.title}
                                     </a>
                                 </h3>
@@ -120,8 +120,8 @@ const sidebarItems = [
 
                                                                     {/* Split Target: Link */}
                                                                     <a href={`/reference/${child.slug}`} class:list={[
-                                                                        "flex-1 px-3 py-2 text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-400 transition-colors font-medium",
-                                                                        child.active && "text-blue-700 dark:text-blue-400 font-bold"
+                                                                        "flex-1 px-3 py-2 text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 transition-colors font-medium",
+                                                                        child.active && "text-blue-700 dark:text-blue-350 font-bold"
                                                                     ]}>
                                                                         {child.title}
                                                                     </a>
@@ -140,7 +140,7 @@ const sidebarItems = [
                                                                                    class:list={[
                                                                                        "block px-3 py-1.5 rounded-md text-sm transition-colors font-medium",
                                                                                        sub.active
-                                                                                           ? "text-blue-700 dark:text-blue-400 font-bold bg-blue-100/50 dark:bg-blue-900/20"
+                                                                                           ? "text-blue-700 dark:text-blue-350 font-bold bg-blue-100/50 dark:bg-blue-900/20"
                                                                                            : "text-neutral-500 dark:text-neutral-500 interact:text-neutral-900 dark:interact:text-neutral-300 interact:translate-x-1 transition-transform"
                                                                                    ]}>
                                                                                     {sub.title}
@@ -153,7 +153,7 @@ const sidebarItems = [
                                                             <div class:list={[
                                                                 "flex items-center justify-between px-3 py-2 rounded-md text-sm transition-all duration-200 cursor-pointer group",
                                                                 child.active
-                                                                    ? "text-blue-700 dark:text-blue-400 font-bold bg-blue-50/50 dark:bg-blue-900/10"
+                                                                    ? "text-blue-700 dark:text-blue-350 font-bold bg-blue-50/50 dark:bg-blue-900/10"
                                                                     : "text-neutral-600 dark:text-neutral-400 interact:text-neutral-900 dark:interact:text-neutral-200 interact:bg-neutral-100 dark:interact:bg-neutral-800/50"
                                                             ]}>
                                                                 <span class={child.active ? "translate-x-0.5" : "group-hover:translate-x-0.5 transition-transform"}>{child.title}</span>

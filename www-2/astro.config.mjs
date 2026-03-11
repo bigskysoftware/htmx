@@ -50,32 +50,26 @@ export default defineConfig({
         "/events": "/reference/events",
         "/help": "/about",
         "/server-examples": "/about",
+
+        // TODO: redirect htmx.org/examples/* to their new /patterns/* locations
+        // e.g. /examples/click-to-edit → /patterns/records/edit-in-place
+        //      /examples/bulk-update → /patterns/records/bulk-actions
+        //      /examples/active-search → /patterns/forms/active-search
+        //      etc.
         "/examples": "/patterns",
 
-        // Old site: flat /patterns/* → nested /patterns/*
-        "/patterns/active-search": "/patterns/forms/active-search",
-        "/patterns/active-validation": "/patterns/forms/active-validation",
-        "/patterns/file-upload": "/patterns/forms/file-upload",
-        "/patterns/linked-selects": "/patterns/forms/linked-selects",
-        "/patterns/reset-on-submit": "/patterns/forms/reset-on-submit",
-        "/patterns/click-to-load": "/patterns/loading/click-to-load",
-        "/patterns/infinite-scroll": "/patterns/loading/infinite-scroll",
-        "/patterns/lazy-load": "/patterns/loading/lazy-load",
-        "/patterns/progress-bar": "/patterns/loading/progress-bar",
-        "/patterns/bulk-actions": "/patterns/records/bulk-actions",
-        "/patterns/delete-in-place": "/patterns/records/delete-in-place",
-        "/patterns/drag-to-reorder": "/patterns/records/drag-to-reorder",
-        "/patterns/edit-in-place": "/patterns/records/edit-in-place",
-        "/patterns/animations": "/patterns/display/animations",
-        "/patterns/dialogs": "/patterns/display/dialogs",
-        "/patterns/tabs": "/patterns/display/tabs",
-        "/patterns/keyboard-shortcuts": "/patterns/advanced/keyboard-shortcuts",
-        "/patterns/update-other-content": "/patterns/advanced/update-other-content",
-        "/patterns/confirm": "/patterns/display/dialogs",
-        "/patterns/modal-bootstrap": "/patterns/display/dialogs",
-        "/patterns/modal-custom": "/patterns/display/dialogs",
-        "/patterns/modal-uikit": "/patterns/display/dialogs",
-        "/patterns/edit-row": "/patterns/records/edit-in-place",
+        // Old site: extensions were top-level
+        "/extensions": "/docs/extensions",
+        "/extensions/sse": "/docs/extensions/sse",
+        "/extensions/ws": "/docs/extensions/ws",
+        "/extensions/head-support": "/docs/extensions/head-support",
+        "/extensions/preload": "/docs/extensions/preload",
+        "/extensions/browser-indicator": "/docs/extensions/browser-indicator",
+        "/extensions/alpine-compat": "/docs/extensions/alpine-compat",
+        "/extensions/htmx-2-compat": "/docs/extensions/htmx-2-compat",
+        "/extensions/optimistic": "/docs/extensions/optimistic",
+        "/extensions/upsert": "/docs/extensions/upsert",
+        "/extensions/building": "/docs/extensions/overview",
 
         // Old site: interviews were under /essays/
         "/essays/interviews/henning-koch": "/interviews/henning-koch",

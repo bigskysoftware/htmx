@@ -1,5 +1,5 @@
 ---
 title: "Extensions"
-description: "Create and use your own custom htmx extensions"
+description: "Extend htmx with SSE, WebSockets, head support, and more"
 thumbnail: "docs/extensions.svg"
 ---

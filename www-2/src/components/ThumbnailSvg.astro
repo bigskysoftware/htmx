@@ -6,38 +6,10 @@ interface Props {
 const {svg} = Astro.props;
 ---
 
-<div class="thumbnail-svg" set:html={svg}/>
-
-<style is:global>
-    .thumbnail-svg {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        svg {
-            height: 100%;
-            width: auto;
-        }
-
-        /* Base colors */
-        color: var(--color-neutral-400);
-        --accent: var(--color-neutral-400);
-
-        @media (prefers-color-scheme: dark) {
-            color: var(--color-neutral-600);
-            --accent: var(--color-neutral-600);
-        }
-    }
-
-    /* Hover - detect anchor interaction in parent card */
-    .group:has(a:hover, a:focus-visible, a:active) .thumbnail-svg {
-        color: var(--color-blue-600);
-        --accent: var(--color-blue-700);
-
-        @media (prefers-color-scheme: dark) {
-            color: var(--color-blue-300);
-            --accent: var(--color-blue-200);
-        }
-    }
-</style>
+<div class="h-full flex items-center justify-center
+            text-neutral-400 dark:text-neutral-600
+            [--accent:var(--color-neutral-400)] dark:[--accent:var(--color-neutral-600)]
+            group-interact:text-blue-600 dark:group-interact:text-blue-300
+            group-interact:[--accent:var(--color-blue-700)] dark:group-interact:[--accent:var(--color-blue-200)]
+            [&_svg]:h-full [&_svg]:w-auto"
+     set:html={svg}/>

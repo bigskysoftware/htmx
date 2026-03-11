@@ -4,58 +4,53 @@ import Sidebar from '../components/Sidebar.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import EssayHeader from '../components/EssayHeader.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Card from '../components/Card.astro';
+import ThumbnailSvg from '../components/ThumbnailSvg.astro';
 import type {ContentFile, ContentFolder} from '../lib/content';
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import GridBackground from "../components/GridBackground.astro";
+
 
 interface Props {
     file?: ContentFile;
     folder?: ContentFolder;
     headings?: any[];
+    collection: string;
 }
 
-const {
-    file,
-    folder,
-    headings = []
-} = Astro.props;
+const {file, folder, headings = [], collection} = Astro.props;
 
-// Auto-detect whether this is an index page or detail page
-// Index pages have only folder, detail pages have both file and folder
-const isContentIndex = !file;
-const data = isContentIndex ? folder : file;
-
-if (!data) {
-    throw new Error('ContentLayout requires either file or folder prop');
-}
-
-// Auto-derive collection from the data
-const collection = data.folder as 'docs' | 'reference' | 'patterns' | 'essays';
-const isEssay = collection === 'essays';
-
-// Show sidebar when the collection has grouped structure (subfolders)
+const isIndex = !file;
+const data = isIndex ? folder! : file;
+const isEssay = !isIndex && collection === 'essays';
 const hasSidebar = !!(folder?.subfolders?.length);
 
-// Render content
 const {Content} = await data.render();
-
 const {title, description, keywords} = data.frontmatter;
 
-// Show TOC only on detail pages with headings
-const includeTableOfContents = !isContentIndex && headings && headings.length > 0;
-
-// Show pagination only on detail pages with prev/next
-const includePagination = !isContentIndex && file && (file.prev || file.next);
-
-// Show the right column if either TOC or pagination is needed
+// Detail page only
+const includeTableOfContents = !isIndex && headings.length > 0;
+const includePagination = !isIndex && !!(file?.prev || file?.next);
 const includeRightColumn = includeTableOfContents || includePagination;
 
+// Index page only
+const showCollectionCards = isIndex && ['docs', 'reference', 'patterns'].includes(collection);
+
+const thumbnailModules = import.meta.glob('/src/assets/img/thumbnails/**/*.svg', {
+    query: '?raw',
+    import: 'default',
+    eager: true
+}) as Record<string, string>;
+
+const getThumbnail = (path: string | undefined): string | null => {
+    if (!path) return null;
+    return thumbnailModules[`/src/assets/img/thumbnails/${path}`] || null;
+};
+
+const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.id.localeCompare(b.id)) : [];
 ---
 
 <Layout {title} {description} {keywords}>
-
-    {(!isContentIndex || !hasSidebar) && <GridBackground mode="3d" />}
 
     <Header slot="header">
         {hasSidebar && (
@@ -80,95 +75,125 @@ const includeRightColumn = includeTableOfContents || includePagination;
 
     <div id="content-wrapper"
          class:list={["group/page", hasSidebar && "lg:pl-72"]}
-         data-collection={collection || undefined}
+         data-collection={collection}
          data-has-sidebar={hasSidebar}>
         <main id="main-content" class="flex-1">
             <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-center max-w-[1440px]">
 
-                <!-- Main Content Area -->
-                <div class:list={["pt-8 sm:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", !isContentIndex ? "max-w-prose" : "max-w-4xl"]}
-                >
+                <div class:list={["pt-8 sm:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", isIndex ? "max-w-4xl" : "max-w-prose"]}>
                     <Breadcrumbs breadcrumbs={data.breadcrumbs} />
 
-                    {isContentIndex ? (
-                        /* INDEX PAGE: Render MDX content with prose styling */
+                    {isIndex ? (
+                        <>
                             <div class="index-content prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none relative z-0">
                                 <Content/>
-                                <slot/>
                             </div>
 
+                            {showCollectionCards && (
+                                <div class="relative my-10 not-prose">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-0">
+                                        {collectionCards.map((item) => {
+                                            const thumbnail = getThumbnail(item.frontmatter.thumbnail);
+
+                                            return (
+                                                <Card class:list={[
+                                                    "group relative isolate flex flex-col overflow-hidden transition outline-hidden",
+                                                    "interact:border-neutral-300 dark:interact:border-neutral-600",
+                                                    "focus-within:ring-2 focus-within:ring-offset-2",
+                                                    "focus-within:ring-neutral-500 dark:focus-within:ring-neutral-400"
+                                                ]}>
+                                                    <div class="relative h-40 lg:h-44 w-full flex items-center justify-center transition">
+                                                        {thumbnail ? (
+                                                            <ThumbnailSvg svg={thumbnail}/>
+                                                        ) : (
+                                                            <span class="text-7xl transition icon-[mdi--file-document-outline] text-neutral-400 dark:text-neutral-600 group-interact:text-neutral-600 dark:group-interact:text-neutral-300"></span>
+                                                        )}
+                                                    </div>
+
+                                                    <div class:list={[
+                                                        "flex flex-col p-5 bg-white/50 dark:bg-neutral-920/50 border-t border-neutral-150 dark:border-neutral-900 transition",
+                                                        "group-interact:bg-neutral-100 dark:group-interact:bg-neutral-875",
+                                                        "group-interact:border-neutral-300 dark:group-interact:border-neutral-600"
+                                                    ]}>
+                                                        <h2 class="font-bold text-lg text-neutral-700 dark:text-neutral-300 group-interact:text-black dark:group-interact:text-white transition mb-2">
+                                                            <a href={item.url} class="outline-hidden">
+                                                                {item.frontmatter.title}
+                                                                <span class="absolute inset-0 z-10"></span>
+                                                            </a>
+                                                        </h2>
+                                                        {item.frontmatter.description && (
+                                                            <p class="text-sm text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-950 dark:group-interact:text-neutral-50 leading-relaxed transition">
+                                                                {item.frontmatter.description}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </Card>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     ) : (
-                        /* DETAIL PAGE: Article wrapper with pagination */
-                            <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
+                        <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
+                            <h1 set:html={title} />
 
-                                {/* Title from frontmatter */}
-                                <h1 set:html={title} />
+                            {isEssay && (
+                                <EssayHeader
+                                    authors={file!.frontmatter.authors}
+                                    created={file!.frontmatter.created}
+                                    modified={file!.frontmatter.modified}
+                                    fileId={file!.id}
+                                />
+                            )}
 
-                                {/* Essay metadata */}
-                                {isEssay && (
-                                    <EssayHeader
-                                        authors={file.frontmatter.authors}
-                                        created={file.frontmatter.created}
-                                        modified={file.frontmatter.modified}
-                                        fileId={file.id}
-                                    />
-                                )}
+                            <slot name="before-content"/>
 
-                                {/* Slots for custom content wrappers */}
-                                <slot name="before-content"/>
+                            <Content/>
 
-                                <Content/>
+                            <slot name="after-content"/>
 
-                                <slot name="after-content"/>
-
-                                {/* Pagination */}
-                                {includePagination && (
-                                        <nav class="not-prose mt-16">
-                                            <div class="grid gap-4 sm:grid-cols-2">
-                                                {file.prev ? (
-                                                                <a href={file.prev.url}
-                                                                   class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-800 rounded-xl transition
-                                                                   interact:bg-neutral-75 dark:interact:bg-neutral-875
-                                                                   interact:border-neutral-400 dark:interact:border-neutral-600">
-                                                                    <i class="icon-[mdi--chevron-left] text-2xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0 mt-0.5"></i>
-                                                                    <div class="flex-1 min-w-0">
-                                                                        {file.prev.breadcrumbs.length > 2 && (
-                                                                                <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mb-2 transition">
-                                                                                    {file.prev.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
-                                                                                </div>
-                                                                        )}
-                                                                        <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-white transition line-clamp-2"
-                                                                            set:html={file.prev.frontmatter.title}></h4>
-                                                                        {file.prev.frontmatter.description &&
-                                                                                <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-2 line-clamp-2 leading-relaxed transition">{file.prev.frontmatter.description}</div>}
+                            {includePagination && (
+                                    <nav class="not-prose mt-16">
+                                        <div class="grid gap-4 sm:grid-cols-2">
+                                            {[
+                                                {link: file!.prev, label: 'Previous', icon: 'icon-[mdi--chevron-left]'},
+                                                {link: file!.next, label: 'Next', icon: 'icon-[mdi--chevron-right]', reverse: true}
+                                            ].map(({link, label, icon, reverse}) =>
+                                                link ? (
+                                                    <Card class:list={[
+                                                        "group relative isolate flex items-start gap-4 p-5 transition",
+                                                        "interact:bg-neutral-75 dark:interact:bg-neutral-875",
+                                                        "interact:border-neutral-400 dark:interact:border-neutral-600",
+                                                        "focus-within:ring-2 focus-within:ring-offset-2",
+                                                        "focus-within:ring-neutral-500"
+                                                    ]}>
+                                                        {!reverse && <i class:list={[icon, "text-2xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0 mt-0.5"]}></i>}
+                                                        <div class="flex-1 min-w-0">
+                                                            {link.breadcrumbs.length > 2 && (
+                                                                    <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mb-2 transition">
+                                                                        {link.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
                                                                     </div>
-                                                                </a>
-                                                    ) :
-                                                        <div></div>}
-
-                                                {file.next && (
-                                                        <a href={file.next.url}
-                                                           class="group flex items-start gap-4 p-5 bg-white dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-800 rounded-xl transition
-                                                           interact:bg-neutral-75 dark:interact:bg-neutral-875
-                                                           interact:border-neutral-400 dark:interact:border-neutral-600">
-                                                            <div class="flex-1 min-w-0">
-                                                                {file.next.breadcrumbs.length > 2 && (
-                                                                        <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mb-2 transition">
-                                                                            {file.next.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
-                                                                        </div>
-                                                                )}
-                                                                <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-white transition line-clamp-2"
-                                                                    set:html={file.next.frontmatter.title}></h4>
-                                                                {file.next.frontmatter.description &&
-                                                                        <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-2 line-clamp-2 leading-relaxed transition">{file.next.frontmatter.description}</div>}
-                                                            </div>
-                                                            <i class="icon-[mdi--chevron-right] text-2xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0 mt-0.5"></i>
-                                                        </a>
-                                                )}
-                                            </div>
-                                        </nav>
-                                )}
-                            </article>
+                                                            )}
+                                                            <h4 class="font-chicago text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-white transition line-clamp-2"
+                                                                set:html={link.frontmatter.title}></h4>
+                                                            <a href={link.url} class="outline-hidden">
+                                                                <span class="absolute inset-0 z-10"></span>
+                                                                <span class="sr-only">{label}: {link.frontmatter.title}</span>
+                                                            </a>
+                                                            {link.frontmatter.description &&
+                                                                    <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-2 line-clamp-2 leading-relaxed transition">{link.frontmatter.description}</div>}
+                                                        </div>
+                                                        {reverse && <i class:list={[icon, "text-2xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0 mt-0.5"]}></i>}
+                                                    </Card>
+                                                ) : (
+                                                    <div></div>
+                                                )
+                                            )}
+                                        </div>
+                                    </nav>
+                            )}
+                        </article>
                     )}
                 </div>
 
@@ -182,29 +207,29 @@ const includeRightColumn = includeTableOfContents || includePagination;
                                     <div class:list={["shrink-0", includeTableOfContents && "mb-8"]}>
                                         <div class="flex gap-2">
                                             {[
-                                                {link: file.prev, label: 'Previous', icon: 'icon-[mdi--chevron-left]'},
+                                                {link: file!.prev, label: 'Previous', icon: 'icon-[mdi--chevron-left]'},
                                                 {
-                                                    link: file.next,
+                                                    link: file!.next,
                                                     label: 'Next',
                                                     icon: 'icon-[mdi--chevron-right]',
                                                     reverse: true
                                                 }
                                             ].map(({link, label, icon, reverse}) => {
-                                                const Tag = link ? 'a' : 'span';
                                                 return (
-                                                        <Tag
+                                                        <Card
+                                                                as={link ? 'a' : 'span'}
                                                                 href={link?.url}
                                                                 title={link?.frontmatter.title}
                                                                 class:list={[
-                                                                    "flex-1 group flex items-center gap-2 p-2 text-xs font-medium border rounded-[5px] transition select-none",
+                                                                    "flex-1 group flex items-center gap-2 p-2 text-xs font-medium transition select-none",
                                                                     reverse && "flex-row-reverse",
                                                                     link
-                                                                        ? "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white"
+                                                                        ? "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white"
                                                                         : "border-transparent bg-neutral-50 dark:bg-neutral-930 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
                                                                 ]}>
                                                             <i class:list={[icon, "size-4", link ? "text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-200 transition" : "opacity-50"]}></i>
                                                             <span class="flex-1 inline-flex justify-center">{label}</span>
-                                                        </Tag>
+                                                        </Card>
                                                 );
                                             })}
                                         </div>

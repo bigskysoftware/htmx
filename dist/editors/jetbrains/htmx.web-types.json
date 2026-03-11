@@ -228,6 +228,16 @@
             "Inheritance": "Use the :inherited modifier (e.g., `hx-vals:inherited`) to make this attribute inherit to child elements"
           },
           "doc-url": "https://htmx.org/attributes/hx-vals/"
+        },
+        {
+          "name": "hx-sse:connect",
+          "description": "Establishes a persistent SSE connection to the specified URL. Requires the SSE extension.\n\nDefaults to trigger on `load`, auto-reconnect with exponential backoff, and pause on background tab.\n\n```html\n<div hx-sse:connect=\"/stream\" hx-swap=\"beforeend\">\n  Messages appear here\n</div>\n```",
+          "doc-url": "https://htmx.org/extensions/sse/#hx-sseconnect"
+        },
+        {
+          "name": "hx-sse:close",
+          "description": "Closes an SSE connection when a named event matching the attribute value is received from the server.\n\n```html\n<div hx-sse:connect=\"/stream\" hx-sse:close=\"done\">\n  Streaming until server sends \"done\"...\n</div>\n```",
+          "doc-url": "https://htmx.org/extensions/sse/#hx-sseclose"
         }
       ]
     },
@@ -323,14 +333,14 @@
           "doc-url": "https://htmx.org/events/#htmx:after:settle"
         },
         {
-          "name": "after:sse:message",
-          "description": "This event is triggered after an SSE message has been processed.\n\n##### Details\n\n* `detail.ctx` - the request context\n* `detail.message` - the SSE message",
-          "doc-url": "https://htmx.org/events/#htmx:after:sse:message"
+          "name": "after:sse:connection",
+          "description": "This event is triggered after a successful SSE connection or reconnection.\n\n##### Details\n\n* `detail.connection.attempt` - attempt number (0 = initial)\n* `detail.connection.url` - the URL connected to\n* `detail.connection.status` - the HTTP status code\n* `detail.connection.lastEventId` - the last event ID received (null on initial)",
+          "doc-url": "https://htmx.org/extensions/sse/#events"
         },
         {
-          "name": "after:sse:stream",
-          "description": "This event is triggered after an SSE stream has ended.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:after:sse:stream"
+          "name": "after:sse:message",
+          "description": "This event is triggered after an SSE message has been processed.\n\n##### Details\n\n* `detail.message` - the SSE message object",
+          "doc-url": "https://htmx.org/extensions/sse/#events"
         },
         {
           "name": "after:swap",
@@ -368,6 +378,11 @@
           "doc-url": "https://htmx.org/events/#htmx:before:request"
         },
         {
+          "name": "before:response",
+          "description": "This event is triggered after a fetch response is received but before the response body is consumed. Extensions can intercept the raw response here (e.g., for streaming). If you call `preventDefault()`, normal response processing will be skipped.\n\n##### Details\n\n* `detail.ctx` - the request context with `ctx.response.raw` containing the unconsumed Response object",
+          "doc-url": "https://htmx.org/events/#htmx:before:response"
+        },
+        {
           "name": "before:restore:history",
           "description": "This event is triggered before history is restored.\n\n##### Details\n\n* `detail.path` - the path being restored",
           "doc-url": "https://htmx.org/events/#htmx:before:restore:history"
@@ -378,19 +393,24 @@
           "doc-url": "https://htmx.org/events/#htmx:before:settle"
         },
         {
+          "name": "before:sse:connection",
+          "description": "This event is triggered before an SSE connection attempt (initial or reconnection). Set detail.connection.cancelled = true to prevent.\n\n##### Details\n\n* `detail.connection.attempt` - attempt number (0 = initial)\n* `detail.connection.delay` - delay before connection (ms)\n* `detail.connection.url` - the URL being connected to\n* `detail.connection.lastEventId` - the last event ID received (null on initial)\n* `detail.connection.cancelled` - set to true to cancel",
+          "doc-url": "https://htmx.org/extensions/sse/#events"
+        },
+        {
           "name": "before:sse:message",
-          "description": "This event is triggered before an SSE message is processed.\n\n##### Details\n\n* `detail.ctx` - the request context\n* `detail.message` - the SSE message",
-          "doc-url": "https://htmx.org/events/#htmx:before:sse:message"
+          "description": "This event is triggered before an SSE message is processed. Set detail.message.cancelled = true to skip.\n\n##### Details\n\n* `detail.message` - the SSE message object",
+          "doc-url": "https://htmx.org/extensions/sse/#events"
         },
         {
-          "name": "before:sse:reconnect",
-          "description": "This event is triggered before reconnecting to an SSE stream.\n\n##### Details\n\n* `detail.ctx` - the request context\n* `detail.reconnect` - reconnection information",
-          "doc-url": "https://htmx.org/events/#htmx:before:sse:reconnect"
+          "name": "sse:error",
+          "description": "This event is triggered when an SSE stream error occurs.\n\n##### Details\n\n* `detail.error` - the error object",
+          "doc-url": "https://htmx.org/extensions/sse/#events"
         },
         {
-          "name": "before:sse:stream",
-          "description": "This event is triggered before processing an SSE stream.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:before:sse:stream"
+          "name": "sse:close",
+          "description": "This event is triggered when an SSE connection is closed.\n\n##### Details\n\n* `detail.reason` - why the connection was closed (\"message\", \"removed\", \"ended\", \"cancelled\", \"cleanup\")",
+          "doc-url": "https://htmx.org/extensions/sse/#events"
         },
         {
           "name": "before:swap",

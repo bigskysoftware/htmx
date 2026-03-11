@@ -2,33 +2,34 @@
     <style>
         /* 3D shading via CSS variables — uses Tailwind theme tokens */
         .crt {
-            --f1: var(--color-neutral-100); --f2: var(--color-neutral-200);
-            --f3: var(--color-neutral-300); --f4: var(--color-neutral-400);
+            --f1: var(--color-neutral-200); --f2: var(--color-neutral-200);
+            --f3: var(--color-neutral-300); --f4: var(--color-neutral-300);
             --scr: var(--color-neutral-800); --scr-s: var(--color-neutral-400);
             transform-origin: center;
         }
         @media (prefers-color-scheme: dark) {
             .crt {
-                --f1: var(--color-neutral-600); --f2: var(--color-neutral-700);
-                --f3: var(--color-neutral-800); --f4: var(--color-neutral-900);
+                --f1: var(--color-neutral-700); --f2: var(--color-neutral-700);
+                --f3: var(--color-neutral-800); --f4: var(--color-neutral-800);
                 --scr: var(--color-neutral-950); --scr-s: var(--color-neutral-900);
 
             }
         }
         .group:has(a:hover, a:focus-visible, a:active) .crt {
-            --f1: var(--color-blue-100); --f2: var(--color-blue-200);
-            --f3: var(--color-blue-300); --f4: var(--color-blue-500);
-            --scr: var(--color-blue-950); --scr-s: var(--color-blue-900);
+            --f1: var(--color-neutral-100); --f2: var(--color-neutral-200);
+            --f3: var(--color-neutral-300); --f4: var(--color-neutral-400);
 
             animation: crt-rage 0.08s ease-in-out infinite alternate;
         }
         @media (prefers-color-scheme: dark) {
             .group:has(a:hover, a:focus-visible, a:active) .crt {
-                --f1: var(--color-blue-200); --f2: var(--color-blue-300);
-                --f3: var(--color-blue-400); --f4: var(--color-blue-500);
+                --f1: var(--color-neutral-300); --f2: var(--color-neutral-400);
+                --f3: var(--color-neutral-600); --f4: var(--color-neutral-700);
 
             }
         }
+        .crt-detail { opacity: 0; transition: opacity 0.2s ease; }
+        .group:has(a:hover, a:focus-visible, a:active) .crt-detail { opacity: 1; }
 
         /* Polygon shading classes — scoped under .crt */
         .crt .gs { transition: fill 150ms, stroke 150ms; stroke-width: 0.5; stroke-linejoin: round; }
@@ -36,7 +37,8 @@
         .crt .gs2 { fill: var(--f2); stroke: var(--f2); }
         .crt .gs3 { fill: var(--f3); stroke: var(--f3); }
         .crt .gs4 { fill: var(--f4); stroke: var(--f4); }
-        .crt .gs-scr { fill: var(--scr); stroke: var(--scr-s); transition: fill 150ms, stroke 150ms; }
+        .crt .gs-scr { fill: var(--scr); stroke: var(--scr-s); opacity: 0.3; transition: fill 150ms, stroke 150ms, opacity 150ms; }
+        .group:has(a:hover, a:focus-visible, a:active) .crt .gs-scr { opacity: 1; }
         .horse { opacity: 0; transition: opacity 0.2s ease; }
         .group:has(a:hover, a:focus-visible, a:active) .horse { opacity: 1; }
 
@@ -86,10 +88,10 @@
         <polygon points="104,20 96,28 96,76 104,84" class="gs gs4"/>
 
         <!-- Screen bezel inset -->
-        <polygon points="32,28 96,28 92,32 36,32" class="gs gs4"/>
-        <polygon points="36,72 92,72 96,76 32,76" class="gs gs1"/>
-        <polygon points="32,28 36,32 36,72 32,76" class="gs gs4"/>
-        <polygon points="96,28 92,32 92,72 96,76" class="gs gs2"/>
+        <polygon points="32,28 96,28 92,32 36,32" class="gs gs4 crt-detail"/>
+        <polygon points="36,72 92,72 96,76 32,76" class="gs gs1 crt-detail"/>
+        <polygon points="32,28 36,32 36,72 32,76" class="gs gs4 crt-detail"/>
+        <polygon points="96,28 92,32 92,72 96,76" class="gs gs2 crt-detail"/>
 
         <!-- CRT screen -->
         <rect x="36" y="32" width="56" height="40" class="gs-scr"/>
@@ -113,10 +115,10 @@
         <polygon points="88,98 96,104 96,108 88,102" class="gs gs4"/>
 
         <!-- Details: disk drive slot + vents -->
-        <polygon points="65,78 88,78 88,80 65,80" class="gs gs4"/>
-        <rect x="26" y="32" width="4" height="1" class="gs gs4"/>
-        <rect x="26" y="36" width="4" height="1" class="gs gs4"/>
-        <rect x="26" y="40" width="4" height="1" class="gs gs4"/>
+        <polygon points="65,78 88,78 88,80 65,80" class="gs gs4 crt-detail"/>
+        <rect x="26" y="32" width="4" height="1" class="gs gs4 crt-detail"/>
+        <rect x="26" y="36" width="4" height="1" class="gs gs4 crt-detail"/>
+        <rect x="26" y="40" width="4" height="1" class="gs gs4 crt-detail"/>
 
         <!-- Laser beams from horse's eye -->
         <line x1="58" y1="49" x2="340" y2="280" class="laser laser-g" stroke="var(--color-red-500, #ef4444)" stroke-width="5"/>

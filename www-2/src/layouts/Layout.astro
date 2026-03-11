@@ -5,6 +5,7 @@ import Head from "../components/Head.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Search from "../components/Search.astro";
+import GridBackground from "../components/GridBackground.astro";
 interface Props {
     title?: string;
     description?: string;
@@ -23,6 +24,8 @@ const {title, description, image, keywords} = Astro.props;
 <body hx-boost:inherited="true"
       hx-swap:inherited="innerMorph"
       class="group/body pt-(--header-height) has-[#mobile-navigation-toggle:checked]:overflow-hidden has-[dialog[open]]:overflow-hidden">
+
+<GridBackground />
 
 <slot name="header">
     <Header/>

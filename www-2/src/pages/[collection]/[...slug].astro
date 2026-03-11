@@ -3,7 +3,7 @@ import { getFolder } from '../../lib/content.ts';
 import ContentLayout from '../../layouts/ContentLayout.astro';
 
 export async function getStaticPaths() {
-    const collections = ['docs', 'reference', 'patterns', 'essays', 'interviews'] as const;
+    const collections = ['docs', 'reference', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'] as const;
     const paths = [];
 
     for (const collection of collections) {
@@ -36,20 +36,13 @@ export async function getStaticPaths() {
 }
 
 const { file, folder } = Astro.props;
+const collection = Astro.params.collection as string;
 
-// Get headings if available
 let headings = [];
 if (file) {
     const rendered = await file.render();
     headings = rendered.headings;
-} else if (folder) {
-    // For index pages, build synthetic TOC from subfolders
-    headings = folder.subfolders.map(f => ({
-        depth: 2,
-        slug: f.slug,
-        text: f.frontmatter.title
-    }));
 }
 ---
 
-<ContentLayout {file} {folder} {headings} />
+<ContentLayout {file} {folder} {headings} {collection} />

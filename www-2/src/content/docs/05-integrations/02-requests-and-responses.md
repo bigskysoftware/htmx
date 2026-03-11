@@ -19,8 +19,9 @@ In the event of a connection error, the [`htmx:error`](/events) event will be tr
 
 ### Configuring Response Handling 
 
-By default, htmx will swap content for successful HTTP responses (2xx status codes) and will not swap content for error
-responses (4xx, 5xx status codes). However, you can customize this behavior using the `hx-status:XXX` attribute pattern.
+By default, htmx will swap content for all HTTP responses except `204` and `304` status codes. This includes error
+responses (4xx, 5xx). You can customize this behavior using the `hx-status:XXX` attribute pattern or by configuring
+`htmx.config.noSwap`.
 
 #### Status-Code Conditional Swapping
 
@@ -65,8 +66,11 @@ htmx includes headers in the requests it makes:
 | Header                       | Description                                                                                          |
 |------------------------------|------------------------------------------------------------------------------------------------------|
 | `HX-Boosted`                 | indicates that the request is via an element using [hx-boost](/reference/attributes/hx-boost)                  |
-| `HX-History-Restore-Request` | "true" if the request is for history restoration after a miss in the local history cache             |
-| `HX-Request`                 | always "true" except on history restore requests if `htmx.config.historyRestoreAsHxRequest' disabled |
+| `HX-Current-URL`             | the current URL of the browser                                                                       |
+| `HX-Request`                 | always "true"                                                                                        |
+| `HX-Request-Type`            | `"partial"` for targeted swaps, `"full"` for body-level or `hx-select` requests                      |
+| `HX-Source`                  | the source element in `tag#id` format (e.g. `button#submit`)                                         |
+| `HX-Target`                  | the target element in `tag#id` format (e.g. `div#results`)                                           |
 
 ### Response Headers
 

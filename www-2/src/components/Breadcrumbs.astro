@@ -34,7 +34,7 @@ const parent = allCrumbs.slice(0, -1).reverse().find(c => c.href) || null;
                            class="transition interact:underline interact:text-blue-700 dark:interact:text-blue-300"
                            set:html={crumb.label} />
                     ) : (
-                        <span class:list={[isLast(i) && "font-bold text-neutral-700 dark:text-neutral-300 truncate max-w-[40ch]"]}
+                        <span class:list={[isLast(i) && "font-semibold text-neutral-700 dark:text-neutral-300 truncate max-w-[40ch]"]}
                               aria-current={isLast(i) ? "page" : undefined}
                               set:html={crumb.label} />
                     )}

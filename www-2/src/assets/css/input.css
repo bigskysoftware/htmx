@@ -49,6 +49,7 @@
     --color-blue-100: oklch(0.9375 0.0235 250.08);
     --color-blue-200: oklch(0.8908 0.043 249.39);
     --color-blue-300: oklch(0.8196 0.0739 247.52);
+    --color-blue-350: oklch(0.7729 0.0925 249.30);
     --color-blue-400: oklch(0.7262 0.111 251.08);
     --color-blue-500: oklch(0.6393 0.1445 257.27);
     --color-blue-600: oklch(0.5693 0.1653 261.81); /* htmx brand blue */
@@ -169,7 +170,7 @@
     --tw-prose-invert-body: var(--color-neutral-300);
     --tw-prose-invert-headings: var(--color-neutral-100);
     --tw-prose-invert-lead: var(--color-neutral-400);
-    --tw-prose-invert-links: var(--color-blue-400);
+    --tw-prose-invert-links: var(--color-blue-350);
     --tw-prose-invert-bold: var(--color-neutral-100);
     --tw-prose-invert-counters: var(--color-neutral-500);
     --tw-prose-invert-bullets: var(--color-neutral-700);
@@ -190,11 +191,12 @@
     prose-a:no-underline!
     prose-a:interact:underline!
     prose-a:not-in-prose-headings:text-blue-700
-    prose-a:not-in-prose-headings:dark:text-blue-400!
+    prose-a:not-in-prose-headings:dark:text-blue-350!
+    prose-a:not-in-prose-headings:dark:interact:text-blue-300!
     prose-a:[[href^="#"]]:text-neutral-800
     prose-a:[[href^="#"]]:dark:text-neutral-100
-    prose-h1:text-[2em]
-    ;
+    prose-h1:text-[2em]/12
+    prose-img:rounded-lg;
 
     @apply
     prose-headings:scroll-pt-[calc(var(--header-height)+2rem)]
@@ -215,84 +217,90 @@
     /* Code blocks - macOS window style */
 
     :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-        @apply relative border border-neutral-200 dark:border-neutral-850 rounded-[4px] bg-white dark:bg-neutral-950 shadow-xs overflow-y-hidden;
+        @apply relative border border-neutral-200 dark:border-neutral-850 rounded-[4px] bg-white dark:bg-neutral-950 overflow-y-hidden;
 
         code {
             @apply block overflow-x-auto text-xs leading-5 whitespace-pre p-4 pr-12 mask-l-from-97% mask-r-from-95%;
         }
     }
 
-    /* Details/Summary styling - clean collapsible sections */
+    /* Details/Summary - collapsible sections */
 
     :where(details):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-        @apply my-6
-        py-2
-        border-l border-transparent open:border-neutral-200 open:dark:border-neutral-800
-        overflow-hidden
-        transition
-        px-4 open:pb-4
-        ;
+        @apply my-6;
 
         summary {
-            @apply relative pl-5 py-3 text-sm font-semibold cursor-pointer select-none sm:transition list-none
-            text-neutral-900 dark:text-neutral-100
-            interact:bg-neutral-100 dark:interact:bg-neutral-900
-            border-b border-b-transparent [details[open]_&]:border-b-neutral-200 [details[open]_&]:dark:border-b-neutral-850
-            interact:underline interact:decoration-[0.125em] interact:underline-offset-[0.25em]
-            [details[open]_&]:mb-2;
+            @apply flex w-full items-center cursor-pointer select-none text-sm
+            px-3 py-2 -mx-3 rounded-[4px]
+            text-neutral-600 dark:text-neutral-400
+            interact:bg-neutral-75 dark:interact:bg-neutral-875
+            interact:text-neutral-900 dark:interact:text-neutral-200
+            transition;
 
-            /* Remove default marker */
-
-            &::-webkit-details-marker,
+            /* Robustly hide native markers */
+            &::-webkit-details-marker {
+                display: none;
+            }
             &::marker {
-                @apply hidden;
+                content: '';
             }
 
-            /* Chevron positioned absolutely to avoid underline */
-
-            &::after {
-                @apply content-['›'] absolute right-0 top-1/2 -translate-y-1/2 rotate-0
-                text-base font-bold transition text-neutral-400;
-            }
-        }
-
-        &[open] summary::before {
-            @apply -translate-y-1/2 rotate-90;
-        }
-
-        /* Content area */
-
-        /* Remove excessive spacing from prose elements inside details */
-
-        p, ul, ol, pre, blockquote {
-            &:last-child {
-                @apply mb-0;
+            /* Custom inline chevron */
+            &::before {
+                @apply content-[''] inline-block size-4 mr-1.5 shrink-0
+                bg-current opacity-50 transition-transform;
+                mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z'/%3E%3C/svg%3E");
             }
         }
 
-        /* Reduce spacing between paragraphs inside details */
+        &[open] summary {
+            @apply mb-4 text-neutral-900 dark:text-neutral-100;
 
-        p + p {
-            @apply mt-3;
+            &::before {
+                @apply rotate-90;
+            }
         }
 
-        /* Warning variant - yellow accent */
+        /* Tighter prose spacing inside details, zero indentation */
+        > :not(summary):nth-child(2) {
+            @apply mt-0;
+        }
+
+        > :not(summary):last-child {
+            @apply mb-0;
+        }
 
         &.warning {
-            @apply border-l-yellow-500 dark:border-l-yellow-400;
+            @apply p-4 rounded-[4px] border border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/30 dark:bg-yellow-900/10;
 
-            summary::before {
-                @apply text-yellow-500 dark:text-yellow-400;
+            summary {
+                @apply text-yellow-800 dark:text-yellow-300
+                interact:text-yellow-950 dark:interact:text-yellow-100;
+
+                &::before {
+                    @apply opacity-60;
+                }
+            }
+
+            &[open] summary {
+                @apply text-yellow-900 dark:text-yellow-200;
             }
         }
 
-        /* Info variant - blue accent */
-
         &.info {
-            @apply border-l-blue-700 dark:border-l-blue-600;
+            @apply p-4 rounded-[4px] border border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-900/10;
 
-            summary::before {
-                @apply text-blue-700 dark:text-blue-400;
+            summary {
+                @apply text-blue-800 dark:text-blue-300
+                interact:text-blue-950 dark:interact:text-blue-100;
+
+                &::before {
+                    @apply opacity-60;
+                }
+            }
+
+            &[open] summary {
+                @apply text-blue-900 dark:text-blue-200;
             }
         }
     }
@@ -375,4 +383,3 @@
         @slot;
     }
 }
-

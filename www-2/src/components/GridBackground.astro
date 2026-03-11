@@ -1,127 +1,71 @@
 ---
-/**
- * GridBackground
- *
- * "3d"   — fixed tilted perspective grid (landing page)
- * "flat" — absolute grid aligned to card columns, extending beyond with fade
- */
+const d = 800;
+const tz = -390;
+const theta = 67 * (Math.PI / 180);
+const s = 0.7;
+const gridSize = 260;
 
-interface Props {
-    mode?: '3d' | 'flat';
+function project(x: number, y: number) {
+    const xScaled = x * s;
+    const yScaled = y * s;
+    const yRotated = yScaled * Math.cos(theta);
+    const zRotated = yScaled * Math.sin(theta);
+    const w = (d - (zRotated + tz)) / d;
+    if (w <= 0) return null;
+    return { x: xScaled / w, y: yRotated / w };
 }
 
-const { mode = '3d' } = Astro.props;
+const horizontalLines: {x1: number, y1: number, x2: number, y2: number}[] = [];
+const verticalLines: {x1: number, y1: number, x2: number, y2: number}[] = [];
+
+let lastY: number | null = null;
+for (let j = 10; j >= -100; j--) {
+    const pL = project(-8000, j * gridSize);
+    const pR = project(8000, j * gridSize);
+    if (!pL || !pR) continue;
+    if (lastY !== null && Math.abs(lastY - pL.y) < 1.5) break;
+    horizontalLines.push({ x1: pL.x, y1: pL.y, x2: pR.x, y2: pR.y });
+    lastY = pL.y;
+}
+
+for (let i = -30; i <= 30; i++) {
+    const pNear = project(i * gridSize, 1700);
+    const pFar = project(i * gridSize, -3000);
+    if (!pNear || !pFar) continue;
+    verticalLines.push({ x1: pNear.x, y1: pNear.y, x2: pFar.x, y2: pFar.y });
+}
 ---
 
-{mode === '3d' ? (
-    <div
-        class="fixed inset-0 pointer-events-none -z-10 perspective-[800px] starting:opacity-0 transition duration-500"
-        aria-hidden="true"
-    >
-        <div class="grid-plane absolute inset-0">
-            <div class="grid-pattern-3d absolute"></div>
-        </div>
-    </div>
-) : (
-    <div class="flat-grid pointer-events-none -z-10 starting:opacity-0 transition duration-500" aria-hidden="true">
-    </div>
-)}
-
-<script is:inline>
-    function alignFlatGrids() {
-        document.querySelectorAll('.flat-grid').forEach(bg => {
-            const container = bg.parentElement;
-            if (!container) return;
-
-            const grid = container.querySelector('.grid');
-            const firstCard = grid?.firstElementChild;
-            if (!grid || !firstCard) return;
-
-            // gap-6 in Tailwind is 24px
-            const gap = 24;
-            // Half gap (12px) + half line width (1px for a 2px line) to perfectly center it
-            const alignOffset = (gap / 2) + 1;
-
-            // 1. Get exact rendered dimensions of the card
-            const cardRect = firstCard.getBoundingClientRect();
-            const cellW = cardRect.width + gap;
-            const cellH = cardRect.height + gap;
-
-            // 2. Calculate pixel offset between the grid and the background wrapper
-            const gridRect = grid.getBoundingClientRect();
-            const bgRect = bg.getBoundingClientRect();
-
-            // 3. Offset the background position by the difference, minus our alignment offset
-            const offsetX = (gridRect.left - bgRect.left) - alignOffset;
-            const offsetY = (gridRect.top - bgRect.top) - alignOffset;
-
-            const el = bg;
-            el.style.setProperty('--cell-w', cellW + 'px');
-            el.style.setProperty('--cell-h', cellH + 'px');
-            el.style.setProperty('--bg-x', offsetX + 'px');
-            el.style.setProperty('--bg-y', offsetY + 'px');
-        });
-    }
-
-    // Run after DOM is ready and on resize
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', alignFlatGrids);
-    } else {
-        alignFlatGrids();
-    }
-    window.addEventListener('resize', alignFlatGrids);
-
-    // Re-run after htmx morph navigation (guard against duplicate listeners)
-    if (!window._flatGridHtmxBound) {
-        window._flatGridHtmxBound = true;
-        document.body.addEventListener('htmx:after:swap', alignFlatGrids);
-    }
-</script>
+<div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 grid-bg flex justify-center items-center starting:opacity-0 transition duration-500" aria-hidden="true">
+    <svg viewBox="-1000 -1000 2000 2000" preserveAspectRatio="xMidYMid slice" class="w-screen h-screen min-w-full min-h-full">
+        <defs>
+            <linearGradient id="horizonFade" x1="0" y1="-100" x2="0" y2="-320" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="white" />
+                <stop offset="100%" stop-color="black" />
+            </linearGradient>
+            <mask id="fadeMask">
+                <rect x="-8000" y="-8000" width="16000" height="16000" fill="url(#horizonFade)" />
+            </mask>
+        </defs>
+        <g mask="url(#fadeMask)">
+            {horizontalLines.map(l => <line x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} />)}
+            {verticalLines.map(l => <line x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} />)}
+        </g>
+    </svg>
+</div>
 
 <style>
-    :root {
-        --grid-line-color: rgb(0 0 0 / 0.06);
+    .grid-bg {
+        mask-image: radial-gradient(ellipse 50% 70% at 50% 50%, black 10%, transparent 80%);
+    }
+    .grid-bg line {
+        stroke: rgb(0 0 0 / 0.08);
+        stroke-width: 1.5px;
+        vector-effect: non-scaling-stroke;
     }
     @media (prefers-color-scheme: dark) {
-        :root {
-            --grid-line-color: rgb(255 255 255 / 0.07);
+        .grid-bg line {
+            stroke: rgb(255 255 255 / 0.05);
         }
-    }
-
-    /* ---- 3D MODE (don't touch) ---- */
-    .grid-plane {
-        overflow: visible;
-        transform-origin: center 50%;
-        transform: translateZ(-390px) rotateX(67deg) scale(0.7);
-    }
-
-    .grid-pattern-3d {
-        inset: -100vh -100vw;
-        background-image:
-            linear-gradient(to right, currentColor 2px, transparent 2px),
-            linear-gradient(to bottom, currentColor 2px, transparent 2px);
-        background-size: 260px 260px;
-        background-position: center center;
-        mask-image: radial-gradient(ellipse 50% 70% at 50% 50%, black 10%, transparent 80%);
-        color: var(--grid-line-color);
-    }
-
-    /* ---- FLAT MODE ---- */
-    .flat-grid {
-        position: absolute;
-        top: -200px;
-        bottom: -200px;
-        left: -3000px;
-        right: -3000px;
-
-        background-image:
-            linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
-            linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
-
-        /* Driven entirely by JS variables */
-        background-size: var(--cell-w, 280px) var(--cell-h, 320px);
-        background-position: var(--bg-x, 0px) var(--bg-y, 0px);
-
-        mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, black 10%, transparent 70%);
     }
 </style>

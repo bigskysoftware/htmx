@@ -22,21 +22,21 @@
 
         /* Hover State Mechanics */
         .group:has(a:hover, a:focus-visible, a:active) .core-concept {
-        --v1: var(--color-blue-100);
-        --v2: var(--color-blue-200);
-        --v3: var(--color-blue-300);
-        --v4: var(--color-blue-500);
-        --glow-line: var(--color-blue-300);
-        --text-glow: var(--color-blue-200);
+        --v1: var(--color-neutral-100);
+        --v2: var(--color-neutral-200);
+        --v3: var(--color-neutral-300);
+        --v4: var(--color-neutral-400);
+        --glow-line: var(--color-blue-500);
+        --text-glow: var(--color-blue-600);
         }
         @media (prefers-color-scheme: dark) {
         .group:has(a:hover, a:focus-visible, a:active) .core-concept {
-        --v1: var(--color-blue-200);
-        --v2: var(--color-blue-300);
-        --v3: var(--color-blue-400);
-        --v4: var(--color-blue-500);
-        --glow-line: var(--color-blue-300);
-        --text-glow: var(--color-blue-100);
+        --v1: var(--color-neutral-300);
+        --v2: var(--color-neutral-400);
+        --v3: var(--color-neutral-600);
+        --v4: var(--color-neutral-700);
+        --glow-line: var(--color-blue-400);
+        --text-glow: var(--color-blue-300);
         }
         }
 
@@ -58,13 +58,13 @@
         transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .group:has(a:hover, a:focus-visible, a:active) .top-shield {
-        transform: translate(0px, -24px);
+        transform: translate(0px, -32px);
         }
         .group:has(a:hover, a:focus-visible, a:active) .left-shield {
-        transform: translate(-22px, 12.5px);
+        transform: translate(-30px, 17px);
         }
         .group:has(a:hover, a:focus-visible, a:active) .right-shield {
-        transform: translate(22px, 12.5px);
+        transform: translate(30px, 17px);
         }
 
         /* 2. The Hidden Core Crystal Reveal */
@@ -159,7 +159,7 @@
 
                 <g transform="translate(0, 32)">
                     <circle cx="64" cy="64" r="1.5" fill="var(--glow-line)" />
-                    <text x="64" y="69" text-anchor="middle" class="orbit-text" transform="rotate(180 64 64)">hx-post</text>
+                    <text x="64" y="59" text-anchor="middle" class="orbit-text" transform="rotate(180 64 64)">hx-post</text>
                 </g>
 
                 <g transform="translate(-32, 0)">
@@ -174,6 +174,7 @@
             </g>
         </g>
 
+
         <!-- ========================================== -->
         <!-- LAYER 2: THE INNER CORE                    -->
         <!-- ========================================== -->
@@ -181,15 +182,15 @@
             <!-- Holographic Crystal Glow -->
             <path d="M 64 42 L 84 64 L 64 86 L 44 64 Z" stroke="var(--glow-line)" stroke-width="1.5" fill="none" opacity="0.3" filter="blur(1px)" />
 
-            <!-- Isometric Core Node (Octahedron/Diamond) -->
-            <path class="gs gs1" d="M 64 48 L 50 64 L 64 70 Z" />
-            <path class="gs gs2" d="M 64 48 L 78 64 L 64 70 Z" />
-            <path class="gs gs3" d="M 64 80 L 50 64 L 64 70 Z" />
-            <path class="gs gs4" d="M 64 80 L 78 64 L 64 70 Z" />
-
-            <!-- Central Energy Point -->
-            <circle cx="64" cy="64" r="1.5" fill="var(--text-glow)" />
+            <!-- Central Energy Point (behind diamond) -->
             <circle cx="64" cy="64" r="3" fill="var(--text-glow)" opacity="0.2" />
+            <circle cx="64" cy="64" r="1.5" fill="var(--text-glow)" />
+
+            <!-- Isometric Core Node (Octahedron/Diamond) -->
+            <path d="M 64 48 L 50 64 L 64 70 Z" fill="var(--glow-line)" opacity="0.4" />
+            <path d="M 64 48 L 78 64 L 64 70 Z" fill="var(--glow-line)" opacity="0.6" />
+            <path d="M 64 80 L 50 64 L 64 70 Z" fill="var(--glow-line)" opacity="0.8" />
+            <path d="M 64 80 L 78 64 L 64 70 Z" fill="var(--text-glow)" opacity="0.9" />
         </g>
 
         <!-- ========================================== -->

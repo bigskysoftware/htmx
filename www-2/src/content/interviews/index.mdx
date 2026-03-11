@@ -3,6 +3,20 @@ title: "Interviews"
 description: "Conversations with creators and thinkers in the hypermedia space"
 ---
 
+import {getCollection} from 'astro:content';
+import LinkList from '../../components/LinkList.astro';
+
+export const interviews = (await getCollection('interviews'))
+    .sort((a, b) => new Date(b.data.created || 0).getTime() - new Date(a.data.created || 0).getTime())
+    .map(e => ({
+        title: e.data.title,
+        url: `/interviews/${e.id}`,
+        author: e.data.authors?.join(', '),
+        date: e.data.created ? new Date(e.data.created).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}) : undefined,
+    }));
+
 # {frontmatter.title}
 
-Conversations with the creators and thinkers who have shaped hypermedia and the web.
+<p class="text-neutral-600 dark:text-neutral-400">{frontmatter.description}</p>
+
+<LinkList items={interviews} />

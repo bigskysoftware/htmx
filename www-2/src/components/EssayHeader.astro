@@ -1,87 +1,108 @@
 ---
 import { getCollection } from 'astro:content';
-import { TAG_ORDER } from '../lib/content';
+import { Image } from 'astro:assets';
 
 interface Props {
     authors?: string[];
     created?: Date | string;
     modified?: Date | string;
-    tags?: string[];
+    fileId?: string;
 }
 
-const { authors, created: rawCreated, modified: rawModified, tags } = Astro.props;
+const { authors, created: rawCreated, modified: rawModified, fileId } = Astro.props;
 
 // Ensure dates are Date objects (frontmatter may pass strings or Dates)
 const created = rawCreated ? (rawCreated instanceof Date ? rawCreated : new Date(rawCreated)) : undefined;
 const modified = rawModified ? (rawModified instanceof Date ? rawModified : new Date(rawModified)) : undefined;
 
-// Look up author URLs from team.yaml
+// Look up author info from team.yaml
 const team = await getCollection('team');
+const teamImages = import.meta.glob('/src/assets/img/team/*.png', { eager: true }) as Record<string, { default: ImageMetadata }>;
+
+// Reading time from raw file content
+const essayRaw = import.meta.glob('/src/content/essays/*.{md,mdx}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+let readingMinutes: number | undefined;
+if (fileId) {
+    const raw = essayRaw[`/src/content/${fileId}`];
+    if (raw) {
+        const body = raw.replace(/^---[\s\S]*?---/, '');
+        readingMinutes = Math.max(1, Math.round(body.trim().split(/\s+/).length / 250));
+    }
+}
+
 const authorInfo = (authors || []).map(name => {
     const member = team.find(m => m.data.name === name);
-    return { name, url: member?.data.url };
+    const image = member?.data.image ? teamImages[member.data.image]?.default : undefined;
+    return { name, url: member?.data.url, image };
 });
-
-// Tag display labels (from shared TAG_ORDER)
-const tagLabels: Record<string, string> = Object.fromEntries(
-    TAG_ORDER.map(t => [t.tag, t.label])
-);
 
 const formatDate = (date: Date) =>
     date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 const showModified = modified && created &&
     modified.toDateString() !== created.toDateString();
+
+// Use first author's avatar as the displayed avatar
+const primaryAuthor = authorInfo[0];
 ---
 
-<div class="not-prose mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-500 dark:text-neutral-450">
-    {/* Authors */}
-    {authorInfo.length > 0 && (
-        <span class="flex items-center gap-1.5">
-            <i class="icon-[mdi--account-outline] size-4 shrink-0" aria-hidden="true"></i>
-            {authorInfo.map((author, i) => (
-                <>
-                    {i > 0 && <span>, </span>}
-                    {author.url ? (
-                        <a href={author.url}
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           class="interact:text-blue-600 dark:interact:text-blue-400 interact:underline underline-offset-4 transition">
-                            {author.name}
-                        </a>
-                    ) : (
-                        <span>{author.name}</span>
-                    )}
-                </>
-            ))}
-        </span>
-    )}
+<div class="not-prose mb-6 mt-4">
+    <div class="flex items-center">
+        {/* Avatar */}
+        {primaryAuthor?.image ? (
+            <div class="size-10 rounded-full overflow-hidden shrink-0 bg-neutral-200 dark:bg-neutral-800">
+                <Image
+                    src={primaryAuthor.image}
+                    alt=""
+                    class="size-full object-cover"
+                    width={80}
+                    height={80}
+                    loading="eager"
+                />
+            </div>
+        ) : authorInfo.length > 0 && (
+            <div class="size-10 rounded-full shrink-0 bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
+                <i class="icon-[mdi--account-outline] size-5 text-neutral-400 dark:text-neutral-600" aria-hidden="true"></i>
+            </div>
+        )}
 
-    {/* Dates */}
-    {created && (
-        <span class="flex items-center gap-1.5">
-            <i class="icon-[mdi--calendar-outline] size-4 shrink-0" aria-hidden="true"></i>
-            <time datetime={created.toISOString().slice(0, 10)}>
-                {formatDate(created)}
-            </time>
-            {showModified && (
-                <span>
-                    (updated <time datetime={modified.toISOString().slice(0, 10)}>{formatDate(modified)}</time>)
+        {/* Author name + date */}
+        <div class:list={["flex flex-col gap-1.5", authorInfo.length > 0 && "ms-4"]}>
+            {authorInfo.length > 0 && (
+                <span class="font-chicago text-sm text-neutral-900 dark:text-neutral-100">
+                    {authorInfo.map((author, i) => (
+                        <>
+                            {i > 0 && ", "}
+                            {author.url ? (
+                                <a href={author.url}
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="interact:text-blue-600 dark:interact:text-blue-300 interact:underline underline-offset-4 transition">
+                                    {author.name}
+                                </a>
+                            ) : (
+                                <span>{author.name}</span>
+                            )}
+                        </>
+                    ))}
                 </span>
             )}
-        </span>
-    )}
 
-    {/* Tags */}
-    {tags && tags.length > 0 && (
-        <span class="flex items-center gap-1.5">
-            <i class="icon-[mdi--tag-outline] size-4 shrink-0" aria-hidden="true"></i>
-            {tags.map((tag, i) => (
-                <>
-                    {i > 0 && <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>}
-                    <span>{tagLabels[tag] || tag}</span>
-                </>
-            ))}
-        </span>
-    )}
+            {created && (
+                <span class="text-xs font-mono tabular-nums text-neutral-500 dark:text-neutral-450">
+                    {readingMinutes && (
+                        <span>{readingMinutes} min read<span class="mx-1">·</span></span>
+                    )}
+                    <time datetime={created.toISOString().slice(0, 10)}>
+                        {formatDate(created)}
+                    </time>
+                    {showModified && (
+                        <span>
+                            {" "}· updated <time datetime={modified.toISOString().slice(0, 10)}>{formatDate(modified)}</time>
+                        </span>
+                    )}
+                </span>
+            )}
+        </div>
+    </div>
 </div>

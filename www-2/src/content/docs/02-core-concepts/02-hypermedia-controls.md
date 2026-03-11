@@ -335,8 +335,8 @@ You can modify this by using the [hx-swap](/reference/attributes/hx-swap) attrib
 
 | Name                        | Description                                                                                                                               |
 |-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| `outerHTML`                 | the default, replaces the entire target element with the returned content                                                                 |
-| `innerHTML`                 | puts the content inside the target element                                                                                                |
+| `innerHTML`                 | the default, puts the content inside the target element                                                                                   |
+| `outerHTML`                 | replaces the entire target element with the returned content                                                                              |
 | `beforebegin` (or `before`) | prepends the content before the target in the target's parent element                                                                     |
 | `afterbegin` (or `prepend`) | prepends the content before the first child inside the target                                                                             |
 | `beforeend` (or `append`)   | appends the content after the last child inside the target                                                                                |
@@ -348,10 +348,9 @@ You can modify this by using the [hx-swap](/reference/attributes/hx-swap) attrib
 
 ### Morph Swaps
 
-In addition to the standard swap mechanisms above, htmx also supports _morphing_ swaps, via extensions. Morphing swaps
-attempt to _merge_ new content into the existing DOM, rather than simply replacing it. They often do a better job
-preserving things like focus, video state, etc. by mutating existing nodes in-place during the swap operation, at the
-cost of more CPU.
+htmx includes built-in `innerMorph` and `outerMorph` swaps that merge new content into the existing DOM rather than
+simply replacing it. They often do a better job preserving things like focus, video state, etc. by mutating existing
+nodes in-place during the swap operation, at the cost of more CPU.
 
 Consider this HTML:
 
@@ -397,9 +396,10 @@ Useful for third-party widgets, custom web components, or active animations.
 The [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
 gives developers a way to create an animated transition between different DOM states.
 
-```html
-<!-- TODO - is this going to be true? -->
-By default, htmx uses the viewTransition() API when swapping in content.
+htmx supports view transitions via:
+- Setting `htmx.config.transitions` to `true` globally
+- Per-swap via `hx-swap` `transition` property: `hx-swap="outerHTML transition:true"`
+- For boosted elements: `hx-boost="transition:true"`
 
 ### Swap Options
 

@@ -31,7 +31,8 @@ const reference = defineCollection({
         title: z.string(),
         description: z.string().optional(),
         keywords: z.array(z.string()).optional(),
-            }).strict(),
+        thumbnail: z.string().optional(),
+    }).strict(),
 });
 
 const patterns = defineCollection({
@@ -40,6 +41,7 @@ const patterns = defineCollection({
         title: z.string(),
         description: z.string().optional(),
         keywords: z.array(z.string()).optional(),
+        thumbnail: z.string().optional(),
     }).strict(),
 });
 

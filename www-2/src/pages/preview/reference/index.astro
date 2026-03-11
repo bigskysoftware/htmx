@@ -87,17 +87,17 @@ const categories = Object.keys(groupedItems)
                     <div class="relative flex-1 flex flex-col">
                         {/* Header row - icon + browse hint */}
                         <div class="flex items-start justify-between mb-4">
-                            <div class="flex items-center justify-center size-14 rounded-2xl bg-white/90 dark:bg-neutral-850 text-neutral-400 dark:text-neutral-500 group-interact:bg-blue-100 dark:group-interact:bg-blue-900/50 group-interact:text-blue-600 dark:group-interact:text-blue-400 transition-colors shadow-sm">
+                            <div class="flex items-center justify-center size-14 rounded-2xl bg-white/90 dark:bg-neutral-850 text-neutral-400 dark:text-neutral-500 group-interact:bg-blue-100 dark:group-interact:bg-blue-900/50 group-interact:text-blue-600 dark:group-interact:text-blue-300 transition-colors shadow-sm">
                                 <i class={`${category.icon} text-3xl`}></i>
                             </div>
-                            <span class="flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 opacity-0 group-interact:opacity-100 transition-opacity">
+                            <span class="flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-350 opacity-0 group-interact:opacity-100 transition-opacity">
                                 Browse
                                 <i class="icon-[mdi--arrow-right]"></i>
                             </span>
                         </div>
 
                         {/* Content */}
-                        <h2 class="font-bold text-xl text-neutral-900 dark:text-neutral-100 group-interact:text-blue-600 dark:group-interact:text-blue-400 transition-colors mb-2">
+                        <h2 class="font-bold text-xl text-neutral-900 dark:text-neutral-100 group-interact:text-blue-600 dark:group-interact:text-blue-300 transition-colors mb-2">
                             {category.title}
                         </h2>
                         <p class="text-base text-neutral-500 dark:text-neutral-400 leading-relaxed">
@@ -122,15 +122,15 @@ const categories = Object.keys(groupedItems)
             <div class="relative flex-1 flex flex-col justify-between">
                 <div class="flex items-start justify-between mb-2">
                     <div class="flex items-center gap-4">
-                        <div class="flex items-center justify-center size-10 rounded-xl bg-white/90 dark:bg-neutral-850 text-neutral-400 dark:text-neutral-500 group-interact:bg-blue-100 dark:group-interact:bg-blue-900/50 group-interact:text-blue-600 dark:group-interact:text-blue-400 transition-colors shadow-sm">
+                        <div class="flex items-center justify-center size-10 rounded-xl bg-white/90 dark:bg-neutral-850 text-neutral-400 dark:text-neutral-500 group-interact:bg-blue-100 dark:group-interact:bg-blue-900/50 group-interact:text-blue-600 dark:group-interact:text-blue-300 transition-colors shadow-sm">
                             <i class="icon-[mdi--puzzle] text-xl"></i>
                         </div>
-                        <h2 class="font-bold text-xl text-neutral-900 dark:text-neutral-100 group-interact:text-blue-600 dark:group-interact:text-blue-400 transition-colors">
+                        <h2 class="font-bold text-xl text-neutral-900 dark:text-neutral-100 group-interact:text-blue-600 dark:group-interact:text-blue-300 transition-colors">
                             Extensions
                         </h2>
                     </div>
 
-                    <span class="flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 opacity-0 group-interact:opacity-100 transition-opacity">
+                    <span class="flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-350 opacity-0 group-interact:opacity-100 transition-opacity">
                         Explore
                         <i class="icon-[mdi--arrow-right]"></i>
                     </span>
@@ -152,9 +152,9 @@ const categories = Object.keys(groupedItems)
     <div class="mt-8 max-w-2xl mx-auto text-center">
         <p class="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
             The reference section covers the core API surface of htmx. For a guided introduction, check out the <a
-                href="/docs" class="text-blue-600 dark:text-blue-400 hover:underline underline-offset-2 font-medium">documentation</a>,
+                href="/docs" class="text-blue-600 dark:text-blue-350 hover:underline underline-offset-2 font-medium">documentation</a>,
             or see practical use-cases in the <a href="/patterns"
-                                                 class="text-blue-600 dark:text-blue-400 hover:underline underline-offset-2 font-medium">patterns</a>
+                                                 class="text-blue-600 dark:text-blue-350 hover:underline underline-offset-2 font-medium">patterns</a>
             gallery.
         </p>
     </div>

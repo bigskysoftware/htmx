@@ -182,26 +182,13 @@ Preserve state when swapping large DOM trees:
 
 Uses the idiomorph algorithm. Better than innerHTML for complex UIs.
 
-### Built-in Streams
+### SSE Extension Rewritten
 
-SSE support now built-in. No extension needed.
+The SSE extension has been rewritten to use `fetch()` and `ReadableStream` instead of `EventSource`. This enables
+request bodies, custom headers, and all HTTP methods. SSE remains a [core extension](/docs/extensions/overview)
+that ships with htmx but requires loading a separate script.
 
-Configure globally:
-```html
-<meta name="htmx:config" content='{
-  "streams": {
-    "reconnect": true,
-    "reconnectDelay": 500
-  }
-}'>
-```
-
-Or per-element:
-```html
-<div hx-get="/events"
-     hx-config='{"stream": {"reconnect": true}}'>
-</div>
-```
+See the [SSE extension documentation](/docs/extensions/sse) for details.
 
 ### Modern Swap Names
 
@@ -219,13 +206,13 @@ Both old and new names work.
 Update multiple targets from one response:
 
 ```html
-<template hx type="partial" hx-target="#messages" hx-swap="beforeend">
+<hx-partial hx-target="#messages" hx-swap="beforeend">
     <div>New message</div>
-</template>
+</hx-partial>
 
-<template hx type="partial" hx-target="#count">
+<hx-partial hx-target="#count">
     <span>5</span>
-</template>
+</hx-partial>
 ```
 
 Alternative to out-of-band swaps with explicit targeting.
