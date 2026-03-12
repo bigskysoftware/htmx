@@ -975,6 +975,76 @@ describe('hx-sse SSE extension', function() {
         assert.equal(closeReason, 'ended', 'Close reason should be "ended"');
     });
 
+    it('pauseOnBackground reconnect sends Last-Event-ID for message replay', async function() {
+        this.timeout(5000);
+        const enc = new TextEncoder();
+        const controllers = [];
+
+        // All notifications the "server" knows about
+        const allMessages = [
+            {id: 'n-1', data: '<p>Notification 1</p>'},
+            {id: 'n-2', data: '<p>Notification 2</p>'},
+            {id: 'n-3', data: '<p>Notification 3</p>'}
+        ];
+
+        // Simulate a server that replays missed messages using Last-Event-ID
+        fetchMock.mockResponse('GET', '/notifications', () => {
+            let ctrl;
+            const body = new ReadableStream({ start(c) { ctrl = c; controllers.push(c); } });
+            const response = new MockResponse(body, {
+                headers: { 'Content-Type': 'text/event-stream' }
+            });
+            response.body = body;
+
+            // On reconnect, check Last-Event-ID and replay missed messages
+            if (controllers.length > 1) {
+                const calls = fetchMock.getCalls();
+                const lastId = calls[calls.length - 1].request.headers?.['Last-Event-ID'];
+                if (lastId) {
+                    let start = allMessages.findIndex(m => m.id === lastId) + 1;
+                    for (let i = start; i < allMessages.length; i++) {
+                        ctrl.enqueue(enc.encode(`id: ${allMessages[i].id}\ndata: ${allMessages[i].data}\n\n`));
+                    }
+                }
+            }
+            return response;
+        });
+
+        createProcessedHTML('<button hx-get="/notifications" hx-target="#output" hx-config="sse.reconnect:true sse.pauseOnBackground:true sse.reconnectDelay:50ms sse.reconnectJitter:0" hx-swap="beforeend">Connect</button><div id="output"></div>');
+
+        find('button').click();
+        await waitForEvent('htmx:after:sse:connection');
+
+        // Server sends first 2 notifications
+        controllers[0].enqueue(enc.encode('id: n-1\ndata: <p>Notification 1</p>\n\n'));
+        await waitForEvent('htmx:after:sse:message');
+        controllers[0].enqueue(enc.encode('id: n-2\ndata: <p>Notification 2</p>\n\n'));
+        await waitForEvent('htmx:after:sse:message');
+
+        assert.include(find('#output').innerHTML, 'Notification 1');
+        assert.include(find('#output').innerHTML, 'Notification 2');
+
+        // Tab goes to background (n-3 exists on the server but client never received it)
+        Object.defineProperty(document, 'hidden', {value: true, configurable: true});
+        document.dispatchEvent(new Event('visibilitychange'));
+        await new Promise(r => setTimeout(r, 50));
+
+        // Tab comes back — extension reconnects with Last-Event-ID: n-2
+        Object.defineProperty(document, 'hidden', {value: false, configurable: true});
+        document.dispatchEvent(new Event('visibilitychange'));
+        await waitForEvent('htmx:after:sse:connection', 3000);
+
+        // Verify Last-Event-ID header was sent
+        const reconnectCall = fetchMock.getCalls()[fetchMock.getCalls().length - 1];
+        assert.equal(reconnectCall.request.headers['Last-Event-ID'], 'n-2', 'Should send Last-Event-ID of last received message');
+
+        // Server replayed n-3 on reconnect — verify it was swapped in
+        await waitForEvent('htmx:after:sse:message', 1000);
+        assert.include(find('#output').innerHTML, 'Notification 3', 'Missed notification should be replayed on reconnect');
+
+        controllers[controllers.length - 1].close();
+    });
+
     it('server retry field updates reconnect delay', async function() {
         this.timeout(5000);
         const stream = mockStreamResponse('/retry-test');
