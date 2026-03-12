@@ -216,6 +216,10 @@ is recognized by default. If you use `data-hx-*` attributes, set the prefix in y
 htmx 4 uses a new event naming convention: `htmx:phase:action[:sub-action]`, and so if you are using htmx events you
 need to rename the events that they are listening for.  Here is a complete table with the htmx 4 equivalent events:
 
+**Note:** `htmx:before:request` and `htmx:after:request` now fire on the **target** element rather than
+the source element. If you have event listeners attached to specific source elements, you may need to
+adjust them.
+
 
 | htmx 2.x Event              | htmx 4.x Event                    | Notes                                |
 |-----------------------------|-----------------------------------|--------------------------------------|
