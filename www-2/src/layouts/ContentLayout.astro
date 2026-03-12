@@ -11,6 +11,10 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
 
+// This layout handles all content collection pages (index, detail, essays, reference, etc.).
+// It reduces duplication significantly, but makes it hard to understand how a given page
+// renders just from looking at src/pages/. Worth finding a way to split it so each
+// collection's rendering path is legible from its page file without reintroducing duplication.
 interface Props {
     file?: ContentFile;
     folder?: ContentFolder;
@@ -34,7 +38,7 @@ const includePagination = !isIndex && !!(file?.prev || file?.next);
 const includeRightColumn = includeTableOfContents || includePagination;
 
 // Index page only
-const showCollectionCards = isIndex && ['docs', 'reference', 'patterns'].includes(collection);
+const showCollectionCards = isIndex && ['docs', 'reference'].includes(collection);
 
 const thumbnailModules = import.meta.glob('/src/assets/img/thumbnails/**/*.svg', {
     query: '?raw',
