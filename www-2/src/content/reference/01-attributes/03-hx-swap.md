@@ -5,7 +5,7 @@ description: "Specify the method for swap"
 
 Controls where the response content goes.
 
-Defaults to `innerHTML` (configurable via [`htmx.config.defaultSwapStyle`](/reference/config/htmx-config-defaultSwap))
+Defaults to `innerHTML` (configurable via [`htmx.config.defaultSwap`](/reference/config/htmx-config-defaultSwap))
 
 ## Examples
 
@@ -42,6 +42,16 @@ Replaces entire element.
   ...
 </div>
 <!-- ...gets replaced -->
+```
+
+### `textContent`
+
+Replaces the text content of the element, without parsing the response as HTML.
+
+Useful when the response is plain text and you want to avoid any HTML injection.
+
+```html
+<span hx-get="/count" hx-swap="textContent">0</span>
 ```
 
 ### `beforebegin` / `before`
@@ -150,6 +160,18 @@ Doesn't insert content (out-of-band swaps still work).
 </div>
 ```
 
+### `upsert`
+
+Updates existing elements by ID and inserts new ones.
+
+*Requires the [upsert extension](https://github.com/bigskysoftware/htmx-extensions).*
+
+```html
+<div hx-get="/items" hx-swap="upsert">
+  <!-- Existing elements with matching IDs are updated, new ones are inserted -->
+</div>
+```
+
 ## Modifiers
 
 Customize swap behavior with modifiers.
@@ -175,6 +197,18 @@ Useful for showing loading states or coordinating with CSS animations.
 ```
 
 Default: `0ms`
+
+### `settle`
+
+Adds delay between the swap and the settle phase.
+
+Useful for synchronizing htmx with CSS transition timing.
+
+```html
+<div hx-swap="innerHTML settle:200ms"></div>
+```
+
+Default: `1ms`
 
 ### `ignoreTitle`
 
@@ -238,6 +272,14 @@ Override swap target inline. Alternative to using [`hx-target`](/reference/attri
 
 ```html
 <div hx-swap="innerHTML target:#results"></div>
+```
+
+### `strip`
+
+Controls whether the outer element of the response content is removed before swapping.
+
+```html
+<div hx-swap="innerHTML strip:true"></div>
 ```
 
 ## Caveats
