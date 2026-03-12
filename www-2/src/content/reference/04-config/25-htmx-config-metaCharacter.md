@@ -3,7 +3,7 @@ title: "htmx.config.metaCharacter"
 description: "Custom character used instead of `:` for attribute modifiers"
 ---
 
-Allows you to replace the `:` character used in attribute modifiers (e.g., `hx-get:inherited`) with a custom character of your choice.
+The `htmx.config.metaCharacter` option allows you to replace the `:` character used in attribute modifiers (e.g., `hx-get:inherited`) with a custom character of your choice.
 
 **Default:** `undefined` (uses `:`)
 

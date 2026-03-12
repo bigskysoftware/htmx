@@ -3,7 +3,7 @@ title: "htmx.config.indicatorClass"
 description: "CSS class for loading indicators"
 ---
 
-CSS class applied to elements specified by [`hx-indicator`](/reference/attributes/hx-indicator) during requests.
+The `htmx.config.indicatorClass` option sets the CSS class applied to elements specified by [`hx-indicator`](/reference/attributes/hx-indicator) during requests.
 
 **Default:** `"htmx-indicator"`
 

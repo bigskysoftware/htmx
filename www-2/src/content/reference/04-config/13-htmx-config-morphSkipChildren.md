@@ -3,7 +3,7 @@ title: "htmx.config.morphSkipChildren"
 description: "Skip morphing children of specific elements"
 ---
 
-CSS selector for elements whose children won't be morphed.
+The `htmx.config.morphSkipChildren` option is a CSS selector for elements whose children won't be morphed.
 
 The element itself updates (attributes change). Its children stay untouched.
 

@@ -3,7 +3,7 @@ title: "htmx.config.defaultSettleDelay"
 description: "Delay between the swap and settle phases in milliseconds"
 ---
 
-Controls how long htmx waits between the swap phase and the settle phase (when CSS transition classes are removed).
+The `htmx.config.defaultSettleDelay` option controls how long htmx waits between the swap phase and the settle phase (when CSS transition classes are removed).
 
 **Default:** `1` (1 millisecond)
 

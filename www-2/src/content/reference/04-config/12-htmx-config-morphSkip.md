@@ -3,7 +3,7 @@ title: "htmx.config.morphSkip"
 description: "Skip morphing for specific elements"
 ---
 
-CSS selector for elements to skip during morphing.
+The `htmx.config.morphSkip` option is a CSS selector for elements to skip during morphing.
 
 Matching elements won't be morphed. They stay exactly as they are.
 
