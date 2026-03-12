@@ -49,8 +49,8 @@ const isPatterns = folder.folder === 'patterns';
 
         {/* Grouped files (subfolders with their files) */}
         {folder.subfolders.map((subFolder) => {
-            const files = subFolder.subfiles.filter((f: ContentFile) => !f.frontmatter?.hidden);
-            const containsCurrentPage = subFolder.subfiles.some((f: ContentFile) => currentUrl === f.url);
+            const files = subFolder.subfiles;
+            const containsCurrentPage = files.some((f: ContentFile) => currentUrl === f.url);
 
             return (
                     <details class="group/section w-full not-first-of-type:mt-2 no-morph"
