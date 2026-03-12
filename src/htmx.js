@@ -96,7 +96,8 @@ var htmx = (() => {
             if (document.readyState === 'loading') {
                 document.addEventListener("DOMContentLoaded", init)
             } else {
-                init()
+                // wait a tick so extensions can register
+                setTimeout(init)
             }
         }
 
