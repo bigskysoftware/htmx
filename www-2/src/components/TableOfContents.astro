@@ -60,8 +60,8 @@ const minDepth = tocHeadings.length > 0 ? Math.min(...tocHeadings.map(h => h.dep
                        class={`toc-link block py-2 pr-2 text-sm transition truncate -ml-px border-l-2
                           ${indentClass}
                           /* Default State (Inactive) */
-                          border-transparent text-neutral-600 hover:text-neutral-900 hover:border-neutral-300
-                          dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:border-neutral-700
+                          border-transparent text-neutral-600 interact:text-neutral-900 interact:border-neutral-300
+                          dark:text-neutral-400 dark:interact:text-neutral-200 dark:interact:border-neutral-700
                           /* Active State (via Hyperscript) */
                           data-active:border-neutral-900 data-active:text-neutral-900 data-active:font-semibold
                           data-active:dark:border-neutral-100 data-active:dark:text-neutral-100

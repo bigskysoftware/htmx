@@ -1,12 +1,20 @@
 ---
 import type { HTMLTag, Polymorphic } from "astro/types";
 
-type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag; class?: string }>;
+type CardVariant = "xs" | "sm" | "base" | "lg" | "xl";
+type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag; class?: string; variant?: CardVariant }>;
 
-const { as: Tag = "div", class: cls, ...rest } = Astro.props;
+const { as: Tag = "div", class: cls, variant = "base", ...rest } = Astro.props;
 ---
 <Tag class:list={[
-    "bg-neutral-25 dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-800 rounded-[clamp(0.3125rem,3%,0.75rem)]",
+    "bg-neutral-25 dark:bg-neutral-910 border border-neutral-200 dark:border-neutral-800",
+    {
+        "rounded-xs": variant === "xs",
+        "rounded-sm": variant === "sm",
+        "rounded": variant === "base",
+        "rounded-lg": variant === "lg",
+        "rounded-xl": variant === "xl"
+    },
     cls
 ]} {...rest}>
     <slot />

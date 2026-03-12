@@ -217,7 +217,7 @@
     /* Code blocks - macOS window style */
 
     :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-        @apply relative border border-neutral-200 dark:border-neutral-850 rounded-[4px] bg-white dark:bg-neutral-950 overflow-y-hidden;
+        @apply relative border border-neutral-200 dark:border-neutral-850 rounded-lg bg-white dark:bg-neutral-950 overflow-y-hidden;
 
         code {
             @apply block overflow-x-auto text-xs leading-5 whitespace-pre p-4 pr-12 mask-l-from-97% mask-r-from-95%;
@@ -227,7 +227,7 @@
     /* Details/Summary - collapsible sections */
 
     :where(details):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-        @apply my-6;
+        @apply my-6 py-0;
 
         summary {
             @apply flex w-full items-center cursor-pointer select-none text-sm
@@ -253,6 +253,10 @@
             }
         }
 
+        &[open] {
+            @apply pb-4;
+        }
+
         &[open] summary {
             @apply mb-4 text-neutral-900 dark:text-neutral-100;
 
@@ -271,7 +275,7 @@
         }
 
         &.warning {
-            @apply p-4 rounded-[4px] border border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/30 dark:bg-yellow-900/10;
+            @apply px-4 py-0 rounded-[4px] border border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/30 dark:bg-yellow-900/10;
 
             summary {
                 @apply text-yellow-800 dark:text-yellow-300
@@ -288,7 +292,7 @@
         }
 
         &.info {
-            @apply p-4 rounded-[4px] border border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-900/10;
+            @apply px-4 py-0 rounded-[4px] border border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-900/10;
 
             summary {
                 @apply text-blue-800 dark:text-blue-300
