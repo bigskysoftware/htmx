@@ -208,11 +208,15 @@
     /* Inline code - remove backticks */
 
     :where(:not(pre) > code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-        @apply text-neutral-900 dark:text-neutral-100 font-semibold bg-neutral-100 dark:bg-neutral-850 px-1.5 py-0.5 rounded;
+        @apply text-neutral-900 dark:text-neutral-100 font-semibold bg-neutral-200/25 dark:bg-neutral-800/25 px-1.5 py-0.5 rounded;
 
         &::before, &::after {
             content: none;
         }
+    }
+
+    :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) > code {
+        color: inherit;
     }
 
     /* Code blocks - macOS window style */
