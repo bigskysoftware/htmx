@@ -43,6 +43,13 @@ describe('htmx.config.metaCharacter functionality', function() {
         assert.equal(result, '"a":1,"b":2,"c":3');
     });
 
+    it('onLoad works with custom meta character', function() {
+        let fired = false;
+        htmx.onLoad(() => fired = true);
+        createProcessedHTML('<div hx-get="/test">Test</div>');
+        assert.isTrue(fired);
+    });
+
     it('works with hx-on events using custom meta character', async function() {
         let eventFired = false;
         createProcessedHTML('<button id="btn" hx-on-click="window.testEvent = true">Click</button>');

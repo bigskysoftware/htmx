@@ -620,13 +620,12 @@ var htmx = (() => {
         }
 
         __initTimeout(ctx) {
-            let timeoutInterval;
-            if (ctx.request.timeout) {
-                timeoutInterval = this.parseInterval(ctx.request.timeout);
-            } else {
-                timeoutInterval = this.config.defaultTimeout;
+            let timeout = ctx.request.timeout != null
+                ? this.parseInterval(ctx.request.timeout)
+                : this.config.defaultTimeout;
+            if (timeout) {
+                ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.(), timeout);
             }
-            ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.(), timeoutInterval);
         }
 
         __determineSyncStrategy(elt) {
@@ -1456,7 +1455,7 @@ var htmx = (() => {
         }
 
         onLoad(callback) {
-            this.on("htmx:after:process", (evt) => {
+            this.on(this.__maybeAdjustMetaCharacter("htmx:after:process"), (evt) => {
                 callback(evt.target)
             })
         }
