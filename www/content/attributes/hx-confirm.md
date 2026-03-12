@@ -17,6 +17,20 @@ Here is an example:
 </button>
 ```
 
+## JavaScript Confirmation
+
+Using the `js:` prefix you can write custom confirmation logic for a trigger.
+
+The expression is evaluated as async JavaScript (it will be awaited if it returns a promise).
+
+If returns or resolves to a truthy value then the request proceeds otherwise it is canceled.
+
+```html
+<button hx-delete="/account" hx-confirm="js: await sweetConfirm('Delete your account?')">
+  Delete My Account
+</button>
+```
+
 ## Event details
 
 The event triggered by `hx-confirm` contains additional properties in its `detail`:
