@@ -196,7 +196,8 @@
     prose-a:[[href^="#"]]:text-neutral-800
     prose-a:[[href^="#"]]:dark:text-neutral-100
     prose-h1:text-[2em]/12
-    prose-img:rounded-lg;
+    prose-img:rounded-lg
+    prose-img:border prose-img:border-neutral-200 prose-img:dark:border-neutral-800;
 
     @apply
     prose-headings:scroll-pt-[calc(var(--header-height)+2rem)]
