@@ -41,10 +41,10 @@
     
     // Build selector for WS attributes
     function buildWsSelector(attrName) {
-        let colonAttr = buildAttrName(':' + attrName);
+        let mc = htmx.config.metaCharacter || ':';
+        let mcAttr = buildAttrName(mc + attrName);
         let hyphenAttr = buildAttrName('-' + attrName);
-        // Escape colon for CSS selector
-        return `[${colonAttr.replace(':', '\\:')}],[${hyphenAttr}]`;
+        return `[${CSS.escape(mcAttr)}],[${hyphenAttr}]`;
     }
     
     // ========================================
@@ -345,22 +345,19 @@
         // Build message
         let form = element.form || element.closest('form');
         let body = api.collectFormData(element, form, event.submitter);
-        let valsResult = api.handleHxVals(element, body);
-        if (valsResult) await valsResult;
         
-        // Preserve multi-value form fields (checkboxes, multi-selects)
         let values = {};
         for (let [key, value] of body) {
             if (key in values) {
-                // Convert to array if needed
-                if (!Array.isArray(values[key])) {
-                    values[key] = [values[key]];
-                }
-                values[key].push(value);
+                values[key] = [].concat(values[key], value);
             } else {
                 values[key] = value;
             }
         }
+        
+        // Merge hx-vals with original types preserved
+        let valsResult = api.getAttributeObject(element, 'hx-vals', obj => Object.assign(values, obj));
+        if (valsResult) await valsResult;
         
         // Build headers object
         let headers = {
@@ -534,7 +531,7 @@
     
     function triggerEvent(element, eventName, detail = {}) {
         if (!element) return true;
-        return htmx.trigger(element, eventName, detail);
+        return api.triggerHtmxEvent(element, eventName, detail);
     }
     
     // ========================================

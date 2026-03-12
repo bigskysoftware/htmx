@@ -81,12 +81,13 @@ var htmx = (() => {
                 determineMethodAndAction: this.#determineMethodAndAction.bind(this),
                 createRequestContext: this.#createRequestContext.bind(this),
                 collectFormData: this.#collectFormData.bind(this),
-                handleHxVals: this.#handleHxVals.bind(this),
+                getAttributeObject: this.#getAttributeObject.bind(this),
                 insertContent: this.#insertContent.bind(this),
                 morph: this.#morph.bind(this),
                 isSoftMatch: this.#isSoftMatch.bind(this),
                 onTrigger: this.#onTrigger.bind(this),
-                htmxProp: this.#htmxProp.bind(this)
+                htmxProp: this.#htmxProp.bind(this),
+                triggerHtmxEvent: this.#trigger.bind(this)
             };
             let init = () => {
                 this.#initHistoryHandling()
@@ -95,13 +96,14 @@ var htmx = (() => {
             if (document.readyState === 'loading') {
                 document.addEventListener("DOMContentLoaded", init)
             } else {
-                init()
+                // wait a tick so extensions can register
+                setTimeout(init)
             }
         }
 
         #initHtmxConfig() {
+            this.version = '4.0.0-beta1'
             this.config = {
-                version: '4.0.0-beta1',
                 logAll: false,
                 prefix: "",
                 transitions: false,
@@ -162,7 +164,7 @@ var htmx = (() => {
         }
 
         #queryEltAndDescendants(elt, selector) {
-            let results = [...elt.querySelectorAll(selector)];
+            let results = [...(elt.querySelectorAll?.(selector) ?? [])];
             if (elt.matches?.(selector)) {
                 results.unshift(elt);
             }
@@ -186,7 +188,7 @@ var htmx = (() => {
 
         #attributeValue(elt, name, defaultVal, eltCollector) {
             let unprefixed = name;
-            name = this.#prefix(name);
+            name = this.#maybeAdjustMetaCharacter(this.#prefix(name));
             let appendName = name + this.#maybeAdjustMetaCharacter(":append");
             let inheritName = name + (this.config.implicitInheritance ? "" : this.#maybeAdjustMetaCharacter(":inherited"));
             let inheritAppendName = name + this.#maybeAdjustMetaCharacter(":inherited:append");
@@ -303,7 +305,7 @@ var htmx = (() => {
 
         #htmxProp(elt) {
             if (!elt._htmx) {
-                elt._htmx = { listeners: [], triggerSpecs: [], requests: [] };
+                elt._htmx = { listeners: [], triggerSpecs: [] };
                 elt.setAttribute('data-htmx-powered', 'true');
             }
             return elt._htmx;
@@ -397,7 +399,7 @@ var htmx = (() => {
         }
 
         #handleHxHeaders(elt, headers) {
-            return this.#handleAttributeObject(elt, "hx-headers", obj => {
+            return this.#getAttributeObject(elt, "hx-headers", obj => {
                 for (let key in obj) headers[key] = String(obj[key]);
             });
         }
@@ -439,8 +441,11 @@ var htmx = (() => {
             // Build request body
             let body = this.#collectFormData(elt, form, evt.submitter, ctx.request.validate)
             if (!body) return  // Validation failed
-            let valsResult = this.#handleHxVals(elt, body)
-            if (valsResult) await valsResult  // Only await if it returned a promise
+            let valsResult = this.#getAttributeObject(elt, "hx-vals", obj => {
+                ctx.vals = obj;
+                for (let key in obj) body.set(key, obj[key]);
+            });
+            if (valsResult) await valsResult; // Only await if it returned a promise
             if (ctx.values) {
                 for (let k in ctx.values) {
                     body.delete(k);
@@ -542,6 +547,7 @@ var htmx = (() => {
                 if (!this.#trigger(elt, "htmx:after:request", {ctx})) return;
 
                 if(this.#handleHeadersAndMaybeReturnEarly(ctx)){
+                    ctx.keepIndicators = true;
                     return
                 }
 
@@ -560,9 +566,11 @@ var htmx = (() => {
                 this.#trigger(elt, "htmx:error", {ctx, error})
             } finally {
                 clearTimeout(ctx.requestTimeout);
-                this.#hideIndicators(indicators);
-                this.#enableElements(disableElements);
                 this.#trigger(elt, "htmx:finally:request", {ctx})
+                if (!ctx.keepIndicators) {
+                    this.#hideIndicators(indicators);
+                    this.#enableElements(disableElements);
+                }
 
                 requestQueue.finish()
                 if (requestQueue.more()) {
@@ -612,13 +620,12 @@ var htmx = (() => {
         }
 
         #initTimeout(ctx) {
-            let timeoutInterval;
-            if (ctx.request.timeout) {
-                timeoutInterval = this.parseInterval(ctx.request.timeout);
-            } else {
-                timeoutInterval = this.config.defaultTimeout;
+            let timeout = ctx.request.timeout != null
+                ? this.parseInterval(ctx.request.timeout)
+                : this.config.defaultTimeout;
+            if (timeout) {
+                ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.(), timeout);
             }
-            ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.(), timeoutInterval);
         }
 
         #determineSyncStrategy(elt) {
@@ -677,8 +684,6 @@ var htmx = (() => {
         // Wire up trigger listeners with full modifier support (delay, throttle, once, etc.)
         #onTrigger(elt, specString, handler) {
             let specs = this.#parseTriggerSpecs(specString)
-            let listeners = []
-
             this.#htmxProp(elt).triggerSpecs.push(...specs)
 
             for (let spec of specs) {
@@ -823,14 +828,7 @@ var htmx = (() => {
                     let listenerInfo = {fromElt, eventName, handler: spec.handler};
                     elt._htmx.listeners.push(listenerInfo)
                     spec.listeners.push(listenerInfo)
-                    listeners.push(listenerInfo)
                     fromElt.addEventListener(eventName, spec.handler);
-                }
-            }
-
-            return () => {
-                for (let l of listeners) {
-                    l.fromElt.removeEventListener(l.eventName, l.handler)
                 }
             }
         }
@@ -1027,10 +1025,6 @@ var htmx = (() => {
             let response = text.replace(/<hx-([a-z]+)(\s+|>)/gi, '<template hx type="$1"$2').replace(/<\/hx-[a-z]+>/gi, '</template>');
             let title = '';
             response = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, m => (title = this.#parseHTML(m).title, ''));
-            if (!title) {
-                let m = response.match(/<title[\s>]([\s\S]*?)<\/title>/i);
-                if (m && !response.slice(0, m.index).includes('<svg')) title = m[1].trim();
-            }
             let startTag = response.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
             let doc, fragment;
@@ -1044,6 +1038,15 @@ var htmx = (() => {
                 doc = this.#parseHTML(`<template>${response}</template>`);
                 fragment = doc.querySelector('template').content;
             }
+
+            if (!title) {
+                let titleElt = fragment.querySelector('title:not(svg title)');
+                if (titleElt) {
+                    title = titleElt.textContent;
+                    titleElt.remove();
+                }
+            }
+
             this.#processScripts(fragment);
 
             return {
@@ -1147,7 +1150,7 @@ var htmx = (() => {
         }
 
         #handleAutoFocus(elt) {
-            let autofocus = elt.querySelector?.("[autofocus]");
+            let autofocus = this.#queryEltAndDescendants(elt, '[autofocus]')[0];
             if (autofocus) {
                 this.#setFocus(autofocus);
             }
@@ -1219,7 +1222,7 @@ var htmx = (() => {
             let swapPromises = [];
             let transitionTasks = [];
             for (let task of tasks) {
-                if (task.swapSpec?.transition ?? mainSwap?.transition ?? (ctx.transition !== false)) {
+                if (task.swapSpec?.transition ?? mainSwap?.transition ?? ctx.transition) {
                     transitionTasks.push(task);
                 } else {
                     swapPromises.push(this.#insertContent(task));
@@ -1262,7 +1265,7 @@ var htmx = (() => {
                     target: this.#resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
                     swapSpec,
                     sourceElement: ctx.sourceElement,
-                    transition: (ctx.transition !== false) && (swapSpec.transition !== false)
+                    transition: ctx.transition && swapSpec.transition !== false
                 };
                 return mainSwap;
             }
@@ -1452,7 +1455,7 @@ var htmx = (() => {
         }
 
         onLoad(callback) {
-            this.on("htmx:after:process", (evt) => {
+            this.on(this.#maybeAdjustMetaCharacter("htmx:after:process"), (evt) => {
                 callback(evt.target)
             })
         }
@@ -1598,14 +1601,14 @@ var htmx = (() => {
                 replace = hx.replaceurl;
             }
 
+            // if this is a boosted element, default to pushing
+            if (push == null && replace == null && this.#isBoosted(sourceElement)) {
+                push = 'true';
+            }
+            
             // normalize "false" to null
             if (push === 'false' || push === false) push = null;
             if (replace === 'false' || replace === false) replace = null;
-
-            // if this is a boosted element, default to pushing
-            if (!push && !replace && this.#isBoosted(sourceElement)) {
-                push = 'true';
-            }
 
             if (!push && !replace) return null;
 
@@ -1766,7 +1769,7 @@ var htmx = (() => {
             }
         }
 
-        #handleAttributeObject(elt, attrName, callback) {
+        #getAttributeObject(elt, attrName, callback) {
             let attrValue = this.#attributeValue(elt, attrName);
             if (!attrValue) return null;
 
@@ -1784,12 +1787,6 @@ var htmx = (() => {
                 // Synchronous path - return the parsed object directly
                 callback(this.#parseConfig(attrValue));
             }
-        }
-
-        #handleHxVals(elt, body) {
-            return this.#handleAttributeObject(elt, "hx-vals", obj => {
-                for (let key in obj) body.set(key, obj[key]);
-            });
         }
 
         #stringHyperscriptStyleSelector(selector) {
@@ -1935,13 +1932,15 @@ var htmx = (() => {
             }
             insertionPoint ||= oldParent.firstChild;
 
-            for (const newChild of [...newParent.childNodes]) {
+            let newChild = newParent.firstChild;
+            while (newChild) {
+                let matchedNode;
                 if (insertionPoint && insertionPoint != endPoint) {
-                    let bestMatch = this.#findBestMatch(ctx, newChild, insertionPoint, endPoint);
-                    if (bestMatch) {
-                        if (bestMatch !== insertionPoint) {
+                    matchedNode = this.#findBestMatch(ctx, newChild, insertionPoint, endPoint);
+                    if (matchedNode) {
+                        if (matchedNode !== insertionPoint) {
                             let cursor = insertionPoint;
-                            while (cursor && cursor !== bestMatch) {
+                            while (cursor && cursor !== matchedNode) {
                                 let tempNode = cursor;
                                 cursor = cursor.nextSibling;
                                 // remove nodes unless they match upcoming content in which case move them to end for later use
@@ -1952,32 +1951,33 @@ var htmx = (() => {
                                 }
                             }
                         }
-                        this.#morphNode(bestMatch, newChild, ctx);
-                        insertionPoint = bestMatch.nextSibling;
-                        continue;
                     }
                 }
 
-                if (newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
+                if (!matchedNode && newChild instanceof Element && ctx.persistentIds.has(newChild.id)) {
                     let escapedId = CSS.escape(newChild.id);
-                    let target = (ctx.target.id === newChild.id && ctx.target) ||
+                    matchedNode = (ctx.target.id === newChild.id && ctx.target) ||
                         ctx.target.querySelector(`[id="${escapedId}"]`) ||
                         ctx.pantry.querySelector(`[id="${escapedId}"]`);
-                    let elementId = target.id;
-                    let element = target;
+                    let element = matchedNode;
                     while ((element = element.parentNode)) {
                         let idSet = ctx.idMap.get(element);
                         if (idSet) {
-                            idSet.delete(elementId);
+                            idSet.delete(matchedNode.id);
                             if (!idSet.size) ctx.idMap.delete(element);
                         }
                     }
-                    this.#moveBefore(oldParent, target, insertionPoint);
-                    this.#morphNode(target, newChild, ctx);
-                    insertionPoint = target.nextSibling;
+                    this.#moveBefore(oldParent, matchedNode, insertionPoint);
+                }
+
+                if (matchedNode) {
+                    this.#morphNode(matchedNode, newChild, ctx);
+                    insertionPoint = matchedNode.nextSibling;
+                    newChild = newChild.nextSibling;
                     continue;
                 }
 
+                let nextNewChild = newChild.nextSibling;
                 if (ctx.idMap.has(newChild)) {
                     let placeholder = document.createElement(newChild.tagName);
                     oldParent.insertBefore(placeholder, insertionPoint);
@@ -1987,6 +1987,7 @@ var htmx = (() => {
                     oldParent.insertBefore(newChild, insertionPoint);
                     insertionPoint = newChild.nextSibling;
                 }
+                newChild = nextNewChild;
             }
 
             while (insertionPoint && insertionPoint != endPoint) {
