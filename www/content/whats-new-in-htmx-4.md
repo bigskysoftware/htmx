@@ -197,7 +197,7 @@ SSE support is provided via the [SSE extension](/extensions/sse), rewritten from
 
 ### Core Extensions
 
-htmx 4 ships with 9 core extensions:
+htmx 4 ships with 11 core extensions:
 
 {{ include(path="content/extensions/core-extensions-table.html") }}
 
