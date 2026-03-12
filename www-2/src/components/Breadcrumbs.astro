@@ -12,7 +12,7 @@ const parent = allCrumbs.slice(0, -1).reverse().find(c => c.href) || null;
 ---
 
 {allCrumbs.length > 1 && (
-    <nav aria-label="Breadcrumb" class="mb-6">
+    <nav aria-label="Breadcrumb" class="mb-6 sm:mb-8">
         {/* Mobile: show parent link only */}
         {parent && (
             <a href={parent.href}
