@@ -1,5 +1,5 @@
 ---
-title: "HTTP Integration"
+title: "Requests & Responses"
 description: "Work with HTTP headers and response status codes"
 keywords: ["status code", "error handling", "response", "request", "AJAX", "XHR", "fetch"]
 ---
