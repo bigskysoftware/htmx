@@ -175,7 +175,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                                                 {!reverse && <i class:list={[icon, "text-2xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0 mt-0.5"]}></i>}
                                                                 <div class="flex-1 min-w-0">
                                                                     {link.breadcrumbs.length > 2 && (
-                                                                            <div class="text-xs text-neutral-500 group-interact:text-neutral-700 dark:group-interact:text-neutral-300 mb-2 transition">
+                                                                            <div class="text-xs tracking-wide text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-300 mb-2 transition">
                                                                                 {link.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
                                                                             </div>
                                                                     )}
@@ -186,7 +186,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                                                         <span class="sr-only">{label}: {link.frontmatter.title}</span>
                                                                     </a>
                                                                     {link.frontmatter.description &&
-                                                                            <div class="text-sm text-neutral-500 dark:text-neutral-500 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-2 line-clamp-2 leading-relaxed transition">{link.frontmatter.description}</div>}
+                                                                            <div class="text-sm text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-2 line-clamp-2 leading-relaxed transition">{link.frontmatter.description}</div>}
                                                                 </div>
                                                                 {reverse && <i class:list={[icon, "text-2xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0 mt-0.5"]}></i>}
                                                             </Card>
