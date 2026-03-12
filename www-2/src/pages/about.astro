@@ -65,52 +65,48 @@ const linkedSections = [
 
                 {/* Featured: Carson Gross */}
                 {creator && (
-                    <Card variant="lg" class="flex flex-col sm:flex-row gap-6 p-6 sm:p-8 mb-6">
-                        <div class="shrink-0 self-start">
-                            <div class="size-12 sm:size-20 rounded-full overflow-hidden ring-2 ring-neutral-100 dark:ring-neutral-800">
-                                <Image src={teamImages[creator.image].default} alt={creator.name}
-                                       class="w-full h-full object-cover" width={224} height={224} />
+                        <Card variant="lg" class="flex flex-col sm:flex-row sm:items-center gap-6 p-4 sm:p-6 mb-6">
+                            <Image src={teamImages[creator.image].default} alt={creator.name}
+                                   class="object-cover size-20 rounded-full" width={224} height={224} />
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-1">
+                                    <h3 class="font-chicago text-xl leading-none text-neutral-900 dark:text-neutral-100">{creator.name}</h3>
+                                    {creator.github && (
+                                            <a href={`https://github.com/${creator.github}`} target="_blank" rel="noopener noreferrer"
+                                               class="p-2 sm:p-3 flex justify-center items-center text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white sm:transition"
+                                               aria-label={`${creator.name} on GitHub`}>
+                                                <i class="icon-[mdi--github] size-5.5"></i>
+                                            </a>
+                                    )}
+                                </div>
+                                <span class="inline-block font-mono text-[11px] uppercase tracking-wider text-neutral-500 dark:text-neutral-450">Creator of htmx / Head Grug (same thing)</span>
+                                <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mt-1.5" set:html={creator.content}></p>
                             </div>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-3 mb-1">
-                                <h3 class="font-chicago text-xl leading-none text-neutral-900 dark:text-neutral-100">{creator.name}</h3>
-                                {creator.github && (
-                                    <a href={`https://github.com/${creator.github}`} target="_blank" rel="noopener noreferrer"
-                                       class="text-neutral-400 dark:text-neutral-500 interact:text-neutral-900 dark:interact:text-neutral-100 transition"
-                                       aria-label={`${creator.name} on GitHub`}>
-                                        <i class="icon-[mdi--github] size-5 block"></i>
-                                    </a>
-                                )}
-                            </div>
-                            <span class="inline-block font-mono text-[11px] uppercase tracking-wider text-neutral-500 dark:text-neutral-450 mb-3">Creator of htmx</span>
-                            <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed" set:html={creator.content}></p>
-                        </div>
-                    </Card>
+                        </Card>
                 )}
 
                 {/* Other team members */}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {contributors.map((member) => (
-                        <Card variant="lg" class="flex items-center gap-4 p-4">
-                            <div class="shrink-0 size-12 rounded-full overflow-hidden ring-1 ring-neutral-100 dark:ring-neutral-800">
-                                <Image src={teamImages[member.image].default} alt={member.name}
-                                       class="w-full h-full object-cover" width={96} height={96} />
-                            </div>
-                            <div class="flex-1 min-w-0 pt-0.5">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <h3 class="font-chicago text-sm leading-none text-neutral-900 dark:text-neutral-100">{member.name}</h3>
-                                    {member.github && (
-                                        <a href={`https://github.com/${member.github}`} target="_blank" rel="noopener noreferrer"
-                                           class="text-neutral-400 dark:text-neutral-500 interact:text-neutral-900 dark:interact:text-neutral-100 transition"
-                                           aria-label={`${member.name} on GitHub`}>
-                                            <i class="icon-[mdi--github] size-4 block"></i>
-                                        </a>
-                                    )}
+                            <Card variant="lg" class="flex items-center gap-4 p-4">
+                                <div class="shrink-0 size-12 rounded-full overflow-hidden ring-1 ring-neutral-100 dark:ring-neutral-800">
+                                    <Image src={teamImages[member.image].default} alt={member.name}
+                                           class="w-full h-full object-cover" width={96} height={96} />
                                 </div>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-450 leading-relaxed" set:html={member.content}></p>
-                            </div>
-                        </Card>
+                                <div class="flex-1 min-w-0 pt-0.5">
+                                    <div class="flex items-center mb-1">
+                                        <h3 class="font-chicago text-sm leading-none text-neutral-900 dark:text-neutral-100">{member.name}</h3>
+                                        {member.github && (
+                                                <a href={`https://github.com/${member.github}`} target="_blank" rel="noopener noreferrer"
+                                                   class="px-3 py-0.5 sm:py-1 flex justify-center items-center text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white sm:transition"
+                                                   aria-label={`${member.name} on GitHub`}>
+                                                    <i class="icon-[mdi--github] size-4.5"></i>
+                                                </a>
+                                        )}
+                                    </div>
+                                    <p class="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed" set:html={member.content}></p>
+                                </div>
+                            </Card>
                     ))}
                 </div>
             </section>
@@ -118,55 +114,52 @@ const linkedSections = [
             <!-- Books -->
             <section class="mb-16">
                 <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-6">Books</h2>
-                <div class="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-8">
+                <div class="prose max-w-none grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-8">
                     {books.map(book => (
-                        <a href={book.href} target="_blank" rel="noopener noreferrer"
-                           class="group block text-center no-underline rounded-[clamp(0.25rem,calc(0.1875rem+0.25vw),0.5rem)] outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400">
-                            <div class="mb-3 transition group-interact:-translate-y-0.5">
-                                <Image src={bookImages[book.img].default} alt={book.title}
-                                       class="w-full h-auto rounded shadow-md transition" width={280} />
-                            </div>
-                            <span class="font-chicago text-xs text-neutral-700 dark:text-neutral-300 group-interact:text-blue-600 dark:group-interact:text-blue-350 transition leading-tight">{book.title}</span>
-                        </a>
+                            <a href={book.href} target="_blank" rel="noopener noreferrer"
+                               class="group font-chicago text-sm text-center">
+                                <Image src={bookImages[book.img].default} alt={book.title} width={280} class="not-prose mb-3 group-interact:-translate-y-0.5 transition" />
+                                {book.title}
+                            </a>
                     ))}
                 </div>
             </section>
 
             {linkedSections.map((section) => (
-                <section class="mb-16">
-                    <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-6">{section.title}</h2>
-                    <div class={section.gridClass}>
-                        {section.items.map((item) => (
-                            <Card variant="lg" class="group relative isolate p-5 overflow-hidden transition outline-hidden interact:border-neutral-300 dark:interact:border-neutral-600 interact:bg-neutral-50 dark:interact:bg-neutral-875 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-neutral-500 dark:focus-within:ring-neutral-400">
-                                <div class:list={[
-                                    "flex items-center gap-4",
-                                    section.centered && "sm:flex-col sm:items-center sm:text-center"
-                                ]}>
-                                    <i class={`${item.icon} ${section.centered ? 'size-8' : 'size-7'} text-neutral-400 dark:text-neutral-600 shrink-0 group-interact:text-neutral-600 dark:group-interact:text-neutral-300 transition`}></i>
-                                    <div class:list={["min-w-0", section.centered || "flex-1"]}>
-                                        <h3 class="font-chicago text-sm text-neutral-900 dark:text-neutral-100 mb-1 sm:mb-2">
-                                            <a
-                                                href={item.url}
-                                                target={item.target}
-                                                rel={item.rel}
-                                                class="outline-hidden text-neutral-900 dark:text-neutral-100 group-interact:text-black dark:group-interact:text-white transition"
-                                            >
-                                                {item.title}
-                                                <span class="absolute inset-0 z-10"></span>
-                                            </a>
-                                        </h3>
-                                        <p class:list={[
-                                            "text-xs text-neutral-500 dark:text-neutral-450 group-interact:text-neutral-700 dark:group-interact:text-neutral-300 transition",
-                                            section.centered ? "" : "truncate"
+                    <section class="mb-16">
+                        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-6">{section.title}</h2>
+                        <div class={section.gridClass}>
+                            {section.items.map((item) => (
+                                    <Card variant="lg" class="group relative isolate p-5 overflow-hidden transition outline-hidden interact:border-neutral-300 dark:interact:border-neutral-600 interact:bg-neutral-50 dark:interact:bg-neutral-875 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-neutral-500 dark:focus-within:ring-neutral-400">
+                                        <div class:list={[
+                                            "flex items-center gap-4",
+                                            section.centered && "sm:flex-col sm:items-center sm:text-center"
                                         ]}>
-                                            {item.description}
-                                        </p>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                </section>
+                                            <i class={`${item.icon} ${section.centered ? 'size-8' : 'size-7'} text-neutral-400 dark:text-neutral-600 shrink-0 group-interact:text-neutral-600 dark:group-interact:text-neutral-300 transition`}></i>
+                                            <div class:list={["min-w-0", section.centered || "flex-1"]}>
+                                                <h3 class="font-chicago text-sm text-neutral-900 dark:text-neutral-100 mb-1 sm:mb-2">
+                                                    <a
+                                                            href={item.url}
+                                                            target={item.target}
+                                                            rel={item.rel}
+                                                            class="outline-hidden text-neutral-900 dark:text-neutral-100 group-interact:text-black dark:group-interact:text-white transition"
+                                                    >
+                                                        {item.title}
+                                                        <span class="absolute inset-0 z-10"></span>
+                                                    </a>
+                                                </h3>
+                                                <p class:list={[
+                                                    "text-xs text-neutral-500 dark:text-neutral-450 group-interact:text-neutral-700 dark:group-interact:text-neutral-300 transition",
+                                                    section.centered ? "" : "truncate"
+                                                ]}>
+                                                    {item.description}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </Card>
+                            ))}
+                        </div>
+                    </section>
             ))}
 
             <div class="h-16"></div>
