@@ -6,10 +6,10 @@ interface Props {
 const {svg} = Astro.props;
 ---
 
-<div class="h-full w-full flex items-center justify-center overflow-hidden
+<div class="h-full flex items-center justify-center
             text-neutral-400 dark:text-neutral-600
             [--accent:var(--color-neutral-400)] dark:[--accent:var(--color-neutral-600)]
             group-interact:text-blue-600 dark:group-interact:text-blue-300
             group-interact:[--accent:var(--color-blue-700)] dark:group-interact:[--accent:var(--color-blue-200)]
-            [&_svg]:w-full [&_svg]:h-auto"
+            [&_svg]:h-full [&_svg]:w-auto"
      set:html={svg}/>
