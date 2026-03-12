@@ -17,6 +17,7 @@
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/rss": "^4.0.15",
+    "@astrojs/sitemap": "^3.7.1",
     "astro": "5.18.0",
     "flexsearch": "^0.8.212",
     "rehype-autolink-headings": "^7.1.0",

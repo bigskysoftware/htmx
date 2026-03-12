@@ -4,6 +4,11 @@ interface Props {
     description?: string;
     image?: string;
     keywords?: string[];
+    type?: 'website' | 'article';
+    publishedTime?: Date | string;
+    modifiedTime?: Date | string;
+    authors?: string[];
+    articleTags?: string[];
 }
 
 const SITE_KEYWORDS = 'htmx, hypermedia, ajax, html, javascript, frontend, web development, hateoas, rest, websockets, server sent events, declarative';
@@ -13,11 +18,48 @@ const {
     description = "htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext\n\nhtmx is small (~10k min.gz'd), dependency-free, extendable, IE11 compatible & has reduced code base sizes by 67% when compared with react",
     image = "/img/og-image.png",
     keywords,
+    type = 'website',
+    publishedTime: rawPublished,
+    modifiedTime: rawModified,
+    authors,
+    articleTags,
 } = Astro.props;
 
 const metaKeywords = keywords?.length
     ? `${keywords.join(', ')}, ${SITE_KEYWORDS}`
     : SITE_KEYWORDS;
+
+const toIso = (d: Date | string | undefined) =>
+    d ? (d instanceof Date ? d : new Date(d)).toISOString() : undefined;
+
+const publishedIso = toIso(rawPublished);
+const modifiedIso = toIso(rawModified);
+
+const jsonLd = type === 'article' ? {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description.trim(),
+    "url": Astro.url.href,
+    "image": new URL(image, Astro.url).href,
+    ...(publishedIso && {"datePublished": publishedIso}),
+    ...(modifiedIso && {"dateModified": modifiedIso}),
+    ...(authors?.length && {
+        "author": authors.map(name => ({"@type": "Person", "name": name}))
+    }),
+    ...(articleTags?.length && {"keywords": articleTags.join(", ")}),
+    "publisher": {
+        "@type": "Organization",
+        "name": "htmx",
+        "url": Astro.site?.href ?? "https://four.htmx.org",
+    },
+} : {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "htmx",
+    "url": Astro.site?.href ?? "https://four.htmx.org",
+    "description": description.trim(),
+};
 ---
 
 <head>
@@ -55,11 +97,18 @@ const metaKeywords = keywords?.length
             <link rel="canonical" href={Astro.url.href}>}
 
     <!-- Open Graph / Social Media -->
-    <meta property="og:type" content="website">
+    <meta property="og:type" content={type}>
+    <meta property="og:site_name" content="htmx">
+    <meta property="og:locale" content="en_US">
     <meta property="og:url" content={Astro.url}>
     <meta property="og:title" content={title}>
     <meta property="og:description" content={description.trim()}>
     <meta property="og:image" content={new URL(image, Astro.url)}>
+
+    {type === 'article' && publishedIso && <meta property="article:published_time" content={publishedIso}>}
+    {type === 'article' && modifiedIso && <meta property="article:modified_time" content={modifiedIso}>}
+    {type === 'article' && authors?.map(a => <meta property="article:author" content={a}>)}
+    {type === 'article' && articleTags?.map(t => <meta property="article:tag" content={t}>)}
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@htmx_org">
@@ -78,9 +127,8 @@ const metaKeywords = keywords?.length
     <link rel="alternate" type="application/atom+xml" title="Sitewide Atom feed" href="/atom.xml">
 
     <!-- htmx & extensions -->
-    <script is:inline defer src="/js/htmx.min.js"></script>
-    <script is:inline defer src="/js/ext/hx-preload.min.js"></script>
-    <meta name="htmx-config" content='{"extensions":"preload","history":"reload","morphSkip":["#search-shortcut-hint"],"morphIgnore":["data-htmx-powered","_"],"logAll":false}'>
+    <script is:inline defer src="/js/htmx.js"></script>
+    <meta name="htmx-config" content='{"history":"reload","morphSkip":["#search-shortcut-hint"],"morphIgnore":["data-htmx-powered","_"],"logAll":false}'>
 
     <!-- _hyperscript -->
     <script is:inline defer src="/js/_hyperscript.min.js"></script>
@@ -102,5 +150,8 @@ const metaKeywords = keywords?.length
     <script>
         document.addEventListener('touchstart', function () {}, {passive: true});
     </script>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}/>
 
 </head>

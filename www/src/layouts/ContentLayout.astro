@@ -32,6 +32,14 @@ const hasSidebar = !!(folder?.subfolders?.length);
 const {Content} = await data.render();
 const {title, description, keywords} = data.frontmatter;
 
+const articleMeta = !isIndex ? {
+    type: 'article' as const,
+    publishedTime: file?.frontmatter.created,
+    modifiedTime: file?.frontmatter.modified,
+    authors: file?.frontmatter.authors,
+    articleTags: file?.frontmatter.tags,
+} : {};
+
 // Detail page only
 const includeTableOfContents = !isIndex && headings.length > 0;
 const includePagination = !isIndex && !!(file?.prev || file?.next);
@@ -54,7 +62,7 @@ const getThumbnail = (path: string | undefined): string | null => {
 const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.id.localeCompare(b.id)) : [];
 ---
 
-<Layout {title} {description} {keywords}>
+<Layout {title} {description} {keywords} {...articleMeta}>
 
     <Header slot="header">
         {hasSidebar && (
@@ -120,7 +128,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                                                     "group-interact:border-neutral-300 dark:group-interact:border-neutral-600"
                                                                 ]}>
                                                                     <h2 class="font-bold text-lg text-neutral-700 dark:text-neutral-300 group-interact:text-black dark:group-interact:text-white transition mb-2">
-                                                                        <a href={item.url} class="outline-hidden">
+                                                                        <a href={item.allFiles[0]?.url ?? item.url} class="outline-hidden">
                                                                             {item.frontmatter.title}
                                                                             <span class="absolute inset-0 z-10"></span>
                                                                         </a>
