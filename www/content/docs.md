@@ -1644,7 +1644,7 @@ They are listed below:
 | `htmx.config.morphScanLimit`      | defaults to `10`, max siblings to scan when looking for matching elements during [morphing](@/morphing.md#htmxconfigmorphscanlimit)                                      |
 | `htmx.config.morphSkip`           | CSS selector for elements to skip entirely during [morphing](@/morphing.md#htmxconfigmorphskip)                                                                          |
 | `htmx.config.morphSkipChildren`   | CSS selector for elements whose children to skip during [morphing](@/morphing.md#htmxconfigmorphskipchildren) (useful for web components)                                |
-| `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                      |
+| `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap. Supports numbers and wildcard strings: `'4xx'`, `'5xx'`, `'42x'`                    |
 | `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                        |
 | `htmx.config.metaCharacter`       | defaults to `undefined`, allows you to use a custom character instead of `:` for attribute modifiers (e.g., `-` to use `hx-get-inherited` instead of `hx-get:inherited`) |
 </div>
