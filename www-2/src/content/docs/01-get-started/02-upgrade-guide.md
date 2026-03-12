@@ -261,6 +261,95 @@ Look for these:
 9. ☐ Test attribute inheritance
 10. ☐ Test history navigation
 
+## OOB Swap Order
+
+In htmx 2, out-of-band (`hx-swap-oob`) elements were swapped **before** the main content. In htmx 4, the main content swaps first, then OOB and `hx-partial` elements swap after — in document order.
+
+If your app relies on OOB swaps running before the main swap, you will need to restructure it.
+
+## Config Key Changes
+
+### Renamed Config Keys
+
+| htmx 2.x | htmx 4.x |
+|---|---|
+| `defaultSwapStyle` | `defaultSwap` |
+| `globalViewTransitions` | `transitions` |
+| `historyEnabled` | `history` |
+| `includeIndicatorStyles` | `includeIndicatorCSS` |
+| `timeout` | `defaultTimeout` |
+
+### Changed Defaults
+
+| Config | htmx 2 | htmx 4 |
+|---|---|---|
+| `defaultTimeout` | `0` (no timeout) | `60000` (60 seconds) |
+| `defaultSettleDelay` | `20` | `1` |
+
+### Removed Config Keys
+
+These keys have no direct replacement unless noted:
+
+`addedClass`, `allowEval`, `allowNestedOobSwaps`, `allowScriptTags`, `attributesToSettle`, `defaultSwapDelay`, `disableSelector` (use `hx-ignore`), `getCacheBusterParam`, `historyCacheSize`, `ignoreTitle`, `methodsThatUseUrlParams`, `refreshOnHistoryMiss`, `responseHandling` (use `hx-status` and `noSwap`), `scrollBehavior`, `scrollIntoViewOnBoost`, `selfRequestsOnly` (use `htmx.config.mode`), `settlingClass`, `swappingClass`, `triggerSpecsCache`, `useTemplateFragments`, `withCredentials` (use `hx-config`), `wsBinaryType`, `wsReconnectDelay`
+
+## HTTP Header Changes
+
+### Request Headers
+
+| htmx 2.x | htmx 4.x | Notes |
+|---|---|---|
+| `HX-Trigger` | `HX-Source` | Format changed to `tagName#id` (e.g. `button#submit`) |
+| `HX-Target` | `HX-Target` | Format changed to `tagName#id` |
+| `HX-Trigger-Name` | removed | Use `HX-Source` |
+| `HX-Prompt` | removed | Use `hx-confirm` with async JS |
+| *(new)* | `HX-Request-Type` | `"full"` or `"partial"` |
+| *(new)* | `Accept` | Now explicitly `text/html` |
+
+### Response Headers
+
+These response headers were **removed**:
+
+- `HX-Trigger-After-Swap`
+- `HX-Trigger-After-Settle`
+
+Use `HX-Trigger` or JavaScript instead.
+
+All other response headers are unchanged: `HX-Trigger`, `HX-Location`, `HX-Push-Url`, `HX-Redirect`, `HX-Refresh`, `HX-Replace-Url`, `HX-Retarget`, `HX-Reswap`, `HX-Reselect`.
+
+## Removed Events
+
+### Validation Events
+
+htmx 4 removes the built-in validation events. Use native browser form validation instead.
+
+- `htmx:validation:validate`
+- `htmx:validation:failed`
+- `htmx:validation:halted`
+
+### XHR Events
+
+These events are gone because htmx now uses `fetch()` instead of `XMLHttpRequest`:
+
+| Removed | Notes |
+|---|---|
+| `htmx:xhr:loadstart` | No replacement |
+| `htmx:xhr:loadend` | Use `htmx:finally:request` |
+| `htmx:xhr:progress` | No replacement |
+| `htmx:xhr:abort` | Use `htmx:error` |
+
+## New Events in htmx 4
+
+| Event | When it fires |
+|---|---|
+| `htmx:after:cleanup` | After element cleanup |
+| `htmx:after:history:update` | After history update |
+| `htmx:after:process` | After element processing |
+| `htmx:before:response` | Before response body is read (cancellable) |
+| `htmx:before:settle` | Before settle phase |
+| `htmx:after:settle` | After settle phase |
+| `htmx:after:viewTransition` | After a view transition completes |
+| `htmx:finally:request` | Always fires after a request, whether it succeeded or failed |
+
 ## Get Help
 
 - [GitHub Discussions](https://github.com/bigskysoftware/htmx/discussions)
