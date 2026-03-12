@@ -15,19 +15,10 @@ export async function getStaticPaths() {
             props: { folder }
         });
 
-        const files = folder.allFiles;
-
-        files.forEach((file, index) => {
+        folder.allFiles.forEach((file) => {
             paths.push({
                 params: { collection, slug: file.slug },
-                props: {
-                    file: {
-                        ...file,
-                        prev: index > 0 ? files[index - 1] : undefined,
-                        next: index < files.length - 1 ? files[index + 1] : undefined
-                    },
-                    folder
-                }
+                props: { file, folder }
             });
         });
     }

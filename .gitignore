@@ -8,3 +8,5 @@ test/scratch/scratch.html
 /coverage
 /tmp
 .syncthing.*
+# Override global gitignore: lib/ directories are part of this project
+!**/lib/
