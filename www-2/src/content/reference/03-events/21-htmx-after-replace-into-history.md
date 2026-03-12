@@ -3,7 +3,7 @@ title: "htmx:after:replace:into:history"
 description: "After a replace state action"
 ---
 
-Fired specifically after a `history.replaceState()` operation (replaces current history entry).
+The `htmx:after:replace:into:history` event fires specifically after a `history.replaceState()` operation (replaces current history entry).
 
 ## When It Fires
 

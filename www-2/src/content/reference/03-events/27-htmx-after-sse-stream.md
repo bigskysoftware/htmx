@@ -3,7 +3,7 @@ title: "htmx:after:sse:stream"
 description: "After SSE stream closes"
 ---
 
-Fired when an SSE stream connection closes.
+The `htmx:after:sse:stream` event fires when an SSE stream connection closes.
 
 ## When It Fires
 

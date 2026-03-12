@@ -3,7 +3,7 @@ title: "htmx:before:sse:stream"
 description: "Before SSE stream connection opens"
 ---
 
-Fired before an SSE stream connection is opened.
+The `htmx:before:sse:stream` event fires before an SSE stream connection is opened.
 
 ## When It Fires
 

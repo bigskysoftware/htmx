@@ -3,7 +3,7 @@ title: "every"
 description: "Periodic polling trigger"
 ---
 
-Fired periodically at a specified interval, used for polling.
+The `every` trigger event fires periodically at a specified interval, used for polling.
 
 ## When It Fires
 

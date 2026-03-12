@@ -3,7 +3,7 @@ title: "htmx:before:restore:history"
 description: "Before restoring from history"
 ---
 
-Fired when the user navigates back or forward through history (popstate event).
+The `htmx:before:restore:history` event fires when the user navigates back or forward through history (popstate event).
 
 ## When It Fires
 

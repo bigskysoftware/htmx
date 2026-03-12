@@ -3,7 +3,7 @@ title: "htmx:before:sse:reconnect"
 description: "Before SSE stream reconnects"
 ---
 
-Fired before htmx attempts to reconnect a dropped Server-Sent Events stream.
+The `htmx:before:sse:reconnect` event fires before htmx attempts to reconnect a dropped Server-Sent Events stream.
 
 ## When It Fires
 

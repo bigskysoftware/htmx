@@ -3,7 +3,7 @@ title: "load"
 description: "Fired immediately after initialization"
 ---
 
-Fired immediately after element initialization, mimicking the standard DOM `load` event.
+The `load` trigger event fires immediately after element initialization, mimicking the standard DOM `load` event.
 
 ## When It Fires
 

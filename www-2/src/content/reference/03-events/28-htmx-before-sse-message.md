@@ -3,7 +3,7 @@ title: "htmx:before:sse:message"
 description: "Before SSE message is processed"
 ---
 
-Fired when an SSE message arrives, before htmx processes it.
+The `htmx:before:sse:message` event fires when an SSE message arrives, before htmx processes it.
 
 ## When It Fires
 

@@ -3,7 +3,7 @@ title: "htmx:after:settle"
 description: "After the settle phase completes"
 ---
 
-Fired after htmx finishes the settle phase, including any CSS transitions.
+The `htmx:after:settle` event fires after htmx finishes the settle phase, including any CSS transitions.
 
 ## When It Fires
 

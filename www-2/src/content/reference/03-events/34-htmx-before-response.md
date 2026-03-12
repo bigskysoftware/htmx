@@ -3,7 +3,7 @@ title: "htmx:before:response"
 description: "After a response is received but before the body is consumed"
 ---
 
-Fired after a fetch response arrives but before htmx reads the response body.
+The `htmx:before:response` event fires after a fetch response arrives but before htmx reads the response body.
 
 ## When It Fires
 

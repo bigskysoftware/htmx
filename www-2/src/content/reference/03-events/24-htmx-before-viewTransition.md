@@ -3,7 +3,7 @@ title: "htmx:before:viewTransition"
 description: "Before View Transition API starts"
 ---
 
-Fired before a View Transition starts (if browser supports View Transitions API and `htmx.config.transitions` is
+The `htmx:before:viewTransition` event fires before a View Transition starts (if browser supports View Transitions API and `htmx.config.transitions` is
 `true`).
 
 ## When It Fires
