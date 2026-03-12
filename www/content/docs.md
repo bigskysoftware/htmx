@@ -146,6 +146,15 @@ This makes `htmx` available both as a module import and globally as `window.htmx
 import htmx from 'htmx.org';
 import 'htmx.org/dist/ext/hx-preload';
 ```
+### Using `defer` with htmx
+
+You may load htmx using the [`defer`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script#defer)
+however it is important to understand that deferring scripts can change the order that they are processed in.  If you are
+including other scripts (such as htmx extension) that depend on htmx being loaded, we recommend combining those scripts
+into a single JS file where the order of initialization within the file is correct and putting the `defer` attribute on
+that combined JS files `script` tag.
+
+This is the best way to guarantee the execution order of JavaScript when combined with the `defer` attribute.
 
 ## AJAX
 
