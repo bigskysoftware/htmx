@@ -1454,7 +1454,7 @@ var htmx = (() => {
         }
 
         onLoad(callback) {
-            this.on("htmx:after:process", (evt) => {
+            this.on(this.__maybeAdjustMetaCharacter("htmx:after:process"), (evt) => {
                 callback(evt.target)
             })
         }
