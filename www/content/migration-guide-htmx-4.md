@@ -106,6 +106,11 @@ As mentioned above, you can revert this behavior by setting `htmx.config.implici
 In htmx 4 [`hx-delete`](/attributes/hx-delete), like [`hx-get`](/attributes/hx-get), no longer includes the enclosing form's inputs by
 default. Use [`hx-include`](/attributes/hx-include)`="closest form"` if you need this behavior.
 
+### Default Trigger for Button & Submit Inputs
+
+In htmx 2, all `<input>` elements defaulted to the `change` trigger. In htmx 4, `<input type="button">` and
+`<input type="submit">` now default to `click`, matching the behavior of `<button>` elements.
+
 ### Out-of-Band Swap Order
 
 In htmx 2, out-of-band ([`hx-swap-oob`](/attributes/hx-swap-oob)) elements were swapped *before* the main content. In htmx 4,
