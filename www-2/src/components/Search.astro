@@ -2,7 +2,7 @@
     import '../assets/js/search-index.js';
 </script>
 
-<search-index id="global-search" src="/search-index.json"
+<search-index id="global-search" hx-preserve src="/search-index.json"
               highlight="<mark class='bg-blue-700 dark:bg-blue-300 text-white dark:text-neutral-900 font-bold px-0.5 box-decoration-clone'>$1</mark>"
               class="group/search">
     <dialog id="search-modal"

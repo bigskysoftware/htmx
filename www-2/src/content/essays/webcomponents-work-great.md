@@ -111,6 +111,7 @@ That will give us this table:
   </tr>
 </table>
 <button>Save</button>
+```
 
 That's not too bad!
 The save button will submit all the data in the table, and the server will respond with a new table that reflects the
@@ -121,6 +122,7 @@ sending all that information each time starts to get costly.
 
 Let's remove all that redundancy with a web component!
 
+```html
 <form hx-put=/carnival>
 <table>
   <tr>

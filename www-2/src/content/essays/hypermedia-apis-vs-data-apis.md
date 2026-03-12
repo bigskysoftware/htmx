@@ -98,16 +98,16 @@ we will add a new end point, `/contacts/table`, which renders only the table of 
 
 and then add a poll trigger to the table:
 
- ```html
- <div>
-     <form action='/contacts' method="post">
-       <!-- form for adding contacts -->
-     </form>
-     <table hx-trigger="every 30s" hx-get="/contacts/table" hx-swap="outerHTML">
-       <!-- contacts table -->
-     </table>
- </div>
- ```
+```html
+<div>
+    <form action='/contacts' method="post">
+      <!-- form for adding contacts -->
+    </form>
+    <table hx-trigger="every 30s" hx-get="/contacts/table" hx-swap="outerHTML">
+      <!-- contacts table -->
+    </table>
+</div>
+```
 
 Here we see the hypermedia API and data API begin to diverge. This new end point is driven entirely by hypermedia
 needs, not data model needs. This end point can go away if the hypermedia needs of the application change; its form may
@@ -117,16 +117,16 @@ dramatically and so on, which is entirely acceptable since the system is self-de
 Since we have updated the HTML to use htmx for polling, we may as well make the form use htmx as well for a better
 UX experience:
 
- ```html
- <div>
-     <form action='/contacts' method="post" hx-boost="true">
-       <!-- form for adding contacts -->
-     </form>
-     <table hx-trigger="every 30s" hx-get="/contacts/table" hx-swap="outerHTML">
-       <!-- contacts table -->
-     </table>
- </div>
- ```
+```html
+<div>
+    <form action='/contacts' method="post" hx-boost="true">
+      <!-- form for adding contacts -->
+    </form>
+    <table hx-trigger="every 30s" hx-get="/contacts/table" hx-swap="outerHTML">
+      <!-- contacts table -->
+    </table>
+</div>
+```
 
 We can, if we choose, add additional end points for things like server-side validation of inputs, dynamic forms and
 so forth. These end points would be driven by *hypermedia needs* rather than any sort of data model considerations:
