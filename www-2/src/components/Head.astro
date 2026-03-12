@@ -80,16 +80,27 @@ const metaKeywords = keywords?.length
     <!-- htmx & extensions -->
     <script is:inline defer src="/js/htmx.min.js"></script>
     <script is:inline defer src="/js/ext/hx-preload.min.js"></script>
-    <meta name="htmx-config" content='{"extensions":"preload","morphSkip":["#search-shortcut-hint"],"morphIgnore":["data-htmx-powered","_"],"logAll":false}'>
+    <meta name="htmx-config" content='{"extensions":"preload","history":"reload","morphSkip":["#search-shortcut-hint"],"morphIgnore":["data-htmx-powered","_"],"logAll":false}'>
 
     <!-- _hyperscript -->
     <script is:inline defer src="/js/_hyperscript.min.js"></script>
     <script is:inline defer src="/js/_hyperscript_render.min.js"></script>
 
+    <!-- Re-initialize hyperscript after each morphed forward navigation.
+         innerMorph swaps new nodes in-place; new nodes have no initialized flag in
+         hyperscript's WeakMap, so processNode correctly re-binds _ attributes on them.
+         Back/forward navigation uses history:"reload" so the full page reloads naturally. -->
+    <script>
+        document.addEventListener('htmx:after:swap', function () {
+            if (window._hyperscript) window._hyperscript.processNode(document.body);
+        });
+    </script>
+
     <!-- Enable :active pseudo-class on iOS Safari (requires touchstart listener).
          Used by our custom interact: TailwindCSS variant for touch feedback.
          https://stackoverflow.com/questions/3885018/active-pseudo-class-doesnt-work-in-mobile-safari -->
-    <script>document.addEventListener('touchstart', function () {
-    }, {passive: true});</script>
+    <script>
+        document.addEventListener('touchstart', function () {}, {passive: true});
+    </script>
 
 </head>
