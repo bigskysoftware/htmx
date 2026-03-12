@@ -3,7 +3,7 @@ title: "htmx:abort"
 description: "Trigger to abort an ongoing request"
 ---
 
-A control event that, when fired on an element, aborts its ongoing request.
+The `htmx:abort` event is a control event that, when fired on an element, aborts its ongoing request.
 
 ## When To Fire It
 

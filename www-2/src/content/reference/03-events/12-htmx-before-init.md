@@ -3,7 +3,7 @@ title: "htmx:before:init"
 description: "Before a specific element is initialized"
 ---
 
-Fired before a specific element is initialized with htmx metadata.
+The `htmx:before:init` event fires before a specific element is initialized with htmx metadata.
 
 ## When It Fires
 

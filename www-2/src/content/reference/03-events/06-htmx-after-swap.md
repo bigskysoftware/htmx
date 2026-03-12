@@ -3,7 +3,7 @@ title: "htmx:after:swap"
 description: "After content is swapped into DOM"
 ---
 
-Fired after new content has been swapped into the DOM.
+The `htmx:after:swap` event fires after new content has been swapped into the DOM.
 
 ## When It Fires
 

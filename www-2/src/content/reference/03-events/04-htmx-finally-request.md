@@ -3,7 +3,7 @@ title: "htmx:finally:request"
 description: "At the end of request lifecycle"
 ---
 
-Fired at the very end of the request cycle, whether successful or failed.
+The `htmx:finally:request` event fires at the very end of the request cycle, whether successful or failed.
 
 ## When It Fires
 

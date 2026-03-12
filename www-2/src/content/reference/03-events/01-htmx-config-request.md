@@ -3,7 +3,7 @@ title: "htmx:config:request"
 description: "Configure request before it's sent"
 ---
 
-Fired after request parameters are built but before validation and sending.
+The `htmx:config:request` event fires after request parameters are built but before validation and sending.
 
 ## When It Fires
 

@@ -3,7 +3,7 @@ title: "htmx:after:request"
 description: "After response is received"
 ---
 
-Fired immediately after the `fetch()` call resolves and the response is received.
+The `htmx:after:request` event fires immediately after the `fetch()` call resolves and the response is received.
 
 ## When It Fires
 

@@ -3,7 +3,7 @@ title: "htmx:before:request"
 description: "Immediately before fetch is called"
 ---
 
-Fired immediately before the `fetch()` call is made.
+The `htmx:before:request` event fires immediately before the `fetch()` call is made.
 
 ## When It Fires
 
