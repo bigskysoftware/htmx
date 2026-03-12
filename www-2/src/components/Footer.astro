@@ -58,7 +58,7 @@ const navigationSections = [
                             <h2 class="tracking-wide uppercase text-neutral-900 dark:text-neutral-100 mb-4 sm:mb-6">
                                 {section.name}
                             </h2>
-                            <ul class:list={["space-y-3", section.name === 'Links' ? 'font-chicago' : 'font-medium']}>
+                            <ul class:list={["space-y-3", section.name === 'Links' && 'font-chicago']}>
                                 {section.items.map((link) => (
                                         <li>
                                             <a href={link.url}
