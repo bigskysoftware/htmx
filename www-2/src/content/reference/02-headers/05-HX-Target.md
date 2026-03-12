@@ -3,7 +3,7 @@ title: "HX-Target"
 description: "The element that will receive the response"
 ---
 
-The `HX-Target` header identifies the element that will receive the response.
+The `HX-Target` request header identifies the element that will receive the response.
 
 This header is only included when a target is specified.
 
