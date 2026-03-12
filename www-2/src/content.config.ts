@@ -32,6 +32,7 @@ const reference = defineCollection({
         description: z.string().optional(),
         keywords: z.array(z.string()).optional(),
         thumbnail: z.string().optional(),
+        hidden: z.boolean().optional(),
     }).strict(),
 });
 

@@ -16,15 +16,17 @@ export async function getStaticPaths() {
         });
 
         const files = folder.allFiles;
+        const navFiles = files.filter(f => !f.frontmatter?.hidden);
 
-        files.forEach((file, index) => {
+        files.forEach((file) => {
+            const navIndex = navFiles.findIndex(f => f.slug === file.slug);
             paths.push({
                 params: { collection, slug: file.slug },
                 props: {
                     file: {
                         ...file,
-                        prev: index > 0 ? files[index - 1] : undefined,
-                        next: index < files.length - 1 ? files[index + 1] : undefined
+                        prev: navIndex > 0 ? navFiles[navIndex - 1] : undefined,
+                        next: navIndex !== -1 && navIndex < navFiles.length - 1 ? navFiles[navIndex + 1] : undefined
                     },
                     folder
                 }
