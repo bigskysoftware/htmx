@@ -26,13 +26,13 @@ The link updates itself when clicked.
 Use any [extended selector](/docs/features/extended-selectors) to target elements:
 
 * CSS selectors: `#results`, `.container`, `[data-target]`
-* `closest <selector>` - nearest ancestor matching selector
-* `find <selector>` - first child matching selector
+* `closest <selector>` - nearest ancestor (or the element itself) matching selector
+* `find <selector>` - first child descendant matching selector
+* `findAll <selector>` - all child descendant elements matching selector
 * `next` - next sibling element
 * `next <selector>` - scan forward for selector
 * `previous` - previous sibling element
 * `previous <selector>` - scan backward for selector
-* And more...
 
 See the full [extended selectors](/docs/features/extended-selectors) guide.
 
