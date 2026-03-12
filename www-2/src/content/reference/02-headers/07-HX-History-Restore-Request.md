@@ -3,7 +3,7 @@ title: "HX-History-Restore-Request"
 description: "Indicates history navigation (back/forward)"
 ---
 
-Set to `true` when the user navigates back or forward in history.
+The `HX-History-Restore-Request` request header is set to `true` when the user navigates back or forward in history.
 
 htmx restores the previous state without a full page reload. Use this to skip side effects during history restoration.
 

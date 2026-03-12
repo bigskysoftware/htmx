@@ -3,7 +3,7 @@ title: "Last-Event-ID"
 description: "Last received SSE event ID for reconnection"
 ---
 
-Sent during SSE reconnection to resume from the last received event.
+The `Last-Event-ID` request header is sent during SSE reconnection to resume from the last received event.
 
 The server uses this to skip duplicate events and continue streaming from the correct point.
 

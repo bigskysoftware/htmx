@@ -3,7 +3,7 @@ title: "HX-Request-Type"
 description: "Indicates if this is a partial or full page request"
 ---
 
-The `HX-Request-Type` header indicates if request targets a specific element or the whole page.
+The `HX-Request-Type` request header indicates if request targets a specific element or the whole page.
 
 ## Syntax
 

@@ -3,7 +3,7 @@ title: "HX-Location"
 description: "Client-side AJAX navigation to a new URL"
 ---
 
-Navigate to a new URL without a full page reload.
+The `HX-Location` response header navigates to a new URL without a full page reload.
 
 Like clicking a boosted link—htmx fetches the content and updates the page via AJAX.
 

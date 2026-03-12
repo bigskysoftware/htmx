@@ -3,7 +3,7 @@ title: "HX-Trigger"
 description: "Trigger client-side events from the server"
 ---
 
-Trigger client-side events when content is swapped.
+The `HX-Trigger` response header triggers client-side events when content is swapped.
 
 Send a single event:
 
