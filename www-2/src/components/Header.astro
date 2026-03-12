@@ -1,4 +1,6 @@
 ---
+import FinderLink from './FinderLink.astro';
+
 const navigationItems = [
     {name: "docs", url: "/docs", description: "Read the complete documentation and tutorials"},
     {name: "reference", url: "/reference", description: "Browse the full API reference"},
@@ -182,37 +184,41 @@ const isCurrent = (url?: string) => {
      class="lg:hidden z-50 opacity-0 top-(--header-height) fixed inset-0 h-screen bg-neutral-10 dark:bg-neutral-920 pointer-events-none select-none [html:has(#mobile-navigation-toggle:checked)_&]:opacity-100 [html:has(#mobile-navigation-toggle:checked)_&]:pointer-events-auto sm:transition duration-100 overflow-y-auto overscroll-contain">
     <div class="p-4 space-y-2">
         {navigationItems.map((item) => (
-                <a
-                        href={item.url}
-                        title={item.description}
-                        aria-current={isCurrent(item.url) ? 'page' : undefined}
-                        class="flex items-center gap-2 px-3 py-2.5 text-base rounded-sm transition font-chicago text-neutral-700 dark:text-neutral-300 interact:bg-blue-700 dark:interact:bg-blue-600 interact:text-white aria-[current=page]:bg-blue-700 dark:aria-[current=page]:bg-blue-600 aria-[current=page]:text-white aria-[current=page]:font-bold"
-                        _="on click set #mobile-navigation-toggle.checked to false"
-                >
-                    {item.name}
-                </a>
+            <FinderLink
+                href={item.url}
+                title={item.description}
+                aria-current={isCurrent(item.url) ? 'page' : undefined}
+                class="!mx-0 font-chicago text-base gap-2 aria-[current=page]:bg-blue-700 aria-[current=page]:text-white dark:aria-[current=page]:bg-blue-350 dark:aria-[current=page]:text-black aria-[current=page]:font-bold"
+                _="on click set #mobile-navigation-toggle.checked to false"
+            >
+                {item.name}
+            </FinderLink>
         ))}
 
         <div class="h-px bg-neutral-200 dark:bg-neutral-800 my-4" role="separator"></div>
 
         <!-- Mobile (Drawer): Discord Button -->
-        <a href="/discord"
-           title="Join the Discord community"
-           class="flex items-center gap-3 px-3 py-2.5 text-base rounded-sm transition font-chicago text-neutral-700 dark:text-neutral-300 interact:bg-blue-700 dark:interact:bg-blue-600 interact:text-white"
-           _="on click set #mobile-navigation-toggle.checked to false">
-            <i class="icon-[ic--baseline-discord] text-xl"></i>
+        <FinderLink
+            href="/discord"
+            title="Join the Discord community"
+            class="!mx-0 font-chicago text-base gap-3"
+            _="on click set #mobile-navigation-toggle.checked to false"
+        >
+            <i class="icon-[ic--baseline-discord] text-xl" aria-hidden="true"></i>
             Discord
-        </a>
+        </FinderLink>
 
         <!-- Mobile (Drawer): Github Button -->
-        <a href="https://github.com/bigskysoftware/htmx"
-           target="_blank"
-           rel="noopener noreferrer"
-           title="View source code on GitHub"
-           class="flex items-center gap-3 px-3 py-2.5 text-base rounded-sm transition font-chicago text-neutral-700 dark:text-neutral-300 interact:bg-blue-700 interact:text-white"
-           _="on click set #mobile-navigation-toggle.checked to false">
-            <i class="icon-[mdi--github] text-xl"></i>
+        <FinderLink
+            href="https://github.com/bigskysoftware/htmx"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="View source code on GitHub"
+            class="!mx-0 font-chicago text-base gap-3"
+            _="on click set #mobile-navigation-toggle.checked to false"
+        >
+            <i class="icon-[mdi--github] text-xl" aria-hidden="true"></i>
             GitHub
-        </a>
+        </FinderLink>
     </div>
 </nav>

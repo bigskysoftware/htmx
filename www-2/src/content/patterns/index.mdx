@@ -2,6 +2,88 @@
 title: "Patterns"
 description: "Learn how to build common UX patterns with htmx."
 ---
-# Patterns
+
+import { getCollection } from 'astro:content';
+import FinderLink from '../../components/FinderLink.astro';
+import Card from '../../components/Card.astro';
+
+export const allEntries = await getCollection('patterns');
+
+export const categoryEntries = allEntries
+    .filter(e => !e.id.includes('/') && e.id !== 'index')
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+export const patternEntries = allEntries
+    .filter(e => e.id.includes('/'))
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+export const cleanSlug = (id) => id.split('/').map(s => s.replace(/^\d+-/, '')).join('/');
+
+export const iconMap = {
+    'click-to-load':        'icon-[mdi--cursor-pointer]',
+    'infinite-scroll':      'icon-[mdi--arrow-expand-down]',
+    'lazy-load':            'icon-[bitcoin-icons--visible-filled]',
+    'progress-bar':         'icon-[vaadin--progressbar]',
+    'active-search':        'icon-[mdi--magnify]',
+    'active-validation':    'icon-[mdi--check]',
+    'file-upload':          'icon-[ic--round-file-upload]',
+    'linked-selects':       'icon-[mdi--form-dropdown]',
+    'reset-on-submit':      'icon-[mdi--eraser]',
+    'bulk-actions':         'icon-[mdi--checkbox-multiple-marked]',
+    'delete-in-place':      'icon-[material-symbols--delete]',
+    'drag-to-reorder':      'icon-[solar--reorder-linear]',
+    'edit-in-place':        'icon-[material-symbols--edit]',
+    'animations':           'icon-[mdi--animation]',
+    'dialogs':              'icon-[vaadin--modal-list]',
+    'tabs':                 'icon-[mdi--tab]',
+    'bidirectional-sync':   'icon-[fluent--cloud-bidirectional-20-regular]',
+    'continuous-streams':   'icon-[circum--stream-on]',
+    'one-off-streams':      'icon-[cil--stream]',
+    'polling':              'icon-[bi--arrow-repeat]',
+    'keyboard-shortcuts':   'icon-[mdi--keyboard]',
+    'update-other-content': 'icon-[mdi--sync]',
+};
+
+export const groupedPatterns = categoryEntries.map(cat => ({
+    slug: cleanSlug(cat.id),
+    label: cat.data.title,
+    items: patternEntries
+        .filter(e => e.id.startsWith(cat.id + '/'))
+        .map(e => ({
+            title: e.data.title,
+            url: `/patterns/${cleanSlug(e.id)}`,
+            description: e.data.description,
+            icon: iconMap[cleanSlug(e.id).split('/').pop()] || '',
+        })),
+}));
+
+# {frontmatter.title}
 
 <p class="text-neutral-600 dark:text-neutral-400">{frontmatter.description}</p>
+
+<div class="mt-6">
+    {groupedPatterns.map(group => (
+        <div class="mt-8 first:mt-0">
+            <h4 id={group.slug}>
+                <a href={`#${group.slug}`}>{group.label}</a>
+            </h4>
+            <div class="not-prose mt-3">
+                <Card variant="sm" class="p-1.5">
+                    <div class="flex flex-col gap-1.5">
+                        {group.items.map(item => (
+                            <FinderLink href={item.url} class="!mx-0">
+                                {item.icon && <i class={`${item.icon} size-5 shrink-0 -translate-y-px group-interact/link:text-white dark:group-interact/link:text-black transition`}></i>}
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 flex-1 min-w-0">
+                                    <span class="text-xs font-chicago tracking-tight sm:min-w-[20ch]">{item.title}</span>
+                                    {item.description && (
+                                        <span class="text-xs group-interact/link:text-blue-200 dark:group-interact/link:text-black transition">{item.description}</span>
+                                    )}
+                                </div>
+                            </FinderLink>
+                        ))}
+                    </div>
+                </Card>
+            </div>
+        </div>
+    ))}
+</div>
