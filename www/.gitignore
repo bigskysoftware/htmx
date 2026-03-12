@@ -6,6 +6,8 @@ dist/
 public/js/*
 !public/js/.gitkeep
 !public/js/_hyperscript.js
+!public/js/_hyperscript.min.js
+!public/js/_hyperscript_render.min.js
 
 # dependencies
 node_modules/
