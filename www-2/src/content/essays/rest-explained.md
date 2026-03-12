@@ -86,8 +86,7 @@ everyone reading this will understand:
 
 Here we have a basic bit of html, with some divs, a bit of information and then some anchor tags to perform various
 operations on a contact. Nothing fancy. Again, for the discussion, imagine this content could be found at
-```html
-<http://example.com/contacts/42>.
+`http://example.com/contacts/42`.
 
 Back to the dissertation:
 
@@ -118,10 +117,11 @@ operations on that data (in the form of links.)
 
 Now, contrast this with a JSON representation of the same data:
 
-    {
-      "name" : "Joe Blow",
-      "email" : "joe@example.com"
-    }
+```json
+{
+  "name" : "Joe Blow",
+  "email" : "joe@example.com"
+}
 ```
 
 Obviously this is smaller, but a client working with this data must decide two crucial things:

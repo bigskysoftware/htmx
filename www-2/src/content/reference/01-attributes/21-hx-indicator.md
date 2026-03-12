@@ -98,6 +98,7 @@ This simulates what a spinner might look like in that situation:
     Post It!
    <img  class="htmx-indicator" src="/img/bars.svg" alt="Loading..."/>
 </button>
+```
 
 ## Notes
 
@@ -107,6 +108,7 @@ This simulates what a spinner might look like in that situation:
   `includeIndicatorStyles`. See [Configuring htmx](/docs.md#configuring-htmx). The easiest way is to add this to the
   `<head>` of your HTML:
 
+```html
 <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
 ```
 

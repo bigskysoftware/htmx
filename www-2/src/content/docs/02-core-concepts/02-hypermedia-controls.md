@@ -407,6 +407,7 @@ The [hx-swap](/reference/attributes/hx-swap) attribute also supports options for
 example, by default htmx will swap in the title of a title tag found anywhere in the new content. You can turn this
 behavior off by setting the `ignoreTitle` modifier to true:
 
+```html
 <button hx-post="/like" hx-swap="outerHTML ignoreTitle:true">Like</button>
 ```
 

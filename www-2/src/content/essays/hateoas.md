@@ -9,7 +9,6 @@ tags: ["foundations"]
 #show_author: false
 ---
 
-```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Zetta:wght@900&display=swap&text=HATEOAS" rel="stylesheet">
@@ -56,6 +55,7 @@ In this way, RESTful interaction is driven by hypermedia, rather than out-of-ban
 A concrete example will clarify this. Consider this GET request, issued by a web browser, which fetches a bank account
 resource:
 
+```
 GET /accounts/12345 HTTP/1.1
 Host: bank.example.com
 ```

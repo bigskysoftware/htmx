@@ -28,7 +28,6 @@ Listen for progress events and update the progress bar:
 
 [//]: # ({{ demo_environment&#40;&#41; }})
 
-```html
 <form id="upload-form" hx-encoding="multipart/form-data" hx-post="/upload"
       class="space-y-4 p-4 border border-neutral-200 dark:border-neutral-700 rounded mb-8">
   <div>
@@ -55,10 +54,12 @@ Listen for progress events and update the progress bar:
   });
 </script>
 
+
 ### With Hyperscript
 
 Use hyperscript for cleaner syntax:
 
+```html
 <form hx-encoding="multipart/form-data" hx-post="/upload"
       _="on htmx:xhr:progress(loaded, total)
          set #progress.value to (loaded/total)*100">
@@ -102,7 +103,6 @@ The file stays selected when the form swaps with error messages.
     <label class="block text-sm font-medium mb-2">Name</label>
     <input type="text" name="name" placeholder="Enter your name"
            class="block w-full text-sm border border-neutral-300 dark:border-neutral-600 rounded px-3 py-2">
-```html
   </div>
   <button type="submit"
           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
@@ -145,6 +145,7 @@ The file stays selected when the form swaps with error messages.
 
 Place the file input outside the swap target:
 
+```html
 <input form="form-id" type="file" name="file">
 
 <form id="form-id" enctype="multipart/form-data" hx-post="/submit">

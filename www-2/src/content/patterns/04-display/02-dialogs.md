@@ -34,6 +34,7 @@ Click here to see a demo of the final result:
 
 ```html
 <button class="btn primary" hx-get="/modal" hx-target="body" hx-swap="beforeend">Open a Modal</button>
+```
 
 ### High Level Plan
 
@@ -43,6 +44,7 @@ In this demo we'll define some nice animations in CSS, and then use some [Hypers
 
 ### Main Page HTML
 
+```html
 <button class="btn primary" hx-get="/modal" hx-target="body" hx-swap="beforeend">Open a Modal</button>
 ```
 

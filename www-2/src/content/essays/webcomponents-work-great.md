@@ -47,6 +47,7 @@ Let's say that you have a table that says what carnival rides everyone is signed
     <td>Yes
   </tr>
 </table>
+```
 
 Alex is willing to go on the carousel but not the roller coaster, because he is scared; Sophia is not scared of either.
 
@@ -54,6 +55,7 @@ I built this as a regular HTML
 table ([closing tags are omitted](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td#technical_summary) for
 clarity):
 
+```html
 <table>
   <tr><th>Name    <th>Carousel  <th>Roller Coaster
   <tr><td>Alex    <td>Yes       <td>No

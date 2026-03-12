@@ -2,7 +2,6 @@
 title: "Edit in Place"
 description: Update a record without page refresh
 ---
-```html
 <style type="text/tailwindcss">
 /* macOS 9 Platinum Demo Window */
 .demo-window {
@@ -37,6 +36,7 @@ It works by providing two modes that the user can switch between: **View Mode** 
 
 In view mode, display the current value(s) with a way to switch to **Edit Mode** (e.g. a button / icon / etc.).
 
+```html
 <div hx-target:inherited="this">
 
     <p>Name: <span>{{ user.name }}</span></p>
