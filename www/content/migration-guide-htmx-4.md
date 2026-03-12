@@ -66,6 +66,7 @@ The following attributes have been removed:
 | `hx-request`      | Use [`hx-config`](/attributes/hx-config)                           |
 | `hx-history`      | Removed (history is no longer stored in local storage)            |
 | `hx-history-elt`  | Removed (history uses target element)                             |
+| `hx-on-*`         | The dash variant (`hx-on-click`) is removed; use `hx-on:click` or the `metaCharacter` config for template systems that don't support colons |
 
 ### New Attributes
 
