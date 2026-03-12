@@ -459,6 +459,51 @@ htmx_config_request: (elt, detail) => {
 6. **No `getSelectors()`** - use element-level hooks instead
 7. **Direct modification** of request/response via `detail.ctx`
 
+## Internal API Migration
+
+The internal API object passed to `init(api)` has completely different methods in htmx 4.
+
+If your extension used any of these methods, use this table to find the equivalent:
+
+| htmx 2 method              | htmx 4 equivalent                                   |
+|----------------------------|-----------------------------------------------------|
+| `getAttributeValue`        | `attributeValue`                                    |
+| `getClosestAttributeValue` | `attributeValue` (walks up ancestors automatically) |
+| `getTarget`                | use `htmx.find()`                                   |
+| `getSwapSpecification`     | (removed)                                           |
+| `getTriggerSpecs`          | `parseTriggerSpecs`                                 |
+| `getHeaders`               | (removed — use `ctx.request.headers`)               |
+| `getInputValues`           | `collectFormData`                                   |
+| `makeFragment`             | (removed)                                           |
+| `oobSwap`                  | (removed — use partials)                            |
+| `triggerEvent`             | `triggerHtmxEvent`                                  |
+| `swap`                     | `insertContent`                                     |
+| `querySelectorExt`         | use `htmx.findAll()`                                |
+| `addTriggerHandler`        | `onTrigger`                                         |
+| `getInternalData`          | `htmxProp`                                          |
+| `mergeObjects`             | (removed)                                           |
+| `makeSettleInfo`           | (removed)                                           |
+| `settleImmediately`        | (removed)                                           |
+| `canAccessLocalStorage`    | (removed)                                           |
+| `findThisElement`          | (removed)                                           |
+| `filterValues`             | (removed)                                           |
+| `hasAttribute`             | (removed)                                           |
+| `getExpressionVars`        | (removed)                                           |
+| `bodyContains`             | (removed)                                           |
+| `withExtensions`           | (removed)                                           |
+| `shouldCancel`             | (removed)                                           |
+| `getClosestMatch`          | (removed)                                           |
+
+**New methods**:
+
+| htmx 4 method              | Description                                                        |
+|----------------------------|--------------------------------------------------------------------|
+| `morph`                    | Morph one element into another using the built-in morph algorithm  |
+| `isSoftMatch`              | Check if two elements are a "soft match" (same tag and attributes) |
+| `createRequestContext`     | Create a request context object programmatically                   |
+| `determineMethodAndAction` | Resolve the HTTP method and URL for an element                     |
+| `getAttributeObject`       | Get all htmx attribute values for an element as an object          |
+
 ## Additional Resources
 
 - [Building htmx Extensions](/extensions/building) - Full htmx 4 extension
