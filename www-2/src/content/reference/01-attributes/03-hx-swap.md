@@ -5,7 +5,7 @@ description: "Specify the method for swap"
 
 Controls where the response content goes.
 
-Defaults to `innerHTML` (configurable via [`htmx.config.defaultSwapStyle`](/reference/javascript-api/htmx-config-defaultSwap))
+Defaults to `innerHTML` (configurable via [`htmx.config.defaultSwapStyle`](/reference/config/htmx-config-defaultSwap))
 
 ## Examples
 
@@ -125,8 +125,8 @@ Morphs entire element, preserving state and focus.
 **Morph exclusions:**
 
 Exclude specific elements from morphing:
-- [`htmx.config.morphSkip`](/reference/javascript-api/htmx-config-morphskip) - Skip entire elements
-- [`htmx.config.morphSkipChildren`](/reference/javascript-api/htmx-config-morphskipchildren) - Skip children only
+- [`htmx.config.morphSkip`](/reference/config/htmx-config-morphskip) - Skip entire elements
+- [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphskipchildren) - Skip children only
 
 ### `delete`
 
@@ -162,7 +162,7 @@ Enables View Transitions API for smooth page transitions.
 <div hx-swap="innerHTML transition:true"></div>
 ```
 
-Enable globally: [`htmx.config.transitions = true`](/reference/javascript-api/htmx-config-transitions)
+Enable globally: [`htmx.config.transitions = true`](/reference/config/htmx-config-transitions)
 
 ### `swap`
 
@@ -234,7 +234,7 @@ Boosted forms default to `show:top`. Disable:
 
 ### `target`
 
-Override swap target inline. Alternative to using `hx-target` attribute.
+Override swap target inline. Alternative to using [`hx-target`](/reference/attributes/hx-target) attribute.
 
 ```html
 <div hx-swap="innerHTML target:#results"></div>

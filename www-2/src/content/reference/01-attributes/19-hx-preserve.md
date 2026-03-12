@@ -24,7 +24,7 @@ The response requires an element with the same `id`, but its type and other attr
   reconciliation
 * When using [History Support](/docs.md#history) for actions like the back button `hx-preserve` elements will also have
   their state preserved
-* Avoid using [hx-swap](/reference/attributes/hx-swap) set to `none` with requests that could contain a `hx-preserve` element to
+* Avoid using [`hx-swap`](/reference/attributes/hx-swap) set to `none` with requests that could contain a `hx-preserve` element to
   avoid losing it
 * `hx-preserve` can cause elements to be removed from their current location and relocated to a new location when
   swapping in a partial/oob response
@@ -34,7 +34,7 @@ The response requires an element with the same `id`, but its type and other attr
     <div id="video" hx-preserve></div>
   </div>
   ```
-* Can be used on the inside content of a [hx-swap-oob](/reference/attributes/hx-swap-oob) element
+* Can be used on the inside content of a [`hx-swap-oob`](/reference/attributes/hx-swap-oob) element
   ```html
   <div id="notify" hx-swap-oob="true">
     Notification updated but keep the same retain

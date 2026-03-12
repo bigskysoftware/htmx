@@ -39,7 +39,7 @@ If you wish to override this behavior in either case, you can place the `hx-head
 You may also control merging behavior of individual elements:
 
 - If you place `hx-head="re-eval"` on a head element, it will be re-added (removed and appended) to the head tag on every request, even if it already exists. This can be useful to execute a script on every htmx request, for example.
-- If you place `hx-preserve="true"` on an element, it will never be removed from the head.
+- If you place [`hx-preserve`](/reference/attributes/hx-preserve)`="true"` on an element, it will never be removed from the head.
 
 ### Example
 

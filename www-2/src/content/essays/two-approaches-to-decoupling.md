@@ -34,7 +34,7 @@ The concept of coupling and decoupling is closely (and inversely) related to
 [cohesion](https://en.wikipedia.org/wiki/Cohesion_(computer_science)). Highly cohesive software has related logic
 within a module or conceptual boundary, rather than spread out throughout a codebase.  (A related concept is our own
 idea
-of [Locality of Behavior](/essays/locality-of-behaviour/))
+of [Locality of Behavior](/essays/locality-of-behaviour))
 
 Broadly, experienced developers strive for decoupled and cohesive systems.
 
@@ -202,7 +202,7 @@ API is encoded within and discovered through the hypermedia.
 
 This means that we can dramatically change our API without breaking our clients.
 
-This flexibility is the crux of the REST-ful network architecture and, in particular, of [HATEOAS](/essays/hateoas/).
+This flexibility is the crux of the REST-ful network architecture and, in particular, of [HATEOAS](/essays/hateoas).
 
 As you can see, despite much tighter _application-level_ coupling between our front-end and back-end, we actually have
 more flexibility due to the _network architecture_ decoupling afforded to us by the Uniform Interface aspect of

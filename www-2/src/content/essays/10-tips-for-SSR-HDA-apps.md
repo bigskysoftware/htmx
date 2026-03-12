@@ -131,7 +131,7 @@ But this experience stinks compared to what people are used to: drag-and-drop.
 
 In cases like this, it is perfectly fine to use a front-end heavy approach as an "Island of Interactivity".
 
-Consider the [SortableJS](/patterns/drag-to-reorder) example. Here you have a sophisticated area of interactivity that
+Consider the [SortableJS](/patterns/records/drag-to-reorder) example. Here you have a sophisticated area of interactivity that
 allows for
 drag-and-drop, and that integrates with htmx and the broader hypermedia-driven application via events.
 
@@ -159,7 +159,7 @@ Finally, do not be dogmatic about using hypermedia. At the end of the day, it is
 [strengths & weaknesses](/essays/when-to-use-hypermedia). If a particular part of an app, or if an entire app,
 demands something more interactive than what hypermedia can deliver, then go with a technology that can.
 
-Just be familiar with [what hypermedia can do](/patterns/_index), so you can make that decision as an informed
+Just be familiar with [what hypermedia can do](/patterns), so you can make that decision as an informed
 developer.
 
 ## Conclusion

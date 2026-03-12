@@ -17,7 +17,7 @@ The `htmx-2-compat` extension provides a compatibility layer that allows htmx 2.
 
 Once loaded, the extension maps old htmx 2.x APIs and behaviors to their htmx 4 equivalents, including:
 
-- Old event names (e.g., `htmx:afterSwap` → `htmx:after:swap`)
+- Old event names (e.g., `htmx:afterSwap` → [`htmx:after:swap`](/reference/events/htmx-after-swap))
 - Implicit attribute inheritance (without requiring `:inherited` modifier)
 - The `hx-ext` attribute for activating extensions
 - Other htmx 2.x behaviors that changed in htmx 4

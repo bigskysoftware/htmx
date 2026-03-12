@@ -31,6 +31,6 @@ The event triggered by `hx-confirm` contains additional properties in its `detai
 ## Notes
 
 * `hx-confirm` uses the browser's `window.confirm` by default. You can customize this behavior as
-  shown [in this example](/patterns/confirm).
+  shown in the [Dialogs](/patterns/display/dialogs) pattern.
 * a boolean `skipConfirmation` can be passed to the `issueRequest` callback; if true (defaults to false), the
   `window.confirm` will not be called and the AJAX request is issued directly

@@ -76,8 +76,8 @@ is [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete)-y
 web applications, in the [Ruby on Rails](https://rubyonrails.org/) style. If your main application mechanic is showing
 forms and saving the forms into a database, hypermedia can work very well.
 
-And, with htmx, it can also be [very smooth](/patterns/edit-in-place), and not just constrained
-to the simple [list view/detail view](/patterns/edit-row) approach many server side applications take.
+And, with htmx, it can also be [very smooth](/patterns/records/edit-in-place), and not just constrained
+to the simple list view/detail view approach many server side applications take.
 
 ### _...If your UI is "nested", with updates mostly taking place within well-defined blocks_
 
@@ -91,7 +91,7 @@ not exclusively), uses a hypermedia-style application.
 "Ah ha!", exclaims the SPA enthusiast, "See, even GitHub can't get this right!"
 
 Well, GitHub has fixed the issue, but it does demonstrate a problem with the hypermedia approach: how do you update
-disjoint parts of the UI cleanly? htmx offers [a few techniques for making this work](/patterns/update-other-content),
+disjoint parts of the UI cleanly? htmx offers [a few techniques for making this work](/patterns/advanced/update-other-content),
 and Contexte, in their talk, discuss handling this situation very cleanly, using the event approach.
 
 But, let us grant that this is an area where the hypermedia approach can get into trouble. To avoid this problem, one
@@ -133,7 +133,7 @@ our API to satisfy the new requirements. This is a [unique aspect](/essays/hateo
 hypermedia, and we [discuss it in more detail here](/essays/hypermedia-apis-vs-data-apis).
 
 Of course, there may be UI requirements that do not allow for grouping of dependent element in this manner and, if
-the techniques [mentioned above](/patterns/update-other-content) aren't satisfactory, then it may be
+the techniques [mentioned above](/patterns/advanced/update-other-content) aren't satisfactory, then it may be
 time to consider an alternative approach.
 
 ### _...If you need "deep links" & good first-render performance_
@@ -158,7 +158,7 @@ information
 that cannot be determined at server-side render-time. A good example of this is something like a spreadsheet: a user can
 enter an arbitrary function into a cell and introduce all sorts of dependencies on the screen, on the fly.
 
-(Note, however, that for many applications, the ["editable row"](/patterns/edit-row) pattern is an
+(Note, however, that for many applications, the "editable row" pattern is an
 acceptable alternative to more general spreadsheet-like behavior, and this pattern does play well with hypermedia by
 isolating edits within a bounded area.)
 
@@ -188,7 +188,7 @@ We should note, however, that it is typically easier to embed SPA components _wi
 architecture, than vice-versa. Isolated client-side components can communicate with a broader hypermedia application
 via [events](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events), in the manner
 demonstrated
-in the [drag-and-drop Sortable.js + htmx](/patterns/drag-to-reorder) example.
+in the [drag-and-drop Sortable.js + htmx](/patterns/records/drag-to-reorder) example.
 
 ### _...If you want integrated copy & paste components_
 

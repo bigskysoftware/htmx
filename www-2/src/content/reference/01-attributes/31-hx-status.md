@@ -52,7 +52,7 @@ The value uses htmx's configuration syntax to set request context properties:
 
 ## Common Use Cases
 
-### Validation Errors (422)
+### Validation Errors (`422`)
 
 ```html
 <form hx-post="/register"
@@ -105,8 +105,8 @@ The value uses htmx's configuration syntax to set request context properties:
 
 * Status code patterns are evaluated in order of specificity (exact match → 2-digit wildcard → 1-digit wildcard)
 * The configuration can set any request context property, not just swap behavior
-* Values override any previous settings including response headers (HX-Retarget, HX-Reswap, etc.)
-* Without `hx-status`, htmx uses default behavior (swap on 2xx, no swap on 204/304)
+* Values override any previous settings including response headers (`HX-Retarget`, `HX-Reswap`, etc.)
+* Without `hx-status`, htmx uses default behavior (swap on 2xx, no swap on `204`/`304`)
 * Can be combined with other `hx-` attributes
 
 ## See Also

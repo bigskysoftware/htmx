@@ -31,7 +31,7 @@ document.body.addEventListener("showMessage", (evt) => {
 });
 ```
 
-Use `hx-trigger` to respond to server-triggered events:
+Use [`hx-trigger`](/reference/attributes/hx-trigger) to respond to server-triggered events:
 
 ```html
 <div hx-trigger="showMessage from:body" hx-get="/message"></div>

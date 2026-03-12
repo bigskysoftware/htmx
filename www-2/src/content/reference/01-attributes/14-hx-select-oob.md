@@ -50,7 +50,7 @@ You can specify different swap strategies for each selected element:
 * Works similarly to `hx-swap-oob` in the response, but driven from the request side
 * The selected elements must have an `id` attribute to identify where to swap them
 * If no swap strategy is specified, the default is `outerHTML`
-* Can be combined with `hx-select` to also select the main content
+* Can be combined with [`hx-select`](/reference/attributes/hx-select) to also select the main content
 
 ## See Also
 

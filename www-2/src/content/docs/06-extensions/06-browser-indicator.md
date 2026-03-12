@@ -35,7 +35,7 @@ Instead of marking individual elements, you can enable the indicator for all boo
 <meta name="htmx-config" content='{"extensions": "browser-indicator", "boostBrowserIndicator": true}'>
 ```
 
-With this config, any element with `hx-boost` will automatically show the browser indicator during its requests.
+With this config, any element with [`hx-boost`](/reference/attributes/hx-boost) will automatically show the browser indicator during its requests.
 
 ### Browser Stop Button
 

@@ -46,7 +46,7 @@ most SPAs abandon HATEOAS in favor of a client-side model and data (rather than 
 
 ## An Example HDA fragment
 
-Consider the htmx [Active Search](/patterns/active-search) example:
+Consider the htmx [Active Search](/patterns/forms/active-search) example:
 
 ```html
 <h3> 

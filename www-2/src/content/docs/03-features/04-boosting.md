@@ -4,7 +4,7 @@ description: "Convert regular links and forms to use AJAX"
 keywords: ["boost", "hx-boost", "progressive enhancement", "AJAX links"]
 ---
 
-Htmx supports "boosting" regular HTML anchors and forms with the [hx-boost](/reference/attributes/hx-boost) attribute. This
+Htmx supports "boosting" regular HTML anchors and forms with the [`hx-boost`](/reference/attributes/hx-boost) attribute. This
 attribute will convert all anchor tags and forms into AJAX requests that, by default, target the body of the page.
 
 Here is an example:
@@ -32,7 +32,7 @@ a wider audience to use your site's functionality.
 
 Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
 
-Consider the [active search](/patterns/active-search) example. As it is written, it will not degrade gracefully:
+Consider the [active search](/patterns/forms/active-search) example. As it is written, it will not degrade gracefully:
 someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity's sake,
 to keep the example as brief as possible.
 
@@ -51,10 +51,10 @@ However, you could wrap the htmx-enhanced input in a form element:
 
 With this in place, javascript-enabled clients would still get the nice active-search UX, but non-javascript enabled
 clients would be able to hit the enter key and still search. Even better, you could add a "Search" button as well.
-You would then need to update the form with an `hx-post` that mirrored the `action` attribute, or perhaps use `hx-boost`
+You would then need to update the form with an [`hx-post`](/reference/attributes/hx-post) that mirrored the `action` attribute, or perhaps use `hx-boost`
 on it.
 
-You would need to check on the server side for the `HX-Request` header to differentiate between an htmx-driven and a
+You would need to check on the server side for the [`HX-Request`](/reference/headers/hx-request) header to differentiate between an htmx-driven and a
 regular request, to determine exactly what to render to the client.
 
 Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.

@@ -7,7 +7,7 @@ htmx extends HTML with attributes that control how requests are made and how res
 
 ## Making Requests
 
-Add `hx-get` to an element. It makes an AJAX request when clicked.
+Add [`hx-get`](/reference/attributes/hx-get) to an element. It makes an AJAX request when clicked.
 
 **Your HTML:**
 ```html
@@ -106,7 +106,7 @@ By default, requests are triggered by the "natural" event of an element:
 * `form` is triggered on the `submit` event
 * everything else is triggered by the `click` event
 
-If you want different behavior you can use the [hx-trigger](/reference/attributes/hx-trigger)
+If you want different behavior you can use the [`hx-trigger`](/reference/attributes/hx-trigger)
 attribute to specify which event will cause the request.
 
 Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
@@ -139,9 +139,9 @@ Other modifiers you can use for triggers are:
 * `from:<CSS Selector>` - listen for the event on a different element. This can be used for things like keyboard
   shortcuts. Note that this CSS selector is not re-evaluated if the page changes.
 
-Multiple triggers can be specified in the [hx-trigger](/reference/attributes/hx-trigger) attribute, separated by commas.
+Multiple triggers can be specified in the [`hx-trigger`](/reference/attributes/hx-trigger) attribute, separated by commas.
 
-You can use these features to implement many common UX patterns, such as [Active Search](/patterns/active-search):
+You can use these features to implement many common UX patterns, such as [Active Search](/patterns/forms/active-search):
 
 ```html
 <input type="text"
@@ -177,7 +177,7 @@ The `this` symbol will be set to the current element.
 
 ### Special Events
 
-htmx provides a few special events for use in [hx-trigger](/reference/attributes/hx-trigger):
+htmx provides a few special events for use in [`hx-trigger`](/reference/attributes/hx-trigger):
 
 * `load` - fires once when the element is first loaded
 * `revealed` - fires once when an element first scrolls into the viewport
@@ -220,7 +220,7 @@ If the `/messages` end point keeps returning a div set up this way, it will keep
 second.
 
 Load polling can be useful in situations where a poll has an end point at which point the polling terminates, such as
-when you are showing the user a [progress bar](/patterns/progress-bar).
+when you are showing the user a [progress bar](/patterns/loading/progress-bar).
 
 ### Request Indicators
 
@@ -262,7 +262,7 @@ mechanism you can create your own CSS transition like so:
 ```
 
 If you want the `htmx-request` class added to a different element, you can use
-the [hx-indicator](/reference/attributes/hx-indicator)
+the [`hx-indicator`](/reference/attributes/hx-indicator)
 attribute with a CSS selector to do so:
 
 ```html
@@ -279,7 +279,7 @@ Here we call out the indicator explicitly by id.
 Note that we could have placed the class on the parent `div` as well and had the same effect.
 
 You can also add the [`disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled) to
-elements for the duration of a request by using the [hx-disable](/reference/attributes/hx-disable) attribute.
+elements for the duration of a request by using the [`hx-disable`](/reference/attributes/hx-disable) attribute.
 
 ## Targets
 
@@ -331,7 +331,7 @@ an `innerHTML` swap.
 
 This is similar to how the `target` attribute on links and forms works, placing the retrieved document within an iframe.
 
-You can modify this by using the [hx-swap](/reference/attributes/hx-swap) attribute with any of the following values:
+You can modify this by using the [`hx-swap`](/reference/attributes/hx-swap) attribute with any of the following values:
 
 | Name                        | Description                                                                                                                               |
 |-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
@@ -380,14 +380,14 @@ video. With the `outerHTML` swap this will cause the video to stop playing and r
 uses ID elements to intelligently mutate the DOM and preserve the existing video element, keeping the video playing
 smoothly.
 
-Note that a similar effect can be achieved with the `hx-preserve` attribute, discussed below.
+Note that a similar effect can be achieved with the [`hx-preserve`](/reference/attributes/hx-preserve) attribute, discussed below.
 
 #### Excluding Elements from Morphing
 
 Exclude specific elements from morphing using config options:
 
-- [`htmx.config.morphSkip`](/reference/javascript-api/htmx-config-morphskip) - Completely skip morphing specific elements (they stay frozen)
-- [`htmx.config.morphSkipChildren`](/reference/javascript-api/htmx-config-morphskipchildren) - Update element attributes but preserve children
+- [`htmx.config.morphSkip`](/reference/config/htmx-config-morphskip) - Completely skip morphing specific elements (they stay frozen)
+- [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphskipchildren) - Update element attributes but preserve children
 
 Useful for third-party widgets, custom web components, or active animations.
 
@@ -399,11 +399,11 @@ gives developers a way to create an animated transition between different DOM st
 htmx supports view transitions via:
 - Setting `htmx.config.transitions` to `true` globally
 - Per-swap via `hx-swap` `transition` property: `hx-swap="outerHTML transition:true"`
-- For boosted elements: `hx-boost="transition:true"`
+- For boosted elements: [`hx-boost`](/reference/attributes/hx-boost)`="transition:true"`
 
 ### Swap Options
 
-The [hx-swap](/reference/attributes/hx-swap) attribute also supports options for tuning the swapping behavior of htmx. For
+The [`hx-swap`](/reference/attributes/hx-swap) attribute also supports options for tuning the swapping behavior of htmx. For
 example, by default htmx will swap in the title of a title tag found anywhere in the new content. You can turn this
 behavior off by setting the `ignoreTitle` modifier to true:
 
@@ -426,7 +426,7 @@ The modifiers available on `hx-swap` are:
 
 All swap modifiers appear after the swap style is specified, and are colon-separated.
 
-See the [hx-swap](/reference/attributes/hx-swap) documentation for more details on these options.
+See the [`hx-swap`](/reference/attributes/hx-swap) documentation for more details on these options.
 
 ## Parameters
 
@@ -439,15 +439,15 @@ Additionally, if the element causes a non-`GET` request, the values of all the i
 included (typically this is the nearest enclosing form, but could be different if e.g. `<button form="associated-form">`
 is used).
 
-If you wish to include the values of other elements, you can use the [hx-include](/reference/attributes/hx-include) attribute
+If you wish to include the values of other elements, you can use the [`hx-include`](/reference/attributes/hx-include) attribute
 with a CSS selector of all the elements whose values you want to include in the request.
 
-Finally, if you want to programmatically modify the parameters, you can use the [htmx:config:request](/reference/events/htmx-config-request)
+Finally, if you want to programmatically modify the parameters, you can use the [`htmx:config:request`](/reference/events/htmx-config-request)
 event.
 
 ### File Upload
 
-If you wish to upload files via an htmx request, you can set the [hx-encoding](/reference/attributes/hx-encoding) attribute to
+If you wish to upload files via an htmx request, you can set the [`hx-encoding`](/reference/attributes/hx-encoding) attribute to
 `multipart/form-data`. This will use a `FormData` object to submit the request, which will properly include the file
 in the request.
 

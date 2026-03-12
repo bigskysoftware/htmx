@@ -23,7 +23,7 @@ Choose the method that fits your needs.
 
 Use out-of-band swaps when you want to match elements by their `id`.
 
-Add `hx-swap-oob="true"` to any element in your response. htmx will find the element with the same `id` in your page and swap it.
+Add [`hx-swap-oob`](/reference/attributes/hx-swap-oob)`="true"` to any element in your response. htmx will find the element with the same `id` in your page and swap it.
 
 **Server response:**
 
@@ -76,7 +76,7 @@ Use out-of-band swaps when:
 
 Use partial tags when you need explicit control over targeting.
 
-Wrap content in a `<template>` tag with `type="partial"`. Specify where it goes with `hx-target`.
+Wrap content in a `<template>` tag with `type="partial"`. Specify where it goes with [`hx-target`](/reference/attributes/hx-target).
 
 **Server response:**
 
@@ -127,7 +127,7 @@ Both methods work together. Use them in the same response if needed.
 
 ### Select Specific Elements for OOB
 
-Use `hx-select-oob` on the triggering element to extract specific elements from the response for out-of-band swapping:
+Use [`hx-select-oob`](/reference/attributes/hx-select-oob) on the triggering element to extract specific elements from the response for out-of-band swapping:
 
 ```html
 <button hx-post="/submit"
@@ -141,7 +141,7 @@ This pulls `#message` and `#counter` from the response and swaps them out-of-ban
 
 ### Preserve Content During Swaps
 
-Add `hx-preserve="true"` to elements you want to keep across swaps:
+Add [`hx-preserve`](/reference/attributes/hx-preserve)`="true"` to elements you want to keep across swaps:
 
 ```html
 <video id="my-video" hx-preserve="true">

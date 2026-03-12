@@ -7,7 +7,7 @@ Fired immediately after element initialization, mimicking the standard DOM `load
 
 ## When It Fires
 
-Right after `htmx:after:init`, providing a familiar event name for developers.
+Right after [`htmx:after:init`](/reference/events/htmx-after-init), providing a familiar event name for developers.
 
 ## Event Detail
 

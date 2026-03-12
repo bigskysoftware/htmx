@@ -75,7 +75,7 @@ Hyperscript lets you destructure event details directly into variables.
 
 When forms return with validation errors, file inputs lose their selection. Preserve them with `hx-preserve` or by moving the input outside the swap target.
 
-### Using hx-preserve
+### Using `hx-preserve`
 
 Add `hx-preserve` to keep the file selection:
 

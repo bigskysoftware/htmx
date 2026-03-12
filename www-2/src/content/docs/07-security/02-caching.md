@@ -23,7 +23,7 @@ header for subsequent requests from that element.
 This allows your server to return a [`304 Not Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304)
 response when the content hasn't changed.
 
-You can set an etag on an element initially by using the `hx-config` attribute:
+You can set an etag on an element initially by using the [`hx-config`](/reference/attributes/hx-config) attribute:
 
 ```html
 <div id="news" hx-get="/news"
@@ -40,7 +40,7 @@ Be mindful that if your server can render different content for the same URL dep
 headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)
 response HTTP header.
 
-For example, if your server renders the full HTML when the `HX-Request` header is missing or `false`, and it renders a
+For example, if your server renders the full HTML when the [`HX-Request`](/reference/headers/hx-request) header is missing or `false`, and it renders a
 fragment of that HTML when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be keyed
 based on a composite of the response URL and the `HX-Request` request header rather than being based just on the
 response URL.

@@ -141,7 +141,7 @@ Here is an example that adds a parameter to an htmx request
 
 Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
 
-Another use case is to [reset user input](/patterns/reset-on-submit) on successful requests using the `htmx:after:swap`
+Another use case is to [reset user input](/patterns/forms/reset-on-submit) on successful requests using the [`htmx:after:swap`](/reference/events/htmx-after-swap)
 event:
 
 ```html
@@ -157,7 +157,7 @@ Htmx integrates well with third party libraries.
 
 If the library fires events on the DOM, you can use those events to trigger requests from htmx.
 
-A good example of this is the [SortableJS demo](/patterns/drag-to-reorder):
+A good example of this is the [SortableJS demo](/patterns/records/drag-to-reorder):
 
 ```html
 <form class="sortable" hx-post="/items" hx-trigger="end">

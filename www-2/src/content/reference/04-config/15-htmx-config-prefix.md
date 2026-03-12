@@ -17,4 +17,4 @@ htmx.config.prefix = "data-hx-";
 <meta name="htmx-config" content='{"prefix":"data-hx-"}'>
 ```
 
-Now you can use `data-hx-get` instead of `hx-get`, etc.
+Now you can use `data-hx-get` instead of [`hx-get`](/reference/attributes/hx-get), etc.

@@ -46,7 +46,7 @@ Inheritance now requires the `:inherited` modifier.
 </div>
 ```
 
-Use `:inherited` on any attribute: `hx-boost:inherited`, `hx-target:inherited`, etc.
+Use `:inherited` on any attribute: [`hx-boost`](/reference/attributes/hx-boost)`:inherited`, [`hx-target`](/reference/attributes/hx-target)`:inherited`, etc.
 
 Restore old behavior: `htmx.config.implicitInheritance = true`
 
@@ -66,25 +66,25 @@ More reliable. Cannot be reverted.
 
 ## Attribute Changes
 
-### Step 1: Rename hx-disable
+### Step 1: Rename `hx-disable`
 
 **Before upgrading:**
 
 1. Search for `hx-disable` in your codebase
-2. Rename all `hx-disable` → `hx-ignore`
+2. Rename all `hx-disable` → [`hx-ignore`](/reference/attributes/hx-ignore)
 3. Then rename `hx-disabled-elt` → `hx-disable`
 
 ### Removed Attributes
 
 | Attribute        | Use Instead                          |
 |------------------|--------------------------------------|
-| `hx-vars`        | `hx-vals` with `js:` prefix          |
-| `hx-params`      | `htmx:config:request` event          |
-| `hx-prompt`      | `hx-confirm` with async function     |
+| `hx-vars`        | [`hx-vals`](/reference/attributes/hx-vals) with `js:` prefix          |
+| `hx-params`      | [`htmx:config:request`](/reference/events/htmx-config-request) event          |
+| `hx-prompt`      | [`hx-confirm`](/reference/attributes/hx-confirm) with async function     |
 | `hx-ext`         | Extensions work via events now       |
 | `hx-disinherit`  | Not needed (explicit inheritance)    |
 | `hx-inherit`     | Not needed (explicit inheritance)    |
-| `hx-request`     | `hx-config`                          |
+| `hx-request`     | [`hx-config`](/reference/attributes/hx-config)                          |
 | `hx-history`     | Removed (no localStorage)            |
 | `hx-history-elt` | Removed (uses target element)        |
 
@@ -92,7 +92,7 @@ More reliable. Cannot be reverted.
 
 | Attribute    | Purpose                           |
 |--------------|-----------------------------------|
-| `hx-action`  | Specify URL (use with `hx-method`) |
+| [`hx-action`](/reference/attributes/hx-action)  | Specify URL (use with [`hx-method`](/reference/attributes/hx-method)) |
 | `hx-method`  | Specify HTTP method               |
 | `hx-config`  | Configure requests with JSON      |
 | `hx-ignore`  | Disable htmx processing (was `hx-disable`) |
@@ -103,26 +103,26 @@ Find and replace event names in your JavaScript:
 
 | htmx 2.x                    | htmx 4.x                          |
 |-----------------------------|-----------------------------------|
-| `htmx:afterOnLoad`          | `htmx:after:init`                 |
+| `htmx:afterOnLoad`          | [`htmx:after:init`](/reference/events/htmx-after-init)                 |
 | `htmx:afterProcessNode`     | `htmx:after:init`                 |
-| `htmx:afterRequest`         | `htmx:after:request`              |
-| `htmx:afterSettle`          | `htmx:after:swap`                 |
+| `htmx:afterRequest`         | [`htmx:after:request`](/reference/events/htmx-after-request)              |
+| `htmx:afterSettle`          | [`htmx:after:swap`](/reference/events/htmx-after-swap)                 |
 | `htmx:afterSwap`            | `htmx:after:swap`                 |
-| `htmx:beforeCleanupElement` | `htmx:before:cleanup`             |
-| `htmx:beforeHistorySave`    | `htmx:before:history:update`      |
-| `htmx:beforeOnLoad`         | `htmx:before:init`                |
-| `htmx:beforeProcessNode`    | `htmx:before:process`             |
-| `htmx:beforeRequest`        | `htmx:before:request`             |
-| `htmx:beforeSwap`           | `htmx:before:swap`                |
+| `htmx:beforeCleanupElement` | [`htmx:before:cleanup`](/reference/events/htmx-before-cleanup)             |
+| `htmx:beforeHistorySave`    | [`htmx:before:history:update`](/reference/events/htmx-before-history-update)      |
+| `htmx:beforeOnLoad`         | [`htmx:before:init`](/reference/events/htmx-before-init)                |
+| `htmx:beforeProcessNode`    | [`htmx:before:process`](/reference/events/htmx-before-process)             |
+| `htmx:beforeRequest`        | [`htmx:before:request`](/reference/events/htmx-before-request)             |
+| `htmx:beforeSwap`           | [`htmx:before:swap`](/reference/events/htmx-before-swap)                |
 | `htmx:configRequest`        | `htmx:config:request`             |
-| `htmx:historyCacheMiss`     | `htmx:before:restore:history`     |
+| `htmx:historyCacheMiss`     | [`htmx:before:restore:history`](/reference/events/htmx-before-restore-history)     |
 | `htmx:historyRestore`       | `htmx:before:restore:history`     |
 | `htmx:load`                 | `htmx:after:init`                 |
 | `htmx:oobAfterSwap`         | `htmx:after:swap`                 |
 | `htmx:oobBeforeSwap`        | `htmx:before:swap`                |
-| `htmx:pushedIntoHistory`    | `htmx:after:push:into:history`    |
-| `htmx:replacedInHistory`    | `htmx:after:replace:into:history` |
-| `htmx:responseError`        | `htmx:error`                      |
+| `htmx:pushedIntoHistory`    | [`htmx:after:push:into:history`](/reference/events/htmx-after-push-into-history)    |
+| `htmx:replacedInHistory`    | [`htmx:after:replace:into:history`](/reference/events/htmx-after-replace-into-history) |
+| `htmx:responseError`        | [`htmx:error`](/reference/events/htmx-error)                      |
 | `htmx:sendError`            | `htmx:error`                      |
 | `htmx:swapError`            | `htmx:error`                      |
 | `htmx:targetError`          | `htmx:error`                      |

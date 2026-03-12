@@ -7,7 +7,7 @@ Fired periodically at a specified interval, used for polling.
 
 ## When It Fires
 
-At regular intervals specified in the `hx-trigger` attribute (e.g., `every 2s`).
+At regular intervals specified in the [`hx-trigger`](/reference/attributes/hx-trigger) attribute (e.g., `every 2s`).
 
 ## Event Detail
 

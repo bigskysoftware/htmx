@@ -15,7 +15,7 @@ The `upsert` extension adds a new swap style that intelligently updates existing
 
 ## Usage
 
-Use `hx-swap="upsert"` to apply the upsert behavior:
+Use [`hx-swap`](/reference/attributes/hx-swap)`="upsert"` to apply the upsert behavior:
 
 ```html
 <button hx-get="/items" hx-swap="upsert" hx-target="#item-list">

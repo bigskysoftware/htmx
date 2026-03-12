@@ -7,7 +7,7 @@ Fired when an element enters the viewport, detected via IntersectionObserver.
 
 ## When It Fires
 
-When an element becomes visible in the viewport, used by `hx-trigger="intersect"`.
+When an element becomes visible in the viewport, used by [`hx-trigger`](/reference/attributes/hx-trigger)`="intersect"`.
 
 ## Event Detail
 

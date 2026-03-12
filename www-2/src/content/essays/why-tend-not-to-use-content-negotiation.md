@@ -141,7 +141,7 @@ To give you a concrete example, consider an end point that renders a detail view
 contacts"
 section of the UI and, further, computing these related contacts is expensive for some reason.
 
-In this situation you might choose to use the [Lazy Loading](https://htmx.org/patterns/lazy-load/) pattern to defer
+In this situation you might choose to use the [Lazy Loading](https://htmx.org/patterns/loading/lazy-load/) pattern to defer
 loading the related contacts until after the initial contact detail screen has been rendered. This improves perceived
 performance of the page for your users.
 

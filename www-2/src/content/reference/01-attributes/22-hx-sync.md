@@ -59,8 +59,8 @@ cannot be submitted.
 ```
 
 When dealing with forms that contain many inputs, you can prioritize the submit request over all input validation
-requests using the hx-sync `replace` strategy on the form tag. This will cancel any in-flight validation requests and
-issue only the `hx-post="/store"` request. If you'd rather abort the submit request and prioritize any existing
+requests using the `hx-sync` `replace` strategy on the form tag. This will cancel any in-flight validation requests and
+issue only the [`hx-post`](/reference/attributes/hx-post)`="/store"` request. If you'd rather abort the submit request and prioritize any existing
 validation requests you can use the `hx-sync="this:abort"` strategy on the form tag.
 
 ```html
@@ -70,7 +70,7 @@ validation requests you can use the `hx-sync="this:abort"` strategy on the form 
 </form>
 ```
 
-When implementing active search functionality the hx-trigger attribute's `delay` modifier can be used to debounce the
+When implementing active search functionality the [`hx-trigger`](/reference/attributes/hx-trigger) attribute's `delay` modifier can be used to debounce the
 user's input and avoid making multiple requests while the user types. However, once a request is made, if the user
 begins typing again a new request will begin even if the previous one has not finished processing. This example will
 cancel any in-flight requests and use only the last request. In cases where the search input is contained within the

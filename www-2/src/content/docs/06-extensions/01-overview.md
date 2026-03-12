@@ -91,30 +91,30 @@ Extensions hook into htmx lifecycle events. Event names use underscores instead 
 
 | Hook Name | Triggered Event | Parameters | Description |
 |-----------|----------------|------------|-------------|
-| `htmx_before_init` | `htmx:before:init` | `(elt, detail)` | Before element initialization |
-| `htmx_after_init` | `htmx:after:init` | `(elt, detail)` | After element initialization |
-| `htmx_before_process` | `htmx:before:process` | `(elt, detail)` | Before processing element |
-| `htmx_after_process` | `htmx:after:process` | `(elt, detail)` | After processing element |
-| `htmx_before_cleanup` | `htmx:before:cleanup` | `(elt, detail)` | Before cleaning up element |
-| `htmx_after_cleanup` | `htmx:after:cleanup` | `(elt, detail)` | After cleaning up element |
+| `htmx_before_init` | [`htmx:before:init`](/reference/events/htmx-before-init) | `(elt, detail)` | Before element initialization |
+| `htmx_after_init` | [`htmx:after:init`](/reference/events/htmx-after-init) | `(elt, detail)` | After element initialization |
+| `htmx_before_process` | [`htmx:before:process`](/reference/events/htmx-before-process) | `(elt, detail)` | Before processing element |
+| `htmx_after_process` | [`htmx:after:process`](/reference/events/htmx-after-process) | `(elt, detail)` | After processing element |
+| `htmx_before_cleanup` | [`htmx:before:cleanup`](/reference/events/htmx-before-cleanup) | `(elt, detail)` | Before cleaning up element |
+| `htmx_after_cleanup` | [`htmx:after:cleanup`](/reference/events/htmx-after-cleanup) | `(elt, detail)` | After cleaning up element |
 
 #### Request Lifecycle Events
 
 | Hook Name | Triggered Event | Parameters | Description |
 |-----------|----------------|------------|-------------|
-| `htmx_config_request` | `htmx:config:request` | `(elt, detail)` | Configure request before sending |
-| `htmx_before_request` | `htmx:before:request` | `(elt, detail)` | Before request is sent |
+| `htmx_config_request` | [`htmx:config:request`](/reference/events/htmx-config-request) | `(elt, detail)` | Configure request before sending |
+| `htmx_before_request` | [`htmx:before:request`](/reference/events/htmx-before-request) | `(elt, detail)` | Before request is sent |
 | `htmx_before_response` | `htmx:before:response` | `(elt, detail)` | After fetch, before body consumed |
-| `htmx_after_request` | `htmx:after:request` | `(elt, detail)` | After request completes |
-| `htmx_finally_request` | `htmx:finally:request` | `(elt, detail)` | Always called after request |
-| `htmx_error` | `htmx:error` | `(elt, detail)` | On request error |
+| `htmx_after_request` | [`htmx:after:request`](/reference/events/htmx-after-request) | `(elt, detail)` | After request completes |
+| `htmx_finally_request` | [`htmx:finally:request`](/reference/events/htmx-finally-request) | `(elt, detail)` | Always called after request |
+| `htmx_error` | [`htmx:error`](/reference/events/htmx-error) | `(elt, detail)` | On request error |
 
 #### Swap Events
 
 | Hook Name | Triggered Event | Parameters | Description |
 |-----------|----------------|------------|-------------|
-| `htmx_before_swap` | `htmx:before:swap` | `(elt, detail)` | Before content swap |
-| `htmx_after_swap` | `htmx:after:swap` | `(elt, detail)` | After content swap |
+| `htmx_before_swap` | [`htmx:before:swap`](/reference/events/htmx-before-swap) | `(elt, detail)` | Before content swap |
+| `htmx_after_swap` | [`htmx:after:swap`](/reference/events/htmx-after-swap) | `(elt, detail)` | After content swap |
 | `htmx_before_settle` | `htmx:before:settle` | `(elt, detail)` | Before settle phase |
 | `htmx_after_settle` | `htmx:after:settle` | `(elt, detail)` | After settle phase |
 | `handle_swap` | _(direct call)_ | `(swapStyle, target, fragment, swapSpec)` | Custom swap handler |
@@ -123,11 +123,11 @@ Extensions hook into htmx lifecycle events. Event names use underscores instead 
 
 | Hook Name | Triggered Event | Parameters | Description |
 |-----------|----------------|------------|-------------|
-| `htmx_before_history_update` | `htmx:before:history:update` | `(elt, detail)` | Before updating history |
-| `htmx_after_history_update` | `htmx:after:history:update` | `(elt, detail)` | After updating history |
-| `htmx_after_push_into_history` | `htmx:after:push:into:history` | `(elt, detail)` | After pushing to history |
-| `htmx_after_replace_into_history` | `htmx:after:replace:into:history` | `(elt, detail)` | After replacing history |
-| `htmx_before_restore_history` | `htmx:before:restore:history` | `(elt, detail)` | Before restoring from history |
+| `htmx_before_history_update` | [`htmx:before:history:update`](/reference/events/htmx-before-history-update) | `(elt, detail)` | Before updating history |
+| `htmx_after_history_update` | [`htmx:after:history:update`](/reference/events/htmx-after-history-update) | `(elt, detail)` | After updating history |
+| `htmx_after_push_into_history` | [`htmx:after:push:into:history`](/reference/events/htmx-after-push-into-history) | `(elt, detail)` | After pushing to history |
+| `htmx_after_replace_into_history` | [`htmx:after:replace:into:history`](/reference/events/htmx-after-replace-into-history) | `(elt, detail)` | After replacing history |
+| `htmx_before_restore_history` | [`htmx:before:restore:history`](/reference/events/htmx-before-restore-history) | `(elt, detail)` | Before restoring from history |
 
 ### Cancelling Events
 
@@ -170,7 +170,7 @@ Available internal API methods:
 - `determineMethodAndAction(elt, evt)` - Get HTTP method and URL
 - `createRequestContext(elt, evt)` - Create request context object
 - `collectFormData(elt, form, submitter)` - Collect form data
-- `handleHxVals(elt, body)` - Process hx-vals attribute
+- `handleHxVals(elt, body)` - Process [`hx-vals`](/reference/attributes/hx-vals) attribute
 
 ### Request Context
 

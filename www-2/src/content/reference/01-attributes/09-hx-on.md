@@ -8,7 +8,7 @@ The `hx-on*` attributes allow you to embed scripts inline to respond to events d
 found in HTML, such as `onClick`.
 
 The `hx-on*` attributes improve upon `onevent` by enabling the handling of any arbitrary JavaScript event,
-for enhanced [Locality of Behaviour (LoB)](/essays/locality-of-behaviour/) even when dealing with non-standard DOM
+for enhanced [Locality of Behaviour (LoB)](/essays/locality-of-behaviour) even when dealing with non-standard DOM
 events. For example, these
 attributes allow you to handle [htmx events](/reference#events).
 
@@ -77,7 +77,7 @@ in HTML attributes, you may use dashes in the place of colons for both the long 
 
 ```
 
-### hx-on (deprecated)
+### `hx-on` (deprecated)
 
 The value is an event name, followed by a colon `:`, followed by the script:
 

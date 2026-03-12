@@ -93,7 +93,7 @@ Target the next sibling element.
 
 Targets the element immediately after the button.
 
-Works like [Element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling).
+Works like [`Element.nextElementSibling`](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling).
 
 ## `next <selector>`
 

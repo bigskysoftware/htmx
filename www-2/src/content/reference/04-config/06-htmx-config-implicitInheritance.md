@@ -17,4 +17,4 @@ htmx.config.implicitInheritance = true;
 <meta name="htmx-config" content='{"implicitInheritance":true}'>
 ```
 
-When enabled, attributes like `hx-target` on a parent apply to all child elements unless overridden.
+When enabled, attributes like [`hx-target`](/reference/attributes/hx-target) on a parent apply to all child elements unless overridden.

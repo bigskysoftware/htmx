@@ -89,7 +89,7 @@ Because the div has a stable id, `color-demo`, htmx will structure the swap such
 
 ### Smooth Progress Bar
 
-The [Progress Bar](/patterns/progress-bar) demo uses this basic CSS animation technique as well, by updating the `length`
+The [Progress Bar](/patterns/loading/progress-bar) demo uses this basic CSS animation technique as well, by updating the `length`
 property of a progress bar element, allowing for a smooth animation.
 
 ## Swap Transitions 

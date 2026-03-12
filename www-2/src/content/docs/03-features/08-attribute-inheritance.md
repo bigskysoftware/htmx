@@ -7,7 +7,7 @@ description: "Hoist attributes to parents to reduce repetition"
 <summary>Changes in htmx 4.0</summary>
 
 In htmx 2.0 attribute inheritance was implicit by default: elements inherited the attributes on their parents, such
-as hx-target. In htmx 4.0 attribute inheritance is now explicit by default, using the `:inherited` modifier.
+as [`hx-target`](/reference/attributes/hx-target). In htmx 4.0 attribute inheritance is now explicit by default, using the `:inherited` modifier.
 
 </details>
 
@@ -24,7 +24,7 @@ Consider the following htmx:
 </button>
 ```
 
-Here we have a duplicate `hx-confirm` attribute.
+Here we have a duplicate [`hx-confirm`](/reference/attributes/hx-confirm) attribute.
 
 We can hoist this attribute to a parent element using the `:inherited` modifier:
 

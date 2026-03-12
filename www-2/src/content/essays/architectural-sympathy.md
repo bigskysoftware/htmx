@@ -50,7 +50,7 @@ This is in contrast with the [SPA](https://developer.mozilla.org/en-US/docs/Glos
 applications. Most SPA frameworks have little architectural sympathy with the original web model. Rather, they largely
 _replace_ the original, REST-ful, hypermedia-oriented architecture of the web in favor of a more thick-client like
 architecture, exchanging information over an
-[RPC-like fixed-data format](/essays/how-did-rest-come-to-mean-the-opposite-of-rest/) network architecture.
+[RPC-like fixed-data format](/essays/how-did-rest-come-to-mean-the-opposite-of-rest) network architecture.
 
 ### Advantages Of The Architecturally Sympathetic Approach
 

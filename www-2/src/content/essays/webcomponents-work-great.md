@@ -17,8 +17,8 @@ If your app is largely hypermedia, but you want an interactive, React-based cale
 that one page with a script tag.
 
 We sometimes call this pattern "Islands of Interactivity"—it's referenced in our
-explainers [here](/essays/10-tips-for-SSR-HDA-apps.md#tip-8-when-necessary-create-islands-of-interactivity), [here](/essays/hypermedia-friendly-scripting.md#islands),
-and [here](/essays/you-cant.md#myth-5-with-htmx-or-mpas-every-user-action-must-happen-on-the-server).
+explainers [here](/essays/10-tips-for-SSR-HDA-apps#tip-8-when-necessary-create-islands-of-interactivity), [here](/essays/hypermedia-friendly-scripting#islands),
+and [here](/essays/you-cant#myth-5-with-htmx-or-mpas-every-user-action-must-happen-on-the-server).
 Unlike JS frameworks, which are largely incompatible with each other, using islands with htmx won't lock you into any
 specific paradigm.
 

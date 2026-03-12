@@ -17,7 +17,7 @@ The `preload` extension allows you to load HTML fragments into your browser's ca
 
 ## Usage
 
-Add a `preload` attribute to any hyperlinks and `hx-get` elements you want to preload. By default, resources will be loaded as soon as the `mousedown` event begins, giving your application a roughly 100-200ms head start on serving responses.
+Add a `preload` attribute to any hyperlinks and [`hx-get`](/reference/attributes/hx-get) elements you want to preload. By default, resources will be loaded as soon as the `mousedown` event begins, giving your application a roughly 100-200ms head start on serving responses.
 
 ```html
 <a href="/server/1" preload>Preloaded on mousedown</a>

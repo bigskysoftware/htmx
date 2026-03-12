@@ -21,7 +21,7 @@ Include the extension script after htmx:
 
 The SSE extension hooks into htmx's request pipeline. When any htmx request receives a response with `Content-Type: text/event-stream`, the extension takes over and streams SSE messages into the DOM instead of performing a normal swap.
 
-This means **any `hx-get`, `hx-post`, etc. that returns an SSE stream will just work**, no special attributes needed beyond loading the extension.
+This means **any [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc. that returns an SSE stream will just work**, no special attributes needed beyond loading the extension.
 
 ## `hx-sse:connect`
 
@@ -58,7 +58,7 @@ For persistent SSE connections (auto-connect on load, reconnect on failure), use
 
 ### Trigger Modifiers
 
-All standard `hx-trigger` modifiers are supported:
+All standard [`hx-trigger`](/reference/attributes/hx-trigger) modifiers are supported:
 
 ```html
 <!-- Connect after a delay -->
@@ -119,7 +119,7 @@ Messages without an `event:` field are swapped into the DOM as HTML content.
 
 ## Configuration
 
-Configure SSE behavior globally via `htmx.config.sse` or per-element via `hx-config`:
+Configure SSE behavior globally via `htmx.config.sse` or per-element via [`hx-config`](/reference/attributes/hx-config):
 
 ```html
 <!-- Global config -->
@@ -274,4 +274,4 @@ This means:
 - **No more `EventSource`**: uses `fetch()` + `ReadableStream`, enabling POST requests, custom headers, and cookies.
 - **Reconnection**: `hx-sse:connect` reconnects automatically with exponential backoff. Configure via `hx-config`.
 - **Background tab handling**: pauses streams when the tab is backgrounded, reconnects when visible (configurable via `pauseOnBackground`).
-- **Any HTTP method**: `hx-post`, `hx-put`, etc. all work with SSE responses.
+- **Any HTTP method**: `hx-post`, [`hx-put`](/reference/attributes/hx-put), etc. all work with SSE responses.

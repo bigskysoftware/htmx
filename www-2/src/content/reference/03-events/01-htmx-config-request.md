@@ -7,7 +7,7 @@ Fired after request parameters are built but before validation and sending.
 
 ## When It Fires
 
-After htmx has constructed the request context but before `htmx:confirm` or `htmx:before:request`.
+After htmx has constructed the request context but before [`htmx:confirm`](/reference/events/htmx-confirm) or [`htmx:before:request`](/reference/events/htmx-before-request).
 
 ## Event Detail
 
@@ -87,5 +87,5 @@ htmx.on('htmx:config:request', (evt) => {
 ## Notes
 
 - This is the ideal place to modify request configuration globally
-- Changes made here apply after `hx-config` attributes are processed
+- Changes made here apply after [`hx-config`](/reference/attributes/hx-config) attributes are processed
 - Use this for cross-cutting concerns like authentication, logging, or global timeouts

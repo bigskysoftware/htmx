@@ -34,7 +34,7 @@ htmx.process(newContent);
 * Automatically called by htmx after swaps
 * Useful when manually inserting HTML with htmx attributes
 * Processes the element and all descendants
-* Triggers `htmx:before:process` event before processing
-* Initializes event listeners for hx-get, hx-post, etc.
+* Triggers [`htmx:before:process`](/reference/events/htmx-before-process) event before processing
+* Initializes event listeners for [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc.
 * Sets up boosted links and forms
-* Processes hx-on attributes
+* Processes [`hx-on`](/reference/attributes/hx-on) attributes

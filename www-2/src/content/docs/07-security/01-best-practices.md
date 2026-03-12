@@ -80,7 +80,7 @@ for exploring this topic.
 htmx uses eval for some functionality:
 
 * Event filters
-* The `hx-on` attribute
+* The [`hx-on`](/reference/attributes/hx-on) attribute
 * Handling most attribute values that starts with `js:` or `javascript:`
 
 All of these features can be replaced with standard event listeners and thus are not crucial to using htmx.
@@ -90,7 +90,7 @@ Thus you can disable `eval()` via a CSP and continue to use htmx.
 ## CSRF Prevention
 
 The assignment and checking of CSRF tokens are typically backend responsibilities, but `htmx` can support returning the
-CSRF token automatically with every request using the `hx-headers` attribute. The attribute needs to be added to the
+CSRF token automatically with every request using the [`hx-headers`](/reference/attributes/hx-headers) attribute. The attribute needs to be added to the
 element issuing the request or one of its ancestor elements. This makes the `html` and `body` elements effective
 global vehicles for adding the CSRF token to the `HTTP` request header, as illustrated below.
 
