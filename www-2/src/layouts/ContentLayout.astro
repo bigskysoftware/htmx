@@ -171,7 +171,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                                                 {!reverse && <i class:list={[icon, "text-2xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0 mt-0.5"]}></i>}
                                                                 <div class="flex-1 min-w-0">
                                                                     {link.breadcrumbs.length > 2 && (
-                                                                            <div class="text-xs font-medium text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mb-2 transition">
+                                                                            <div class="text-xs text-neutral-500 group-interact:text-neutral-700 dark:group-interact:text-neutral-300 mb-2 transition">
                                                                                 {link.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
                                                                             </div>
                                                                     )}
@@ -208,29 +208,22 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                         <div class="flex gap-2">
                                             {[
                                                 {link: file!.prev, label: 'Previous', icon: 'icon-[mdi--chevron-left]'},
-                                                {
-                                                    link: file!.next,
-                                                    label: 'Next',
-                                                    icon: 'icon-[mdi--chevron-right]',
-                                                    reverse: true
-                                                }
-                                            ].map(({link, label, icon, reverse}) => {
-                                                return (
-                                                        <Card as={link ? 'a' : 'span'}
-                                                              href={link?.url}
-                                                              title={link?.frontmatter.title}
-                                                              class:list={[
-                                                                  "flex-1 group flex items-center gap-2 p-2 text-xs font-medium transition select-none",
-                                                                  reverse && "flex-row-reverse",
-                                                                  link
-                                                                      ? "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white outline-hidden focus:ring-1 focus:ring-offset-1 focus:ring-neutral-500 dark:focus:ring-neutral-400"
-                                                                      : "border-transparent bg-neutral-50 dark:bg-neutral-930 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
-                                                              ]}>
-                                                            <i class:list={[icon, "size-4", link ? "text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition" : "opacity-50"]}></i>
-                                                            <span class="flex-1 inline-flex justify-center">{label}</span>
-                                                        </Card>
-                                                );
-                                            })}
+                                                {link: file!.next, label: 'Next', icon: 'icon-[mdi--chevron-right]', reverse: true}
+                                            ].map(({link, label, icon, reverse}) => (
+                                                    <Card as={link ? 'a' : 'span'}
+                                                          href={link?.url}
+                                                          title={link?.frontmatter.title}
+                                                          class:list={[
+                                                              "flex-1 group flex items-center gap-2 p-2 text-xs font-medium transition select-none",
+                                                              reverse && "flex-row-reverse",
+                                                              link
+                                                                  ? "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white outline-hidden focus:ring-1 focus:ring-offset-1 focus:ring-neutral-500 dark:focus:ring-neutral-400"
+                                                                  : "border-transparent bg-neutral-50 dark:bg-neutral-930 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
+                                                          ]}>
+                                                        <i class:list={[icon, "size-4", link ? "text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition" : "opacity-50"]}></i>
+                                                        <span class="flex-1 inline-flex justify-center">{label}</span>
+                                                    </Card>
+                                            ))}
                                         </div>
                                     </div>
                             )}
