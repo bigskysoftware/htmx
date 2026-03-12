@@ -176,7 +176,7 @@ is a custom event, `newContact`.  We listen for this event on the `body` because
 is triggered by the response to the form, it will end up hitting the body due to event bubbling.
 
 When a successful contact creation occurs during a POST to `/contacts`, the response includes 
-an [`HX-Trigger`](/reference/headers/hx-trigger) response header that looks like this:
+an [`HX-Trigger`](/reference/headers/HX-Trigger) response header that looks like this:
 
 ```txt
 HX-Trigger:newContact

@@ -52,7 +52,7 @@ This form will issue an ajax `POST` to the given URL and replace the body's inne
 * Only links that are to the same domain and that are not local anchors will be boosted
 * All requests are done via AJAX, so keep that in mind when doing things like redirects
 * To find out if the request results from a boosted anchor or form, look for
-  [`HX-Boosted`](/reference/headers/hx-boosted) in the request header
+  [`HX-Boosted`](/reference/headers/HX-Boosted) in the request header
 * Selectively disable boost on child elements with `hx-boost="false"`
 * Disable the replacement of elements via boost, and their children, with
   [`hx-preserve="true"`](/reference/attributes/hx-preserve)

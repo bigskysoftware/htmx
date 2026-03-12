@@ -46,4 +46,4 @@ This will push the URL `/account/home' into the location history.
 
 ## Notes
 
-* The [`HX-Push-Url` response header](/reference/headers/hx-push-url) has similar behavior and can override this attribute.
+* The [`HX-Push-Url` response header](/reference/headers/HX-Push-Url) has similar behavior and can override this attribute.

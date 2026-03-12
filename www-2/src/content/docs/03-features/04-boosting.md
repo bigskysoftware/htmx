@@ -54,7 +54,7 @@ clients would be able to hit the enter key and still search. Even better, you co
 You would then need to update the form with an [`hx-post`](/reference/attributes/hx-post) that mirrored the `action` attribute, or perhaps use `hx-boost`
 on it.
 
-You would need to check on the server side for the [`HX-Request`](/reference/headers/hx-request) header to differentiate between an htmx-driven and a
+You would need to check on the server side for the [`HX-Request`](/reference/headers/HX-Request) header to differentiate between an htmx-driven and a
 regular request, to determine exactly what to render to the client.
 
 Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.

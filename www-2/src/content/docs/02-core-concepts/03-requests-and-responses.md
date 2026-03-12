@@ -65,12 +65,12 @@ htmx includes headers in the requests it makes:
 
 | Header                       | Description                                                                                          |
 |------------------------------|------------------------------------------------------------------------------------------------------|
-| [`HX-Boosted`](/reference/headers/hx-boosted)                 | indicates that the request is via an element using [`hx-boost`](/reference/attributes/hx-boost)                  |
-| [`HX-Current-URL`](/reference/headers/hx-current-url)             | the current URL of the browser                                                                       |
-| [`HX-Request`](/reference/headers/hx-request)                 | always "true"                                                                                        |
-| [`HX-Request-Type`](/reference/headers/hx-request-type)            | `"partial"` for targeted swaps, `"full"` for body-level or `hx-select` requests                      |
-| [`HX-Source`](/reference/headers/hx-source)                  | the source element in `tag#id` format (e.g. `button#submit`)                                         |
-| [`HX-Target`](/reference/headers/hx-target)                  | the target element in `tag#id` format (e.g. `div#results`)                                           |
+| [`HX-Boosted`](/reference/headers/HX-Boosted)                 | indicates that the request is via an element using [`hx-boost`](/reference/attributes/hx-boost)                  |
+| [`HX-Current-URL`](/reference/headers/HX-Current-URL)             | the current URL of the browser                                                                       |
+| [`HX-Request`](/reference/headers/HX-Request)                 | always "true"                                                                                        |
+| [`HX-Request-Type`](/reference/headers/HX-Request-Type)            | `"partial"` for targeted swaps, `"full"` for body-level or `hx-select` requests                      |
+| [`HX-Source`](/reference/headers/HX-Source)                  | the source element in `tag#id` format (e.g. `button#submit`)                                         |
+| [`HX-Target`](/reference/headers/HX-Target)                  | the target element in `tag#id` format (e.g. `div#results`)                                           |
 
 ### Response Headers
 
@@ -78,19 +78,19 @@ htmx supports htmx-specific response headers:
 
 | Header                                           | Description                                                                                                                                                                        |
 |--------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`HX-Location`](/reference/headers/hx-location)            | allows you to do a client-side redirect that does not do a full page reload                                                                                                        |
-| [`HX-Push-Url`](/reference/headers/hx-push-url)            | pushes a new url into the history stack                                                                                                                                            |
-| [`HX-Redirect`](/reference/headers/hx-redirect)            | can be used to do a client-side redirect to a new location                                                                                                                         |
-| [`HX-Refresh`](/reference/headers/hx-refresh)                                     | if set to "true" the client-side will do a full refresh of the page                                                                                                                |
-| [`HX-Replace-Url`](/reference/headers/hx-replace-url)      | replaces the current URL in the location bar                                                                                                                                       |
+| [`HX-Location`](/reference/headers/HX-Location)            | allows you to do a client-side redirect that does not do a full page reload                                                                                                        |
+| [`HX-Push-Url`](/reference/headers/HX-Push-Url)            | pushes a new url into the history stack                                                                                                                                            |
+| [`HX-Redirect`](/reference/headers/HX-Redirect)            | can be used to do a client-side redirect to a new location                                                                                                                         |
+| [`HX-Refresh`](/reference/headers/HX-Refresh)                                     | if set to "true" the client-side will do a full refresh of the page                                                                                                                |
+| [`HX-Replace-Url`](/reference/headers/HX-Replace-Url)      | replaces the current URL in the location bar                                                                                                                                       |
 | `HX-Reswap`                                      | allows you to specify how the response will be swapped. See [`hx-swap`](/reference/attributes/hx-swap) for possible values                                                                     |
 | `HX-Retarget`                                    | a CSS selector that updates the target of the content update to a different element on the page                                                                                    |
 | `HX-Reselect`                                    | a CSS selector that allows you to choose which part of the response is used to be swapped in. Overrides an existing [`hx-select`](/reference/attributes/hx-select) on the triggering element |
-| [`HX-Trigger`](/reference/headers/hx-trigger)              | allows you to trigger client-side events                                                                                                                                           |
-| [`HX-Trigger-After-Settle`](/reference/headers/hx-trigger) | allows you to trigger client-side events after the settle step                                                                                                                     |
-| [`HX-Trigger-After-Swap`](/reference/headers/hx-trigger)   | allows you to trigger client-side events after the swap step                                                                                                                       |
+| [`HX-Trigger`](/reference/headers/HX-Trigger)              | allows you to trigger client-side events                                                                                                                                           |
+| [`HX-Trigger-After-Settle`](/reference/headers/HX-Trigger) | allows you to trigger client-side events after the settle step                                                                                                                     |
+| [`HX-Trigger-After-Swap`](/reference/headers/HX-Trigger)   | allows you to trigger client-side events after the swap step                                                                                                                       |
 
-For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](/reference/headers/hx-trigger).
+For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](/reference/headers/HX-Trigger).
 
 Submitting a form via htmx has the benefit of no longer needing
 the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get).

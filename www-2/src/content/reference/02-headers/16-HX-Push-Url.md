@@ -22,4 +22,4 @@ HX-Push-Url: /dashboard
 
 - Response headers are not processed on 3xx response codes.
 
-See also: [`hx-push-url`](/reference/attributes/hx-push-url), [`HX-Replace-Url`](/reference/headers/hx-replace-url)
+See also: [`hx-push-url`](/reference/attributes/hx-push-url), [`HX-Replace-Url`](/reference/headers/HX-Replace-Url)

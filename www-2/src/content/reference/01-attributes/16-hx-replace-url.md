@@ -43,6 +43,6 @@ This will replace the URL `/account/home' in the browser location bar.
 
 ## Notes
 
-* The [`HX-Replace-Url` response header](/reference/headers/hx-replace-url) has similar behavior and can override this attribute.
+* The [`HX-Replace-Url` response header](/reference/headers/HX-Replace-Url) has similar behavior and can override this attribute.
 * The [`hx-push-url` attribute](/reference/attributes/hx-push-url) is a similar and more commonly used attribute, which creates a
   new history entry rather than replacing the current one.
