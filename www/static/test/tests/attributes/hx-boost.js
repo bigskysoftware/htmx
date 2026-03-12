@@ -138,6 +138,21 @@ describe('hx-boost attribute', async function() {
         find('#result').innerHTML.should.equal('Clicked')
     })
 
+    it('hx-boost with hx-push-url=false does not push history', async function() {
+        let pushCount = 0
+        let originalPushState = history.pushState.bind(history)
+        history.pushState = (...args) => { pushCount++; originalPushState(...args) }
+        try {
+            mockResponse('GET', '/test', 'Clicked')
+            createProcessedHTML('<div id="result"></div><a hx-boost="true" hx-push-url="false" hx-target="#result" id="a1" href="/test">Click Me</a>')
+            find('#a1').click()
+            await forRequest()
+            pushCount.should.equal(0)
+        } finally {
+            history.pushState = originalPushState
+        }
+    })
+
     // // it('overriding default swap style does not effect boosting', async function() {
     // //     htmx.config.defaultSwapStyle = 'afterend'
     // //     try {

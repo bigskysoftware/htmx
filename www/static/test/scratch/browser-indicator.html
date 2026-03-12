@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:hx-boost="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="htmx-config" content='{"extensions": "browser-indicator"}'>
+    <title>Browser Indicator Test</title>
+    <script src="../../src/htmx.js"></script>
+    <script src="../../src/ext/hx-browser-indicator.js"></script>
+    <script>
+        htmx.config.logAll = true;
+        htmx.config.boostBrowserIndicator = true;
+
+        // Add a 2 second delay to all fetches so the indicator is visible
+        let originalFetch = window.fetch;
+        window.fetch = async (...args) => {
+            await new Promise(r => setTimeout(r, 2000));
+            return originalFetch(...args);
+        };
+    </script>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
+        button { padding: 0.5em 1em; margin: 0.5em; font-size: 1em; }
+        #output { margin-top: 1em; padding: 1em; border: 1px solid #ccc; min-height: 2em; }
+    </style>
+</head>
+<body>
+
+<h2>hx-browser-indicator test</h2>
+
+<p>Click a button and watch the browser tab spinner.</p>
+
+<h3>Per-element attribute</h3>
+<button hx-get="/test/scratch/fragment.html" hx-target="#output" hx-browser-indicator="true">
+    Load (with browser indicator)
+</button>
+<button hx-get="/test/scratch/fragment.html" hx-target="#output">
+    Load (no browser indicator)
+</button>
+
+<h3>Boosted link (enable via config)</h3>
+<div hx-boost:inherited="true">
+    <a href="">Boosted link</a>
+</div>
+
+<div id="output">Response will appear here</div>
+
+
+
+</body>
+</html>

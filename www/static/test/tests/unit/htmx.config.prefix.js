@@ -52,7 +52,7 @@ describe('htmx.config.prefix functionality', function() {
         let called = 0;
         let btn = createDisconnectedHTML('<button>Click</button>');
         btn.setAttribute('data-hx-trigger', 'click');
-        btn._htmx = {};
+        htmx.__htmxProp(btn);
         htmx.__initializeTriggers(btn, () => called++);
 
         btn.click();
@@ -66,5 +66,20 @@ describe('htmx.config.prefix functionality', function() {
 
         let result = htmx.__prefix("hx-get");
         assert.equal(result, "hx-get");
+    });
+
+    it('custom prefix works with attribute inheritance', function() {
+        htmx.config.prefix = "data-hx-";
+
+        let container = createDisconnectedHTML(
+            '<div data-hx-target:inherited="#output">' +
+            '  <button data-hx-get="/test">Click</button>' +
+            '</div>'
+        );
+        let button = container.querySelector('button');
+        let targetValue = htmx.__attributeValue(button, "hx-target");
+        assert.equal(targetValue, "#output");
+
+        htmx.config.prefix = "";
     });
 });

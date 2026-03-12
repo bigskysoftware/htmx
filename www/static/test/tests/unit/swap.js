@@ -485,6 +485,14 @@ describe('swap() unit tests', function() {
         document.activeElement.should.equal(input)
     })
 
+    it('__insertContent accepts string swapSpec', async function () {
+        createProcessedHTML("<div id='d1'>Old</div>")
+        let fragment = document.createDocumentFragment()
+        fragment.append(document.createTextNode('New'))
+        await htmx.__insertContent({target: find('#d1'), swapSpec: 'innerHTML', fragment})
+        find('#d1').innerText.should.equal('New')
+    })
+
     it('restores focus to textarea after innerHTML swap', async function () {
         createProcessedHTML("<textarea id='focused-textarea'>hello world</textarea>")
         let textarea = find('#focused-textarea')

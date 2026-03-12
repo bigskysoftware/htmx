@@ -120,6 +120,25 @@ describe('__issueRequest unit tests', function() {
         window.confirm = originalConfirm
     })
 
+    it('cancels request when dropRequest called after htmx:confirm preventDefault', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none" hx-confirm="Are you sure?"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        div.addEventListener('htmx:confirm', (e) => {
+            e.preventDefault()
+            e.detail.dropRequest()
+        })
+
+        let fetchCalled = false
+        ctx.fetch = async () => {
+            fetchCalled = true
+            return { status: 200, headers: new Headers(), text: async () => '' }
+        }
+
+        await htmx.__issueRequest(ctx)
+        assert.isFalse(fetchCalled)
+    })
+
     it('creates response object with correct structure', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
@@ -219,6 +238,95 @@ describe('__issueRequest unit tests', function() {
 
         assert.isTrue(request1Complete)
         assert.isTrue(request2Started)
+    })
+
+    it('aborts request after timeout fires', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none" hx-config="timeout:50"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = (url, opts) => new Promise((_, reject) => {
+            opts.signal.addEventListener('abort', () => {
+                reject(new DOMException('The operation was aborted', 'AbortError'))
+            })
+        })
+
+        let errorFired = false
+        div.addEventListener('htmx:error', () => errorFired = true)
+
+        await htmx.__issueRequest(ctx)
+        assert.isTrue(errorFired)
+        assert.isTrue(ctx.request.signal.aborted)
+    })
+
+    it('htmx:abort event aborts in-flight request', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = (url, opts) => new Promise((_, reject) => {
+            setTimeout(() => htmx.trigger(div, 'htmx:abort'), 10)
+            opts.signal.addEventListener('abort', () => {
+                reject(new DOMException('The operation was aborted', 'AbortError'))
+            })
+        })
+
+        let errorFired = false
+        div.addEventListener('htmx:error', () => errorFired = true)
+
+        await htmx.__issueRequest(ctx)
+        assert.isTrue(errorFired)
+        assert.isTrue(ctx.request.signal.aborted)
+    })
+
+    it('does not crash when scroll target selector matches nothing', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML scroll:top scrollTarget:#nonexistent"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers(),
+            text: async () => '<div>Response</div>'
+        })
+
+        let errorFired = false
+        div.addEventListener('htmx:error', () => errorFired = true)
+
+        await htmx.__issueRequest(ctx)
+        assert.isFalse(errorFired)
+    })
+
+    it('does not crash when show target selector matches nothing', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML show:top showTarget:#nonexistent"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers(),
+            text: async () => '<div>Response</div>'
+        })
+
+        let errorFired = false
+        div.addEventListener('htmx:error', () => errorFired = true)
+
+        await htmx.__issueRequest(ctx)
+        assert.isFalse(errorFired)
+    })
+
+    it('throws clean error for unknown swap style with no extensions', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="foobar"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers(),
+            text: async () => '<div>Response</div>'
+        })
+
+        let capturedError = null
+        div.addEventListener('htmx:error', (e) => capturedError = e.detail.error)
+
+        await htmx.__issueRequest(ctx)
+        assert.isNotNull(capturedError)
+        assert.include(capturedError.message, 'Unknown swap style')
     })
 
 });

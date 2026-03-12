@@ -86,7 +86,7 @@ describe('hx-confirm attribute', function() {
         
         btn.addEventListener('htmx:confirm', (e) => {
             e.preventDefault()
-            setTimeout(() => e.detail.issueRequest(true), 10)
+            setTimeout(() => e.detail.issueRequest(), 10)
         })
         
         btn.click()
@@ -101,7 +101,7 @@ describe('hx-confirm attribute', function() {
         
         btn.addEventListener('htmx:confirm', (e) => {
             e.preventDefault()
-            e.detail.issueRequest(false)
+            e.detail.dropRequest()
         })
         
         btn.click()

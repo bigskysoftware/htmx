@@ -16,7 +16,7 @@ const config = {
 
 <h2>Htmx Test Suite</h2>
 
-<script src="node_modules/chai/chai.js"></script>
+<script src="https://unpkg.com/chai@4.5.0/chai.js"></script>
 <script src="test/lib/fetch-mock.js"></script>
 <script src="src/htmx.js"></script>
 

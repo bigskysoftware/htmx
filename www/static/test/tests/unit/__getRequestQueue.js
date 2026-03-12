@@ -139,7 +139,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
         queue.issue(ctx2, 'queue all')
 
-        queue.finish()
+        queue.finish(ctx1)
         let next = queue.next()
 
         assert.equal(next, ctx2)
@@ -155,7 +155,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let ctx2 = htmx.__createRequestContext(div, new Event('click'))
         queue.issue(ctx2, 'queue all')
 
-        queue.finish()
+        queue.finish(ctx1)
         queue.next()
 
         // Should now allow a new request
@@ -170,12 +170,11 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let queue = htmx.__getRequestQueue(div)
 
         let ctx = htmx.__createRequestContext(div, new Event('click'))
-        ctx.abort = () => { ctx.aborted = true }
         queue.issue(ctx, 'queue first')
 
         queue.abort()
 
-        assert.isTrue(ctx.aborted)
+        assert.isTrue(ctx.request.signal.aborted)
     })
 
     it('returns same queue for same element', function () {
@@ -195,6 +194,39 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let queue2 = htmx.__getRequestQueue(div2)
 
         assert.notEqual(queue1, queue2)
+    })
+
+    it('hx-sync="drop" without selector uses drop strategy', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-sync="drop"></div>')
+        let queue = htmx.__getRequestQueue(div)
+        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
+        queue.issue(ctx1, htmx.__determineSyncStrategy(div))
+
+        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
+        let result = queue.issue(ctx2, htmx.__determineSyncStrategy(div))
+
+        assert.isFalse(result)
+        assert.equal(ctx2.status, 'dropped')
+    })
+
+    it('hx-sync="abort" without selector uses abort strategy', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-sync="abort"></div>')
+        let queue = htmx.__getRequestQueue(div)
+        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
+        ctx1.request = {abort: () => { ctx1.aborted = true }}
+        queue.issue(ctx1, htmx.__determineSyncStrategy(div))
+
+        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
+        let result = queue.issue(ctx2, htmx.__determineSyncStrategy(div))
+
+        assert.isFalse(result)
+        assert.equal(ctx2.status, 'dropped')
+    })
+
+    it('hx-sync="selector:drop" uses drop strategy', function () {
+        let container = createProcessedHTML('<div id="c"><div id="btn" hx-get="/test" hx-sync="#c:drop"></div></div>')
+        let btn = container.querySelector('#btn')
+        assert.equal(htmx.__determineSyncStrategy(btn), 'drop')
     })
 
     it('uses selector from hx-sync for queue', function () {

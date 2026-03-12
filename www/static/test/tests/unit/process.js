@@ -70,6 +70,20 @@ describe('process() unit tests', function() {
         assert.isTrue(fired)
     })
 
+    it('ignores hx-on: attributes under hx-ignore', function () {
+        let container = createProcessedHTML('<div><div hx-ignore><button hx-on:click="this.setAttribute(\'fired\', \'true\')">Click</button></div></div>')
+        htmx.process(container)
+        let button = container.querySelector('button')
+        button.click()
+        assert.isNull(button.getAttribute('fired'))
+    })
+
+    it('hx-on:htmx:after:init fires during process', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-on:htmx:after:init="this.setAttribute(\'inited\', \'true\')"></div>')
+        htmx.process(div)
+        assert.equal(div.getAttribute('inited'), 'true')
+    })
+
     it('skips processing if htmx:before:process is cancelled', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         div.removeAttribute('data-htmx-powered')

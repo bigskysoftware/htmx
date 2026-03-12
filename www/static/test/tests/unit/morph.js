@@ -464,6 +464,25 @@ describe('Morph Swap Styles Tests', function() {
             assert.isNotNull(newBtn);
             assert.equal(newBtn.getAttribute('data-htmx-powered'), 'true', 'New inserted element should be processed');
         });
+
+        it('processes new htmx attributes on tag-changing outerMorph (span to div)', async function() {
+            mockResponse('GET', '/test', '<div id="target" hx-get="/click" hx-target="#result">Updated</div>');
+            const container = createProcessedHTML('<div><span id="target">Original</span><div id="result"></div></div>');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'outerMorph'});
+
+            const newDiv = container.querySelector('#target');
+            assert.isNotNull(newDiv, 'New div should exist in DOM');
+            assert.equal(newDiv.tagName, 'DIV', 'Element should now be a div');
+            assert.equal(newDiv.getAttribute('data-htmx-powered'), 'true', 'New div should be processed');
+
+            mockResponse('GET', '/click', 'Clicked!');
+            newDiv.click();
+            await htmx.forEvent('htmx:after:swap', 100);
+
+            assert.equal(container.querySelector('#result').textContent, 'Clicked!', 'htmx actions on new div should work');
+        });
+
     });
 
     describe('htmx integration', function() {

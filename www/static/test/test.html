@@ -63,7 +63,7 @@
 
     <!-- Test infrastructure -->
     <script src="https://unpkg.com/chai@4.5.0/chai.js"></script>
-    <script src="https://unpkg.com/mocha@11.7.4/mocha.js"></script>
+    <script src="https://unpkg.com/mocha@11.7.5/mocha.js"></script>
 
     <script src="lib/fetch-mock.js"></script>
 
@@ -95,7 +95,7 @@
     <script src="./tests/unit/__getRequestQueue.js"></script>
     <script src="./tests/unit/__handleHistoryUpdate.js"></script>
     <script src="./tests/unit/__handleHxHeadersAndMaybeReturnEarly.js"></script>
-    <script src="./tests/unit/__handleHxVals.js"></script>
+    <script src="./tests/unit/__getAttributeObject.js"></script>
     <script src="./tests/unit/__handleStatusCodes.js"></script>
     <script src="./tests/unit/__handleTriggerEvent.js"></script>
     <script src="./tests/unit/__handleTriggerHeader.js"></script>
@@ -156,10 +156,12 @@
     <!-- ============================================ -->
     <!-- Extension Tests -->
     <!-- ============================================ -->
+    <script src="./tests/ext/hx-head.js"></script>
     <script src="./tests/ext/hx-alpine-compat.js"></script>
     <script src="./tests/ext/hx-optimistic.js"></script>
     <script src="./tests/ext/hx-preload.js"></script>
     <script src="./tests/ext/hx-upsert.js"></script>
+    <script src="./tests/ext/hx-sse.js"></script>
     <script src="./tests/ext/hx-ws.js"></script>
 
     <!-- ============================================ -->
@@ -170,7 +172,6 @@
     <script src="./tests/end2end/core.js"></script>
     <script src="./tests/end2end/events.js"></script>
     <script src="./tests/end2end/oob.js"></script>
-    <script src="./tests/end2end/sse.js"></script>
     <script src="./tests/end2end/strip.js"></script>
 
     <script>

@@ -23,6 +23,21 @@ describe('__handleStatusCodes unit tests', function() {
         assert.equal(ctx.swap, 'none')
     })
 
+    it('sets swap to none for 304 status', function () {
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let ctx = {
+            sourceElement: div,
+            swap: 'innerHTML',
+            response: {
+                raw: { status: 304 }
+            }
+        }
+
+        htmx.__handleStatusCodes(ctx)
+
+        assert.equal(ctx.swap, 'none')
+    })
+
     it('does not change swap for 200 status', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let ctx = {
