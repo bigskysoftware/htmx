@@ -170,6 +170,27 @@ The following configuration keys have been removed in htmx 4:
 | `wsBinaryType` | WebSocket extension handles this |
 | `wsReconnectDelay` | Use `htmx.config.websockets` instead |
 
+### New Config Keys
+
+The following configuration keys are new in htmx 4:
+
+| New Key               | Default                 | Notes                                                                                                     |
+|-----------------------|-------------------------|-----------------------------------------------------------------------------------------------------------|
+| `defaultSwap`         | `"innerHTML"`           | Renamed from `defaultSwapStyle`                                                                           |
+| `defaultTimeout`      | `60000`                 | Renamed from `timeout`, default changed from `0`                                                          |
+| `extensions`          | `""`                    | Comma-separated allowlist of extensions that may register                                                 |
+| `history`             | `true`                  | Renamed from `historyEnabled`, also accepts `"reload"` to force full page reload on history navigation    |
+| `implicitInheritance` | `false`                 | Replaces `disableInheritance` (inverted logic)                                                            |
+| `includeIndicatorCSS` | `true`                  | Renamed from `includeIndicatorStyles`                                                                     |
+| `mode`                | `"same-origin"`         | Fetch request mode (replaces `selfRequestsOnly`)                                                          |
+| `morphIgnore`         | `["data-htmx-powered"]` | Attributes to skip during [morphing](/morphing#htmxconfigmorphignore)                                     |
+| `morphScanLimit`      | `10`                    | Max sibling scan distance during [morph matching](/morphing#htmxconfigmorphscanlimit)                     |
+| `morphSkip`           | _(none)_                | CSS selector for elements to [skip entirely](/morphing#htmxconfigmorphskip) during morphing               |
+| `morphSkipChildren`   | _(none)_                | CSS selector for elements whose [children to skip](/morphing#htmxconfigmorphskipchildren) during morphing |
+| `noSwap`              | `[204, 304]`            | Status codes that skip swap (supports wildcards like `'4xx'`, `'5xx'`)                                    |
+| `prefix`              | `""`                    | Custom attribute prefix (see below)                                                                       |
+| `transitions`         | `false`                 | Renamed from `globalViewTransitions`                                                                      |
+
 ### `data-hx-*` Attribute Prefix
 
 In htmx 2, both `hx-*` and `data-hx-*` attributes were recognized automatically. In htmx 4, only `hx-*`
