@@ -3,7 +3,7 @@ title: "hx-target"
 description: "Specify target element for swap"
 ---
 
-Specifies where to insert the response content.
+The `hx-target` attribute specifies where to insert the response content.
 
 Defaults to `this` (which represents the element making the request).
 

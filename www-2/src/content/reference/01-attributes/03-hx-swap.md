@@ -3,7 +3,7 @@ title: "hx-swap"
 description: "Specify the method for swap"
 ---
 
-Controls where the response content goes.
+The `hx-swap` attribute controls where the response content goes.
 
 Defaults to `innerHTML` (configurable via [`htmx.config.defaultSwap`](/reference/config/htmx-config-defaultSwap))
 
