@@ -57,6 +57,8 @@
     --color-blue-800: oklch(0.4421 0.1412 265.64);
     --color-blue-900: oklch(0.3934 0.1075 265.08);
     --color-blue-950: oklch(0.2936 0.068 267.21);
+
+    --radius-lg: 0.625rem;
 }
 
 @layer base {
