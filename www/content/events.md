@@ -244,6 +244,20 @@ This event is triggered after the settle phase completes, including after any se
 * `detail.newContent` - array of newly settled content elements
 * `detail.settleTasks` - array of settle tasks that were executed
 
+## Morph Events
+
+### Event - `htmx:before:morph:node` {#htmx:before:morph:node}
+
+This event is triggered before each node is morphed during a morph swap (`innerMorph` or `outerMorph`).
+You can cancel morphing of an individual node by calling `preventDefault()`.
+
+This is an extension-only event — it is dispatched to extensions via hooks, not as a DOM event.
+
+##### Details
+
+* `detail.oldNode` - the existing DOM node
+* `detail.newNode` - the incoming node it will be morphed into
+
 ## History Events
 
 ### Event - `htmx:before:history:update` {#htmx:before:history:update}

@@ -94,6 +94,14 @@ of colons:
 | `htmx_after_settle`   | `htmx:after:settle`   | `(elt, detail)` | After settle phase      |
 | `handle_swap`         | _(direct call)_       | `(swapStyle, target, fragment, swapSpec)` | Custom swap handler     |
 
+### Morph Events
+
+| Hook Name                  | Triggered Event            | Parameters      | Description                                         |
+| -------------------------- | -------------------------- | --------------- | --------------------------------------------------- |
+| `htmx_before_morph_node`   | `htmx:before:morph:node`   | `(elt, detail)` | Before morphing a node — return `false` to skip it  |
+
+`detail` contains `oldNode` (the existing DOM node) and `newNode` (the incoming node it will be morphed into).
+
 ### History Events
 
 | Hook Name                         | Triggered Event                   | Parameters      | Description                   |
