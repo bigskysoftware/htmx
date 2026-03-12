@@ -82,7 +82,7 @@ export const activeTags = tagDefs.filter(t => t.id === 'all' || usedTags.has(t.i
     <div class="hidden sm:flex flex-wrap gap-2 mb-6">
         {activeTags.map((tag, i) => (
             <label class:list={[
-                "cursor-pointer select-none px-3 py-1.5 text-xs font-chicago whitespace-nowrap transition rounded-[3px]",
+                "cursor-pointer select-none px-3 py-1.5 text-xs font-chicago whitespace-nowrap transition rounded-sm",
                 "border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900",
                 "text-neutral-500 dark:text-neutral-450",
                 "interact:bg-neutral-100 dark:interact:bg-neutral-800 interact:border-neutral-300 dark:interact:border-neutral-700 interact:text-neutral-700 dark:interact:text-neutral-300",
