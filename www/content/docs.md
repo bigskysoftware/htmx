@@ -1146,6 +1146,9 @@ To restrict which extensions can register, use an allow list:
 <meta name="htmx-config" content='{"extensions": "my-ext,another-ext"}'>
 ```
 
+This `meta` tag must appear *before* htmx is included so that the information is available when htmx is
+initializing.
+
 ### Core Extensions
 
 htmx supports some core extensions, which are supported by the htmx development team:
