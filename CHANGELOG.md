@@ -1,5 +1,33 @@
 # Changelog
 
+## [4.0.0-beta1] - 2026-03-13
+
+* Extracted SSE from core into standalone extension (`hx-sse.js`) ([#3666](https://github.com/bigskysoftware/htmx/pull/3666))
+* New core extensions
+  * Added `hx-targets` extension for multi-error targeting by HTTP status code
+  * Added `hx-download` extension for file download swaps
+  * Added `hx-browser-indicator` extension to show the browser's native loading indicator
+* Submit inputs (`<input type="submit">`) now use `click` as the default trigger
+* Smaller Additions
+  * Added `ctx.vals` for extension use ([#3689](https://github.com/bigskysoftware/htmx/pull/3689))
+  * Added async `<head>` tag support ([#3686](https://github.com/bigskysoftware/htmx/pull/3686))
+  * Added `htmx:before:morph:node` extension hook event for per-node morph control
+* Bug Fixes
+  * WS and SSE now properly adjust attribute names when `metaCharacter` is set
+  * Indicators and timeout no longer activate until after confirmation dialog completes
+  * Keep indicators active on redirect-refresh ([#3688](https://github.com/bigskysoftware/htmx/pull/3688))
+  * Fixed `outerMorph` handling when new nodes are inserted ([#3667](https://github.com/bigskysoftware/htmx/pull/3667))
+  * Boosted method resolution properly uppercased
+  * Boosted forms now push URLs correctly
+  * Ensure only one history restoration request is in flight at a time
+  * Fixed zero timeout handling ([#3692](https://github.com/bigskysoftware/htmx/pull/3692))
+  * Fixed empty non-GET action handling ([#3661](https://github.com/bigskysoftware/htmx/pull/3661))
+  * Fixed `<title>` extraction to avoid matching SVG `<title>` tags
+  * Fixed CSS-escape IDs when morphing
+  * Fixed preserved element skip issue during morphing
+  * Fixed `onLoad` event name normalization with `metaCharacter` ([#3695](https://github.com/bigskysoftware/htmx/pull/3695))
+  * Many smaller fixes
+
 ## [4.0.0-alpha7] - 2025-02-12
 
 * Added focus and selection restoration after swaps, matching htmx 2.x behavior ([#3645](https://github.com/bigskysoftware/htmx/pull/3645))
