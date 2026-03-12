@@ -1,0 +1,34 @@
+{
+  "name": "htmx-website",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "predev": "rsync -a ../dist/ public/js/",
+    "dev": "NODE_ENV=development astro dev",
+    "start": "NODE_ENV=development astro dev",
+    "prebuild": "rsync -a ../dist/ public/js/",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/rss": "^4.0.15",
+    "astro": "5.18.0",
+    "flexsearch": "^0.8.212",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-slug": "^6.0.0",
+    "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "@iconify/json": "^2.2.419",
+    "@iconify/tailwind4": "^1.2.0",
+    "@playwright/test": "^1.58.2",
+    "@tailwindcss/typography": "^0.5.19",
+    "@tailwindcss/vite": "^4.1.17",
+    "tailwindcss": "^4.1.17"
+  }
+}

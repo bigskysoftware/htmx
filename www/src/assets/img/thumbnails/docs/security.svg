@@ -1,0 +1,12 @@
+<svg viewBox="0 0 128 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .accent { fill: var(--accent); stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+        .accent-body { fill: var(--accent); fill-opacity: 0.4; stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+    </style>
+
+    <!-- Shield body -->
+    <path class="accent-body" d="M64 20L42 32v18c0 14 10 24 22 30 12-6 22-16 22-30V32z" stroke-width="1.5" stroke-linejoin="round"/>
+
+    <!-- Shield check mark -->
+    <path class="accent" d="M55 48l6 6 12-14" style="fill: none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

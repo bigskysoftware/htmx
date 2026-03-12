@@ -1,0 +1,121 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import bssBars from '../assets/img/bss-bars.png';
+
+interface Props {
+    class?: string;
+    containerClass?: string;
+    contentClass?: string;
+}
+
+const {
+    class: className,
+    containerClass = "px-4 sm:px-6 lg:px-8",
+    contentClass = "max-w-2xl lg:max-w-5xl mx-auto"
+} = Astro.props;
+
+// 1. Helper function to keep the template clean
+const isExternal = (url: string) => url?.startsWith('http');
+
+const navigationSections = [
+    {
+        name: "Links",
+        items: [
+            {name: "docs", url: "/docs"},
+            {name: "reference", url: "/reference"},
+            {name: "patterns", url: "/patterns"},
+            {name: "extensions", url: "/docs/extensions"},
+            {name: "essays", url: "/essays"},
+            {name: "about", url: "/about"},
+        ]
+    },
+    {
+        name: "Community",
+        items: (await getCollection('community')).map(communityLink => ({
+            name: communityLink.data.name,
+            url: communityLink.data.url,
+            iconClass: communityLink.data.iconClass,
+        }))
+    },
+    {
+        name: "Resources",
+        items: [
+            {name: "Interviews", url: "/interviews", iconClass: "icon-[mdi--account-voice]"},
+            {name: "Podcasts", url: "/podcasts", iconClass: "icon-[lucide--audio-lines]"},
+            {name: "Memes", url: "/memes", iconClass: "icon-[mdi--emoticon-cool-outline]"},
+            {name: "Book", url: "https://hypermedia.systems", iconClass: "icon-[mdi--book-open-page-variant]"},
+            {name: "RSS", url: "/rss.xml", iconClass: "icon-[mdi--rss]"},
+        ]
+    },
+];
+---
+
+<footer class:list={["text-sm border-t border-neutral-200 dark:border-neutral-850 bg-neutral-10 dark:bg-neutral-920 mt-16 sm:mt-24 pt-12 pb-6 sm:pt-16 sm:pb-8 relative z-10", className]}>
+    <div class={containerClass}>
+        <div class={contentClass}>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8 sm:gap-8 lg:gap-12">
+
+                {navigationSections.map((section) => (
+                        <div>
+                            <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-700 dark:text-neutral-300 mb-4 sm:mb-6">
+                                {section.name}
+                            </h2>
+                            <ul class="space-y-2 sm:space-y-3">
+                                {section.items.map((link) => (
+                                        <li>
+                                            <a
+                                                    href={link.url}
+                                                    target={isExternal(link.url) ? "_blank" : undefined}
+                                                    rel={isExternal(link.url) ? "noopener noreferrer" : undefined}
+                                                    title={`Go to ${link.url}`}
+                                                    class:list={[
+                                                        "text-neutral-600 dark:text-neutral-400 interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition",
+                                                        link.iconClass && "inline-flex items-center gap-3"
+                                                    ]}
+                                            >
+                                                {link.iconClass && (
+                                                        <span class="w-5 flex justify-center shrink-0">
+                                                            <i class:list={[link.iconClass, "text-base"]}></i>
+                                                        </span>
+                                                )}
+                                                {link.name}
+                                            </a>
+                                        </li>
+                                ))}
+                            </ul>
+                        </div>
+                ))}
+
+                <div>
+                    <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-700 dark:text-neutral-300 mb-4 sm:mb-6">
+                        Haiku
+                    </h2>
+                    <p class="italic font-light text-sm text-neutral-550 dark:text-neutral-450 leading-loose -translate-y-2">
+                        javascript fatigue:<br>longing for a hypertext<br>already in hand
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-12 sm:mt-16 flex items-center text-neutral-600 dark:text-neutral-400 text-xs sm:text-sm">
+                <div class="flex-grow border-t border-neutral-200 dark:border-neutral-850"></div>
+
+                <span class="flex items-center gap-2 px-4 sm:px-6">
+                    &copy; {new Date().getFullYear()}
+                    <span class="text-neutral-300 dark:text-neutral-800 mx-1">·</span>
+                    <a href="https://bigsky.software" target="_blank" rel="noopener noreferrer"
+                       title="Go to Big Sky Software's website"
+                       class="group inline-flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400 interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
+                        <Image src={bssBars} alt="" aria-hidden="true" loading="lazy"
+                               class="size-3 shrink-0 transition duration-100 group-interact:[filter:brightness(0)_saturate(100%)_invert(29%)_sepia(88%)_saturate(1124%)_hue-rotate(214deg)] dark:group-interact:[filter:brightness(0)_saturate(100%)_invert(72%)_sepia(60%)_saturate(430%)_hue-rotate(190deg)_brightness(1.2)]"/>
+                        Big Sky Software
+                    </a>
+                </span>
+
+                <div class="flex-grow border-t border-neutral-200 dark:border-neutral-800"></div>
+            </div>
+
+        </div>
+    </div>
+</footer>

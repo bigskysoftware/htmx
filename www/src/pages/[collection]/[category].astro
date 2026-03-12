@@ -1,0 +1,41 @@
+---
+/**
+ * Category Index Redirects
+ *
+ * Generates redirect pages for category URLs (e.g., /reference/attributes)
+ * that automatically redirect to the first item in each category.
+ *
+ * This ensures clean URLs while preventing dead-end category pages.
+ */
+import { getFolder } from '../../lib/content.ts';
+
+export async function getStaticPaths() {
+    const collections = ['docs', 'reference', 'patterns'] as const;
+    const paths = [];
+
+    for (const collection of collections) {
+        const folder = await getFolder(collection);
+
+        // Add redirects for direct subfolders only
+        folder.subfolders.forEach(subfolder => {
+            if (subfolder.allFiles.length > 0) {
+                paths.push({
+                    params: {
+                        collection,
+                        category: subfolder.slug
+                    },
+                    props: {
+                        redirectTo: subfolder.allFiles[0].url
+                    }
+                });
+            }
+        });
+    }
+
+    return paths;
+}
+
+const { redirectTo } = Astro.props;
+
+return Astro.redirect(redirectTo, 302);
+---

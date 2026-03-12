@@ -1,0 +1,224 @@
+---
+import FinderLink from './FinderLink.astro';
+
+const navigationItems = [
+    {name: "docs", url: "/docs", description: "Read the complete documentation and tutorials"},
+    {name: "reference", url: "/reference", description: "Browse the full API reference"},
+    {name: "patterns", url: "/patterns", description: "Common UI patterns with htmx"},
+    {name: "essays", url: "/essays", description: "Read essays about htmx and hypermedia"},
+    {name: "about", url: "/about", description: "About htmx, the team, and community"},
+];
+
+const isCurrent = (url?: string) => {
+    if (!url) return false;
+    if (url === '/' && Astro.url.pathname === '/') return true;
+    if (url !== '/' && Astro.url.pathname.startsWith(url)) return true;
+    return false;
+};
+---
+
+<header role="banner"
+        class="flex flex-col fixed inset-x-0 top-0 h-(--header-height) z-40 bg-neutral-10 dark:bg-neutral-920 border-b border-neutral-200 dark:border-neutral-850">
+    <!-- Construction Banner -->
+    <!--<a href="/guides/migration/htmx-2-to-4"-->
+    <!--   class="flex justify-center text-center px-4 py-1 text-xs sm:text-sm text-neutral-800 dark:text-neutral-900 bg-yellow-300 border-y-4 [border-image:repeating-linear-gradient(45deg,#000,#000_10px,#ffcc00_10px,#ffcc00_20px)_4] hover:bg-yellow-300 dark:hover:bg-yellow-400 transition group"-->
+    <!--   title="htmx 4.0 changes and migration guide">-->
+    <!--    <span>🚧 htmx 4.0 is under construction. <span class="font-bold no-underline group-hover:underline">Read changes-->
+    <!--        →</span></span>-->
+    <!--</a>-->
+
+    <!-- Navigation -->
+    <nav id="navigation"
+         class="w-full h-(--navigation-bar-height) flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 lg:py-4 gap-4 lg:gap-12"
+         aria-label="Primary Navigation"
+    >
+        <div class="flex items-center gap-3">
+
+            <!-- Slot for content before logo (e.g. sidebar toggle on content pages) -->
+            <slot name="before-logo"/>
+
+            <!-- Logo -->
+            <a href="/" aria-label="HTMX Homepage"
+               class="group/logo text-xl sm:text-[1.375rem] lg:text-2xl whitespace-nowrap font-mono tracking-tight font-extrabold inline-flex items-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 shrink-0 sm:transition rounded-sm outline-hidden">
+                <span aria-hidden="true">&lt;</span>
+                <b class="relative text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition" aria-hidden="true">
+                    <span class="group-interact/logo:opacity-0 sm:transition">/</span>
+                    <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 sm:transition">-</span>
+                </b>
+                <span aria-hidden="true" class="relative">
+                    <span class="group-interact/logo:opacity-0 sm:transition">&gt;</span>
+                    <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 sm:transition">-</span>
+                </span>
+                <span class="font-chicago ms-2 inline-block relative">
+                    <span class="group-interact/logo:opacity-0 sm:transition">
+                        htm<b class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition">x</b>
+                    </span>
+                    <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 group-interact/logo:underline sm:transition">
+                        hom<b class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition">e</b>
+                    </span>
+                </span>
+            </a>
+
+            <!-- Version Selector -->
+            <div class="inline-flex items-center relative group/version">
+                <select
+                        aria-label="Select htmx version"
+                        class="appearance-none bg-transparent pl-2 pr-5 py-1 text-xs font-chicago rounded-sm text-neutral-500 dark:text-neutral-450 interact:text-neutral-900 dark:interact:text-neutral-100 cursor-pointer outline-hidden sm:transition border border-transparent interact:border-neutral-200 dark:interact:border-neutral-800 translate-y-0.5"
+                        onchange="window.location.href = this.value"
+                >
+                    <option value="/" selected>v4</option>
+                    <option value="https://htmx.org">v2</option>
+                    <option value="https://v1.htmx.org">v1</option>
+                </select>
+                <i class="icon-[mdi--chevron-down] absolute right-1 top-1/2 -translate-y-1/2 text-xs text-neutral-400 dark:text-neutral-500 group-hover/version:text-neutral-600 dark:group-hover/version:text-neutral-400 pointer-events-none sm:transition"
+                   aria-hidden="true"></i>
+            </div>
+        </div>
+
+        <!-- Desktop: Nav Links + Status Bar + Search + Social -->
+        <div class="hidden lg:flex items-center justify-between flex-1 gap-4 xl:gap-6">
+            <!-- Desktop: Nav Links -->
+            <div aria-label="Main" class="hidden lg:flex items-center gap-4 xl:gap-6 flex-1"
+                 hx-preload:inherited="mouseenter">
+                <ul class="flex gap-4 xl:gap-6 items-center justify-center xl:text-[1.075rem] font-chicago tracking-tight">
+                    {navigationItems.map((item) => (
+                            <li>
+                                <a href={item.url} {...(item.description && { title: item.description })}
+                                   aria-current={isCurrent(item.url) ? 'page' : undefined}
+                                   class="px-3 py-1 sm:transition interact:underline text-neutral-500 dark:text-neutral-450 interact:text-blue-700 dark:interact:text-blue-300 aria-[current=page]:text-neutral-900 dark:aria-[current=page]:text-neutral-100 aria-[current=page]:font-bold outline-hidden">
+                                    {item.name}
+                                </a>
+                            </li>
+                    ))}
+                </ul>
+            </div>
+            <!-- Desktop: Status Bar -->
+            <div id="status-bar" aria-hidden="true"
+                 class="hidden 2xl:block flex-1 text-center text-xs xl:text-sm text-neutral-700 dark:text-neutral-300 translate-y-0.5 truncate min-w-0 max-w-xs"
+                 _="on mouseenter from <[title]/> put event.target's @title into me
+              on mouseleave from <[title]/> put '' into me">
+            </div>
+            <!-- Desktop: Search & Social -->
+            <div class="flex items-center min-w-[200px]">
+                <!-- Desktop: Search -->
+                <div class="flex-1">
+                    <button type="button"
+                            class="relative group flex items-center min-h-[44px] min-w-[200px] w-full bg-white dark:bg-neutral-910
+    border border-neutral-200 dark:border-neutral-800 rounded-md py-2 px-3 text-base font-sans text-neutral-400
+    interact:bg-neutral-100 dark:interact:bg-neutral-800/50
+    interact:border-neutral-400 dark:interact:border-neutral-600
+    outline-hidden sm:transition cursor-pointer"
+                            aria-label="Open Search"
+                            _="on click
+                                 showModal() from the first of <search-index > dialog/>
+                               end
+                               on keydown[key is 'k' and (metaKey or ctrlKey)] from window
+                                 halt the event
+                                 trigger click
+                               end">
+                        <i class="icon-[ic--baseline-search] size-5 text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition"
+                           aria-hidden="true"></i>
+                        <span class="text-sm mx-2 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition">Open Search</span>
+                        <kbd
+                                id="search-shortcut-hint"
+                                aria-hidden="true"
+                                class="ms-auto pe-1 font-chicago text-xs group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition"
+                                _="init if navigator.platform.toLowerCase() contains 'mac' put '⌘ K' into me"
+                        >Ctrl K</kbd>
+                    </button>
+                </div>
+                <!-- Divider -->
+                <div class="h-6 w-px bg-neutral-200 dark:bg-neutral-800 ml-7.5 mr-5.5" role="separator"></div>
+                <!-- Desktop: Discord -->
+                <a href="/discord"
+                   aria-label="Join Discord"
+                   title="Join the Discord community"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="flex px-3 py-2 group sm:transition">
+                    <i class="icon-[ic--baseline-discord] size-5.5 scale-[1.1] text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white sm:transition"
+                       aria-hidden="true"></i>
+                </a>
+                <!-- Desktop: Github -->
+                <a href="https://github.com/bigskysoftware/htmx"
+                   aria-label="View Source on GitHub"
+                   title="View source code on GitHub"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="flex ml-3 px-3 py-2 group sm:transition">
+                    <i class="icon-[mdi--github] size-5.5 text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white sm:transition"
+                       aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Mobile: Search + Navigation -->
+        <div class="lg:hidden flex items-center gap-4">
+            <!-- Mobile: Search -->
+            <button
+                    type="button"
+                    class="flex items-center justify-center size-10 text-neutral-600 dark:text-neutral-400 rounded-xs outline-hidden"
+                    aria-label="Search"
+                    _="on click showModal() from the first of <search-index > dialog/>">
+                <i class="icon-[ic--baseline-search] size-5 sm:size-6" aria-hidden="true"></i>
+            </button>
+            <!-- Mobile: Navigation -->
+            <label class="flex items-center justify-center size-10 cursor-pointer rounded-xs outline-hidden"
+                   for="mobile-navigation-toggle"
+                   aria-label="Toggle Navigation Menu"
+                   role="button"
+                   tabindex="0">
+                <input id="mobile-navigation-toggle" type="checkbox" class="sr-only">
+                <i class="icon-[mdi--menu] [html:has(#mobile-navigation-toggle:checked)_&]:hidden size-5 sm:size-6 text-neutral-600 dark:text-neutral-400"
+                   aria-hidden="true"></i>
+                <i class="icon-[mdi--close] hidden [html:has(#mobile-navigation-toggle:checked)_&]:block size-5 sm:size-6 text-neutral-600 dark:text-neutral-400"
+                   aria-hidden="true"></i>
+            </label>
+        </div>
+    </nav>
+</header>
+
+<!-- Mobile: Navigation -->
+<nav id="mobile-navigation"
+     aria-label="Mobile Navigation"
+     class="lg:hidden z-50 opacity-0 top-(--header-height) fixed inset-0 h-screen bg-neutral-10 dark:bg-neutral-920 pointer-events-none select-none [html:has(#mobile-navigation-toggle:checked)_&]:opacity-100 [html:has(#mobile-navigation-toggle:checked)_&]:pointer-events-auto sm:transition duration-100 overflow-y-auto overscroll-contain">
+    <div class="p-4 space-y-2">
+        {navigationItems.map((item) => (
+            <FinderLink
+                href={item.url}
+                title={item.description}
+                aria-current={isCurrent(item.url) ? 'page' : undefined}
+                class="!mx-0 font-chicago text-base gap-2 aria-[current=page]:bg-blue-700 aria-[current=page]:text-white dark:aria-[current=page]:bg-blue-350 dark:aria-[current=page]:text-black aria-[current=page]:font-bold"
+                _="on click set #mobile-navigation-toggle.checked to false"
+            >
+                {item.name}
+            </FinderLink>
+        ))}
+
+        <div class="h-px bg-neutral-200 dark:bg-neutral-800 my-4" role="separator"></div>
+
+        <!-- Mobile (Drawer): Discord Button -->
+        <FinderLink
+            href="/discord"
+            title="Join the Discord community"
+            class="!mx-0 font-chicago text-base gap-3"
+            _="on click set #mobile-navigation-toggle.checked to false"
+        >
+            <i class="icon-[ic--baseline-discord] text-xl" aria-hidden="true"></i>
+            Discord
+        </FinderLink>
+
+        <!-- Mobile (Drawer): Github Button -->
+        <FinderLink
+            href="https://github.com/bigskysoftware/htmx"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="View source code on GitHub"
+            class="!mx-0 font-chicago text-base gap-3"
+            _="on click set #mobile-navigation-toggle.checked to false"
+        >
+            <i class="icon-[mdi--github] text-xl" aria-hidden="true"></i>
+            GitHub
+        </FinderLink>
+    </div>
+</nav>

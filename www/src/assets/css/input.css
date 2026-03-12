@@ -1,0 +1,396 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+@plugin "@iconify/tailwind4";
+
+/* Local font */
+@font-face {
+    font-family: 'ChicagoFLF';
+    src: url('/fonts/ChicagoFLF.ttf') format('truetype');
+}
+
+@theme {
+    /* Body */
+    --font-sans: 'Inter', sans-serif;
+    /* Headings & Buttons */
+    --font-chicago: 'ChicagoFLF', sans-serif;
+    /* Code */
+    --font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+
+    /* Gray tones */
+    --color-neutral-10: oklch(99.8% 0 0);
+    --color-neutral-25: oklch(99.5% 0 0);
+    --color-neutral-50: oklch(98.5% 0 0);
+    --color-neutral-75: oklch(97.8% 0 0);
+    --color-neutral-100: oklch(97% 0 0);
+    --color-neutral-150: oklch(95.6% 0 0);
+    --color-neutral-200: oklch(92.2% 0 0);
+    --color-neutral-300: oklch(87% 0 0);
+    --color-neutral-350: oklch(80.9% 0 0);
+    --color-neutral-400: oklch(70.8% 0 0);
+    --color-neutral-450: oklch(62.9% 0 0);
+    --color-neutral-500: oklch(55.6% 0 0);
+    --color-neutral-550: oklch(49.7% 0 0);
+    --color-neutral-600: oklch(43.9% 0 0);
+    --color-neutral-650: oklch(40.5% 0 0);
+    --color-neutral-700: oklch(37.1% 0 0);
+    --color-neutral-750: oklch(32.0% 0 0);
+    --color-neutral-800: oklch(26.9% 0 0);
+    --color-neutral-850: oklch(23.7% 0 0);
+    --color-neutral-875: oklch(22.1% 0 0);
+    --color-neutral-900: oklch(20.5% 0 0);
+    --color-neutral-910: oklch(19.3% 0 0);
+    --color-neutral-920: oklch(18.1% 0 0); /* primary dark mode background */
+    --color-neutral-930: oklch(16.9% 0 0);
+    --color-neutral-940: oklch(15.7% 0 0);
+    --color-neutral-950: oklch(14.5% 0 0);
+    /* Blue that matches htmx logo */
+    --color-blue-50: oklch(0.9714 0.0108 256.69);
+    --color-blue-100: oklch(0.9375 0.0235 250.08);
+    --color-blue-200: oklch(0.8908 0.043 249.39);
+    --color-blue-300: oklch(0.8196 0.0739 247.52);
+    --color-blue-350: oklch(0.7729 0.0925 249.30);
+    --color-blue-400: oklch(0.7262 0.111 251.08);
+    --color-blue-500: oklch(0.6393 0.1445 257.27);
+    --color-blue-600: oklch(0.5693 0.1653 261.81); /* htmx brand blue */
+    --color-blue-700: oklch(0.505 0.1698 264.24);
+    --color-blue-800: oklch(0.4421 0.1412 265.64);
+    --color-blue-900: oklch(0.3934 0.1075 265.08);
+    --color-blue-950: oklch(0.2936 0.068 267.21);
+
+    --radius-lg: 0.625rem;
+}
+
+@layer base {
+    /* Body styles */
+    body {
+        overflow-x: hidden;
+
+        color: var(--color-neutral-700);
+        background-color: var(--color-neutral-25);
+
+        @media (prefers-color-scheme: dark) {
+            color: var(--color-neutral-300);
+            background-color: var(--color-neutral-920);
+        }
+    }
+
+    button,
+    a,
+    [role="button"] {
+        touch-action: manipulation;
+    }
+
+    /* Use Chicago font in headings */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-chicago), serif;
+        letter-spacing: var(--tracking-tight);
+    }
+
+    /* Improve underlines in anchors */
+    a, a * {
+        text-decoration-thickness: 0.125em;
+        text-underline-offset: 0.25em;
+    }
+
+    /* Astro/Shiki CSS Variables - Custom Theme */
+    :root {
+        --navigation-bar-height: 56px;
+
+        @media (width >= 64rem) {
+            --navigation-bar-height: 76px;
+        }
+
+        --header-height: var(--navigation-bar-height);
+
+        /* Base colors - light mode */
+        --astro-code-foreground: #1a1a1a;
+        --astro-code-background: var(--color-white);
+
+        /* HTML/Markup syntax */
+        --astro-code-token-string-expression: #bca26c; /* HTML tags (yellow) */
+        --astro-code-token-function: #5a5a5a; /* HTML attributes (neutral) */
+        --astro-code-token-keyword: #6aab73; /* Attribute = signs (green) */
+        --astro-code-token-string: #6aab73; /* Attribute values (green) */
+
+        /* JavaScript/Logic syntax */
+        --astro-code-token-constant: #ce8e6d; /* Keywords like function, async, export (orange) */
+        --astro-code-token-parameter: #57a8f5; /* Functions/methods (blue) */
+        --astro-code-token-punctuation: #c87dbb; /* Properties (purple) */
+
+        /* Other */
+        --astro-code-token-comment: #808080; /* Comments (gray) */
+        --astro-code-token-link: #57a8f5; /* Links (blue) */
+    }
+
+    /* Dark mode overrides with media query */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --astro-code-foreground: var(--color-neutral-350);
+            --astro-code-background: var(--color-neutral-950);
+            --astro-code-token-function: var(--color-neutral-350);
+        }
+    }
+}
+
+@utility scan-lines {
+    mask-size: 100% max(1.5px, 0.02em);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 12.5%);
+
+    @variant dark {
+        mask-image: linear-gradient(to bottom, transparent 0%, black 17.5%);
+    }
+}
+
+/* Override prose pre padding with high specificity */
+.prose pre,
+.prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    padding: 0 !important;
+}
+
+/* Custom color theme for prose */
+@utility prose-htmx {
+    /* Light Mode */
+    --tw-prose-body: var(--color-neutral-700);
+    --tw-prose-headings: var(--color-neutral-900);
+    --tw-prose-lead: var(--color-neutral-600);
+    --tw-prose-links: var(--color-blue-600);
+    --tw-prose-bold: var(--color-neutral-900);
+    --tw-prose-counters: var(--color-neutral-500);
+    --tw-prose-bullets: var(--color-neutral-300);
+    --tw-prose-hr: var(--color-neutral-200);
+    --tw-prose-quotes: var(--color-neutral-900);
+    --tw-prose-quote-borders: var(--color-neutral-200);
+    --tw-prose-captions: var(--color-neutral-500);
+    --tw-prose-code: var(--color-neutral-900);
+    --tw-prose-pre-code: var(--color-neutral-800);
+    --tw-prose-pre-bg: var(--color-neutral-50);
+    --tw-prose-th-borders: var(--color-neutral-300);
+    --tw-prose-td-borders: var(--color-neutral-200);
+
+    /* Dark Mode (for prose-invert) */
+    --tw-prose-invert-body: var(--color-neutral-300);
+    --tw-prose-invert-headings: var(--color-neutral-100);
+    --tw-prose-invert-lead: var(--color-neutral-400);
+    --tw-prose-invert-links: var(--color-blue-350);
+    --tw-prose-invert-bold: var(--color-neutral-100);
+    --tw-prose-invert-counters: var(--color-neutral-500);
+    --tw-prose-invert-bullets: var(--color-neutral-700);
+    --tw-prose-invert-hr: var(--color-neutral-850);
+    --tw-prose-invert-quotes: var(--color-neutral-100);
+    --tw-prose-invert-quote-borders: var(--color-neutral-850);
+    --tw-prose-invert-captions: var(--color-neutral-500);
+    --tw-prose-invert-code: var(--color-neutral-100);
+    --tw-prose-invert-pre-code: var(--color-neutral-300);
+    --tw-prose-invert-pre-bg: var(--color-neutral-900);
+    --tw-prose-invert-th-borders: var(--color-neutral-800);
+    --tw-prose-invert-td-borders: var(--color-neutral-850);
+}
+
+/* Prose CSS overrides */
+.prose {
+    @apply
+    prose-a:no-underline!
+    prose-a:interact:underline!
+    prose-a:not-in-prose-headings:text-blue-700
+    prose-a:not-in-prose-headings:dark:text-blue-350!
+    prose-a:not-in-prose-headings:dark:interact:text-blue-300!
+    prose-a:[[href^="#"]]:text-neutral-800
+    prose-a:[[href^="#"]]:dark:text-neutral-100
+    prose-h1:text-[2em]/12
+    prose-img:rounded-lg
+    prose-img:border prose-img:border-neutral-200 prose-img:dark:border-neutral-800;
+
+    @apply
+    prose-headings:scroll-pt-[calc(var(--header-height)+2rem)]
+    prose-headings:scroll-mt-[calc(var(--header-height)+2rem)]
+    [html:has(#sidebar)_&]:max-lg:prose-headings:scroll-pt-[calc(var(--header-height)+var(--sidebar-header-height)+2rem)]
+    [html:has(#sidebar)_&]:max-lg:prose-headings:scroll-mt-[calc(var(--header-height)+var(--sidebar-header-height)+2rem)];
+
+    /* Inline code - remove backticks */
+
+    :where(:not(pre) > code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+        @apply text-neutral-900 dark:text-neutral-100 font-semibold bg-neutral-200/25 dark:bg-neutral-800/25 px-1.5 py-0.5 rounded;
+
+        &::before, &::after {
+            content: none;
+        }
+    }
+
+    :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) > code {
+        color: inherit;
+    }
+
+    /* Code blocks - macOS window style */
+
+    :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+        @apply relative border border-neutral-200 dark:border-neutral-850 rounded-lg bg-white dark:bg-neutral-950 overflow-y-hidden;
+
+        code {
+            @apply block overflow-x-auto text-xs leading-5 whitespace-pre p-4 pr-12 mask-l-from-97% mask-r-from-95%;
+        }
+    }
+
+    /* Details/Summary - collapsible sections */
+
+    :where(details):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+        @apply my-6 py-0;
+
+        summary {
+            @apply flex w-full items-center cursor-pointer select-none text-sm
+            px-3 py-2 -mx-3 rounded-[4px]
+            text-neutral-600 dark:text-neutral-400
+            interact:bg-neutral-75 dark:interact:bg-neutral-875
+            interact:text-neutral-900 dark:interact:text-neutral-200
+            transition;
+
+            /* Robustly hide native markers */
+            &::-webkit-details-marker {
+                display: none;
+            }
+            &::marker {
+                content: '';
+            }
+
+            /* Custom inline chevron */
+            &::before {
+                @apply content-[''] inline-block size-4 mr-1.5 shrink-0
+                bg-current opacity-50 transition-transform;
+                mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z'/%3E%3C/svg%3E");
+            }
+        }
+
+        &[open] {
+            @apply pb-4;
+        }
+
+        &[open] summary {
+            @apply mb-4 text-neutral-900 dark:text-neutral-100;
+
+            &::before {
+                @apply rotate-90;
+            }
+        }
+
+        /* Tighter prose spacing inside details, zero indentation */
+        > :not(summary):nth-child(2) {
+            @apply mt-0;
+        }
+
+        > :not(summary):last-child {
+            @apply mb-0;
+        }
+
+        &.warning {
+            @apply px-4 py-0 rounded-[4px] border border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/30 dark:bg-yellow-900/10;
+
+            summary {
+                @apply text-yellow-800 dark:text-yellow-300
+                interact:text-yellow-950 dark:interact:text-yellow-100;
+
+                &::before {
+                    @apply opacity-60;
+                }
+            }
+
+            &[open] summary {
+                @apply text-yellow-900 dark:text-yellow-200;
+            }
+        }
+
+        &.info {
+            @apply px-4 py-0 rounded-[4px] border border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-900/10;
+
+            summary {
+                @apply text-blue-800 dark:text-blue-300
+                interact:text-blue-950 dark:interact:text-blue-100;
+
+                &::before {
+                    @apply opacity-60;
+                }
+            }
+
+            &[open] summary {
+                @apply text-blue-900 dark:text-blue-200;
+            }
+        }
+    }
+}
+
+@utility prose-lg {
+    /* Override h1 font size for prose-lg (with not-prose support) */
+    & :where(h1):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+        font-size: 2em;
+    }
+}
+
+@utility text-shadow-3d-* {
+    text-shadow: 0 2px 0 color-mix(in srgb, --value(--color-*) 95%, white),
+    0 4px 0 color-mix(in srgb, --value(--color-*) 95%, black);
+}
+
+@utility shadow-3d-* {
+    box-shadow: 0 calc(var(--shadow-depth, 0.375cqh) / 2) 0 color-mix(in srgb, --value(--color-*) 95%, white),
+    0 var(--shadow-depth, 0.375cqh) 0 color-mix(in srgb, --value(--color-*) 95%, black);
+}
+
+@utility shadow-3d-depth-* {
+    --shadow-depth: --value([length], integer);
+}
+
+/* Subtle scrollbar styling */
+@utility scrollbar-subtle {
+    /* Standard properties (Firefox, modern Chrome/Edge) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-neutral-300) transparent;
+
+    @media (prefers-color-scheme: dark) {
+        scrollbar-color: var(--color-neutral-700) transparent;
+    }
+
+    /* WebKit (Chrome, Safari, Edge) - finer control */
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--color-neutral-300);
+        border-radius: 3px;
+
+        &:hover {
+            background: var(--color-neutral-400);
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        &::-webkit-scrollbar-thumb {
+            background: var(--color-neutral-700);
+
+            &:hover {
+                background: var(--color-neutral-600);
+            }
+        }
+    }
+}
+
+/* interact: variant - combines hover/focus-visible/active for interactive states
+   Hover scoped to (hover: hover) to prevent sticky touch behavior on mobile.
+   :active provides brief tap feedback on touch devices (requires touchstart listener in Head.astro) */
+@custom-variant interact {
+    @media (hover: hover) {
+        &:hover {
+            @slot;
+        }
+    }
+    &:focus-visible {
+        @slot;
+    }
+
+    &:active {
+        @slot;
+    }
+}

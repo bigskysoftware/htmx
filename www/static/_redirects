@@ -1,8 +1,0 @@
-/locality-of-behaviour                      /essays/locality-of-behaviour
-/locality-of-behavior                       /essays/locality-of-behaviour
-/essays/locality-of-behavior                /essays/locality-of-behaviour
-/posts/2020-6-19-htmx-0.0.5-is-released/    /posts/2020-6-20-htmx-0.0.6-is-released/
-/discord                                    https://discord.gg/Z6gPqAd
-/feed.xml                                   /atom.xml
-/attributes/kt-swap                         /attributes/hx-swap
-https://demo.htmx.org/*                     /js/demo/it.js  200!

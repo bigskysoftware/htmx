@@ -7,3 +7,6 @@ test/scratch/scratch.html
 .vscode
 /coverage
 /tmp
+.syncthing.*
+# Override global gitignore: lib/ directories are part of this project
+!**/lib/

@@ -1,0 +1,41 @@
+- name: Alex Petros
+  image: /src/assets/img/team/alex.png
+  github: alexpetros
+  content: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+- name: Deniz Akşimşek
+  image: /src/assets/img/team/deniz.png
+  github: bkardell
+  content: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+- name: Michael West
+  image: /src/assets/img/team/latent.png
+  github: MichaelWest22
+  content: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+- name: Christian Tanul
+  image: /src/assets/img/team/scriptogre.png
+  github: scriptogre
+  content: A perfectionist still editing this sentence.
+
+- name: Vincent Thébaud
+  image: /src/assets/img/team/telroshan.png
+  github: bigskysoftware
+  content: A game developer who hasn't released any game yet.
+
+- name: Stephen Mitchell
+  image: /src/assets/img/team/scum.png
+  github: bigskysoftware
+  content: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+- name: Carson Gross
+  image: /src/assets/img/team/grug.png
+  github: bigskysoftware
+  url: https://www.cs.montana.edu/users/grug/
+  content: |
+    An <a href="https://www.cs.montana.edu/users/grug/" target="_blank" rel="noopener noreferrer" class="font-semibold text-blue-600 dark:text-blue-350 hover:underline hover:text-blue-700 dark:hover:text-blue-300 underline-offset-4 transition">academic</a> with no real-world coding experience.
+
+- name: Stu Kennedy
+  image: /src/assets/img/team/stu.png
+  github: bigskysoftware
+  content: Full-Stack Human, Part-Time AI Whisperer, and HTMX Preacher at Large.

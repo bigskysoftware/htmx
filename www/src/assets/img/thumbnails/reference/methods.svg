@@ -1,0 +1,38 @@
+<svg viewBox="0 0 128 128" overflow="visible" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .ref {
+            --code: var(--color-neutral-600);
+            --muted: var(--color-neutral-400);
+        }
+        @media (prefers-color-scheme: dark) {
+            .ref {
+                --code: var(--color-neutral-400);
+                --muted: var(--color-neutral-500);
+            }
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .ref {
+            --code: var(--color-neutral-900);
+            --muted: var(--color-neutral-600);
+        }
+        @media (prefers-color-scheme: dark) {
+            .group:has(a:hover, a:focus-visible, a:active) .ref {
+                --code: var(--color-neutral-200);
+                --muted: var(--color-neutral-300);
+            }
+        }
+        .ref text { transition: fill 150ms; }
+        .ref text {
+            font-family: var(--font-mono), monospace;
+            font-size: 17px;
+            dominant-baseline: middle;
+            text-anchor: middle;
+        }
+        .code { font-weight: 700; }
+        .muted { font-weight: 500; }
+    </style>
+    <g class="ref">
+        <text x="64" y="64">
+            <tspan class="code" fill="var(--code)">htmx.ajax</tspan><tspan class="muted" fill="var(--muted)">(...)</tspan>
+        </text>
+    </g>
+</svg>

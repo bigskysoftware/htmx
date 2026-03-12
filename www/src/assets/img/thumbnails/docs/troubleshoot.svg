@@ -1,0 +1,23 @@
+<svg viewBox="0 0 128 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .accent { fill: var(--accent); stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+        .accent-body { fill: var(--accent); fill-opacity: 0.4; stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+    </style>
+
+    <!-- Magnifying glass body -->
+    <circle class="accent-body" cx="56" cy="42" r="18" stroke-width="1.5"/>
+
+    <!-- Handle -->
+    <line class="accent" x1="69" y1="55" x2="84" y2="70" style="fill: none" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Bug inside lens -->
+    <ellipse class="accent" cx="56" cy="42" rx="4" ry="6"/>
+    <circle class="accent" cx="56" cy="34" r="2.5"/>
+    <!-- Bug legs -->
+    <path d="M52 38l-4-2" stroke="currentColor" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round" style="fill: none"/>
+    <path d="M60 38l4-2" stroke="currentColor" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round" style="fill: none"/>
+    <path d="M52 42l-4 0" stroke="currentColor" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round" style="fill: none"/>
+    <path d="M60 42l4 0" stroke="currentColor" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round" style="fill: none"/>
+    <path d="M52 46l-4 2" stroke="currentColor" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round" style="fill: none"/>
+    <path d="M60 46l4 2" stroke="currentColor" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round" style="fill: none"/>
+</svg>

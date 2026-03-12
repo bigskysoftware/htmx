@@ -382,7 +382,7 @@ var htmx = (() => {
             if (selector instanceof Element) {
                 return selector;
             } else if (selector != null) {
-                return this.#findExt(elt, selector, "hx-target");
+                return this.#findOrWarn(elt, selector, "hx-target");
             } else if (this.#isBoosted(elt)) {
                 return document.body
             } else {
@@ -605,7 +605,7 @@ var htmx = (() => {
             if (syncValue && syncValue.includes(":")) {
                 let strings = syncValue.split(":");
                 let selector = strings[0];
-                syncElt = this.#findExt(elt, selector, "hx-sync");
+                syncElt = this.#findOrWarn(elt, selector, "hx-sync") || elt;
             }
             return syncElt._htmxRequestQueue ||= new ReqQ()
         }
@@ -680,7 +680,7 @@ var htmx = (() => {
                 if (eventName === 'intersect' || eventName === "revealed") {
                     let observerOptions = {}
                     if (spec.opts?.root) {
-                        observerOptions.root = this.#findExt(elt, spec.opts.root)
+                        observerOptions.root = this.#findOrWarn(elt, spec.opts.root)
                     }
                     if (spec.opts?.threshold) {
                         observerOptions.threshold = parseFloat(spec.opts.threshold)
@@ -946,6 +946,7 @@ var htmx = (() => {
                 for (let spec of elt._htmx.triggerSpecs || []) {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
+                    Missing: spec.observer?.disconnect()
                 }
                 for (let listenerInfo of elt._htmx.listeners || []) {
                     listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler);
@@ -1118,7 +1119,7 @@ var htmx = (() => {
         }
 
         #handleAutoFocus(elt) {
-            let autofocus = this.find(elt, "[autofocus]");
+            let autofocus = elt.querySelector?.("[autofocus]");
             if (autofocus) {
                 this.#setFocus(autofocus);
             }
@@ -1600,17 +1601,13 @@ var htmx = (() => {
                 if (attr.startsWith(searchString)) {
                     let evtName = attr.substring(searchString.length)
                     let code = node.getAttribute(attr);
-                    let handler = node.addEventListener(evtName, async (evt) => {
+                    node.addEventListener(evtName, async (evt) => {
                         try {
                             await this.#executeJavaScriptAsync(node, {"event": evt}, code, false)
                         } catch (e) {
                             console.error(e);
                         }
                     });
-                    // ensure listeners collection is initialized and push for cleanup
-                    node._htmx ||= {}
-                    node._htmx.listeners ||= []
-                    node._htmx.listeners.push({fromElt: node, eventName: evtName, handler});
                 }
             }
         }
@@ -1838,6 +1835,14 @@ var htmx = (() => {
             }
         }
 
+        #findOrWarn(elt, selector, thisAttr) {
+            let result = this.#findAllExt(elt, selector, thisAttr)[0]
+            if (!result) {
+                console.warn(`htmx: '${selector}' on ${thisAttr} did not match any element`)
+            }
+            return result
+        }
+
         #findExt(eltOrSelector, selector, thisAttr) {
             return this.#findAllExt(eltOrSelector, selector, thisAttr)[0]
         }
@@ -1882,7 +1887,7 @@ var htmx = (() => {
             }
             insertionPoint ||= oldParent.firstChild;
 
-            for (const newChild of newParent.childNodes) {
+            for (const newChild of [...newParent.childNodes]) {
                 if (insertionPoint && insertionPoint != endPoint) {
                     let bestMatch = this.#findBestMatch(ctx, newChild, insertionPoint, endPoint);
                     if (bestMatch) {
@@ -1924,16 +1929,15 @@ var htmx = (() => {
                     continue;
                 }
 
-                let tempChild;
                 if (ctx.idMap.has(newChild)) {
-                    tempChild = document.createElement(newChild.tagName);
-                    oldParent.insertBefore(tempChild, insertionPoint);
-                    this.#morphNode(tempChild, newChild, ctx);
+                    let placeholder = document.createElement(newChild.tagName);
+                    oldParent.insertBefore(placeholder, insertionPoint);
+                    this.#morphNode(placeholder, newChild, ctx);
+                    insertionPoint = placeholder.nextSibling;
                 } else {
-                    tempChild = document.importNode(newChild, true);
-                    oldParent.insertBefore(tempChild, insertionPoint);
+                    oldParent.insertBefore(newChild, insertionPoint);
+                    insertionPoint = newChild.nextSibling;
                 }
-                insertionPoint = tempChild.nextSibling;
             }
 
             while (insertionPoint && insertionPoint != endPoint) {

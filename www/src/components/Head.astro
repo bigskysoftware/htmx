@@ -1,0 +1,106 @@
+---
+interface Props {
+    title?: string;
+    description?: string;
+    image?: string;
+    keywords?: string[];
+}
+
+const SITE_KEYWORDS = 'htmx, hypermedia, ajax, html, javascript, frontend, web development, hateoas, rest, websockets, server sent events, declarative';
+
+const {
+    title = "htmx",
+    description = "htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext\n\nhtmx is small (~10k min.gz'd), dependency-free, extendable, IE11 compatible & has reduced code base sizes by 67% when compared with react",
+    image = "/img/og-image.png",
+    keywords,
+} = Astro.props;
+
+const metaKeywords = keywords?.length
+    ? `${keywords.join(', ')}, ${SITE_KEYWORDS}`
+    : SITE_KEYWORDS;
+---
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{title}</title>
+
+    <!-- Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+    <!-- SEO & Page Meta -->
+    <meta name="description" content={description.trim()}>
+    <meta name="keywords"
+          content={metaKeywords}>
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Big Sky Software">
+    <meta name="generator" content="Astro">
+
+    <!-- Sitemap -->
+    <link rel="sitemap" href="/sitemap-index.xml">
+
+    <!-- Security -->
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- Prevents iOS from turning version numbers (e.g. 2.0.0) into phone links -->
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#171717" media="(prefers-color-scheme: dark)">
+
+    {Astro.url &&
+            <link rel="canonical" href={Astro.url.href}>}
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content={Astro.url}>
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content={description.trim()}>
+    <meta property="og:image" content={new URL(image, Astro.url)}>
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@htmx_org">
+    <meta name="twitter:title" content={title}>
+    <meta name="twitter:description" content={description.trim()}>
+    <meta name="twitter:image" content={new URL(image, Astro.url)}>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+          rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/atom+xml" title="Sitewide Atom feed" href="/atom.xml">
+
+    <!-- htmx & extensions -->
+    <script is:inline defer src="/js/htmx.min.js"></script>
+    <script is:inline defer src="/js/ext/hx-preload.min.js"></script>
+    <meta name="htmx-config" content='{"extensions":"preload","history":"reload","morphSkip":["#search-shortcut-hint"],"morphIgnore":["data-htmx-powered","_"],"logAll":false}'>
+
+    <!-- _hyperscript -->
+    <script is:inline defer src="/js/_hyperscript.min.js"></script>
+    <script is:inline defer src="/js/_hyperscript_render.min.js"></script>
+
+    <!-- Re-initialize hyperscript after each morphed forward navigation.
+         innerMorph swaps new nodes in-place; new nodes have no initialized flag in
+         hyperscript's WeakMap, so processNode correctly re-binds _ attributes on them.
+         Back/forward navigation uses history:"reload" so the full page reloads naturally. -->
+    <script>
+        document.addEventListener('htmx:after:swap', function () {
+            if (window._hyperscript) window._hyperscript.processNode(document.body);
+        });
+    </script>
+
+    <!-- Enable :active pseudo-class on iOS Safari (requires touchstart listener).
+         Used by our custom interact: TailwindCSS variant for touch feedback.
+         https://stackoverflow.com/questions/3885018/active-pseudo-class-doesnt-work-in-mobile-safari -->
+    <script>
+        document.addEventListener('touchstart', function () {}, {passive: true});
+    </script>
+
+</head>

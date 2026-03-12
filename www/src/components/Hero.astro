@@ -1,0 +1,95 @@
+---
+import CDNGenerator from "./CDNGenerator.astro";
+
+const CDN_URL = "https://unpkg.com/htmx.org@4/dist/htmx.min.js";
+---
+
+<section id="hero-section"
+         class="group not-prose pt-8 pb-12 sm:pt-16 sm:pb-24 w-screen relative left-1/2 -ml-[50vw] overflow-hidden"
+         _="on keydown[key is 'Escape'] set #cdn-mode.checked to false">
+
+    <!-- CDN Mode Toggle (hidden checkbox) -->
+    <input type="checkbox" id="cdn-mode" class="sr-only">
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="transform: translateZ(0); isolation: isolate;">
+
+        <!-- Hero Content (visible by default, hidden in CDN mode) -->
+        <div class="text-center mb-12 sm:mb-16 transition group-has-[#cdn-mode:checked]:opacity-0 group-has-[#cdn-mode:checked]:pointer-events-none group-has-[#cdn-mode:checked]:-translate-y-4">
+            <h1 class="flex flex-col gap-6 text-5xl sm:text-6xl md:text-7xl font-bold font-chicago tracking-tight text-black dark:text-white"
+                style="transform: translateZ(0);">
+                <span>Wait, HTML</span>
+                <span>
+                    can do
+                    <span class="text-blue-600 dark:text-blue-350 italic text-shadow-3d-blue-900 dark:text-shadow-3d-blue-700">
+                        that!?
+                    </span>
+                </span>
+            </h1>
+            <p class="mt-9 text-xl sm:text-2xl text-neutral-650 dark:text-neutral-350 max-w-2xl mx-auto">
+                build modern UIs with the simplicity of hypertext
+            </p>
+            <!-- CTA -->
+            <div class="mt-9 flex justify-center items-center gap-9">
+                <a href="/docs/get-started/installation"
+                   class="inline-flex items-center justify-center h-11 px-8 bg-linear-to-b text-white font-chicago text-sm shadow-3d-blue-900 dark:shadow-3d-blue-800 rounded-lg from-blue-600 to-blue-700 dark:from-blue-500  interact:from-blue-500 interact:to-blue-600 dark:interact:from-blue-400 dark:interact:to-blue-500 dark:to-blue-600 border border-blue-500 dark:border-blue-500 dark:interact:border-blue-400 active:translate-y-[0.375cqh] active:shadow-3d-depth-[2px] transition">
+                    Start Here
+                </a>
+
+                <!-- CDN Copy Button -->
+                <!--<div class="flex items-center">-->
+                <!--    <button class="group/copy flex items-center gap-4 cursor-pointer dark:bg-neutral-940/50 py-2 px-4 rounded-lg"-->
+                <!--            data-cdn-url={CDN_URL}-->
+                <!--            _="on click-->
+                <!--                 set url to my @data-cdn-url-->
+                <!--                 writeText(`<script src='` + url + `'></script>`) on navigator.clipboard-->
+                <!--                 add .hidden to .copy-icon in me-->
+                <!--                 remove .hidden from .check-icon in me-->
+                <!--                 wait 2s-->
+                <!--                 remove .hidden from .copy-icon in me-->
+                <!--                 add .hidden to .check-icon in me">-->
+                <!--        <code class="font-mono text-sm text-neutral-500 dark:text-neutral-400">-->
+                <!--            <span class="transition text-blue-600 dark:text-blue-400">&lt;script</span>-->
+                <!--            <span class="transition text-neutral-700 dark:text-neutral-300">src=</span><span-->
+                <!--                class="transition text-emerald-600 dark:text-emerald-400">".../htmx.min.js"</span><span-->
+                <!--                class="transition text-blue-600 dark:text-blue-400">&gt;</span>-->
+                <!--        </code>-->
+                <!--        <i class="icon-[radix-icons&#45;&#45;copy] size-4 copy-icon text-neutral-400 transition group-hover/copy:text-neutral-600 dark:group-hover/copy:text-neutral-300"></i>-->
+                <!--        <i class="icon-[radix-icons&#45;&#45;check] size-4 check-icon hidden text-emerald-500"></i>-->
+                <!--    </button>-->
+                <!--    <label for="cdn-mode"-->
+                <!--           class="flex items-center justify-center px-4 py-2 rounded-r-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition cursor-pointer rounded"-->
+                <!--           title="Configure CDN">-->
+                <!--        <i class="icon-[radix-icons&#45;&#45;gear] size-4"></i>-->
+                <!--    </label>-->
+                <!--</div>-->
+            </div>
+        </div>
+
+        <!-- CDN Configuration (hidden by default, visible in CDN mode) -->
+        <div class="absolute inset-x-0 top-0 flex flex-col items-center transition opacity-0 pointer-events-none translate-y-4 group-has-[#cdn-mode:checked]:opacity-100 group-has-[#cdn-mode:checked]:pointer-events-auto group-has-[#cdn-mode:checked]:translate-y-0">
+
+            <!-- Header -->
+            <div class="w-full max-w-2xl flex items-center justify-between mb-6">
+                <h2 class="font-chicago text-lg text-neutral-900 dark:text-neutral-100">Configure CDN</h2>
+                <label for="cdn-mode"
+                       class="flex items-center justify-center size-9 text-neutral-400 interact:text-neutral-600 dark:interact:text-neutral-300 transition cursor-pointer rounded-lg interact:bg-neutral-100 dark:interact:bg-neutral-800"
+                       title="Close (Esc)">
+                    <i class="icon-[radix-icons--cross-2] size-5"></i>
+                </label>
+            </div>
+
+            <!-- CDN Generator -->
+            <div class="w-full max-w-2xl bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-lg overflow-hidden">
+                <CDNGenerator/>
+            </div>
+
+            <!-- Hint -->
+            <p class="mt-4 text-sm text-neutral-400 dark:text-neutral-500">
+                Press <kbd
+                    class="px-1.5 py-0.5 rounded border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 text-xs font-mono">Esc</kbd>
+                to close
+            </p>
+        </div>
+
+    </div>
+</section>
