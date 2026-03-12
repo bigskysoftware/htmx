@@ -61,8 +61,10 @@ export const grouped = (() => {
 
 <div class="space-y-10">
     {grouped.map(([year, yearPodcasts]) => (
-        <section>
-            <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-4">{year}</h2>
+        <section class="not-prose">
+            <h2 class="text-sm tracking-wide text-neutral-550 dark:text-neutral-450 mb-4">
+                {year}
+            </h2>
             <LinkList items={yearPodcasts.map(p => ({
                 title: p.name,
                 url: p.url,
