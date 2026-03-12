@@ -1,5 +1,5 @@
 [build]
-base    = "www-2"
+base    = "www"
 publish = "dist"
 command = "bun install && bun run build"
 
