@@ -80,23 +80,11 @@ const metaKeywords = keywords?.length
     <!-- htmx & extensions -->
     <script is:inline defer src="/js/htmx.min.js"></script>
     <script is:inline defer src="/js/ext/hx-preload.min.js"></script>
-    <meta name="htmx-config"
-          content='{"extensions":"preload","morphSkip":["#global-search","#search-shortcut-hint"],"morphIgnore":["data-htmx-powered","_"],"logAll":true}'>
+    <meta name="htmx-config" content='{"extensions":"preload","morphSkip":["#search-shortcut-hint"],"morphIgnore":["data-htmx-powered","_"],"logAll":false}'>
 
     <!-- _hyperscript -->
     <script is:inline defer src="/js/_hyperscript.min.js"></script>
     <script is:inline defer src="/js/_hyperscript_render.min.js"></script>
-    <script is:inline>
-        // Process new htmx content with hyperscript, but skip search component
-        // The search component (#global-search) is protected by morphSkip
-        document.addEventListener('htmx:after:swap', function (evt) {
-            document.body.querySelectorAll('[_]').forEach(function (el) {
-                if (!el.closest('#global-search')) {
-                    _hyperscript.processNode(el);
-                }
-            });
-        });
-    </script>
 
     <!-- Enable :active pseudo-class on iOS Safari (requires touchstart listener).
          Used by our custom interact: TailwindCSS variant for touch feedback.

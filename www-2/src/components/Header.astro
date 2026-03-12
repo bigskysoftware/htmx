@@ -100,15 +100,13 @@ const isCurrent = (url?: string) => {
             <div class="flex items-center min-w-[200px]">
                 <!-- Desktop: Search -->
                 <div class="flex-1">
-                    <button
-                            type="button"
+                    <button type="button"
                             class="relative group flex items-center min-h-[44px] min-w-[200px] w-full bg-white dark:bg-neutral-910
-    border border-neutral-200 dark:border-neutral-800 rounded-[5px] py-2 px-3 text-base font-sans text-neutral-400
+    border border-neutral-200 dark:border-neutral-800 rounded-md py-2 px-3 text-base font-sans text-neutral-400
     interact:bg-neutral-100 dark:interact:bg-neutral-800/50
     interact:border-neutral-400 dark:interact:border-neutral-600
     outline-hidden sm:transition cursor-pointer"
                             aria-label="Open Search"
-                            hx-preserve="true"
                             _="on click
                                  showModal() from the first of <search-index > dialog/>
                                end
