@@ -111,6 +111,12 @@ default. Use [`hx-include`](/attributes/hx-include)`="closest form"` if you need
 In htmx 2, all `<input>` elements defaulted to the `change` trigger. In htmx 4, `<input type="button">` and
 `<input type="submit">` now default to `click`, matching the behavior of `<button>` elements.
 
+### Form Validation
+
+In htmx 2, [`hx-validate`](/attributes/hx-validate) was opt-in for all elements. In htmx 4, `<form>` elements
+validate by default (unless the form has `noValidate` or the submitter has `formNoValidate`). Set
+`hx-validate="false"` on a form to disable this.
+
 ### Out-of-Band Swap Order
 
 In htmx 2, out-of-band ([`hx-swap-oob`](/attributes/hx-swap-oob)) elements were swapped *before* the main content. In htmx 4,
