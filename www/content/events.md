@@ -50,7 +50,7 @@ document.body.addEventListener('htmx:confirm', function(evt) {
 
 ##### Details
 
-* `detail.ctx` - the request context object
+* `detail.ctx` - the [request context](/extensions/building#request-context) object
 * `detail.issueRequest()` - function to confirm and issue the request
 * `detail.dropRequest()` - function to cancel the request
 
@@ -139,7 +139,7 @@ document.body.addEventListener('htmx:config:request', function(evt) {
 
 ##### Details
 
-* `detail.ctx` - the request context object containing:
+* `detail.ctx` - the [request context](/extensions/building#request-context) object containing:
   * `ctx.sourceElement` - the element that triggered the request
   * `ctx.request` - the request configuration with properties:
     * `action` - the URL
@@ -147,6 +147,7 @@ document.body.addEventListener('htmx:config:request', function(evt) {
     * `headers` - headers object
     * `body` - request body (FormData)
     * `credentials`, `mode`, `cache`, etc. - fetch options
+  * `ctx.fetch` - the fetch function, [replaceable](/extensions/building#overriding-ctxfetch) for middleware/caching
 
 ### Event - `htmx:before:request` {#htmx:before:request}
 

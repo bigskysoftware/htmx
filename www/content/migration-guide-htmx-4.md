@@ -317,7 +317,7 @@ Extensions in htmx 4 use a new event-based hook system instead of the callback-b
 - Event-based hooks instead of callback methods
 - Hook names use underscores: `htmx_before_request` instead of `onEvent`
 - Extensions load by including the script (config whitelist is optional)
-- Full request context available via `detail.ctx`
+- Full request context available via `detail.ctx` (see [Request Context reference](/extensions/building#request-context) for the complete structure)
 
 Extensions will almost certainly need a rewrite. Please see our [Extensions documentation](https://htmx.org/extensions/) and [Extension Migration Guide](https://htmx.org/extensions/migration-guide) for more information.
 

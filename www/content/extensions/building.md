@@ -165,33 +165,84 @@ Available internal API methods:
 
 ## Request Context
 
-The `detail.ctx` object contains request information:
+The `detail.ctx` object is available in all request lifecycle event hooks. It is created before the
+request and populated progressively as the request proceeds.
 
 ```javascript
 {
-    sourceElement,      // Element triggering request
-    sourceEvent,        // Event that triggered request
-    status,            // Request status
-    target,            // Target element for swap
-    swap,              // Swap strategy
+    // --- Available from creation ---
+    sourceElement,      // Element that triggered the request
+    sourceEvent,        // DOM event that triggered the request
+    status,             // Lifecycle status: "created" → "queued"/"dropped" → "issuing" → "response received" → "swapped" or "error: ..."
+    target,             // Resolved target element for swap
+    swap,               // Swap strategy string (e.g. "innerHTML", "outerMorph")
+    select,             // CSS selector for content selection (from hx-select)
+    selectOOB,          // CSS selector for OOB swaps (from hx-select-oob)
+    push,               // URL to push into history (from hx-push-url)
+    replace,            // URL to replace in history (from hx-replace-url)
+    transition,         // Whether to use view transitions (from config.transitions)
+    confirm,            // Confirmation message (from hx-confirm)
+    fetch,              // Fetch function — defaults to window.fetch, overridable (see below)
     request: {
-        action,        // Request URL
-        method,        // HTTP method
-        headers,       // Request headers
-        body,          // Request body (FormData)
-        validate,      // Whether to validate
-        abort,         // Function to abort request
-        signal         // AbortSignal
+        action,         // Request URL (without fragment)
+        anchor,         // Fragment identifier (part after #)
+        method,         // HTTP method (GET, POST, etc.)
+        headers,        // Request headers object
+        body,           // Request body: FormData, URLSearchParams, or null
+        validate,       // Whether to run form validation
+        abort,          // Function — call to abort the request
+        signal,         // AbortSignal passed to fetch()
+        credentials,    // Fetch credentials ("same-origin" by default)
+        mode,           // Fetch mode (from config.mode, "same-origin" by default)
+        form,           // Enclosing form element, if any (set during form data collection)
+        submitter,      // Submit button that triggered the request, if any
+        etag,           // ETag value for conditional requests (from hx-config)
     },
-    response: {        // Available after request
-        raw,           // Raw Response object
-        status,        // HTTP status code
-        headers        // Response headers
+
+    // --- Available after response ---
+    response: {
+        raw,            // Raw Response object
+        status,         // HTTP status code (number)
+        headers,        // Response headers object
     },
-    text,              // Response text (after request)
-    hx                 // HX-* response headers (parsed)
+    text,               // Response body as text
+    title,              // Page title extracted from response
+    hx: {               // Parsed HX-* response headers
+        retarget,       // HX-Retarget value
+        reswap,         // HX-Reswap value
+        reselect,       // HX-Reselect value
+        trigger,        // HX-Trigger value
+        refresh,        // HX-Refresh value
+        redirect,       // HX-Redirect value
+        pushUrl,        // HX-Push-Url value
+        replaceUrl,     // HX-Replace-Url value
+        location,       // HX-Location value
+    },
 }
 ```
+
+### Overriding `ctx.fetch`
+
+A very powerful option that htmx 4 makes available is that you can replace `ctx.fetch` during the 
+`htmx:config:request` event in order to customize how requests are made and handled. 
+
+Here is a simple example that logs the request interception and then delegates to the built
+in version of `fetch`:
+
+```javascript
+htmx.on("htmx:config:request", (evt) => {
+    let ctx = evt.detail.ctx;
+    let originalFetch = ctx.fetch;
+    ctx.fetch = async (url, options) => {
+        console.log("Intercepted request to", url);
+        return originalFetch(url, options);
+    };
+});
+```
+
+With this functionality you can add "middleware" to the htmx request life cycle.
+
+See the `hx-preload` extension for a good example of this feature.
 
 ## Custom Swap Strategies
 
