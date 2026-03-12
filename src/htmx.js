@@ -375,7 +375,7 @@ var htmx = (() => {
                     this.__htmxProp(sourceElement).etag ||= ctx.request.etag
                 }
             }
-            if (sourceElement._htmx?.etag) {
+            if (sourceElement._htmx?.etag && !this.__isBoosted(sourceElement)) {
                 ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
             }
             return ctx;
