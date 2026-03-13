@@ -85,13 +85,16 @@ const isPatterns = folder.folder === 'patterns';
                                                        title={file.frontmatter.description}
                                                        aria-current={isActive ? 'page' : undefined}
                                                        class:list={[
-                                                           "block px-3 py-2 text-sm rounded-md transition truncate",
+                                                           "flex items-center gap-2.5 px-3 py-2 text-sm rounded-md transition",
                                                            isReference && "font-mono",
                                                            isActive
                                                                ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
                                                                : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
                                                        ]}>
-                                                        <span set:html={file.frontmatter.title}/>
+                                                        {isPatterns && file.frontmatter.icon && (
+                                                            <i class:list={[file.frontmatter.icon, "size-4 shrink-0"]}></i>
+                                                        )}
+                                                        <span class="truncate" set:html={file.frontmatter.title}/>
                                                     </a>
                                                 </li>
                                         );

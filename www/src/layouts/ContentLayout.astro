@@ -1,5 +1,6 @@
 ---
 import Layout from './Layout.astro';
+import Demo from '../components/Demo.astro';
 import Sidebar from '../components/Sidebar.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import EssayHeader from '../components/EssayHeader.astro';
@@ -27,6 +28,7 @@ const {file, folder, headings = [], collection} = Astro.props;
 const isIndex = !file;
 const data = isIndex ? folder! : file;
 const isEssay = !isIndex && collection === 'essays';
+const isPatterns = !isIndex && collection === 'patterns';
 const hasSidebar = !!(folder?.subfolders?.length);
 
 const {Content} = await data.render();
@@ -159,6 +161,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                         />
                                 )}
 
+                                {isPatterns && <Demo />}
                                 <slot name="before-content"/>
 
                                 <Content/>
