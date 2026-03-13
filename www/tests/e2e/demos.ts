@@ -74,7 +74,7 @@ test.describe.serial('Pattern demos', () => {
         await waitForSw(page);
 
         // Check for pattern-specific content, not just any demo content
-        await expect(page.locator('#demo-content button', { hasText: /load more/i }))
+        await expect(page.locator('#demo-content button', { hasText: /show more/i }))
             .toBeVisible({ timeout: 15_000 });
     });
 
@@ -88,7 +88,7 @@ test.describe.serial('Pattern demos', () => {
         await expect(page).toHaveURL('/patterns/loading/click-to-load', { timeout: 10_000 });
 
         // Verify click-to-load specific content appears (not stale infinite-scroll)
-        await expect(page.locator('#demo-content button', { hasText: /load more/i }))
+        await expect(page.locator('#demo-content button', { hasText: /show more/i }))
             .toBeVisible({ timeout: 15_000 });
     });
 
@@ -116,14 +116,14 @@ test.describe.serial('Pattern demos', () => {
         await page.click('a[href="/patterns/loading/click-to-load"]');
         await expect(page).toHaveURL('/patterns/loading/click-to-load', { timeout: 10_000 });
 
-        const loadMore = page.locator('#demo-content button', { hasText: /load more/i });
+        const loadMore = page.locator('#demo-content button', { hasText: /show more/i });
         await expect(loadMore).toBeVisible({ timeout: 15_000 });
 
-        const initialRows = await page.locator('#demo-content tbody tr').count();
+        const initialCount = await page.locator('#demo-content #comments > div').count();
         await loadMore.click();
         await page.waitForTimeout(1500);
-        const newRows = await page.locator('#demo-content tbody tr').count();
-        expect(newRows).toBeGreaterThan(initialRows);
+        const newCount = await page.locator('#demo-content #comments > div').count();
+        expect(newCount).toBeGreaterThan(initialCount);
         expect(errors).toEqual([]);
     });
 
@@ -161,15 +161,13 @@ test.describe.serial('Pattern demos', () => {
         await waitForDemo(page);
     });
 
-    test('shows placeholder on pages without demos', async ({ page }) => {
+    test('shows empty demo container on pages without demos', async ({ page }) => {
         await page.goto(STUB);
         await expect(page.locator('[data-demo-container]')).toBeVisible();
 
-        const content = await page.evaluate(() => {
-            const el = document.querySelector('#demo-content');
-            return el ? getComputedStyle(el, '::before').content : null;
-        });
-        expect(content).toContain('Demo coming soon');
+        // demo-content should be empty (no children)
+        const childCount = await page.locator('#demo-content > *').count();
+        expect(childCount).toBe(0);
     });
 
     test('no errors on pages without demos', async ({ page }) => {

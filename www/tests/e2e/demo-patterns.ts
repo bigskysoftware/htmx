@@ -27,18 +27,18 @@ test.describe.serial('Pattern demo pages', () => {
         await waitForSw(page);
         await waitForDemo(page);
 
-        // Should have a table with contacts
-        await expect(page.locator('#demo-content table')).toBeVisible();
-        const initialRows = await page.locator('#demo-content tbody tr').count();
-        expect(initialRows).toBeGreaterThan(0);
+        // Should have comments
+        await expect(page.locator('#demo-content #comments')).toBeVisible();
+        const initialCount = await page.locator('#demo-content #comments > div').count();
+        expect(initialCount).toBeGreaterThan(0);
 
-        // Click "Load More" and verify more rows appear
-        const loadMore = page.locator('#demo-content button', { hasText: /load more/i });
-        if (await loadMore.isVisible()) {
-            await loadMore.click();
+        // Click "Show more comments" and verify more appear
+        const showMore = page.locator('#demo-content button', { hasText: /show more/i });
+        if (await showMore.isVisible()) {
+            await showMore.click();
             await page.waitForTimeout(1000);
-            const newRows = await page.locator('#demo-content tbody tr').count();
-            expect(newRows).toBeGreaterThan(initialRows);
+            const newCount = await page.locator('#demo-content #comments > div').count();
+            expect(newCount).toBeGreaterThan(initialCount);
         }
     });
 
@@ -58,8 +58,8 @@ test.describe.serial('Pattern demo pages', () => {
         await waitForSw(page);
         await waitForDemo(page);
 
-        // Should eventually show the weather card (replaces loading placeholder)
-        await expect(page.locator('#demo-content .weather-card')).toBeVisible({ timeout: 10_000 });
+        // Should eventually show the forecast (replaces loading placeholder)
+        await expect(page.locator('#demo-content', { hasText: '5-Day Forecast' })).toBeVisible({ timeout: 10_000 });
     });
 
     test('progress-bar: renders and starts job', async ({ page }) => {
