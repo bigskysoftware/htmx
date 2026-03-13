@@ -10,6 +10,7 @@ public/js/*
 !public/js/_hyperscript_render.min.js
 !public/js/_hyperscript_bundle.min.js
 !public/js/demo-sw.js
+!public/js/demo-shim.js
 
 # dependencies
 node_modules/
