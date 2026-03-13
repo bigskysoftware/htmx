@@ -63,12 +63,12 @@ export const groupedPatterns = categoryEntries.map(cat => ({
 
 <div class="mt-6">
     {groupedPatterns.map(group => (
-        <div class="mt-8 first:mt-0">
+        <div class="mt-12 first:mt-0">
             <h4 id={group.slug}>
                 <a href={`#${group.slug}`}>{group.label}</a>
             </h4>
             <div class="not-prose mt-3">
-                <Card variant="sm" class="p-1.5">
+                <Card variant="lg" class="p-1.5">
                     <div class="flex flex-col gap-1.5">
                         {group.items.map(item => (
                             <FinderLink href={item.url} class="!mx-0">
