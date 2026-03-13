@@ -1,21 +1,12 @@
 ---
-
+// Demo container for pattern pages.
+// Loaded automatically by ContentLayout for pattern detail pages.
+// Hidden by default; server.start() reveals it.
 ---
 
-<script is:inline src="/js/fetch-mock.js"></script>
-<script is:inline>
-  function init(path, response) {
-    onGet(path, response);
-    _hyperscript.evaluate(`put \`<div hx-get="${path}" hx-trigger="load" hx-swap="outerHTML transition:false"></div>\` into #demo-content`)
-  }
-  const routes = [];
-  function onGet(path, handler) { routes.push({ method: 'GET', url: path, handler }); }
-  function onPost(path, handler) { routes.push({ method: 'POST', url: path, handler }); }
-  function onPut(path, handler) { routes.push({ method: 'PUT', url: path, handler }); }
-  function onDelete(path, handler) { routes.push({ method: 'DELETE', url: path, handler }); }
-</script>
+<script is:inline src="/js/demo-shim.js"></script>
 
-<div class="not-prose my-8 max-w-4xl mx-auto">
+<div data-demo-container class="not-prose my-8 max-w-4xl mx-auto" style="display:none">
     <div class="border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-neutral-900">
         <!-- Window Header -->
         <div class="flex items-center gap-4 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-900 border-b border-neutral-300 dark:border-neutral-800">
@@ -31,7 +22,7 @@
         <!-- Content -->
         <div class="p-6">
             <div id="demo-content">
-                <!-- Dynamic content gets loaded here -->
+                <!-- server.start() injects htmx load trigger here -->
             </div>
         </div>
     </div>
