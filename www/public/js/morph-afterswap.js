@@ -10,11 +10,13 @@
         if (window._hyperscript) window._hyperscript.processNode(document.body);
 
         // Re-execute scripts in the article (pattern demos, etc.)
-        // Only on page navigation (URL changed), not on demo-internal swaps.
-        // We track URL instead of checking e.target because morph can disconnect
-        // the source element, causing htmx to fall back to e.target === document.
+        // Skip swaps originating inside the demo container (e.g. Load More button).
         if (e.target.closest?.('[data-demo-container]')) return;
-        if (location.href === lastSwapUrl) return;
+        // When the source element is disconnected during morph (e.g. injected link
+        // removed by the morph), htmx falls back to e.target === document. In that
+        // case, only re-execute if the URL actually changed (rules out demo-internal
+        // outerHTML swaps like Load More where the button is removed).
+        if (e.target === document && location.href === lastSwapUrl) return;
         lastSwapUrl = location.href;
         var article = document.querySelector('article');
         if (!article || !article.querySelector('script')) return;
