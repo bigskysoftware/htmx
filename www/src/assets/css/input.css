@@ -127,7 +127,7 @@
     @media (prefers-color-scheme: dark) {
         :root {
             --astro-code-foreground: var(--color-neutral-350);
-            --astro-code-background: var(--color-neutral-950);
+            --astro-code-background: var(--color-neutral-930);
             --astro-code-token-function: var(--color-neutral-350);
         }
     }

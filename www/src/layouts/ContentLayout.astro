@@ -129,14 +129,14 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                                                     "group-interact:bg-neutral-100 dark:group-interact:bg-neutral-875",
                                                                     "group-interact:border-neutral-300 dark:group-interact:border-neutral-600"
                                                                 ]}>
-                                                                    <h2 class="font-bold text-lg text-neutral-700 dark:text-neutral-300 group-interact:text-black dark:group-interact:text-white transition mb-2">
+                                                                    <h2 class="font-bold text-lg text-neutral-800 dark:text-neutral-200 group-interact:text-black dark:group-interact:text-white transition mb-2">
                                                                         <a href={item.allFiles[0]?.url ?? item.url} class="outline-hidden">
                                                                             {item.frontmatter.title}
                                                                             <span class="absolute inset-0 z-10"></span>
                                                                         </a>
                                                                     </h2>
                                                                     {item.frontmatter.description && (
-                                                                            <p class="text-sm text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-950 dark:group-interact:text-neutral-50 leading-relaxed transition">
+                                                                            <p class="text-sm text-neutral-800 dark:text-neutral-200 group-interact:text-neutral-950 dark:group-interact:text-neutral-50 leading-relaxed transition">
                                                                                 {item.frontmatter.description}
                                                                             </p>
                                                                     )}
@@ -161,6 +161,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                         />
                                 )}
 
+                                {isPatterns && description && <p>{description}</p>}
                                 {isPatterns && <Demo />}
                                 <slot name="before-content"/>
 
