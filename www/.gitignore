@@ -9,6 +9,7 @@ public/js/*
 !public/js/_hyperscript.min.js
 !public/js/_hyperscript_render.min.js
 !public/js/_hyperscript_bundle.min.js
+!public/js/morph-afterswap.js
 
 # dependencies
 node_modules/

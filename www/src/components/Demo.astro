@@ -86,7 +86,7 @@
       if (typeof result === 'string') {
         port.postMessage({ body: result, status: 200, headers: {}, delay: responseDelay });
       } else if (result && typeof result === 'object') {
-        port.postMessage({ body: result.body || '', status: result.status || 200, headers: result.headers || {}, delay: responseDelay });
+        port.postMessage({ body: result.body || '', status: result.status || 200, headers: result.headers || {}, delay: result.delay ?? responseDelay });
       }
     } catch (err) {
       console.error('[demo] Route handler error:', err);
@@ -191,36 +191,18 @@
     });
   }
 
-  // After morph navigation, re-execute scripts in the article by cloning them.
-  // Same approach as the _hyperscript re-init in Head.astro.
-  // Only runs on page-level morphs — skip if the swap target is inside the demo
-  // container (that's the demo's own content swap, not a page navigation).
-  if (!window._demoMorphHandler) {
-    window._demoMorphHandler = true;
-    document.addEventListener('htmx:after:swap', (e) => {
-      // Skip demo-internal swaps. For outerHTML/delete swaps the source element is
-      // removed from the DOM, so htmx re-dispatches on the document itself.
-      if (e.target === document || e.target.closest?.('[data-demo-container]')) return;
-      const article = document.querySelector('article');
-      if (!article?.querySelector('[data-demo-container]')) return;
-      for (const old of article.querySelectorAll('script')) {
-        const fresh = document.createElement('script');
-        for (const attr of old.attributes) fresh.setAttribute(attr.name, attr.value);
-        fresh.textContent = old.textContent;
-        old.replaceWith(fresh);
-      }
-    });
-  }
+  // Script re-execution after morph is handled globally in Head.astro
+  // so it works even when navigating from non-pattern pages to pattern pages.
 }
 </script>
 
 <div data-demo-container class="not-prose my-8 max-w-4xl mx-auto">
-    <div class="border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-        <div class="flex items-center gap-4 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-900 border-b border-neutral-300 dark:border-neutral-800">
+    <div class="border border-neutral-200 dark:border-neutral-850 rounded-lg bg-white dark:bg-neutral-930 overflow-hidden">
+        <div class="flex items-center gap-4 px-3 py-2 bg-neutral-50 dark:bg-neutral-920 border-b border-neutral-100 dark:border-neutral-900">
             <div class="flex gap-1.5">
-                <div class="size-2 rounded-full bg-neutral-300 dark:bg-neutral-700/75"></div>
-                <div class="size-2 rounded-full bg-neutral-300 dark:bg-neutral-700/75"></div>
-                <div class="size-2 rounded-full bg-neutral-300 dark:bg-neutral-700/75"></div>
+                <div class="size-2.25 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
+                <div class="size-2.25 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
+                <div class="size-2.25 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
             </div>
             <span class="text-[0.675rem] font-medium text-neutral-500 dark:text-neutral-500/80 tracking-widest translate-y-px">DEMO</span>
         </div>
