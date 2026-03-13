@@ -53,12 +53,41 @@ export default defineConfig({
         "/help": "/about",
         "/server-examples": "/about",
 
-        // TODO: redirect htmx.org/examples/* to their new /patterns/* locations
-        // e.g. /examples/click-to-edit → /patterns/records/edit-in-place
-        //      /examples/bulk-update → /patterns/records/bulk-actions
-        //      /examples/active-search → /patterns/forms/active-search
-        //      etc.
+        // Old site: /examples/* → /patterns/*
         "/examples": "/patterns",
+        // Loading
+        "/examples/click-to-load": "/patterns/loading/click-to-load",
+        "/examples/infinite-scroll": "/patterns/loading/infinite-scroll",
+        "/examples/lazy-load": "/patterns/loading/lazy-load",
+        "/examples/progress-bar": "/patterns/loading/progress-bar",
+        // Forms
+        "/examples/active-search": "/patterns/forms/active-search",
+        "/examples/inline-validation": "/patterns/forms/active-validation",
+        "/examples/file-upload": "/patterns/forms/file-upload",
+        "/examples/file-upload-input": "/patterns/forms/file-upload",
+        "/examples/value-select": "/patterns/forms/linked-selects",
+        "/examples/reset-user-input": "/patterns/forms/reset-on-submit",
+        // Records
+        "/examples/bulk-update": "/patterns/records/bulk-actions",
+        "/examples/delete-row": "/patterns/records/delete-in-place",
+        "/examples/sortable": "/patterns/records/drag-to-reorder",
+        "/examples/click-to-edit": "/patterns/records/edit-in-place",
+        "/examples/edit-row": "/patterns/records/edit-in-place",
+        // Display
+        "/examples/animations": "/patterns/display/animations",
+        "/examples/dialogs": "/patterns/display/dialogs",
+        "/examples/modal-uikit": "/patterns/display/dialogs",
+        "/examples/modal-bootstrap": "/patterns/display/dialogs",
+        "/examples/modal-custom": "/patterns/display/dialogs",
+        "/examples/tabs-hateoas": "/patterns",
+        "/examples/tabs-javascript": "/patterns",
+        // Advanced
+        "/examples/keyboard-shortcuts": "/patterns/advanced/keyboard-shortcuts",
+        "/examples/update-other-content": "/patterns",
+        "/examples/confirm": "/patterns",
+        "/examples/async-auth": "/patterns",
+        "/examples/web-components": "/patterns",
+        "/examples/move-before": "/patterns",
 
         // Old site: extensions were top-level
         "/extensions": "/docs/extensions",

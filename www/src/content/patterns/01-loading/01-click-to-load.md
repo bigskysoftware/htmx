@@ -1,89 +1,86 @@
 ---
 title: "Click to Load"
-description: Load content when you click an element
+description: Load more items on demand
 icon: "icon-[mdi--cursor-pointer]"
 ---
 
-<script>
-var dataStore = function(){
-  var contactId = 9;
-  function generateContact() {
-    contactId++;
-    var idHash = "";
-    var possible = "ABCDEFG0123456789";
-    for( var i=0; i < 15; i++ ) idHash += possible.charAt(Math.floor(Math.random() * possible.length));
-    return { name: "Agent Smith", email: "void" + contactId + "@null.org", id: idHash }
-  }
-  return {
-    contactsForPage : function(page) {
-      var vals = [];
-      for( var i=0; i < 10; i++ ){
-        vals.push(generateContact());
-      }
-      return vals;
-    }
-  }
-}()
+Place a button in the last row of your table. Use [`hx-get`](/reference/attributes/hx-get) to fetch the next page, [`hx-target`](/reference/attributes/hx-target) to target the row it sits in, and [`hx-swap`](/reference/attributes/hx-swap) to replace it entirely:
 
-server.get("/demo", function(req) {
-  var contacts = dataStore.contactsForPage(1);
-  return tableTemplate(contacts);
-});
-
-server.get(/\/agents.*/, function(req) {
-  var page = parseInt(req.params['page']);
-  var contacts = dataStore.contactsForPage(page);
-  return rowsTemplate(page, contacts);
-});
-
-function tableTemplate(contacts) {
-    return `<table><thead><tr><th>Name</th><th>Email</th><th>ID</th></tr></thead><tbody>
-            ${rowsTemplate(1, contacts)}
-            </tbody></table>`
-}
-
-function rowsTemplate(page, contacts) {
-  var txt = "";
-  for (var i = 0; i < contacts.length; i++) {
-    var c = contacts[i];
-    txt += `<tr><td>${c.name}</td><td>${c.email}</td><td>${c.id}</td></tr>\n`;
-  }
-  txt += loadMoreRow(page);
-  return txt;
-}
-
-function loadMoreRow(page) {
-  return `<tr id="replaceMe">
-  <td colspan="3">
-    <center>
-      <button class='btn primary' hx-get="/agents/?page=${page + 1}"
-                       hx-target="#replaceMe"
-                       hx-swap="outerHTML">
-         Load More Agents... <img class="htmx-indicator" src="/img/bars.svg" alt="">
-       </button>
-    </center>
+```html
+<tr id="load-more">
+  <td colspan="2">
+    <button hx-get="/contacts/?page=2"
+            hx-target="#load-more"
+            hx-swap="outerHTML">
+      Load More
+    </button>
   </td>
-</tr>`;
+</tr>
+```
+
+The server responds with new rows **and a new button** pointing to the next page:
+
+```html
+<tr>
+  <td>Kim Yee</td>
+  <td>kim@yee.org</td>
+</tr>
+<tr id="load-more">
+  <td colspan="2">
+    <button hx-get="/contacts/?page=3"
+            hx-target="#load-more"
+            hx-swap="outerHTML">
+      Load More
+    </button>
+  </td>
+</tr>
+```
+
+Each click extends the list and produces a fresh button. No client-side state needed. When there are no more pages, omit the button.
+
+<script>
+const contacts = [
+    { name: "Joe Smith", email: "joe@smith.org" },
+    { name: "Angie MacDowell", email: "angie@macdowell.org" },
+    { name: "Fuqua Tarkenton", email: "fuqua@tarkenton.org" },
+    { name: "Kim Yee", email: "kim@yee.org" },
+    { name: "Alan Partridge", email: "alan@partridge.co.uk" },
+    { name: "Dana Scully", email: "dana@fbi.gov" },
+];
+
+const tr = "starting:opacity-0 starting:translate-y-1 transition-all duration-300 ease-out";
+const th = "text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide border-b border-neutral-200 dark:border-neutral-750";
+const td = "px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-850 text-sm text-neutral-600 dark:text-neutral-300";
+const btn = "w-full flex items-center justify-center gap-1.5 mt-2 px-3 py-2.5 text-[0.8125rem] font-medium text-neutral-500 dark:text-neutral-500 bg-transparent border-none rounded-md cursor-pointer transition-all hover:bg-neutral-75 dark:hover:bg-neutral-875 hover:text-neutral-700 dark:hover:text-neutral-200 active:scale-[0.99]";
+
+server.get("/demo", () => `
+<table class="w-full border-collapse">
+    <thead><tr><th class="${th}">Name</th><th class="${th}">Email</th></tr></thead>
+    <tbody class="[&>tr:last-child>td]:border-b-0">${rows(0)}</tbody>
+</table>`);
+
+server.get(/\/contacts.*/, (req) => rows(parseInt(req.params.page)));
+
+function rows(page) {
+    const start = page * 2;
+    const slice = contacts.slice(start, start + 2);
+    let html = slice.map((c, i) =>
+        `<tr class="${tr}" style="transition-delay:${i * 80}ms"><td class="${td}">${c.name}</td><td class="${td}">${c.email}</td></tr>`
+    ).join("\n");
+
+    if (start + 2 < contacts.length) {
+        html += `
+    <tr id="load-more"><td colspan="2" class="p-0">
+        <button class="${btn}"
+                hx-get="/contacts/?page=${page + 1}"
+                hx-target="#load-more"
+                hx-swap="outerHTML">
+            Load More &#8595;
+        </button>
+    </td></tr>`;
+    }
+    return html;
 }
 
 server.start("/demo");
 </script>
-
-This example shows how to implement click-to-load the next page in a table of data. The crux of the demo is
-the final row:
-
-```html
-
-<tr id="replaceMe">
-    <td colspan="3">
-        <button class='btn primary' hx-get="/contacts/?page=2"
-                hx-target="#replaceMe"
-                hx-swap="outerHTML">
-            Load More Agents... <img class="htmx-indicator" src="/img/bars.svg" alt="">
-        </button>
-    </td>
-</tr>
-```
-
-This row contains a button that will replace the entire row with the next page of
-results (which will contain a button to load the *next* page of results). And so on.
