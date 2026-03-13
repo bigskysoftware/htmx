@@ -1,21 +1,127 @@
-<svg viewBox="0 0 128 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="8 8 112 112" overflow="visible" fill="none" xmlns="http://www.w3.org/2000/svg">
     <style>
-        .accent { fill: var(--accent); stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
-        .accent-body { fill: var(--accent); fill-opacity: 0.4; stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+        .ext-plug {
+        /* Male Plug (lighter neutral) */
+        --m1: var(--color-neutral-150); --m2: var(--color-neutral-200);
+        --m3: var(--color-neutral-300); --m4: var(--color-neutral-400);
+
+        /* Female Plug (slightly darker neutral) */
+        --f1: var(--color-neutral-200); --f2: var(--color-neutral-300);
+        --f3: var(--color-neutral-350); --f4: var(--color-neutral-400);
+
+        }
+        @media (prefers-color-scheme: dark) {
+        .ext-plug {
+        --m1: var(--color-neutral-650); --m2: var(--color-neutral-700);
+        --m3: var(--color-neutral-750); --m4: var(--color-neutral-850);
+
+        --f1: var(--color-neutral-700); --f2: var(--color-neutral-750);
+        --f3: var(--color-neutral-800); --f4: var(--color-neutral-850);
+        }
+        }
+
+        /* Hover: emphasized neutrals */
+        .group:has(a:hover, a:focus-visible, a:active) .ext-plug {
+        --m1: var(--color-neutral-100); --m2: var(--color-neutral-200);
+        --m3: var(--color-neutral-300); --m4: var(--color-neutral-400);
+
+        --f1: var(--color-neutral-200); --f2: var(--color-neutral-300);
+        --f3: var(--color-neutral-400); --f4: var(--color-neutral-450);
+        }
+        @media (prefers-color-scheme: dark) {
+        .group:has(a:hover, a:focus-visible, a:active) .ext-plug {
+        --m1: var(--color-neutral-300); --m2: var(--color-neutral-400);
+        --m3: var(--color-neutral-600); --m4: var(--color-neutral-700);
+
+        --f1: var(--color-neutral-400); --f2: var(--color-neutral-500);
+        --f3: var(--color-neutral-700); --f4: var(--color-neutral-750);
+        }
+        }
+
+        .ext-plug .gs { transition: fill 200ms ease, stroke 200ms ease; stroke-width: 0.5; stroke-linejoin: round; }
+        .ext-plug .m-gs1 { fill: var(--m1); stroke: var(--m1); }
+        .ext-plug .m-gs2 { fill: var(--m2); stroke: var(--m2); }
+        .ext-plug .m-gs3 { fill: var(--m3); stroke: var(--m3); }
+        .ext-plug .m-gs4 { fill: var(--m4); stroke: var(--m4); }
+
+        .ext-plug .f-gs1 { fill: var(--f1); stroke: var(--f1); }
+        .ext-plug .f-gs2 { fill: var(--f2); stroke: var(--f2); }
+        .ext-plug .f-gs3 { fill: var(--f3); stroke: var(--f3); }
+        .ext-plug .f-gs4 { fill: var(--f4); stroke: var(--f4); }
+
+        /* Sliding Connection Animation */
+        .ext-plug .plug-male {
+        transform: translate(0, 0);
+        transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .ext-plug .plug-male {
+        transform: translate(12px, 6px);
+        }
+        .ext-plug .plug-female {
+        transform: translate(0, 0);
+        transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .ext-plug .plug-female {
+        transform: translate(-12px, -6px);
+        }
+
+        /* Connection Status LED */
+        .ext-plug .led { fill: var(--color-neutral-400); stroke: var(--color-neutral-400); transition: fill 0.3s ease, stroke 0.3s ease; transition-delay: 0s; }
+        .group:has(a:hover, a:focus-visible, a:active) .ext-plug .led {
+        fill: #34D399; stroke: #34D399;
+        transition-delay: 0.4s;
+        }
+        @media (prefers-color-scheme: dark) {
+        .ext-plug .led { fill: var(--color-neutral-700); stroke: var(--color-neutral-700); }
+        }
     </style>
 
-    <!-- Base block (muted) -->
-    <rect x="40" y="44" width="48" height="28" rx="3" stroke="currentColor" stroke-width="1" stroke-opacity="0.3"/>
-    <line x1="40" y1="52" x2="88" y2="52" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+    <g class="ext-plug" transform="translate(-6, 7)">
 
-    <!-- Plug-in block sliding in from top -->
-    <rect class="accent-body" x="50" y="24" width="28" height="22" rx="3" stroke-width="1.5"/>
+        <g class="plug-male">
+            <path d="M34,38 Q24,33 24,20" class="gs m-gs4" style="stroke-width: 4; fill: none; stroke-linecap: round;" />
 
-    <!-- Plug prongs -->
-    <line class="accent" x1="58" y1="46" x2="58" y2="52" style="fill: none" stroke-width="2" stroke-linecap="round"/>
-    <line class="accent" x1="70" y1="46" x2="70" y2="52" style="fill: none" stroke-width="2" stroke-linecap="round"/>
+            <polygon class="gs m-gs1" points="38,37 46,33 38,29 30,33" />
+            <polygon class="gs m-gs2" points="30,33 38,37 38,51 30,47" />
+            <polygon class="gs m-gs3" points="38,37 46,33 46,47 38,51" />
 
-    <!-- Plus icon in plug block -->
-    <line class="accent" x1="64" y1="31" x2="64" y2="41" style="fill: none" stroke-width="1.5" stroke-linecap="round"/>
-    <line class="accent" x1="59" y1="36" x2="69" y2="36" style="fill: none" stroke-width="1.5" stroke-linecap="round"/>
+            <polygon class="gs m-gs1" points="52,44 64,38 48,30 36,36" />
+            <polygon class="gs m-gs2" points="52,44 36,36 36,56 52,64" />
+            <polygon class="gs m-gs3" points="52,44 64,38 64,58 52,64" />
+
+            <polygon class="gs m-gs1" points="57,55 61,53 73,59 69,61" />
+            <polygon class="gs m-gs2" points="57,55 69,61 69,67 57,61" />
+            <polygon class="gs m-gs3" points="69,61 73,59 73,65 69,67" />
+
+            <polygon class="gs m-gs1" points="55,46 59,44 71,50 67,52" />
+            <polygon class="gs m-gs2" points="55,46 67,52 67,58 55,52" />
+            <polygon class="gs m-gs3" points="67,52 71,50 71,56 67,58" />
+        </g>
+
+
+        <g class="plug-female">
+            <polygon class="gs f-gs3" points="76,56 88,50 88,70 76,76" />
+
+            <polygon class="gs f-gs3" points="92,64 104,58 104,78 92,84" />
+
+            <polygon class="gs f-gs1" points="76,56 88,50 104,58 92,64" />
+            <polygon class="gs f-gs2" points="76,56 92,64 92,84 76,76" />
+
+            <polygon class="gs led" points="82,56 84,55 86,56 84,57" />
+        </g>
+
+        <g class="plug-female">
+            <polygon class="gs f-gs1" points="94,65 102,61 110,65 102,69" />
+            <polygon class="gs f-gs2" points="94,65 102,69 102,83 94,79" />
+            <polygon class="gs f-gs3" points="102,69 110,65 110,79 102,83" />
+            <path d="M106,74 Q116,79 116,92" class="gs f-gs4" style="stroke-width: 4; fill: none; stroke-linecap: round;" />
+        </g>
+
+        <g class="plug-male">
+            <polygon class="gs m-gs1" points="42,35 46,33 60,36 56,38" />
+            <polygon class="gs m-gs3" points="56,38 60,36 60,40 56,42" />
+            <polygon class="gs m-gs2" points="42,35 56,38 56,42" />
+        </g>
+
+    </g>
 </svg>

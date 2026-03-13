@@ -2,19 +2,19 @@
     <style>
         /* Design System Core Variables */
         .core-concept {
-        --v1: var(--color-neutral-100);
+        --v1: var(--color-neutral-150);
         --v2: var(--color-neutral-200);
         --v3: var(--color-neutral-300);
-        --v4: var(--color-neutral-400);
+        --v4: var(--color-neutral-350);
         --glow-line: var(--color-neutral-300);
         --text-glow: var(--color-neutral-400);
         }
         @media (prefers-color-scheme: dark) {
         .core-concept {
-        --v1: var(--color-neutral-600);
+        --v1: var(--color-neutral-650);
         --v2: var(--color-neutral-700);
-        --v3: var(--color-neutral-800);
-        --v4: var(--color-neutral-900);
+        --v3: var(--color-neutral-750);
+        --v4: var(--color-neutral-800);
         --glow-line: var(--color-neutral-700);
         --text-glow: var(--color-neutral-600);
         }

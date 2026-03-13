@@ -2,15 +2,15 @@
     <style>
         /* 3D shading via CSS variables — uses Tailwind theme tokens */
         .crt {
-            --f1: var(--color-neutral-200); --f2: var(--color-neutral-200);
-            --f3: var(--color-neutral-300); --f4: var(--color-neutral-300);
+            --f1: var(--color-neutral-150); --f2: var(--color-neutral-200);
+            --f3: var(--color-neutral-300); --f4: var(--color-neutral-350);
             --scr: var(--color-neutral-800); --scr-s: var(--color-neutral-400);
             transform-origin: center;
         }
         @media (prefers-color-scheme: dark) {
             .crt {
-                --f1: var(--color-neutral-700); --f2: var(--color-neutral-700);
-                --f3: var(--color-neutral-800); --f4: var(--color-neutral-800);
+                --f1: var(--color-neutral-650); --f2: var(--color-neutral-700);
+                --f3: var(--color-neutral-750); --f4: var(--color-neutral-800);
                 --scr: var(--color-neutral-950); --scr-s: var(--color-neutral-900);
 
             }
@@ -41,6 +41,10 @@
         .group:has(a:hover, a:focus-visible, a:active) .crt .gs-scr { opacity: 1; }
         .horse { opacity: 0; transition: opacity 0.2s ease; }
         .group:has(a:hover, a:focus-visible, a:active) .horse { opacity: 1; }
+        .play { fill: white; opacity: 0.4; transition: opacity 0.2s ease; }
+        .group:has(a:hover, a:focus-visible, a:active) .play { opacity: 0; }
+        .glare { opacity: 0; transition: opacity 0.2s ease; }
+        .group:has(a:hover, a:focus-visible, a:active) .glare { opacity: 0.12; }
 
         /* Rage shake */
         @keyframes crt-rage {
@@ -102,8 +106,11 @@
         <!-- Scanline filter over horse -->
         <rect x="36" y="32" width="56" height="40" class="horse" fill="var(--color-neutral-400)" opacity="0.3" style="mix-blend-mode: multiply"/>
 
+        <!-- Play triangle (visible when not hovered) -->
+        <polygon points="58,44 58,60 72,52" class="play"/>
+
         <!-- Screen glare (on top of horse) -->
-        <polygon points="36,32 75,32 45,72 36,72" fill="white" opacity="0.12"/>
+        <polygon points="36,32 75,32 45,72 36,72" class="glare" fill="white"/>
 
         <!-- Stand -->
         <polygon points="56,84 72,84 76,98 52,98" class="gs gs4"/>

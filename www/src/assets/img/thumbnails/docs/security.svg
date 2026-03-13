@@ -1,12 +1,64 @@
-<svg viewBox="0 0 128 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 128 128" overflow="visible" fill="none" xmlns="http://www.w3.org/2000/svg">
     <style>
-        .accent { fill: var(--accent); stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
-        .accent-body { fill: var(--accent); fill-opacity: 0.4; stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+        .shield {
+        --f1: var(--color-neutral-150); --f2: var(--color-neutral-200);
+        --f3: var(--color-neutral-300); --f4: var(--color-neutral-400);
+        }
+        @media (prefers-color-scheme: dark) {
+        .shield {
+        --f1: var(--color-neutral-650); --f2: var(--color-neutral-700);
+        --f3: var(--color-neutral-750); --f4: var(--color-neutral-850);
+        }
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .shield {
+        --f1: var(--color-neutral-100); --f2: var(--color-neutral-200);
+        --f3: var(--color-neutral-300); --f4: var(--color-neutral-400);
+        }
+        @media (prefers-color-scheme: dark) {
+        .group:has(a:hover, a:focus-visible, a:active) .shield {
+        --f1: var(--color-neutral-300); --f2: var(--color-neutral-400);
+        --f3: var(--color-neutral-600); --f4: var(--color-neutral-700);
+        }
+        }
+
+        .shield .gs { transition: fill 150ms, stroke 150ms; stroke-width: 0.5; stroke-linejoin: round; }
+        .shield .gs1 { fill: var(--f1); stroke: var(--f1); }
+        .shield .gs2 { fill: var(--f2); stroke: var(--f2); }
+        .shield .gs3 { fill: var(--f3); stroke: var(--f3); }
+        .shield .gs4 { fill: var(--f4); stroke: var(--f4); }
+
+        .shield .code-text {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-weight: bold;
+        fill: var(--f4);
+        opacity: 0.5;
+        transition: fill 150ms, opacity 150ms;
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .shield .code-text {
+        opacity: 1;
+        }
+
+        .shield { transition: transform 200ms ease; transform-origin: 64px 58px; }
+        .group:has(a:hover, a:focus-visible, a:active) .shield {
+        transform: scale(1.05) translateY(-3px);
+        }
     </style>
 
-    <!-- Shield body -->
-    <path class="accent-body" d="M64 20L42 32v18c0 14 10 24 22 30 12-6 22-16 22-30V32z" stroke-width="1.5" stroke-linejoin="round"/>
+    <g class="shield">
+        <!-- 3D depth: upper right vertical edge -->
+        <polygon class="gs gs3" points="98,20 101,22 101,57 98,55" />
+        <!-- 3D depth: bottom right curved edge -->
+        <polygon class="gs gs4" points="98,55 101,57 89,92 67,117 64,115 86,90" />
 
-    <!-- Shield check mark -->
-    <path class="accent" d="M55 48l6 6 12-14" style="fill: none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Shield front face (outer — visible as rim) -->
+        <!-- Points: top-left, top-center, top-right, shoulder-right, belly-right, point, belly-left, shoulder-left -->
+        <polygon class="gs gs2" points="30,20 64,20 98,20 98,55 86,90 64,115 42,90 30,55" />
+
+        <!-- Shield front face (inner — bright face) -->
+        <!-- Inset by 5px -->
+        <polygon class="gs gs1" points="35,25 64,25 93,25 93,52 82,85 64,107 46,85 35,52" />
+
+        <!-- </> symbol centered in the face -->
+        <text x="64" y="60" text-anchor="middle" dominant-baseline="middle" class="code-text" font-size="20">&lt;/&gt;</text>
+    </g>
 </svg>

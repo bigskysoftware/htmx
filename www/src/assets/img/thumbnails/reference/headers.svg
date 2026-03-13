@@ -1,23 +1,19 @@
 <svg viewBox="0 0 240 128" fill="none" xmlns="http://www.w3.org/2000/svg">
     <style>
         .ref {
-            --code: var(--color-neutral-600);
-            --muted: var(--color-neutral-400);
+            --color: var(--color-neutral-500);
         }
         @media (prefers-color-scheme: dark) {
             .ref {
-                --code: var(--color-neutral-400);
-                --muted: var(--color-neutral-500);
+                --color: var(--color-neutral-400);
             }
         }
         .group:has(a:hover, a:focus-visible, a:active) .ref {
-            --code: var(--color-neutral-900);
-            --muted: var(--color-neutral-600);
+            --color: var(--color-neutral-900);
         }
         @media (prefers-color-scheme: dark) {
             .group:has(a:hover, a:focus-visible, a:active) .ref {
-                --code: var(--color-neutral-200);
-                --muted: var(--color-neutral-300);
+                --color: var(--color-neutral-200);
             }
         }
         .ref text { transition: fill 150ms; }
@@ -27,12 +23,10 @@
             dominant-baseline: middle;
             text-anchor: middle;
         }
-        .code { font-weight: 700; }
-        .muted { font-weight: 500; }
     </style>
     <g class="ref">
         <text x="120" y="64">
-            <tspan class="code" fill="var(--code)">HX-Request</tspan><tspan class="muted" fill="var(--muted)">: true</tspan>
+            <tspan fill="var(--color)">HX-Header: true</tspan>
         </text>
     </g>
 </svg>
