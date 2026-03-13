@@ -1,6 +1,7 @@
 ---
 title: "Bulk Actions"
 description: Perform actions on multiple records
+icon: "icon-[mdi--checkbox-multiple-marked]"
 ---
 This demo shows how to implement a common pattern where rows are selected and then bulk updated.  This is
 accomplished by putting a form around a table, with checkboxes in the table, and then including the checked
@@ -71,13 +72,7 @@ You can see a working example of this code below.
 }
 </style>
 
-[//]: # ({{ demo_environment&#40;&#41; }})
-
 <script>
-    //=========================================================================
-    // Fake Server Side Code
-    //=========================================================================
-
     const dataStore = (() => {
       const data = {
         "joe@smith.org": {name: 'Joe Smith', status: 'Active'},
@@ -111,29 +106,22 @@ You can see a working example of this code below.
       };
     })();
 
-    // routes
-    init("/demo", function(request){
+    server.get("/demo", function(req) {
         return displayUI(dataStore.all());
     });
 
-    /*
-    Params look like:
-    {"active:joe@smith.org":"on","active:angie@macdowell.org":"on","active:fuqua@tarkenton.org":"on"}
-    */
-    onPost("/users", function (req, params) {
+    server.post("/users", function(req) {
       const actives = {};
       let activated = 0;
       let deactivated = 0;
 
-      // Build a set of active users for efficient lookup
-      for (const param of Object.keys(params)) {
+      for (const param of Object.keys(req.params)) {
         const nameEmail = param.split(':');
         if (nameEmail[0] === 'active') {
           actives[nameEmail[1]] = true;
         }
       }
 
-      // Activate or deactivate users based on the lookup
       for (const email of Object.keys(dataStore.all())) {
         if (actives[email]) {
           activated += dataStore.activate(email);
@@ -145,7 +133,6 @@ You can see a working example of this code below.
       return `Activated ${activated} and deactivated ${deactivated} users`;
     });
 
-    // templates
     function displayUI(contacts) {
       return `<h3>Select Rows And Activate Or Deactivate Below</h3>
                <form
@@ -192,4 +179,6 @@ You can see a working example of this code below.
 
       return txt;
     }
+
+server.start("/demo");
 </script>

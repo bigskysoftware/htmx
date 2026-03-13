@@ -1,6 +1,7 @@
 ---
 title: "Edit in Place"
 description: Update a record without page refresh
+icon: "icon-[material-symbols--edit]"
 ---
 <style type="text/tailwindcss">
 /* macOS 9 Platinum Demo Window */
@@ -86,12 +87,10 @@ The endpoints follow REST conventions:
 
 The URL represents the resource (`/users/1`), and the HTTP method indicates the action.
 
-[//]: # ({{ demo_environment&#40;&#41; }})
-
 <script>
 const user = { name: "Joe Smith" };
 
-init("/users/1", () => `
+server.get("/users/1", () => `
 <div hx-target:inherited="this">
     <p>Name: <span>${user.name}</span></p>
     <button hx-get="/users/1/edit"
@@ -100,7 +99,7 @@ init("/users/1", () => `
     </button>
 </div>`);
 
-onGet("/users/1/edit", () => `
+server.get("/users/1/edit", () => `
 <form hx-put="/users/1"
       hx-target:inherited="this"
       hx-swap:inherited="outerHTML">
@@ -113,8 +112,8 @@ onGet("/users/1/edit", () => `
     </button>
 </form>`);
 
-onPut("/users/1", (req, params) => {
-    user.name = params.name;
+server.put("/users/1", (req) => {
+    user.name = req.params.name;
 
     return `
 <div hx-target:inherited="this"
@@ -124,6 +123,8 @@ onPut("/users/1", (req, params) => {
         Edit
     </button>
 </div>`});
+
+server.start("/users/1");
 </script>
 
 <style type="text/tailwindcss">

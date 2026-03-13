@@ -1,6 +1,7 @@
 ---
 title: "Keyboard Shortcuts"
 description: Bind keyboard shortcuts to interactive elements
+icon: "icon-[mdi--keyboard]"
 ---
 
 In this example we show how to create a keyboard shortcut for an action.
@@ -25,22 +26,15 @@ You can find out the conditions needed for a given keyboard shortcut here:
 
 [https://javascript.info/keyboard-events](https://javascript.info/keyboard-events)
 
-[//]: # ({{ demo_environment&#40;&#41; }})
-
 <script>
-
-    //=========================================================================
-    // Fake Server Side Code
-    //=========================================================================
-
-    // routes
-    init("/init", function(request, params){
+    server.get("/init", function(req) {
         return "<button class='btn primary' style='font-size:20pt' hx-trigger='click, keyup[altKey&&shiftKey&&key==\"D\"] from:body'" +
                       " hx-post='/doit'>Do It! (alt-shift-D) </button>";
     });
 
-    onPost("/doit", function (request, params) {
+    server.post("/doit", function(req) {
         return "Did it!";
     });
 
+server.start("/init");
 </script>

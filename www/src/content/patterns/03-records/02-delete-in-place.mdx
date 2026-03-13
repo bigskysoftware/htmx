@@ -1,6 +1,7 @@
 ---
 title: "Delete in Place"
 description: Remove a record without page refresh
+icon: "icon-[material-symbols--delete]"
 ---
 This example shows how to implement a delete button that removes a table row upon completion.  First let's look at the
 table body:
@@ -60,14 +61,7 @@ tr.htmx-swapping td {
 }
 </style>
 
-{{ demo_environment() }}
-
 <script>
-    //=========================================================================
-    // Fake Server Side Code
-    //=========================================================================
-
-    // data
     var contacts = [
       {
         name: "Joe Smith",
@@ -91,16 +85,14 @@ tr.htmx-swapping td {
       },
     ];
 
-    // routes
-    init("/demo", function(request, params){
+    server.get("/demo", function(req) {
       return tableTemplate(contacts);
     });
 
-    onDelete(/\/contact\/\d+/, function(request, params){
+    server.delete(/\/contact\/\d+/, function(req) {
       return "";
     });
 
-    // templates
     function rowTemplate(contact, i) {
       return `<tr>
       <td>${contact["name"]}</td>
@@ -137,4 +129,5 @@ tr.htmx-swapping td {
 </table>`;
     }
 
+server.start("/demo");
 </script>

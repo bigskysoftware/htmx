@@ -1,6 +1,7 @@
 ---
 title: "Lazy Load"
 description: Load content after the page renders
+icon: "icon-[bitcoin-icons--visible-filled]"
 ---
 This example shows how to lazily load an element on a page.  We start with an initial
 state that looks like this:
@@ -32,28 +33,22 @@ img {
 }
 </style>
 
-{{ demo_environment() }}
-
 <script>
-    server.autoRespondAfter = 2000; // longer response for more drama
+server.delay(2000);
 
-    //=========================================================================
-    // Fake Server Side Code
-    //=========================================================================
+server.get("/demo", function(req) {
+  return lazyTemplate();
+});
 
-    // routes
-    init("/demo", function(request, params){
-      return lazyTemplate();
-    });
+server.get("/graph", function(req) {
+  return "<img alt='Tokyo Climate' src='/img/tokyo.png'>";
+});
 
-    onGet("/graph", function(request, params){
-      return "<img alt='Tokyo Climate' src='/img/tokyo.png'>";
-    });
-
-    // templates
-    function lazyTemplate(page) {
-      return `<div hx-get="/graph" hx-trigger="load">
+function lazyTemplate(page) {
+  return `<div hx-get="/graph" hx-trigger="load">
   <img alt="Result loading..." class="htmx-indicator" width="150" src="/img/bars.svg"/>
 </div>`;
-    }
+}
+
+server.start("/demo");
 </script>

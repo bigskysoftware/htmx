@@ -1,6 +1,7 @@
 ---
 title: "Dialogs"
 description: Show modals and popups on demand
+icon: "icon-[vaadin--modal-list]"
 ---
 htmx provides several approaches for working with modals and dialogs, from simple browser-native dialogs to custom implementations and framework integrations.
 
@@ -276,14 +277,8 @@ window.document.getElementById("cancelButton").addEventListener("click", functio
 })
 ```
 
-<script type="text/javascript">
-
-    //=========================================================================
-    // Fake Server Side Code
-    //=========================================================================
-
-    // routes
-    init("/modal", function(request){
+<script>
+    server.get("/modal", function(req) {
 		return `
 		<div id="modal" _="on closeModal add .closing wait for animationend then remove me">
 			<div class="modal-underlay" _="on click trigger closeModal"></div>
@@ -298,13 +293,14 @@ window.document.getElementById("cancelButton").addEventListener("click", functio
 		</div>
 		`
       });
+
+server.start("/modal");
 </script>
 
 <style>
 /***** MODAL DIALOG ****/
 
 #modal {
-	/* Underlay covers entire screen. */
 	position: fixed;
 	top:0px;
 	bottom: 0px;
@@ -312,21 +308,15 @@ window.document.getElementById("cancelButton").addEventListener("click", functio
 	right:0px;
 	background-color:rgba(0,0,0,0.5);
 	z-index:1000;
-
-	/* Flexbox centers the .modal-content vertically and horizontally */
 	display:flex;
 	flex-direction:column;
 	align-items:center;
-
-	/* Animate when opening */
 	animation-name: fadeIn;
 	animation-duration:150ms;
 	animation-timing-function: ease;
 }
 
 #modal > .modal-underlay {
-	/* underlay takes up the entire viewport. This is only
-	required if you want to click to dismiss the popup */
 	position: absolute;
 	z-index: -1;
 	top:0px;
@@ -336,35 +326,26 @@ window.document.getElementById("cancelButton").addEventListener("click", functio
 }
 
 #modal > .modal-content {
-	/* Position visible dialog near the top of the window */
 	margin-top:10vh;
-
-	/* Sizing for visible dialog */
 	width:80%;
 	max-width:600px;
-
-	/* Display properties for visible dialog*/
 	border:solid 1px #999;
 	border-radius:8px;
 	box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.3);
 	background-color:white;
 	padding:20px;
-
-	/* Animate when opening */
 	animation-name:zoomIn;
 	animation-duration:150ms;
 	animation-timing-function: ease;
 }
 
 #modal.closing {
-	/* Animate when closing */
 	animation-name: fadeOut;
 	animation-duration:150ms;
 	animation-timing-function: ease;
 }
 
 #modal.closing > .modal-content {
-	/* Animate when closing */
 	animation-name: zoomOut;
 	animation-duration:150ms;
 	animation-timing-function: ease;

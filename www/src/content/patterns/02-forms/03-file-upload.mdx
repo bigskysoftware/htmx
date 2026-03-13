@@ -1,6 +1,7 @@
 ---
 title: "File Upload"
 description: Upload files with progress and validation
+icon: "icon-[ic--round-file-upload]"
 ---
 Upload files with progress tracking and validation handling. Use `multipart/form-data` encoding.
 
@@ -26,8 +27,6 @@ Listen for progress events and update the progress bar:
 </script>
 ```
 
-[//]: # ({{ demo_environment&#40;&#41; }})
-
 <form id="upload-form" hx-encoding="multipart/form-data" hx-post="/upload"
       class="space-y-4 p-4 border border-neutral-200 dark:border-neutral-700 rounded mb-8">
   <div>
@@ -49,7 +48,7 @@ Listen for progress events and update the progress bar:
     htmx.find('#progress').setAttribute('value', evt.detail.loaded / evt.detail.total * 100);
   });
 
-  onPost("/upload", function(req) {
+  server.post("/upload", function(req) {
     return `<div class="text-green-600">File uploaded successfully!</div>`;
   });
 </script>
@@ -111,8 +110,8 @@ The file stays selected when the form swaps with error messages.
 </form>
 
 <script>
-  onPost("/validate", function(req) {
-    const name = new URLSearchParams(req.requestBody).get('name');
+  server.post("/validate", function(req) {
+    const name = req.params['name'];
     if (!name) {
       return `
         <form id="preserve-form" enctype="multipart/form-data" hx-post="/validate"

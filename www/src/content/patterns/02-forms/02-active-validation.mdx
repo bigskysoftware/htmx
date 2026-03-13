@@ -1,6 +1,7 @@
 ---
 title: Active Validation
 description: Validate form input as you type
+icon: "icon-[mdi--check]"
 ---
 
 This example shows how to do inline field validation, in this case of an email address. To do this
@@ -80,42 +81,32 @@ Below is a working demo of this example. The only email that will be accepted is
    }
 </style>
 
-{{ demo_environment() }}
-
 <script>
+server.get("/demo", function(req) {
+  return demoTemplate();
+});
 
-    //=========================================================================
-    // Fake Server Side Code
-    //=========================================================================
+server.post("/contact", function(req) {
+  return formTemplate();
+});
 
-    // routes
-    init("/demo", function(request, params){
-      return demoTemplate();
-    });
-
-    onPost("/contact", function(request, params){
-      return formTemplate();
-    });
-
-    onPost(/\/contact\/email.*/, function(request, params){
-        var email = params['email'];
-        if(!/\S+@\S+\.\S+/.test(email)) {
-          return emailInputTemplate(email, "Please enter a valid email address");
-        } else if(email != "test@test.com") {
-          return emailInputTemplate(email, "That email is already taken.  Please enter another email.");
-        } else {
-          return emailInputTemplate(email);
-        }
-     });
-
-    // templates
-    function demoTemplate() {
-
-        return `<h3>Signup Form</h3><p>Enter an email into the input below and on tab out it will be validated.  Only "test@test.com" will pass.</p> ` + formTemplate();
+server.post(/\/contact\/email.*/, function(req) {
+    var email = req.params['email'];
+    if(!/\S+@\S+\.\S+/.test(email)) {
+      return emailInputTemplate(email, "Please enter a valid email address");
+    } else if(email != "test@test.com") {
+      return emailInputTemplate(email, "That email is already taken.  Please enter another email.");
+    } else {
+      return emailInputTemplate(email);
     }
+ });
 
-    function formTemplate() {
-      return `<form hx-post="/contact">
+function demoTemplate() {
+    return `<h3>Signup Form</h3><p>Enter an email into the input below and on tab out it will be validated.  Only "test@test.com" will pass.</p> ` + formTemplate();
+}
+
+function formTemplate() {
+  return `<form hx-post="/contact">
   <div hx-target="this" hx-swap="outerHTML">
     <label for="email">Email Address</label>
     <input name="email" id="email" hx-post="/contact/email" hx-indicator="#ind">
@@ -131,14 +122,16 @@ Below is a working demo of this example. The only email that will be accepted is
   </div>
   <button type='submit' class="btn primary" disabled>Submit</button>
 </form>`;
-    }
+}
 
-        function emailInputTemplate(val, errorMsg) {
-            return `<div hx-target="this" hx-swap="outerHTML" class="${errorMsg ? "error" : "valid"}">
+    function emailInputTemplate(val, errorMsg) {
+        return `<div hx-target="this" hx-swap="outerHTML" class="${errorMsg ? "error" : "valid"}">
   <label>Email Address</label>
   <input name="email" hx-post="/contact/email" hx-indicator="#ind" value="${val}" aria-invalid="${!!errorMsg}">
   <img id="ind" src="/img/bars.svg" alt="Checking..." class="htmx-indicator"/>
   ${errorMsg ? (`<div class='error-message' >${errorMsg}</div>`) : ""}
 </div>`;
-        }
+    }
+
+server.start("/demo");
 </script>

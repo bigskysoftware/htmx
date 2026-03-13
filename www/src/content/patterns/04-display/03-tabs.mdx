@@ -1,0 +1,53 @@
+---
+title: "Tabs"
+description: Switch between content panels using tabs
+icon: "icon-[mdi--tab]"
+---
+Switch between content panels. Two approaches: server controls tab state, or JavaScript does.
+
+## Server-Driven (HATEOAS)
+
+The server controls which tab is selected. This follows [HATEOAS](https://en.wikipedia.org/wiki/HATEOAS) (Hypertext As The Engine Of Application State) - the server returns complete UI state with each response.
+
+```html
+<!-- Initial container -->
+<div id="tabs" hx-get="/tab1" hx-trigger="load"></div>
+```
+
+```html
+<!-- Server returns this for each tab click -->
+<div role="tablist">
+  <button hx-get="/tab1" role="tab" aria-selected="true">Tab 1</button>
+  <button hx-get="/tab2" role="tab" aria-selected="false">Tab 2</button>
+  <button hx-get="/tab3" role="tab" aria-selected="false">Tab 3</button>
+</div>
+
+<div role="tabpanel">
+  Tab content here...
+</div>
+```
+
+## Client-Side
+
+JavaScript handles tab selection. Server returns content only. Uses `aria-selected` attribute to control styling.
+
+```html
+<div role="tablist"
+     hx-target:inherited="#tab-contents"
+     hx-on:htmx-after-on-load="
+       document.querySelector('[aria-selected=true]').setAttribute('aria-selected', 'false');
+       event.target.setAttribute('aria-selected', 'true');
+     ">
+  <button role="tab" hx-get="/tab1" aria-selected="true">Tab 1</button>
+  <button role="tab" hx-get="/tab2" aria-selected="false">Tab 2</button>
+  <button role="tab" hx-get="/tab3" aria-selected="false">Tab 3</button>
+</div>
+
+<div id="tab-contents" role="tabpanel" hx-get="/tab1" hx-trigger="load"></div>
+```
+
+Server returns just the content:
+
+```html
+<p>Your tab content...</p>
+```
