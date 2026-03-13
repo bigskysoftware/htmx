@@ -9,8 +9,6 @@ public/js/*
 !public/js/_hyperscript.min.js
 !public/js/_hyperscript_render.min.js
 !public/js/_hyperscript_bundle.min.js
-!public/js/demo-sw.js
-!public/js/demo-shim.js
 
 # dependencies
 node_modules/
@@ -25,6 +23,9 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+
+# test artifacts
+test-results/
 
 # macOS-specific files
 .DS_Store

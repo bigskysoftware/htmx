@@ -1,9 +1,10 @@
-// www/public/js/demo-sw.js
+// www/public/demo-sw.js
 // Service Worker for htmx pattern demos.
 // Intercepts fetch requests and relays them to the page via MessageChannel.
 // Supports HTTP and SSE (Server-Sent Events via ReadableStream).
 
 const FALLTHROUGH_TIMEOUT = 300; // ms before falling through to real network
+const DEMO_PREFIX = '/_/';
 
 // SSE stream controllers, keyed by connection ID
 const sseControllers = new Map();
@@ -13,20 +14,9 @@ self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
 
 self.addEventListener('fetch', (event) => {
-  // Only intercept same-origin requests
-  if (new URL(event.request.url).origin !== self.location.origin) return;
-
-  // Skip requests for static assets, Astro dev server, etc.
-  const path = new URL(event.request.url).pathname;
-  if (path.startsWith('/js/') || path.startsWith('/img/') || path.startsWith('/src/') ||
-      path.startsWith('/@') || path.startsWith('/node_modules/') ||
-      path.endsWith('.astro') || path.endsWith('.css') || path.endsWith('.svg') ||
-      path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.ico') ||
-      path.endsWith('.woff2') || path.endsWith('.woff') ||
-      path === '/' || path.startsWith('/patterns') || path.startsWith('/docs') ||
-      path.startsWith('/reference') || path.startsWith('/essays') ||
-      path.startsWith('/about') || path.startsWith('/search-index')) return;
-
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+  if (!url.pathname.startsWith(DEMO_PREFIX)) return;
   event.respondWith(handleRequest(event));
 });
 
@@ -41,7 +31,7 @@ async function handleRequest(event) {
 
   return new Promise((resolve) => {
     const timeout = setTimeout(() => {
-      resolve(fetch(event.request));
+      resolve(new Response('Demo route timed out', { status: 504 }));
     }, FALLTHROUGH_TIMEOUT);
 
     messageChannel.port1.onmessage = (msg) => {
@@ -97,8 +87,13 @@ async function handleRequest(event) {
   });
 }
 
-// Listen for SSE data messages from the page
+// Listen for messages from the page
 self.addEventListener('message', (event) => {
+  // Re-claim after hard reload
+  if (event.data.type === 'claim') {
+    self.clients.claim();
+    return;
+  }
   if (event.data.type === 'sse-data') {
     const controller = sseControllers.get(event.data.connectionId);
     if (controller) {
