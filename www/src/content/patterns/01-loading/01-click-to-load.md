@@ -1,42 +1,30 @@
 ---
 title: "Click to Load"
-description: Load more items on demand
+description: Load more items when you click a button
 icon: "icon-[mdi--cursor-pointer]"
 ---
 
-Place a button in the last row of your table. Use [`hx-get`](/reference/attributes/hx-get) to fetch the next page, [`hx-target`](/reference/attributes/hx-target) to target the row it sits in, and [`hx-swap`](/reference/attributes/hx-swap) to replace it entirely:
-
-```html
-<tr id="load-more">
-  <td colspan="2">
-    <button hx-get="/contacts/?page=2"
-            hx-target="#load-more"
-            hx-swap="outerHTML">
-      Load More
-    </button>
-  </td>
-</tr>
-```
-
-The server responds with new rows **and a new button** pointing to the next page:
+Place a button in the last row of your table:
 
 ```html
 <tr>
-  <td>Kim Yee</td>
-  <td>kim@yee.org</td>
-</tr>
-<tr id="load-more">
-  <td colspan="2">
-    <button hx-get="/contacts/?page=3"
-            hx-target="#load-more"
-            hx-swap="outerHTML">
+  <td>
+    <button hx-get="/contacts/?page=2"
+            hx-swap="outerHTML"
+            hx-target="closest tr">
       Load More
     </button>
   </td>
 </tr>
 ```
 
-Each click extends the list and produces a fresh button. No client-side state needed. When there are no more pages, omit the button.
+- [`hx-get`](/reference/attributes/hx-get) fetches the next page.
+- [`hx-swap`](/reference/attributes/hx-swap)=[`"outerHTML"`](/reference/attributes/hx-swap#outerhtml) swaps it in by replacing the entire element.
+- [`hx-target`](/reference/attributes/hx-target)=[`"closest tr"`](/docs/features/extended-selectors#closest-selector) targets the row the button sits in.
+
+The server responds with new rows and a fresh button pointing to the next page. Each click extends the list. No client-side state needed.
+
+When there are no more pages, omit the button.
 
 <script>
 const contacts = [
@@ -70,11 +58,11 @@ function rows(page) {
 
     if (start + 2 < contacts.length) {
         html += `
-    <tr id="load-more"><td colspan="2" class="p-0">
+    <tr><td colspan="2" class="p-0">
         <button class="${btn}"
                 hx-get="/contacts/?page=${page + 1}"
-                hx-target="#load-more"
-                hx-swap="outerHTML">
+                hx-swap="outerHTML"
+                hx-target="closest tr">
             Load More &#8595;
         </button>
     </td></tr>`;
