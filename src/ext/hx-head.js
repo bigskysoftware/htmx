@@ -177,6 +177,9 @@
         },
         htmx_after_swap: (elt, detail) => {
             for (const node of detail.ctx._deferredHeadScripts || []) appendNode(node)
+        },
+        htmx_history_cache_restored: (elt, detail) => {
+            if (detail.head) mergeHead(detail.head, 'merge')
         }
     })
 

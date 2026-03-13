@@ -75,6 +75,10 @@
             }
         },
 
+        htmx_history_cache_before_save: (elt, detail) => {
+            window.Alpine?.destroyTree?.(detail.target);
+        },
+
         htmx_after_swap: (elt, detail) => {
             detail.ctx._alpineFlushed = true;
             maybeFlush();
