@@ -313,14 +313,14 @@
           "doc-url": "https://htmx.org/events/#htmx:after:process"
         },
         {
-          "name": "after:push:into:history",
+          "name": "after:history:push",
           "description": "This event is triggered after a URL has been pushed into history.\n\n##### Details\n\n* `detail.path` - the path that was pushed into history",
-          "doc-url": "https://htmx.org/events/#htmx:after:push:into:history"
+          "doc-url": "https://htmx.org/events/#htmx:after:history:push"
         },
         {
-          "name": "after:replace:into:history",
+          "name": "after:history:replace",
           "description": "This event is triggered after a URL has been replaced in history.\n\n##### Details\n\n* `detail.path` - the path that was replaced in history",
-          "doc-url": "https://htmx.org/events/#htmx:after:replace:into:history"
+          "doc-url": "https://htmx.org/events/#htmx:after:history:replace"
         },
         {
           "name": "after:request",
@@ -383,9 +383,9 @@
           "doc-url": "https://htmx.org/events/#htmx:before:response"
         },
         {
-          "name": "before:restore:history",
+          "name": "before:history:restore",
           "description": "This event is triggered before history is restored.\n\n##### Details\n\n* `detail.path` - the path being restored",
-          "doc-url": "https://htmx.org/events/#htmx:before:restore:history"
+          "doc-url": "https://htmx.org/events/#htmx:before:history:restore"
         },
         {
           "name": "before:settle",

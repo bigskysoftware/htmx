@@ -205,7 +205,8 @@ describe('bootstrap unit tests', function() {
         ].sort();
 
         const expectedPublicProperties = [
-            'config'
+            'config',
+            'version',
         ].sort();
 
         // Get own properties (like config, eventSource)

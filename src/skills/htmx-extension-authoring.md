@@ -108,9 +108,9 @@ Hook names use underscores (not colons). All hooks receive `(elt, detail)` unles
 |------|-------|
 | `htmx_before_history_update` | `htmx:before:history:update` |
 | `htmx_after_history_update` | `htmx:after:history:update` |
-| `htmx_after_push_into_history` | `htmx:after:push:into:history` |
-| `htmx_after_replace_into_history` | `htmx:after:replace:into:history` |
-| `htmx_before_restore_history` | `htmx:before:restore:history` |
+| `htmx_after_history_push` | `htmx:after:history:push` |
+| `htmx_after_history_replace` | `htmx:after:history:replace` |
+| `htmx_before_history_restore` | `htmx:before:history:restore` |
 
 ### View Transitions
 
