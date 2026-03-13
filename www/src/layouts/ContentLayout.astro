@@ -113,8 +113,8 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                                             <Card variant="lg" class:list={[
                                                                 "group relative isolate flex flex-col overflow-hidden transition",
                                                                 "interact:border-neutral-300 dark:interact:border-neutral-600",
-                                                                "focus-within:ring-2 focus-within:ring-offset-2",
-                                                                "focus-within:ring-neutral-500 dark:focus-within:ring-neutral-400"
+                                                                "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2",
+                                                                "has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400"
                                                             ]}>
                                                                 <div class="relative h-40 lg:h-44 w-full flex items-center justify-center transition">
                                                                     {thumbnail ? (
@@ -181,8 +181,8 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                                                 "group relative isolate flex items-center gap-3 sm:gap-4 p-3 sm:p-4 transition",
                                                                 "interact:bg-neutral-75 dark:interact:bg-neutral-875",
                                                                 "interact:border-neutral-400 dark:interact:border-neutral-600",
-                                                                "focus-within:ring-2 focus-within:ring-offset-2",
-                                                                "focus-within:ring-neutral-500 dark:focus-within:ring-neutral-400"
+                                                                "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2",
+                                                                "has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400"
                                                             ]}>
                                                                 {!reverse && <i class:list={[icon, "text-2xl sm:text-3xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0"]}></i>}
                                                                 <div class="flex-1 min-w-0">
@@ -233,7 +233,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                                               "flex-1 group flex items-center gap-2 p-2 text-xs font-medium transition select-none",
                                                               reverse && "flex-row-reverse",
                                                               link
-                                                                  ? "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white outline-hidden focus:ring-1 focus:ring-offset-1 focus:ring-neutral-500 dark:focus:ring-neutral-400"
+                                                                  ? "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white outline-hidden focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400"
                                                                   : "border-transparent bg-neutral-50 dark:bg-neutral-930 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
                                                           ]}>
                                                         <i class:list={[icon, "size-4", link ? "text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition" : "opacity-50"]}></i>
