@@ -130,9 +130,9 @@ const jsonLd = type === 'article' ? {
     <script is:inline defer src="/js/htmx.js"></script>
     <meta name="htmx-config" content='{"history":"reload","morphSkip":["#search-shortcut-hint"],"morphIgnore":["data-htmx-powered","_"],"logAll":false}'>
 
-    <!-- _hyperscript -->
-    <script is:inline defer src="/js/_hyperscript.min.js"></script>
-    <script is:inline defer src="/js/_hyperscript_render.min.js"></script>
+    <!-- _hyperscript (core + render/template plugin bundled to guarantee the render
+         command is registered before browserInit's processNode fires) -->
+    <script is:inline defer src="/js/_hyperscript_bundle.min.js"></script>
 
     <!-- Re-initialize hyperscript after each morphed forward navigation.
          innerMorph swaps new nodes in-place; new nodes have no initialized flag in
