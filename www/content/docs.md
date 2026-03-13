@@ -1464,26 +1464,43 @@ request HTTP header to the next requests to the same URL.
 
 ### ETag Support
 
-htmx supports [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)-based caching on a per-element 
-basis. When your server includes an `ETag` header in the response, htmx will store the ETag value and automatically 
-include it in the [`If-None-Match`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match)
-header for subsequent requests from that element. 
+htmx supports [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)-based DOM optimization on a per-element 
+basis. When your server includes an `ETag` header in the response, htmx will store the ETag value and compare it with 
+subsequent responses from that element. If the ETag matches, htmx will skip the DOM swap entirely, preventing unnecessary 
+re-rendering even when the server returns a `200 OK` response.
 
-This allows your server to return a [`304 Not Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304) 
-response when the content hasn't changed.
-
-You can set an etag on an element initially by using the `hx-config` attribute:
+This is an **opt-in** feature. To enable ETag tracking on an element, set `etag:true` in the `hx-config` attribute:
 
 ```html
 <div id="news" hx-get="/news" 
      hx-trigger="every 3s"
-    hx-config='"etag":"1762656750"'>
+     hx-config='etag:true'>
     Latest News...
 </div>
 ```
 
-When this div issues a poll-based request it will submit an `If-None-Match` header and the server can respond with a
-`304 Not Modified` if no new news is available.
+You can also set an initial ETag value to prevent unnecessary swaps on the first request:
+
+```html
+<div id="news" hx-get="/news" 
+     hx-trigger="every 3s"
+     hx-config='etag:"1762656750"'>
+    Latest News...
+</div>
+```
+
+#### How ETag Optimization Works
+
+htmx uses **passive ETag comparison** for DOM optimization:
+
+1. **Browser handles network caching**: The browser automatically sends `If-None-Match` headers and handles `304 Not Modified` 
+   responses according to standard HTTP caching rules (controlled by `Cache-Control` headers)
+2. **htmx handles DOM optimization**: When a response includes an `ETag` header, htmx compares it with the stored value. 
+   If they match, htmx skips the swap operation entirely, even if the server returned `200 OK` with the same content
+
+This layered approach provides two levels of optimization:
+- **Network level**: Browser + CDN handle 304 responses (no content transfer)
+- **DOM level**: htmx prevents unnecessary re-rendering when content hasn't changed
 
 Be mindful that if your server can render different content for the same URL depending on some other
 headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)

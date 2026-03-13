@@ -190,6 +190,31 @@ This event is always triggered after a request completes, similar to a `finally`
 
 * `detail.ctx` - the request context object
 
+## Caching Events
+
+### Event - `htmx:etag:match` {#htmx:etag:match}
+
+This event is triggered when a response's `ETag` header matches the stored ETag value for an element (when using `hx-config='etag:true'` or `hx-config='etag:"value"'`).
+
+By default, when an ETag matches, htmx will abort the swap operation to prevent unnecessary DOM updates. You can override this behavior by calling `preventDefault()` to force the swap even when the ETag matches.
+
+```javascript
+document.body.addEventListener('htmx:etag:match', function(evt) {
+  // Force swap even when ETag matches
+  if (shouldForceUpdate()) {
+    evt.preventDefault();
+  }
+});
+```
+
+##### Details
+
+* `detail.ctx` - the request context object containing:
+  * `ctx.sourceElement` - the element that made the request (where the ETag is stored)
+  * `ctx.response` - the response object with the matching ETag
+  * `ctx.text` - the cached response text
+* `detail.responseETag` - the matching ETag value from the current response
+
 ## Swap Events
 
 ### Event - `htmx:before:swap` {#htmx:before:swap}

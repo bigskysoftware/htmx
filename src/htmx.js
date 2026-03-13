@@ -118,7 +118,7 @@ var htmx = (() => {
                 extensions: '',
                 morphIgnore: ["data-htmx-powered"],
                 morphScanLimit: 10,
-                noSwap: [204, 304],
+                noSwap: [204],
                 implicitInheritance: false,
                 defaultSettleDelay: 1
             }
@@ -375,9 +375,6 @@ var htmx = (() => {
                     this.__htmxProp(sourceElement).etag ||= ctx.request.etag
                 }
             }
-            if (sourceElement._htmx?.etag) {
-                ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
-            }
             return ctx;
         }
 
@@ -557,6 +554,7 @@ var htmx = (() => {
                     if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
                     ctx.status = "response received";
                     this.__handleStatusCodes(ctx);
+                    if (this.__handleETagComparison(ctx)) return;
                     await this.swap(ctx);
                     ctx.status = "swapped";
                 }
@@ -613,9 +611,6 @@ var htmx = (() => {
                 opts.push = opts.push || 'true';
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
-            }
-            if(ctx.response?.headers?.get?.("Etag")) {
-                this.__htmxProp(ctx.sourceElement).etag = ctx.response.headers.get("Etag");
             }
         }
 
@@ -2148,6 +2143,22 @@ var htmx = (() => {
             }
             for (const id of duplicateIds) persistentIds.delete(id);
             return persistentIds;
+        }
+
+        __handleETagComparison(ctx) {
+            let responseETag = ctx.response?.headers?.get?.("Etag");
+            let htmxProp = this.__htmxProp(ctx.sourceElement);
+            const storedETag = htmxProp.etag;
+
+            // Only process ETags if element has opted in via hx-config
+            if (storedETag && responseETag) {
+                if (typeof storedETag === 'string' && responseETag === storedETag) {
+                    if (this.__trigger(ctx.sourceElement, "htmx:etag:match", {ctx, responseETag})) {
+                        return true; // ETag matched, abort all swaps
+                    }
+                }
+                htmxProp.etag = responseETag;
+            }
         }
 
         __handleStatusCodes(ctx) {
