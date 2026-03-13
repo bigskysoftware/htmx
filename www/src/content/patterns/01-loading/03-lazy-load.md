@@ -31,7 +31,7 @@ const day = `flex flex-col items-center gap-1 py-3 px-2 rounded-md transition-al
 
 // Fixed height prevents layout shift when content swaps in
 server.get("/demo", () => `
-<div class="h-[160px]" hx-get="/weather" hx-trigger="load" hx-swap="innerHTML settle:300ms">
+<div class="h-[136px]" hx-get="/weather" hx-trigger="load" hx-swap="innerHTML settle:300ms">
   <div class="h-full flex items-center justify-center gap-2 text-sm starting:opacity-0 transition-opacity duration-500 ease-out">
     <span class="inline-block size-4 border-2 border-neutral-200 dark:border-neutral-700 border-t-neutral-400 dark:border-t-neutral-400 rounded-full animate-spin"></span>
     Loading forecast…
