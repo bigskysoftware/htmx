@@ -172,13 +172,13 @@ All events now provide a consistent `ctx` object with request/response informati
 - Easier to access request/response information in event handlers
 - More predictable event handling across the request lifecycle
 
-### Etag / Conditional Requests
+### Polling Tags (PTag Extension)
 
-htmx 4 has built-in support for `Etag`-based conditional requests.
+The [ptag extension](/extensions/ptag) provides per-element polling optimization via the `hx-ptag` attribute.
 
-- When a response includes an `Etag` header, htmx stores it on the source element
-- Subsequent requests from that element automatically include an `If-None-Match` header
-- `304 Not Modified` responses do not swap by default, avoiding unnecessary DOM updates
+- Server sends an `HX-PTag` response header with a version token
+- Subsequent requests include the stored ptag as an `HX-PTag` request header
+- Server returns `304 Not Modified` when content hasn't changed, skipping the swap
 
 ### JSX-Compatible Attribute Names
 
@@ -197,7 +197,7 @@ SSE support is provided via the [SSE extension](/extensions/sse), rewritten from
 
 ### Core Extensions
 
-htmx 4 ships with 11 core extensions:
+htmx 4 ships with 12 core extensions:
 
 {{ include(path="content/extensions/core-extensions-table.html") }}
 

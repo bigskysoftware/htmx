@@ -1462,38 +1462,34 @@ HTTP response header to the response for a given URL, the browser will automatic
 [`If-Modified-Since`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since)
 request HTTP header to the next requests to the same URL.
 
-### ETag Support
+Similarly, [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) headers work
+transparently with htmx. When your server includes an `ETag` in a response, the browser's cache
+will automatically send
+[`If-None-Match`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match) on
+subsequent requests to the same URL. If the server returns
+[`304 Not Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304), the browser
+serves the cached response — `fetch()` (and therefore htmx) sees a normal `200` with the cached
+body, so no special handling is needed.
 
-htmx supports [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)-based caching on a per-element 
-basis. When your server includes an `ETag` header in the response, htmx will store the ETag value and automatically 
-include it in the [`If-None-Match`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match)
-header for subsequent requests from that element. 
+Note that `ETag`/`If-None-Match` operate at the URL level and are managed entirely by the browser.
+If you need per-element granularity — for example, to skip swaps during polling or to pass
+application-level state to the server — see the [ptag extension](/extensions/ptag) below.
 
-This allows your server to return a [`304 Not Modified`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304) 
-response when the content hasn't changed.
+### Polling Tags (PTag)
 
-You can set an etag on an element initially by using the `hx-config` attribute:
+For per-element polling optimization, htmx provides the [ptag extension](/extensions/ptag). This lets
+your server skip swaps when content hasn't changed, which is especially useful for polling scenarios.
 
-```html
-<div id="news" hx-get="/news" 
-     hx-trigger="every 3s"
-    hx-config='"etag":"1762656750"'>
-    Latest News...
-</div>
-```
+See the [ptag extension documentation](/extensions/ptag) for details.
 
-When this div issues a poll-based request it will submit an `If-None-Match` header and the server can respond with a
-`304 Not Modified` if no new news is available.
+#### Vary Header for htmx Requests
 
 Be mindful that if your server can render different content for the same URL depending on some other
 headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)
 response HTTP header.
 
-#### Vary Header for htmx Requests
-
-When your server returns different content based on htmx request headers, use the `Vary` header to ensure proper caching:
-
-**Basic Usage** - If your server renders different content for partial vs. full requests:
+If your server renders different content for partial vs. full requests based on the `HX-Request-Type` header, you will
+need to add this header:
 
 ```
 Vary: HX-Request-Type
@@ -1501,7 +1497,7 @@ Vary: HX-Request-Type
 
 This is the most common case and ensures caches distinguish between partial and full page responses.
 
-**Advanced Usage** - If your responses also vary based on the target or source element:
+If your responses also vary based on the target or source element, you may need to add the following:
 
 ```
 Vary: HX-Request-Type, HX-Target

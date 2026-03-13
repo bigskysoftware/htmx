@@ -204,7 +204,6 @@ request and populated progressively as the request proceeds.
         mode,           // Fetch mode (from config.mode, "same-origin" by default)
         form,           // Enclosing form element, if any (set during form data collection)
         submitter,      // Submit button that triggered the request, if any
-        etag,           // ETag value for conditional requests (from hx-config)
     },
 
     // --- Available after response ---

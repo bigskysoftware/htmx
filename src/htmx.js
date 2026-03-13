@@ -371,12 +371,6 @@ var htmx = (() => {
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
                 this.__mergeConfig(configAttr, ctx.request);
-                if (ctx.request.etag) {
-                    this.__htmxProp(sourceElement).etag ||= ctx.request.etag
-                }
-            }
-            if (sourceElement._htmx?.etag) {
-                ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
             }
             return ctx;
         }
@@ -613,9 +607,6 @@ var htmx = (() => {
                 opts.push = opts.push || 'true';
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
-            }
-            if(ctx.response?.headers?.get?.("Etag")) {
-                this.__htmxProp(ctx.sourceElement).etag = ctx.response.headers.get("Etag");
             }
         }
 
