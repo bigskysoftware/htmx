@@ -23,26 +23,33 @@ htmx replaces the placeholder with the server response. A settling CSS transitio
 _During the settle phase htmx briefly adds `.htmx-settling` to the parent, starting the element at `opacity: 0`. The transition then eases it to full visibility._
 
 <script>
+const label = "text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400";
+const temp = "text-lg font-semibold text-neutral-800 dark:text-neutral-100";
+const desc = "text-xs text-neutral-500 dark:text-neutral-400";
+const fade = "starting:opacity-0 starting:translate-y-1 transition-all duration-300 ease-out";
+const day = `flex flex-col items-center gap-1 py-3 px-2 rounded-md transition-all duration-300 ease-out starting:opacity-0 starting:translate-y-1 hover:bg-neutral-50 dark:hover:bg-neutral-850`;
+
+// Fixed height prevents layout shift when content swaps in
 server.get("/demo", () => `
-<div hx-get="/weather" hx-trigger="load" hx-swap="innerHTML settle:300ms">
-  <div class="loading-placeholder">
-    <span class="spinner"></span>
-    Loading forecast...
+<div class="h-[160px]" hx-get="/weather" hx-trigger="load" hx-swap="innerHTML settle:300ms">
+  <div class="h-full flex items-center justify-center gap-2 text-sm starting:opacity-0 transition-opacity duration-500 ease-out">
+    <span class="inline-block size-4 border-2 border-neutral-200 dark:border-neutral-700 border-t-neutral-400 dark:border-t-neutral-400 rounded-full animate-spin"></span>
+    Loading forecast…
   </div>
 </div>`);
 
-server.get("/weather", () => ({ delay: 1500, body: `
-<div class="weather-card">
-  <div class="weather-header">
-    <span class="weather-icon">&#9729;</span>
-    <span class="weather-title">5-Day Forecast</span>
+server.get("/weather", () => ({ delay: 600, body: `
+<div>
+  <div class="${fade} flex items-center gap-2 mb-4">
+    <span class="text-xl">&#9729;</span>
+    <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-200">5-Day Forecast</span>
   </div>
-  <div class="weather-grid">
-    <div class="weather-day"><strong>Mon</strong><span>72 &deg;F</span><span class="weather-desc">Sunny</span></div>
-    <div class="weather-day"><strong>Tue</strong><span>68 &deg;F</span><span class="weather-desc">Cloudy</span></div>
-    <div class="weather-day"><strong>Wed</strong><span>65 &deg;F</span><span class="weather-desc">Rain</span></div>
-    <div class="weather-day"><strong>Thu</strong><span>70 &deg;F</span><span class="weather-desc">Partly cloudy</span></div>
-    <div class="weather-day"><strong>Fri</strong><span>74 &deg;F</span><span class="weather-desc">Sunny</span></div>
+  <div class="grid grid-cols-5 gap-1 text-center">
+    <div class="${day}" style="transition-delay:50ms"><span class="${label}">Mon</span><span class="${temp}">72°</span><span class="${desc}">Sunny</span></div>
+    <div class="${day}" style="transition-delay:100ms"><span class="${label}">Tue</span><span class="${temp}">68°</span><span class="${desc}">Cloudy</span></div>
+    <div class="${day}" style="transition-delay:150ms"><span class="${label}">Wed</span><span class="${temp}">65°</span><span class="${desc}">Rain</span></div>
+    <div class="${day}" style="transition-delay:200ms"><span class="${label}">Thu</span><span class="${temp}">70°</span><span class="${desc}">Partly cloudy</span></div>
+    <div class="${day}" style="transition-delay:250ms"><span class="${label}">Fri</span><span class="${temp}">74°</span><span class="${desc}">Sunny</span></div>
   </div>
 </div>` }));
 
@@ -52,55 +59,4 @@ server.start("/demo");
 <style>
 #demo-content .htmx-settling > div { opacity: 0; }
 #demo-content div { transition: opacity 300ms ease-in; }
-
-#demo-content .loading-placeholder {
-  display: flex; align-items: center; gap: 0.5rem;
-  padding: 2rem; justify-content: center;
-  color: #6b7280; font-size: 0.875rem;
-}
-
-#demo-content .spinner {
-  display: inline-block; width: 1rem; height: 1rem;
-  border: 2px solid #d1d5db; border-top-color: #6b7280;
-  border-radius: 50%; animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-#demo-content .weather-card {
-  border: 1px solid #e5e7eb; border-radius: 0.5rem;
-  padding: 1rem 1.25rem; max-width: 28rem;
-}
-
-#demo-content .weather-header {
-  display: flex; align-items: center; gap: 0.5rem;
-  margin-bottom: 0.75rem; font-size: 0.9375rem; font-weight: 600;
-  color: #111827;
-}
-
-#demo-content .weather-icon { font-size: 1.25rem; }
-
-#demo-content .weather-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.25rem;
-  text-align: center;
-}
-
-#demo-content .weather-day {
-  display: flex; flex-direction: column; gap: 0.125rem;
-  padding: 0.5rem 0.25rem; border-radius: 0.375rem;
-  font-size: 0.8125rem; color: #374151;
-}
-
-#demo-content .weather-day:hover { background: #f3f4f6; }
-
-#demo-content .weather-desc { font-size: 0.6875rem; color: #9ca3af; }
-
-/* Dark mode */
-.dark #demo-content .loading-placeholder { color: #9ca3af; }
-.dark #demo-content .spinner { border-color: #4b5563; border-top-color: #9ca3af; }
-.dark #demo-content .weather-card { border-color: #374151; }
-.dark #demo-content .weather-header { color: #f3f4f6; }
-.dark #demo-content .weather-day { color: #d1d5db; }
-.dark #demo-content .weather-day:hover { background: #1f2937; }
-.dark #demo-content .weather-desc { color: #6b7280; }
 </style>
