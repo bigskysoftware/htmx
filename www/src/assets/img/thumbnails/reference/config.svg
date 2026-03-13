@@ -1,4 +1,4 @@
-<svg viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 240 128" fill="none" xmlns="http://www.w3.org/2000/svg">
     <style>
         .ref {
             --code: var(--color-neutral-600);
@@ -23,7 +23,7 @@
         .ref text { transition: fill 150ms; }
         .ref text {
             font-family: var(--font-mono), monospace;
-            font-size: 11px;
+            font-size: 17px;
             dominant-baseline: middle;
             text-anchor: middle;
         }
@@ -31,7 +31,7 @@
         .muted { font-weight: 500; }
     </style>
     <g class="ref">
-        <text x="64" y="64">
+        <text x="120" y="64">
             <tspan class="code" fill="var(--code)">htmx.config</tspan><tspan class="muted" fill="var(--muted)">.debug</tspan>
         </text>
     </g>

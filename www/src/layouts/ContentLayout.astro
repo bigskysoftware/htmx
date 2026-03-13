@@ -116,7 +116,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                                             ]}>
                                                                 <div class="relative h-40 lg:h-44 w-full flex items-center justify-center transition">
                                                                     {thumbnail ? (
-                                                                            <ThumbnailSvg svg={thumbnail}/>
+                                                                            <ThumbnailSvg svg={thumbnail} fitWidth={collection === 'reference'}/>
                                                                     ) : (
                                                                             <span class="text-7xl transition icon-[mdi--file-document-outline] text-neutral-400 dark:text-neutral-600 group-interact:text-neutral-600 dark:group-interact:text-neutral-300"></span>
                                                                     )}
