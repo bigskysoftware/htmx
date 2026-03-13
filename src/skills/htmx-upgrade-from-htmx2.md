@@ -141,10 +141,10 @@ htmx 2 uses camelCase event names. htmx 4 uses colon-separated names.
 | `htmx:beforeCleanupElement` | `htmx:before:cleanup`             |
 | `htmx:beforeHistorySave`    | `htmx:before:history:update`      |
 | `htmx:beforeHistoryUpdate`  | `htmx:before:history:update`      |
-| `htmx:historyCacheMiss`     | `htmx:before:restore:history`     |
-| `htmx:historyRestore`       | `htmx:before:restore:history`     |
-| `htmx:pushedIntoHistory`    | `htmx:after:push:into:history`    |
-| `htmx:replacedInHistory`    | `htmx:after:replace:into:history` |
+| `htmx:historyCacheMiss`     | `htmx:before:history:restore`     |
+| `htmx:historyRestore`       | `htmx:before:history:restore`     |
+| `htmx:pushedIntoHistory`    | `htmx:after:history:push`         |
+| `htmx:replacedInHistory`    | `htmx:after:history:replace`      |
 | `htmx:beforeTransition`     | `htmx:before:viewTransition`      |
 | `htmx:oobBeforeSwap`        | `htmx:before:swap`                |
 | `htmx:oobAfterSwap`         | `htmx:after:swap`                 |

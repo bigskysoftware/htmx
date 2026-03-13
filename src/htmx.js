@@ -1564,18 +1564,18 @@ var htmx = (() => {
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
             history.pushState({htmx: true}, '', path);
-            this.__trigger(document, "htmx:after:push:into:history", {path});
+            this.__trigger(document, "htmx:after:history:push", {path});
         }
 
         __replaceUrlInHistory(path) {
             if (!this.config.history) return;
             history.replaceState({htmx: true}, '', path);
-            this.__trigger(document, "htmx:after:replace:into:history", {path});
+            this.__trigger(document, "htmx:after:history:replace", {path});
         }
 
         __restoreHistory(path) {
             path = path || location.pathname + location.search;
-            if (this.__trigger(document, "htmx:before:restore:history", {path, cacheMiss: true})) {
+            if (this.__trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
                 if (this.config.history === "reload") {
                     location.reload();
                 } else {

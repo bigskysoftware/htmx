@@ -24,7 +24,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
             eventPath = event.detail.path;
         };
         
-        document.addEventListener('htmx:after:push:into:history', handler);
+        document.addEventListener('htmx:after:history:push', handler);
         
         try {
             let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="true">Click me</button>');
@@ -35,7 +35,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
             historyEventFired.should.equal(true);
             eventPath.should.equal('/test');
         } finally {
-            document.removeEventListener('htmx:after:push:into:history', handler);
+            document.removeEventListener('htmx:after:history:push', handler);
         }
     });
     
@@ -51,7 +51,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
             eventPath = event.detail.path;
         };
         
-        document.addEventListener('htmx:after:replace:into:history', handler);
+        document.addEventListener('htmx:after:history:replace', handler);
         
         try {
             let btn = createProcessedHTML('<button hx-get="/test" hx-replace-url="true">Click me</button>');
@@ -62,7 +62,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
             historyEventFired.should.equal(true);
             eventPath.should.equal('/test');
         } finally {
-            document.removeEventListener('htmx:after:replace:into:history', handler);
+            document.removeEventListener('htmx:after:history:replace', handler);
         }
     });
     
@@ -78,7 +78,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
             eventPath = event.detail.path;
         };
         
-        document.addEventListener('htmx:after:push:into:history', handler);
+        document.addEventListener('htmx:after:history:push', handler);
         
         try {
             let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="/custom">Click me</button>');
@@ -89,7 +89,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
             historyEventFired.should.equal(true);
             eventPath.should.equal('/custom');
         } finally {
-            document.removeEventListener('htmx:after:push:into:history', handler);
+            document.removeEventListener('htmx:after:history:push', handler);
         }
     });
     
@@ -103,7 +103,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
             historyEventFired = true;
         };
         
-        document.addEventListener('htmx:after:push:into:history', handler);
+        document.addEventListener('htmx:after:history:push', handler);
         
         try {
             let btn = createProcessedHTML('<button hx-get="/test" hx-push-url="false">Click me</button>');
@@ -113,7 +113,7 @@ describe('hx-push-url and hx-replace-url attributes', function() {
             playground().textContent.should.equal('Test Response');
             historyEventFired.should.equal(false);
         } finally {
-            document.removeEventListener('htmx:after:push:into:history', handler);
+            document.removeEventListener('htmx:after:history:push', handler);
         }
     });
     

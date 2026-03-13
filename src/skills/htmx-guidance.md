@@ -225,8 +225,8 @@ htmx 4 naming convention: `htmx:phase:action`
 **History:**
 
 - `htmx:before:history:update` / `htmx:after:history:update`
-- `htmx:after:push:into:history` / `htmx:after:replace:into:history`
-- `htmx:before:restore:history`
+- `htmx:after:history:push` / `htmx:after:history:replace`
+- `htmx:before:history:restore`
 
 **View Transitions:**
 
