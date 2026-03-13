@@ -3,9 +3,7 @@ title: "Bulk Actions"
 description: Perform actions on multiple records
 icon: "icon-[mdi--checkbox-multiple-marked]"
 ---
-This demo shows how to implement a common pattern where rows are selected and then bulk updated.  This is
-accomplished by putting a form around a table, with checkboxes in the table, and then including the checked
-values in the form submission (`POST` request):
+Wrap a table in a form with checkboxes, then POST the checked values for bulk update:
 
 ```html
 <form id="checked-contacts"
@@ -34,12 +32,9 @@ values in the form submission (`POST` request):
 </form>
 ```
 
-The server will bulk-update the statuses based on the values of the checkboxes.
-We respond with a small toast message about the update to inform the user, and
-use an `<output>` element to politely announce the update for accessibility. Note
-that the `<output>` element is appropriate for announcing the result of an action
-in a specific form, but if you need to announce general-purpose messages that are
-not connected to a form it would make sense to use an ARIA live region, eg
+The server bulk-updates statuses based on checkbox values and responds with a
+toast message. The `<output>` element announces the result for accessibility. For
+general-purpose messages outside a form, use an ARIA live region instead, e.g.
 `<p id="toast" aria-live="polite"></p>`.
 
 ```css
@@ -54,22 +49,22 @@ not connected to a form it would make sense to use an ARIA live region, eg
 }
 ```
 
-The cool thing is that, because HTML form inputs already manage their own state,
-we don't need to re-render any part of the users table. The active users are
-already checked and the inactive ones unchecked!
+Because HTML form inputs manage their own state, we don't need to re-render the
+table -- checked rows stay checked.
 
-You can see a working example of this code below.
-
-<style scoped="">
-#toast.htmx-settling {
-  opacity: 100;
-}
-
-#toast {
-  background: #E1F0DA;
-  opacity: 0;
-  transition: opacity 3s ease-out;
-}
+<style>
+#demo-content table { width: 100%; border-collapse: collapse; }
+#demo-content th { font-weight: 600; font-size: 0.8125rem; color: #737373; text-align: left; padding: 0.5rem 0.75rem; border-bottom: 2px solid #e5e5e5; }
+:is(.dark) #demo-content th { color: #a3a3a3; border-bottom-color: #404040; }
+#demo-content td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #e5e5e5; }
+:is(.dark) #demo-content td { border-bottom-color: #404040; }
+#demo-content td:last-child { text-align: center; }
+#demo-content th:last-child { text-align: center; }
+#demo-content input[type="checkbox"] { width: 1rem; height: 1rem; cursor: pointer; }
+#demo-content #toast.htmx-settling { opacity: 100; }
+#demo-content #toast { background: #dcfce7; opacity: 0; transition: opacity 3s ease-out; padding: 0.5rem 0.75rem; border-radius: 0.25rem; margin-top: 0.5rem; display: block; }
+:is(.dark) #demo-content #toast { background: #14532d; color: #bbf7d0; }
+#demo-content input[type="submit"] { margin-top: 0.75rem; }
 </style>
 
 <script>
@@ -160,9 +155,9 @@ You can see a working example of this code below.
     }
 
     function displayTable(contacts) {
-      var txt = "";
+      let txt = "";
 
-      for (email of Object.keys(contacts)) {
+      for (const email of Object.keys(contacts)) {
         txt += `
 <tr>
   <td>${contacts[email].name}</td>

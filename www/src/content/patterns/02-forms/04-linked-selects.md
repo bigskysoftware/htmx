@@ -3,33 +3,30 @@ title: "Linked Selects"
 description: Update select options via another select
 icon: "icon-[mdi--form-dropdown]"
 ---
-In this example we show how to make the values in one `select` depend on the value selected in another `select`.
+This example shows how to make the options in one `select` depend on the value chosen in another.
 
-To begin we start with a default value for the `make` select: Audi.  We render the `model` select for this make.  We
-then have the `make` select trigger a `GET` to `/models` to retrieve the models options and target the `models` select.
-
-Here is the code:
+The `make` select triggers a `GET` to `/models` whenever its value changes. The response — a fresh set of `<option>` elements — replaces the contents of the `model` select.
 
 ```html
 <div>
-    <label >Make</label>
-    <select name="make" hx-get="/models" hx-target="#models" hx-indicator=".htmx-indicator">
-      <option value="audi">Audi</option>
-      <option value="toyota">Toyota</option>
-      <option value="bmw">BMW</option>
-    </select>
-  </div>
-  <div>
-    <label>Model</label>
-    <select id="models" name="model">
-      <option value="a1">A1</option>
-      ...
-    </select>
-    <img class="htmx-indicator" width="20" src="/img/bars.svg" alt="Saving...">
+  <label>Make</label>
+  <select name="make" hx-get="/models" hx-target="#models" hx-indicator="#models-indicator">
+    <option value="audi">Audi</option>
+    <option value="toyota">Toyota</option>
+    <option value="bmw">BMW</option>
+  </select>
+</div>
+<div>
+  <label>Model</label>
+  <select id="models" name="model">
+    <option value="a1">A1</option>
+    ...
+  </select>
+  <span id="models-indicator" class="htmx-indicator" style="opacity:0; transition: opacity 200ms;">Loading...</span>
 </div>
 ```
 
-When a request is made to the `/models` end point, we return the models for that make:
+The `/models` endpoint returns the matching options:
 
 ```html
 <option value='325i'>325i</option>
@@ -37,24 +34,22 @@ When a request is made to the `/models` end point, we return the models for that
 <option value='X5'>X5</option>
 ```
 
-And they become available in the `model` select.
-
 <script>
-server.get("/demo", function(req) {
-  return formTemplate();
-});
+const models = {
+  audi:   ["A1", "A4", "A6"],
+  toyota: ["Landcruiser", "Tacoma", "Yaris"],
+  bmw:    ["325i", "325ix", "X5"],
+};
 
-server.get(/models.*/, function(req) {
-    var make = dataStore.findMake(req.params['make']);
-    return modelOptionsTemplate(make['models']);
-});
+const optionsFor = (make) =>
+  (models[make] || []).map((m) => `<option value='${m}'>${m}</option>`).join("\n");
 
-function formTemplate() {
-  return `  <h3>Pick A Make/Model</h3>
+server.get("/demo", () => `
+<h3>Pick A Make/Model</h3>
 <form>
   <div>
-    <label >Make</label>
-    <select name="make" hx-get="/models" hx-target="#models" hx-indicator=".htmx-indicator">
+    <label>Make</label>
+    <select name="make" hx-get="/models" hx-target="#models" hx-indicator="#models-indicator">
       <option value="audi">Audi</option>
       <option value="toyota">Toyota</option>
       <option value="bmw">BMW</option>
@@ -64,32 +59,23 @@ function formTemplate() {
     <label>Model</label>
     <select id="models" name="model">
       <option value="a1">A1</option>
-      <option value="a3">A3</option>
+      <option value="a4">A4</option>
       <option value="a6">A6</option>
     </select>
-    <img class="htmx-indicator" width="20" src="/img/bars.svg" alt="Saving...">
+    <span id="models-indicator" class="htmx-indicator" style="opacity:0; transition: opacity 200ms;">Loading...</span>
   </div>
-</form>`;
-}
+</form>`);
 
-function modelOptionsTemplate(make) {
-  return make.map(function(val) {
-    return "<option value='" + val + "'>" + val +"</option>";
-  }).join("\n");
-}
-
-var dataStore = function(){
-  var data = {
-    audi : { models : ["A1", "A4", "A6"] },
-    toyota : { models : ["Landcruiser", "Tacoma", "Yaris"] },
-    bmw : { models : ["325i", "325ix", "X5"] }
-  };
-  return {
-    findMake : function(make) {
-      return data[make];
-    }
-  }
-}()
+server.get(/models.*/, (req) => optionsFor(req.params["make"]));
 
 server.start("/demo");
 </script>
+
+<style>
+#demo-content select { padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; }
+:is(.dark) #demo-content select { background: #1a1a1a; border-color: #404040; color: #e5e5e5; }
+#demo-content label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.25rem; color: #374151; }
+:is(.dark) #demo-content label { color: #d1d5db; }
+#demo-content .htmx-indicator { font-size: 0.75rem; color: #6b7280; }
+:is(.dark) #demo-content .htmx-indicator { color: #9ca3af; }
+</style>

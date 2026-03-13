@@ -4,219 +4,119 @@ description: Show progress bar during background job
 icon: "icon-[vaadin--progressbar]"
 ---
 
-This example shows how to implement a smoothly scrolling progress bar.
+This pattern shows a smoothly animated progress bar driven by server polling.
 
-We start with an initial state with a button that issues a `POST` to `/start` to begin the job:
+A button `POST`s to `/start`, which kicks off a background job and replaces the button with a polling progress bar:
 
 ```html
-
-<div hx-target="this" hx-swap="outerHTML">
-    <h3>Start Progress</h3>
-    <button class="btn primary" hx-post="/start">
-        Start Job
-    </button>
+<div hx-get="/job/progress"
+     hx-trigger="every 600ms"
+     hx-target="this"
+     hx-swap="innerHTML">
+    <div class="progress" role="progressbar"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="pb" class="progress-bar" style="width:0%"></div>
+    </div>
 </div>
 ```
 
-This div is then replaced with a new div containing status and a progress bar that reloads itself every 600ms:
+Every 600ms the inner `div` is replaced with an updated width. Because the progress bar has a stable `id`, htmx settles the `style` attribute smoothly. A CSS `transition` on `width` makes the animation continuous rather than jumpy.
 
-```html
+When the job finishes, the server sends an `HX-Trigger: done` header. The outer wrapper listens for that event and swaps in the final "Complete" state with a restart button.
 
-<div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">
-    <h3 role="status" id="pblabel" tabindex="-1" autofocus>Running</h3>
-
-    <div
-            hx-get="/job/progress"
-            hx-trigger="every 600ms"
-            hx-target="this"
-            hx-swap="innerHTML">
-        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-             aria-labelledby="pblabel">
-            <div id="pb" class="progress-bar" style="width:0%">
-            </div>
-        </div>
-    </div>
-
-```
-
-This progress bar is updated every 600 milliseconds, with the "width" style attribute and `aria-valuenow` attributed set
-to current progress value.
-Because there is an id on the progress bar div, htmx will smoothly transition between requests by settling the
-style attribute into its new value. This, when coupled with CSS transitions, makes the visual transition continuous
-rather than jumpy.
-
-Finally, when the process is complete, a server returns `HX-Trigger: done` header, which triggers an update of the UI
-to "Complete" state
-with a restart button added to the UI (we are using the [
-`class-tools`](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/class-tools/README) extension in this
-example to add fade-in effect on the button):
-
-```html
-
-<div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">
-    <h3 role="status" id="pblabel" tabindex="-1" autofocus>Complete</h3>
-
-    <div
-            hx-get="/job/progress"
-            hx-trigger="none"
-            hx-target="this"
-            hx-swap="innerHTML">
-        <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="122"
-             aria-labelledby="pblabel">
-            <div id="pb" class="progress-bar" style="width:122%">
-            </div>
-        </div>
-    </div>
-
-    <button id="restart-btn" class="btn primary" hx-post="/start" classes="add show:600ms">
-        Restart Job
-    </button>
-</div>
-```
-
-This example uses styling cribbed from the bootstrap progress bar:
+The key CSS for the progress bar:
 
 ```css
-.progress {
-    height: 20px;
-    margin-bottom: 20px;
-    overflow: hidden;
-    background-color: #f5f5f5;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
-}
-
-.progress-bar {
-    float: left;
+#demo-content .progress-bar {
     width: 0%;
     height: 100%;
-    font-size: 12px;
-    line-height: 20px;
-    color: #fff;
-    text-align: center;
-    background-color: #337ab7;
-    -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
-    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
-    -webkit-transition: width .6s ease;
-    -o-transition: width .6s ease;
-    transition: width .6s ease;
+    background: #2563eb;
+    transition: width 0.6s ease;
 }
 ```
 
 <style>
-.progress {
+#demo-content .progress {
     height: 20px;
     margin-bottom: 20px;
     overflow: hidden;
-    background-color: #f5f5f5;
-    border-radius: 4px;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+    background-color: #e5e5e5;
+    border-radius: 6px;
 }
-.progress-bar {
-    float: left;
+:is(.dark) #demo-content .progress {
+    background-color: #2a2a2a;
+}
+#demo-content .progress-bar {
     width: 0%;
     height: 100%;
-    font-size: 12px;
-    line-height: 20px;
-    color: #fff;
-    text-align: center;
-    background-color: #337ab7;
-    -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-    box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
-    -webkit-transition: width .6s ease;
-    -o-transition: width .6s ease;
-    transition: width .6s ease;
+    border-radius: 6px;
+    background: #2563eb;
+    transition: width 0.6s ease;
 }
-#restart-btn {
-  opacity:0;
+:is(.dark) #demo-content .progress-bar {
+    background: #3b82f6;
 }
-#restart-btn.show {
-  opacity:1;
-  transition: opacity 100ms ease-in;
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+#demo-content #restart-btn {
+    animation: fade-in 0.4s ease-in 0.3s both;
 }
 </style>
 
 <script>
-server.get("/demo", function(req) {
-  return startButton("Start Progress");
-});
+const job = { complete: false, percentComplete: 0 };
 
-server.post("/start", function(req) {
-    var job = jobManager.start();
-    return jobStatusTemplate(job);
-});
+const resetJob = () => {
+    job.complete = false;
+    job.percentComplete = 0;
+};
 
-server.get("/job", function(req) {
-    var job = jobManager.currentProcess();
-    return jobStatusTemplate(job);
-});
+const advanceJob = () => {
+    job.percentComplete = Math.min(100, job.percentComplete + Math.floor(33 * Math.random()));
+    job.complete = job.percentComplete >= 100;
+};
 
-server.get("/job/progress", function(req) {
-    var job = jobManager.currentProcess();
+const progressBar = () =>
+    `<div class="progress" role="progressbar"
+          aria-valuemin="0" aria-valuemax="100" aria-valuenow="${job.percentComplete}">
+        <div id="pb" class="progress-bar" style="width:${job.percentComplete}%"></div>
+    </div>`;
+
+const restartBtn = () => job.complete
+    ? `<button id="restart-btn" class="btn primary" hx-post="/start">Restart Job</button>`
+    : "";
+
+const statusView = () =>
+    `<div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">
+        <h3 role="status" id="pblabel" tabindex="-1" autofocus>${job.complete ? "Complete" : "Running"}</h3>
+        <div hx-get="/job/progress"
+             hx-trigger="${job.complete ? 'none' : 'every 600ms'}"
+             hx-target="this"
+             hx-swap="innerHTML">
+            ${progressBar()}
+        </div>
+        ${restartBtn()}
+    </div>`;
+
+server.get("/demo", () =>
+    `<div hx-target="this" hx-swap="outerHTML">
+        <h3>Start Progress</h3>
+        <button class="btn primary" hx-post="/start">Start Job</button>
+    </div>`);
+
+server.post("/start", () => { resetJob(); return statusView(); });
+
+server.get("/job", () => statusView());
+
+server.get("/job/progress", () => {
+    advanceJob();
     if (job.complete) {
-      return { body: jobProgressTemplate(job), headers: { "HX-Trigger": "done" } };
+        return { body: progressBar(), headers: { "HX-Trigger": "done" } };
     }
-    return jobProgressTemplate(job);
+    return progressBar();
 });
-
-function startButton(message) {
-  return `<div hx-target="this" hx-swap="outerHTML">
-  <h3>${message}</h3>
-  <button class="btn primary" hx-post="/start">
-            Start Job
-  </button>
-</div>`;
-}
-
-function jobProgressTemplate(job) {
-  return `<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${job.percentComplete}" aria-labelledby="pblabel">
-      <div id="pb" class="progress-bar" style="width:${job.percentComplete}%">
-    </div>
-  </div>`
-}
-
-function jobStatusTemplate(job) {
-    return `<div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">
-  <h3 role="status" id="pblabel" tabindex="-1" autofocus>${job.complete ? "Complete" : "Running"}</h3>
-
-  <div
-    hx-get="/job/progress"
-    hx-trigger="${job.complete ? 'none' : 'every 600ms'}"
-    hx-target="this"
-    hx-swap="innerHTML">
-    ${jobProgressTemplate(job)}
-  </div>
-  ${restartButton(job)}`;
-}
-
-function restartButton(job) {
-  if(job.complete){
-    return `
-<button id="restart-btn" class="btn primary" hx-post="/start" classes="add show:600ms">
-  Restart Job
-</button>`
-  } else {
-    return "";
-  }
-}
-
-var jobManager = (function(){
-  var currentProcess = null;
-  return {
-    start : function() {
-      currentProcess = {
-        complete : false,
-        percentComplete : 0
-      }
-      return currentProcess;
-    },
-    currentProcess : function() {
-      currentProcess.percentComplete += Math.min(100, Math.floor(33 * Math.random()));
-      currentProcess.complete = currentProcess.percentComplete >= 100;
-      return currentProcess;
-    }
-  }
-})();
 
 server.start("/demo");
 </script>

@@ -3,8 +3,12 @@ title: "Delete in Place"
 description: Remove a record without page refresh
 icon: "icon-[material-symbols--delete]"
 ---
-This example shows how to implement a delete button that removes a table row upon completion.  First let's look at the
-table body:
+This example shows how to implement a delete button that removes a table row in place.
+
+The table body uses [`hx-confirm`](/reference/attributes/hx-confirm) to prompt before deleting,
+[`hx-target`](/reference/attributes/hx-target) to target the `closest tr`, and
+[`hx-swap`](/reference/attributes/hx-swap) to swap the entire row out. All three are inherited by
+every button in the body:
 
 ```html
 <table class="table delete-row-example">
@@ -22,11 +26,7 @@ table body:
 </table>
 ```
 
-The table body has a [`hx-confirm`](/reference/attributes/hx-confirm) attribute to confirm the delete action.  It also
-set the target to be the `closest tr` that is, the closest table row, for all the buttons ([`hx-target`](/reference/attributes/hx-target)
-is inherited from parents in the DOM.)  The swap specification in [`hx-swap`](/reference/attributes/hx-swap) says to swap the
-entire target out and to wait 1 second after receiving a response.  This last bit is so that we can use the following
-CSS:
+A simple CSS transition fades the row out during the swap delay:
 
 ```css
 tr.htmx-swapping td {
@@ -35,11 +35,8 @@ tr.htmx-swapping td {
 }
 ```
 
-To fade the row out before it is swapped/removed.
-
-Each row has a button with a [`hx-delete`](/reference/attributes/hx-delete) attribute containing the url on which to issue a `DELETE`
-request to delete the row from the server. This request responds with a `200` status code and empty content, indicating that the
-row should be replaced with nothing.
+Each row has a [`hx-delete`](/reference/attributes/hx-delete) button. The server responds with
+`200` and an empty body, so the row is replaced with nothing:
 
 ```html
 <tr>
@@ -55,64 +52,93 @@ row should be replaced with nothing.
 ```
 
 <style>
+#demo-content table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+}
+
+#demo-content th,
+#demo-content td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  text-align: left;
+}
+
+#demo-content th {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+
+#demo-content .btn.danger {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #fff;
+  background: #dc2626;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+#demo-content .btn.danger:hover {
+  background: #b91c1c;
+}
+
 tr.htmx-swapping td {
   opacity: 0;
   transition: opacity 1s ease-out;
 }
+
+/* Dark mode */
+:is(.dark) #demo-content table {
+  border-color: #374151;
+}
+
+:is(.dark) #demo-content th,
+:is(.dark) #demo-content td {
+  border-color: #374151;
+}
+
+:is(.dark) #demo-content th {
+  background: #1f2937;
+}
+
+:is(.dark) #demo-content .btn.danger {
+  background: #ef4444;
+}
+
+:is(.dark) #demo-content .btn.danger:hover {
+  background: #dc2626;
+}
 </style>
 
 <script>
-    var contacts = [
-      {
-        name: "Joe Smith",
-        email: "joe@smith.org",
-        status: "Active",
-      },
-      {
-        name: "Angie MacDowell",
-        email: "angie@macdowell.org",
-        status: "Active",
-      },
-      {
-        name: "Fuqua Tarkenton",
-        email: "fuqua@tarkenton.org",
-        status: "Active",
-      },
-      {
-        name: "Kim Yee",
-        email: "kim@yee.org",
-        status: "Inactive",
-      },
+    const contacts = [
+      { name: "Joe Smith",         email: "joe@smith.org",         status: "Active"   },
+      { name: "Angie MacDowell",   email: "angie@macdowell.org",   status: "Active"   },
+      { name: "Fuqua Tarkenton",   email: "fuqua@tarkenton.org",   status: "Active"   },
+      { name: "Kim Yee",           email: "kim@yee.org",           status: "Inactive" },
     ];
 
-    server.get("/demo", function(req) {
-      return tableTemplate(contacts);
-    });
+    server.get("/demo", () => tableTemplate(contacts));
 
-    server.delete(/\/contact\/\d+/, function(req) {
-      return "";
-    });
+    server.delete(/\/contact\/\d+/, () => "");
 
-    function rowTemplate(contact, i) {
-      return `<tr>
-      <td>${contact["name"]}</td>
-      <td>${contact["email"]}</td>
-      <td>${contact["status"]}</td>
+    const rowTemplate = (contact, i) => `<tr>
+      <td>${contact.name}</td>
+      <td>${contact.email}</td>
+      <td>${contact.status}</td>
       <td>
         <button class="btn danger" hx-delete="/contact/${i}">
           Delete
         </button>
       </td>
     </tr>`;
-    }
 
-    function tableTemplate(contacts) {
-      var rows = "";
-
-      for (var i = 0; i < contacts.length; i++) {
-        rows += rowTemplate(contacts[i], i, "");
-      }
-
+    const tableTemplate = (contacts) => {
+      const rows = contacts.map((c, i) => rowTemplate(c, i)).join("");
       return `
 <table class="table delete-row-example">
   <thead>
@@ -127,7 +153,7 @@ tr.htmx-swapping td {
     ${rows}
   </tbody>
 </table>`;
-    }
+    };
 
-server.start("/demo");
+    server.start("/demo");
 </script>

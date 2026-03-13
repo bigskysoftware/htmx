@@ -4,11 +4,9 @@ description: Validate form input as you type
 icon: "icon-[mdi--check]"
 ---
 
-This example shows how to do inline field validation, in this case of an email address. To do this
-we need to create a form with an input that `POST`s back to the server with the value to be validated
-and updates the DOM with the validation results.
+Inline field validation lets you check user input as they type (or on blur) without a full form submission. The input `POST`s its value to the server, which returns a replacement fragment with validation feedback.
 
-We start with this form:
+Here's the form. The email `<div>` targets itself with `hx-swap="outerHTML"`, so the server can replace it entirely with an error or success variant:
 
 ```html
 <h3>Signup Form</h3>
@@ -16,122 +14,113 @@ We start with this form:
     <div hx-target="this" hx-swap="outerHTML">
         <label>Email Address</label>
         <input name="email" hx-post="/contact/email" hx-indicator="#ind">
-        <img id="ind" src="/img/bars.svg" alt="Checking..." class="htmx-indicator"/>
+        <span id="ind" class="htmx-indicator">Checking...</span>
     </div>
     <div class="form-group">
         <label>First Name</label>
-        <input type="text" class="form-control" name="firstName">
+        <input type="text" name="firstName">
     </div>
     <div class="form-group">
         <label>Last Name</label>
-        <input type="text" class="form-control" name="lastName">
+        <input type="text" name="lastName">
     </div>
     <button class="btn primary">Submit</button>
 </form>
 ```
 
-Note that the first div in the form has set itself as the target of the request and specified the `outerHTML`
-swap strategy, so it will be replaced entirely by the response. The input then specifies that it will
-`POST` to `/contact/email` for validation, when the `changed` event occurs (this is the default for inputs).
-It also specifies an indicator for the request.
+The input `POST`s to `/contact/email` on the default `change` event. The `#ind` indicator shows while the request is in flight.
 
-When a request occurs, it will return a partial to replace the outer div. It might look like this:
+When validation fails, the server returns a replacement div annotated with an `error` class and an error message:
 
 ```html
-
 <div hx-target="this" hx-swap="outerHTML" class="error">
     <label>Email Address</label>
-    <input name="email" hx-post="/contact/email" hx-indicator="#ind" value="test@foo.com">
-    <img id="ind" src="/img/bars.svg" alt="Checking..." class="htmx-indicator"/>
+    <input name="email" hx-post="/contact/email" value="test@foo.com">
+    <span id="ind" class="htmx-indicator">Checking...</span>
     <div class='error-message'>That email is already taken. Please enter another email.</div>
 </div>
 ```
 
-Note that this div is annotated with the `error` class and includes an error message element.
-
-This form can be lightly styled with this CSS:
+Style the error and valid states with some CSS:
 
 ```css
-  .error-message {
-    color: red;
+#demo-content .error-message {
+    color: #dc2626;
 }
-
-.error input {
-    box-shadow: 0 0 3px #CC0000;
+#demo-content .error input {
+    box-shadow: 0 0 3px #dc2626;
 }
-
-.valid input {
-    box-shadow: 0 0 3px #36cc00;
+#demo-content .valid input {
+    box-shadow: 0 0 3px #16a34a;
 }
 ```
 
-To give better visual feedback.
-
-Below is a working demo of this example. The only email that will be accepted is `test@test.com`.
+Below is a working demo. The only accepted email is `test@test.com`.
 
 <style>
-  .error-message {
-    color:red;
-  }
-  .error input {
-      box-shadow: 0 0 3px #CC0000;
-   }
-  .valid input {
-      box-shadow: 0 0 3px #36cc00;
-   }
+  #demo-content form { display: flex; flex-direction: column; gap: 0.75rem; max-width: 24rem; }
+  #demo-content label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.875rem; }
+  #demo-content input { display: block; width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; }
+  :is(.dark) #demo-content input { background: #1a1a1a; border-color: #404040; color: #e5e5e5; }
+  #demo-content button { align-self: flex-start; padding: 0.5rem 1.25rem; border: none; border-radius: 0.375rem; background: #2563eb; color: #fff; font-weight: 600; cursor: pointer; }
+  #demo-content button:disabled { opacity: 0.5; cursor: not-allowed; }
+  :is(.dark) #demo-content button { background: #3b82f6; }
+  #demo-content .htmx-indicator { display: none; font-size: 0.75rem; color: #6b7280; font-style: italic; }
+  #demo-content .htmx-request .htmx-indicator { display: inline; }
+  #demo-content .error-message { color: #dc2626; font-size: 0.8rem; margin-top: 0.25rem; }
+  :is(.dark) #demo-content .error-message { color: #f87171; }
+  #demo-content .error input { box-shadow: 0 0 3px #dc2626; }
+  :is(.dark) #demo-content .error input { box-shadow: 0 0 3px #f87171; }
+  #demo-content .valid input { box-shadow: 0 0 3px #16a34a; }
+  :is(.dark) #demo-content .valid input { box-shadow: 0 0 3px #4ade80; }
 </style>
 
 <script>
-server.get("/demo", function(req) {
-  return demoTemplate();
+server.get("/demo", () => demoTemplate());
+
+server.post("/contact", () => formTemplate());
+
+server.post(/\/contact\/email.*/, (req) => {
+  const email = req.params['email'];
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    return emailInputTemplate(email, "Please enter a valid email address");
+  } else if (email !== "test@test.com") {
+    return emailInputTemplate(email, "That email is already taken. Please enter another email.");
+  } else {
+    return emailInputTemplate(email);
+  }
 });
 
-server.post("/contact", function(req) {
-  return formTemplate();
-});
+const demoTemplate = () =>
+  `<h3>Signup Form</h3>
+   <p>Enter an email and tab out to validate. Only "test@test.com" will pass.</p>` +
+  formTemplate();
 
-server.post(/\/contact\/email.*/, function(req) {
-    var email = req.params['email'];
-    if(!/\S+@\S+\.\S+/.test(email)) {
-      return emailInputTemplate(email, "Please enter a valid email address");
-    } else if(email != "test@test.com") {
-      return emailInputTemplate(email, "That email is already taken.  Please enter another email.");
-    } else {
-      return emailInputTemplate(email);
-    }
- });
+const formTemplate = () =>
+  `<form hx-post="/contact">
+    <div hx-target="this" hx-swap="outerHTML">
+      <label for="email">Email Address</label>
+      <input name="email" id="email" hx-post="/contact/email" hx-indicator="#ind">
+      <span id="ind" class="htmx-indicator">Checking...</span>
+    </div>
+    <div>
+      <label for="firstName">First Name</label>
+      <input type="text" name="firstName" id="firstName">
+    </div>
+    <div>
+      <label for="lastName">Last Name</label>
+      <input type="text" name="lastName" id="lastName">
+    </div>
+    <button type="submit" disabled>Submit</button>
+  </form>`;
 
-function demoTemplate() {
-    return `<h3>Signup Form</h3><p>Enter an email into the input below and on tab out it will be validated.  Only "test@test.com" will pass.</p> ` + formTemplate();
-}
-
-function formTemplate() {
-  return `<form hx-post="/contact">
-  <div hx-target="this" hx-swap="outerHTML">
+const emailInputTemplate = (val, errorMsg) =>
+  `<div hx-target="this" hx-swap="outerHTML" class="${errorMsg ? 'error' : 'valid'}">
     <label for="email">Email Address</label>
-    <input name="email" id="email" hx-post="/contact/email" hx-indicator="#ind">
-    <img id="ind" src="/img/bars.svg" alt="Checking..." class="htmx-indicator"/>
-  </div>
-  <div class="form-group">
-    <label for="firstName">First Name</label>
-    <input type="text" class="form-control" name="firstName" id="firstName">
-  </div>
-  <div class="form-group">
-    <label for="lastName">Last Name</label>
-    <input type="text" class="form-control" name="lastName" id="lastName">
-  </div>
-  <button type='submit' class="btn primary" disabled>Submit</button>
-</form>`;
-}
-
-    function emailInputTemplate(val, errorMsg) {
-        return `<div hx-target="this" hx-swap="outerHTML" class="${errorMsg ? "error" : "valid"}">
-  <label>Email Address</label>
-  <input name="email" hx-post="/contact/email" hx-indicator="#ind" value="${val}" aria-invalid="${!!errorMsg}">
-  <img id="ind" src="/img/bars.svg" alt="Checking..." class="htmx-indicator"/>
-  ${errorMsg ? (`<div class='error-message' >${errorMsg}</div>`) : ""}
-</div>`;
-    }
+    <input name="email" id="email" hx-post="/contact/email" hx-indicator="#ind" value="${val}" aria-invalid="${!!errorMsg}">
+    <span id="ind" class="htmx-indicator">Checking...</span>
+    ${errorMsg ? `<div class="error-message">${errorMsg}</div>` : ''}
+  </div>`;
 
 server.start("/demo");
 </script>
