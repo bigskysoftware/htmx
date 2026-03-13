@@ -38,7 +38,7 @@
         opacity: 1;
         }
 
-        .shield { transition: transform 200ms ease; transform-origin: 64px 58px; }
+        .shield { transition: transform 200ms ease; transform-origin: 64px 55px; }
         .group:has(a:hover, a:focus-visible, a:active) .shield {
         transform: scale(1.05) translateY(-3px);
         }
@@ -46,19 +46,19 @@
 
     <g class="shield">
         <!-- 3D depth: upper right vertical edge -->
-        <polygon class="gs gs3" points="98,20 101,22 101,57 98,55" />
+        <polygon class="gs gs3" points="98,20 101,22 101,55 98,53" />
         <!-- 3D depth: bottom right curved edge -->
-        <polygon class="gs gs4" points="98,55 101,57 89,92 67,117 64,115 86,90" />
+        <polygon class="gs gs4" points="98,53 101,55 89,88 67,109 64,107 86,86" />
 
         <!-- Shield front face (outer — visible as rim) -->
         <!-- Points: top-left, top-center, top-right, shoulder-right, belly-right, point, belly-left, shoulder-left -->
-        <polygon class="gs gs2" points="30,20 64,20 98,20 98,55 86,90 64,115 42,90 30,55" />
+        <polygon class="gs gs2" points="30,20 64,20 98,20 98,53 86,86 64,107 42,86 30,53" />
 
         <!-- Shield front face (inner — bright face) -->
         <!-- Inset by 5px -->
-        <polygon class="gs gs1" points="35,25 64,25 93,25 93,52 82,85 64,107 46,85 35,52" />
+        <polygon class="gs gs1" points="35,25 64,25 93,25 93,50 82,81 64,100 46,81 35,50" />
 
         <!-- </> symbol centered in the face -->
-        <text x="64" y="60" text-anchor="middle" dominant-baseline="middle" class="code-text" font-size="20">&lt;/&gt;</text>
+        <text x="64" y="55" text-anchor="middle" dominant-baseline="middle" class="code-text" font-size="20">&lt;/&gt;</text>
     </g>
 </svg>

@@ -21,7 +21,7 @@
         --v2: var(--color-neutral-200);
         --v3: var(--color-neutral-350);
         --v4: var(--color-neutral-450);
-        --accent: var(--color-blue-500);
+        --accent: var(--color-neutral-500);
         }
         @media (prefers-color-scheme: dark) {
         .group:has(a:hover, a:focus-visible, a:active) .features-board {
@@ -29,7 +29,7 @@
         --v2: var(--color-neutral-400);
         --v3: var(--color-neutral-500);
         --v4: var(--color-neutral-600);
-        --accent: var(--color-blue-400);
+        --accent: var(--color-neutral-350);
         }
         }
 
