@@ -41,21 +41,21 @@ const sections = [
                         "flex items-center gap-4",
                         section.centered && "sm:flex-col sm:items-center sm:text-center"
                     ]}>
-                        <i class={`${item.icon} ${section.centered ? 'size-8' : 'size-7'} text-neutral-400 dark:text-neutral-600 shrink-0 group-interact:text-neutral-600 dark:group-interact:text-neutral-300 transition`}></i>
+                        <i class={`${item.icon} ${section.centered ? 'size-8' : 'size-7'} text-neutral-500 dark:text-neutral-450 shrink-0 group-interact:text-neutral-700 dark:group-interact:text-neutral-300 transition`}></i>
                         <div class:list={["min-w-0", section.centered || "flex-1"]}>
                             <h3 class="font-chicago text-sm text-neutral-900 dark:text-neutral-100 mb-1 sm:mb-2">
                                 <a
                                     href={item.url}
                                     target={item.target}
                                     rel={item.rel}
-                                    class="outline-hidden text-neutral-900 dark:text-neutral-100 group-interact:text-black dark:group-interact:text-white transition"
+                                    class="outline-hidden text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-white transition"
                                 >
                                     {item.title}
                                     <span class="absolute inset-0 z-10"></span>
                                 </a>
                             </h3>
                             <p class:list={[
-                                "text-xs text-neutral-500 dark:text-neutral-450 group-interact:text-neutral-700 dark:group-interact:text-neutral-300 transition",
+                                "text-xs group-interact:text-neutral-700 dark:group-interact:text-neutral-300 transition",
                                 section.centered ? "" : "truncate"
                             ]}>
                                 {item.description}

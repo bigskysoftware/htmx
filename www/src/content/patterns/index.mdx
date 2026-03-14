@@ -1,6 +1,6 @@
 ---
 title: "Patterns"
-description: "Learn how to build common UX patterns with htmx."
+description: "Common patterns and recipes for htmx."
 ---
 
 import { getCollection } from 'astro:content';
@@ -32,13 +32,13 @@ export const groupedPatterns = categoryEntries.map(cat => ({
         })),
 }));
 
-<div class="mt-6">
+<div class="not-prose mt-6">
     {groupedPatterns.map(group => (
         <div class="mt-12 first:mt-0">
-            <h4 id={group.slug}>
-                <a href={`#${group.slug}`}>{group.label}</a>
-            </h4>
-            <div class="not-prose mt-3">
+            <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">
+                {group.label}
+            </h2>
+            <div>
                 <Card variant="lg" class="p-1.5">
                     <div class="flex flex-col gap-1.5">
                         {group.items.map(item => (

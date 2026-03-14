@@ -1,6 +1,6 @@
 ---
 title: "Using Extensions"
-description: "Install, configure, and build htmx extensions"
+description: "Install, configure, and build htmx extensions."
 keywords: ["extensions", "plugins", "custom", "building", "creating"]
 ---
 

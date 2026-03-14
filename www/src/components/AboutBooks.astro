@@ -16,7 +16,7 @@ const books = [
     <div class="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-8">
         {books.map(book => (
             <a href={book.href} target="_blank" rel="noopener noreferrer"
-               class="group font-chicago text-sm text-center text-neutral-900 dark:text-neutral-100">
+               class="group font-chicago text-sm text-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 interact:underline transition">
                 <Image src={bookImages[book.img].default} alt={book.title} width={280} class="mb-3 rounded-sm group-interact:-translate-y-0.5 transition" />
                 {book.title}
             </a>

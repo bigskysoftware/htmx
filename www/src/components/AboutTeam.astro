@@ -28,8 +28,8 @@ const contributors = team.filter(m => m.name !== 'Carson Gross');
                         </a>
                     )}
                 </div>
-                <span class="inline-block font-mono text-[11px] uppercase tracking-wider text-neutral-500 dark:text-neutral-450">Creator of htmx / Head Grug (same thing)</span>
-                <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed mt-1.5" set:html={creator.content}></p>
+                <span class="inline-block font-mono text-[11px] uppercase tracking-wider text-neutral-600 dark:text-neutral-400">Creator of htmx / Head Grug (same thing)</span>
+                <p class="text-sm leading-relaxed mt-1.5" set:html={creator.content}></p>
             </div>
         </Card>
     )}
@@ -52,7 +52,7 @@ const contributors = team.filter(m => m.name !== 'Carson Gross');
                             </a>
                         )}
                     </div>
-                    <p class="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed" set:html={member.content}></p>
+                    <p class="text-xs leading-relaxed" set:html={member.content}></p>
                 </div>
             </Card>
         ))}
