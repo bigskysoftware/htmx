@@ -131,6 +131,7 @@
         }
 
         --header-height: var(--navigation-bar-height);
+        --construction-banner-height: 40px;
 
         /* Base colors - light mode */
         --astro-code-foreground: #1a1a1a;
@@ -233,8 +234,8 @@
     @apply
     prose-headings:scroll-pt-[calc(var(--header-height)+2rem)]
     prose-headings:scroll-mt-[calc(var(--header-height)+2rem)]
-    [html:has(#sidebar)_&]:max-lg:prose-headings:scroll-pt-[calc(var(--header-height)+var(--sidebar-header-height)+2rem)]
-    [html:has(#sidebar)_&]:max-lg:prose-headings:scroll-mt-[calc(var(--header-height)+var(--sidebar-header-height)+2rem)];
+    [html:has(#construction-banner)_&]:prose-headings:scroll-pt-[calc(var(--header-height)+var(--construction-banner-height)+2rem)]
+    [html:has(#construction-banner)_&]:prose-headings:scroll-mt-[calc(var(--header-height)+var(--construction-banner-height)+2rem)];
 
     /* Inline code - remove backticks */
 
@@ -315,6 +316,7 @@
 
             summary {
                 @apply text-yellow-800 dark:text-yellow-300
+                interact:bg-transparent dark:interact:bg-transparent
                 interact:text-yellow-950 dark:interact:text-yellow-100;
 
                 &::before {
@@ -332,6 +334,7 @@
 
             summary {
                 @apply text-blue-800 dark:text-blue-300
+                interact:bg-transparent dark:interact:bg-transparent
                 interact:text-blue-950 dark:interact:text-blue-100;
 
                 &::before {
