@@ -1047,19 +1047,23 @@ var htmx = (() => {
         }
 
         __createOOBTask(tasks, elt, oobValue, sourceElement) {
-            let target = elt.id ? '#' + CSS.escape(elt.id) : null;
+            let targetSelector = elt.id ? '#' + CSS.escape(elt.id) : null;
             if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
-                [oobValue, target = target] = oobValue.split(/:(.*)/);
+                [oobValue, targetSelector = targetSelector] = oobValue.split(/:(.*)/);
             }
             if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
 
             let swapSpec = this.__parseSwapSpec(oobValue);
-            target = swapSpec.target || target;
+            targetSelector = swapSpec.target || targetSelector;
             swapSpec.strip ??= !swapSpec.style.startsWith('outer');
-            if (!target) return;
-            let fragment = document.createDocumentFragment();
-            fragment.append(elt);
-            tasks.push({type: 'oob', fragment, target, swapSpec, sourceElement});
+            if (!targetSelector) return;
+            let targets = [...document.querySelectorAll(targetSelector)];
+            for (let target of targets) {
+                let fragment = document.createDocumentFragment();
+                fragment.append(elt.cloneNode(true));
+                tasks.push({type: 'oob', fragment, target, swapSpec, sourceElement});
+            }
+            elt.remove();
         }
 
         __processOOB(fragment, sourceElement, selectOOB) {
@@ -1111,15 +1115,20 @@ var htmx = (() => {
                 let type = templateElt.getAttribute('type');
                 
                 if (type === 'partial') {
-                    let target = templateElt.getAttribute(this.__prefix('hx-target')) || (templateElt.id ? '#' + CSS.escape(templateElt.id) : null);
-                    this.__processScripts(templateElt.content);
-                    tasks.push({
-                        type: 'partial',
-                        fragment: templateElt.content.cloneNode(true),
-                        target,
-                        swapSpec: this.__parseSwapSpec(templateElt.getAttribute(this.__prefix('hx-swap')) || this.config.defaultSwap),
-                        sourceElement: ctx.sourceElement
-                    });
+                    let targetSelector = templateElt.getAttribute(this.__prefix('hx-target')) || (templateElt.id ? '#' + CSS.escape(templateElt.id) : null);
+                    if (targetSelector) {
+                        this.__processScripts(templateElt.content);
+                        let swapSpec = this.__parseSwapSpec(templateElt.getAttribute(this.__prefix('hx-swap')) || this.config.defaultSwap);
+                        for (let target of document.querySelectorAll(targetSelector)) {
+                            tasks.push({
+                                type: 'partial',
+                                fragment: templateElt.content.cloneNode(true),
+                                target,
+                                swapSpec,
+                                sourceElement: ctx.sourceElement
+                            });
+                        }
+                    }
                 } else {
                     this.__triggerExtensions(templateElt, 'htmx:process:' + type, { ctx, tasks });
                 }
