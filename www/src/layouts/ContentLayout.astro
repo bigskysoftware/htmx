@@ -8,15 +8,9 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Card from '../components/Card.astro';
 import ThumbnailSvg from '../components/ThumbnailSvg.astro';
 import type {ContentFile, ContentFolder} from '../lib/content';
+import CopyPageButton from '../components/CopyPageButton.astro';
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-
-// Raw content files for the copy-page-content feature
-const rawContentModules = import.meta.glob('/src/content/**/*.{md,mdx}', {
-    query: '?raw',
-    import: 'default',
-    eager: true
-}) as Record<string, string>;
 
 // This layout handles all content collection pages (index, detail, essays, reference, etc.).
 // It reduces duplication significantly, but makes it hard to understand how a given page
@@ -69,22 +63,6 @@ const getThumbnail = (path: string | undefined): string | null => {
 
 const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.id.localeCompare(b.id)) : [];
 
-// Build cleaned markdown content for the copy button (detail pages only)
-let cleanedContent = '';
-if (!isIndex && file) {
-    const rawKey = `/src/content/${file.id}`;
-    const raw = rawContentModules[rawKey];
-    if (raw) {
-        cleanedContent = raw
-            // Strip frontmatter
-            .replace(/^---[\s\S]*?---\n*/, '')
-            // Strip <script> blocks containing server.start (demo server scripts)
-            .replace(/<script>[\s\S]*?server\.start[\s\S]*?<\/script>\s*/g, '')
-            // Strip <div id="demo-content"...> lines
-            .replace(/<div\s+id="demo-content"[^>]*>\s*<\/div>\s*/g, '')
-            .trim();
-    }
-}
 ---
 
 <Layout {title} {description} {keywords} {...articleMeta}>
@@ -175,15 +153,7 @@ if (!isIndex && file) {
                             <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
                                 <div class="flex items-center justify-between gap-2 not-prose">
                                     <h1 class="flex-1 font-chicago text-[2em]/12 font-bold text-neutral-900 dark:text-neutral-100" set:html={title} />
-                                    {cleanedContent && (
-                                        <button
-                                            class="copy-page-btn group/copy flex items-center justify-center size-8 rounded-sm shrink-0 text-neutral-400 dark:text-neutral-500 interact:text-neutral-600 dark:interact:text-neutral-300 transition cursor-pointer"
-                                            aria-label="Copy page content"
-                                            title="Copy page content">
-                                            <i class="size-4 icon-[mdi--content-copy] group-[.copied]/copy:hidden"></i>
-                                            <i class="size-4 icon-[mdi--check] hidden group-[.copied]/copy:block text-green-600 dark:text-green-400"></i>
-                                        </button>
-                                    )}
+                                    {!isIndex && file && <CopyPageButton file={file} />}
                                 </div>
 
                                 {isEssay && (
@@ -250,7 +220,7 @@ if (!isIndex && file) {
                 <!-- Right Column (Table of Contents) -->
                 {includeRightColumn && (
                         <aside class:list={[
-                            "hidden xl:flex xl:flex-col xl:w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) h-[calc(100vh-var(--header-height))] pt-26 pb-8 pr-4",
+                            "hidden xl:flex xl:flex-col xl:w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) h-[calc(100vh-var(--header-height))] pt-27 pb-8 pr-4",
                             hasSidebar ? "xl:-me-16" : "xl:-me-[19rem]",
                         ]}>
                             {includePagination && (
@@ -296,31 +266,6 @@ if (!isIndex && file) {
             </div>
         </main>
     </div>
-
-    {cleanedContent && (
-        <>
-            <template id="page-raw-content">{cleanedContent}</template>
-            <script is:inline>
-                document.addEventListener('click', function(e) {
-                    var btn = e.target.closest('.copy-page-btn');
-                    if (!btn) return;
-                    var tmpl = document.getElementById('page-raw-content');
-                    if (!tmpl) return;
-                    var text = tmpl.content.textContent;
-                    navigator.clipboard.writeText(text).then(function() {
-                        document.querySelectorAll('.copy-page-btn').forEach(function(b) {
-                            b.classList.add('copied');
-                        });
-                        setTimeout(function() {
-                            document.querySelectorAll('.copy-page-btn').forEach(function(b) {
-                                b.classList.remove('copied');
-                            });
-                        }, 2000);
-                    });
-                });
-            </script>
-        </>
-    )}
 
     <Footer slot="footer"
             class:list={[hasSidebar && "lg:pl-72"]}

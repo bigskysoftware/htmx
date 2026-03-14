@@ -43,7 +43,7 @@ export const codeBlockTransformer = {
             type: 'element',
             tagName: 'button',
             properties: {
-                class: 'z-20 absolute top-9 right-2 size-8 flex items-center justify-center select-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded opacity-100 lg:opacity-0 data-copied:opacity-100 group-interact:opacity-100 transition text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white outline-hidden focus:ring-1 focus:ring-offset-1 focus:ring-neutral-500 dark:focus:ring-neutral-400 cursor-pointer before:content-["Copied!"] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:mr-2 before:px-2 before:py-1 before:text-xs before:font-semibold before:text-white before:bg-neutral-900 dark:before:bg-neutral-100 dark:before:text-neutral-900 before:rounded before:whitespace-nowrap before:opacity-0 before:pointer-events-none data-copied:before:opacity-100 before:transition',
+                class: 'z-20 absolute top-9 right-2 size-8 flex items-center justify-center select-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded opacity-100 lg:opacity-0 data-copied:opacity-100 group-interact:opacity-100 focus-visible:opacity-100 transition text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white outline-hidden focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400 cursor-pointer before:content-["Copied!"] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:mr-2 before:px-2 before:py-1 before:text-xs before:font-semibold before:text-white before:bg-neutral-900 dark:before:bg-neutral-100 dark:before:text-neutral-900 before:rounded before:whitespace-nowrap before:opacity-0 before:pointer-events-none data-copied:before:opacity-100 before:transition',
                 _: `on click
                         -- Note: iOS Safari requires HTTPS for clipboard API (won't work on localhost)
                         writeText(textContent of last <code/> in closest <pre/>) into navigator.clipboard
@@ -71,6 +71,9 @@ export const codeBlockTransformer = {
                 }
             ]
         };
+
+        // Make pre unfocusable (code inside is the scrollable element)
+        node.properties.tabindex = '-1';
 
         // Add header and button as first children
         // @ts-ignore - type inference issue with hast nodes
