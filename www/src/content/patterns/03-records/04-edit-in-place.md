@@ -2,116 +2,97 @@
 title: "Edit in Place"
 description: Update a record without page refresh
 icon: "icon-[material-symbols--edit]"
+soon: true
 ---
 
-<div id="demo-content" class="not-prose demo-container"></div>
-
-This pattern shows how to edit a record in place, without a page refresh.
-
-It works by providing two modes that the user can switch between: **View Mode** & **Edit Mode**.
-
-### 1. View Mode
-
-In view mode, display the current value(s) with a way to switch to **Edit Mode** (e.g. a button / icon / etc.).
-
-```html
-<div hx-target:inherited="this">
-
-    <p>Name: <span>{{ user.name }}</span></p>
-
-    <!-- On click, switch to edit mode -->
-    <button hx-get="/users/1/edit"
-            hx-swap="outerHTML">
-        Edit
-    </button>
-
-</div>
-```
-_The \<button\> `GET`s the edit form & replaces the parent `<div>` with it._
-
-
-### 2. Edit Mode
-
-In edit mode, show a form with **Save** & **Cancel** options.
-
-```html
-<!-- On submit, save changes & return to view mode -->
-<form hx-put="/users/1"
-      hx-target:inherited="this"
-      hx-swap:inherited="outerHTML">
-
-    <p>Name: <input name="name" value="{{ user.name }}" autofocus></p>
-
-    <button type="submit">
-        Save
-    </button>
-
-    <!-- On click, return to view mode (without saving) -->
-    <button type="button" hx-get="/users/1">
-        Cancel
-    </button>
-
-</form>
-```
-_The form `PUT`s the updated value to the server, which returns the updated view mode HTML to replace the form._
-
-**Note:**
-
-The endpoints follow REST conventions:
-- `GET /users/1` - Retrieve the current view
-- `GET /users/1/edit` - Retrieve the edit form
-- `PUT /users/1` - Update the resource
-
-The URL represents the resource (`/users/1`), and the HTTP method indicates the action.
-
 <script>
-const user = { name: "Joe Smith" };
+const user = { name: "Joe Smith", email: "joe@smith.org" };
 
-server.get("/users/1", () => `
-<div hx-target:inherited="this">
-    <p>Name: <span>${user.name}</span></p>
-    <button hx-get="/users/1/edit"
-            hx-swap="outerHTML">
-        Edit
-    </button>
-</div>`);
+function viewHTML() {
+    return `
+<div id="user-view" class="p-5 border border-neutral-200 dark:border-neutral-800 rounded-lg max-w-sm">
+    <div class="mb-3">
+        <span class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">Name</span>
+        <span class="text-sm font-medium text-neutral-800 dark:text-neutral-100">${user.name}</span>
+    </div>
+    <div class="mb-4">
+        <span class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">Email</span>
+        <span class="text-sm font-medium text-neutral-800 dark:text-neutral-100">${user.email}</span>
+    </div>
+    <button class="px-3.5 py-1.5 text-sm font-medium rounded-md cursor-pointer border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 interact:bg-neutral-50 dark:interact:bg-neutral-850 active:scale-[0.98] transition" hx-get="/users/1/edit" hx-target="#user-view" hx-swap="outerHTML">Edit</button>
+</div>`;
+}
+
+server.get("/users/1", () => viewHTML());
 
 server.get("/users/1/edit", () => `
-<form hx-put="/users/1"
-      hx-target:inherited="this"
-      hx-swap:inherited="outerHTML">
-    <p>Name: <input name="name" value="${user.name}" autofocus></p>
-    <button type="submit">
-        Save
-    </button>
-    <button hx-get="/users/1">
-        Cancel
-    </button>
+<form id="user-view" class="p-5 border border-neutral-200 dark:border-neutral-800 rounded-lg max-w-sm" hx-put="/users/1" hx-target="this" hx-swap="outerHTML">
+    <div class="mb-3">
+        <label class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">Name
+            <input class="mt-1 w-full px-2.5 py-1.5 text-sm border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-400/30 focus:border-neutral-400 dark:focus:border-neutral-500" name="name" value="${user.name}" autofocus>
+        </label>
+    </div>
+    <div class="mb-4">
+        <label class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">Email
+            <input class="mt-1 w-full px-2.5 py-1.5 text-sm border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-400/30 focus:border-neutral-400 dark:focus:border-neutral-500" name="email" value="${user.email}" type="email">
+        </label>
+    </div>
+    <div class="flex gap-2">
+        <button class="px-3.5 py-1.5 text-sm font-medium rounded-md cursor-pointer text-white dark:text-neutral-900 bg-neutral-800 dark:bg-neutral-200 interact:bg-neutral-700 dark:interact:bg-neutral-300 active:scale-[0.98] transition" type="submit">Save</button>
+        <button class="px-3.5 py-1.5 text-sm font-medium rounded-md cursor-pointer bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 interact:bg-neutral-200 dark:interact:bg-neutral-700 active:scale-[0.98] transition" type="button" hx-get="/users/1">Cancel</button>
+    </div>
 </form>`);
 
 server.put("/users/1", (req) => {
     user.name = req.params.name;
-
-    return `
-<div hx-target:inherited="this"
-     hx-swap:inherited="outerHTML">
-    <p>Name: <span>${user.name}</span></p>
-    <button hx-get="/users/1/edit">
-        Edit
-    </button>
-</div>`});
+    user.email = req.params.email;
+    return viewHTML();
+});
 
 server.start("/users/1");
 </script>
 
-<style type="text/tailwindcss">
-#demo-content > div, #demo-content > form {
-    @apply p-4 border border-neutral-300 rounded shadow max-w-md;
-}
-#demo-content p {
-    @apply h-[34px]
-}
-#demo-content input {
-    @apply px-2 py-0.5 border border-neutral-400 rounded shadow-inner;
-}
-</style>
+<div id="demo-content" class="not-prose demo-container flex justify-center"></div>
+
+## Basic usage
+
+On the client, display the current values with a button that fetches the edit form.
+
+```html
+<div hx-target="this" hx-swap="outerHTML">
+    <p>Name: Joe Smith</p>
+    <p>Email: joe@smith.org</p>
+    <button hx-get="/users/1/edit">Edit</button>
+</div>
+```
+
+- [`hx-target`](/reference/attributes/hx-target)=[`"this"`](/reference/attributes/hx-target#this) sets the target to the `<div>` itself.
+- [`hx-swap`](/reference/attributes/hx-swap)=[`"outerHTML"`](/reference/attributes/hx-swap#outerhtml) replaces the entire `<div>` with the response.
+- [`hx-get`](/reference/attributes/hx-get) on the button requests the edit form.
+
+On the server, respond with a form pre-filled with the current values.
+
+```html
+<form hx-put="/users/1" hx-target="this" hx-swap="outerHTML">
+    <label>Name <input name="name" value="Joe Smith"></label>
+    <label>Email <input name="email" value="joe@smith.org"></label>
+    <button type="submit">Save</button>
+    <button type="button" hx-get="/users/1">Cancel</button>
+</form>
+```
+
+- [`hx-put`](/reference/attributes/hx-put) submits the form as a `PUT` request.
+- **Save** submits the form, and the server responds with the updated view mode HTML.
+- **Cancel** re-fetches the view mode without saving.
+
+## Notes
+
+### REST conventions
+
+The endpoints follow standard REST conventions:
+
+- `GET /users/1`: retrieve the view
+- `GET /users/1/edit`: retrieve the edit form
+- `PUT /users/1`: update the resource
+
+The URL represents the resource, and the HTTP method indicates the action.

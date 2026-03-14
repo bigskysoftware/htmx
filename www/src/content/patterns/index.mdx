@@ -29,6 +29,7 @@ export const groupedPatterns = categoryEntries.map(cat => ({
             url: `/patterns/${cleanSlug(e.id)}`,
             description: e.data.description,
             icon: e.data.icon || '',
+            soon: e.data.soon || false,
         })),
 }));
 
@@ -42,14 +43,17 @@ export const groupedPatterns = categoryEntries.map(cat => ({
                 <Card variant="lg" class="p-1.5">
                     <div class="flex flex-col gap-1.5">
                         {group.items.map(item => (
-                            <FinderLink href={item.url} class="!mx-0">
-                                {item.icon && <i class={`${item.icon} size-5 shrink-0 -translate-y-px group-interact/link:text-white dark:group-interact/link:text-black transition`}></i>}
+                            <FinderLink href={item.soon ? undefined : item.url} data-disabled={item.soon ? '' : undefined} class={`!mx-0${item.soon ? ' cursor-not-allowed pointer-events-none opacity-50' : ''}`}>
+                                {item.icon && <i class={`${item.icon} size-5 shrink-0 mr-3 -translate-y-px group-interact/link:text-white dark:group-interact/link:text-black transition`}></i>}
                                 <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 flex-1 min-w-0">
-                                    <span class="text-sm font-chicago tracking-tight sm:min-w-[20ch]">{item.title}</span>
+                                    <span class="text-sm font-chicago tracking-tight sm:min-w-[16ch]">{item.title}</span>
                                     {item.description && (
                                         <span class="text-sm text-neutral-600 dark:text-neutral-400 group-interact/link:text-white dark:group-interact/link:text-black transition">{item.description}</span>
                                     )}
                                 </div>
+                                {item.soon && (
+                                    <span class="text-[9px] px-1.5 py-0.5 shrink-0 self-start sm:self-center rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">Soon</span>
+                                )}
                             </FinderLink>
                         ))}
                     </div>

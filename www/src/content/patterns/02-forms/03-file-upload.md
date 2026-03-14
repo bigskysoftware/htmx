@@ -2,154 +2,165 @@
 title: "File Upload"
 description: Upload files with progress and validation
 icon: "icon-[ic--round-file-upload]"
+soon: true
 ---
-Upload files with progress tracking and validation handling. Use `multipart/form-data` encoding.
-
-## Upload with Progress
-
-Create a form with multipart encoding:
-
-```html
-<form hx-encoding="multipart/form-data" hx-post="/upload">
-  <input type="file" name="file">
-  <button>Upload</button>
-  <progress id="progress" value="0" max="100"></progress>
-</form>
-```
-
-Listen for progress events and update the progress bar:
-
-```html
-<script>
-  htmx.on('#form', 'htmx:xhr:progress', function(evt) {
-    htmx.find('#progress').setAttribute('value', evt.detail.loaded / evt.detail.total * 100);
-  });
-</script>
-```
-
-<form id="upload-form" hx-encoding="multipart/form-data" hx-post="/upload"
-      class="space-y-4 p-4 border border-neutral-200 dark:border-neutral-700 rounded mb-8">
-  <div>
-    <label class="block text-sm font-medium mb-2">Choose file</label>
-    <input type="file" name="file"
-           class="block w-full text-sm border border-neutral-300 dark:border-neutral-600 rounded px-3 py-2">
-  </div>
-  <button type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded interact:bg-blue-700">
-    Upload
-  </button>
-  <progress id="progress" value="0" max="100"
-            class="w-full h-2 [&::-webkit-progress-bar]:bg-neutral-200 [&::-webkit-progress-value]:bg-blue-600 [&::-moz-progress-bar]:bg-blue-600"></progress>
-  <div id="upload-result" class="text-sm text-neutral-600 dark:text-neutral-400"></div>
-</form>
 
 <script>
-  htmx.on('#upload-form', 'htmx:xhr:progress', function(evt) {
-    htmx.find('#progress').setAttribute('value', evt.detail.loaded / evt.detail.total * 100);
-  });
+const inputClass = "block w-full px-3 py-2.5 text-sm border rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 outline-none transition focus:border-neutral-400 dark:focus:border-neutral-500";
+const labelClass = "block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1.5";
+const errorClass = "text-[0.675rem] text-red-600 dark:text-red-400 mt-1.5";
 
-  server.post("/upload", function(req) {
-    return `<div class="text-green-600">File uploaded successfully!</div>`;
-  });
+function renderForm(errors = {}, values = {}) {
+  const border = (field) => errors[field]
+    ? "border-red-300 dark:border-red-700"
+    : "border-neutral-200 dark:border-neutral-700";
+
+  const fileSelected = values.file;
+
+  return `
+  <form id="upload-form" hx-post="/submit" hx-target="#upload-wrapper" hx-swap="innerHTML"
+        hx-on::after-settle="var fi=document.getElementById('file-input'); var lb=document.getElementById('file-label'); if(fi&&lb&&fi.files[0]) lb.textContent=fi.files[0].name"
+        class="w-full mx-auto flex flex-col gap-5">
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="name-input" class="${labelClass}">Name</label>
+        <input id="name-input" name="name" placeholder="Jane Smith" value="${values.name || ''}"
+               class="${inputClass} ${border('name')}">
+        ${errors.name ? '<p class="' + errorClass + '">' + errors.name + '</p>' : ''}
+      </div>
+      <div>
+        <label for="email-input" class="${labelClass}">Email</label>
+        <input id="email-input" name="email" type="email" placeholder="jane@example.com" value="${values.email || ''}"
+               class="${inputClass} ${border('email')}">
+        ${errors.email ? '<p class="' + errorClass + '">' + errors.email + '</p>' : ''}
+      </div>
+    </div>
+    <div>
+      <label for="file-input"
+             class="group flex flex-col items-center justify-center gap-2 px-4 py-6 border-2 border-dashed ${errors.file ? 'border-red-300 dark:border-red-700' : 'border-neutral-200 dark:border-neutral-800'} rounded-lg cursor-pointer transition hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-850 active:scale-[0.99]">
+        <i class="icon-[mdi--cloud-upload-outline] size-8 text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-500 dark:group-hover:text-neutral-400 transition"></i>
+        <span class="text-sm text-neutral-600 dark:text-neutral-400" id="file-label">${fileSelected ? fileSelected : 'Choose a file'}</span>
+      </label>
+      <input hx-preserve id="file-input" type="file" name="file" class="sr-only"
+             onchange="document.getElementById('file-label').textContent=this.files[0]?.name||'Choose a file'">
+      ${errors.file ? '<p class="' + errorClass + '">' + errors.file + '</p>' : ''}
+    </div>
+    <button type="submit"
+            class="w-full px-5 py-2.5 text-sm font-medium rounded-md text-white dark:text-neutral-900 bg-neutral-800 dark:bg-neutral-200 cursor-pointer hover:bg-neutral-700 dark:hover:bg-neutral-300 active:scale-[0.98] transition">
+      Submit
+    </button>
+  </form>`;
+}
+
+server.get("/demo", () =>
+  `<div id="upload-wrapper" class="starting:opacity-0 transition duration-300">${renderForm()}</div>`);
+
+server.post("/submit", (req) => {
+  const name = (req.params.name || '').trim();
+  const email = (req.params.email || '').trim();
+  const hasFile = req.params.file && req.params.file !== '' && req.params.file !== '[object File]';
+
+  const errors = {};
+  if (!name) errors.name = 'Name is required.';
+  if (!email) errors.email = 'Email is required.';
+  else if (!email.includes('@')) errors.email = 'Enter a valid email.';
+
+  if (Object.keys(errors).length > 0) {
+    return renderForm(errors, { name, email, file: hasFile ? 'file' : '' });
+  }
+
+  return `
+  <div class="w-full max-w-sm mx-auto starting:opacity-0 transition duration-300">
+    <div class="flex flex-col items-center gap-3 py-8 text-center">
+      <i class="icon-[mdi--check-circle] size-12 text-green-500 dark:text-green-400"></i>
+      <p class="text-sm font-medium text-neutral-800 dark:text-neutral-200">Submitted successfully</p>
+      <p class="text-xs text-neutral-500 dark:text-neutral-400">Your file selection was preserved through validation.</p>
+      <button hx-get="/reset" hx-target="#upload-wrapper" hx-swap="innerHTML"
+              class="mt-2 px-4 py-2 text-[0.8125rem] font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-850 rounded-md cursor-pointer transition active:scale-[0.98]">
+        Try again
+      </button>
+    </div>
+  </div>`;
+});
+
+server.get("/reset", () => renderForm());
+
+server.start("/demo");
 </script>
 
+<div id="demo-content" class="not-prose demo-container flex items-center justify-center min-h-[460px]"></div>
 
-### With Hyperscript
+## Basic usage
 
-Use hyperscript for cleaner syntax:
+On the client, set `hx-encoding` to `multipart/form-data`:
 
 ```html
-<form hx-encoding="multipart/form-data" hx-post="/upload"
-      _="on htmx:xhr:progress(loaded, total)
-         set #progress.value to (loaded/total)*100">
-  <input type="file" name="file">
-  <button>Upload</button>
-  <progress id="progress" value="0" max="100"></progress>
+<form hx-post="/upload"
+      hx-encoding="multipart/form-data">
+    <input type="file" name="file">
+    <input type="text" name="name">
+    <button>Submit</button>
 </form>
 ```
 
-Hyperscript lets you destructure event details directly into variables.
+- [`hx-encoding`](/reference/attributes/hx-encoding)=`"multipart/form-data"` sends the form as [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData), required for file uploads.
+- [`hx-post`](/reference/attributes/hx-post) submits the form to `/upload`.
 
-## Keep File Selection on Errors
-
-When forms return with validation errors, file inputs lose their selection. Preserve them with `hx-preserve` or by moving the input outside the swap target.
-
-### Using `hx-preserve`
-
-Add `hx-preserve` to keep the file selection:
+On the server, respond with a success or error message:
 
 ```html
-<form enctype="multipart/form-data" hx-post="/submit">
-  <input hx-preserve type="file" name="file">
-  <button>Submit</button>
-</form>
+<p>File uploaded successfully.</p>
 ```
 
-The file stays selected when the form swaps with error messages.
+## Preserving file selection on errors
 
-**Important:** Only add `hx-preserve` to the input itself, not error containers. The server can conditionally remove `hx-preserve` when the file has errors (like invalid type).
+When a form re-renders with validation errors, file inputs lose their selection. Add [`hx-preserve`](/reference/attributes/hx-preserve) to keep it:
 
-<form id="preserve-form" enctype="multipart/form-data" hx-post="/validate"
+```html
+<form hx-post="..."
       hx-swap="outerHTML"
-      class="space-y-4 p-4 border border-neutral-200 dark:border-neutral-700 rounded mb-8">
-  <div>
-    <label class="block text-sm font-medium mb-2">Upload file</label>
-    <input type="file" name="file"
-           class="block w-full text-sm border border-neutral-300 dark:border-neutral-600 rounded px-3 py-2">
-    <p class="text-xs text-neutral-500 mt-1">Try submitting without selecting a file</p>
-  </div>
-  <div>
-    <label class="block text-sm font-medium mb-2">Name</label>
-    <input type="text" name="name" placeholder="Enter your name"
-           class="block w-full text-sm border border-neutral-300 dark:border-neutral-600 rounded px-3 py-2">
-  </div>
-  <button type="submit"
-          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-    Submit
-  </button>
-</form>
-
-<script>
-  server.post("/validate", function(req) {
-    const name = req.params['name'];
-    if (!name) {
-      return `
-        <form id="preserve-form" enctype="multipart/form-data" hx-post="/validate"
-              hx-swap="outerHTML"
-              class="space-y-4 p-4 border border-neutral-200 dark:border-neutral-700 rounded mb-8">
-          <div>
-            <label class="block text-sm font-medium mb-2">Upload file</label>
-            <input hx-preserve type="file" name="file"
-                   class="block w-full text-sm border border-neutral-300 dark:border-neutral-600 rounded px-3 py-2">
-            <p class="text-xs text-neutral-500 mt-1">Try submitting without selecting a file</p>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-2">Name</label>
-            <input type="text" name="name" placeholder="Enter your name"
-                   class="block w-full text-sm border border-red-300 rounded px-3 py-2">
-            <p class="text-sm text-red-600 mt-1">Name is required</p>
-          </div>
-          <button type="submit"
-                  class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            Submit
-          </button>
-        </form>
-      `;
-    }
-    return `<div class="p-4 bg-green-50 text-green-700 rounded">Form submitted successfully! Your file selection was preserved.</div>`;
-  });
-</script>
-
-### Move Input Outside Form
-
-Place the file input outside the swap target:
-
-```html
-<input form="form-id" type="file" name="file">
-
-<form id="form-id" enctype="multipart/form-data" hx-post="/submit">
-  <button>Submit</button>
+      hx-encoding="multipart/form-data">
+    <input hx-preserve type="file" name="file">
+    <input type="text" name="name">
+    <button>Submit</button>
 </form>
 ```
 
-The `form` attribute links the input to the form. Since the input is outside the swap target, it never gets replaced.
+Try it in the demo: select a file, then submit with empty fields. The form re-renders with errors, but your file selection stays.
+
+Alternatively, place the file input outside the swap target using the [`form` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input#form):
+
+```html
+<input form="my-form" type="file" name="file">
+
+<form id="my-form" hx-post="..."
+      hx-encoding="multipart/form-data">
+    <button>Submit</button>
+</form>
+```
+
+The input is outside the form element, so it is never replaced during swaps.
+
+## Upload progress
+
+htmx 4.x uses the native [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) API. `fetch` supports [upload progress monitoring](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#monitoring_upload_progress) in some browsers, but cross-browser support is limited. For reliable progress tracking, use [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload) directly:
+
+```html
+<form id="upload-form" enctype="multipart/form-data">
+  <input type="file" name="file">
+  <button>Upload</button>
+  <progress id="progress" value="0" max="100"></progress>
+</form>
+
+<script>
+  document.querySelector('#upload-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const xhr = new XMLHttpRequest();
+    xhr.upload.addEventListener('progress', (evt) => {
+      document.querySelector('#progress').value = (evt.loaded / evt.total) * 100;
+    });
+    xhr.open('POST', '/upload');
+    xhr.send(new FormData(e.target));
+  });
+</script>
+```

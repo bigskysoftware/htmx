@@ -48,6 +48,7 @@ const patterns = defineCollection({
         keywords: z.array(z.string()).optional(),
         thumbnail: z.string().optional(),
         icon: z.string().optional(),
+        soon: z.boolean().optional(),
     }).strict(),
 });
 

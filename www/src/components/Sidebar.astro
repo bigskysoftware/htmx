@@ -79,22 +79,29 @@ const isPatterns = folder.folder === 'patterns';
                                 <ul class="space-y-0.5 border-l border-neutral-150 dark:border-neutral-850 ml-3 pl-3 mt-1 mb-4">
                                     {files.map((file: ContentFile) => {
                                         const isActive = currentUrl === file.url;
+                                        const isSoon = file.frontmatter.soon;
                                         return (
                                                 <li>
-                                                    <a href={file.url}
+                                                    <a href={isSoon ? undefined : file.url}
                                                        title={file.frontmatter.description}
                                                        aria-current={isActive ? 'page' : undefined}
+                                                       aria-disabled={isSoon ? 'true' : undefined}
                                                        class:list={[
                                                            "flex items-center gap-2.5 px-3 py-2 text-sm rounded-md transition",
                                                            isReference && "font-mono",
-                                                           isActive
-                                                               ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
-                                                               : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
+                                                           isSoon
+                                                               ? "opacity-50 cursor-not-allowed"
+                                                               : isActive
+                                                                   ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
+                                                                   : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
                                                        ]}>
                                                         {isPatterns && file.frontmatter.icon && (
                                                             <i class:list={[file.frontmatter.icon, "size-4 shrink-0"]}></i>
                                                         )}
                                                         <span class="truncate" set:html={file.frontmatter.title}/>
+                                                        {isSoon && (
+                                                            <span class="text-[9px] px-1.5 py-0.5 shrink-0 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide ml-auto">Soon</span>
+                                                        )}
                                                     </a>
                                                 </li>
                                         );

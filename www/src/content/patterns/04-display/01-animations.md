@@ -2,6 +2,7 @@
 title: "Animations"
 description: Animate content as it swaps in
 icon: "icon-[mdi--animation]"
+soon: true
 ---
 htmx is designed to allow you to use [CSS transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions)
 to add smooth animations and transitions to your web page using only CSS and HTML.  Below are a few examples of

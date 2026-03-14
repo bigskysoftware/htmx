@@ -315,8 +315,8 @@ export async function getFolder(path: string): Promise<ContentFolder> {
         throw new Error(`No index.md found for folder: ${path}`);
     }
 
-    // Add prev/next links — hidden files are excluded from the nav sequence
-    const navFiles = folder.allFiles.filter(f => !f.frontmatter?.hidden);
+    // Add prev/next links — hidden and soon files are excluded from the nav sequence
+    const navFiles = folder.allFiles.filter(f => !f.frontmatter?.hidden && !f.frontmatter?.soon);
     for (let i = 0; i < navFiles.length; i++) {
         if (i > 0) navFiles[i].prev = navFiles[i - 1];
         if (i < navFiles.length - 1) navFiles[i].next = navFiles[i + 1];

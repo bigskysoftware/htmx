@@ -4,125 +4,84 @@ description: Validate form input as you type
 icon: "icon-[mdi--check]"
 ---
 
-<div id="demo-content" class="not-prose demo-container"></div>
-
-Inline field validation lets you check user input as they type (or on blur) without a full form submission. The input `POST`s its value to the server, which returns a replacement fragment with validation feedback.
-
-Here's the form. The email `<div>` targets itself with `hx-swap="outerHTML"`, so the server can replace it entirely with an error or success variant:
-
-```html
-<h3>Signup Form</h3>
-<form hx-post="/contact">
-    <div hx-target="this" hx-swap="outerHTML">
-        <label>Email Address</label>
-        <input name="email" hx-post="/contact/email" hx-indicator="#ind">
-        <span id="ind" class="htmx-indicator">Checking...</span>
-    </div>
-    <div class="form-group">
-        <label>First Name</label>
-        <input type="text" name="firstName">
-    </div>
-    <div class="form-group">
-        <label>Last Name</label>
-        <input type="text" name="lastName">
-    </div>
-    <button class="btn primary">Submit</button>
-</form>
-```
-
-The input `POST`s to `/contact/email` on the default `change` event. The `#ind` indicator shows while the request is in flight.
-
-When validation fails, the server returns a replacement div annotated with an `error` class and an error message:
-
-```html
-<div hx-target="this" hx-swap="outerHTML" class="error">
-    <label>Email Address</label>
-    <input name="email" hx-post="/contact/email" value="test@foo.com">
-    <span id="ind" class="htmx-indicator">Checking...</span>
-    <div class='error-message'>That email is already taken. Please enter another email.</div>
-</div>
-```
-
-Style the error and valid states with some CSS:
-
-```css
-#demo-content .error-message {
-    color: #dc2626;
-}
-#demo-content .error input {
-    box-shadow: 0 0 3px #dc2626;
-}
-#demo-content .valid input {
-    box-shadow: 0 0 3px #16a34a;
-}
-```
-
-Below is a working demo. The only accepted email is `test@test.com`.
-
-<style>
-  #demo-content form { display: flex; flex-direction: column; gap: 0.75rem; max-width: 24rem; }
-  #demo-content label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.875rem; }
-  #demo-content input { display: block; width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; }
-  :is(.dark) #demo-content input { background: #1a1a1a; border-color: #404040; color: #e5e5e5; }
-  #demo-content button { align-self: flex-start; padding: 0.5rem 1.25rem; border: none; border-radius: 0.375rem; background: #2563eb; color: #fff; font-weight: 600; cursor: pointer; }
-  #demo-content button:disabled { opacity: 0.5; cursor: not-allowed; }
-  :is(.dark) #demo-content button { background: #3b82f6; }
-  #demo-content .htmx-indicator { display: none; font-size: 0.75rem; color: #6b7280; font-style: italic; }
-  #demo-content .htmx-request .htmx-indicator { display: inline; }
-  #demo-content .error-message { color: #dc2626; font-size: 0.8rem; margin-top: 0.25rem; }
-  :is(.dark) #demo-content .error-message { color: #f87171; }
-  #demo-content .error input { box-shadow: 0 0 3px #dc2626; }
-  :is(.dark) #demo-content .error input { box-shadow: 0 0 3px #f87171; }
-  #demo-content .valid input { box-shadow: 0 0 3px #16a34a; }
-  :is(.dark) #demo-content .valid input { box-shadow: 0 0 3px #4ade80; }
-</style>
-
 <script>
-server.get("/demo", () => demoTemplate());
+const taken = ["admin", "htmx", "test", "user", "root", "moderator"];
 
-server.post("/contact", () => formTemplate());
+server.get("/demo", () =>
+  `<div class="w-full max-w-sm mx-auto starting:opacity-0 transition duration-300">
+    <form class="flex flex-col gap-1" autocomplete="off">
+      <div class="mb-6">
+        <label for="username" class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-3">Username</label>
+        <div class="relative">
+          <input name="username" id="username" class="block w-full px-3 py-2.5 text-sm border border-neutral-200 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 outline-none transition-shadow focus:border-neutral-400 dark:focus:border-neutral-500" placeholder="e.g. johndoe"
+                 hx-post="/check-username"
+                 hx-trigger="input changed delay:300ms"
+                 hx-target="#username-msg"
+                 hx-swap="innerMorph"
+                 autocomplete="new-password" data-1p-ignore>
+          <div id="username-msg" class="absolute right-0 -bottom-6.5 text-right"></div>
+        </div>
+      </div>
+      <div class="mb-6">
+        <label for="password" class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-3">Password</label>
+        <div class="relative">
+          <input name="password" id="password" type="password" class="block w-full px-3 py-2.5 text-sm border border-neutral-200 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 outline-none transition-shadow focus:border-neutral-400 dark:focus:border-neutral-500" placeholder="••••••••"
+                 hx-post="/check-password"
+                 hx-trigger="input changed delay:200ms"
+                 hx-target="#password-msg"
+                 hx-swap="innerMorph"
+                 autocomplete="new-password" data-1p-ignore>
+          <div id="password-msg" class="absolute right-0 -bottom-6.5 text-right"></div>
+        </div>
+      </div>
+      <button type="button" onclick="this.closest('form').reset(); document.getElementById('username-msg').innerHTML=''; document.getElementById('password-msg').innerHTML='';" class="w-full mt-1 px-5 py-2.5 text-sm font-medium rounded-md text-white dark:text-neutral-900 bg-neutral-800 dark:bg-neutral-200 cursor-pointer hover:bg-neutral-700 dark:hover:bg-neutral-300 active:scale-[0.98] transition">Sign up</button>
+    </form>
+  </div>`);
 
-server.post(/\/contact\/email.*/, (req) => {
-  const email = req.params['email'];
-  if (!/\S+@\S+\.\S+/.test(email)) {
-    return emailInputTemplate(email, "Please enter a valid email address");
-  } else if (email !== "test@test.com") {
-    return emailInputTemplate(email, "That email is already taken. Please enter another email.");
-  } else {
-    return emailInputTemplate(email);
-  }
+server.post(/\/check-username.*/, (req) => {
+  const raw = (req.params.username || '').trim();
+  const name = raw.toLowerCase();
+  if (!name) return '<span></span>';
+  if (name.length < 3) return `<span class="text-[0.675rem] starting:opacity-0 transition-opacity duration-200 text-red-600 dark:text-red-400">Must be at least 3 characters.</span>`;
+  if (!/^[a-z0-9_]+$/.test(name)) return `<span class="text-[0.675rem] starting:opacity-0 transition-opacity duration-200 text-red-600 dark:text-red-400">Only letters, numbers, and underscores.</span>`;
+  if (taken.includes(name)) return `<span class="text-[0.675rem] starting:opacity-0 transition-opacity duration-200 text-red-600 dark:text-red-400">"${raw}" is already taken.</span>`;
+  return { delay: 150, body: `<span class="text-[0.675rem] starting:opacity-0 transition-opacity duration-200 text-green-700 dark:text-green-400">${raw} is available!</span>` };
 });
 
-const demoTemplate = () =>
-  `<h3>Signup Form</h3>
-   <p>Enter an email and tab out to validate. Only "test@test.com" will pass.</p>` +
-  formTemplate();
-
-const formTemplate = () =>
-  `<form hx-post="/contact">
-    <div hx-target="this" hx-swap="outerHTML">
-      <label for="email">Email Address</label>
-      <input name="email" id="email" hx-post="/contact/email" hx-indicator="#ind">
-      <span id="ind" class="htmx-indicator">Checking...</span>
-    </div>
-    <div>
-      <label for="firstName">First Name</label>
-      <input type="text" name="firstName" id="firstName">
-    </div>
-    <div>
-      <label for="lastName">Last Name</label>
-      <input type="text" name="lastName" id="lastName">
-    </div>
-    <button type="submit" disabled>Submit</button>
-  </form>`;
-
-const emailInputTemplate = (val, errorMsg) =>
-  `<div hx-target="this" hx-swap="outerHTML" class="${errorMsg ? 'error' : 'valid'}">
-    <label for="email">Email Address</label>
-    <input name="email" id="email" hx-post="/contact/email" hx-indicator="#ind" value="${val}" aria-invalid="${!!errorMsg}">
-    <span id="ind" class="htmx-indicator">Checking...</span>
-    ${errorMsg ? `<div class="error-message">${errorMsg}</div>` : ''}
-  </div>`;
+server.post(/\/check-password.*/, (req) => {
+  const pw = req.params.password || '';
+  if (!pw) return '<span></span>';
+  if (pw.length < 6) return `<span class="text-[0.675rem] starting:opacity-0 transition-opacity duration-200 text-red-600 dark:text-red-400">Too short.</span>`;
+  if (pw.length < 10) return `<span class="text-[0.675rem] starting:opacity-0 transition-opacity duration-200 text-amber-600 dark:text-amber-400">Decent password.</span>`;
+  return `<span class="text-[0.675rem] starting:opacity-0 transition-opacity duration-200 text-green-700 dark:text-green-400">Strong password.</span>`;
+});
 
 server.start("/demo");
 </script>
+
+<div id="demo-content" class="not-prose demo-container flex items-center justify-center min-h-[400px]"></div>
+
+## Basic usage
+
+On the client, the input validates on each keystroke (debounced).
+
+```html
+<input name="username"
+       hx-post="/check-username"
+       hx-trigger="input changed delay:300ms"
+       hx-target="next span">
+
+<span></span>
+```
+
+- [`hx-post`](/reference/attributes/hx-post) sends the value to `/check-username`.
+- [`hx-trigger`](/reference/attributes/hx-trigger) fires on [`input`](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) after a 300ms [`delay`](/reference/attributes/hx-trigger#delay), and only when the value has [`changed`](/reference/attributes/hx-trigger#changed).
+- [`hx-target`](/reference/attributes/hx-target)=[`"next span"`](/reference/attributes/hx-target#relative-targets) puts the response into the next sibling `<span>`.
+
+On the server, respond with a validation message:
+
+```html
+<span class="error">That username is taken.</span>
+```
+
+Or an empty `<span>` when valid.
