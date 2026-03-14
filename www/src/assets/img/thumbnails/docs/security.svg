@@ -1,64 +1,48 @@
 <svg viewBox="0 0 128 128" overflow="visible" fill="none" xmlns="http://www.w3.org/2000/svg">
     <style>
-        .shield {
-        --f1: var(--color-neutral-150); --f2: var(--color-neutral-200);
-        --f3: var(--color-neutral-300); --f4: var(--color-neutral-400);
+        .security {
+        --v1: var(--color-neutral-150);
+        --v2: var(--color-neutral-200);
+        --v3: var(--color-neutral-300);
+        --v4: var(--color-neutral-350);
         }
         @media (prefers-color-scheme: dark) {
-        .shield {
-        --f1: var(--color-neutral-650); --f2: var(--color-neutral-700);
-        --f3: var(--color-neutral-750); --f4: var(--color-neutral-850);
+        .security {
+        --v1: var(--color-neutral-650);
+        --v2: var(--color-neutral-700);
+        --v3: var(--color-neutral-750);
+        --v4: var(--color-neutral-800);
         }
         }
-        .group:has(a:hover, a:focus-visible, a:active) .shield {
-        --f1: var(--color-neutral-100); --f2: var(--color-neutral-200);
-        --f3: var(--color-neutral-300); --f4: var(--color-neutral-400);
+        .group:has(a:hover, a:focus-visible, a:active) .security {
+        --v1: var(--color-neutral-150);
+        --v2: var(--color-neutral-200);
+        --v3: var(--color-neutral-350);
+        --v4: var(--color-neutral-450);
         }
         @media (prefers-color-scheme: dark) {
-        .group:has(a:hover, a:focus-visible, a:active) .shield {
-        --f1: var(--color-neutral-300); --f2: var(--color-neutral-400);
-        --f3: var(--color-neutral-600); --f4: var(--color-neutral-700);
+        .group:has(a:hover, a:focus-visible, a:active) .security {
+        --v1: var(--color-neutral-300);
+        --v2: var(--color-neutral-400);
+        --v3: var(--color-neutral-500);
+        --v4: var(--color-neutral-600);
         }
         }
 
-        .shield .gs { transition: fill 150ms, stroke 150ms; stroke-width: 0.5; stroke-linejoin: round; }
-        .shield .gs1 { fill: var(--f1); stroke: var(--f1); }
-        .shield .gs2 { fill: var(--f2); stroke: var(--f2); }
-        .shield .gs3 { fill: var(--f3); stroke: var(--f3); }
-        .shield .gs4 { fill: var(--f4); stroke: var(--f4); }
-
-        .shield .code-text {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-weight: bold;
-        fill: var(--f4);
-        opacity: 0.5;
-        transition: fill 150ms, opacity 150ms;
-        }
-        .group:has(a:hover, a:focus-visible, a:active) .shield .code-text {
-        opacity: 1;
-        }
-
-        .shield { transition: transform 200ms ease; transform-origin: 64px 55px; }
-        .group:has(a:hover, a:focus-visible, a:active) .shield {
-        transform: scale(1.05) translateY(-3px);
-        }
+        .security path { transition: fill 150ms, stroke 150ms; }
     </style>
 
-    <g class="shield">
-        <!-- 3D depth: upper right vertical edge -->
-        <polygon class="gs gs3" points="98,20 101,22 101,55 98,53" />
-        <!-- 3D depth: bottom right curved edge -->
-        <polygon class="gs gs4" points="98,53 101,55 89,88 67,109 64,107 86,86" />
+    <g class="security" transform="translate(28, 26) scale(3)">
+        <!-- Shadow -->
+        <path d="M12 22q-3.475-.875-5.738-3.988T4 11.1V5l8-3l8 3v6.1q0 3.8-2.262 6.913T12 22z"
+            fill="var(--v4)" transform="translate(0.5, 0.5)"/>
 
-        <!-- Shield front face (outer — visible as rim) -->
-        <!-- Points: top-left, top-center, top-right, shoulder-right, belly-right, point, belly-left, shoulder-left -->
-        <polygon class="gs gs2" points="30,20 64,20 98,20 98,53 86,86 64,107 42,86 30,53" />
+        <!-- Shield body -->
+        <path d="M12 22q-3.475-.875-5.738-3.988T4 11.1V5l8-3l8 3v6.1q0 3.8-2.262 6.913T12 22z"
+            fill="var(--v1)" stroke="var(--v1)"/>
 
-        <!-- Shield front face (inner — bright face) -->
-        <!-- Inset by 5px -->
-        <polygon class="gs gs1" points="35,25 64,25 93,25 93,50 82,81 64,100 46,81 35,50" />
-
-        <!-- </> symbol centered in the face -->
-        <text x="64" y="55" text-anchor="middle" dominant-baseline="middle" class="code-text" font-size="20">&lt;/&gt;</text>
+        <!-- Half-shield badge -->
+        <path d="M12 19.9q2.425-.75 4.05-2.963T17.95 12H12V4.125l-6 2.25v5.175q0 .175.05.45H12z"
+            fill="var(--v3)" stroke="var(--v3)"/>
     </g>
 </svg>
