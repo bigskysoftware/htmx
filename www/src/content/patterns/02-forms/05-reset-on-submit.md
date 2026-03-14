@@ -3,6 +3,9 @@ title: "Reset on Submit"
 description: Clear form inputs after submission
 icon: "icon-[mdi--eraser]"
 ---
+
+<div id="demo-content" class="not-prose demo-container"></div>
+
 This example resets form inputs after submission using [`hx-on`](/reference/attributes/hx-on),
 so users can fire off multiple requests without manually clearing the previous value.
 

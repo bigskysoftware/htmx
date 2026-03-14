@@ -4,6 +4,8 @@ description: Validate form input as you type
 icon: "icon-[mdi--check]"
 ---
 
+<div id="demo-content" class="not-prose demo-container"></div>
+
 Inline field validation lets you check user input as they type (or on blur) without a full form submission. The input `POST`s its value to the server, which returns a replacement fragment with validation feedback.
 
 Here's the form. The email `<div>` targets itself with `hx-swap="outerHTML"`, so the server can replace it entirely with an error or success variant:

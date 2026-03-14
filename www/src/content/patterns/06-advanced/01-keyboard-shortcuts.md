@@ -4,6 +4,8 @@ description: Bind keyboard shortcuts to interactive elements
 icon: "icon-[mdi--keyboard]"
 ---
 
+<div id="demo-content" class="not-prose demo-container"></div>
+
 This example binds a global keyboard shortcut to a button that loads content from the server:
 
 ```html

@@ -3,6 +3,9 @@ title: "Delete in Place"
 description: Remove a record without page refresh
 icon: "icon-[material-symbols--delete]"
 ---
+
+<div id="demo-content" class="not-prose demo-container"></div>
+
 This example shows how to implement a delete button that removes a table row in place.
 
 The table body uses [`hx-confirm`](/reference/attributes/hx-confirm) to prompt before deleting,

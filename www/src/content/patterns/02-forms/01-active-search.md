@@ -4,6 +4,8 @@ description: Filter search results as you type
 icon: "icon-[mdi--magnify]"
 ---
 
+<div id="demo-content" class="not-prose demo-container"></div>
+
 This example searches a contacts database as the user types.
 
 We start with a search input and an empty table:

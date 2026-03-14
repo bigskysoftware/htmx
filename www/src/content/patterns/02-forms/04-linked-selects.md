@@ -3,6 +3,9 @@ title: "Linked Selects"
 description: Update select options via another select
 icon: "icon-[mdi--form-dropdown]"
 ---
+
+<div id="demo-content" class="not-prose demo-container"></div>
+
 This example shows how to make the options in one `select` depend on the value chosen in another.
 
 The `make` select triggers a `GET` to `/models` whenever its value changes. The response — a fresh set of `<option>` elements — replaces the contents of the `model` select.

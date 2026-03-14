@@ -4,6 +4,8 @@ description: Show progress bar during background job
 icon: "icon-[vaadin--progressbar]"
 ---
 
+<div id="demo-content" class="not-prose demo-container"></div>
+
 This pattern shows a smoothly animated progress bar driven by server polling.
 
 A button `POST`s to `/start`, which kicks off a background job and replaces the button with a polling progress bar:

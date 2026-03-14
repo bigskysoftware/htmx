@@ -3,31 +3,8 @@ title: "Edit in Place"
 description: Update a record without page refresh
 icon: "icon-[material-symbols--edit]"
 ---
-<style type="text/tailwindcss">
-/* macOS 9 Platinum Demo Window */
-.demo-window {
-  @apply mt-6 mb-8 mx-auto max-w-4xl;
-  @apply bg-gradient-to-b from-[#e8e8e8] to-[#d0d0d0];
-  @apply border border-[#999] rounded-[3px];
-  @apply p-[6px];
-  @apply shadow-[0_2px_6px_rgba(0,0,0,0.15)];
-}
 
-.demo-window-content {
-  @apply bg-white border border-[rgba(0,0,0,0.25)];
-  @apply shadow-[inset_1px_1px_3px_rgba(0,0,0,0.1)];
-  @apply rounded-[2px];
-  @apply p-8;
-  @apply min-h-[250px];
-  @apply flex items-center justify-center;
-}
-
-.demo-window h2 {
-  @apply text-xs font-semibold mb-3 text-[#555] uppercase tracking-wider;
-  @apply [text-shadow:0_1px_0_rgba(255,255,255,0.9)];
-  @apply font-[family-name:'Lucida_Grande',Geneva,Verdana,sans-serif];
-}
-</style>
+<div id="demo-content" class="not-prose demo-container"></div>
 
 This pattern shows how to edit a record in place, without a page refresh.
 

@@ -3,6 +3,9 @@ title: "Bulk Actions"
 description: Perform actions on multiple records
 icon: "icon-[mdi--checkbox-multiple-marked]"
 ---
+
+<div id="demo-content" class="not-prose demo-container"></div>
+
 Wrap a table in a form with checkboxes, then POST the checked values for bulk update:
 
 ```html

@@ -3,6 +3,9 @@ title: "Drag to Reorder"
 description: Change order of records with drag and drop
 icon: "icon-[solar--reorder-linear]"
 ---
+
+<div id="demo-content" class="not-prose demo-container"></div>
+
 In this example we show how to integrate the [Sortable](https://sortablejs.github.io/Sortable/)
 JavaScript library with htmx.
 

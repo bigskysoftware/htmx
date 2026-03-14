@@ -3,6 +3,9 @@ title: "Dialogs"
 description: Show modals and popups on demand
 icon: "icon-[vaadin--modal-list]"
 ---
+
+<div id="demo-content" class="not-prose demo-container"></div>
+
 htmx provides several approaches for working with modals and dialogs, from simple browser-native confirmation prompts to fully custom modal windows.
 
 ## Browser Native Dialogs
