@@ -4,14 +4,8 @@ import path from 'node:path';
 
 // Auto-calculate bundle size from actual dist file
 const distPath = path.resolve(import.meta.dirname, '../../../dist/htmx.min.js.br');
-let bundleSize = '~10k';
-try {
-    const stats = fs.statSync(distPath);
-    const kb = Math.round(stats.size / 1024);
-    bundleSize = `~${kb}k`;
-} catch {
-    // fallback
-}
+const stats = fs.statSync(distPath);
+const bundleSize = `~${Math.round(stats.size / 1024)}k`;
 
 // Auto-calculate extension count
 const extensionDocs = import.meta.glob('../content/docs/06-extensions/*.md', { eager: true }) as Record<string, any>;
@@ -21,13 +15,13 @@ const extensionCount = Object.keys(extensionDocs).filter(file => {
 }).length;
 ---
 
-<p class="flex items-center gap-3 sm:gap-4 text-xs font-mono text-neutral-550 dark:text-neutral-450 font-light">
+<p class="flex items-center gap-3 sm:gap-4 text-xs font-mono font-light text-neutral-650 dark:text-neutral-350">
     <a href="/docs/get-started/installation" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
-        <b class="font-chicago text-neutral-600 dark:text-neutral-400 group-interact:text-blue-600 dark:group-interact:text-blue-300">{bundleSize}</b> min.br'd</a>
+        <b class="font-chicago group-interact:text-blue-600 dark:group-interact:text-blue-300">{bundleSize}</b> min.br'd</a>
     <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
-    <a href="/docs/get-started/installation" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
-        <b class="font-chicago text-neutral-600 dark:text-neutral-400 group-interact:text-blue-600 dark:group-interact:text-blue-300">0</b> dep<span class="max-sm:hidden">endencie</span>s</a>
+    <a href="https://github.com/bigskysoftware/htmx/blob/master/package.json" target="_blank" rel="noopener noreferrer" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
+        <b class="font-chicago group-interact:text-blue-600 dark:group-interact:text-blue-300">0</b> dep<span class="max-sm:hidden">endencie</span>s</a>
     <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
     <a href="/docs/extensions" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
-        <b class="font-chicago text-neutral-600 dark:text-neutral-400 group-interact:text-blue-600 dark:group-interact:text-blue-300">{extensionCount}</b> extension<span class="max-sm:hidden">s</span></a>
+        <b class="font-chicago group-interact:text-blue-600 dark:group-interact:text-blue-300">{extensionCount}</b> extension<span class="max-sm:hidden">s</span></a>
 </p>
