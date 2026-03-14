@@ -1,6 +1,9 @@
 ---
-// Demo container for pattern pages.
-// Loaded automatically by ContentLayout for pattern detail pages.
+// Demo shim for pattern pages.
+// Loaded by ContentLayout for pattern detail pages.
+// Provides the server.* API that pattern <script> blocks use.
+// No HTML output — demo chrome is a CSS utility (.demo-container in input.css)
+// and placed inline by authors in their .md files.
 ---
 
 <script is:inline>
@@ -152,8 +155,7 @@
     sse(path, handler) { sseHandlers.push({ url: path, handler }); },
     ws(path, handler)  { wsHandlers.push({ url: path, handler }); },
 
-    start(path) {
-      document.querySelector('[data-demo-container]')?.setAttribute('data-demo-has-script', '');
+    start(path, selector) {
       swReady.then(reg => {
         if (!navigator.serviceWorker?.controller && reg?.active) {
           return new Promise(resolve => {
@@ -164,7 +166,7 @@
       }).then(() => {
         if (wsHandlers.length > 0) window.WebSocket = MockWebSocket;
         else if (window._OriginalWebSocket) window.WebSocket = window._OriginalWebSocket;
-        const el = document.getElementById('demo-content');
+        var el = document.querySelector(selector || '#demo-content');
         if (!el) return;
         // Fetch and swap manually rather than using hx-get/hx-trigger="load".
         // htmx re-processes all body children after a morph navigation (htmx.js:1402),
@@ -181,11 +183,11 @@
     },
   };
 
-  // Auto-prefix htmx requests from within the demo container so the SW intercepts them
+  // Auto-prefix htmx requests from within demo containers so the SW intercepts them
   if (!window._demoConfigRequest) {
     window._demoConfigRequest = true;
     document.addEventListener('htmx:config:request', (e) => {
-      if (e.detail.ctx.sourceElement?.closest?.('[data-demo-container]')) {
+      if (e.detail.ctx.sourceElement?.closest?.('.demo-container')) {
         e.detail.ctx.request.action = DEMO_PREFIX + e.detail.ctx.request.action;
       }
     });
@@ -195,19 +197,3 @@
   // so it works even when navigating from non-pattern pages to pattern pages.
 }
 </script>
-
-<div data-demo-container class="not-prose my-8 max-w-4xl mx-auto">
-    <div class="border border-neutral-200 dark:border-neutral-850 rounded-lg bg-white dark:bg-neutral-930 overflow-hidden">
-        <div class="flex items-center gap-4 px-3 py-2 bg-neutral-50 dark:bg-neutral-920 border-b border-neutral-100 dark:border-neutral-900">
-            <div class="flex gap-1.5">
-                <div class="size-2.25 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
-                <div class="size-2.25 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
-                <div class="size-2.25 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
-            </div>
-            <span class="text-[0.675rem] font-medium text-neutral-500 dark:text-neutral-500/80 tracking-widest translate-y-px">DEMO</span>
-        </div>
-        <div class="p-6">
-            <div id="demo-content"></div>
-        </div>
-    </div>
-</div>

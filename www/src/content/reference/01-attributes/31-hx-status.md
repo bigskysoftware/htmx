@@ -1,116 +1,112 @@
 ---
 title: "hx-status"
-description: "Handle responses by status code"
+description: "Handle responses differently by status code"
 ---
 
-The `hx-status` attribute allows you to specify different swap behaviors based on the HTTP status code of the response.
+The `hx-status` attribute overrides swap behavior based on the HTTP response status code.
 
-This attribute uses a pattern matching syntax where you specify the status code(s) followed by the swap configuration.
-
-## Syntax
+## Examples
 
 ```html
-<button hx-post="/submit"
-        hx-status:422="select:#errors"
-        hx-status:500="select:#server-error">
-  Submit
-</button>
-```
-
-## Status Code Patterns
-
-You can use specific status codes or wildcards:
-
-```html
-<button hx-get="/data"
-        hx-status:404="select:#not-found"
-        hx-status:50x="select:#server-error"
-        hx-status:5xx="select:#fallback">
-  Load Data
-</button>
-```
-
-## Configuration Options
-
-The value uses htmx's configuration syntax to set request context properties:
-
-* `swap:` - swap strategy (innerHTML, outerHTML, delete, none, etc.)
-* `target:` - target element for the swap
-* `select:` - CSS selector to pick content from response
-* `push:` - push URL to history (true/false or a URL)
-* `replace:` - replace URL in history (true/false or a URL)
-* `transition:` - whether to use view transitions (true/false)
-
-```html
-<form hx-post="/save"
-      hx-status:422="swap:innerHTML target:#errors select:#validation-errors"
-      hx-status:500="swap:none push:false"
-      hx-status:200="select:#success-message">
-  <!-- form fields -->
+<!-- Show validation errors in a specific container -->
+<form hx-post="..."
+      hx-status:422="target:#errors select:#validation-errors">
+  ...
 </form>
+
+<!-- Suppress swap on server errors -->
+<button hx-post="..." hx-status:5xx="swap:none">Save</button>
+
+<!-- Push a custom URL on 201 Created -->
+<form hx-post="..." hx-status:201="push:/items/new">...</form>
 ```
 
-## Common Use Cases
+## Patterns
 
-### Validation Errors (`422`)
+The status code goes after the colon: `hx-status:CODE="..."`.
 
-```html
-<form hx-post="/register"
-      hx-status:422="select:#errors target:#error-container">
-  <input name="email" type="email">
-  <div id="error-container"></div>
-  <button type="submit">Register</button>
-</form>
-```
-
-### Not Found (404)
+Supports exact codes, single-digit wildcards (`x`), and range wildcards (`xx`):
 
 ```html
-<div hx-get="/user/123"
-     hx-status:404="select:#user-not-found">
-  Loading...
+<div hx-get="..."
+     hx-status:404="select:#not-found"
+     hx-status:50x="select:#bad-gateway"
+     hx-status:5xx="swap:none">
+  ...
 </div>
 ```
 
-### Server Errors (5xx)
+Evaluated in order of specificity: exact match (`404`), then 2-digit wildcard (`50x`), then 1-digit wildcard (`5xx`).
+
+## Modifiers
+
+The value takes space-separated `key:value` pairs.
 
 ```html
-<button hx-post="/process"
-        hx-status:5xx="swap:innerHTML target:#error-display select:#server-error push:false">
-  Process
-</button>
-```
-
-### Preventing History Updates on Errors
-
-```html
-<button hx-get="/data"
-        hx-push-url="true"
-        hx-status:4xx="push:false"
-        hx-status:5xx="push:false">
-  Load Data
-</button>
-```
-
-### Custom History URL on Success
-
-```html
-<form hx-post="/items"
-      hx-status:201="push:/items/new">
-  <!-- form fields -->
+<form hx-post="..."
+      hx-status:422="swap:innerHTML target:#errors select:#validation-errors"
+      hx-status:500="swap:none push:false">
+  ...
 </form>
+```
+
+### `swap`
+
+Swap style for this status code. See [`hx-swap` styles](/reference/attributes/hx-swap#styles) for values.
+
+```html
+<div hx-get="..." hx-status:500="swap:none"></div>
+```
+
+### `target`
+
+CSS selector for the swap target. Overrides [`hx-target`](/reference/attributes/hx-target).
+
+```html
+<div hx-get="..." hx-status:422="target:#error-container"></div>
+```
+
+### `select`
+
+CSS selector to pick content from the response. Overrides [`hx-select`](/reference/attributes/hx-select).
+
+```html
+<div hx-get="..." hx-status:422="select:#validation-errors"></div>
+```
+
+### `push`
+
+Push a URL to browser history. `true`/`false`, or a URL string.
+
+```html
+<div hx-get="..." hx-status:5xx="push:false"></div>
+<form hx-post="/items" hx-status:201="push:/items/new"></form>
+```
+
+### `replace`
+
+Replace the current URL in browser history. `true`/`false`, or a URL string.
+
+```html
+<div hx-get="..." hx-status:301="replace:/new-location"></div>
+```
+
+### `transition`
+
+Use the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) for this swap. `true`/`false`.
+
+```html
+<div hx-get="..." hx-status:200="transition:true"></div>
 ```
 
 ## Notes
 
-* Status code patterns are evaluated in order of specificity (exact match → 2-digit wildcard → 1-digit wildcard)
-* The configuration can set any request context property, not just swap behavior
-* Values override any previous settings including response headers (`HX-Retarget`, `HX-Reswap`, etc.)
-* Without `hx-status`, htmx uses default behavior (swap on 2xx, no swap on `204`/`304`)
-* Can be combined with other `hx-` attributes
+* Values override response headers ([`HX-Retarget`](/reference/headers/HX-Trigger), `HX-Reswap`, etc.)
+* Without `hx-status`, htmx swaps all responses except [`204`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/204) and [`304`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/304)
 
 ## See Also
 
-* [Response Handling](/docs/core-concepts/requests-and-responses#configuring-response-handling) in the docs
+* [`hx-swap`](/reference/attributes/hx-swap)
 * [`hx-select`](/reference/attributes/hx-select)
 * [`hx-target`](/reference/attributes/hx-target)
+* [`htmx.config.noSwap`](/reference/config/htmx-config-noSwap)

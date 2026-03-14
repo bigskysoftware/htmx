@@ -22,4 +22,4 @@ Once loaded, the extension maps old htmx 2.x APIs and behaviors to their htmx 4 
 - The `hx-ext` attribute for activating extensions
 - Other htmx 2.x behaviors that changed in htmx 4
 
-See the [Upgrade Guide](/docs/get-started/upgrade-guide) for a full list of changes between htmx 2.x and htmx 4.
+See the [Migration guide](/docs/get-started/migration) for a full list of changes between htmx 2.x and htmx 4.

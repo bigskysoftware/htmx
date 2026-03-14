@@ -4,69 +4,6 @@ description: Show progress bar during background job
 icon: "icon-[vaadin--progressbar]"
 ---
 
-<div id="demo-content" class="not-prose demo-container"></div>
-
-This pattern shows a smoothly animated progress bar driven by server polling.
-
-A button `POST`s to `/start`, which kicks off a background job and replaces the button with a polling progress bar:
-
-```html
-<div hx-get="/job/progress"
-     hx-trigger="every 600ms"
-     hx-target="this"
-     hx-swap="innerHTML">
-    <div class="progress" role="progressbar"
-         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-        <div id="pb" class="progress-bar" style="width:0%"></div>
-    </div>
-</div>
-```
-
-Every 600ms the inner `div` is replaced with an updated width. Because the progress bar has a stable `id`, htmx settles the `style` attribute smoothly. A CSS `transition` on `width` makes the animation continuous rather than jumpy.
-
-When the job finishes, the server sends an `HX-Trigger: done` header. The outer wrapper listens for that event and swaps in the final "Complete" state with a restart button.
-
-The key CSS for the progress bar:
-
-```css
-#demo-content .progress-bar {
-    width: 0%;
-    height: 100%;
-    background: #2563eb;
-    transition: width 0.6s ease;
-}
-```
-
-<style>
-#demo-content .progress {
-    height: 20px;
-    margin-bottom: 20px;
-    overflow: hidden;
-    background-color: #e5e5e5;
-    border-radius: 6px;
-}
-:is(.dark) #demo-content .progress {
-    background-color: #2a2a2a;
-}
-#demo-content .progress-bar {
-    width: 0%;
-    height: 100%;
-    border-radius: 6px;
-    background: #2563eb;
-    transition: width 0.6s ease;
-}
-:is(.dark) #demo-content .progress-bar {
-    background: #3b82f6;
-}
-@keyframes fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-#demo-content #restart-btn {
-    animation: fade-in 0.4s ease-in 0.3s both;
-}
-</style>
-
 <script>
 const job = { complete: false, percentComplete: 0 };
 
@@ -76,49 +13,89 @@ const resetJob = () => {
 };
 
 const advanceJob = () => {
-    job.percentComplete = Math.min(100, job.percentComplete + Math.floor(33 * Math.random()));
+    job.percentComplete = Math.min(100, job.percentComplete + 8 + Math.floor(8 * Math.random()));
     job.complete = job.percentComplete >= 100;
 };
 
 const progressBar = () =>
-    `<div class="progress" role="progressbar"
-          aria-valuemin="0" aria-valuemax="100" aria-valuenow="${job.percentComplete}">
-        <div id="pb" class="progress-bar" style="width:${job.percentComplete}%"></div>
+    `<div class="flex flex-col items-center gap-2 w-full">
+        <div class="w-full h-1.5 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-800" role="progressbar"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="${job.percentComplete}">
+            <div id="pb" class="w-full h-full rounded-full bg-neutral-800 dark:bg-neutral-300 origin-left transition-transform duration-[400ms] ease-in-out" style="transform:scaleX(${job.percentComplete / 100})"></div>
+        </div>
+        <span class="text-xs text-neutral-600 dark:text-neutral-400 tabular-nums">${job.percentComplete}%</span>
     </div>`;
 
-const restartBtn = () => job.complete
-    ? `<button id="restart-btn" class="btn primary" hx-post="/start">Restart Job</button>`
-    : "";
-
-const statusView = () =>
-    `<div hx-trigger="done" hx-get="/job" hx-swap="outerHTML" hx-target="this">
-        <h3 role="status" id="pblabel" tabindex="-1" autofocus>${job.complete ? "Complete" : "Running"}</h3>
-        <div hx-get="/job/progress"
-             hx-trigger="${job.complete ? 'none' : 'every 600ms'}"
-             hx-target="this"
-             hx-swap="innerHTML">
-            ${progressBar()}
+const jobView = () =>
+    `<div id="job-status" class="flex flex-col items-center justify-center gap-4 w-full"
+          hx-trigger="every 400ms" hx-get="/job/progress" hx-swap="outerMorph">
+        <div class="flex items-center justify-between w-full">
+            <p class="text-sm font-medium text-neutral-700 dark:text-neutral-200" role="status">${job.complete ? 'Complete' : 'Processing\u2026'}</p>
+            <button class="flex items-center gap-1.5 text-[0.8125rem] text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 cursor-pointer transition duration-300 ${job.complete ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
+                    hx-post="/start" hx-target="#job-status" hx-swap="outerMorph" ${job.complete ? '' : 'tabindex="-1"'}><i class="icon-[mdi--refresh] size-3.5"></i> Run again</button>
         </div>
-        ${restartBtn()}
+        <div class="w-full">${progressBar()}</div>
     </div>`;
 
 server.get("/demo", () =>
-    `<div hx-target="this" hx-swap="outerHTML">
-        <h3>Start Progress</h3>
-        <button class="btn primary" hx-post="/start">Start Job</button>
+    `<div id="progress-demo" class="starting:opacity-0 transition duration-300 ease-out flex flex-col items-center justify-center text-center">
+        <p class="text-sm text-neutral-500 dark:text-neutral-400 mb-4">Simulates a background job with server polling.</p>
+        <button class="text-sm font-medium text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 rounded-md px-5 py-2 cursor-pointer transition hover:bg-neutral-50 dark:hover:bg-neutral-850 hover:text-neutral-800 dark:hover:text-neutral-100 active:scale-[0.98]"
+                hx-post="/start" hx-target="#progress-demo" hx-swap="outerMorph">
+            Start Job
+        </button>
     </div>`);
 
-server.post("/start", () => { resetJob(); return statusView(); });
-
-server.get("/job", () => statusView());
+server.post("/start", () => { resetJob(); return jobView(); });
 
 server.get("/job/progress", () => {
     advanceJob();
-    if (job.complete) {
-        return { body: progressBar(), headers: { "HX-Trigger": "done" } };
-    }
-    return progressBar();
+    return { body: jobView(), status: job.complete ? 286 : 200 };
 });
 
 server.start("/demo");
 </script>
+
+<div id="demo-content" class="not-prose demo-container flex flex-col justify-center min-h-[191px]"></div>
+
+## Basic usage
+
+On the client, a button starts the job.
+
+```html
+<button hx-post="/start" hx-swap="outerMorph">
+  Start Job
+</button>
+```
+
+On the server, respond with a container that polls for progress:
+
+```html
+<div hx-trigger="every 400ms"
+     hx-get="/job/progress"
+     hx-swap="outerMorph">
+  ...progress bar...
+</div>
+```
+
+- [`hx-trigger`](/reference/attributes/hx-trigger)=[`"every 400ms"`](/reference/attributes/hx-trigger#polling) polls the server on an interval.
+- [`outerMorph`](/reference/attributes/hx-swap#outermorph) morphs the element in place, so CSS transitions on `transform` animate smoothly.
+
+Each poll returns updated progress. When done, the server responds with [HTTP 286](https://en.wikipedia.org/wiki/86_(term)) to stop polling.
+
+## Notes
+
+### Use `transform` instead of `width`
+
+Animating `width` causes [layout recalculation](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing). Use `transform: scaleX()` instead ([GPU-composited](https://web.dev/articles/stick-to-compositor-only-properties-and-manage-layer-count), no layout thrashing):
+
+```css
+.bar {
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 400ms ease-in-out;
+}
+```
+
+The server returns `style="transform: scaleX(0.65)"` instead of `style="width: 65%"`. Same look, no layout thrashing. The demo above uses this approach.

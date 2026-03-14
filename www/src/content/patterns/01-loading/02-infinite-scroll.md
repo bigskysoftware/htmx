@@ -4,6 +4,43 @@ description: Load content when you scroll to bottom
 icon: "icon-[mdi--arrow-expand-down]"
 ---
 
+<script>
+const PAGE_SIZE = 3;
+
+server.get("/demo", () => `
+<div class="relative">
+  <div class="max-h-[300px] overflow-y-auto mask-b-from-60%">
+    <table class="w-full border-collapse">
+      <thead><tr><th class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide sticky top-0 bg-white dark:bg-neutral-930 z-10 shadow-[inset_0_-1px_0_var(--color-neutral-100)] dark:shadow-[inset_0_-1px_0_var(--color-neutral-850)]">Name</th><th class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide sticky top-0 bg-white dark:bg-neutral-930 z-10 shadow-[inset_0_-1px_0_var(--color-neutral-850)]">Email</th></tr></thead>
+      <tbody class="[&>tr:last-child>td]:border-b-0">${rows(0)}</tbody>
+    </table>
+  </div>
+  <div class="absolute -bottom-2 inset-x-0 flex justify-center pointer-events-none">
+    <span class="text-[0.6875rem] text-neutral-600 dark:text-neutral-400 flex items-center gap-1">Scroll to load more <span class="translate-y-px">&darr;</span></span>
+  </div>
+</div>`);
+
+server.get(/\/contacts.*/, (req) => rows(parseInt(req.params.page)));
+
+function rows(page) {
+    const start = page * PAGE_SIZE;
+    let html = Array.from({ length: PAGE_SIZE }, (_, i) => {
+        const n = start + i;
+        return `<tr class="starting:opacity-0 transition-opacity duration-300 ease-out"><td class="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-850 text-sm text-neutral-600 dark:text-neutral-300">Agent Smith</td><td class="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-850 text-sm text-neutral-600 dark:text-neutral-300">agent${n}@smith.org</td></tr>`;
+    }).join("\n");
+
+    html += `
+    <tr class="starting:opacity-0 transition-opacity duration-300 ease-out" hx-get="/contacts?page=${page + 1}"
+        hx-trigger="intersect once"
+        hx-swap="outerHTML">
+        <td colspan="2" class="px-3 py-2.5 text-center text-[0.8125rem] italic text-neutral-400 dark:text-neutral-600 border-b border-neutral-100 dark:border-neutral-850">Loading more...</td>
+    </tr>`;
+    return html;
+}
+
+server.start("/demo");
+</script>
+
 <div id="demo-content" class="not-prose demo-container min-h-[380px]"></div>
 
 ## Basic usage
@@ -37,41 +74,4 @@ On the server, respond with the next rows plus a fresh placeholder pointing to `
 </tr>
 ```
 
-Because [`outerHTML`](/reference/attributes/hx-swap#outerhtml) replaces the old placeholder, the new one takes its place — creating a self-extending chain.
-
-<script>
-const PAGE_SIZE = 3;
-
-const tr = "starting:opacity-0 transition-opacity duration-300 ease-out";
-const th = "text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide sticky top-0 bg-white dark:bg-neutral-930 z-10 shadow-[inset_0_-1px_0_var(--color-neutral-100)] dark:shadow-[inset_0_-1px_0_var(--color-neutral-850)]";
-const td = "px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-850 text-sm text-neutral-600 dark:text-neutral-300";
-const placeholder = "px-3 py-2.5 text-center text-[0.8125rem] italic text-neutral-400 dark:text-neutral-600 border-b border-neutral-100 dark:border-neutral-850";
-
-server.get("/demo", () => `
-<div class="max-h-[300px] overflow-y-auto mask-b-from-80%">
-<table class="w-full border-collapse">
-    <thead><tr><th class="${th}">Name</th><th class="${th}">Email</th></tr></thead>
-    <tbody class="[&>tr:last-child>td]:border-b-0">${rows(0)}</tbody>
-</table>
-</div>`);
-
-server.get(/\/contacts.*/, (req) => rows(parseInt(req.params.page)));
-
-function rows(page) {
-    const start = page * PAGE_SIZE;
-    let html = Array.from({ length: PAGE_SIZE }, (_, i) => {
-        const n = start + i;
-        return `<tr class="${tr}"><td class="${td}">Agent Smith</td><td class="${td}">agent${n}@smith.org</td></tr>`;
-    }).join("\n");
-
-    html += `
-    <tr class="${tr}" hx-get="/contacts?page=${page + 1}"
-        hx-trigger="intersect once"
-        hx-swap="outerHTML">
-        <td colspan="2" class="${placeholder}">Loading more...</td>
-    </tr>`;
-    return html;
-}
-
-server.start("/demo");
-</script>
+Because [`outerHTML`](/reference/attributes/hx-swap#outerhtml) replaces the old placeholder, the new one takes its place, creating a self-extending chain.

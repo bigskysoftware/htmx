@@ -176,6 +176,22 @@ All error events are consolidated to [`htmx:error`](/reference/events/htmx-error
 | `htmx:targetError`          | [`htmx:error`](/reference/events/htmx-error) |
 | `htmx:timeout`              | [`htmx:error`](/reference/events/htmx-error) |
 
+### `hx-on::` shorthand
+
+The double-colon shorthand for htmx events no longer works. Because event names changed from camelCase to colon-separated (e.g. `htmx:afterRequest` → `htmx:after:request`), the `hx-on::` prefix can no longer map to the correct event name.
+
+Use the full event name instead:
+
+```html
+<!-- htmx 2 -->
+<form hx-on::after-request="this.reset()">
+
+<!-- htmx 4 -->
+<form hx-on:htmx:after:request="this.reset()">
+```
+
+This applies to all `hx-on::` event handlers. Find and replace `hx-on::` with `hx-on:htmx:` and update the event name to the new colon-separated format (see table above).
+
 ### Removed events
 
 Validation events are removed. Use native browser form validation:
@@ -417,7 +433,7 @@ htmx 4 ships with 9 core extensions:
 1. Add config options or load [`htmx-2-compat`](/docs/extensions/htmx-2-compat) for backward compatibility
 2. Rename `hx-disable` to [`hx-ignore`](/reference/attributes/hx-ignore), then `hx-disabled-elt` to [`hx-disable`](/reference/attributes/hx-disable)
 3. Replace removed attributes with alternatives
-4. Find/replace event names in JavaScript
+4. Find/replace event names in JavaScript and `hx-on::` attributes
 5. Replace removed API methods with native JS
 6. Update extensions
 7. Rename changed config keys

@@ -4,106 +4,8 @@ description: Filter search results as you type
 icon: "icon-[mdi--magnify]"
 ---
 
-<div id="demo-content" class="not-prose demo-container"></div>
-
-This example searches a contacts database as the user types.
-
-We start with a search input and an empty table:
-
-```html
-<h3>
-    Search Contacts
-    <span class="htmx-indicator">Searching...</span>
-</h3>
-<input class="form-control" type="search"
-       name="search" placeholder="Begin typing to search..."
-       hx-post="/search"
-       hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
-       hx-target="#search-results"
-       hx-indicator=".htmx-indicator">
-
-<table class="table">
-    <thead>
-    <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Email</th>
-    </tr>
-    </thead>
-    <tbody id="search-results">
-    </tbody>
-</table>
-```
-
-The input issues a `POST` to `/search` on the [`input`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event) event and sets the table body to the resulting content. The trigger modifiers work together:
-
-- `delay:500ms` waits until the user stops typing before sending.
-- `changed` skips requests when the value hasn't actually changed (e.g. arrow keys).
-- `keyup[key=='Enter']` sends immediately on Enter, using an [event filter](/reference/attributes/hx-trigger#event-filters).
-- `load` populates the table with all results on page load.
-
-The `hx-indicator` attribute shows a loading message while the request is in flight.
-
-<style>
-#demo-content input[type="search"] {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d4d4d4;
-  border-radius: 0.375rem;
-  font-size: 0.925rem;
-  outline: none;
-  background: #fff;
-  color: #171717;
-  transition: border-color 0.15s;
-}
-#demo-content input[type="search"]:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
-}
-:is(.dark) #demo-content input[type="search"] {
-  background: #262626;
-  border-color: #525252;
-  color: #e5e5e5;
-}
-:is(.dark) #demo-content input[type="search"]:focus {
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
-}
-#demo-content table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-#demo-content th {
-  text-align: left;
-  padding: 0.5rem 0.75rem;
-  color: #737373;
-  font-weight: 600;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 2px solid #e5e5e5;
-}
-:is(.dark) #demo-content th { color: #a3a3a3; border-bottom-color: #404040; }
-#demo-content td {
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid #e5e5e5;
-  font-size: 0.9rem;
-}
-:is(.dark) #demo-content td { border-bottom-color: #404040; }
-#demo-content h3 { margin-top: 0; }
-#demo-content .htmx-indicator {
-  display: inline-block;
-  font-size: 0.8rem;
-  color: #737373;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-#demo-content .htmx-request .htmx-indicator,
-#demo-content .htmx-request.htmx-indicator {
-  opacity: 1;
-}
-:is(.dark) #demo-content .htmx-indicator { color: #a3a3a3; }
-</style>
-
 <script>
-server.get("/init", (req) => searchUI());
+server.get("/init", () => searchUI());
 
 server.post(/\/search.*/, (req) => {
   const search = req.params["search"] || "";
@@ -111,31 +13,36 @@ server.post(/\/search.*/, (req) => {
   return resultsUI(results);
 });
 
-const searchUI = () => `<h3>
-  Search Contacts
-  <span class="htmx-indicator">Searching...</span>
-</h3>
-<input type="search"
-       name="search" placeholder="Begin typing to search..."
-       hx-post="/search"
-       hx-trigger="input changed delay:500ms, keyup[key=='Enter'], load"
-       hx-target="#search-results"
-       hx-indicator=".htmx-indicator">
-<table>
-  <thead>
-    <tr>
-      <th>First Name</th>
-      <th>Last Name</th>
-      <th>Email</th>
-    </tr>
-  </thead>
-  <tbody id="search-results">
-  </tbody>
-</table>`;
+const searchUI = () => `
+<div>
+  <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-200 mb-3 block">Search Contacts</span>
+  <div class="relative">
+    <input type="search"
+           name="search" placeholder="Begin typing to search..."
+           class="w-full px-3 py-2 [&::-webkit-search-cancel-button]:hidden border border-neutral-200 dark:border-neutral-700 rounded-md text-sm bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 outline-none transition-colors focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-2 focus:ring-neutral-400/15 dark:focus:ring-neutral-500/20 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+           hx-post="/search"
+           hx-trigger="input changed delay:200ms, keyup[key=='Enter'], load"
+           hx-target="#search-results"
+           hx-swap="innerHTML"
+           hx-indicator="#search-spinner">
+    <span id="search-spinner" class="absolute right-3.5 top-1/2 -translate-y-1/2 size-3.5 border-2 border-neutral-300 dark:border-neutral-600 border-t-neutral-700 dark:border-t-neutral-300 rounded-full animate-spin [animation-duration:0.5s] opacity-0 [&.htmx-request]:opacity-100 text-neutral-700 dark:text-neutral-300 transition-opacity duration-200"></span>
+  </div>
+  <table class="w-full border-collapse mt-3">
+    <thead>
+      <tr>
+        <th class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide sticky top-0 bg-white dark:bg-neutral-930 z-10 shadow-[inset_0_-1px_0_var(--color-neutral-100)] dark:shadow-[inset_0_-1px_0_var(--color-neutral-850)]">First Name</th>
+        <th class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide sticky top-0 bg-white dark:bg-neutral-930 z-10 shadow-[inset_0_-1px_0_var(--color-neutral-100)] dark:shadow-[inset_0_-1px_0_var(--color-neutral-850)]">Last Name</th>
+        <th class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide sticky top-0 bg-white dark:bg-neutral-930 z-10 shadow-[inset_0_-1px_0_var(--color-neutral-100)] dark:shadow-[inset_0_-1px_0_var(--color-neutral-850)]">Email</th>
+      </tr>
+    </thead>
+    <tbody id="search-results" class="[&>tr:last-child>td]:border-b-0">
+    </tbody>
+  </table>
+</div>`;
 
 const resultsUI = (contacts) =>
   contacts.map((c) =>
-    `<tr><td>${c.first}</td><td>${c.last}</td><td>${c.email}</td></tr>`
+    `<tr class="starting:opacity-0 transition-opacity duration-150 ease-out"><td class="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-850 text-sm text-neutral-600 dark:text-neutral-300">${c.first}</td><td class="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-850 text-sm text-neutral-600 dark:text-neutral-300">${c.last}</td><td class="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-850 text-sm text-neutral-600 dark:text-neutral-300">${c.email}</td></tr>`
   ).join("\n");
 
 const contacts = [
@@ -146,15 +53,6 @@ const contacts = [
   { first: "Jakeem",    last: "Walker",    email: "jakeem.walker@example.com" },
   { first: "Malcolm",   last: "Trujillo",  email: "malcolm.trujillo@example.com" },
   { first: "Wynne",     last: "Rice",      email: "wynne.rice@example.com" },
-  { first: "Jennifer",  last: "Russell",   email: "jennifer.russell@example.com" },
-  { first: "Jena",      last: "Mathis",    email: "jena.mathis@example.com" },
-  { first: "Alexandra", last: "Maynard",   email: "alexandra.maynard@example.com" },
-  { first: "Timon",     last: "Small",     email: "timon.small@example.com" },
-  { first: "Dora",      last: "Allen",     email: "dora.allen@example.com" },
-  { first: "Freya",     last: "Dunn",      email: "freya.dunn@example.com" },
-  { first: "Neil",      last: "Rodriguez", email: "neil.rodriguez@example.com" },
-  { first: "Samuel",    last: "Davis",     email: "samuel.davis@example.com" },
-  { first: "Felix",     last: "Boyle",     email: "felix.boyle@example.com" },
 ];
 
 const findContacts = (str) => {
@@ -168,3 +66,52 @@ const findContacts = (str) => {
 
 server.start("/init");
 </script>
+
+<div id="demo-content" class="not-prose demo-container min-h-[482px]"></div>
+
+## Basic usage
+
+On the client, create a search input that targets a results container.
+
+```html
+<input type="search" name="search"
+       hx-post="/search"
+       hx-trigger="input changed delay:200ms, keyup[key=='Enter'], load"
+       hx-target="#results"
+       hx-indicator=".htmx-indicator">
+
+<tbody id="results"></tbody>
+```
+
+- [`hx-post`](/reference/attributes/hx-post) sends the input value to `/search`.
+- [`hx-trigger`](/reference/attributes/hx-trigger) combines three triggers:
+  - [`input`](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) [`changed`](/reference/attributes/hx-trigger#changed) [`delay:200ms`](/reference/attributes/hx-trigger#delay) debounces keystrokes and ignores keys that don't change the value (e.g. arrows).
+  - `keyup[key=='Enter']` sends immediately on Enter, using an [event filter](/reference/attributes/hx-trigger#event-filters).
+  - [`load`](/reference/attributes/hx-trigger#load) populates the table on page load.
+- [`hx-target`](/reference/attributes/hx-target) puts the response into the `#results` tbody.
+- [`hx-indicator`](/reference/attributes/hx-indicator) shows a loading indicator while the request is in flight.
+
+On the server, respond with matching table rows:
+
+```html
+<tr>
+  <td>Venus</td>
+  <td>Grimes</td>
+  <td>venus.grimes@example.com</td>
+</tr>
+<tr>
+  <td>Fletcher</td>
+  <td>Owen</td>
+  <td>fletcher.owen@example.com</td>
+</tr>
+```
+
+## Notes
+
+### Indicators
+
+The [`htmx-indicator`](/reference/attributes/hx-indicator) class hides an element by default and shows it while a request is in flight:
+
+```html
+<span class="htmx-indicator">Searching...</span>
+```

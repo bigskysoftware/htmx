@@ -9,11 +9,11 @@
         }
         @media (prefers-color-scheme: dark) {
         .features-board {
-        --v1: var(--color-neutral-450);
-        --v2: var(--color-neutral-550);
-        --v3: var(--color-neutral-600);
-        --v4: var(--color-neutral-650);
-        --accent: var(--color-neutral-650);
+        --v1: var(--color-neutral-650);
+        --v2: var(--color-neutral-700);
+        --v3: var(--color-neutral-750);
+        --v4: var(--color-neutral-850);
+        --accent: var(--color-neutral-850);
         }
         }
         .group:has(a:hover, a:focus-visible, a:active) .features-board {
@@ -57,25 +57,25 @@
         <polygon class="gs-accent" points="92,56.5 89,58 92,59.5 95,58" />
 
         <!-- Track lines (recessed grooves) -->
-        <line class="gs gs4" x1="40" y1="65" x2="64" y2="53" style="stroke-width: 2.5;" />
-        <line class="gs gs4" x1="52" y1="71" x2="76" y2="59" style="stroke-width: 2.5;" />
-        <line class="gs gs4" x1="64" y1="77" x2="88" y2="65" style="stroke-width: 2.5;" />
+        <line class="gs gs4" x1="34" y1="65" x2="66" y2="49" style="stroke-width: 2.5;" />
+        <line class="gs gs4" x1="46" y1="71" x2="78" y2="55" style="stroke-width: 2.5;" />
+        <line class="gs gs4" x1="58" y1="77" x2="90" y2="61" style="stroke-width: 2.5;" />
 
         <!-- Knobs: top=gs1, left=gs2, right=gs3 (lighter, raised and catching light) -->
         <g class="knob knob-1">
-            <polygon class="gs gs1" points="40,57 34,54 40,51 46,54" />
-            <polygon class="gs gs2" points="40,65 34,62 34,54 40,57" />
-            <polygon class="gs gs3" points="40,65 46,62 46,54 40,57" />
+            <polygon class="gs gs2" points="40,57 34,54 40,51 46,54" />
+            <polygon class="gs gs3" points="40,65 34,62 34,54 40,57" />
+            <polygon class="gs gs4" points="40,65 46,62 46,54 40,57" />
         </g>
         <g class="knob knob-2">
-            <polygon class="gs gs1" points="52,63 46,60 52,57 58,60" />
-            <polygon class="gs gs2" points="52,71 46,68 46,60 52,63" />
-            <polygon class="gs gs3" points="52,71 58,68 58,60 52,63" />
+            <polygon class="gs gs2" points="52,63 46,60 52,57 58,60" />
+            <polygon class="gs gs3" points="52,71 46,68 46,60 52,63" />
+            <polygon class="gs gs4" points="52,71 58,68 58,60 52,63" />
         </g>
         <g class="knob knob-3">
-            <polygon class="gs gs1" points="64,69 58,66 64,63 70,66" />
-            <polygon class="gs gs2" points="64,77 58,74 58,66 64,69" />
-            <polygon class="gs gs3" points="64,77 70,74 70,66 64,69" />
+            <polygon class="gs gs2" points="64,69 58,66 64,63 70,66" />
+            <polygon class="gs gs3" points="64,77 58,74 58,66 64,69" />
+            <polygon class="gs gs4" points="64,77 70,74 70,66 64,69" />
         </g>
     </g>
 </svg>

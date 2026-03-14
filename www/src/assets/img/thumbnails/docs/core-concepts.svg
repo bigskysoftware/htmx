@@ -33,9 +33,9 @@
         .group:has(a:hover, a:focus-visible, a:active) .core-concept {
         --v1: var(--color-neutral-300);
         --v2: var(--color-neutral-400);
-        --v3: var(--color-neutral-600);
-        --v4: var(--color-neutral-700);
-        --glow-line: var(--color-blue-400);
+        --v3: var(--color-neutral-500);
+        --v4: var(--color-neutral-550);
+        --glow-line: var(--color-blue-500);
         --text-glow: var(--color-blue-300);
         }
         }
@@ -55,16 +55,16 @@
 
         /* 1. The Outer Shells (Exploded View Animation) */
         .shield {
-        transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1);
         }
         .group:has(a:hover, a:focus-visible, a:active) .top-shield {
-        transform: translate(0px, -32px);
+        transform: translate(0px, -36px);
         }
         .group:has(a:hover, a:focus-visible, a:active) .left-shield {
-        transform: translate(-30px, 17px);
+        transform: translate(-34px, 20px);
         }
         .group:has(a:hover, a:focus-visible, a:active) .right-shield {
-        transform: translate(30px, 17px);
+        transform: translate(34px, 20px);
         }
 
         /* 2. The Hidden Core Crystal Reveal */
@@ -82,9 +82,6 @@
         .core-crystal {
         transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s;
         }
-        .group:has(a:hover, a:focus-visible, a:active) .core-crystal {
-        animation: core-levitate 4s ease-in-out infinite alternate 0.5s;
-        }
 
         /* 3. The Core Concepts Data Orbit (htmx lore integrated) */
         .orbit-ring {
@@ -101,7 +98,7 @@
 
         .orbit-text {
         font-family: monospace;
-        font-size: 4.5px;
+        font-size: 5.5px;
         font-weight: bold;
         fill: var(--text-glow);
         letter-spacing: 0.5px;
@@ -122,16 +119,38 @@
         }
 
         /* Keyframes */
-        @keyframes core-levitate {
-        0% { transform: translateY(0px); }
-        100% { transform: translateY(-5px); }
-        }
-        @keyframes orbit-spin {
+@keyframes orbit-spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
         }
         @keyframes dash-flow {
         to { stroke-dashoffset: -8; }
+        }
+
+        .diamond-bg {
+        fill: var(--color-white, #fff);
+        transition: fill 150ms;
+        }
+        @media (prefers-color-scheme: dark) {
+        .diamond-bg { fill: var(--color-neutral-920, #1a1a1a); }
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .diamond-bg {
+        fill: var(--color-neutral-100, #f5f5f5);
+        }
+        @media (prefers-color-scheme: dark) {
+        .group:has(a:hover, a:focus-visible, a:active) .diamond-bg {
+        fill: var(--color-neutral-875, #222);
+        }
+        }
+
+        .center-hint {
+        fill: var(--v1);
+        stroke: var(--v1);
+        opacity: 0.4;
+        transition: opacity 0.3s ease, fill 150ms, stroke 150ms;
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .center-hint {
+        opacity: 0;
         }
     </style>
 
@@ -147,50 +166,42 @@
             <path class="tether" d="M 64 64 L 114 93" />
 
             <g class="orbit-ring">
-                <!-- Data Rings -->
-                <circle cx="64" cy="64" r="32" stroke="var(--glow-line)" stroke-width="0.5" stroke-dasharray="2 4" opacity="0.8" />
-                <circle cx="64" cy="64" r="25" stroke="var(--glow-line)" stroke-width="0.25" opacity="0.3" />
+                <!-- Data Ring -->
+                <circle cx="64" cy="64" r="26" stroke="var(--glow-line)" stroke-width="0.5" stroke-dasharray="2 4" opacity="0.8" />
 
                 <!-- Fundamental Attributes (htmx lore) acting as orbital nodes -->
-                <g transform="translate(0, -32)">
+                <g transform="translate(0, -26)">
                     <circle cx="64" cy="64" r="1.5" fill="var(--glow-line)" />
                     <text x="64" y="61" text-anchor="middle" class="orbit-text">hx-get</text>
                 </g>
 
-                <g transform="translate(0, 32)">
+                <g transform="translate(0, 26)">
                     <circle cx="64" cy="64" r="1.5" fill="var(--glow-line)" />
                     <text x="64" y="59" text-anchor="middle" class="orbit-text" transform="rotate(180 64 64)">hx-post</text>
                 </g>
 
-                <g transform="translate(-32, 0)">
+                <g transform="translate(-26, 0)">
                     <circle cx="64" cy="64" r="1.5" fill="var(--glow-line)" />
                     <text x="64" y="61" text-anchor="middle" class="orbit-text" transform="rotate(-90 64 64)">hx-swap</text>
                 </g>
 
-                <g transform="translate(32, 0)">
+                <g transform="translate(26, 0)">
                     <circle cx="64" cy="64" r="1.5" fill="var(--glow-line)" />
                     <text x="64" y="61" text-anchor="middle" class="orbit-text" transform="rotate(90 64 64)">hx-target</text>
                 </g>
             </g>
+
         </g>
 
-
-        <!-- ========================================== -->
-        <!-- LAYER 2: THE INNER CORE                    -->
-        <!-- ========================================== -->
+        <!-- Inner Core Diamond (separate from orbit layer to render on top) -->
         <g class="core-layer core-crystal">
-            <!-- Holographic Crystal Glow -->
-            <path d="M 64 42 L 84 64 L 64 86 L 44 64 Z" stroke="var(--glow-line)" stroke-width="1.5" fill="none" opacity="0.3" filter="blur(1px)" />
-
-            <!-- Central Energy Point (behind diamond) -->
-            <circle cx="64" cy="64" r="3" fill="var(--text-glow)" opacity="0.2" />
-            <circle cx="64" cy="64" r="1.5" fill="var(--text-glow)" />
-
-            <!-- Isometric Core Node (Octahedron/Diamond) -->
-            <path d="M 64 48 L 50 64 L 64 70 Z" fill="var(--glow-line)" opacity="0.4" />
-            <path d="M 64 48 L 78 64 L 64 70 Z" fill="var(--glow-line)" opacity="0.6" />
-            <path d="M 64 80 L 50 64 L 64 70 Z" fill="var(--glow-line)" opacity="0.8" />
-            <path d="M 64 80 L 78 64 L 64 70 Z" fill="var(--text-glow)" opacity="0.9" />
+            <!-- Solid background to cover dashed lines -->
+            <path d="M 64 48 L 78 64 L 64 80 L 50 64 Z" class="diamond-bg" />
+            <!-- Light from top-right: top-right brightest, bottom-left darkest -->
+            <path d="M 64 48 L 78 64 L 64 70 Z" fill="var(--text-glow)" opacity="0.9" />
+            <path d="M 64 48 L 50 64 L 64 70 Z" fill="var(--glow-line)" opacity="0.7" />
+            <path d="M 64 80 L 78 64 L 64 70 Z" fill="var(--glow-line)" opacity="0.6" />
+            <path d="M 64 80 L 50 64 L 64 70 Z" fill="var(--glow-line)" opacity="0.4" />
         </g>
 
         <!-- ========================================== -->
@@ -202,17 +213,23 @@
         <!-- Top Face Shield -->
         <g class="shield top-shield">
             <path class="gs gs2" d="M 64 28 L 95 46 L 64 64 L 33 46 Z" />
+            <path class="gs gs1" d="M 64 34 L 88 48 L 64 62 L 40 48 Z" />
         </g>
 
         <!-- Left Face Shield -->
         <g class="shield left-shield">
             <path class="gs gs3" d="M 33 46 L 64 64 L 64 100 L 33 82 Z" />
+            <path class="gs gs2" d="M 37 50 L 62 66 L 62 95 L 37 79 Z" />
         </g>
 
         <!-- Right Face Shield -->
         <g class="shield right-shield">
             <path class="gs gs4" d="M 64 64 L 95 46 L 95 82 L 64 100 Z" />
+            <path class="gs gs3" d="M 66 66 L 91 50 L 91 79 L 66 97 Z" />
         </g>
+
+        <!-- Center diamond hint (fades on hover as crystal is revealed) -->
+        <path class="center-hint" d="M 64 56 L 72 64 L 64 72 L 56 64 Z" />
 
     </g>
 </svg>

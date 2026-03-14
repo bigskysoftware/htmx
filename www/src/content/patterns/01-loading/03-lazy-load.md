@@ -5,12 +5,6 @@ icon: "icon-[bitcoin-icons--visible-filled]"
 ---
 
 <script>
-const label = "text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400";
-const temp = "text-lg font-semibold text-neutral-800 dark:text-neutral-100";
-const desc = "text-xs text-neutral-500 dark:text-neutral-400";
-const fade = "starting:opacity-0 starting:translate-y-1 transition";
-const day = `flex flex-col items-center gap-1 py-3 px-2 rounded-md starting:opacity-0 starting:translate-y-1 hover:bg-neutral-50 dark:hover:bg-neutral-850`;
-
 server.get("/demo", () => `
 <div hx-get="/weather" hx-trigger="load" hx-swap="outerHTML">
   <div class="size-full flex items-center justify-center gap-2 text-sm starting:opacity-0 transition">
@@ -19,18 +13,18 @@ server.get("/demo", () => `
   </div>
 </div>`);
 
-server.get("/weather", () => ({ delay: 600, body: `
+server.get("/weather", () => ({ delay: 300, body: `
 <div class="size-full">
-  <div class="${fade} flex items-center gap-2 mb-4">
+  <div class="starting:opacity-0 starting:translate-y-1 transition flex items-center gap-2 mb-4">
     <span class="text-xl">&#9729;</span>
     <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-200">5-Day Forecast</span>
   </div>
   <div class="grid grid-cols-5 gap-1 text-center">
-    <div class="${day}" style="transition:opacity 300ms ease-out 50ms,transform 300ms ease-out 50ms,background-color 150ms ease 0ms"><span class="${label}">Mon</span><span class="${temp}">72°</span><span class="${desc}">Sunny</span></div>
-    <div class="${day}" style="transition:opacity 300ms ease-out 100ms,transform 300ms ease-out 100ms,background-color 150ms ease 0ms"><span class="${label}">Tue</span><span class="${temp}">68°</span><span class="${desc}">Cloudy</span></div>
-    <div class="${day}" style="transition:opacity 300ms ease-out 150ms,transform 300ms ease-out 150ms,background-color 150ms ease 0ms"><span class="${label}">Wed</span><span class="${temp}">65°</span><span class="${desc}">Rain</span></div>
-    <div class="${day}" style="transition:opacity 300ms ease-out 200ms,transform 300ms ease-out 200ms,background-color 150ms ease 0ms"><span class="${label}">Thu</span><span class="${temp}">70°</span><span class="${desc}">Partly cloudy</span></div>
-    <div class="${day}" style="transition:opacity 300ms ease-out 250ms,transform 300ms ease-out 250ms,background-color 150ms ease 0ms"><span class="${label}">Fri</span><span class="${temp}">74°</span><span class="${desc}">Sunny</span></div>
+    <div class="flex flex-col items-center gap-1 py-3 px-2 rounded-md starting:opacity-0 starting:translate-y-1 hover:bg-neutral-50 dark:hover:bg-neutral-850" style="transition:opacity 300ms ease-out 50ms,transform 300ms ease-out 50ms,background-color 150ms ease 0ms"><span class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Mon</span><span class="text-lg font-semibold text-neutral-800 dark:text-neutral-100">72°</span><span class="text-xs text-neutral-500 dark:text-neutral-400">Sunny</span></div>
+    <div class="flex flex-col items-center gap-1 py-3 px-2 rounded-md starting:opacity-0 starting:translate-y-1 hover:bg-neutral-50 dark:hover:bg-neutral-850" style="transition:opacity 300ms ease-out 100ms,transform 300ms ease-out 100ms,background-color 150ms ease 0ms"><span class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Tue</span><span class="text-lg font-semibold text-neutral-800 dark:text-neutral-100">68°</span><span class="text-xs text-neutral-500 dark:text-neutral-400">Cloudy</span></div>
+    <div class="flex flex-col items-center gap-1 py-3 px-2 rounded-md starting:opacity-0 starting:translate-y-1 hover:bg-neutral-50 dark:hover:bg-neutral-850" style="transition:opacity 300ms ease-out 150ms,transform 300ms ease-out 150ms,background-color 150ms ease 0ms"><span class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Wed</span><span class="text-lg font-semibold text-neutral-800 dark:text-neutral-100">65°</span><span class="text-xs text-neutral-500 dark:text-neutral-400">Rain</span></div>
+    <div class="flex flex-col items-center gap-1 py-3 px-2 rounded-md starting:opacity-0 starting:translate-y-1 hover:bg-neutral-50 dark:hover:bg-neutral-850" style="transition:opacity 300ms ease-out 200ms,transform 300ms ease-out 200ms,background-color 150ms ease 0ms"><span class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Thu</span><span class="text-lg font-semibold text-neutral-800 dark:text-neutral-100">70°</span><span class="text-xs text-neutral-500 dark:text-neutral-400">Partly cloudy</span></div>
+    <div class="flex flex-col items-center gap-1 py-3 px-2 rounded-md starting:opacity-0 starting:translate-y-1 hover:bg-neutral-50 dark:hover:bg-neutral-850" style="transition:opacity 300ms ease-out 250ms,transform 300ms ease-out 250ms,background-color 150ms ease 0ms"><span class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Fri</span><span class="text-lg font-semibold text-neutral-800 dark:text-neutral-100">74°</span><span class="text-xs text-neutral-500 dark:text-neutral-400">Sunny</span></div>
   </div>
 </div>` }));
 </script>

@@ -1,9 +1,9 @@
 ---
 title: "htmx.config.defaultSwap"
-description: "Default swap method for responses"
+description: "Default swap style for responses"
 ---
 
-The `htmx.config.defaultSwap` option sets the default swap method when [`hx-swap`](/reference/attributes/hx-swap) is not specified.
+The `htmx.config.defaultSwap` option sets the default swap style when [`hx-swap`](/reference/attributes/hx-swap) is not specified.
 
 **Default:** `"innerHTML"`
 

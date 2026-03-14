@@ -3,12 +3,16 @@
 // the script elements forces the browser to run them again.
 // Back/forward navigation uses history:"reload" so the full page reloads naturally.
 //
-// We listen on htmx:after:history:push instead of htmx:after:swap because
-// it only fires on actual page navigation (URL pushed to history). This naturally
-// excludes demo-internal swaps (e.g. Load More button) and same-page clicks.
+// We listen on htmx:after:swap and check if the swap target is <body> to
+// distinguish page navigation (body morph) from demo-internal swaps
+// (e.g. Load More button, form submissions). Only page navigation re-executes
+// scripts — demo-internal swaps must not wipe and reinitialize the demo.
 (function () {
-    document.addEventListener('htmx:after:history:push', function () {
+    document.addEventListener('htmx:after:swap', function (e) {
         if (window._hyperscript) window._hyperscript.processNode(document.body);
+
+        // Only re-execute scripts on page navigation, not demo-internal swaps
+        if (e.detail?.ctx?.target !== document.body) return;
 
         var article = document.querySelector('article');
         if (!article) return;
@@ -21,6 +25,17 @@
             // Wrap in block scope so const/let re-declarations don't throw
             fresh.textContent = '{' + old.textContent + '}';
             old.replaceWith(fresh);
+        }
+
+        // After scripts re-execute (routes are now registered), re-trigger any
+        // hx-trigger="load" elements that fired before routes were ready.
+        // This handles demo containers that use hx-get/hx-trigger="load" instead
+        // of server.start().
+        if (window.htmx) {
+            var loads = article.querySelectorAll('[hx-trigger*="load"]');
+            for (var k = 0; k < loads.length; k++) {
+                window.htmx.trigger(loads[k], 'load');
+            }
         }
     });
 })();

@@ -11,9 +11,9 @@ async function waitForSw(page: any) {
     });
 }
 
-// Wait for demo content to appear
+// Wait for demo content to appear (supports both #demo-content and .demo-container)
 async function waitForDemo(page: any) {
-    await expect(page.locator('#demo-content > *').first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('#demo-content > *, .demo-container > *').first()).toBeVisible({ timeout: 15_000 });
 }
 
 // Inject a visible boosted link and click it to trigger morph navigation
@@ -161,13 +161,13 @@ test.describe.serial('Pattern demos', () => {
         await waitForDemo(page);
     });
 
-    test('shows empty demo container on pages without demos', async ({ page }) => {
+    test('no demo container on stub pages', async ({ page }) => {
         await page.goto(STUB);
-        await expect(page.locator('[data-demo-container]')).toBeVisible();
+        await expect(page.locator('.prose')).toBeVisible();
 
-        // demo-content should be empty (no children)
-        const childCount = await page.locator('#demo-content > *').count();
-        expect(childCount).toBe(0);
+        // Stub pages don't have a demo container (it's author-placed, not layout-injected)
+        const demoCount = await page.locator('#demo-content, .demo-container').count();
+        expect(demoCount).toBe(0);
     });
 
     test('no errors on pages without demos', async ({ page }) => {
