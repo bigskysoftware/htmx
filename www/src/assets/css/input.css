@@ -17,7 +17,29 @@
     /* Code */
     --font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 
-    /* Gray tones */
+    /* Gray tones
+
+       Text colors:
+         Primary (titles, body):      neutral-700 / dark:neutral-300
+         Secondary (descriptions, labels, footer, breadcrumbs): neutral-600 / dark:neutral-400
+         Interact/hover:              text-black / dark:text-white (max contrast)
+         Disabled:                    neutral-300 / dark:neutral-700
+         (exceptions exist when bg differs, e.g. FinderLink inverts text on colored bg)
+
+       Backgrounds:
+         Page:                        neutral-25 / dark:neutral-920
+         Header/Footer:               neutral-10 / dark:neutral-920
+         Cards:                       neutral-25 / dark:neutral-910
+         Elevated (modals, code):     white / dark:neutral-950
+         Hover state:                 neutral-75 / dark:neutral-875
+
+       Borders:
+         Primary:                     neutral-200 / dark:neutral-850
+         Hover:                       neutral-300 / dark:neutral-600
+
+       Links:
+         Default:                     blue-700 / dark:blue-350
+         Hover:                       blue-700 / dark:blue-300 */
     --color-neutral-10: oklch(99.8% 0 0);
     --color-neutral-25: oklch(99.5% 0 0);
     --color-neutral-50: oklch(98.5% 0 0);
@@ -59,6 +81,8 @@
     --color-blue-950: oklch(0.2936 0.068 267.21);
 
     --radius-lg: 0.625rem;
+
+    --tracking-tightest: -0.075em;
 }
 
 @layer base {
@@ -70,6 +94,7 @@
         background-color: var(--color-neutral-25);
 
         @media (prefers-color-scheme: dark) {
+            color-scheme: dark;
             color: var(--color-neutral-300);
             background-color: var(--color-neutral-920);
         }
@@ -84,7 +109,11 @@
     /* Use Chicago font in headings */
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-chicago), serif;
-        letter-spacing: var(--tracking-tight);
+        letter-spacing: var(--tracking-tightest);
+
+        @media (width >= 40rem) {
+            letter-spacing: var(--tracking-tight);
+        }
     }
 
     /* Improve underlines in anchors */
@@ -377,9 +406,9 @@
     }
 }
 
-/* interact: variant - combines hover/focus-visible/active for interactive states
-   Hover scoped to (hover: hover) to prevent sticky touch behavior on mobile.
-   :active provides brief tap feedback on touch devices (requires touchstart listener in Head.astro) */
+/* interact: variant — use instead of hover: for interactive states.
+   Combines hover (pointer devices only), focus-visible, and active.
+   :active provides tap feedback on touch devices (requires the hacky touchstart listener in Head.astro). */
 @custom-variant interact {
     @media (hover: hover) {
         &:hover {
@@ -392,5 +421,70 @@
 
     &:active {
         @slot;
+    }
+}
+
+
+/* Demo window chrome — border, title bar with dots + label, content padding */
+@layer components {
+    .demo-container {
+        position: relative;
+        margin-block: 2rem;
+        padding-top: 2rem;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-lg);
+        background: var(--color-white);
+        overflow: hidden;
+
+        @variant dark {
+            border-color: var(--color-neutral-850);
+            background: var(--color-neutral-930);
+        }
+
+        /* Title bar */
+        &::before {
+            content: 'DEMO';
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-sans);
+            font-size: 0.675rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            color: var(--color-neutral-500);
+            background: var(--color-neutral-50);
+            border-bottom: 1px solid var(--color-neutral-100);
+
+            @variant dark {
+                color: color-mix(in srgb, var(--color-neutral-500) 80%, transparent);
+                background: var(--color-neutral-920);
+                border-bottom-color: var(--color-neutral-900);
+            }
+        }
+
+        /* Traffic-light dots */
+        &::after {
+            content: '';
+            position: absolute;
+            top: calc((2rem - 9px) / 2);
+            left: 0.75rem;
+            width: 9px;
+            height: 9px;
+            border-radius: 9999px;
+            background: var(--color-neutral-200);
+            box-shadow: 15px 0 0 var(--color-neutral-200), 30px 0 0 var(--color-neutral-200);
+
+            @variant dark {
+                background: var(--color-neutral-800);
+                box-shadow: 15px 0 0 var(--color-neutral-800), 30px 0 0 var(--color-neutral-800);
+            }
+        }
+
+        /* Content area — padding-top includes title bar height */
+        padding: 1.5rem;
+        padding-top: calc(2rem + 1.5rem);
     }
 }
