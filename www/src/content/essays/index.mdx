@@ -1,6 +1,6 @@
 ---
 title: Essays
-description: "On htmx, hypermedia, and building for the web."
+description: "On hypermedia and building for the web."
 ---
 
 import {getCollection} from 'astro:content';
@@ -95,7 +95,7 @@ export const activeTags = tagDefs.filter(t => t.id === 'all' || usedTags.has(t.i
     </div>
 
     <div class="sm:hidden flex items-center gap-3 mb-6">
-        <label for="tag-select" class="text-xs font-chicago text-neutral-500 dark:text-neutral-450 shrink-0">Filter by</label>
+        <label for="tag-select" class="text-sm text-neutral-600 dark:text-neutral-400 shrink-0">Filter by</label>
         <select id="tag-select"
                 class="flex-1 pl-3 pr-9 py-2 text-xs font-chicago rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300"
                 _="on change
