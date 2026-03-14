@@ -1,0 +1,69 @@
+---
+title: "htmx"
+description: "htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext"
+---
+import { getCollection } from 'astro:content';
+import CDNGenerator from "../components/CDNGenerator.astro";
+import EasterEggs from "../components/EasterEggs.astro";
+import Sponsors from "../components/Sponsors.astro";
+import Hero from "../components/Hero.astro";
+import { Image } from 'astro:assets';
+import hypermediaSystems from '../assets/img/hypermedia-systems.png';
+export const sponsors = (await getCollection('sponsors')).map(sponsor => sponsor.data);
+
+<div class="not-prose">
+
+<EasterEggs/>
+
+<Hero/>
+
+</div>
+
+
+<div class="prose-sm sm:prose-base prose-htmx dark:prose-invert max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-16 pb-0">
+
+## motivation
+
+- Why should only [`<a>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) & [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) be able to make HTTP requests?
+- Why should only [`click`](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) & [`submit`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) events trigger them?
+- Why should only [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) & [`POST`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) methods be [available](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)?
+- Why should you only be able to replace the **entire** screen?
+
+By removing these constraints, htmx completes HTML as a [hypertext](https://en.wikipedia.org/wiki/Hypertext).
+
+## quick example
+
+```html
+<button hx-post="/clicked" hx-swap="outerHTML">
+    Click Me
+</button>
+```
+
+When clicked, [`hx-post`](/reference#hx-post) sends a `POST` to `/clicked` and [`hx-swap`](/reference#hx-swap) replaces the button with the response. No JavaScript.
+
+## book
+
+[Hypermedia Systems](https://hypermedia.systems) covers building [Hypermedia-Driven Applications](/essays/hypermedia-driven-applications) with htmx. Free online.
+
+<a href="https://hypermedia.systems" target="_blank" rel="noopener noreferrer" class="group block not-prose w-fit mx-auto font-chicago text-sm text-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 interact:underline transition">
+    <Image src={hypermediaSystems} alt="Hypermedia Systems" width={240} class="mb-3 rounded-sm group-interact:-translate-y-1 transition" />
+    Hypermedia Systems
+</a>
+
+## sponsors
+
+Thank you to all our generous [sponsors](https://github.com/sponsors/bigskysoftware?o=esb)!
+
+<Sponsors sponsors={sponsors} />
+
+</div>
+
+<div class="not-prose text-center py-8 space-y-2">
+    <p class="text-neutral-600 dark:text-neutral-400 font-chicago text-sm">
+        htmx is the successor to <a href="http://intercoolerjs.org"
+                                    class="text-blue-600 dark:text-blue-350 interact:underline interact:text-blue-700 dark:interact:text-blue-300">intercooler.js</a>
+    </p>
+    <p class="text-neutral-500 dark:text-neutral-500 text-sm">
+        ʕ •ᴥ•ʔ made in montana
+    </p>
+</div>

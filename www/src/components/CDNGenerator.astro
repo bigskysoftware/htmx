@@ -1,0 +1,181 @@
+---
+// 1. Configuration
+const VERSION = '4.0.0-alpha3';
+const CDN_BASE = `https://cdn.jsdelivr.net/npm/htmx.org@${VERSION}/dist`;
+
+const EXTENSION_LIST = [
+    {name: 'websockets', comingSoon: true},
+    {name: 'webrtc', comingSoon: true},
+];
+
+// 2. Utility: Fetch file size (Server Side)
+async function getFileSize(url: string) {
+    try {
+        const res = await fetch(url, {method: 'HEAD'});
+        const bytes = parseInt(res.headers.get('content-length') || '0', 10);
+        return bytes ? parseFloat((bytes / 1024).toFixed(1)) : 0;
+    } catch (e) {
+        return 0;
+    }
+}
+
+// 3. Execution: Parallel Fetching
+const [coreMin, coreFull] = await Promise.all([
+    getFileSize(`${CDN_BASE}/htmx.min.js`),
+    getFileSize(`${CDN_BASE}/htmx.js`)
+]);
+
+const extensions = await Promise.all(EXTENSION_LIST.map(async (ext) => {
+    // Skip fetching for "Coming Soon" items
+    if (ext.comingSoon) return {...ext, size: 0, full: 0};
+    
+    return {
+        ...ext,
+        size: await getFileSize(`${CDN_BASE}/ext/${ext.name}.min.js`),
+        full: await getFileSize(`${CDN_BASE}/ext/${ext.name}.js`)
+    };
+}));
+---
+
+<section class="not-prose py-12 sm:py-16 font-sans">
+
+    <template id="script-tag"><span class='text-blue-700 dark:text-blue-350'>&lt;script</span> <span
+            class='text-blue-800 dark:text-blue-200'>src</span>=<span
+            class='text-red-700 dark:text-orange-300'>&quot;{'${unescaped url}'}&quot;</span><span
+            class='text-blue-700 dark:text-blue-350'>&gt;&lt;/script&gt;</span></template>
+
+    <div id="cdn-widget"
+         class="max-w-[755px] mx-auto w-full px-6 flex flex-col gap-2"
+         _={`init
+                set :base to '${CDN_BASE}'
+                set :minSize to ${coreMin}
+                set :fullSize to ${coreFull}
+                send updateCode to me
+
+            on updateCode
+                set min to #min.checked
+                if min then set extStr to '.min' else set extStr to '' end
+                if min then set total to :minSize else set total to :fullSize end
+                set exts to <input.ext:checked/>
+
+                -- Build core script tag
+                render #script-tag with (url: :base + '/htmx' + extStr + '.js')
+                set html to it
+
+                -- Add extension script tags
+                repeat for e in exts
+                    if min
+                        increment total by (e.dataset.min as Number)
+                    else
+                        increment total by (e.dataset.full as Number)
+                    end
+                    render #script-tag with (url: :base + '/ext/' + e.value + extStr + '.js')
+                    set html to html + '\n' + it
+                end
+
+                -- Render output
+                put html into #code
+                put total.toFixed(1) into #total
+
+                -- Update dropdown label
+                if exts.length > 0
+                    put exts.length + ' added' into #count-lbl
+                    add .text-neutral-900 .dark:text-white to #count-lbl
+                else
+                    put 'add extensions' into #count-lbl
+                    remove .text-neutral-900 .dark:text-white from #count-lbl
+                end
+         `}>
+
+        <div class="border border-neutral-200 dark:border-neutral-800 rounded-[4px] bg-white dark:bg-neutral-950 shadow-xs">
+            <div class="flex gap-1.5 px-3 py-2 bg-neutral-50 dark:bg-neutral-920 border-b border-neutral-100 dark:border-neutral-900 rounded-t-[3px]">
+                {[0, 0, 0].map(() =>
+                        <div class="size-2.5 rounded-full bg-neutral-200 dark:bg-neutral-800"/>)}
+            </div>
+            <div class="group relative pe-4 flex items-center gap-3">
+                <pre class="flex-1 overflow-x-auto text-xs leading-5 p-0! border-transparent! bg-transparent! text-neutral-900 dark:text-white"><code
+                        id="code" class="whitespace-pre block"></code></pre>
+
+                <button class="relative text-neutral-400 interact:text-neutral-900 dark:interact:text-white transition active:scale-95 cursor-pointer"
+                        _={`on click
+                        writeText(#code.innerText) on navigator.clipboard
+                        add .hidden to .icon-\[radix-icons--copy\] in me
+                        remove .hidden from .check in me
+                        wait 2s
+                        remove .hidden from .icon-\[radix-icons--copy\] in me
+                        add .hidden to .check in me`}>
+                    <i class="icon-[radix-icons--copy] size-4"></i>
+                    <i class="icon-[radix-icons--check] size-4 hidden check text-green-600"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-between text-xs select-none relative px-1">
+            <div class="flex items-center gap-5">
+
+                <div class="relative" _="on click from elsewhere add .hidden to #dropdown">
+                    <button class="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white transition cursor-pointer"
+                            _="on click toggle .hidden on #dropdown">
+                        <i class="icon-[radix-icons--plus]"></i>
+                        <span class="font-chicago text-[0.625rem]" id="count-lbl">add extensions</span>
+                    </button>
+
+                    <div id="dropdown"
+                         class="hidden absolute top-full left-0 mt-1 min-w-[200px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 divide-y divide-neutral-75 dark:divide-neutral-800 font-chicago rounded-[4px] shadow-xs p-3 z-20 flex flex-col">
+                        {extensions.map((e, i) => (
+                                <label class={`
+                                group flex items-center justify-between p-1.5 first:pt-0 last:pb-0 rounded-[2px] transition select-none
+                                ${e.comingSoon
+                                    ? 'opacity-60 cursor-not-allowed'
+                                    : 'cursor-pointer interact:bg-blue-700 interact:text-white text-neutral-600 dark:text-neutral-400'
+                                }
+                            `}>
+                                    <div class="flex items-center gap-2">
+                                        <div class={`relative size-3 rounded-[2px] border ${e.comingSoon ? 'border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800' : 'border-neutral-300 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-900 group-interact:bg-blue-500 group-interact:border-blue-600'}`}>
+
+                                            <input type="checkbox"
+                                                   value={e.name}
+                                                   disabled={e.comingSoon}
+                                                   class="peer ext appearance-none absolute inset-0 cursor-pointer"
+                                                   data-min={e.size}
+                                                   data-full={e.full}
+                                                   _={e.comingSoon ? '' : "on change trigger updateCode"}
+                                            />
+                                            <i class="icon-[radix-icons--check] absolute inset-0 m-auto size-2.5 text-neutral-900 dark:text-white group-interact:text-white opacity-0 peer-checked:opacity-100"></i>
+                                        </div>
+                                        <span class="text-[0.625rem]">{e.name}</span>
+                                    </div>
+
+                                    {e.comingSoon ? (
+                                            <span class="text-[9px] font-medium font-chicago uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-400/10 px-1.5 py-0.25 rounded-[2px]">
+                                                Soon
+                                            </span>
+                                    ) : (
+                                            <span class="font-mono text-[10px] text-neutral-400 group-interact:text-blue-100">
+                                                {e.size}K
+                                            </span>
+                                    )}
+                                </label>
+                        ))}
+                    </div>
+                </div>
+
+                <label class="flex items-center gap-2 cursor-pointer group text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white transition">
+                    <div class="relative size-3.5 border border-neutral-300 dark:border-neutral-700 rounded-[3px] group-interact:border-neutral-400 bg-white dark:bg-neutral-950 transition">
+
+                        <input type="checkbox" id="min" checked
+                               class="peer appearance-none absolute inset-0 cursor-pointer"
+                               _="on change trigger updateCode"/>
+
+                        <i class="icon-[radix-icons--check] size-3.5 absolute -left-px text-neutral-900 dark:text-white opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                    </div>
+                    <span class="font-chicago text-[0.625rem]">minify</span>
+                </label>
+            </div>
+
+            <span class="font-mono text-neutral-400 dark:text-neutral-600 text-[11px]">~<span id="total"
+                                                                                              class="font-bold text-neutral-600 dark:text-neutral-400">0</span>
+                KB</span>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,46 @@
+---
+import CDNSnippet from "./CDNSnippet.astro";
+import HeroStats from "./HeroStats.astro";
+import HeroDemo from "./HeroDemo.astro";
+---
+
+<!-- Hero -->
+<section class="not-prose pt-8 sm:pt-24 pb-12 sm:pb-16 w-screen relative left-1/2 -ml-[50vw]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style="transform: translateZ(0); isolation: isolate;">
+
+        <h1 class="flex flex-col sm:gap-3 lg:gap-4 text-5xl sm:text-6xl lg:text-7xl font-bold font-chicago text-black dark:text-white"
+            style="transform: translateZ(0);">
+            <span>Wait, HTML</span>
+            <span>
+                can do
+                <span class="text-blue-600 dark:text-blue-350 italic text-shadow-3d-blue-900 dark:text-shadow-3d-blue-700">
+                    that!?
+                </span>
+            </span>
+        </h1>
+
+        <p class="mt-7 sm:mt-15 font-light text-lg sm:text-[1.375rem] lg:text-2xl max-sm:max-w-[28ch] mx-auto">
+            build modern UIs with the simplicity of hypertext
+        </p>
+
+        <div class="mt-7 sm:mt-15">
+            <a href="/docs/get-started/installation"
+               class="inline-flex items-center justify-center h-9 sm:h-10 lg:h-11 px-4 sm:px-6 lg:px-8 bg-linear-to-b text-white font-chicago text-xs sm:text-sm lg:text-base shadow-3d-blue-900 dark:shadow-3d-blue-800 rounded-lg from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 interact:from-blue-500 interact:to-blue-600 dark:interact:from-blue-400 dark:interact:to-blue-500 border border-blue-500 dark:border-blue-500 dark:interact:border-blue-400 active:translate-y-[0.375cqh] active:shadow-3d-depth-[2px] transition">
+                Start Here
+            </a>
+        </div>
+
+        <div class="mt-9 sm:mt-13 flex flex-col items-center gap-6 sm:gap-9">
+            <CDNSnippet />
+            <HeroStats />
+        </div>
+
+    </div>
+</section>
+
+<!-- Demo -->
+<!-- <section class="not-prose pb-16 sm:pb-24 w-screen relative left-1/2 -ml-[50vw]">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <HeroDemo />
+    </div>
+</section> -->

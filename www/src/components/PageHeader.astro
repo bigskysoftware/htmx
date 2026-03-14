@@ -1,0 +1,131 @@
+---
+/**
+ * Unified page header for all content pages.
+ * Renders the title, optional copy button, and either a description
+ * (most pages) or a byline with author/date/reading time (essays).
+ */
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import CopyPageButton from './CopyPageButton.astro';
+import type { ContentFile } from '../lib/content';
+
+interface Props {
+    title: string;
+    description?: string;
+    file?: ContentFile;
+    collection: string;
+}
+
+const { title, description, file, collection } = Astro.props;
+
+const isEssay = !!file && collection === 'essays';
+const showCopyButton = !!file;
+
+// Essay byline data
+let byline: {
+    authors: { name: string; url?: string; image?: ImageMetadata }[];
+    created?: Date;
+    modified?: Date;
+    readingMinutes?: number;
+} | null = null;
+
+if (isEssay) {
+    const fm = file!.frontmatter;
+    const team = await getCollection('team');
+
+    const authors = (fm.authors || []).map((name: string) => {
+        const member = team.find(m => m.data.name === name);
+        return { name, url: member?.data.url, image: member?.data.image };
+    });
+
+    const created = fm.created ? (fm.created instanceof Date ? fm.created : new Date(fm.created)) : undefined;
+    const modified = fm.modified ? (fm.modified instanceof Date ? fm.modified : new Date(fm.modified)) : undefined;
+
+    // Reading time
+    const essayRaw = import.meta.glob('/src/content/essays/*.{md,mdx}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+    let readingMinutes: number | undefined;
+    const raw = essayRaw[`/src/content/${file!.id}`];
+    if (raw) {
+        const body = raw.replace(/^---[\s\S]*?---/, '');
+        readingMinutes = Math.max(1, Math.round(body.trim().split(/\s+/).length / 250));
+    }
+
+    byline = { authors, created, modified, readingMinutes };
+}
+
+const formatDate = (date: Date) =>
+    date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+const showModified = byline?.modified && byline?.created &&
+    byline.modified.toDateString() !== byline.created.toDateString();
+
+const primaryAuthor = byline?.authors[0];
+---
+
+<div class="not-prose mb-6 mt-4 sm:mb-8 sm:mt-6 lg:mb-12 lg:mt-8 space-y-3.5 sm:space-y-4.5 lg:space-y-6.5">
+    <div class="flex items-center justify-between gap-1 sm:gap-1.5 lg:gap-2">
+        <h1 class="flex-1 font-chicago text-2xl sm:text-[2em]/12 font-bold text-neutral-900 dark:text-neutral-100" set:html={title} />
+        {showCopyButton && <CopyPageButton file={file!} />}
+    </div>
+
+    {byline ? (
+        <div class="flex items-center">
+            {primaryAuthor?.image ? (
+                <div class="size-10 rounded-full overflow-hidden shrink-0 bg-neutral-200 dark:bg-neutral-800">
+                    <Image
+                        src={primaryAuthor.image}
+                        alt=""
+                        class="size-full object-cover"
+                        width={80}
+                        height={80}
+                        loading="eager"
+                    />
+                </div>
+            ) : byline.authors.length > 0 && (
+                <div class="size-10 rounded-full shrink-0 bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
+                    <i class="icon-[mdi--account-outline] size-5 text-neutral-400 dark:text-neutral-600" aria-hidden="true"></i>
+                </div>
+            )}
+
+            <div class:list={["flex flex-col gap-1.5", byline.authors.length > 0 && "ms-4"]}>
+                {byline.authors.length > 0 && (
+                    <span class="font-chicago text-sm text-neutral-900 dark:text-neutral-100">
+                        {byline.authors.map((author, i) => (
+                            <>
+                                {i > 0 && ", "}
+                                {author.url ? (
+                                    <a href={author.url}
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       class="interact:text-blue-600 dark:interact:text-blue-300 interact:underline underline-offset-4 transition">
+                                        {author.name}
+                                    </a>
+                                ) : (
+                                    <span>{author.name}</span>
+                                )}
+                            </>
+                        ))}
+                    </span>
+                )}
+
+                {byline.created && (
+                    <span class="text-xs font-mono tabular-nums text-neutral-600 dark:text-neutral-400">
+                        {byline.readingMinutes && (
+                            <span>{byline.readingMinutes} min read<span class="mx-1">·</span></span>
+                        )}
+                        <time datetime={byline.created.toISOString().slice(0, 10)}>
+                            {formatDate(byline.created)}
+                        </time>
+                        {showModified && (
+                            <span>
+                                {" "}· updated <time datetime={byline.modified!.toISOString().slice(0, 10)}>{formatDate(byline.modified!)}</time>
+                            </span>
+                        )}
+                    </span>
+                )}
+            </div>
+        </div>
+    ) : description && (
+        <p class="font-light text-base sm:text-lg lg:text-xl text-neutral-650 dark:text-neutral-350">{description}</p>
+    )}
+</div>

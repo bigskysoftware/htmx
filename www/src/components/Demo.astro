@@ -1,0 +1,194 @@
+---
+---
+
+<script is:inline>
+// Demo shim — provides the server.* API for pattern demos.
+// Inlined (not external src) so it executes synchronously during htmx morph navigation.
+//
+// Runs on every page load and morph re-execution. State arrays are cleared each time,
+// then the pattern's <script> re-registers routes and calls server.start().
+{
+  const DEMO_PREFIX = '/_'; // no trailing slash — the registered path's leading / creates /_/
+  const routes = [];
+  const sseHandlers = [];
+  const wsHandlers = [];
+  let responseDelay = 0;
+  let sseConnectionId = 0;
+  const activeSseStreams = new Map();
+
+  function match(list, method, url) {
+    // Strip the /_/ demo prefix so routes match the paths pattern authors registered
+    const fullPath = new URL(url, location.origin).pathname;
+    const path = fullPath.startsWith(DEMO_PREFIX) ? fullPath.slice(DEMO_PREFIX.length) : fullPath;
+    for (const h of list) {
+      if (method && h.method !== method) continue;
+      if (h.url instanceof RegExp ? h.url.test(path) : h.url === path) return h;
+    }
+    return null;
+  }
+
+  function parseParams(url, body) {
+    const params = {};
+    new URL(url, location.origin).searchParams.forEach((v, k) => { params[k] = v; });
+    if (body) try { new URLSearchParams(body).forEach((v, k) => { params[k] = v; }); } catch (e) {}
+    return params;
+  }
+
+  function handleMessage(event) {
+    const { data } = event;
+
+    // SSE close notification from SW
+    if (data.type === 'sse-close') {
+      const stream = activeSseStreams.get(data.connectionId);
+      if (stream) { if (stream.onclose) stream.onclose(); activeSseStreams.delete(data.connectionId); }
+      return;
+    }
+
+    if (data.type !== 'demo-request') return;
+    const { url, method, body, headers } = data;
+    const port = event.ports[0];
+    if (!port) return;
+
+    // SSE handlers (GET only)
+    if (method === 'GET') {
+      const sseHandler = match(sseHandlers, null, url);
+      if (sseHandler) {
+        const connId = ++sseConnectionId;
+        port.postMessage({ type: 'sse-start', connectionId: connId });
+        const stream = {
+          onclose: null,
+          send({ event: eventType, data }) {
+            navigator.serviceWorker.controller?.postMessage({
+              type: 'sse-data', connectionId: connId,
+              eventType: eventType || null,
+              data: typeof data === 'object' ? JSON.stringify(data) : String(data),
+            });
+          },
+          close() {
+            navigator.serviceWorker.controller?.postMessage({ type: 'sse-end', connectionId: connId });
+            activeSseStreams.delete(connId);
+          }
+        };
+        activeSseStreams.set(connId, stream);
+        sseHandler.handler(stream);
+        return;
+      }
+    }
+
+    // HTTP routes
+    const route = match(routes, method, url);
+    if (!route) { port.postMessage({ type: 'no-match' }); return; }
+
+    try {
+      const result = route.handler({ url, method, params: parseParams(url, body), body, headers: headers || {} });
+      if (typeof result === 'string') {
+        port.postMessage({ body: result, status: 200, headers: {}, delay: responseDelay });
+      } else if (result && typeof result === 'object') {
+        port.postMessage({ body: result.body || '', status: result.status || 200, headers: result.headers || {}, delay: result.delay ?? responseDelay });
+      }
+    } catch (err) {
+      console.error('[demo] Route handler error:', err);
+      const safe = (err.message || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      port.postMessage({ body: '<pre>Error: ' + safe + '</pre>', status: 500, headers: {} });
+    }
+  }
+
+  // Swap listener so it closes over the current routes/handlers
+  if (window._demoHandler) navigator.serviceWorker?.removeEventListener('message', window._demoHandler);
+  window._demoHandler = handleMessage;
+  navigator.serviceWorker?.addEventListener('message', handleMessage);
+
+  // Register SW once (clear cache on failure so next navigation retries)
+  const swReady = window._demoSwReady ??= ('serviceWorker' in navigator)
+    ? navigator.serviceWorker.register('/demo-sw.js', { scope: '/' })
+        .then(() => navigator.serviceWorker.ready)
+        .catch(err => { console.warn('[demo] SW registration failed:', err); delete window._demoSwReady; })
+    : Promise.resolve();
+
+  // --- WebSocket mock ---
+  const OriginalWebSocket = window._OriginalWebSocket ??= window.WebSocket;
+
+  function MockWebSocket(url, protocols) {
+    const handler = match(wsHandlers, null, url);
+    if (!handler) return new OriginalWebSocket(url, protocols);
+
+    const ws = Object.create(MockWebSocket.prototype);
+    Object.assign(ws, { url, readyState: 0, protocol: '', extensions: '', bufferedAmount: 0, binaryType: 'blob',
+      onopen: null, onmessage: null, onclose: null, onerror: null });
+    const listeners = {};
+
+    ws.addEventListener = (type, fn) => (listeners[type] ??= []).push(fn);
+    ws.removeEventListener = (type, fn) => { if (listeners[type]) listeners[type] = listeners[type].filter(f => f !== fn); };
+    ws.dispatchEvent = (evt) => { const h = ws['on' + evt.type]; if (h) h.call(ws, evt); (listeners[evt.type] || []).forEach(fn => fn.call(ws, evt)); };
+
+    const wsPath = new URL(url).pathname;
+    const log = (arrow, color, msg) => console.log('%c[demo-ws] %c' + arrow + ' ' + wsPath + msg, 'color:#8b5cf6;font-weight:bold', 'color:' + color);
+    const closeWs = (code = 1000, reason = '') => { log('\u2715 closed', '#f87171', ''); ws.readyState = 3; ws.dispatchEvent(new CloseEvent('close', { code, reason, wasClean: true })); };
+
+    const serverSocket = {
+      onmessage: null,
+      send(data) { log('\u2199 server \u2192', '#6ee7b7', ': ' + data); setTimeout(() => ws.dispatchEvent(new MessageEvent('message', { data })), 0); },
+      close: closeWs,
+    };
+
+    ws.send = (data) => { log('\u2197 client \u2192', '#38bdf8', ': ' + data); if (serverSocket.onmessage) serverSocket.onmessage(data); };
+    ws.close = closeWs;
+
+    setTimeout(() => { ws.readyState = 1; log('\u26a1 connected', '#4ade80', ''); ws.dispatchEvent(new Event('open')); handler.handler(serverSocket); }, 0);
+    return ws;
+  }
+  MockWebSocket.CONNECTING = 0; MockWebSocket.OPEN = 1; MockWebSocket.CLOSING = 2; MockWebSocket.CLOSED = 3;
+  MockWebSocket.prototype = Object.create(OriginalWebSocket.prototype);
+
+  // --- The server API ---
+  window.server = {
+    get(path, handler)    { routes.push({ method: 'GET', url: path, handler }); },
+    post(path, handler)   { routes.push({ method: 'POST', url: path, handler }); },
+    put(path, handler)    { routes.push({ method: 'PUT', url: path, handler }); },
+    delete(path, handler) { routes.push({ method: 'DELETE', url: path, handler }); },
+    delay(ms) { responseDelay = ms; },
+    sse(path, handler) { sseHandlers.push({ url: path, handler }); },
+    ws(path, handler)  { wsHandlers.push({ url: path, handler }); },
+
+    start(path, selector) {
+      swReady.then(reg => {
+        if (!navigator.serviceWorker?.controller && reg?.active) {
+          return new Promise(resolve => {
+            navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+            reg.active.postMessage({ type: 'claim' });
+          });
+        }
+      }).then(() => {
+        if (wsHandlers.length > 0) window.WebSocket = MockWebSocket;
+        else if (window._OriginalWebSocket) window.WebSocket = window._OriginalWebSocket;
+        var el = document.querySelector(selector || '#demo-content');
+        if (!el) return;
+        // Fetch and swap manually rather than using hx-get/hx-trigger="load".
+        // htmx re-processes all body children after a morph navigation (htmx.js:1402),
+        // which re-triggers "load" on the demo element, causing an infinite request loop.
+        fetch(DEMO_PREFIX + path).then(r => {
+          if (!r.ok) return;
+          return r.text();
+        }).then(html => {
+          if (!html) return;
+          el.innerHTML = html;
+          if (window.htmx) htmx.process(el);
+        }).catch(err => console.warn('[demo] Initial fetch failed:', err));
+      });
+    },
+  };
+
+  // Auto-prefix htmx requests from within demo containers so the SW intercepts them
+  if (!window._demoConfigRequest) {
+    window._demoConfigRequest = true;
+    document.addEventListener('htmx:config:request', (e) => {
+      if (e.detail.ctx.sourceElement?.closest?.('.demo-container')) {
+        e.detail.ctx.request.action = DEMO_PREFIX + e.detail.ctx.request.action;
+      }
+    });
+  }
+
+  // Script re-execution after morph is handled globally in Head.astro
+  // so it works even when navigating from non-pattern pages to pattern pages.
+}
+</script>

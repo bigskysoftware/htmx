@@ -1,0 +1,128 @@
+# Platinum Sponsors
+
+- name: commspace
+  tier: platinum
+  url: https://www.commspace.co.za
+  github: commspace
+  image: /src/assets/img/sponsors/commspace.svg
+
+# Silver Sponsors
+
+- name: JetBrains
+  tier: silver
+  url: https://www.jetbrains.com
+  github: JetBrainsOfficial
+  image: /src/assets/img/sponsors/jetbrains.svg
+
+- name: GitHub
+  tier: silver
+  url: https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next
+  image: /src/assets/img/sponsors/github.svg
+
+- name: Craft CMS
+  tier: silver
+  url: https://craftcms.com
+  github: craftcms
+  image: /src/assets/img/sponsors/craft-cms.svg
+
+- name: ButterCMS
+  tier: silver
+  url: https://buttercms.com
+  github: ButterCMS
+  image: /src/assets/img/sponsors/butter-cms.svg
+
+- name: Black Host
+  tier: silver
+  url: https://black.host
+  tracking: false
+  github: Black-HOST
+  image: /src/assets/img/sponsors/blackhost.svg
+
+- name: V7N
+  tier: silver
+  url: https://www.v7n.com
+  image: /src/assets/img/sponsors/v7n.svg
+
+- name: Hiro The Doggo
+  tier: silver
+  url: https://tacohiro.systems
+  github: sekunho
+  image: /src/assets/img/sponsors/tacohiro-systems.png
+
+- name: Das Filter
+  tier: silver
+  url: https://das.direct/pages/affiliates
+  image: /src/assets/img/sponsors/das-filter.svg
+
+- name: PullApprove
+  tier: silver
+  url: https://pullapprove.com
+  image: /src/assets/img/sponsors/pullapprove.svg
+
+- name: UI Bakery
+  tier: silver
+  url: https://uibakery.io
+  github: uibakery
+  image: /src/assets/img/sponsors/ui-bakery.svg
+
+- name: Tracebit
+  tier: silver
+  url: https://tracebit.com
+  github: tracebit-com
+  image: /src/assets/img/sponsors/tracebit.svg
+
+
+- name: RxDB
+  tier: silver
+  url: https://rxdb.info
+  github: pubkey
+  image: /src/assets/img/sponsors/rxdb.svg
+
+- name: Ohne-Makler
+  tier: silver
+  url: https://ohne-makler.net
+  image: /src/assets/img/sponsors/ohne-makler.svg
+
+- name: Cased
+  tier: silver
+  url: https://cased.com
+  github: cased
+  image: /src/assets/img/sponsors/cased.svg
+
+- name: LLC.org
+  tier: silver
+  url: https://llc.org
+  github: llcorg
+  image: /src/assets/img/sponsors/llc-org.svg
+
+- name: VPS Server
+  tier: silver
+  url: https://vpsserver.com
+  github: VPSServerCom
+  image: /src/assets/img/sponsors/vps-server.svg
+
+
+- name: a-blog cms
+  tier: silver
+  url: https://a-blogcms.jp
+  github: appleple
+  image: /src/assets/img/sponsors/ablogcms.svg
+
+- name: Broadband Map
+  tier: silver
+  url: https://broadbandmap.com
+  github: CoverageCritic
+  image: /src/assets/img/sponsors/broadband-map.svg
+
+- name: Follower24
+  tier: silver
+  url: https://follower24.de
+  github: Follower24
+  image: /src/assets/img/sponsors/follower24.svg
+
+
+- name: Exchange Rate API
+  tier: silver
+  url: https://exchangerate-api.com
+  github: ExchangeRate-API
+  image: /src/assets/img/sponsors/exchange-rate-api.svg

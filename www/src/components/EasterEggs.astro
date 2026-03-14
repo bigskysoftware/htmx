@@ -1,0 +1,50 @@
+---
+import {Image} from 'astro:assets';
+import adsTop from '../assets/img/easter-eggs/ads-top.png';
+import adsBottom from '../assets/img/easter-eggs/ads-bottom.png';
+import shutUpWarren from '../assets/img/easter-eggs/shut-up-warren.png';
+import katakana from '../assets/img/easter-eggs/katakana.png';
+import horse from '../assets/img/easter-eggs/horse.png';
+---
+
+<aside id="easter-eggs" class="hidden" aria-label="Easter egg content">
+    <!-- Ads (?ads=true) -->
+    <figure class="mb-12" _="init if window.location.search contains '?ads=true' put me before #hero-logo">
+        <a href="https://swag.htmx.org">
+            <Image src={adsTop}
+                   alt="Retro advertisement: MacMall PowerBooks as low as 1999$! Call 888-932-1569. Get your FREE 64MB RAM with your PowerBook!"
+                   class="mx-auto" loading="lazy"/>
+        </a>
+    </figure>
+    <figure class="mt-16" _="init if window.location.search contains '?ads=true' put me after #hero-logo">
+        <a href="https://swag.htmx.org">
+            <Image src={adsBottom}
+                   alt="Retro advertisement: Get Flash! FREE Microsoft Internet Explorer! Netscape Now! (3.0) Site created with Microsoft&reg; FrontPage&trade;. Powered by Microsoft BackOffice."
+                   class="mx-auto" loading="lazy"/>
+        </a>
+    </figure>
+
+    <!-- Shut up warren (?wuw=true) -->
+    <figure _="init if window.location.search contains '?wuw=true' put me into #hero-logo">
+        <a href="https://swag.htmx.org/products/shut-up-warren-tee">
+            <Image src={shutUpWarren} alt="shut up warren ⁺₊✦ uwu" loading="lazy" class="mx-auto"/>
+        </a>
+    </figure>
+
+    <!-- katakana (?uwu=true) -->
+    <figure _="init if window.location.search contains '?uwu=true' put me into #hero-logo">
+        <a href="https://swag.htmx.org/products/htmx-katakana-shirt">
+            <Image src={katakana} alt="htmx in katakana: エイチティーエムエックス uwu" loading="lazy"
+                   class="mx-auto"/>
+        </a>
+    </figure>
+
+    <!-- horse (?horse=true) -->
+    <figure _="init if window.location.search contains '?horse=true' put me after #hero-logo">
+        <a href="https://swag.htmx.org">
+            <Image src={horse} alt="Retro computer horse graphic"
+                   class="absolute right-1/2 top-full translate-x-[60%] sm:translate-x-[75%] md:translate-x-[85%] lg:translate-x-full -translate-y-[75%] mask-t-from-50% mask-t-to-100% mask-b-from-90% mask-b-to-100% scan-lines opacity-50"
+                   loading="lazy"/>
+        </a>
+    </figure>
+</aside>

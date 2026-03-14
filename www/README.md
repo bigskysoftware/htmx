@@ -1,17 +1,51 @@
-## Running The Website Locally
+# htmx Documentation Website
 
-The htmx.org website is built with [Zola](https://www.getzola.org/).
+The htmx documentation site, built with [Astro](https://astro.build/) and [Tailwind CSS](https://tailwindcss.com/).
 
-Use `npm run site` to run the site locally. 
+## Development
 
-The site will be available at http://localhost:1111
+From the repo root:
 
-## Folder Structure
+```bash
+npm run site    # or: npm run www
+```
 
-- `content/` - markdown content for the site (docs, examples, essays, attributes, etc.)
-- `templates/` - zola HTML templates (base, page, section layouts)
-  - `shortcodes/` - template components that can be used in markdown
-- `static/` - static assets: images (`img/`), JavaScript (`js/`), stylesheets (`css/`)
-- `config.toml` - zola config file
-- `syntax-theme.tmTheme` - TextMate syntax highlighting theme for code blocks in Markdown
-- `public/` - generated output (created by `zola build`)
+Or from this directory:
+
+```bash
+bun install
+bun run dev
+```
+
+The dev server starts at `http://localhost:4321`. The `predev` script syncs `../dist/` into `public/js/` automatically.
+
+## Building
+
+```bash
+bun run build
+bun run preview   # preview the production build
+```
+
+## Testing
+
+End-to-end tests use [Playwright](https://playwright.dev/):
+
+```bash
+bun run test          # headless
+bun run test:headed   # with browser window
+bun run test:ui       # interactive UI mode
+```
+
+## Structure
+
+```
+src/
+  content/        # Markdown content (docs, reference, patterns)
+  components/     # Astro components
+  layouts/        # Page layouts
+  pages/          # Route pages
+  lib/            # Utilities and helpers
+  assets/         # Images and static assets
+public/
+  js/             # htmx build artifacts (synced from ../dist/)
+```

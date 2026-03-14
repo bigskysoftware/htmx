@@ -1,1 +1,32 @@
-public/**
+# build output
+dist/
+# generated types
+.astro/
+# auto-copied from parent dist/
+public/js/*
+!public/js/.gitkeep
+!public/js/_hyperscript.js
+!public/js/_hyperscript.min.js
+!public/js/_hyperscript_render.min.js
+!public/js/_hyperscript_bundle.min.js
+!public/js/morph-afterswap.js
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# test artifacts
+test-results/
+
+# macOS-specific files
+.DS_Store

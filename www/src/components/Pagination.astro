@@ -1,0 +1,78 @@
+---
+/**
+ * Prev/next navigation for content pages.
+ * - variant="full": detailed cards at the bottom of articles
+ * - variant="compact": small buttons in the TOC sidebar
+ */
+import Card from './Card.astro';
+import type { ContentFile } from '../lib/content';
+
+interface Props {
+    prev?: ContentFile;
+    next?: ContentFile;
+    variant?: 'full' | 'compact';
+}
+
+const { prev, next, variant = 'full' } = Astro.props;
+
+const links = [
+    { link: prev, label: 'Previous', icon: 'icon-[mdi--chevron-left]' },
+    { link: next, label: 'Next', icon: 'icon-[mdi--chevron-right]', reverse: true },
+];
+---
+
+{variant === 'compact' ? (
+    <div class="flex gap-2">
+        {links.map(({ link, label, icon, reverse }) => (
+            <Card as={link ? 'a' : 'span'}
+                  href={link?.url}
+                  title={link?.frontmatter.title}
+                  class:list={[
+                      "flex-1 group flex items-center gap-2 p-2 text-xs font-medium transition select-none",
+                      reverse && "flex-row-reverse",
+                      link
+                          ? "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white outline-hidden focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400"
+                          : "border-transparent bg-neutral-50 dark:bg-neutral-930 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
+                  ]}>
+                <i class:list={[icon, "size-4", link ? "text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition" : "opacity-50"]}></i>
+                <span class="flex-1 inline-flex justify-center">{label}</span>
+            </Card>
+        ))}
+    </div>
+) : (
+    <nav class="not-prose mt-16">
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
+            {links.map(({ link, label, icon, reverse }) =>
+                link ? (
+                    <Card variant="xl" class:list={[
+                        "group relative isolate flex items-center gap-3 sm:gap-4 p-3 sm:p-4 transition",
+                        "interact:bg-neutral-75 dark:interact:bg-neutral-875",
+                        "interact:border-neutral-400 dark:interact:border-neutral-600",
+                        "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2",
+                        "has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400"
+                    ]}>
+                        {!reverse && <i class:list={[icon, "text-2xl sm:text-3xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0"]}></i>}
+                        <div class="flex-1 min-w-0">
+                            {link.breadcrumbs.length > 2 && (
+                                <div class="text-xs tracking-wide text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-300 mb-1.5 sm:mb-2 transition">
+                                    {link.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
+                                </div>
+                            )}
+                            <h4 class="font-chicago text-sm sm:text-base text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-white transition line-clamp-1 sm:line-clamp-2"
+                                set:html={link.frontmatter.title}></h4>
+                            <a href={link.url} class="outline-hidden">
+                                <span class="absolute inset-0 z-10"></span>
+                                <span class="sr-only">{label}: {link.frontmatter.title}</span>
+                            </a>
+                            {link.frontmatter.description &&
+                                <div class="hidden sm:block text-sm text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-1.5 sm:mt-2 line-clamp-2 leading-relaxed transition">{link.frontmatter.description}</div>}
+                        </div>
+                        {reverse && <i class:list={[icon, "text-2xl sm:text-3xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0"]}></i>}
+                    </Card>
+                ) : (
+                    <div></div>
+                )
+            )}
+        </div>
+    </nav>
+)}

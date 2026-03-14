@@ -1,0 +1,71 @@
+---
+const d = 800;
+const tz = -390;
+const theta = 67 * (Math.PI / 180);
+const s = 0.7;
+const gridSize = 260;
+
+function project(x: number, y: number) {
+    const xScaled = x * s;
+    const yScaled = y * s;
+    const yRotated = yScaled * Math.cos(theta);
+    const zRotated = yScaled * Math.sin(theta);
+    const w = (d - (zRotated + tz)) / d;
+    if (w <= 0) return null;
+    return { x: xScaled / w, y: yRotated / w };
+}
+
+const horizontalLines: {x1: number, y1: number, x2: number, y2: number}[] = [];
+const verticalLines: {x1: number, y1: number, x2: number, y2: number}[] = [];
+
+let lastY: number | null = null;
+for (let j = 10; j >= -100; j--) {
+    const pL = project(-8000, j * gridSize);
+    const pR = project(8000, j * gridSize);
+    if (!pL || !pR) continue;
+    if (lastY !== null && Math.abs(lastY - pL.y) < 1.5) break;
+    horizontalLines.push({ x1: pL.x, y1: pL.y, x2: pR.x, y2: pR.y });
+    lastY = pL.y;
+}
+
+for (let i = -30; i <= 30; i++) {
+    const pNear = project(i * gridSize, 1700);
+    const pFar = project(i * gridSize, -3000);
+    if (!pNear || !pFar) continue;
+    verticalLines.push({ x1: pNear.x, y1: pNear.y, x2: pFar.x, y2: pFar.y });
+}
+---
+
+<div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 grid-bg flex justify-center items-center starting:opacity-0 transition duration-500" aria-hidden="true" style="will-change: transform; contain: strict;">
+    <svg viewBox="-1000 -1000 2000 2000" preserveAspectRatio="xMidYMid slice" class="w-screen h-screen min-w-full min-h-full">
+        <defs>
+            <linearGradient id="horizonFade" x1="0" y1="-100" x2="0" y2="-320" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="white" />
+                <stop offset="100%" stop-color="black" />
+            </linearGradient>
+            <mask id="fadeMask">
+                <rect x="-8000" y="-8000" width="16000" height="16000" fill="url(#horizonFade)" />
+            </mask>
+        </defs>
+        <g mask="url(#fadeMask)">
+            {horizontalLines.map(l => <line x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} />)}
+            {verticalLines.map(l => <line x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} />)}
+        </g>
+    </svg>
+</div>
+
+<style>
+    .grid-bg {
+        mask-image: radial-gradient(ellipse 50% 70% at 50% 50%, black 10%, transparent 80%);
+    }
+    .grid-bg line {
+        stroke: rgb(0 0 0 / 0.04);
+        stroke-width: 1.5px;
+        vector-effect: non-scaling-stroke;
+    }
+    @media (prefers-color-scheme: dark) {
+        .grid-bg line {
+            stroke: rgb(255 255 255 / 0.05);
+        }
+    }
+</style>

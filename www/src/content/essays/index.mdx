@@ -1,0 +1,135 @@
+---
+title: Essays
+description: "On hypermedia and building for the web."
+---
+
+import {getCollection} from 'astro:content';
+import FinderLink from '../../components/FinderLink.astro';
+
+export const localEssays = (await getCollection('essays'))
+    .sort((a, b) => new Date(b.data.created || 0).getTime() - new Date(a.data.created || 0).getTime());
+
+export const externalEssays = [
+    {title: "HATEOAS Is For Humans", url: "https://intercoolerjs.org/2016/05/08/hatoeas-is-for-humans.html", author: "Carson Gross", date: "2016-05-08", tags: "foundations"},
+    {title: "Taking HTML Seriously", url: "https://intercoolerjs.org/2020/01/14/taking-html-seriously", author: "Carson Gross", date: "2020-01-14", tags: "foundations"},
+    {title: "The API Churn/Security Trade-off", url: "https://intercoolerjs.org/2016/02/17/api-churn-vs-security.html", author: "Carson Gross", date: "2016-02-17", tags: "the-case-for-hypermedia"},
+    {title: "A Modest Critique of htmx", url: "https://chrisdone.com/posts/htmx-critique/", author: "Chris Done", date: "2024-10-01", tags: "counterpoints"},
+    {title: "A Modest Critique of htmx (Response)", url: "https://news.ycombinator.com/item?id=41782080", date: "2024-10-01", tags: "counterpoints"},
+    {title: "I tried HTMX, then ditched it", url: "https://ajmoon.com/posts/mesh-i-tried-htmx-then-ditched-it", author: "AJ Moon", tags: "counterpoints"},
+    {title: "Is Rendering JSON More Efficient Than HTML?", url: "https://github.com/1cg/html-json-speed-comparison", author: "Carson Gross", tags: "guides"},
+    {title: "Is JSON Smaller Than HTML?", url: "https://github.com/1cg/html-json-size-comparison", author: "Carson Gross", tags: "guides"},
+    {title: "The Grug Brained Developer", url: "https://grugbrain.dev", author: "Carson Gross", tags: "simplicity"},
+    {title: "htmx Implementation Deep Dive", url: "https://www.youtube.com/watch?v=javGxN-h9VQ", author: "Carson Gross", tags: "simplicity"},
+    {title: "A File Structure For The Complex, The Changing and the Indeterminate", url: "https://dl.acm.org/doi/pdf/10.1145/800197.806036", author: "Ted Nelson", date: "1965-01-01", tags: "research"},
+    {title: "The Mother Of All Demos", url: "https://www.youtube.com/watch?v=B6rKUf9DWRI", author: "Doug Engelbart", date: "1968-01-01", tags: "research"},
+    {title: "The First Web Page", url: "http://info.cern.ch/hypertext/WWW/TheProject.html", date: "1991-01-01", tags: "research"},
+    {title: "Architectural Styles and the Design of Network-based Software Architectures", url: "https://ics.uci.edu/~fielding/pubs/dissertation/top.htm", author: "Roy Fielding", date: "2000-01-01", tags: "research"},
+    {title: "State of the Art Review on Hypermedia Issues and Applications", url: "https://web.archive.org/web/20240428215142/https://paul.luon.net/hypermedia/index.html", date: "2006-01-01", tags: "research"},
+    {title: "How Primer changed JavaScript at Facebook", url: "https://youtu.be/BZmfCjtv6cM", author: "Makinde Adeagbo & Tom Occhino", date: "2010-01-01", tags: "research"},
+    {title: "Hypermedia Controls: Feral to Formal", url: "https://dl.acm.org/doi/pdf/10.1145/3648188.3675127", author: "ACM HT'24", date: "2024-01-01", tags: "research"},
+    {title: "Preserving REST-ful Visibility With Generalized Hypermedia Controls", url: "https://hypermedia.cs.montana.edu/papers/preserving-restful.pdf", author: "ACM SIGWEB", date: "2024-01-01", tags: "research"},
+];
+
+export const fmtDate = (d) => {
+    if (!d) return undefined;
+    return new Date(d).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'});
+};
+
+export const allEssays = [
+    ...localEssays.map(e => ({
+        title: e.data.title,
+        url: `/essays/${e.id}`,
+        author: e.data.authors?.join(', '),
+        date: fmtDate(e.data.created),
+        tags: Array.isArray(e.data.tags) ? e.data.tags.join(' ') : '',
+        external: false,
+    })),
+    ...externalEssays.map(e => ({
+        title: e.title,
+        url: e.url,
+        author: e.author,
+        date: fmtDate(e.date),
+        tags: e.tags,
+        external: true,
+    })),
+].sort((a, b) => {
+    if (!a.date && !b.date) return 0;
+    if (!a.date) return 1;
+    if (!b.date) return 1;
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+});
+
+export const tagDefs = [
+    {id: 'all', label: 'All'},
+    {id: 'foundations', label: 'Hypermedia & REST'},
+    {id: 'the-case-for-hypermedia', label: 'Why Hypermedia?'},
+    {id: 'case-studies', label: 'The Real World'},
+    {id: 'guides', label: 'Building HDAs'},
+    {id: 'simplicity', label: 'Complexity Bad'},
+    {id: 'counterpoints', label: 'On The Other Hand'},
+    {id: 'research', label: 'Research'},
+];
+
+export const usedTags = new Set(allEssays.flatMap(i => (i.tags || '').split(' ').filter(Boolean)));
+export const activeTags = tagDefs.filter(t => t.id === 'all' || usedTags.has(t.id));
+
+<div class="not-prose mt-6">
+
+    <div class="hidden sm:flex flex-wrap gap-2 mb-6">
+        {activeTags.map((tag, i) => (
+            <label class:list={[
+                "cursor-pointer select-none px-3 py-1.5 text-xs font-chicago whitespace-nowrap transition rounded-sm",
+                "border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900",
+                "text-neutral-500 dark:text-neutral-450",
+                "interact:bg-neutral-100 dark:interact:bg-neutral-800 interact:border-neutral-300 dark:interact:border-neutral-700 interact:text-neutral-700 dark:interact:text-neutral-300",
+                "has-checked:bg-neutral-150! has-checked:text-neutral-900! has-checked:border-neutral-400! has-checked:shadow-[inset_0_1px_2px_rgba(0,0,0,0.12)]!",
+                "dark:has-checked:bg-neutral-800! dark:has-checked:text-neutral-100! dark:has-checked:border-neutral-600! dark:has-checked:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]!",
+            ]}>
+                <input type="radio" name="tag" value={tag.id} class="sr-only" checked={i === 0}
+                       _="on change
+                        show <.link-list-item/> when my.value is 'all' or its @data-tags contains my.value
+                        set #tag-select.value to my.value" />
+                {tag.label}
+            </label>
+        ))}
+    </div>
+
+    <div class="sm:hidden flex items-center gap-3 mb-6">
+        <label for="tag-select" class="text-sm text-neutral-600 dark:text-neutral-400 shrink-0">Filter by</label>
+        <select id="tag-select"
+                class="flex-1 pl-3 pr-9 py-2 text-xs font-chicago rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300"
+                _="on change
+                 show <.link-list-item/> when my.value is 'all' or its @data-tags contains my.value
+                 for r in <input[name='tag']/> set r.checked to (r.value is my.value)">
+            {activeTags.map(tag => (
+                <option value={tag.id}>{tag.label}</option>
+            ))}
+        </select>
+    </div>
+
+    <div class="flex flex-col gap-1">
+        {allEssays.map(essay => (
+            <FinderLink
+                href={essay.url}
+                data-tags={essay.tags}
+                {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}
+            >
+                <span class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4">
+                    <span class="flex-1 min-w-0 flex items-center gap-2">
+                        <span class="text-[13px] sm:text-sm leading-snug truncate">{essay.title}</span>
+                        {essay.external && (
+                            <i class="icon-[mdi--open-in-new] size-3 shrink-0 text-neutral-400 group-interact/link:text-blue-200 dark:group-interact/link:text-black transition" aria-label="External link"></i>
+                        )}
+                    </span>
+                    {(essay.author || essay.date) && (
+                        <span class="shrink-0 flex items-center gap-1.5 sm:gap-3 text-[11px] font-mono tabular-nums text-neutral-500 dark:text-neutral-450 group-interact/link:text-blue-200 dark:group-interact/link:text-black transition">
+                            {essay.author && <span>{essay.author}</span>}
+                            {essay.author && essay.date && <span aria-hidden="true">&middot;</span>}
+                            {essay.date && <span class="sm:w-[12ch] sm:text-right">{essay.date}</span>}
+                        </span>
+                    )}
+                </span>
+            </FinderLink>
+        ))}
+    </div>
+</div>

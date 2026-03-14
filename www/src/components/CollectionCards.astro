@@ -1,0 +1,75 @@
+---
+/**
+ * Thumbnail card grid for collection index pages (docs, reference).
+ */
+import Card from './Card.astro';
+import ThumbnailSvg from './ThumbnailSvg.astro';
+import type { ContentFolder } from '../lib/content';
+
+interface Props {
+    folders: ContentFolder[];
+    collection: string;
+}
+
+const { folders, collection } = Astro.props;
+
+const thumbnailModules = import.meta.glob('/src/assets/img/thumbnails/**/*.svg', {
+    query: '?raw',
+    import: 'default',
+    eager: true
+}) as Record<string, string>;
+
+const getThumbnail = (path: string | undefined): string | null => {
+    if (!path) return null;
+    return thumbnailModules[`/src/assets/img/thumbnails/${path}`] || null;
+};
+---
+
+<div class="relative my-10 not-prose">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-0">
+        {folders.map((item) => {
+            const thumbnail = getThumbnail(item.frontmatter.thumbnail);
+            const allSoon = item.subfiles.length > 0 && item.subfiles.every(f => f.frontmatter.soon);
+
+            return (
+                <Card variant="lg" class:list={[
+                    "group relative isolate flex flex-col overflow-hidden transition",
+                    allSoon
+                        ? "opacity-60 pointer-events-none"
+                        : ["interact:border-neutral-300 dark:interact:border-neutral-600",
+                           "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2",
+                           "has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400"]
+                ]}>
+                    <div class="relative h-40 lg:h-44 w-full flex items-center justify-center transition">
+                        {thumbnail ? (
+                            <ThumbnailSvg svg={thumbnail} fitWidth={collection === 'reference'}/>
+                        ) : (
+                            <span class="text-7xl transition icon-[mdi--file-document-outline] text-neutral-400 dark:text-neutral-600 group-interact:text-neutral-600 dark:group-interact:text-neutral-300"></span>
+                        )}
+                    </div>
+
+                    <div class:list={[
+                        "flex flex-col p-5 bg-white/50 dark:bg-neutral-920/50 border-t border-neutral-150 dark:border-neutral-900 transition",
+                        !allSoon && "group-interact:bg-neutral-100 dark:group-interact:bg-neutral-875",
+                        !allSoon && "group-interact:border-neutral-300 dark:group-interact:border-neutral-600"
+                    ]}>
+                        <h2 class="font-bold text-lg text-neutral-800 dark:text-neutral-200 group-interact:text-black dark:group-interact:text-white transition mb-2">
+                            <a href={allSoon ? undefined : (item.allFiles[0]?.url ?? item.url)} class="outline-hidden">
+                                {item.frontmatter.title}
+                                {allSoon && (
+                                    <span class="ml-2 align-middle text-[9px] px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">Soon</span>
+                                )}
+                                <span class="absolute inset-0 z-10"></span>
+                            </a>
+                        </h2>
+                        {item.frontmatter.description && (
+                            <p class="text-sm text-neutral-800 dark:text-neutral-200 group-interact:text-neutral-950 dark:group-interact:text-neutral-50 leading-relaxed transition">
+                                {item.frontmatter.description}
+                            </p>
+                        )}
+                    </div>
+                </Card>
+            );
+        })}
+    </div>
+</div>

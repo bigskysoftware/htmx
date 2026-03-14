@@ -1,11 +1,11 @@
 [build]
 base    = "www"
-publish = "public"
-command = "zola build"
+publish = "dist"
+command = "bun install && bun run build"
 
 [build.environment]
-ZOLA_VERSION = "0.19.1"
+NODE_VERSION = "22"
 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
 
 [context.deploy-preview]
-command = "zola build --base-url $DEPLOY_PRIME_URL"
+command = "bun install && bun run build"
