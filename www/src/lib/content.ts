@@ -160,6 +160,21 @@ function sortContentFiles(a: ContentFile, b: ContentFile): number {
  * @returns ContentFolder representing the folder with nested structure
  */
 export async function getFolder(path: string): Promise<ContentFolder> {
+    // Handle root index.mdx (home page)
+    if (path === 'home') {
+        const mod = contentModules['/src/content/index.mdx'] as any;
+        if (!mod) throw new Error('No index.mdx found at content root');
+        return {
+            id: 'index.mdx', folder: 'home', slug: '',
+            get url() { return '/'; },
+            frontmatter: mod.frontmatter,
+            subfiles: [], subfolders: [],
+            get allFiles() { return []; },
+            render: async () => ({ Content: mod.default, headings: mod.getHeadings?.() || [] }),
+            breadcrumbs: []
+        };
+    }
+
     const folderName = path.split('/')[0];
 
     // Get all modules for this folder
@@ -301,6 +316,7 @@ export async function getFolder(path: string): Promise<ContentFolder> {
 
     return folder;
 }
+
 
 /**
  * Tag taxonomy for essays.
