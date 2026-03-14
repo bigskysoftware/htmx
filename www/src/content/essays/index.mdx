@@ -73,10 +73,6 @@ export const tagDefs = [
 export const usedTags = new Set(allEssays.flatMap(i => (i.tags || '').split(' ').filter(Boolean)));
 export const activeTags = tagDefs.filter(t => t.id === 'all' || usedTags.has(t.id));
 
-# {frontmatter.title}
-
-<p class="text-neutral-600 dark:text-neutral-400">{frontmatter.description}</p>
-
 <div class="not-prose mt-6">
 
     <div class="hidden sm:flex flex-wrap gap-2 mb-6">

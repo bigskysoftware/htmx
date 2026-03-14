@@ -55,10 +55,6 @@ export const grouped = (() => {
     return [...map.entries()];
 })();
 
-# {frontmatter.title}
-
-<p class="text-neutral-600 dark:text-neutral-400">{frontmatter.description}</p>
-
 <div class="mt-12 space-y-12">
     {grouped.map(([year, yearPodcasts]) => (
         <section class="not-prose">

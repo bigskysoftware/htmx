@@ -49,6 +49,7 @@ const includeRightColumn = includeTableOfContents || includePagination;
 
 // Index page only
 const showCollectionCards = isIndex && ['docs', 'reference'].includes(collection);
+const useWideLayout = isIndex && ['docs', 'reference', 'patterns'].includes(collection);
 
 const thumbnailModules = import.meta.glob('/src/assets/img/thumbnails/**/*.svg', {
     query: '?raw',
@@ -95,8 +96,16 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
         <main id="content-main-content" class="flex-1">
             <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-center max-w-[1440px]">
 
-                <div class:list={["pt-4 sm:pt-8 lg:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", showCollectionCards ? 'max-w-4xl' : 'max-w-prose']}>
+                <div class:list={["pt-6 sm:pt-8 lg:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", useWideLayout ? 'max-w-4xl' : 'max-w-prose']}>
                     <Breadcrumbs breadcrumbs={data.breadcrumbs} />
+
+                    <div class="not-prose my-6 sm:my-8 lg:my-12 space-y-3.5 sm:space-y-4.5 lg:space-y-6.5">
+                        <div class="flex items-center justify-between gap-1 sm:gap-1.5 lg:gap-2">
+                            <h1 class="flex-1 font-chicago text-2xl sm:text-[2em]/12 font-bold text-neutral-900 dark:text-neutral-100" set:html={title} />
+                            {!isIndex && file && <CopyPageButton file={file} />}
+                        </div>
+                        {!isEssay && description && <p class="font-light text-base sm:text-lg lg:text-xl text-neutral-600 dark:text-neutral-400">{description}</p>}
+                    </div>
 
                     {isIndex ? (
                             <>
@@ -151,11 +160,6 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                             </>
                     ) : (
                             <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
-                                <div class="flex items-center justify-between gap-2 not-prose">
-                                    <h1 class="flex-1 font-chicago text-[2em]/12 font-bold text-neutral-900 dark:text-neutral-100" set:html={title} />
-                                    {!isIndex && file && <CopyPageButton file={file} />}
-                                </div>
-
                                 {isEssay && (
                                         <EssayHeader
                                                 authors={file!.frontmatter.authors}
@@ -164,8 +168,6 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                                 fileId={file!.id}
                                         />
                                 )}
-
-                                {isPatterns && description && <p class="text-lg text-neutral-600 dark:text-neutral-400">{description}</p>}
                                 {isPatterns && <Demo />}
                                 <slot name="before-content"/>
 

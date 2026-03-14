@@ -32,10 +32,6 @@ export const groupedPatterns = categoryEntries.map(cat => ({
         })),
 }));
 
-# {frontmatter.title}
-
-<p class="text-neutral-600 dark:text-neutral-400">{frontmatter.description}</p>
-
 <div class="mt-6">
     {groupedPatterns.map(group => (
         <div class="mt-12 first:mt-0">
@@ -49,9 +45,9 @@ export const groupedPatterns = categoryEntries.map(cat => ({
                             <FinderLink href={item.url} class="!mx-0">
                                 {item.icon && <i class={`${item.icon} size-5 shrink-0 -translate-y-px group-interact/link:text-white dark:group-interact/link:text-black transition`}></i>}
                                 <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 flex-1 min-w-0">
-                                    <span class="text-xs font-chicago tracking-tight sm:min-w-[20ch]">{item.title}</span>
+                                    <span class="text-sm font-chicago tracking-tight sm:min-w-[20ch]">{item.title}</span>
                                     {item.description && (
-                                        <span class="text-xs group-interact/link:text-white dark:group-interact/link:text-black transition">{item.description}</span>
+                                        <span class="text-sm text-neutral-600 dark:text-neutral-400 group-interact/link:text-white dark:group-interact/link:text-black transition">{item.description}</span>
                                     )}
                                 </div>
                             </FinderLink>

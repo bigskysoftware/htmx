@@ -12,12 +12,12 @@ const parent = allCrumbs.slice(0, -1).reverse().find(c => c.href) || null;
 ---
 
 {allCrumbs.length > 1 && (
-    <nav aria-label="Breadcrumb" class="mb-4 sm:mb-8">
+    <nav aria-label="Breadcrumb">
         {/* Mobile: show parent link only */}
         {parent && (
             <a href={parent.href}
-               class="sm:hidden inline-flex items-center gap-1 -ml-1 py-1.5 pr-2 text-sm text-neutral-600 dark:text-neutral-400 transition interact:underline interact:text-blue-700 dark:interact:text-blue-300 rounded-sm">
-                <i class="icon-[mdi--chevron-left] text-lg shrink-0" aria-hidden="true"></i>
+               class="sm:hidden inline-flex items-center gap-0.5 -ml-0.5 py-1 pr-2 text-xs text-neutral-600 dark:text-neutral-400 transition interact:text-blue-700 dark:interact:text-blue-300 rounded-sm">
+                <i class="icon-[mdi--chevron-left] text-base shrink-0" aria-hidden="true"></i>
                 <span class="truncate max-w-[30ch]" set:html={parent.label} />
             </a>
         )}
