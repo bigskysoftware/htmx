@@ -24,6 +24,7 @@
     >
         <form id="search-form"
               role="search"
+              onsubmit="return false"
               class="not-has-placeholder-shown:absolute inset-0 mx-auto w-full max-w-3xl overflow-hidden rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-850 flex flex-col min-h-0 shadow"
               _="on submit
                      halt the event
@@ -42,7 +43,6 @@
                 <input
                         type="text"
                         id="search-input"
-                        name="search"
                         role="combobox"
                         aria-controls="search-results"
                         aria-autocomplete="list"
