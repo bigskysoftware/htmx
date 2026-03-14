@@ -161,7 +161,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                         />
                                 )}
 
-                                {isPatterns && description && <p>{description}</p>}
+                                {isPatterns && description && <p class="text-lg text-neutral-500 dark:text-neutral-400">{description}</p>}
                                 {isPatterns && <Demo />}
                                 <slot name="before-content"/>
 
@@ -216,7 +216,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                 <!-- Right Column (Table of Contents) -->
                 {includeRightColumn && (
                         <aside class:list={[
-                            "hidden xl:flex xl:flex-col xl:w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) max-h-[calc(100vh-var(--header-height))] pt-26 pr-4",
+                            "hidden xl:flex xl:flex-col xl:w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) h-[calc(100vh-var(--header-height))] pt-26 pb-8 pr-4",
                             hasSidebar ? "xl:-me-16" : "xl:-me-[19rem]",
                         ]}>
                             {includePagination && (

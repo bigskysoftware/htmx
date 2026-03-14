@@ -36,6 +36,7 @@ const minDepth = tocHeadings.length > 0 ? Math.min(...tocHeadings.map(h => h.dep
                                 _hyperscript.evaluate(
                                     "take [@data-active] from .toc-link for first <.toc-link[href='#" + id + "']/>"
                                 );
+                                tocLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
                             }
                         }
                     }),
