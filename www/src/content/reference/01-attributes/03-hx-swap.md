@@ -11,13 +11,13 @@ Defaults to `innerHTML` (configurable via [`htmx.config.defaultSwap`](/reference
 
 ```html
 <!-- Replace content in container -->
-<div hx-get="/content" hx-swap="innerHTML"></div>
+<div hx-get="..." hx-swap="innerHTML"></div>
 
 <!-- Append to list and scroll down -->
-<div hx-get="/items" hx-swap="beforeend scroll:bottom"></div>
+<div hx-get="..." hx-swap="beforeend scroll:bottom"></div>
 
 <!-- Update form with smooth transition -->
-<form hx-post="/submit" hx-swap="outerHTML transition:true"></form>
+<form hx-post="..." hx-swap="outerHTML transition:true"></form>
 ```
 
 ## Swap Methods
@@ -51,7 +51,7 @@ Replaces the text content of the element, without parsing the response as HTML.
 Useful when the response is plain text and you want to avoid any HTML injection.
 
 ```html
-<span hx-get="/count" hx-swap="textContent">0</span>
+<span hx-get="..." hx-swap="textContent">0</span>
 ```
 
 ### `beforebegin` / `before`
@@ -144,7 +144,7 @@ Removes element (ignores response content).
 
 ```html
 <!-- This... -->
-<div hx-delete="/resource/123" hx-swap="delete">
+<div hx-delete="..." hx-swap="delete">
   ...
 </div>
 <!-- ...is removed -->
@@ -155,7 +155,7 @@ Removes element (ignores response content).
 Doesn't insert content (out-of-band swaps still work).
 
 ```html
-<div hx-get="/trigger-side-effects" hx-swap="none">
+<div hx-get="..." hx-swap="none">
   <!-- Response not inserted, but OOB swaps happen -->
 </div>
 ```
@@ -167,7 +167,7 @@ Updates existing elements by ID and inserts new ones.
 *Requires the [upsert extension](https://github.com/bigskysoftware/htmx-extensions).*
 
 ```html
-<div hx-get="/items" hx-swap="upsert">
+<div hx-get="..." hx-swap="upsert">
   <!-- Existing elements with matching IDs are updated, new ones are inserted -->
 </div>
 ```
