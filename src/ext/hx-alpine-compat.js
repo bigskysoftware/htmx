@@ -9,6 +9,13 @@
     let api;
     let deferCount = 0;
 
+    function maybeFlush() {
+        if (deferCount > 0) deferCount--;
+        if (deferCount === 0 && window.Alpine?.flushAndStopDeferringMutations) {
+            window.Alpine.flushAndStopDeferringMutations();
+        }
+    }
+
     htmx.registerExtension('alpine-compat', {
         init: (internalAPI) => {
             api = internalAPI;
@@ -71,13 +78,13 @@
             }
         },
 
+        htmx_after_swap: (elt, detail) => {
+            detail.ctx._alpineFlushed = true;
+            maybeFlush();
+        },
+
         htmx_finally_request: (elt, detail) => {
-            if (deferCount > 0) {
-                deferCount--;
-            }
-            if (deferCount === 0 && window.Alpine?.flushAndStopDeferringMutations) {
-                window.Alpine.flushAndStopDeferringMutations();
-            }
+            if (!detail.ctx._alpineFlushed) maybeFlush();
         }
     });
 })();
