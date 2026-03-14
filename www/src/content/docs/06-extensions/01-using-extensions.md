@@ -1,6 +1,6 @@
 ---
-title: "Overview"
-description: "How extensions work in htmx 4, how to use them, and how to build your own"
+title: "Using Extensions"
+description: "Install, configure, and build htmx extensions"
 keywords: ["extensions", "plugins", "custom", "building", "creating"]
 ---
 

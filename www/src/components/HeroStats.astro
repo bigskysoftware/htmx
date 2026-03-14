@@ -1,0 +1,33 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Auto-calculate bundle size from actual dist file
+const distPath = path.resolve(import.meta.dirname, '../../../dist/htmx.min.js.br');
+let bundleSize = '~10k';
+try {
+    const stats = fs.statSync(distPath);
+    const kb = Math.round(stats.size / 1024);
+    bundleSize = `~${kb}k`;
+} catch {
+    // fallback
+}
+
+// Auto-calculate extension count
+const extensionDocs = await Astro.glob('../content/docs/06-extensions/*.md');
+const extensionCount = extensionDocs.filter(doc => {
+    const slug = doc.file.split('/').pop() || '';
+    return !slug.includes('overview') && !slug.startsWith('01-');
+}).length;
+---
+
+<p class="flex items-center gap-3 sm:gap-4 text-xs font-mono text-neutral-550 dark:text-neutral-450 font-light">
+    <a href="/docs/get-started/installation" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
+        <b class="font-chicago text-neutral-600 dark:text-neutral-400 group-interact:text-blue-600 dark:group-interact:text-blue-300">{bundleSize}</b> min.br'd</a>
+    <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
+    <a href="/docs/get-started/installation" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
+        <b class="font-chicago text-neutral-600 dark:text-neutral-400 group-interact:text-blue-600 dark:group-interact:text-blue-300">0</b> dep<span class="max-sm:hidden">endencie</span>s</a>
+    <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
+    <a href="/docs/extensions" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
+        <b class="font-chicago text-neutral-600 dark:text-neutral-400 group-interact:text-blue-600 dark:group-interact:text-blue-300">{extensionCount}</b> extension<span class="max-sm:hidden">s</span></a>
+</p>

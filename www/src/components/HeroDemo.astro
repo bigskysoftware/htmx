@@ -1,0 +1,49 @@
+---
+// Static two-panel demo: server response (left) + client markup (right)
+---
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto w-full">
+
+    <!-- Server panel -->
+    <div class="border border-neutral-200 dark:border-neutral-850 rounded-lg bg-white dark:bg-neutral-950 overflow-hidden">
+        <!-- Window header -->
+        <div class="flex items-center gap-1.5 px-3 py-2
+                    bg-neutral-50 dark:bg-neutral-920
+                    border-b border-neutral-100 dark:border-neutral-900">
+            <div class="size-2 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
+            <div class="size-2 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
+            <div class="size-2 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
+            <span class="ml-1.5 text-[10px] font-chicago text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Server</span>
+        </div>
+        <!-- Server response code -->
+        <pre class="p-3 text-xs leading-5 font-mono overflow-x-auto"><code
+><span class="text-neutral-400 dark:text-neutral-500">// GET /api/greeting</span>
+<span class="text-neutral-400 dark:text-neutral-500">// responds with HTML:</span>
+
+<span class="text-blue-600 dark:text-blue-400">&lt;p&gt;</span><span class="text-neutral-800 dark:text-neutral-200">Hello, htmx!</span><span class="text-blue-600 dark:text-blue-400">&lt;/p&gt;</span></code></pre>
+    </div>
+
+    <!-- Client panel -->
+    <div class="border border-neutral-200 dark:border-neutral-850 rounded-lg bg-white dark:bg-neutral-950 overflow-hidden">
+        <!-- Window header -->
+        <div class="flex items-center gap-1.5 px-3 py-2
+                    bg-neutral-50 dark:bg-neutral-920
+                    border-b border-neutral-100 dark:border-neutral-900">
+            <div class="size-2 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
+            <div class="size-2 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
+            <div class="size-2 rounded-full bg-neutral-200 dark:bg-neutral-800"></div>
+            <span class="ml-1.5 text-[10px] font-chicago text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Browser</span>
+        </div>
+        <!-- Client HTML code -->
+        <pre class="p-3 text-xs leading-5 font-mono overflow-x-auto"><code
+><span class="text-blue-600 dark:text-blue-400">&lt;button</span>
+  <span class="text-emerald-600 dark:text-emerald-400">hx-get</span><span class="text-neutral-600 dark:text-neutral-400">=</span><span class="text-emerald-600 dark:text-emerald-400">"/api/greeting"</span>
+  <span class="text-emerald-600 dark:text-emerald-400">hx-target</span><span class="text-neutral-600 dark:text-neutral-400">=</span><span class="text-emerald-600 dark:text-emerald-400">"#result"</span>
+  <span class="text-emerald-600 dark:text-emerald-400">hx-swap</span><span class="text-neutral-600 dark:text-neutral-400">=</span><span class="text-emerald-600 dark:text-emerald-400">"innerHTML"</span><span class="text-blue-600 dark:text-blue-400">&gt;</span>
+  Click Me
+<span class="text-blue-600 dark:text-blue-400">&lt;/button&gt;</span>
+
+<span class="text-blue-600 dark:text-blue-400">&lt;div</span> <span class="text-emerald-600 dark:text-emerald-400">id</span><span class="text-neutral-600 dark:text-neutral-400">=</span><span class="text-emerald-600 dark:text-emerald-400">"result"</span><span class="text-blue-600 dark:text-blue-400">&gt;</span>Hello, htmx!<span class="text-blue-600 dark:text-blue-400">&lt;/div&gt;</span></code></pre>
+    </div>
+
+</div>

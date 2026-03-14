@@ -1,0 +1,66 @@
+---
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+const pkg = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../../package.json'), 'utf-8'));
+const CDN_URL = `https://cdn.jsdelivr.net/npm/htmx.org@${pkg.version}/dist/htmx.min.js`;
+---
+
+<!-- CDN one-liner: click anywhere to copy full <script> tag -->
+<button
+    class="group/cdn flex items-center
+           border border-neutral-200 dark:border-neutral-800
+           rounded-lg bg-white dark:bg-neutral-950
+           pl-3 sm:pl-4 pr-1.5 sm:pr-2 py-1.5 sm:py-2
+           interact:border-neutral-400 dark:interact:border-neutral-600
+           interact:bg-neutral-50 dark:interact:bg-neutral-900
+           outline-hidden cursor-pointer transition
+           before:content-['Copied!'] before:absolute before:relative
+           before:hidden"
+    title="Copy CDN script tag"
+    data-cdn-url={CDN_URL}
+    _={`on click
+         set url to my @data-cdn-url
+         writeText('<script src="' + url + '"></script>') on navigator.clipboard
+         add .icon-\\[radix-icons--check\\] to first <i/> in me
+         remove .icon-\\[radix-icons--copy\\] from first <i/> in me
+         set @title of me to 'Copied!'
+         add @data-copied
+         put 'Copied!' into #status-bar
+         wait 2s
+         add .icon-\\[radix-icons--copy\\] to first <i/> in me
+         remove .icon-\\[radix-icons--check\\] from first <i/> in me
+         set @title of me to 'Copy to clipboard'
+         remove @data-copied
+         put '' into #status-bar
+     end
+     on copy(event)
+         halt the event
+         set url to my @data-cdn-url
+         call event.clipboardData.setData('text/plain', '<script src="' + url + '"></script>')`}
+>
+    <!-- Script tag with truncated URL display -->
+    <code class="font-mono text-[0.625rem] sm:text-xs leading-5 whitespace-nowrap"
+    ><span class="text-blue-600 dark:text-blue-400">&lt;script</span
+    ><span class="text-neutral-600 dark:text-neutral-400"> src=</span
+    ><span class="text-emerald-600 dark:text-emerald-400">"…/htmx.min.js"</span
+    ><span class="text-blue-600 dark:text-blue-400">&gt;&lt;/script&gt;</span
+    ></code>
+
+    <!-- Copy icon -->
+    <span class="relative shrink-0 ml-1.5 sm:ml-2 size-6 sm:size-7 flex items-center justify-center rounded
+                 text-neutral-400 dark:text-neutral-600
+                 group-interact/cdn:text-black dark:group-interact/cdn:text-white
+                 transition
+                 before:content-['Copied!'] before:absolute
+                 before:bottom-full before:left-1/2 before:-translate-x-1/2 before:mb-1
+                 before:px-2 before:py-1 before:text-xs before:font-semibold
+                 before:text-white before:bg-neutral-900
+                 dark:before:bg-neutral-100 dark:before:text-black
+                 before:rounded before:whitespace-nowrap
+                 before:opacity-0 before:pointer-events-none
+                 group-data-copied/cdn:before:opacity-100 before:transition">
+        <i class="size-3.5 sm:size-4 icon-[radix-icons--copy]" aria-hidden="true"></i>
+    </span>
+
+</button>
