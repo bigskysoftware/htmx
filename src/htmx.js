@@ -68,6 +68,7 @@ var htmx = (() => {
         #hxOnQuery
         #transitionQueue
         #historyAbort
+        #scrollIdx
         #processingTransition
 
         constructor() {
@@ -1553,8 +1554,44 @@ var htmx = (() => {
             if (!history.state) {
                 history.replaceState({htmx: true}, '', location.href);
             }
+            let scrollTimer;
+            if (this.config.history === "reload") {
+                history.scrollRestoration = 'manual';
+                // assign a unique index to this history entry for scroll tracking
+                if (history.state._htmxIdx == null) {
+                    let idx = parseInt(sessionStorage.getItem('htmx:idx') || '0');
+                    history.replaceState({...history.state, _htmxIdx: idx}, '', location.href);
+                    sessionStorage.setItem('htmx:idx', idx + 1);
+                }
+                this.#scrollIdx = history.state._htmxIdx;
+                let savedY = sessionStorage.getItem('htmx:scroll:' + this.#scrollIdx);
+                // start tracking scroll after restoration is complete
+                let startScrollTracking = () => {
+                    window.addEventListener('scroll', () => {
+                        clearTimeout(scrollTimer);
+                        scrollTimer = setTimeout(() => {
+                            sessionStorage.setItem('htmx:scroll:' + this.#scrollIdx, window.scrollY);
+                        }, 350);
+                    }, {passive: true});
+                };
+                if (savedY != null) {
+                    window.addEventListener('load', () => {
+                        requestAnimationFrame(() => {
+                            window.scrollTo(0, parseInt(savedY));
+                            requestAnimationFrame(startScrollTracking);
+                        });
+                    });
+                } else {
+                    startScrollTracking();
+                }
+            }
             window.addEventListener('popstate', (event) => {
                 if (event.state && event.state.htmx) {
+                    // save scroll for the entry we're leaving (using tracked index)
+                    if (this.config.history === "reload" && this.#scrollIdx != null) {
+                        clearTimeout(scrollTimer);
+                        sessionStorage.setItem('htmx:scroll:' + this.#scrollIdx, window.scrollY);
+                    }
                     this.#historyAbort?.abort();
                     this.__restoreHistory();
                 }
@@ -1563,7 +1600,17 @@ var htmx = (() => {
 
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
-            history.pushState({htmx: true}, '', path);
+            if (this.config.history === "reload") {
+                // save scroll for the current entry before pushing
+                sessionStorage.setItem('htmx:scroll:' + this.#scrollIdx, window.scrollY);
+                // assign a new index for the new entry
+                let idx = parseInt(sessionStorage.getItem('htmx:idx') || '0');
+                sessionStorage.setItem('htmx:idx', idx + 1);
+                this.#scrollIdx = idx;
+                history.pushState({htmx: true, _htmxIdx: idx}, '', path);
+            } else {
+                history.pushState({htmx: true}, '', path);
+            }
             this.__trigger(document, "htmx:after:history:push", {path});
         }
 
