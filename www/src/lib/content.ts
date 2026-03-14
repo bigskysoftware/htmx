@@ -153,6 +153,9 @@ function sortContentFiles(a: ContentFile, b: ContentFile): number {
     return a.id.localeCompare(b.id);
 }
 
+/** All content collections, in routing order. Single source of truth for the router and search index. */
+export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'] as const;
+
 /**
  * Get content folder tree.
  *

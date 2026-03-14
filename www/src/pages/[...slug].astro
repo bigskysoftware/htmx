@@ -10,13 +10,12 @@ import Pagination from '../components/Pagination.astro';
 import CollectionCards from '../components/CollectionCards.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { getFolder } from '../lib/content.ts';
+import { getFolder, COLLECTIONS } from '../lib/content.ts';
 
 export async function getStaticPaths() {
-    const collections = ['home', 'about', 'docs', 'reference', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'] as const;
     const paths = [];
 
-    for (const collection of collections) {
+    for (const collection of COLLECTIONS) {
         const isHome = collection === 'home';
         const folder = await getFolder(collection);
 

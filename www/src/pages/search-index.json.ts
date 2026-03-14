@@ -2,8 +2,7 @@ import type {APIRoute} from 'astro';
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
 
-import {getCollection} from 'astro:content';
-import {getFolder} from '../lib/content';
+import {getFolder, COLLECTIONS} from '../lib/content';
 
 /**
  * Strip markdown/HTML to plain text for search indexing
@@ -53,8 +52,6 @@ function extractSections(markdown: string): Array<{title: string, anchor: string
     return sections;
 }
 
-// Collections to index (must have _index.md)
-const COLLECTIONS = ['docs', 'reference', 'patterns', 'essays', 'interviews'];
 
 
 export const GET: APIRoute = async () => {
@@ -65,8 +62,6 @@ export const GET: APIRoute = async () => {
             try {
                 const folder = await getFolder(collectionId);
                 const files = folder.allFiles;
-                if (!files?.length) return;
-
                 const collection = folder.frontmatter.title;
 
                 // Add the collection index page itself
@@ -153,23 +148,6 @@ export const GET: APIRoute = async () => {
             }
         })
     );
-
-    // Standalone pages (home, about)
-    for (const col of ['home', 'about'] as const) {
-        const entries = await getCollection(col);
-        for (const entry of entries) {
-            const url = col === 'home' ? '/' : `/${col}`;
-            results.push({
-                id: url,
-                url,
-                title: entry.data.title,
-                description: entry.data.description || '',
-                parent: null,
-                collection: entry.data.title,
-                breadcrumb: []
-            });
-        }
-    }
 
     return new Response(
         JSON.stringify({results}),
