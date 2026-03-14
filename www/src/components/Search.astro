@@ -10,7 +10,7 @@
             class="fixed top-4 bottom-4 inset-x-4 sm:top-[12vh] sm:bottom-[12vh] bg-transparent open:flex items-start justify-center w-full h-auto
             backdrop:bg-neutral-950/40 backdrop:backdrop-blur-sm
             backdrop:transition backdrop:opacity-0 open:backdrop:opacity-100
-            transition-discrete transition open:starting:opacity-0 opacity-0 open:opacity-100 z-50 starting:open:scale-95 scale-95 open:scale-100 origin-top"
+            transition-discrete transition open:starting:opacity-0 opacity-0 open:opacity-100 z-50 starting:open:scale-95 scale-95 open:scale-100 origin-top outline-none"
             role="alertdialog"
             aria-modal="true"
             aria-label="Search documentation"
@@ -25,7 +25,7 @@
         <form id="search-form"
               role="search"
               onsubmit="return false"
-              class="not-has-placeholder-shown:absolute inset-0 mx-auto w-full max-w-3xl overflow-hidden rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-850 flex flex-col min-h-0 shadow"
+              class="not-has-placeholder-shown:absolute inset-0 mx-auto w-full max-w-3xl overflow-hidden rounded-xl bg-white dark:bg-neutral-920 border border-neutral-200 dark:border-neutral-850 flex flex-col min-h-0 shadow"
               _="on submit
                      halt the event
                      get the first <.result:checked/>
@@ -34,7 +34,7 @@
                      end
                  end">
 
-            <header class="relative border-b border-neutral-200 dark:border-neutral-850 shrink-0 bg-white dark:bg-neutral-910">
+            <header class="relative border-b border-neutral-200 dark:border-neutral-850 shrink-0 bg-neutral-50 dark:bg-neutral-900">
                 <i class="icon-[ic--baseline-search] pointer-events-none absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 text-base sm:text-lg text-neutral-400 group-data-searching/search:opacity-0 transition"
                    aria-hidden="true"></i>
                 <i class="icon-[svg-spinners--90-ring-with-bg] pointer-events-none absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 text-base sm:text-lg text-neutral-400 opacity-0 group-data-searching/search:opacity-100 transition"
@@ -59,6 +59,7 @@
                             set value to event.target.value
                             if value.trim() is empty
                                 put '' into #search-results
+                                remove .has-results from #search-container
                             else
                                 search(value) the closest <search-index/>
                                 set searchResults to it
@@ -74,6 +75,7 @@
                                 set flatResults to it
                                 render #search-template with (results: flatResults, query: value)
                                 put it into #search-results
+                                add .has-results to #search-container
                                 wait 10ms
                                 if <.result/> exists
                                     add @checked to the first <.result/>
@@ -105,7 +107,7 @@
                             end
                         end"
                 />
-                <kbd class="z-10 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 flex items-center justify-center h-5 px-1.5 min-w-5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 font-sans text-[10px] text-neutral-600 dark:text-neutral-400 pointer-events-none"
+                <kbd class="z-10 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 flex items-center justify-center h-5 px-1.5 min-w-5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-25 dark:bg-neutral-910 font-sans text-[10px] text-neutral-600 dark:text-neutral-400 pointer-events-none"
                      aria-label="Press Escape to close">
                     esc
                 </kbd>
@@ -140,7 +142,7 @@
                             <article
                                     class="flex items-center gap-4 px-3 py-3 rounded-lg border transition-all duration-100
                                            /* Default */
-                                           border-transparent bg-transparent text-neutral-600 dark:text-neutral-400
+                                           border-transparent bg-transparent
 
                                            /* Active / Checked State */
                                            peer-checked:bg-neutral-50 dark:peer-checked:bg-neutral-800/50
@@ -176,22 +178,22 @@
                 <output id="search-results" role="region" aria-live="polite" aria-atomic="true"></output>
             </main>
 
-            <footer class="flex flex-wrap items-center font-mono border-t border-neutral-200 dark:border-neutral-850 peer-has-[#search-results:empty]:border-transparent bg-neutral-50 dark:bg-neutral-910 px-4 py-3 text-xs text-neutral-500 dark:text-neutral-400 shrink-0 rounded-b-xl"
+            <footer class="flex flex-wrap items-center font-mono border-t border-transparent peer-[.has-results]:border-neutral-200 dark:peer-[.has-results]:border-neutral-850 bg-neutral-50 dark:bg-neutral-900 px-4 py-3 text-xs text-neutral-500 dark:text-neutral-400 shrink-0 rounded-b-xl"
                     aria-label="Keyboard shortcuts">
                 <div class="flex items-center gap-6">
                     <span class="hidden sm:flex items-center gap-1.5">
-                        <kbd class="flex items-center justify-center size-5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 font-sans text-[10px] text-neutral-600 dark:text-neutral-400"
+                        <kbd class="flex items-center justify-center size-5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-25 dark:bg-neutral-910 font-sans text-[10px] text-neutral-600 dark:text-neutral-400"
                              aria-label="Up arrow">
                             ↑
                         </kbd>
-                        <kbd class="flex items-center justify-center size-5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 font-sans text-[10px] text-neutral-600 dark:text-neutral-400"
+                        <kbd class="flex items-center justify-center size-5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-25 dark:bg-neutral-910 font-sans text-[10px] text-neutral-600 dark:text-neutral-400"
                              aria-label="Down arrow">
                             ↓
                         </kbd>
                         <span>to navigate</span>
                     </span>
                     <span class="flex items-center gap-1.5">
-                        <kbd class="flex items-center justify-center h-5 px-1.5 min-w-5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 font-sans text-[10px] text-neutral-600 dark:text-neutral-400"
+                        <kbd class="flex items-center justify-center h-5 px-1.5 min-w-5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-25 dark:bg-neutral-910 font-sans text-[10px] text-neutral-600 dark:text-neutral-400"
                              aria-label="Enter">
                             <i class="icon-[uil--enter] text-xs"></i>
                         </kbd>
