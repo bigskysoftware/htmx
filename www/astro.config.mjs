@@ -71,14 +71,18 @@ export default defineConfig({
         // Category index redirects (computed from folder structure)
         ...buildCategoryRedirects(),
 
-        // Old site: migration guides (will live under /docs/get-started/)
+        // Old site: migration guides
+        // TODO: Create these migration guide pages (content exists on old site):
+        //   - /docs/get-started/migration-turbo (from Hotwire Turbo)
+        //   - /docs/get-started/migration-htmx-1 (from htmx 1.x)
+        //   - /docs/get-started/migration-intercooler (from Intercooler.js)
         "/migration-guide-hotwire-turbo": "/docs/get-started/migration-turbo",
         "/migration-guide-htmx-1": "/docs/get-started/migration-htmx-1",
-        "/migration-guide-htmx-4": "/docs/get-started/migration-htmx-4",
-        "/migration-guide-htmx-2": "/docs/get-started/migration-htmx-4",
+        "/migration-guide-htmx-2": "/docs/get-started/migration",
+        "/migration-guide-htmx-4": "/docs/get-started/migration",
         "/migration-guide-intercooler": "/docs/get-started/migration-intercooler",
-        "/htmx-4": "/docs/get-started/migration-htmx-4",
-        "/whats-new-in-htmx-4": "/docs/get-started/migration-htmx-4",
+        "/htmx-4": "/docs/get-started/migration",
+        "/whats-new-in-htmx-4": "/docs/get-started/migration",
 
         // Old site: simple redirects
         "/events": "/reference/events",
