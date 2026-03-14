@@ -19,14 +19,6 @@ const isCurrent = (url?: string) => {
 
 <header role="banner"
         class="flex flex-col fixed inset-x-0 top-0 h-(--header-height) z-40 bg-neutral-10 dark:bg-neutral-920 border-b border-neutral-200 dark:border-neutral-850">
-    <!-- Construction Banner -->
-    <!--<a href="/guides/migration/htmx-2-to-4"-->
-    <!--   class="flex justify-center text-center px-4 py-1 text-xs sm:text-sm text-neutral-800 dark:text-neutral-900 bg-yellow-300 border-y-4 [border-image:repeating-linear-gradient(45deg,#000,#000_10px,#ffcc00_10px,#ffcc00_20px)_4] hover:bg-yellow-300 dark:hover:bg-yellow-400 transition group"-->
-    <!--   title="htmx 4.0 changes and migration guide">-->
-    <!--    <span>🚧 htmx 4.0 is under construction. <span class="font-bold no-underline group-hover:underline">Read changes-->
-    <!--        →</span></span>-->
-    <!--</a>-->
-
     <!-- Navigation -->
     <nav id="navigation"
          class="w-full h-(--navigation-bar-height) flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 lg:py-4 gap-4 lg:gap-12"
@@ -63,7 +55,7 @@ const isCurrent = (url?: string) => {
             <div class="inline-flex items-center relative group/version">
                 <select
                         aria-label="Select htmx version"
-                        class="appearance-none bg-transparent pl-2 pr-5 py-1 text-xs font-chicago rounded-sm text-neutral-500 dark:text-neutral-450 interact:text-neutral-900 dark:interact:text-neutral-100 cursor-pointer outline-hidden sm:transition border border-transparent interact:border-neutral-200 dark:interact:border-neutral-800 translate-y-0.5"
+                        class="appearance-none bg-transparent pl-2 pr-5 py-1 text-xs font-chicago rounded-sm text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white cursor-pointer outline-hidden sm:transition border border-transparent interact:border-neutral-200 dark:interact:border-neutral-800 translate-y-0.5"
                         onchange="window.location.href = this.value"
                 >
                     <option value="/" selected>v4</option>
@@ -85,7 +77,7 @@ const isCurrent = (url?: string) => {
                             <li>
                                 <a href={item.url} {...(item.description && { title: item.description })}
                                    aria-current={isCurrent(item.url) ? 'page' : undefined}
-                                   class="px-3 py-1 sm:transition interact:underline text-neutral-500 dark:text-neutral-450 interact:text-blue-700 dark:interact:text-blue-300 aria-[current=page]:text-neutral-900 dark:aria-[current=page]:text-neutral-100 aria-[current=page]:font-bold outline-hidden">
+                                   class="px-3 py-1 sm:transition interact:underline text-neutral-500 dark:text-neutral-450 interact:text-blue-700 dark:interact:text-blue-300 aria-[current=page]:text-neutral-800 dark:aria-[current=page]:text-neutral-200 aria-[current=page]:font-bold outline-hidden">
                                     {item.name}
                                 </a>
                             </li>
@@ -188,7 +180,7 @@ const isCurrent = (url?: string) => {
                 href={item.url}
                 title={item.description}
                 aria-current={isCurrent(item.url) ? 'page' : undefined}
-                class="!mx-0 font-chicago text-base gap-2 aria-[current=page]:bg-blue-700 aria-[current=page]:text-white dark:aria-[current=page]:bg-blue-350 dark:aria-[current=page]:text-black aria-[current=page]:font-bold"
+                class="!mx-0 font-chicago text-base tracking-tight gap-2 aria-[current=page]:bg-blue-700 aria-[current=page]:text-white dark:aria-[current=page]:bg-blue-350 dark:aria-[current=page]:text-black aria-[current=page]:font-bold"
                 _="on click set #mobile-navigation-toggle.checked to false"
             >
                 {item.name}
@@ -201,7 +193,7 @@ const isCurrent = (url?: string) => {
         <FinderLink
             href="/discord"
             title="Join the Discord community"
-            class="!mx-0 font-chicago text-base gap-3"
+            class="!mx-0 font-chicago text-base tracking-tight gap-3"
             _="on click set #mobile-navigation-toggle.checked to false"
         >
             <i class="icon-[ic--baseline-discord] text-xl" aria-hidden="true"></i>
@@ -214,7 +206,7 @@ const isCurrent = (url?: string) => {
             target="_blank"
             rel="noopener noreferrer"
             title="View source code on GitHub"
-            class="!mx-0 font-chicago text-base gap-3"
+            class="!mx-0 font-chicago text-base tracking-tight gap-3"
             _="on click set #mobile-navigation-toggle.checked to false"
         >
             <i class="icon-[mdi--github] text-xl" aria-hidden="true"></i>
