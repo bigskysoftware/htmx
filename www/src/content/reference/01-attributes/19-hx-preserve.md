@@ -22,7 +22,7 @@ The response requires an element with the same `id`, but its type and other attr
   the [morphdom extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/morphdom-swap/README), which
   does a more elaborate DOM
   reconciliation
-* When using [History Support](/docs.md#history) for actions like the back button `hx-preserve` elements will also have
+* When using [History Support](/docs/features/history) for actions like the back button `hx-preserve` elements will also have
   their state preserved
 * Avoid using [`hx-swap`](/reference/attributes/hx-swap) set to `none` with requests that could contain a `hx-preserve` element to
   avoid losing it

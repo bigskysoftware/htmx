@@ -23,4 +23,4 @@ the `innerHTML` of the `body`.
 * You can control the swap strategy by using the [`hx-swap`](/reference/attributes/hx-swap) attribute
 * You can control what event triggers the request with the [`hx-trigger`](/reference/attributes/hx-trigger) attribute
 * You can control the data submitted with the request in various ways, documented
-  here: [Parameters](/docs.md#parameters)
+  here: [Parameters](/docs/core-concepts/hypermedia-controls#parameters)

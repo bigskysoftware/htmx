@@ -56,4 +56,4 @@ The attribute takes a CSS selector that points to the optimistic content to swap
 
 ## See Also
 
-* [Extensions](/docs.md#extensions)
+* [Extensions](/docs/extensions/overview)

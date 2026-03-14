@@ -58,4 +58,4 @@ You can specify when to preload:
 
 ## See Also
 
-* [Extensions](/docs.md#extensions)
+* [Extensions](/docs/extensions/overview)

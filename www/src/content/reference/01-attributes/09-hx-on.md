@@ -31,7 +31,7 @@ standard DOM events.
 
 One gotcha to note is that DOM attributes do not preserve case. This means, unfortunately, an attribute like
 `hx-on:htmx:beforeRequest` **will not work**, because the DOM lowercases the attribute names. Fortunately, htmx supports
-both camel case event names and also [kebab-case event names](/docs.md#events), so you can use
+both camel case event names and also [kebab-case event names](/reference/events), so you can use
 `hx-on:htmx:before-request` instead.
 
 In order to make writing htmx-based event handlers a little easier, you can use the shorthand double-colon `hx-on::` for

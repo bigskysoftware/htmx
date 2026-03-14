@@ -111,6 +111,6 @@ The value uses htmx's configuration syntax to set request context properties:
 
 ## See Also
 
-* [Response Handling](/docs.md#response-handling) in the docs
+* [Response Handling](/docs/core-concepts/requests-and-responses#configuring-response-handling) in the docs
 * [`hx-select`](/reference/attributes/hx-select)
 * [`hx-target`](/reference/attributes/hx-target)

@@ -23,6 +23,6 @@ the `innerHTML` of the `body`.
 * You can control the swap strategy by using the [`hx-swap`](/reference/attributes/hx-swap) attribute
 * You can control what event triggers the request with the [`hx-trigger`](/reference/attributes/hx-trigger) attribute
 * You can control the data submitted with the request in various ways, documented
-  here: [Parameters](/docs.md#parameters)
+  here: [Parameters](/docs/core-concepts/hypermedia-controls#parameters)
 * To remove the element following a successful `DELETE`, return a `200` status code with an empty body; if the server
-  responds with a `204`, no swap takes place, documented here: [Requests & Responses](/docs.md#requests)
+  responds with a `204`, no swap takes place, documented here: [Requests & Responses](/docs/core-concepts/requests-and-responses)

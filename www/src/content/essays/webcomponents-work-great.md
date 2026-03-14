@@ -183,7 +183,7 @@ merged [Shadow DOM support for htmx 2.0](https://github.com/bigskysoftware/htmx/
 implementation details of a Web Component,
 and supporting that
 is [occasionally](https://github.com/bigskysoftware/htmx/pull/2846) [frustrating](https://github.com/bigskysoftware/htmx/pull/2866).
-But being able to work with both the [Shadow DOM](/docs.md#web-components) and
+But being able to work with both the [Shadow DOM](/docs/features/web-components) and
 the ["Light DOM"](https://meyerweb.com/eric/thoughts/2023/11/01/blinded-by-the-light-dom/) is a nice feature for htmx,
 and it carries a relatively minimal support burden because htmx just isn't doing all that much.
 
