@@ -114,7 +114,7 @@ const extensions = await Promise.all(EXTENSION_LIST.map(async (ext) => {
             <div class="flex items-center gap-5">
 
                 <div class="relative" _="on click from elsewhere add .hidden to #dropdown">
-                    <button class="flex items-center gap-1.5 text-neutral-500 interact:text-neutral-900 dark:interact:text-neutral-300 transition cursor-pointer"
+                    <button class="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white transition cursor-pointer"
                             _="on click toggle .hidden on #dropdown">
                         <i class="icon-[radix-icons--plus]"></i>
                         <span class="font-chicago text-[0.625rem]" id="count-lbl">add extensions</span>
@@ -160,7 +160,7 @@ const extensions = await Promise.all(EXTENSION_LIST.map(async (ext) => {
                     </div>
                 </div>
 
-                <label class="flex items-center gap-2 cursor-pointer group text-neutral-500 interact:text-neutral-900 dark:interact:text-neutral-300 transition">
+                <label class="flex items-center gap-2 cursor-pointer group text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white transition">
                     <div class="relative size-3.5 border border-neutral-300 dark:border-neutral-700 rounded-[3px] group-interact:border-neutral-400 bg-white dark:bg-neutral-950 transition">
 
                         <input type="checkbox" id="min" checked

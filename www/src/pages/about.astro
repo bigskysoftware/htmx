@@ -61,7 +61,7 @@ const linkedSections = [
 
             <!-- Team -->
             <section class="mb-16">
-                <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-6">Team</h2>
+                <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">Team</h2>
 
                 {/* Featured: Carson Gross */}
                 {creator && (
@@ -113,7 +113,7 @@ const linkedSections = [
 
             <!-- Books -->
             <section class="mb-16">
-                <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-6">Books</h2>
+                <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">Books</h2>
                 <div class="prose max-w-none grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-8">
                     {books.map(book => (
                             <a href={book.href} target="_blank" rel="noopener noreferrer"
@@ -127,7 +127,7 @@ const linkedSections = [
 
             {linkedSections.map((section) => (
                     <section class="mb-16">
-                        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-550 dark:text-neutral-450 mb-6">{section.title}</h2>
+                        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">{section.title}</h2>
                         <div class={section.gridClass}>
                             {section.items.map((item) => (
                                     <Card variant="lg" class="group relative isolate p-5 overflow-hidden transition outline-hidden interact:border-neutral-300 dark:interact:border-neutral-600 interact:bg-neutral-50 dark:interact:bg-neutral-875 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400">
