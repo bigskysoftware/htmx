@@ -56,6 +56,9 @@ htmx supports a set of core extensions, maintained by the htmx development team 
 | [htmx-2-compat](/docs/extensions/htmx-2-compat) | Compatibility layer for htmx 2.x code |
 | [optimistic](/docs/extensions/optimistic) | Optimistic UI updates |
 | [upsert](/docs/extensions/upsert) | Update-or-insert swap strategy for dynamic lists |
+| [download](/docs/extensions/download) | Save responses as file downloads with streaming progress |
+| [ptag](/docs/extensions/ptag) | Per-element polling tags to skip unchanged content |
+| [targets](/docs/extensions/targets) | Swap the same response into multiple elements |
 
 ## Building Extensions
 
