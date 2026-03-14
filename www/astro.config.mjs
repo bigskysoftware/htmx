@@ -3,6 +3,7 @@ import {defineConfig} from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeExternalLinks from "rehype-external-links";
 import {codeBlockTransformer} from "./src/lib/shiki-transformers.js";
 
 import mdx from "@astrojs/mdx";
@@ -27,7 +28,14 @@ export default defineConfig({
                 rehypeAutolinkHeadings,
                 {
                     behavior: "wrap",
-                    test: (node) => node.tagName !== 'h1', // Skip h1 headings
+                    test: (node) => node.tagName !== 'h1',
+                },
+            ],
+            [
+                rehypeExternalLinks,
+                {
+                    target: "_blank",
+                    rel: ["noopener", "noreferrer"],
                 },
             ],
         ],
