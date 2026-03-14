@@ -160,17 +160,22 @@ function sortContentFiles(a: ContentFile, b: ContentFile): number {
  * @returns ContentFolder representing the folder with nested structure
  */
 export async function getFolder(path: string): Promise<ContentFolder> {
-    // Handle root index.mdx (home page)
-    if (path === 'home') {
-        const mod = contentModules['/src/content/index.mdx'] as any;
-        if (!mod) throw new Error('No index.mdx found at content root');
+    // Handle root-level .mdx files (e.g. content/index.mdx → 'home', content/about.mdx → 'about')
+    // These are single-page "collections" that don't have a folder — just a file at the content root.
+    const rootFileMap: Record<string, string> = { home: 'index' };
+    const rootFileName = rootFileMap[path] ?? path;
+    const rootMod = contentModules[`/src/content/${rootFileName}.mdx`] as any
+        ?? contentModules[`/src/content/${rootFileName}.md`] as any;
+
+    if (rootMod && !contentModules[`/src/content/${path}/index.mdx`] && !contentModules[`/src/content/${path}/index.md`]) {
+        const isHome = path === 'home';
         return {
-            id: 'index.mdx', folder: 'home', slug: '',
-            get url() { return '/'; },
-            frontmatter: mod.frontmatter,
+            id: `${rootFileName}.mdx`, folder: path, slug: '',
+            get url() { return isHome ? '/' : `/${path}`; },
+            frontmatter: rootMod.frontmatter,
             subfiles: [], subfolders: [],
             get allFiles() { return []; },
-            render: async () => ({ Content: mod.default, headings: mod.getHeadings?.() || [] }),
+            render: async () => ({ Content: rootMod.default, headings: rootMod.getHeadings?.() || [] }),
             breadcrumbs: []
         };
     }

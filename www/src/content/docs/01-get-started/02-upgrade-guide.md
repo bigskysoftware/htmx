@@ -1,7 +1,6 @@
 ---
 title: "Upgrade Guide"
 description: "Upgrade from htmx 2.x with this migration guide"
-thumbnail: "docs/upgrade-guide.svg"
 ---
 
 This guide helps you migrate from **htmx 2.x** to **htmx 4.x** and covers all breaking changes.

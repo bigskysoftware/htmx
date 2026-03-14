@@ -32,12 +32,10 @@ let byline: {
 if (isEssay) {
     const fm = file!.frontmatter;
     const team = await getCollection('team');
-    const teamImages = import.meta.glob('/src/assets/img/team/*.png', { eager: true }) as Record<string, { default: ImageMetadata }>;
 
     const authors = (fm.authors || []).map((name: string) => {
         const member = team.find(m => m.data.name === name);
-        const image = member?.data.image ? teamImages[member.data.image]?.default : undefined;
-        return { name, url: member?.data.url, image };
+        return { name, url: member?.data.url, image: member?.data.image };
     });
 
     const created = fm.created ? (fm.created instanceof Date ? fm.created : new Date(fm.created)) : undefined;

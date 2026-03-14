@@ -154,19 +154,21 @@ export const GET: APIRoute = async () => {
         })
     );
 
-    // Standalone pages from the `pages` content collection
-    const pages = await getCollection('pages');
-    for (const page of pages) {
-        const url = page.id === 'index' ? '/' : `/${page.id.replace(/\/index$/, '')}`;
-        results.push({
-            id: url,
-            url,
-            title: page.data.title,
-            description: page.data.description || '',
-            parent: null,
-            collection: page.data.title,
-            breadcrumb: []
-        });
+    // Standalone pages (home, about)
+    for (const col of ['home', 'about'] as const) {
+        const entries = await getCollection(col);
+        for (const entry of entries) {
+            const url = col === 'home' ? '/' : `/${col}`;
+            results.push({
+                id: url,
+                url,
+                title: entry.data.title,
+                description: entry.data.description || '',
+                parent: null,
+                collection: entry.data.title,
+                breadcrumb: []
+            });
+        }
     }
 
     return new Response(

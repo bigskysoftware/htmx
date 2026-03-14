@@ -14,9 +14,9 @@ try {
 }
 
 // Auto-calculate extension count
-const extensionDocs = await Astro.glob('../content/docs/06-extensions/*.md');
-const extensionCount = extensionDocs.filter(doc => {
-    const slug = doc.file.split('/').pop() || '';
+const extensionDocs = import.meta.glob('../content/docs/06-extensions/*.md', { eager: true }) as Record<string, any>;
+const extensionCount = Object.keys(extensionDocs).filter(file => {
+    const slug = file.split('/').pop() || '';
     return !slug.includes('overview') && !slug.startsWith('01-');
 }).length;
 ---

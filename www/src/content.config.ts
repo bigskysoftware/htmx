@@ -12,7 +12,7 @@ const home = defineCollection({
 });
 
 const about = defineCollection({
-    loader: glob({base: "./src/content/about", pattern: "{*.md,*.mdx}"}),
+    loader: glob({base: "./src/content", pattern: "about.mdx"}),
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
@@ -119,10 +119,10 @@ const team = defineCollection({
             id: slugify(member.name)
         }))
     }),
-    schema: z.object({
+    schema: ({image}) => z.object({
         id: z.string(), // generated from `name`
         name: z.string(),
-        image: z.string(),
+        image: image(),
         github: z.string().optional(),
         url: z.string().url().optional(),
         content: z.string(),
@@ -141,6 +141,6 @@ export const collections = {
     interviews,
     sponsors,
     community,
-team,
+    team,
 };
 

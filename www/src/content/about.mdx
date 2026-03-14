@@ -1,0 +1,143 @@
+---
+title: "About"
+description: "The project, the team, and the community."
+---
+
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Card from '../components/Card.astro';
+
+import hypermediaSystems from '../assets/img/hypermedia-systems.png';
+import serverDrivenWebApps from '../assets/img/server-driven-web-apps.png';
+import modernFrontends from '../assets/img/modern-frontends-htmx.jpg';
+import hypermediaSystemsJp from '../assets/img/hypermedia-systems-japanese.png';
+import htmxJp from '../assets/img/htmx-japanese.png';
+
+export const team = (await getCollection('team')).map(m => m.data);
+export const creator = team.find(m => m.name === 'Carson Gross');
+export const contributors = team.filter(m => m.name !== 'Carson Gross');
+export const communityLinks = (await getCollection('community')).map(c => c.data);
+
+export const books = [
+    {href: "https://hypermedia.systems", img: hypermediaSystems, title: "Hypermedia Systems"},
+    {href: "https://www.amazon.com/Server-Driven-Web-Apps-htmx-Language/dp/B0D9N35GKP", img: serverDrivenWebApps, title: "Server-Driven Web Apps with htmx"},
+    {href: "https://www.wimdeblauwe.com/books/modern-frontends-with-htmx/", img: modernFrontends, title: "Modern frontends with htmx"},
+    {href: "https://www.amazon.co.jp/-/en/dp/4297149451/", img: hypermediaSystemsJp, title: "ハイパーメディアシステム"},
+    {href: "https://www.amazon.co.jp/-/en/dp/4863544693", img: htmxJp, title: "HTMX (Japanese)"},
+];
+
+export const communityItems = communityLinks.map((link) => ({
+    title: link.name,
+    description: link.description,
+    icon: link.iconClass,
+    url: link.url,
+    target: link.url.startsWith('http') ? "_blank" : undefined,
+    rel: link.url.startsWith('http') ? "noopener noreferrer" : undefined,
+}));
+
+export const exploreItems = [
+    {url: "/interviews", icon: "icon-[mdi--microphone]", title: "Interviews", description: "Conversations about hypermedia"},
+    {url: "/podcasts", icon: "icon-[mdi--podcast]", title: "Podcasts", description: "Talks and appearances"},
+    {url: "/memes", icon: "icon-[mdi--emoticon-cool-outline]", title: "Memes", description: "For hypermedia teens"},
+];
+
+{/* Team */}
+<section class="not-prose mb-16">
+    <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">Team</h2>
+
+    {creator && (
+        <Card variant="lg" class="flex flex-col sm:flex-row sm:items-center gap-6 p-4 sm:p-6 mb-6">
+            <Image src={creator.image} alt={creator.name}
+                   class="object-cover size-20 rounded-full" width={224} height={224} />
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1">
+                    <h3 class="font-chicago text-xl leading-none text-neutral-900 dark:text-neutral-100">{creator.name}</h3>
+                    {creator.github && (
+                        <a href={`https://github.com/${creator.github}`} target="_blank" rel="noopener noreferrer"
+                           class="p-2 sm:p-3 flex justify-center items-center text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white sm:transition"
+                           aria-label={`${creator.name} on GitHub`}>
+                            <i class="icon-[mdi--github] size-5.5"></i>
+                        </a>
+                    )}
+                </div>
+                <span class="inline-block font-mono text-[11px] uppercase tracking-wider text-neutral-600 dark:text-neutral-400">Creator of htmx / Head Grug (same thing)</span>
+                <p class="text-sm leading-relaxed mt-1.5" set:html={creator.content}></p>
+            </div>
+        </Card>
+    )}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {contributors.map((member) => (
+            <Card variant="lg" class="flex items-center gap-4 p-4">
+                <div class="shrink-0 size-12 rounded-full overflow-hidden ring-1 ring-neutral-100 dark:ring-neutral-800">
+                    <Image src={member.image} alt={member.name}
+                           class="w-full h-full object-cover" width={96} height={96} />
+                </div>
+                <div class="flex-1 min-w-0 pt-0.5">
+                    <div class="flex items-center mb-1">
+                        <h3 class="font-chicago text-sm leading-none text-neutral-900 dark:text-neutral-100">{member.name}</h3>
+                        {member.github && (
+                            <a href={`https://github.com/${member.github}`} target="_blank" rel="noopener noreferrer"
+                               class="px-3 py-0.5 sm:py-1 flex justify-center items-center text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white sm:transition"
+                               aria-label={`${member.name} on GitHub`}>
+                                <i class="icon-[mdi--github] size-4.5"></i>
+                            </a>
+                        )}
+                    </div>
+                    <p class="text-xs leading-relaxed" set:html={member.content}></p>
+                </div>
+            </Card>
+        ))}
+    </div>
+</section>
+
+{/* Books */}
+<section class="not-prose mb-16">
+    <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">Books</h2>
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-8">
+        {books.map(book => (
+            <a href={book.href} target="_blank" rel="noopener noreferrer"
+               class="group font-chicago text-sm text-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 interact:underline transition">
+                <Image src={book.img} alt={book.title} width={280} class="mb-3 rounded-sm group-interact:-translate-y-0.5 transition" />
+                {book.title}
+            </a>
+        ))}
+    </div>
+</section>
+
+{/* Community */}
+{[
+    { title: "Community", gridClass: "grid grid-cols-1 sm:grid-cols-2 gap-4", centered: false, items: communityItems },
+    { title: "Keep Exploring", gridClass: "grid grid-cols-1 sm:grid-cols-3 gap-4", centered: true, items: exploreItems },
+].map((section) => (
+    <section class="not-prose mb-16">
+        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">{section.title}</h2>
+        <div class={section.gridClass}>
+            {section.items.map((item) => (
+                <Card variant="lg" class="group relative isolate p-5 overflow-hidden transition outline-hidden interact:border-neutral-300 dark:interact:border-neutral-600 interact:bg-neutral-50 dark:interact:bg-neutral-875 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400">
+                    <div class:list={[
+                        "flex items-center gap-4",
+                        section.centered && "sm:flex-col sm:items-center sm:text-center"
+                    ]}>
+                        <i class={`${item.icon} ${section.centered ? 'size-8' : 'size-7'} text-neutral-500 dark:text-neutral-450 shrink-0 group-interact:text-neutral-700 dark:group-interact:text-neutral-300 transition`}></i>
+                        <div class:list={["min-w-0", section.centered || "flex-1"]}>
+                            <h3 class="font-chicago text-sm text-neutral-900 dark:text-neutral-100 mb-1 sm:mb-2">
+                                <a href={item.url} target={item.target} rel={item.rel}
+                                   class="outline-hidden text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-white transition">
+                                    {item.title}
+                                    <span class="absolute inset-0 z-10"></span>
+                                </a>
+                            </h3>
+                            <p class:list={[
+                                "text-xs group-interact:text-neutral-700 dark:group-interact:text-neutral-300 transition",
+                                section.centered ? "" : "truncate"
+                            ]}>
+                                {item.description}
+                            </p>
+                        </div>
+                    </div>
+                </Card>
+            ))}
+        </div>
+    </section>
+))}
