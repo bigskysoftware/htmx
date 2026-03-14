@@ -6,6 +6,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Search from "../components/Search.astro";
 import GridBackground from "../components/GridBackground.astro";
+import ConstructionBanner from "../components/ConstructionBanner.astro";
 interface Props {
     title?: string;
     description?: string;
@@ -36,7 +37,7 @@ const {title, description, image, keywords, type, publishedTime, modifiedTime, a
     <Header/>
 </slot>
 
-<!-- <ConstructionBanner /> -->
+<ConstructionBanner />
 
 <slot/>
 
