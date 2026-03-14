@@ -3,7 +3,7 @@ import { getFolder } from '../../lib/content.ts';
 import ContentLayout from '../../layouts/ContentLayout.astro';
 
 export async function getStaticPaths() {
-    const collections = ['docs', 'reference', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'] as const;
+    const collections = ['about', 'docs', 'reference', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'] as const;
     const paths = [];
 
     for (const collection of collections) {

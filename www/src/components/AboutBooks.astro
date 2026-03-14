@@ -1,0 +1,25 @@
+---
+import {Image} from 'astro:assets';
+
+const bookImages = import.meta.glob('/src/assets/img/*.{png,jpg}', {eager: true}) as Record<string, {default: ImageMetadata}>;
+const books = [
+    {href: "https://hypermedia.systems", img: "/src/assets/img/hypermedia-systems.png", title: "Hypermedia Systems"},
+    {href: "https://www.amazon.com/Server-Driven-Web-Apps-htmx-Language/dp/B0D9N35GKP", img: "/src/assets/img/server-driven-web-apps.png", title: "Server-Driven Web Apps with htmx"},
+    {href: "https://www.wimdeblauwe.com/books/modern-frontends-with-htmx/", img: "/src/assets/img/modern-frontends-htmx.jpg", title: "Modern frontends with htmx"},
+    {href: "https://www.amazon.co.jp/-/en/dp/4297149451/", img: "/src/assets/img/hypermedia-systems-japanese.png", title: "ハイパーメディアシステム"},
+    {href: "https://www.amazon.co.jp/-/en/dp/4863544693", img: "/src/assets/img/htmx-japanese.png", title: "HTMX (Japanese)"},
+];
+---
+
+<section class="not-prose mb-16">
+    <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">Books</h2>
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-8">
+        {books.map(book => (
+            <a href={book.href} target="_blank" rel="noopener noreferrer"
+               class="group font-chicago text-sm text-center text-neutral-900 dark:text-neutral-100">
+                <Image src={bookImages[book.img].default} alt={book.title} width={280} class="mb-3 rounded-sm group-interact:-translate-y-0.5 transition" />
+                {book.title}
+            </a>
+        ))}
+    </div>
+</section>

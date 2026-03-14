@@ -3,8 +3,16 @@ import {glob, file} from "astro/loaders";
 import {slugify} from "./lib/utils.ts";
 import yaml from "js-yaml";
 
+const about = defineCollection({
+    loader: glob({base: "./src/content/about", pattern: "{*.md,*.mdx}"}),
+    schema: z.object({
+        title: z.string(),
+        description: z.string().optional(),
+    }).strict(),
+});
+
 const pages = defineCollection({
-    loader: glob({base: "./src/content", pattern: "{index,about,essays/index,interviews/index,podcasts/index,memes/index}.mdx"}),
+    loader: glob({base: "./src/content", pattern: "{index,essays/index,interviews/index,podcasts/index,memes/index}.mdx"}),
     schema: z.object({
         title: z.string(),
         description: z.string(),
@@ -129,6 +137,7 @@ const team = defineCollection({
 
 export const collections = {
     pages,
+    about,
     docs,
     reference,
     patterns,
