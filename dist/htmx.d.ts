@@ -1,12 +1,12 @@
 export interface HtmxConfig {
-  version: string;
   logAll: boolean;
   prefix: string;
   transitions: boolean;
-  history: boolean;
-  historyReload: boolean;
+  history: boolean | 'reload';
   mode: 'same-origin' | 'cors' | 'no-cors';
   defaultSwap: string;
+  defaultFocusScroll: boolean;
+  defaultSettleDelay: number;
   indicatorClass: string;
   requestClass: string;
   includeIndicatorCSS: boolean;
@@ -15,20 +15,29 @@ export interface HtmxConfig {
   inlineStyleNonce: string;
   extensions: string;
   morphIgnore: string[];
+  morphScanLimit: number;
+  morphSkip?: string;
+  morphSkipChildren?: string;
   noSwap: number[];
   implicitInheritance: boolean;
   metaCharacter?: string;
-  streams?: {
-    reconnect: boolean;
-    reconnectMaxAttempts: number;
-    reconnectDelay: number;
-    reconnectMaxDelay: number;
-    reconnectJitter: number;
-    pauseInBackground: boolean;
-  };
+}
+
+export interface HtmxSwapContext {
+  text: string;
+  sourceElement: Element;
+  swap?: string;
+  select?: string;
+  selectOOB?: string;
+  target?: Element;
+  transition?: boolean;
+  push?: string | boolean;
+  replace?: string | boolean;
+  anchor?: string;
 }
 
 export interface Htmx {
+  version: string;
   config: HtmxConfig;
   ajax(verb: string, path: string, context?: any): Promise<void>;
   find(selector: string): Element | null;
@@ -39,12 +48,12 @@ export interface Htmx {
   on(target: string | Element, event: string, handler: (evt: Event) => void): void;
   onLoad(callback: (elt: Element) => void): void;
   process(elt: Element): void;
-  registerExtension(name: string, ext: any): boolean;
+  registerExtension(name: string, ext: any): void;
   trigger(elt: Element | string, event: string, detail?: any): boolean;
   timeout(ms: number): Promise<void>;
   parseInterval(str: string): number;
-  forEvent(event: string, timeout?: number): Promise<Event | null>;
-  swap(target: Element | string, content: string, swapSpec: any): void;
+  forEvent(event: string, timeout?: number, on?: EventTarget): Promise<Event | null>;
+  swap(ctx: HtmxSwapContext): Promise<void>;
   takeClass(elt: Element, className: string, container?: Element): void;
 }
 
