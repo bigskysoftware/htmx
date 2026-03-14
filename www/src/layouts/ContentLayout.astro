@@ -11,6 +11,12 @@ import type {ContentFile, ContentFolder} from '../lib/content';
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
+// Raw content files for the copy-page-content feature
+const rawContentModules = import.meta.glob('/src/content/**/*.{md,mdx}', {
+    query: '?raw',
+    import: 'default',
+    eager: true
+}) as Record<string, string>;
 
 // This layout handles all content collection pages (index, detail, essays, reference, etc.).
 // It reduces duplication significantly, but makes it hard to understand how a given page
@@ -62,6 +68,23 @@ const getThumbnail = (path: string | undefined): string | null => {
 };
 
 const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.id.localeCompare(b.id)) : [];
+
+// Build cleaned markdown content for the copy button (detail pages only)
+let cleanedContent = '';
+if (!isIndex && file) {
+    const rawKey = `/src/content/${file.id}`;
+    const raw = rawContentModules[rawKey];
+    if (raw) {
+        cleanedContent = raw
+            // Strip frontmatter
+            .replace(/^---[\s\S]*?---\n*/, '')
+            // Strip <script> blocks containing server.start (demo server scripts)
+            .replace(/<script>[\s\S]*?server\.start[\s\S]*?<\/script>\s*/g, '')
+            // Strip <div id="demo-content"...> lines
+            .replace(/<div\s+id="demo-content"[^>]*>\s*<\/div>\s*/g, '')
+            .trim();
+    }
+}
 ---
 
 <Layout {title} {description} {keywords} {...articleMeta}>
@@ -150,7 +173,18 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                             </>
                     ) : (
                             <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
-                                <h1 set:html={title} />
+                                <div class="flex items-center justify-between gap-2 not-prose">
+                                    <h1 class="flex-1 font-chicago text-[2em]/12 font-bold text-neutral-900 dark:text-neutral-100" set:html={title} />
+                                    {cleanedContent && (
+                                        <button
+                                            class="copy-page-btn group/copy flex items-center justify-center size-8 rounded-sm shrink-0 text-neutral-400 dark:text-neutral-500 interact:text-neutral-600 dark:interact:text-neutral-300 transition cursor-pointer"
+                                            aria-label="Copy page content"
+                                            title="Copy page content">
+                                            <i class="size-4 icon-[mdi--content-copy] group-[.copied]/copy:hidden"></i>
+                                            <i class="size-4 icon-[mdi--check] hidden group-[.copied]/copy:block text-green-600 dark:text-green-400"></i>
+                                        </button>
+                                    )}
+                                </div>
 
                                 {isEssay && (
                                         <EssayHeader
@@ -161,7 +195,7 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                                         />
                                 )}
 
-                                {isPatterns && description && <p class="text-lg text-neutral-500 dark:text-neutral-400">{description}</p>}
+                                {isPatterns && description && <p class="text-lg text-neutral-600 dark:text-neutral-400">{description}</p>}
                                 {isPatterns && <Demo />}
                                 <slot name="before-content"/>
 
@@ -245,9 +279,11 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
                             )}
                             {includeTableOfContents && (
                                     <>
-                                        <h2 class="shrink-0 text-[0.675rem] font-sans tracking-wide uppercase text-neutral-500 mb-2">
-                                            On this page
-                                        </h2>
+                                        <div class="shrink-0 mb-2">
+                                            <h2 class="text-[0.675rem] font-sans tracking-wide uppercase text-neutral-500">
+                                                On this page
+                                            </h2>
+                                        </div>
                                         <div class="flex-1 min-h-0 overflow-hidden">
                                             <div class="h-full overflow-y-auto scrollbar-subtle">
                                                 <TableOfContents {headings}/>
@@ -260,6 +296,31 @@ const collectionCards = isIndex && folder ? folder.subfolders.sort((a, b) => a.i
             </div>
         </main>
     </div>
+
+    {cleanedContent && (
+        <>
+            <template id="page-raw-content">{cleanedContent}</template>
+            <script is:inline>
+                document.addEventListener('click', function(e) {
+                    var btn = e.target.closest('.copy-page-btn');
+                    if (!btn) return;
+                    var tmpl = document.getElementById('page-raw-content');
+                    if (!tmpl) return;
+                    var text = tmpl.content.textContent;
+                    navigator.clipboard.writeText(text).then(function() {
+                        document.querySelectorAll('.copy-page-btn').forEach(function(b) {
+                            b.classList.add('copied');
+                        });
+                        setTimeout(function() {
+                            document.querySelectorAll('.copy-page-btn').forEach(function(b) {
+                                b.classList.remove('copied');
+                            });
+                        }, 2000);
+                    });
+                });
+            </script>
+        </>
+    )}
 
     <Footer slot="footer"
             class:list={[hasSidebar && "lg:pl-72"]}
