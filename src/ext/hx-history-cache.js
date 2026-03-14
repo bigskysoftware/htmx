@@ -127,7 +127,7 @@
             setCurrentPath(normalizePath(detail.history.path));
         },
 
-        htmx_before_restore_history: (elt, detail) => {
+        htmx_before_history_restore: (elt, detail) => {
             if (cfg().disable) return;
             saveToCache(normalizePath(currentPath()));
             setCurrentPath(normalizePath(detail.path));
