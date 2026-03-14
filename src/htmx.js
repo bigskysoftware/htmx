@@ -102,8 +102,8 @@ var htmx = (() => {
         }
 
         __initHtmxConfig() {
+            this.version = '4.0.0-beta1'
             this.config = {
-                version: '4.0.0-beta1',
                 logAll: false,
                 prefix: "",
                 transitions: false,
@@ -371,12 +371,6 @@ var htmx = (() => {
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
                 this.__mergeConfig(configAttr, ctx.request);
-                if (ctx.request.etag) {
-                    this.__htmxProp(sourceElement).etag ||= ctx.request.etag
-                }
-            }
-            if (sourceElement._htmx?.etag && !this.__isBoosted(sourceElement)) {
-                ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
             }
             return ctx;
         }
@@ -613,9 +607,6 @@ var htmx = (() => {
                 opts.push = opts.push || 'true';
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
-            }
-            if(ctx.response?.headers?.get?.("Etag")) {
-                this.__htmxProp(ctx.sourceElement).etag = ctx.response.headers.get("Etag");
             }
         }
 
@@ -1564,18 +1555,18 @@ var htmx = (() => {
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
             history.pushState({htmx: true}, '', path);
-            this.__trigger(document, "htmx:after:push:into:history", {path});
+            this.__trigger(document, "htmx:after:history:push", {path});
         }
 
         __replaceUrlInHistory(path) {
             if (!this.config.history) return;
             history.replaceState({htmx: true}, '', path);
-            this.__trigger(document, "htmx:after:replace:into:history", {path});
+            this.__trigger(document, "htmx:after:history:replace", {path});
         }
 
         __restoreHistory(path) {
             path = path || location.pathname + location.search;
-            if (this.__trigger(document, "htmx:before:restore:history", {path, cacheMiss: true})) {
+            if (this.__trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
                 if (this.config.history === "reload") {
                     location.reload();
                 } else {

@@ -115,13 +115,13 @@ Find and replace event names in your JavaScript:
 | `htmx:beforeRequest`        | [`htmx:before:request`](/reference/events/htmx-before-request)             |
 | `htmx:beforeSwap`           | [`htmx:before:swap`](/reference/events/htmx-before-swap)                |
 | `htmx:configRequest`        | `htmx:config:request`             |
-| `htmx:historyCacheMiss`     | [`htmx:before:restore:history`](/reference/events/htmx-before-restore-history)     |
-| `htmx:historyRestore`       | `htmx:before:restore:history`     |
+| `htmx:historyCacheMiss`     | [`htmx:before:history:restore`](/reference/events/htmx-before-restore-history)     |
+| `htmx:historyRestore`       | `htmx:before:history:restore`     |
 | `htmx:load`                 | `htmx:after:init`                 |
 | `htmx:oobAfterSwap`         | `htmx:after:swap`                 |
 | `htmx:oobBeforeSwap`        | `htmx:before:swap`                |
-| `htmx:pushedIntoHistory`    | [`htmx:after:push:into:history`](/reference/events/htmx-after-push-into-history)    |
-| `htmx:replacedInHistory`    | [`htmx:after:replace:into:history`](/reference/events/htmx-after-replace-into-history) |
+| `htmx:pushedIntoHistory`    | [`htmx:after:history:push`](/reference/events/htmx-after-push-into-history)    |
+| `htmx:replacedInHistory`    | [`htmx:after:history:replace`](/reference/events/htmx-after-replace-into-history) |
 | `htmx:responseError`        | [`htmx:error`](/reference/events/htmx-error)                      |
 | `htmx:sendError`            | `htmx:error`                      |
 | `htmx:swapError`            | `htmx:error`                      |

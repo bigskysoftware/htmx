@@ -1,9 +1,9 @@
 ---
-title: "htmx:after:push:into:history"
+title: "htmx:after:history:push"
 description: "After a push state action"
 ---
 
-The `htmx:after:push:into:history` event fires specifically after a `history.pushState()` operation (creates new history entry).
+The `htmx:after:history:push` event fires specifically after a `history.pushState()` operation (creates new history entry).
 
 ## When It Fires
 
@@ -16,7 +16,7 @@ After a new history entry is pushed, allowing forward/back navigation to this po
 ## Example
 
 ```javascript
-htmx.on('htmx:after:push:into:history', (evt) => {
+htmx.on('htmx:after:history:push', (evt) => {
   console.log('Pushed to history:', evt.detail.path);
   // Track navigation in analytics
 });

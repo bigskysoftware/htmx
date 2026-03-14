@@ -1,9 +1,9 @@
 ---
-title: "htmx:after:replace:into:history"
+title: "htmx:after:history:replace"
 description: "After a replace state action"
 ---
 
-The `htmx:after:replace:into:history` event fires specifically after a `history.replaceState()` operation (replaces current history entry).
+The `htmx:after:history:replace` event fires specifically after a `history.replaceState()` operation (replaces current history entry).
 
 ## When It Fires
 
@@ -16,7 +16,7 @@ After the current history entry is replaced, without creating a new back button 
 ## Example
 
 ```javascript
-htmx.on('htmx:after:replace:into:history', (evt) => {
+htmx.on('htmx:after:history:replace', (evt) => {
   console.log('Replaced history with:', evt.detail.path);
 });
 ```

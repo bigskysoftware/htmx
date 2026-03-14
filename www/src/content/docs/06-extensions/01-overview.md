@@ -125,9 +125,9 @@ Extensions hook into htmx lifecycle events. Event names use underscores instead 
 |-----------|----------------|------------|-------------|
 | `htmx_before_history_update` | [`htmx:before:history:update`](/reference/events/htmx-before-history-update) | `(elt, detail)` | Before updating history |
 | `htmx_after_history_update` | [`htmx:after:history:update`](/reference/events/htmx-after-history-update) | `(elt, detail)` | After updating history |
-| `htmx_after_push_into_history` | [`htmx:after:push:into:history`](/reference/events/htmx-after-push-into-history) | `(elt, detail)` | After pushing to history |
-| `htmx_after_replace_into_history` | [`htmx:after:replace:into:history`](/reference/events/htmx-after-replace-into-history) | `(elt, detail)` | After replacing history |
-| `htmx_before_restore_history` | [`htmx:before:restore:history`](/reference/events/htmx-before-restore-history) | `(elt, detail)` | Before restoring from history |
+| `htmx_after_history_push` | [`htmx:after:history:push`](/reference/events/htmx-after-push-into-history) | `(elt, detail)` | After pushing to history |
+| `htmx_after_history_replace` | [`htmx:after:history:replace`](/reference/events/htmx-after-replace-into-history) | `(elt, detail)` | After replacing history |
+| `htmx_before_history_restore` | [`htmx:before:history:restore`](/reference/events/htmx-before-restore-history) | `(elt, detail)` | Before restoring from history |
 
 ### Cancelling Events
 
