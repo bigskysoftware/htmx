@@ -1,0 +1,1 @@
+(()=>{let t;htmx.registerExtension("ptag",{init(e){t=e},htmx_after_init(e){let a=t.attributeValue(e,"hx-ptag");a&&(t.htmxProp(e).ptag=a)},htmx_config_request(t,{ctx:e}){let a=t._htmx?.ptag;a&&(e.request.headers["HX-PTag"]=a)},htmx_after_request(e,{ctx:a}){let r=a.response?.headers?.get?.("HX-PTag");r&&(t.htmxProp(e).ptag=r)}})})();

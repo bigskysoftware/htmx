@@ -371,12 +371,6 @@ var htmx = (() => {
             let configAttr = this.#attributeValue(sourceElement, "hx-config");
             if (configAttr) {
                 this.#mergeConfig(configAttr, ctx.request);
-                if (ctx.request.etag) {
-                    this.#htmxProp(sourceElement).etag ||= ctx.request.etag
-                }
-            }
-            if (sourceElement._htmx?.etag) {
-                ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
             }
             return ctx;
         }
@@ -613,9 +607,6 @@ var htmx = (() => {
                 opts.push = opts.push || 'true';
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
-            }
-            if(ctx.response?.headers?.get?.("Etag")) {
-                this.#htmxProp(ctx.sourceElement).etag = ctx.response.headers.get("Etag");
             }
         }
 
@@ -1056,19 +1047,23 @@ var htmx = (() => {
         }
 
         #createOOBTask(tasks, elt, oobValue, sourceElement) {
-            let target = elt.id ? '#' + CSS.escape(elt.id) : null;
+            let targetSelector = elt.id ? '#' + CSS.escape(elt.id) : null;
             if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
-                [oobValue, target = target] = oobValue.split(/:(.*)/);
+                [oobValue, targetSelector = targetSelector] = oobValue.split(/:(.*)/);
             }
             if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
 
             let swapSpec = this.#parseSwapSpec(oobValue);
-            target = swapSpec.target || target;
+            targetSelector = swapSpec.target || targetSelector;
             swapSpec.strip ??= !swapSpec.style.startsWith('outer');
-            if (!target) return;
-            let fragment = document.createDocumentFragment();
-            fragment.append(elt);
-            tasks.push({type: 'oob', fragment, target, swapSpec, sourceElement});
+            if (!targetSelector) return;
+            let targets = [...document.querySelectorAll(targetSelector)];
+            for (let target of targets) {
+                let fragment = document.createDocumentFragment();
+                fragment.append(elt.cloneNode(true));
+                tasks.push({type: 'oob', fragment, target, swapSpec, sourceElement});
+            }
+            elt.remove();
         }
 
         #processOOB(fragment, sourceElement, selectOOB) {
@@ -1120,15 +1115,20 @@ var htmx = (() => {
                 let type = templateElt.getAttribute('type');
                 
                 if (type === 'partial') {
-                    let target = templateElt.getAttribute(this.#prefix('hx-target')) || (templateElt.id ? '#' + CSS.escape(templateElt.id) : null);
-                    this.#processScripts(templateElt.content);
-                    tasks.push({
-                        type: 'partial',
-                        fragment: templateElt.content.cloneNode(true),
-                        target,
-                        swapSpec: this.#parseSwapSpec(templateElt.getAttribute(this.#prefix('hx-swap')) || this.config.defaultSwap),
-                        sourceElement: ctx.sourceElement
-                    });
+                    let targetSelector = templateElt.getAttribute(this.#prefix('hx-target')) || (templateElt.id ? '#' + CSS.escape(templateElt.id) : null);
+                    if (targetSelector) {
+                        this.#processScripts(templateElt.content);
+                        let swapSpec = this.#parseSwapSpec(templateElt.getAttribute(this.#prefix('hx-swap')) || this.config.defaultSwap);
+                        for (let target of document.querySelectorAll(targetSelector)) {
+                            tasks.push({
+                                type: 'partial',
+                                fragment: templateElt.content.cloneNode(true),
+                                target,
+                                swapSpec,
+                                sourceElement: ctx.sourceElement
+                            });
+                        }
+                    }
                 } else {
                     this.#triggerExtensions(templateElt, 'htmx:process:' + type, { ctx, tasks });
                 }
@@ -1564,18 +1564,18 @@ var htmx = (() => {
         #pushUrlIntoHistory(path) {
             if (!this.config.history) return;
             history.pushState({htmx: true}, '', path);
-            this.#trigger(document, "htmx:after:push:into:history", {path});
+            this.#trigger(document, "htmx:after:history:push", {path});
         }
 
         #replaceUrlInHistory(path) {
             if (!this.config.history) return;
             history.replaceState({htmx: true}, '', path);
-            this.#trigger(document, "htmx:after:replace:into:history", {path});
+            this.#trigger(document, "htmx:after:history:replace", {path});
         }
 
         #restoreHistory(path) {
             path = path || location.pathname + location.search;
-            if (this.#trigger(document, "htmx:before:restore:history", {path, cacheMiss: true})) {
+            if (this.#trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
                 if (this.config.history === "reload") {
                     location.reload();
                 } else {

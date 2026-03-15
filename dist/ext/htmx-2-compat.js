@@ -75,13 +75,13 @@
         htmx_config_request: function (elt, detail) {
             maybeRetriggerEvent(elt, "htmx:configRequest", detail);
         },
-        htmx_before_restore_history: function (elt, detail) {
+        htmx_before_history_restore: function (elt, detail) {
             maybeRetriggerEvent(elt, "htmx:historyRestore", detail);
         },
-        htmx_after_push_into_history: function (elt, detail) {
+        htmx_after_history_push: function (elt, detail) {
             maybeRetriggerEvent(elt, "htmx:pushedIntoHistory", detail);
         },
-        htmx_after_replace_into_history: function (elt, detail) {
+        htmx_after_history_replace: function (elt, detail) {
             maybeRetriggerEvent(elt, "htmx:replacedInHistory", detail);
         },
         htmx_error: function (elt, detail) {
