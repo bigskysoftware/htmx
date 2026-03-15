@@ -68,7 +68,6 @@ var htmx = (() => {
         #hxOnQuery
         #transitionQueue
         #historyAbort
-        #scrollIdx
         #processingTransition
 
         constructor() {
@@ -372,6 +371,12 @@ var htmx = (() => {
             let configAttr = this.#attributeValue(sourceElement, "hx-config");
             if (configAttr) {
                 this.#mergeConfig(configAttr, ctx.request);
+                if (ctx.request.etag) {
+                    this.#htmxProp(sourceElement).etag ||= ctx.request.etag
+                }
+            }
+            if (sourceElement._htmx?.etag) {
+                ctx.request.headers["If-none-match"] = sourceElement._htmx.etag
             }
             return ctx;
         }
@@ -608,6 +613,9 @@ var htmx = (() => {
                 opts.push = opts.push || 'true';
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
+            }
+            if(ctx.response?.headers?.get?.("Etag")) {
+                this.#htmxProp(ctx.sourceElement).etag = ctx.response.headers.get("Etag");
             }
         }
 
@@ -1545,44 +1553,8 @@ var htmx = (() => {
             if (!history.state) {
                 history.replaceState({htmx: true}, '', location.href);
             }
-            let scrollTimer;
-            if (this.config.history === "reload") {
-                history.scrollRestoration = 'manual';
-                // assign a unique index to this history entry for scroll tracking
-                if (history.state._htmxIdx == null) {
-                    let idx = parseInt(sessionStorage.getItem('htmx:idx') || '0');
-                    history.replaceState({...history.state, _htmxIdx: idx}, '', location.href);
-                    sessionStorage.setItem('htmx:idx', idx + 1);
-                }
-                this.#scrollIdx = history.state._htmxIdx;
-                let savedY = sessionStorage.getItem('htmx:scroll:' + this.#scrollIdx);
-                // start tracking scroll after restoration is complete
-                let startScrollTracking = () => {
-                    window.addEventListener('scroll', () => {
-                        clearTimeout(scrollTimer);
-                        scrollTimer = setTimeout(() => {
-                            sessionStorage.setItem('htmx:scroll:' + this.#scrollIdx, window.scrollY);
-                        }, 350);
-                    }, {passive: true});
-                };
-                if (savedY != null) {
-                    window.addEventListener('load', () => {
-                        requestAnimationFrame(() => {
-                            window.scrollTo(0, parseInt(savedY));
-                            requestAnimationFrame(startScrollTracking);
-                        });
-                    });
-                } else {
-                    startScrollTracking();
-                }
-            }
             window.addEventListener('popstate', (event) => {
                 if (event.state && event.state.htmx) {
-                    // save scroll for the entry we're leaving (using tracked index)
-                    if (this.config.history === "reload" && this.#scrollIdx != null) {
-                        clearTimeout(scrollTimer);
-                        sessionStorage.setItem('htmx:scroll:' + this.#scrollIdx, window.scrollY);
-                    }
                     this.#historyAbort?.abort();
                     this.#restoreHistory();
                 }
@@ -1591,29 +1563,19 @@ var htmx = (() => {
 
         #pushUrlIntoHistory(path) {
             if (!this.config.history) return;
-            if (this.config.history === "reload") {
-                // save scroll for the current entry before pushing
-                sessionStorage.setItem('htmx:scroll:' + this.#scrollIdx, window.scrollY);
-                // assign a new index for the new entry
-                let idx = parseInt(sessionStorage.getItem('htmx:idx') || '0');
-                sessionStorage.setItem('htmx:idx', idx + 1);
-                this.#scrollIdx = idx;
-                history.pushState({htmx: true, _htmxIdx: idx}, '', path);
-            } else {
-                history.pushState({htmx: true}, '', path);
-            }
-            this.#trigger(document, "htmx:after:history:push", {path});
+            history.pushState({htmx: true}, '', path);
+            this.#trigger(document, "htmx:after:push:into:history", {path});
         }
 
         #replaceUrlInHistory(path) {
             if (!this.config.history) return;
             history.replaceState({htmx: true}, '', path);
-            this.#trigger(document, "htmx:after:history:replace", {path});
+            this.#trigger(document, "htmx:after:replace:into:history", {path});
         }
 
         #restoreHistory(path) {
             path = path || location.pathname + location.search;
-            if (this.#trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
+            if (this.#trigger(document, "htmx:before:restore:history", {path, cacheMiss: true})) {
                 if (this.config.history === "reload") {
                     location.reload();
                 } else {
