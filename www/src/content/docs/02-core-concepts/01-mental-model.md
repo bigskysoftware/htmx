@@ -9,13 +9,14 @@ thumbnail: "docs/mental-model.svg"
      "server sends ready-to-render HTML". Address common misconceptions
      and patterns to unlearn. -->
 
-htmx extends HTML's built-in hypermedia controls. 
+htmx extends HTML's built-in concept of [hypermedia controls](https://dl.acm.org/doi/fullHtml/10.1145/3648188.3675127).
 
-To understand htmx, first understand these controls.
+To understand htmx, you should first understand what these are.
 
 ## HTML's Native Controls
 
-HTML has two elements that issue HTTP requests: `<a>` and `<form>`.
+HTML has two major elements that issue HTTP requests in response to user actions: `<a>` (anchors, aka "links") and
+`<form>`.
 
 ### The Anchor Tag
 
@@ -23,24 +24,35 @@ HTML has two elements that issue HTTP requests: `<a>` and `<form>`.
 <a href="/blog">Blog</a>
 ```
 
-Click the link. Browser issues GET request to `/blog`. Response loads in the browser window.
+When a user click this link a browser will issue an HTTP `GET` request to `/blog`. It will then load the HTML response
+into the browser's window.
 
 ### The Form Tag
 
 ```html
+
 <form method="post" action="/register">
     <label>Email: <input type="email"></label>
     <button type="submit">Submit</button>
 </form>
 ```
 
-Submit the form. Browser issues POST request to `/register`. Response loads in the browser window.
+When a user submits this form (by, say, clicking on the "Submit" button) a browser will issue an HTTP `POST` request to
+`/register`. Again, it will load the HTML response to this request into the browser window.
+
+These two hypermedia controls demonstrate the core idea behind them: in response to a user action a
+request is made and new content is loaded into the client.
 
 ## Transclusion
 
-Both elements support a `target` attribute. Place the response in an iframe instead of the full window:
+Both of these HTML elements support a (relatively little-known and unused)
+[`target`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement/target) attribute.
+
+By using this attribute you can place the response in, for example, an iframe rather than replacing the entire
+content in the window:
 
 ```html
+
 <form method="post" action="/register" target="iframe1">
     <label>Email: <input type="email"></label>
     <button type="submit">Submit</button>
@@ -50,13 +62,16 @@ Both elements support a `target` attribute. Place the response in an iframe inst
 </iframe>
 ```
 
-This is [transclusion](https://en.wikipedia.org/wiki/Transclusion) - one HTML document included inside another.
+This is [transclusion](https://en.wikipedia.org/wiki/Transclusion), where one HTML document is included inside of
+another.
 
-## How htmx Extends This
+## How htmx Extends This Idea
 
-htmx generalizes these concepts. Any element can issue any HTTP verb to any URL, triggered by any event, with the response placed anywhere.
+htmx generalizes these concepts. Any element can issue any type of HTTP request to any URL. Any event can trigger the
+request. And the response HTML can be placed anywhere in the DOM.
 
 ```html
+
 <button hx-post="/clicked"
         hx-trigger="click"
         hx-target="#output"
@@ -66,53 +81,22 @@ htmx generalizes these concepts. Any element can issue any HTTP verb to any URL,
 <output id="output"></output>
 ```
 
-**What this means:**
+These htmx attributes (which start with `hx-`) tell a browser:
 
-> When a user clicks this button, issue a POST request to `/clicked`. Use the response to replace the element with id `output`.
+> When a user clicks this button, issue a POST request to `/clicked`. Use the response to replace the element with id
+`output`.
 
-## The Key Difference
+Like anchor and form tags, htmx expects _HTML responses_ from the server.
 
-Like anchor and form tags, htmx expects **HTML responses**, not JSON.
+This is in contrast with many front-end libraries and frameworks today which instead expect JSON and
+use client-side templating to transform that JSON into HTML on the client.
 
-**Traditional SPA approach:**
-1. Server returns JSON
-2. JavaScript parses JSON
-3. JavaScript builds HTML
-4. JavaScript updates DOM
+## htmx's Philosophy
 
-**htmx approach:**
-1. Server returns HTML
-2. htmx updates DOM
+Because htmx works in terms of HTML it follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm). 
+It uses [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS) (HATEOAS).
 
-The server sends the final HTML directly. No client-side templating needed.
+The server controls what the user sees by sending HTML.  Users select actions from that HTML and the server responds with
+more HTML (i.e. hypertext). 
 
-## The Philosophy
-
-htmx follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm). It uses [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS) (HATEOAS).
-
-The server controls what the user sees by sending HTML. The hypermedia itself drives the application.
-
-## What This Enables
-
-**Any element** can make requests:
-```html
-<div hx-get="/status">Check Status</div>
-```
-
-**Any HTTP verb:**
-```html
-<button hx-delete="/item/5">Delete</button>
-```
-
-**Any event:**
-```html
-<input hx-post="/save" hx-trigger="blur">
-```
-
-**Response goes anywhere:**
-```html
-<button hx-get="/data" hx-target="#results">Load</button>
-<div id="results"></div>
-```
-
-This is htmx: HTML's hypermedia controls, generalized.
+Thus, the hypermedia itself drives the application.
