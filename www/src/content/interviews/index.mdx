@@ -1,0 +1,33 @@
+---
+title: "Interviews"
+description: "Conversations with creators and thinkers in the hypermedia space"
+---
+
+import {getCollection} from 'astro:content';
+import FinderLink from '../../components/FinderLink.astro';
+
+export const interviews = (await getCollection('interviews'))
+    .sort((a, b) => new Date(b.data.created || 0).getTime() - new Date(a.data.created || 0).getTime())
+    .map(e => ({
+        title: e.data.title,
+        url: `/interviews/${e.id}`,
+        author: e.data.authors?.join(', '),
+        date: e.data.created ? new Date(e.data.created).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}) : undefined,
+    }));
+
+<div class="not-prose flex flex-col gap-1 mt-6">
+    {interviews.map(item => (
+        <FinderLink href={item.url}>
+            <span class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4">
+                <span class="flex-1 min-w-0 text-[13px] sm:text-sm leading-snug truncate">{item.title}</span>
+                {(item.author || item.date) && (
+                    <span class="shrink-0 flex items-center gap-1.5 sm:gap-3 text-[11px] font-mono tabular-nums text-neutral-500 dark:text-neutral-450 group-interact/link:text-blue-200 dark:group-interact/link:text-black transition">
+                        {item.author && <span>{item.author}</span>}
+                        {item.author && item.date && <span aria-hidden="true">&middot;</span>}
+                        {item.date && <span class="sm:w-[12ch] sm:text-right">{item.date}</span>}
+                    </span>
+                )}
+            </span>
+        </FinderLink>
+    ))}
+</div>

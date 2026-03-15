@@ -1,0 +1,210 @@
+<script>
+    import '../assets/js/search-index.js';
+</script>
+
+<search-index id="global-search" hx-preserve="true"
+              src="/search-index.json"
+              highlight="<mark class='bg-blue-700 dark:bg-blue-300 text-white dark:text-neutral-900 font-bold px-0.5 box-decoration-clone'>$1</mark>"
+              class="group/search">
+    <dialog id="search-modal"
+            class="fixed top-4 bottom-4 inset-x-4 sm:top-[12vh] sm:bottom-[12vh] bg-transparent open:flex items-start justify-center w-full h-auto
+            backdrop:bg-neutral-950/40 backdrop:backdrop-blur-sm
+            backdrop:transition backdrop:opacity-0 open:backdrop:opacity-100
+            transition-discrete transition open:starting:opacity-0 opacity-0 open:opacity-100 z-50 starting:open:scale-95 scale-95 open:scale-100 origin-top outline-none"
+            role="alertdialog"
+            aria-modal="true"
+            aria-label="Search documentation"
+            _="on click
+                  if target is me then close() me end
+               end
+               on close
+                   reset() the #search-form
+                   put '' into #search-results
+                   blur() the document.activeElement"
+    >
+        <form id="search-form"
+              role="search"
+              onsubmit="return false"
+              class="not-has-placeholder-shown:absolute inset-0 mx-auto w-full max-w-3xl overflow-hidden rounded-xl bg-white dark:bg-neutral-920 border border-neutral-200 dark:border-neutral-850 flex flex-col min-h-0 shadow"
+              _="on submit
+                     halt the event
+                     get the first <.result:checked/>
+                     if it exists
+                         set window.location.href to it.value
+                     end
+                 end">
+
+            <header class="relative border-b border-neutral-200 dark:border-neutral-850 shrink-0 bg-neutral-50 dark:bg-neutral-900">
+                <i class="icon-[ic--baseline-search] pointer-events-none absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 text-base sm:text-lg text-neutral-400 group-data-searching/search:opacity-0 transition"
+                   aria-hidden="true"></i>
+                <i class="icon-[svg-spinners--90-ring-with-bg] pointer-events-none absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 text-base sm:text-lg text-neutral-400 opacity-0 group-data-searching/search:opacity-100 transition"
+                   aria-hidden="true" aria-live="polite" aria-label="Searching"></i>
+                <label for="search-input" class="sr-only">Search documentation</label>
+                <input
+                        type="text"
+                        id="search-input"
+                        role="combobox"
+                        aria-controls="search-results"
+                        aria-autocomplete="list"
+                        autofocus
+                        class="peer/search-input h-14 sm:h-16 w-full border-0 bg-transparent pl-10 sm:pl-14 pr-10 sm:pr-12 text-base sm:text-lg text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:ring-0 font-sans outline-none"
+                        autocomplete="off"
+                        autocapitalize="off"
+                        autocorrect="off"
+                        enterkeyhint="search"
+                        spellcheck="false"
+                        placeholder="Search documentation..."
+                        _="
+                        on input
+                            set value to event.target.value
+                            if value.trim() is empty
+                                put '' into #search-results
+                                remove .has-results from #search-container
+                            else
+                                search(value) the closest <search-index/>
+                                set searchResults to it
+                                js(searchResults)
+                                    return searchResults.map(result => {
+                                        const coll = result.collection || '';
+                                        result.subcategory = result.breadcrumb?.[0] || '';
+                                        result.collectionId = coll.toLowerCase();
+                                        result.titleFont = 'font-chicago text-sm';
+                                        return result;
+                                    });
+                                end
+                                set flatResults to it
+                                render #search-template with (results: flatResults, query: value)
+                                put it into #search-results
+                                add .has-results to #search-container
+                                wait 10ms
+                                if <.result/> exists
+                                    add @checked to the first <.result/>
+                                end
+                            end
+                        end
+                        on keydown[(key is 'ArrowDown' or key is 'ArrowUp') and .result exists]
+                            halt the event
+                            get the first <.result:checked/> in #search-results
+                            if it exists and it.isConnected
+                                if event.key is 'ArrowDown'
+                                    set target to next .result from it
+                                    if no target then set target to the first .result end
+                                else
+                                    set target to previous .result from it
+                                    if no target then set target to the last .result end
+                                end
+                            else
+                                if event.key is 'ArrowDown'
+                                    set target to the first .result
+                                else
+                                    set target to the last .result
+                                end
+                            end
+                            if target exists
+                                set target.checked to true
+                                call target.setAttribute('checked', '')
+                                call target.scrollIntoView({block: 'nearest'})
+                            end
+                        end"
+                />
+                <kbd class="z-10 absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 flex items-center justify-center h-5 px-1.5 min-w-5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-25 dark:bg-neutral-910 font-sans text-[10px] text-neutral-600 dark:text-neutral-400 pointer-events-none"
+                     aria-label="Press Escape to close">
+                    esc
+                </kbd>
+            </header>
+
+            <main id="search-container"
+                  class="peer h-[400px] sm:h-[500px] scroll-pt-10 overflow-y-auto flex-1 bg-neutral-25 dark:bg-neutral-920">
+
+                <div class="hidden group-not-has-placeholder-shown/search:group-data-searched/search:group-data-empty/search:flex flex-col items-center justify-center h-full px-4 sm:px-6"
+                     role="status" aria-live="polite">
+                    <i class="icon-[mdi--magnify-close] text-6xl sm:text-7xl text-neutral-300 dark:text-neutral-700 mb-4"
+                       aria-hidden="true"></i>
+                    <p class="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 font-medium">No results
+                        found</p>
+                    <p class="text-xs sm:text-sm text-neutral-400 dark:text-neutral-500 mt-1">Try a different search
+                        term</p>
+                </div>
+
+                <template id="search-template" is:raw>
+                    <ul class="space-y-2 p-3" role="listbox" aria-label="Search results">
+                        @repeat for item in results
+                        @if not item.parent
+                        <li class="relative group/result">
+                            <input type="radio"
+                                   name="search_result"
+                                   value="${item.url}"
+                                   role="option"
+                                   class="result peer absolute inset-0 z-10 w-full h-full opacity-0 cursor-pointer touch-manipulation"
+                                   _="on click set window.location.href to my.value end
+                                      on mousemove set my.checked to true then call me.setAttribute('checked', '') end">
+
+                            <article
+                                    class="flex items-center gap-4 px-3 py-3 rounded-lg border transition-all duration-100
+                                           /* Default */
+                                           border-transparent bg-transparent
+
+                                           /* Active / Checked State */
+                                           peer-checked:bg-neutral-50 dark:peer-checked:bg-neutral-800/50
+
+                                           peer-checked:border-neutral-300 dark:peer-checked:border-neutral-600
+                                           peer-checked:text-neutral-900 dark:peer-checked:text-neutral-100"
+                                    aria-hidden="true">
+
+                                <div class="flex flex-col flex-1 min-w-0">
+                                    <nav class="flex items-center gap-2 mb-1 text-xs
+                                                text-neutral-500 dark:text-neutral-450
+                                                group-has-checked/result:text-neutral-600 dark:group-has-checked/result:text-neutral-400 transition-colors">
+                                        <span>${item.collection}</span>
+                                        @if item.subcategory
+                                        <span class="text-neutral-300 dark:text-neutral-700 select-none">/</span>
+                                        <span>${item.subcategory}</span>
+                                        @end
+                                    </nav>
+
+                                    <div class="${item.titleFont} truncate leading-tight">
+                                        ${unescaped item.title}
+                                    </div>
+                                </div>
+
+                                <i class="icon-[uil--enter] text-xs text-neutral-400 opacity-0 -translate-x-2 transition-all duration-200 group-has-checked/result:opacity-100 group-has-checked/result:translate-x-0"></i>
+                            </article>
+                        </li>
+                        @end
+                        @end
+                    </ul>
+                </template>
+
+                <output id="search-results" role="region" aria-live="polite" aria-atomic="true"></output>
+            </main>
+
+            <footer class="flex flex-wrap items-center font-mono border-t border-transparent peer-[.has-results]:border-neutral-200 dark:peer-[.has-results]:border-neutral-850 bg-neutral-50 dark:bg-neutral-900 px-4 py-3 text-xs text-neutral-500 dark:text-neutral-400 shrink-0 rounded-b-xl"
+                    aria-label="Keyboard shortcuts">
+                <div class="flex items-center gap-6">
+                    <span class="hidden sm:flex items-center gap-1.5">
+                        <kbd class="flex items-center justify-center size-5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-25 dark:bg-neutral-910 font-sans text-[10px] text-neutral-600 dark:text-neutral-400"
+                             aria-label="Up arrow">
+                            ↑
+                        </kbd>
+                        <kbd class="flex items-center justify-center size-5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-25 dark:bg-neutral-910 font-sans text-[10px] text-neutral-600 dark:text-neutral-400"
+                             aria-label="Down arrow">
+                            ↓
+                        </kbd>
+                        <span>to navigate</span>
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <kbd class="flex items-center justify-center h-5 px-1.5 min-w-5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-25 dark:bg-neutral-910 font-sans text-[10px] text-neutral-600 dark:text-neutral-400"
+                             aria-label="Enter">
+                            <i class="icon-[uil--enter] text-xs"></i>
+                        </kbd>
+                        <span>to select</span>
+                    </span>
+                    <span class="sm:hidden flex items-center gap-1.5">
+                        <i class="icon-[mdi--gesture-tap] text-sm -translate-y-px"></i>
+                        <span>outside to close</span>
+                    </span>
+                </div>
+            </footer>
+        </form>
+    </dialog>
+</search-index>

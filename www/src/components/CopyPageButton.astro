@@ -1,0 +1,42 @@
+---
+/**
+ * Copy-to-clipboard button for content pages. Builds a cleaned version of the
+ * page's raw markdown and stores it in a <template> and updates relative links to absolute links.
+ */
+import {buildCopyContent} from '../lib/content-copy';
+import type {ContentFile} from '../lib/content';
+
+interface Props {
+    file: ContentFile;
+}
+
+const {file} = Astro.props;
+const content = buildCopyContent(file.id, Astro.site?.origin || 'https://htmx.org');
+---
+
+{content && (
+    <>
+        <button
+            class="copy-page-btn relative flex items-center justify-center size-8 rounded shrink-0 select-none border border-transparent text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-200 dark:interact:border-neutral-800 interact:text-neutral-900 dark:interact:text-white outline-hidden focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400 cursor-pointer transition before:content-['Copied!'] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:mr-2 before:px-2 before:py-1 before:text-xs before:font-semibold before:text-white before:bg-neutral-900 dark:before:bg-neutral-100 dark:before:text-neutral-900 before:rounded before:whitespace-nowrap before:opacity-0 before:pointer-events-none data-copied:before:opacity-100 before:transition"
+            title="Copy page content"
+            _={`on click
+                set tmpl to #page-raw-content
+                if tmpl
+                    writeText(textContent of tmpl.content) into navigator.clipboard
+                    add .icon-\\[radix-icons--check\\] to first <i/> in me
+                    remove .icon-\\[radix-icons--copy\\] from first <i/> in me
+                    set @title of me to 'Copied!'
+                    add @data-copied
+                    put 'Copied!' into #status-bar
+                    wait 2s
+                    add .icon-\\[radix-icons--copy\\] to first <i/> in me
+                    remove .icon-\\[radix-icons--check\\] from first <i/> in me
+                    set @title of me to 'Copy page content'
+                    remove @data-copied
+                    put '' into #status-bar
+                end`}>
+            <i class="size-4 icon-[radix-icons--copy]"></i>
+        </button>
+        <template id="page-raw-content">{content}</template>
+    </>
+)}

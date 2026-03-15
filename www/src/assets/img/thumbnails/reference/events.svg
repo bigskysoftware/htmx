@@ -1,0 +1,32 @@
+<svg viewBox="0 0 240 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .ref {
+            --color: var(--color-neutral-500);
+        }
+        @media (prefers-color-scheme: dark) {
+            .ref {
+                --color: var(--color-neutral-400);
+            }
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .ref {
+            --color: var(--color-neutral-900);
+        }
+        @media (prefers-color-scheme: dark) {
+            .group:has(a:hover, a:focus-visible, a:active) .ref {
+                --color: var(--color-neutral-200);
+            }
+        }
+        .ref text { transition: fill 150ms; }
+        .ref text {
+            font-family: var(--font-mono), monospace;
+            font-size: 17px;
+            dominant-baseline: middle;
+            text-anchor: middle;
+        }
+    </style>
+    <g class="ref">
+        <text x="120" y="64">
+            <tspan fill="var(--color)">htmx:event</tspan>
+        </text>
+    </g>
+</svg>

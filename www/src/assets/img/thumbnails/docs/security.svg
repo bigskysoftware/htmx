@@ -1,0 +1,48 @@
+<svg viewBox="0 0 128 128" overflow="visible" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .security {
+        --v1: var(--color-neutral-150);
+        --v2: var(--color-neutral-200);
+        --v3: var(--color-neutral-300);
+        --v4: var(--color-neutral-350);
+        }
+        @media (prefers-color-scheme: dark) {
+        .security {
+        --v1: var(--color-neutral-650);
+        --v2: var(--color-neutral-700);
+        --v3: var(--color-neutral-750);
+        --v4: var(--color-neutral-800);
+        }
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .security {
+        --v1: var(--color-neutral-150);
+        --v2: var(--color-neutral-200);
+        --v3: var(--color-neutral-350);
+        --v4: var(--color-neutral-450);
+        }
+        @media (prefers-color-scheme: dark) {
+        .group:has(a:hover, a:focus-visible, a:active) .security {
+        --v1: var(--color-neutral-300);
+        --v2: var(--color-neutral-400);
+        --v3: var(--color-neutral-500);
+        --v4: var(--color-neutral-600);
+        }
+        }
+
+        .security path { transition: fill 150ms, stroke 150ms; }
+    </style>
+
+    <g class="security" transform="translate(28, 26) scale(3)">
+        <!-- Shadow -->
+        <path d="M12 22q-3.475-.875-5.738-3.988T4 11.1V5l8-3l8 3v6.1q0 3.8-2.262 6.913T12 22z"
+            fill="var(--v4)" transform="translate(0.5, 0.5)"/>
+
+        <!-- Shield body -->
+        <path d="M12 22q-3.475-.875-5.738-3.988T4 11.1V5l8-3l8 3v6.1q0 3.8-2.262 6.913T12 22z"
+            fill="var(--v1)" stroke="var(--v1)"/>
+
+        <!-- Half-shield badge -->
+        <path d="M12 19.9q2.425-.75 4.05-2.963T17.95 12H12V4.125l-6 2.25v5.175q0 .175.05.45H12z"
+            fill="var(--v3)" stroke="var(--v3)"/>
+    </g>
+</svg>

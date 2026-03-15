@@ -1,0 +1,149 @@
+---
+const memes = [
+    {src: "/img/memes/original.png", alt: "2004 architecture vs 2019 architecture vs 2021 architecture with htmx"},
+    {src: "/img/memes/20yearold.png", alt: "\"lol you are going to use twenty year old technology\" — django, php, flask, rails: \"Yes.\" lisp: \"no, sixty years old.\""},
+    {src: "/img/memes/whowillwin.png", alt: "Who Will Win? Angular and React vs a lunatic in Montana and his internet friends"},
+    {src: "/img/memes/uarealldoingitwrong.png", alt: "Roy Fielding: REST — You're doing it completely wrong"},
+    {src: "/img/memes/restapi.png", alt: "I'm going to create a RESTful API... Using JSON... here are my API docs — increasingly angry Roy Fielding"},
+    {src: "/img/memes/justusehtml.png", alt: "Hydration vs resumability vs just use HTML"},
+    {src: "/img/memes/istudiedhtml.png", alt: "When you wrote class components I studied HTML"},
+    {src: "/img/memes/htmlvsjson.png", alt: "HTML: I feel bad for you. JSON: I don't think about you at all."},
+    {src: "/img/memes/dontknowwhatclientsideroutingis.png", alt: "Can't route client side if you don't know what client-side routing is"},
+    {src: "/img/memes/nocap.png", alt: "Grug with broccoli hair: hypermedia straight bussin"},
+    {src: "/img/memes/ie11enjoyer.png", alt: "Average open standards fan vs average IE11 enjoyer"},
+    {src: "/img/memes/hydration.png", alt: "How much water is in your body? React: 100%"},
+    {src: "/img/memes/viewsource.png", alt: "Gigachad: I wonder how this works — clicks view source — Oh, neat."},
+    {src: "/img/memes/javascripthistory.png", alt: "Friends? Free time? Happiness? Nope — JavaScript History API"},
+    {src: "/img/memes/bellcurve.png", alt: "Bell curve: HTML + a backend — ONE BILLION COMPONENTS — HTML + a backend"},
+    {src: "/img/memes/drakearchitecture.png", alt: "Drake: complex web dev learning graph vs Learn the basics — HTML and CSS"},
+    {src: "/img/memes/bellcurve2.png", alt: "Bell curve: HTML is fine — we have to use react and graphql and redux — htmx is fine"},
+    {src: "/img/memes/dbtohtml.png", alt: "DB to JSON to HTML — or just DB to HTML"},
+    {src: "/img/memes/normal.png", alt: "Me: Why can't you just be normal? JavaScript: screams"},
+    {src: "/img/memes/feelbad.png", alt: "You are using the term REST bad and you should feel bad"},
+    {src: "/img/memes/drakememes.png", alt: "Drake: well reasoned content explaining strengths and weaknesses of htmx vs memes"},
+    {src: "/img/memes/fullstack.jpg", alt: "htmx to backend dev: Look at me. You're fullstack now."},
+    {src: "/img/memes/frontenddevs.png", alt: "Front end devs thinking everyone will use JavaScript on the backend — htmx"},
+    {src: "/img/memes/htmxanddjango.png", alt: "Django riding htmx refusing all that complicated JS noise"},
+    {src: "/img/memes/aye.png", alt: "Old Java dev: I never thought I'd die fighting side by side with dotnet developers — what about someone who also hates JS frameworks? — aye, I could do that"},
+    {src: "/img/memes/extinction.png", alt: "JavaScript/Node as Thanos vs Java, Ruby, Lisp, Python, PHP fighting back"},
+];
+
+const total = memes.length;
+---
+
+<div id="meme-gallery" class="columns-1 sm:columns-2 gap-4 mb-16">
+    {memes.map((meme, i) => (
+        <button type="button"
+                class="block w-full mb-4 break-inside-avoid cursor-zoom-in group"
+                data-src={meme.src}
+                data-alt={meme.alt}
+                _={`on click
+                    set #lightbox-img.src to my @data-src
+                    set #lightbox-img.alt to my @data-alt
+                    set #lightbox-counter.textContent to '${i + 1} / ${total}'
+                    set #meme-lightbox@data-index to '${i}'
+                    call #meme-lightbox.showModal()`}>
+            <img src={meme.src}
+                 alt={meme.alt}
+                 loading="lazy"
+                 class="rounded border border-neutral-200 dark:border-neutral-800 w-full h-auto transition" />
+        </button>
+    ))}
+</div>
+
+<!-- Lightbox dialog -->
+<dialog id="meme-lightbox"
+        class="fixed inset-0 m-0 w-full h-full max-w-none max-h-none bg-transparent p-0
+               backdrop:bg-black/85 backdrop:backdrop-blur-sm
+               open:flex open:items-center open:justify-center"
+        data-index="0"
+        _="on click
+               if event.target is me
+                   call me.close()
+               end
+           end
+           on keydown[key=='ArrowRight']
+               halt the event
+               trigger next on me
+           end
+           on keydown[key=='ArrowLeft']
+               halt the event
+               trigger prev on me
+           end
+           on touchstart
+               set touch to event.changedTouches[0]
+               set my @data-touch-x to touch.clientX
+           end
+           on touchend
+               set touch to event.changedTouches[0]
+               set startX to (my @data-touch-x as Number)
+               set diff to (startX - touch.clientX)
+               if diff > 50
+                   trigger next on me
+               else if diff < -50
+                   trigger prev on me
+               end
+           end
+           on next
+               set buttons to #meme-gallery.children
+               set idx to ((my @data-index as Int) + 1)
+               if idx >= buttons.length
+                   set idx to 0
+               end
+               set btn to buttons[idx]
+               set #lightbox-img.src to btn.dataset.src
+               set #lightbox-img.alt to btn.dataset.alt
+               set #lightbox-counter.textContent to ((idx + 1) + ' / ' + buttons.length)
+               set my @data-index to idx
+           end
+           on prev
+               set buttons to #meme-gallery.children
+               set idx to ((my @data-index as Int) - 1)
+               if idx < 0
+                   set idx to (buttons.length - 1)
+               end
+               set btn to buttons[idx]
+               set #lightbox-img.src to btn.dataset.src
+               set #lightbox-img.alt to btn.dataset.alt
+               set #lightbox-counter.textContent to ((idx + 1) + ' / ' + buttons.length)
+               set my @data-index to idx
+           end">
+
+    <!-- Close -->
+    <button type="button"
+            class="fixed top-4 right-4 z-10 size-10 flex items-center justify-center rounded-full
+                   text-white/70 interact:text-white interact:bg-white/10 transition cursor-pointer outline-none"
+            _="on click call #meme-lightbox.close()"
+            aria-label="Close lightbox">
+        <i class="icon-[mdi--close] size-6"></i>
+    </button>
+
+    <!-- Prev -->
+    <button type="button"
+            class="fixed left-4 top-1/2 -translate-y-1/2 z-10 size-12 flex items-center justify-center rounded-full
+                   text-white/50 interact:text-white interact:bg-white/10 transition cursor-pointer outline-none"
+            _="on click trigger prev on #meme-lightbox"
+            aria-label="Previous meme">
+        <i class="icon-[mdi--chevron-left] size-8"></i>
+    </button>
+
+    <!-- Next -->
+    <button type="button"
+            class="fixed right-4 top-1/2 -translate-y-1/2 z-10 size-12 flex items-center justify-center rounded-full
+                   text-white/50 interact:text-white interact:bg-white/10 transition cursor-pointer outline-none"
+            _="on click trigger next on #meme-lightbox"
+            aria-label="Next meme">
+        <i class="icon-[mdi--chevron-right] size-8"></i>
+    </button>
+
+    <!-- Image -->
+    <img id="lightbox-img"
+         src=""
+         alt=""
+         class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg select-none" />
+
+    <!-- Counter -->
+    <span id="lightbox-counter"
+          class="fixed bottom-4 left-1/2 -translate-x-1/2 text-sm text-white/50 font-mono tabular-nums select-none">
+    </span>
+</dialog>

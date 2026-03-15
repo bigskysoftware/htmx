@@ -1,0 +1,44 @@
+<svg viewBox="0 0 128 128" overflow="visible" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .troubleshoot {
+        --v1: var(--color-neutral-150);
+        --v2: var(--color-neutral-200);
+        --v3: var(--color-neutral-300);
+        --v4: var(--color-neutral-350);
+        }
+        @media (prefers-color-scheme: dark) {
+        .troubleshoot {
+        --v1: var(--color-neutral-650);
+        --v2: var(--color-neutral-700);
+        --v3: var(--color-neutral-750);
+        --v4: var(--color-neutral-800);
+        }
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .troubleshoot {
+        --v1: var(--color-neutral-150);
+        --v2: var(--color-neutral-200);
+        --v3: var(--color-neutral-350);
+        --v4: var(--color-neutral-450);
+        }
+        @media (prefers-color-scheme: dark) {
+        .group:has(a:hover, a:focus-visible, a:active) .troubleshoot {
+        --v1: var(--color-neutral-300);
+        --v2: var(--color-neutral-400);
+        --v3: var(--color-neutral-500);
+        --v4: var(--color-neutral-600);
+        }
+        }
+
+        .troubleshoot path { transition: fill 150ms, stroke 150ms; }
+    </style>
+
+    <g class="troubleshoot" transform="translate(34, 35) scale(2.5)">
+        <!-- Shadow -->
+        <path d="M11.669 3.254L8.707.293L7.293 1.707l1.853 1.854a15.2 15.2 0 0 0-3.974 1.468a10 10 0 0 0-.54.316l-.033.021l-.01.007l-.003.002l-.002.001L5 6l-.364-.546l-.052-.078l-.334.223V8.25h15.5V5.6l-.334-.223l-.002-.001l-.003-.002l-.01-.007l-.032-.02l-.116-.073c-.099-.06-.242-.144-.425-.244a15.2 15.2 0 0 0-3.974-1.468l1.853-1.854L15.293.293l-2.961 2.961a13 13 0 0 0-.664 0M19 6l.416-.624zM1.996 8.132L4.828 9.75h14.344l2.832-1.618l.992 1.736l-3.246 1.855V14H23v2h-3.25v2.277l3.246 1.855l-.992 1.736l-3.34-1.908L12 22.816L5.336 19.96l-3.34 1.908l-.992-1.736l3.246-1.855V16H1v-2h3.25v-2.277L1.004 9.868z"
+            fill="var(--v4)" fill-rule="evenodd" clip-rule="evenodd" transform="translate(0.5, 0.5)"/>
+
+        <!-- Bug body -->
+        <path d="M11.669 3.254L8.707.293L7.293 1.707l1.853 1.854a15.2 15.2 0 0 0-3.974 1.468a10 10 0 0 0-.54.316l-.033.021l-.01.007l-.003.002l-.002.001L5 6l-.364-.546l-.052-.078l-.334.223V8.25h15.5V5.6l-.334-.223l-.002-.001l-.003-.002l-.01-.007l-.032-.02l-.116-.073c-.099-.06-.242-.144-.425-.244a15.2 15.2 0 0 0-3.974-1.468l1.853-1.854L15.293.293l-2.961 2.961a13 13 0 0 0-.664 0M19 6l.416-.624zM1.996 8.132L4.828 9.75h14.344l2.832-1.618l.992 1.736l-3.246 1.855V14H23v2h-3.25v2.277l3.246 1.855l-.992 1.736l-3.34-1.908L12 22.816L5.336 19.96l-3.34 1.908l-.992-1.736l3.246-1.855V16H1v-2h3.25v-2.277L1.004 9.868z"
+            fill="var(--v1)" fill-rule="evenodd" clip-rule="evenodd"/>
+    </g>
+</svg>

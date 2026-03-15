@@ -1,0 +1,7 @@
+# Old site: /attributes/* → /reference/attributes/*
+/attributes              /reference/attributes          301
+/attributes/*            /reference/attributes/:splat   301
+
+# Old site: /headers/* → /reference/headers/*
+/headers                 /reference/headers             301
+/headers/*               /reference/headers/:splat      301

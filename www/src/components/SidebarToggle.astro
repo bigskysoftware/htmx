@@ -1,0 +1,20 @@
+---
+/**
+ * Mobile sidebar toggle button. Slotted into Header's "before-logo" slot.
+ */
+---
+
+<label slot="before-logo"
+       class="lg:hidden flex items-center justify-center size-10 cursor-pointer select-none rounded-xs text-neutral-600 dark:text-neutral-400 interact:text-neutral-800 dark:interact:text-neutral-100 sm:transition"
+       for="sidebar-toggle-mobile"
+       aria-label="Toggle Sidebar"
+       aria-controls="sidebar-nav"
+       role="button"
+       tabindex="0">
+    <i class="size-5 icon-[mdi--menu-open]
+          transition-opacity duration-200
+          [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-0"></i>
+    <i class="size-5 icon-[mdi--menu-close]
+          absolute transition-opacity duration-200 opacity-0
+          [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-100"></i>
+</label>
