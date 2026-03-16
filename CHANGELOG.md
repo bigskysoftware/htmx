@@ -3,10 +3,12 @@
 ## [4.0.0-alpha8] - 2026-03-16
 
 * Extracted SSE from core into standalone extension (`hx-sse.js`) ([#3666](https://github.com/bigskysoftware/htmx/pull/3666))
+* An all new website rebuilt with Astro by @scriptogre (https://github.com/bigskysoftware/htmx/pull/3703)
 * New core extensions
   * Added `hx-targets` extension for multi-error targeting by HTTP status code
   * Added `hx-download` extension for file download swaps
   * Added `hx-browser-indicator` extension to show the browser's native loading indicator
+  * Added `hx-ptag` extension, replacing previous etag-based behavior that played poorly w/the default browser behavior
 * Submit inputs (`<input type="submit">`) now use `click` as the default trigger
 * Smaller Additions
   * Added `ctx.vals` for extension use ([#3689](https://github.com/bigskysoftware/htmx/pull/3689))
