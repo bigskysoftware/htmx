@@ -1,6 +1,6 @@
 {
   "name": "htmx.org",
-  "version": "4.0.0-beta1",
+  "version": "4.0.0-alpha8",
   "description": "A hypermedia-oriented JavaScript library",
   "main": "dist/htmx.js",
   "module": "dist/htmx.esm.js",
@@ -42,8 +42,8 @@
     "test:all": "web-test-runner --browsers chromium firefox webkit --config test/web-test-runner.config.mjs --playwright --concurrency 1",
     "test:manual": "node test/manual/server.js",
     "test:manual:ws": "node test/manual/ws-server.js",
-    "www": "cd www && bun install && bun run dev",
-    "site": "cd www && bun install && bun run dev",
+    "www:build": "cd www && bun install && bun run build",
+    "www:dev": "cd www && bun install && bun run dev",
     "merge": "  (echo \"src/** merge=ours\ndist/** merge=ours\ntest/** merge=ours\n\" > .gitattributes && git add .gitattributes && git merge master); git reset HEAD .gitattributes 2>/dev/null; rm .gitattributes 2>/dev/null\n",
     "update-sha": "bash scripts/update-sha.sh"
   },
@@ -69,5 +69,8 @@
     "brotli-cli": "^2.1.1",
     "terser": "^5.46.0",
     "ws": "^8.19.0"
+  },
+  "dependencies": {
+    "playwright": "^1.58.2"
   }
 }

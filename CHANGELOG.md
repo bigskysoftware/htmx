@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0-beta1] - 2026-03-13
+## [4.0.0-alpha8] - 2026-03-16
 
 * Extracted SSE from core into standalone extension (`hx-sse.js`) ([#3666](https://github.com/bigskysoftware/htmx/pull/3666))
 * New core extensions
