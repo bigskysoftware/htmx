@@ -1,10 +1,7 @@
 (() => {
     let api;
 
-    const CACHE_KEY = 'htmx-history-cache';
-    const PATH_KEY  = 'htmx-history-cache-current-path';
-
-    let currentPathForHistory = location.pathname + location.search;
+    const INDEX_KEY = 'htmx-history-index';
 
     function cfg() {
         return htmx.config.historyCache;
@@ -14,28 +11,16 @@
         return htmx.config.prefix ? attr.replace('hx-', htmx.config.prefix) : attr;
     }
 
-    function normalizePath(path) {
-        try { path = new URL(path, location.href).pathname + new URL(path, location.href).search; } catch (_) {}
-        return path.replace(/\/$/, '') || '/';
-    }
-
-    function currentPath() {
-        return currentPathForHistory
-            || (canUseStorage() && sessionStorage.getItem(PATH_KEY))
-            || location.pathname + location.search;
-    }
-
-    function setCurrentPath(path) {
-        currentPathForHistory = path;
-        if (canUseStorage()) sessionStorage.setItem(PATH_KEY, path);
-    }
-
     function canUseStorage() {
         try {
             sessionStorage.setItem('__htmx_test__', '1');
             sessionStorage.removeItem('__htmx_test__');
             return true;
         } catch (_) { return false; }
+    }
+
+    function genId() {
+        return crypto.randomUUID?.() ?? Math.random().toString(36).slice(2);
     }
 
     function getHistoryTarget() {
@@ -52,62 +37,124 @@
         return clone.innerHTML;
     }
 
-    function readCache() {
-        try { return JSON.parse(sessionStorage.getItem(CACHE_KEY)) || []; } catch (_) { return []; }
+    // --- sessionStorage index (LRU list of htmxIds) ---
+
+    function readIndex() {
+        try { return JSON.parse(sessionStorage.getItem(INDEX_KEY)) || []; } catch { return []; }
     }
 
-    function writeCache(cache) {
-        sessionStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+    function writeIndex(index) {
+        sessionStorage.setItem(INDEX_KEY, JSON.stringify(index));
     }
 
-    function saveToCache(url) {
-        if (!canUseStorage()) return;
-        if (cfg().size <= 0) { sessionStorage.removeItem(CACHE_KEY); return; }
-        let target = getHistoryTarget();
+    function saveToSessionStorage(htmxId, content, head) {
+        if (cfg().size <= 0) return false;
+        let index = readIndex().filter(id => id !== htmxId);
+        // evict oldest until we're under the limit (leaving room for our new entry)
+        while (index.length >= cfg().size) {
+            sessionStorage.removeItem('htmx-history-' + index.shift());
+        }
+        // try to write, evicting more if sessionStorage is full
+        let data = JSON.stringify({ content, head });
+        while (true) {
+            try {
+                sessionStorage.setItem('htmx-history-' + htmxId, data);
+                index.push(htmxId);
+                writeIndex(index);
+                return true;
+            } catch (e) {
+                if (index.length === 0) return false;
+                sessionStorage.removeItem('htmx-history-' + index.shift());
+            }
+        }
+    }
+
+    function getFromSessionStorage(htmxId) {
+        try { return JSON.parse(sessionStorage.getItem('htmx-history-' + htmxId)); } catch { return null; }
+    }
+
+    // --- two-tier save/get ---
+
+    function saveCurrentPage() {
         if (htmx.find(`[${prefix('hx-history')}="false"]`)) return;
 
-        let cache = readCache();
-        let detail = { path: url, target, cache };
+        let target = getHistoryTarget();
+        let content = cleanContent(target);
+        let head = document.head.outerHTML;
+        let scroll = window.scrollY;
+        let title = document.title;
+
+        let detail = { target, content, head };
         if (api.triggerHtmxEvent(document, 'htmx:history:cache:before:save', detail) === false) return;
-        // respect mutations to path and target from event handlers
-        url = detail.path;
-        target = detail.target;
-        cache = detail.cache;
+        content = detail.content;
+        head = detail.head;
 
-        cache = cache.filter(e => e.url !== url);
-        let item = { url, content: cleanContent(target), head: document.head.outerHTML, title: document.title, scroll: window.scrollY };
-        cache.push(item);
+        // Reuse existing htmxId if this entry already fell back to sessionStorage
+        let existingId = history.state?.htmxId;
 
-        while (cache.length > cfg().size) cache.shift();
-
-        let saved = false;
-        while (!saved && cache.length > 0) {
+        if (existingId) {
+            // Already using sessionStorage for this entry — update it there
+            history.replaceState({ ...history.state, scroll, title }, '', location.href);
+            if (canUseStorage()) saveToSessionStorage(existingId, content, head);
+        } else {
+            // Tier 1: try storing content directly in history.state
             try {
-                writeCache(cache);
-                saved = true;
-            } catch (error) {
-                cache.shift();
+                history.replaceState({
+                    ...history.state,
+                    htmxContent: { content, head },
+                    scroll,
+                    title
+                }, '', location.href);
+            } catch (e) {
+                // Tier 2: overflow — mint an htmxId, store content in sessionStorage
+                let htmxId = genId();
+                history.replaceState({
+                    ...history.state,
+                    htmxId,
+                    htmxContent: undefined,
+                    scroll,
+                    title
+                }, '', location.href);
+                if (canUseStorage()) saveToSessionStorage(htmxId, content, head);
             }
         }
 
-        if (saved) api.triggerHtmxEvent(document, 'htmx:history:cache:after:save', { path: url, item, cache: readCache() });
+        api.triggerHtmxEvent(document, 'htmx:history:cache:after:save', { content, head, scroll, title });
     }
 
-    function getFromCache(url) {
-        return readCache().find(e => e.url === url) || null;
+    function getCachedContent() {
+        let state = history.state;
+        if (!state) return null;
+
+        // Tier 1: content directly in history.state
+        if (state.htmxContent) return state.htmxContent;
+
+        // Tier 2: htmxId points to sessionStorage
+        if (state.htmxId && canUseStorage()) return getFromSessionStorage(state.htmxId);
+
+        return null;
     }
 
-    async function restoreFromCache(path, item) {
-        await htmx.swap({
+    async function restoreFromCache(item) {
+        // Let head extension merge stylesheets/blocking scripts before body swap
+        let detail = { head: item.head, ready: null };
+        api.triggerHtmxEvent(document, 'htmx:history:cache:before:restore', detail);
+        if (detail.ready) await detail.ready;
+
+        // Swap body — pass deferred scripts on ctx so htmx_after_swap picks them up
+        let ctx = {
             sourceElement: document.body,
             target: getHistoryTarget(),
             swap: cfg().swapStyle,
             text: item.content,
-            transition: false
-        });
-        document.title = item.title;
-        requestAnimationFrame(() => window.scrollTo(0, item.scroll));
-        api.triggerHtmxEvent(document, 'htmx:history:cache:restored', { path, item, head: item.head });
+            transition: false,
+            _deferredHeadScripts: detail._deferredHeadScripts
+        };
+        await htmx.swap(ctx);
+
+        let state = history.state;
+        document.title = state?.title || document.title;
+        requestAnimationFrame(() => window.scrollTo(0, state?.scroll || 0));
     }
 
     htmx.registerExtension('history-cache', {
@@ -122,33 +169,24 @@
 
         htmx_before_history_update: (elt, detail) => {
             if (cfg().disable) return;
-            saveToCache(normalizePath(currentPath()));
-            // track the path that is about to be pushed/replaced so we have it after popstate
-            setCurrentPath(normalizePath(detail.history.path));
+            saveCurrentPage();
         },
 
         htmx_before_history_restore: (elt, detail) => {
             if (cfg().disable) return;
-            saveToCache(normalizePath(currentPath()));
-            setCurrentPath(normalizePath(detail.path));
-            let normalizedPath = normalizePath(detail.path);
-            let item = getFromCache(normalizedPath);
+            let item = getCachedContent();
             if (!item) {
-                // cache miss — fire event, then let core handle the fetch
-                let missDetail = { path: normalizedPath, refreshOnMiss: cfg().refreshOnMiss };
+                let missDetail = { path: detail.path, refreshOnMiss: cfg().refreshOnMiss };
                 api.triggerHtmxEvent(document, 'htmx:history:cache:miss', missDetail);
                 if (missDetail.refreshOnMiss) { location.reload(); return false; }
                 return;
             }
-            // fire hit event synchronously, before deciding whether to cancel core
-            let hitDetail = { path: normalizedPath, item };
-            if (api.triggerHtmxEvent(document, 'htmx:history:cache:hit', hitDetail) === false) {
-                // cache:hit was cancelled — let core handle the fetch (with proper abort signal)
-                return;
-            }
-            // user accepted cache — cancel core, restore from cache
+
+            let hitDetail = { path: detail.path, item };
+            if (api.triggerHtmxEvent(document, 'htmx:history:cache:hit', hitDetail) === false) return;
+
             detail.cancelled = true;
-            restoreFromCache(normalizedPath, hitDetail.item);
+            restoreFromCache(hitDetail.item);
             return false;
         }
     });
