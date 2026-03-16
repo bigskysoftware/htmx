@@ -977,16 +977,12 @@ var htmx = (() => {
         __handlePreservedElements(fragment) {
             let pantry = document.createElement('div');
             pantry.style.display = 'none';
-            document.body.appendChild(pantry);
+            document.body.insertAdjacentElement('afterend', pantry);
             let newPreservedElts = fragment.querySelectorAll?.(`[${this.__prefix('hx-preserve')}]`) || [];
             for (let preservedElt of newPreservedElts) {
                 let currentElt = document.getElementById(preservedElt.id);
                 if (currentElt) {
-                    if (pantry.moveBefore) {
-                        pantry.moveBefore(currentElt, null);
-                    } else {
-                        pantry.appendChild(currentElt);
-                    }
+                    this.__moveBefore(pantry, currentElt, null);
                 }
             }
             return pantry
@@ -996,11 +992,7 @@ var htmx = (() => {
             for (let preservedElt of [...pantry.children]) {
                 let newElt = document.getElementById(preservedElt.id);
                 if (newElt) {
-                    if (newElt.parentNode.moveBefore) {
-                        newElt.parentNode.moveBefore(preservedElt, newElt);
-                    } else {
-                        newElt.replaceWith(preservedElt);
-                    }
+                    this.__moveBefore(newElt.parentNode, preservedElt, newElt);
                     this.__cleanup(newElt)
                     newElt.remove()
                 }
@@ -1287,7 +1279,7 @@ var htmx = (() => {
                 fragment.append(...(task.fragment.firstElementChild.content || task.fragment.firstElementChild).childNodes);
             }
 
-            target.classList.add("htmx-swapping")
+            this.__addClass(target, "htmx-swapping")
             if (cssTransition && task.swapSpec?.swap) {
                 await this.timeout(task.swapSpec?.swap)
             }
@@ -1370,7 +1362,7 @@ var htmx = (() => {
                     }
                 }
             } finally {
-                target.classList.remove("htmx-swapping")
+                this.__removeClass(target, "htmx-swapping")
             }
             this.__restorePreservedElements(pantry);
             if (focusInfo && !focusInfo.elt.matches(':focus')) {
@@ -1384,23 +1376,23 @@ var htmx = (() => {
             this.__trigger(target, "htmx:before:settle", {task, newContent, settleTasks})
 
             for (const elt of newContent) {
-                elt.classList?.add?.("htmx-added")
+                this.__addClass(elt, "htmx-added")
             }
 
             if (cssTransition && settleTasks.length > 0) {
-                target.classList.add("htmx-settling")
+                this.__addClass(target, "htmx-settling")
                 await this.timeout(settleDelay);
                 // invoke settle tasks
                 for (let settleTask of settleTasks) {
                     settleTask()
                 }
-                target.classList.remove("htmx-settling")
+                this.__removeClass(target, "htmx-settling")
             }
 
             this.__trigger(target, "htmx:after:settle", {task, newContent, settleTasks})
 
             for (const elt of newContent) {
-                elt.classList?.remove?.("htmx-added")
+                this.__removeClass(elt, "htmx-added")
                 this.process(elt);
                 this.__handleAutoFocus(elt);
             }
@@ -1462,9 +1454,9 @@ var htmx = (() => {
 
         takeClass(element, className, container = element.parentElement) {
             for (let elt of this.__findAllExt(this.__normalizeElement(container), "." + className)) {
-                elt.classList.remove(className);
+                this.__removeClass(elt, className);
             }
-            element.classList.add(className);
+            this.__addClass(element, className);
         }
 
         on(eventOrElt, eventOrCallback, callback) {
@@ -1672,7 +1664,7 @@ var htmx = (() => {
             for (const indicator of indicatorElements) {
                 indicator._htmxReqCount ||= 0
                 indicator._htmxReqCount++
-                indicator.classList.add(this.config.requestClass)
+                this.__addClass(indicator, this.config.requestClass)
             }
             return indicatorElements
         }
@@ -1682,7 +1674,7 @@ var htmx = (() => {
                 if (indicator._htmxReqCount) {
                     indicator._htmxReqCount--;
                     if (indicator._htmxReqCount <= 0) {
-                        indicator.classList.remove(this.config.requestClass);
+                        this.__removeClass(indicator, this.config.requestClass);
                         delete indicator._htmxReqCount
                     }
                 }
@@ -2045,6 +2037,8 @@ var htmx = (() => {
             if (!(oldNode instanceof Element) || oldNode.tagName !== newNode.tagName) {
                 return false;
             }
+            // Script tags must be identical to match - never patch a script with different content
+            if (oldNode.tagName === 'SCRIPT' && !oldNode.isEqualNode(newNode)) return false;
             // If both have Alpine reactive ID bindings, ignore ID mismatch
             if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
                 return true;
@@ -2218,6 +2212,15 @@ var htmx = (() => {
                 }
             }
             return restoreTasks;
+        }
+
+        __addClass(elt, cls) {
+            elt?.classList?.add?.(cls);
+        }
+
+        __removeClass(elt, cls) {
+            elt?.classList?.remove?.(cls);
+            if (elt?.classList?.length === 0) elt.removeAttribute('class');
         }
 
         __normalizeElement(cssOrElement) {

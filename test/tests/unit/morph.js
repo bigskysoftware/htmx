@@ -246,6 +246,30 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(div.querySelector('#\\31'), hr);
         });
 
+        it('does not re-execute identical script tags during morph', async function() {
+            window._scriptMorphCount = 0;
+            createProcessedHTML('<div id="target"></div>');
+            await htmx.swap({target: '#target', text: '<script>window._scriptMorphCount++<\/script><div id="content">original</div>', swap: 'innerHTML'});
+            assert.equal(window._scriptMorphCount, 1, 'Script should run once after initial swap');
+
+            await htmx.swap({target: '#target', text: '<script>window._scriptMorphCount++<\/script><div id="content">updated</div>', swap: 'innerMorph'});
+
+            assert.equal(window._scriptMorphCount, 1, 'Identical script should not re-execute after morph');
+            delete window._scriptMorphCount;
+        });
+
+        it('executes changed script tags once when replaced during morph', async function() {
+            window._scriptMorphCount = 0;
+            createProcessedHTML('<div id="target"></div>');
+            await htmx.swap({target: '#target', text: '<script>window._scriptMorphCount++<\/script>', swap: 'innerHTML'});
+            assert.equal(window._scriptMorphCount, 1, 'Original script should run once after initial swap');
+
+            await htmx.swap({target: '#target', text: '<script>window._scriptMorphCount += 10<\/script>', swap: 'innerMorph'});
+
+            assert.equal(window._scriptMorphCount, 11, 'Changed script should execute exactly once after morph');
+            delete window._scriptMorphCount;
+        });
+
         it('does not treat empty id="" as a persistent id', async function() {
             // When both old and new content have <h1 id="">, the empty string should NOT
             // be treated as a persistent ID that needs to be preserved/matched.

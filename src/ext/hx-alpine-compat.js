@@ -23,14 +23,11 @@
             // Override isSoftMatch to handle Alpine reactive IDs
             let originalIsSoftMatch = api.isSoftMatch;
             api.isSoftMatch = function(oldNode, newNode) {
-                if (!(oldNode instanceof Element) || oldNode.tagName !== newNode.tagName) {
-                    return false;
-                }
                 // If both have Alpine reactive ID bindings, ignore ID mismatch
                 if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
-                    return true;
+                    return oldNode instanceof Element && oldNode.tagName === newNode.tagName;
                 }
-                return !oldNode.id || oldNode.id === newNode.id;
+                return originalIsSoftMatch(oldNode, newNode);
             };
         },
         
