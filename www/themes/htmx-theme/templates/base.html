@@ -27,7 +27,7 @@
 </head>
 <body hx-ext="class-tools, preload">
 
-<div class="top-nav">
+<header class="top-nav">
     <div class="c">
         <div class="menu">
             <div class="logo-wrapper">
@@ -43,7 +43,7 @@
             {% else %}
             <div id="nav" class="navigation" hx-boost="true">
             {% endif %}
-                <div class="navigation-items" preload="mouseover">
+                <nav class="navigation-items" preload="mouseover">
                     <div><a href="/docs/">docs</a></div>
                     <div><a href="/reference/">reference</a></div>
                     <div><a href="/examples/">examples</a></div>
@@ -63,11 +63,11 @@
                             <a class="github-button" href="https://github.com/bigskysoftware/htmx" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-show-count="true" aria-label="Star bigskysoftware/htmx on GitHub">star</a>
                         </div>
                     </div>
-                </div>
+                </nav>
             </div>
         </div>
     </div>
-</div>
+</header>
 
 {% if page and page.extra and page.extra.custom_classes %}
     {% set disp_classes = page.extra.custom_classes %}
@@ -75,9 +75,9 @@
     {% set disp_classes = "" %}
 {% endif %}
 
-<div class="c content {{ disp_classes }}">
+<main class="c content {{ disp_classes }}">
     {% block content %} {% endblock content -%}
-</div>
+</main>
 
 <footer>
     <div class="c content {{ disp_classes }}">

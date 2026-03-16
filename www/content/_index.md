@@ -285,36 +285,36 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </div>
 <div>
         <a data-github-account="appleple" href="https://www.a-blogcms.jp/">
-          <img src="/img/ablogcms_logo.svg" style="width:100%;max-width:250px">
+          <img src="/img/ablogcms_logo.svg" alt="a-blog cms" style="width:100%;max-width:250px">
         </a>
 </div>
 <div>
-        <a data-github-account="CoverageCritic" alt="Find Internet Providers With Broadband Map" href="https://broadbandmap.com/">
-           <img class="dark-hidden" src="/img/BroadbandMapLogo2LineLightMode.png" style="width:100%;max-width:250px">
-           <img class="dark-visible" src="/img/BroadbandMapLogo2LineDarkMode.png" style="width:100%;max-width:250px">
+        <a data-github-account="CoverageCritic" href="https://broadbandmap.com/">
+           <img class="dark-hidden" alt="Find Internet Providers With Broadband Map" src="/img/BroadbandMapLogo2LineLightMode.png" style="width:100%;max-width:250px">
+           <img class="dark-visible" alt="Find Internet Providers With Broadband Map" src="/img/BroadbandMapLogo2LineDarkMode.png" style="width:100%;max-width:250px">
         </a>
 </div>
 <div>
-        <a data-github-account="Follower24" alt="Follower24" href="https://www.follower24.de/">
-           <img class="dark-hidden" src="/img/follower_light.svg" style="width:100%;max-width:250px">
-           <img class="dark-visible" src="/img/follower_dark.svg" style="width:100%;max-width:250px">
+        <a data-github-account="Follower24" href="https://www.follower24.de/">
+           <img class="dark-hidden" alt="Follower24" src="/img/follower_light.svg" style="width:100%;max-width:250px">
+           <img class="dark-visible" alt="Follower24" src="/img/follower_dark.svg" style="width:100%;max-width:250px">
         </a>
 </div>
 <div>
-    <a data-github-account="ExchangeRate-API" alt="The Accurate & Reliable Exchange Rate API" href="https://www.exchangerate-api.com">
-       <img class="dark-hidden" src="/img/exchange-rate-api.png" style="width:100%;max-width:250px">
-       <img class="dark-visible" src="/img/exchange-rate-api-dark.png" style="width:100%;max-width:250px">
+    <a data-github-account="ExchangeRate-API" href="https://www.exchangerate-api.com">
+       <img class="dark-hidden" alt="The Accurate & Reliable Exchange Rate API" src="/img/exchange-rate-api.png" style="width:100%;max-width:250px">
+       <img class="dark-visible" alt="The Accurate & Reliable Exchange Rate API" src="/img/exchange-rate-api-dark.png" style="width:100%;max-width:250px">
     </a>
 </div>
 <div>
     <a data-github-account="mersano" href="https://instant-famous.com/">
-       <img src="/img/rsz_instant_famous.png" style="width:100%;max-width:250px">
+       <img src="/img/rsz_instant_famous.png" alt="Instant Famous" style="width:100%;max-width:250px">
     </a>
 </div>
 <div></div>
 <div>
     <a data-github-account="blacksandsmedia" href="https://hellostake.com/au/referral-code">
-       <img src="/img/stake.jpeg" style="width:100%;max-width:250px">
+       <img src="/img/stake.jpeg" alt="Stake" style="width:100%;max-width:250px">
     </a>
 </div>
 </div>
