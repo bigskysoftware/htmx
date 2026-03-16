@@ -390,6 +390,58 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         assert.isFalse(ctx1.aborted)
     })
 
+    // hx-sync value parsing tests
+
+    it('hx-sync="this" defaults to queue first strategy', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-sync="this"></div>')
+        assert.equal(htmx.__determineSyncStrategy(div), 'queue first')
+    })
+
+    it('hx-sync="this" uses same element for queue', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-sync="this"></div>')
+        let queue = htmx.__getRequestQueue(div)
+        assert.isOk(queue)
+    })
+
+    it('hx-sync="this:drop" uses drop strategy', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-sync="this:drop"></div>')
+        assert.equal(htmx.__determineSyncStrategy(div), 'drop')
+    })
+
+    it('hx-sync="this:replace" uses replace strategy', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-sync="this:replace"></div>')
+        assert.equal(htmx.__determineSyncStrategy(div), 'replace')
+    })
+
+    it('hx-sync="this:queue last" uses queue last strategy', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-sync="this:queue last"></div>')
+        assert.equal(htmx.__determineSyncStrategy(div), 'queue last')
+    })
+
+    it('hx-sync="closest form" uses closest form for queue with default strategy', function () {
+        let form = createProcessedHTML('<form><div id="btn" hx-get="/test" hx-sync="closest form"></div></form>')
+        let btn = form.querySelector('#btn')
+        assert.equal(htmx.__determineSyncStrategy(btn), 'queue first')
+        // queue should be on the form, not the button
+        let queue = htmx.__getRequestQueue(btn)
+        assert.equal(form._htmxRequestQueue, queue)
+    })
+
+    it('hx-sync="closest form:replace" uses closest form with replace strategy', function () {
+        let form = createProcessedHTML('<form><div id="btn" hx-get="/test" hx-sync="closest form:replace"></div></form>')
+        let btn = form.querySelector('#btn')
+        assert.equal(htmx.__determineSyncStrategy(btn), 'replace')
+        let queue = htmx.__getRequestQueue(btn)
+        assert.equal(form._htmxRequestQueue, queue)
+    })
+
+    it('hx-sync with "this" shares queue between sibling elements synced to parent', function () {
+        let container = createProcessedHTML('<div id="c"><div id="a" hx-get="/a" hx-sync="#c:drop"></div><div id="b" hx-get="/b" hx-sync="#c:drop"></div></div>')
+        let a = container.querySelector('#a')
+        let b = container.querySelector('#b')
+        assert.equal(htmx.__getRequestQueue(a), htmx.__getRequestQueue(b))
+    })
+
     it('abort strategy: clears queue when aborting current request', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)

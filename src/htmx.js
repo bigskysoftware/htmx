@@ -622,16 +622,18 @@ var htmx = (() => {
         __determineSyncStrategy(elt) {
             let syncValue = this.__attributeValue(elt, "hx-sync");
             if (!syncValue) return "queue first";
-            return syncValue.split(":").pop();
+            let strategy = syncValue.split(":").pop().trim();
+            return /^(drop|abort|replace|queue)/.test(strategy) ? strategy : "queue first";
         }
 
         __getRequestQueue(elt) {
             let syncValue = this.__attributeValue(elt, "hx-sync");
             let syncElt = elt
-            if (syncValue && syncValue.includes(":")) {
-                let strings = syncValue.split(":");
-                let selector = strings[0];
-                syncElt = this.__findOrWarn(elt, selector, "hx-sync") || elt;
+            if (syncValue) {
+                let selector = syncValue.includes(":")
+                    ? syncValue.slice(0, syncValue.lastIndexOf(":")).trim()
+                    : (/^(drop|abort|replace|queue)/.test(syncValue) ? null : syncValue);
+                if (selector) syncElt = this.__findOrWarn(elt, selector, "hx-sync") || elt;
             }
             return syncElt._htmxRequestQueue ||= new ReqQ()
         }
