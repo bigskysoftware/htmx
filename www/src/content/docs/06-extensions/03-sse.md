@@ -145,15 +145,81 @@ Configure SSE behavior globally via `htmx.config.sse` or per-element via [`hx-co
 | `reconnectMaxDelay` | `60000` | `60000` | Maximum reconnect delay (ms) |
 | `reconnectMaxAttempts` | `Infinity` | `Infinity` | Maximum reconnection attempts |
 | `reconnectJitter` | `0.3` | `0.3` | Jitter factor (0-1) for delay randomization |
-| `pauseOnBackground` | `true` | `false` | Close the stream when the tab is backgrounded, reconnect when visible |
+| `pauseOnBackground` | `true` | `false` | Disconnect when the tab is backgrounded, reconnect when visible (see [Background Tab Behavior](#background-tab-behavior)) |
 
 ### Reconnection Strategy
 
 The extension uses exponential backoff with jitter:
 
-- **Formula**: `delay = min(reconnectDelay * 2^(attempt-1), reconnectMaxDelay)`
-- **Jitter**: Adds +/-`reconnectJitter` randomization to avoid thundering herd
-- **Last-Event-ID**: Automatically sent on reconnection if the server provided message IDs
+- **Formula**: `delay = min(reconnectDelay × 2^(attempt-1), reconnectMaxDelay)`
+- **Jitter**: Adds ±`reconnectJitter` randomization to avoid thundering herd
+- **Last-Event-ID**: Automatically sent on reconnection if the server provided message IDs (see [Background Tab Behavior](#background-tab-behavior))
+
+### Background Tab Behavior
+
+When `pauseOnBackground` is enabled (the default for `hx-sse:connect`), the extension disconnects the
+stream when the browser tab is hidden and reconnects when the tab becomes visible again. This exists
+because some browsers (notably iOS Safari) silently kill SSE connections when the app is backgrounded
+without firing any error events, leaving the connection in a zombie state.
+
+**Messages sent by the server while the tab is in the background are not received by the client.** Whether
+those messages can be recovered depends on your server:
+
+- If the server includes `id:` fields in its SSE messages, the extension tracks the last received ID and
+  sends it as a `Last-Event-ID` header when reconnecting.
+- If the server reads the `Last-Event-ID` header and replays missed messages, nothing is lost.
+- If the server does not send `id:` fields or does not support `Last-Event-ID`, messages sent during the
+  background period are lost.
+
+#### Example: Resumable Notifications Stream
+
+**Server** (Python with FastAPI + sse-starlette):
+
+```python
+from fastapi import FastAPI, Request
+from sse_starlette.sse import EventSourceResponse
+
+app = FastAPI()
+notifications = []  # In production, use a database
+
+@app.get("/notifications")
+async def sse(request: Request):
+    last_id = request.headers.get("last-event-id")
+
+    async def stream():
+        # Replay any missed messages
+        start = 0
+        if last_id:
+            for i, n in enumerate(notifications):
+                if str(n["id"]) == last_id:
+                    start = i + 1
+                    break
+            for n in notifications[start:]:
+                yield {"id": str(n["id"]), "data": n["data"]}
+
+        # Stream new messages as they arrive
+        seen = len(notifications)
+        while True:
+            if len(notifications) > seen:
+                for n in notifications[seen:]:
+                    yield {"id": str(n["id"]), "data": n["data"]}
+                seen = len(notifications)
+            await asyncio.sleep(0.5)
+
+    return EventSourceResponse(stream())
+```
+
+**Client:**
+
+```html
+<div hx-sse:connect="/notifications" hx-swap="beforeend">
+    <!-- Notifications appear here -->
+</div>
+```
+
+When the user switches tabs and comes back, the extension reconnects with
+`Last-Event-ID: <last-received-id>`, and the server replays any notifications
+that were sent in the meantime.
 
 ## Events
 
