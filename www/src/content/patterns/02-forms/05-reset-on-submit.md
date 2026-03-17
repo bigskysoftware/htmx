@@ -5,21 +5,12 @@ icon: "icon-[mdi--eraser]"
 ---
 
 <script>
-const replies = [
-  "have you tried just returning HTML",
-  "look, just use a form. forms have been working since 1993",
-  "you're mass producing artisanal web apps now. welcome to the club",
-  "hypermedia is how the web was meant to work. we just forgot for a bit",
-  "the browser already knows how to do this. we just had to get out of its way",
-];
+var _replyIndex = 0;
 
-let replyIndex = 0;
-
-const inputCls = "flex-1 px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-850 bg-white dark:bg-neutral-900 text-sm text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 outline-none";
-
-const btnCls = "px-4 py-2 text-sm font-semibold rounded-lg text-white bg-neutral-800 dark:text-neutral-900 dark:bg-neutral-200 cursor-pointer interact:bg-neutral-700 dark:interact:bg-neutral-300 active:scale-[0.98] transition";
-
-server.get("/demo", () => `
+server.get("/demo", () => {
+  const inputCls = "flex-1 px-3 py-2 rounded-lg border border-neutral-200 dark:border-neutral-850 bg-white dark:bg-neutral-900 text-sm text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 outline-none";
+  const btnCls = "px-4 py-2 text-sm font-semibold rounded-lg text-white bg-neutral-800 dark:text-neutral-900 dark:bg-neutral-200 cursor-pointer interact:bg-neutral-700 dark:interact:bg-neutral-300 active:scale-[0.98] transition";
+  return `
 <div class="flex flex-col h-[300px]">
   <div id="messages" class="flex-1 overflow-y-auto space-y-3 pb-3 pr-3 scrollbar-subtle"></div>
   <form class="flex gap-2 shrink-0 mt-3"
@@ -30,12 +21,20 @@ server.get("/demo", () => `
            class="${inputCls}">
     <button class="${btnCls}">Send</button>
   </form>
-</div>`);
+</div>`;
+});
 
 server.post("/chat", (req) => {
+  const replies = [
+    "have you tried just returning HTML",
+    "look, just use a form. forms have been working since 1993",
+    "you're mass producing artisanal web apps now. welcome to the club",
+    "hypermedia is how the web was meant to work. we just forgot for a bit",
+    "the browser already knows how to do this. we just had to get out of its way",
+  ];
   const msg = req.params["message"];
   if (!msg) return;
-  const reply = replies[replyIndex++ % replies.length];
+  const reply = replies[_replyIndex++ % replies.length];
   return `
     <div class="starting:opacity-0 starting:translate-y-1 transition duration-300 ease-out flex justify-end">
       <div class="rounded-lg rounded-br-sm bg-blue-600 dark:bg-blue-500 px-3.5 py-2 text-sm text-white max-w-[75%]">${msg}</div>

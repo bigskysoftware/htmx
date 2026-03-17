@@ -105,6 +105,8 @@
         .catch(err => { console.warn('[demo] SW registration failed:', err); delete window._demoSwReady; })
     : Promise.resolve();
 
+  window._demoGeneration ??= 0;
+
   // --- WebSocket mock ---
   const OriginalWebSocket = window._OriginalWebSocket ??= window.WebSocket;
 
@@ -149,9 +151,17 @@
     delay(ms) { responseDelay = ms; },
     sse(path, handler) { sseHandlers.push({ url: path, handler }); },
     ws(path, handler)  { wsHandlers.push({ url: path, handler }); },
+    reset() {
+      routes.length = 0;
+      sseHandlers.length = 0;
+      wsHandlers.length = 0;
+      responseDelay = 0;
+    },
 
     start(path, selector) {
+      const generation = ++window._demoGeneration;
       swReady.then(reg => {
+        if (generation !== window._demoGeneration) return;
         if (!navigator.serviceWorker?.controller && reg?.active) {
           return new Promise(resolve => {
             navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
@@ -159,6 +169,7 @@
           });
         }
       }).then(() => {
+        if (generation !== window._demoGeneration) return;
         if (wsHandlers.length > 0) window.WebSocket = MockWebSocket;
         else if (window._OriginalWebSocket) window.WebSocket = window._OriginalWebSocket;
         var el = document.querySelector(selector || '#demo-content');
@@ -170,7 +181,7 @@
           if (!r.ok) return;
           return r.text();
         }).then(html => {
-          if (!html) return;
+          if (!html || generation !== window._demoGeneration) return;
           el.innerHTML = html;
           if (window.htmx) htmx.process(el);
         }).catch(err => console.warn('[demo] Initial fetch failed:', err));

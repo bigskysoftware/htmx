@@ -21,6 +21,8 @@ function buildCategoryRedirects() {
         for (const dir of subfolders.sort((a, b) => a.name.localeCompare(b.name))) {
             const files = readdirSync(`${base}/${dir.name}`).filter(f => /\.(md|mdx)$/.test(f) && !f.startsWith('index')).sort();
             if (files.length === 0) continue;
+            const hasIndexFile = readdirSync(`${base}/${dir.name}`).some(f => f === 'index.md' || f === 'index.mdx');
+            if (hasIndexFile) continue; // real page exists, no redirect needed
             const catSlug = dir.name.replace(/^\d+-/, '');
             const firstSlug = files[0].replace(/\.(md|mdx)$/, '').replace(/^\d+-/, '');
             redirects[`/${collection}/${catSlug}`] = `/${collection}/${catSlug}/${firstSlug}`;

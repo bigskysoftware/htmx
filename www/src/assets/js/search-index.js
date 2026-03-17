@@ -343,7 +343,9 @@ class SearchIndex extends HTMLElement {
         this.index.update(doc);
     }
 
-    remove(id) {
+    // this was named remove but renamed to avoid prototype pollution
+    // causing hx-preserve remove to break
+    removeDoc(id) {
         if (!this.index) throw new Error('Index not loaded');
         this.index.remove(id);
     }

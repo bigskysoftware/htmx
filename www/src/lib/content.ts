@@ -213,12 +213,9 @@ export async function getFolder(path: string): Promise<ContentFolder> {
         const folderUrl = slug ? `/${folderName}/${slug}` : `/${folderName}`;
 
         // Create breadcrumb for this folder
-        const isRootLevel = parentBreadcrumbs.length === 0;
-
-        // Only root-level folders link to real pages; subfolder URLs are just redirects
         const thisFolderBreadcrumb: Breadcrumb = {
             label: indexContent.frontmatter.title,
-            ...(isRootLevel && {href: folderUrl})
+            href: folderUrl
         };
 
         // Breadcrumbs to pass to children (includes this folder)

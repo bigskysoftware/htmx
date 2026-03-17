@@ -5,15 +5,15 @@ icon: "icon-[mdi--magnify]"
 ---
 
 <script>
-server.get("/init", () => searchUI());
+server.get("/demo", () => searchUI());
 
 server.post(/\/search.*/, (req) => {
   const search = req.params["search"] || "";
-  const results = findContacts(search);
-  return resultsUI(results);
+  return resultsUI(findContacts(search));
 });
 
-const searchUI = () => `
+function searchUI() {
+  return `
 <div>
   <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-200 mb-3 block">Search Contacts</span>
   <div class="relative">
@@ -39,32 +39,33 @@ const searchUI = () => `
     </tbody>
   </table>
 </div>`;
+}
 
-const resultsUI = (contacts) =>
-  contacts.map((c) =>
+function resultsUI(contacts) {
+  return contacts.map((c) =>
     `<tr class="starting:opacity-0 transition-opacity duration-150 ease-out"><td class="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-850 text-sm text-neutral-600 dark:text-neutral-300">${c.first}</td><td class="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-850 text-sm text-neutral-600 dark:text-neutral-300">${c.last}</td><td class="px-3 py-2.5 border-b border-neutral-100 dark:border-neutral-850 text-sm text-neutral-600 dark:text-neutral-300">${c.email}</td></tr>`
   ).join("\n");
+}
 
-const contacts = [
-  { first: "Venus",     last: "Grimes",    email: "venus.grimes@example.com" },
-  { first: "Fletcher",  last: "Owen",      email: "fletcher.owen@example.com" },
-  { first: "William",   last: "Hale",      email: "william.hale@example.com" },
-  { first: "TaShya",    last: "Cash",      email: "tashya.cash@example.com" },
-  { first: "Jakeem",    last: "Walker",    email: "jakeem.walker@example.com" },
-  { first: "Malcolm",   last: "Trujillo",  email: "malcolm.trujillo@example.com" },
-  { first: "Wynne",     last: "Rice",      email: "wynne.rice@example.com" },
-];
-
-const findContacts = (str) => {
+function findContacts(str) {
+  const contacts = [
+    { first: "Venus",     last: "Grimes",    email: "venus.grimes@example.com" },
+    { first: "Fletcher",  last: "Owen",      email: "fletcher.owen@example.com" },
+    { first: "William",   last: "Hale",      email: "william.hale@example.com" },
+    { first: "TaShya",    last: "Cash",      email: "tashya.cash@example.com" },
+    { first: "Jakeem",    last: "Walker",    email: "jakeem.walker@example.com" },
+    { first: "Malcolm",   last: "Trujillo",  email: "malcolm.trujillo@example.com" },
+    { first: "Wynne",     last: "Rice",      email: "wynne.rice@example.com" },
+  ];
   const s = str.toLowerCase();
   return contacts.filter((c) =>
     c.first.toLowerCase().includes(s) ||
     c.last.toLowerCase().includes(s) ||
     c.email.toLowerCase().includes(s)
   );
-};
+}
 
-server.start("/init");
+server.start("/demo");
 </script>
 
 <div id="demo-content" class="not-prose demo-container min-h-[482px]"></div>

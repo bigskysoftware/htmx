@@ -5,8 +5,6 @@ icon: "icon-[mdi--arrow-expand-down]"
 ---
 
 <script>
-const PAGE_SIZE = 3;
-
 server.get("/demo", () => `
 <div class="relative">
   <div class="max-h-[300px] overflow-y-auto mask-b-from-60%">
@@ -23,6 +21,7 @@ server.get("/demo", () => `
 server.get(/\/contacts.*/, (req) => rows(parseInt(req.params.page)));
 
 function rows(page) {
+    const PAGE_SIZE = 3;
     const start = page * PAGE_SIZE;
     let html = Array.from({ length: PAGE_SIZE }, (_, i) => {
         const n = start + i;

@@ -5,19 +5,6 @@ icon: "icon-[mdi--cursor-pointer]"
 ---
 
 <script>
-const comments = [
-    { author: "1cg", time: "2h ago", text: "daily reminder that the browser is the framework" },
-    { author: "S4RF", time: "3h ago", text: "In 1997 I would have shipped this with a Perl script and a cronjob" },
-    { author: "uncle k2", time: "5h ago", text: "I am begging a front end dev to look at an element in the browser DOM inspector one (1) single time." },
-    { author: "gnut", time: "8h ago", text: "oh heyyy!! pretty cool experiment. A lot of IDE's hate it though, thinks they are invalid CSS properties." },
-    { author: "wyrmisis", time: "12h ago", text: "Sir, another React Dev Tool has hit the browser." },
-    { author: "M379KL", time: "1d ago", text: "Build step for CSS was nuts to first realize they were doing. JavaScript required for CSS also nuts." },
-    { author: "fizzy", time: "1d ago", text: "I made this meme for a different conversation but in case the need ever arises for an anti-joke, here ya go" },
-    { author: "Reiss", time: "2d ago", text: "this was everybody in europe 23 years ago" },
-    { author: "pavlos", time: "2d ago", text: "Real" },
-];
-
-const PAGE_SIZE = 3;
 
 server.get("/demo", () => `
 <div class="overflow-y-auto">
@@ -29,6 +16,18 @@ server.get("/demo", () => `
 server.get(/\/comments.*/, (req) => items(parseInt(req.params.page)));
 
 function items(page) {
+    const comments = [
+        { author: "1cg", time: "2h ago", text: "daily reminder that the browser is the framework" },
+        { author: "S4RF", time: "3h ago", text: "In 1997 I would have shipped this with a Perl script and a cronjob" },
+        { author: "uncle k2", time: "5h ago", text: "I am begging a front end dev to look at an element in the browser DOM inspector one (1) single time." },
+        { author: "gnut", time: "8h ago", text: "oh heyyy!! pretty cool experiment. A lot of IDE's hate it though, thinks they are invalid CSS properties." },
+        { author: "wyrmisis", time: "12h ago", text: "Sir, another React Dev Tool has hit the browser." },
+        { author: "M379KL", time: "1d ago", text: "Build step for CSS was nuts to first realize they were doing. JavaScript required for CSS also nuts." },
+        { author: "fizzy", time: "1d ago", text: "I made this meme for a different conversation but in case the need ever arises for an anti-joke, here ya go" },
+        { author: "Reiss", time: "2d ago", text: "this was everybody in europe 23 years ago" },
+        { author: "pavlos", time: "2d ago", text: "Real" },
+    ];
+    const PAGE_SIZE = 3;
     const start = page * PAGE_SIZE;
     const slice = comments.slice(start, start + PAGE_SIZE);
     let html = slice.map((c, i) => `

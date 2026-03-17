@@ -5,29 +5,26 @@ icon: "icon-[mdi--form-dropdown]"
 ---
 
 <script>
-const makes = {
-  audi: [
-    { name: "A4", type: "Sedan", price: "$39,900" },
-    { name: "Q5", type: "SUV", price: "$45,600" },
-    { name: "e-tron GT", type: "Electric", price: "$106,500" },
-  ],
-  toyota: [
-    { name: "Tacoma", type: "Truck", price: "$31,500" },
-    { name: "GR Supra", type: "Sport", price: "$56,250" },
-    { name: "Land Cruiser", type: "SUV", price: "$58,250" },
-  ],
-  bmw: [
-    { name: "M3", type: "Sedan", price: "$76,000" },
-    { name: "X5", type: "SUV", price: "$65,200" },
-    { name: "i4", type: "Electric", price: "$52,200" },
-  ],
-};
-
-const brandName = { audi: "Audi", toyota: "Toyota", bmw: "BMW" };
-
-const selectCls = "w-full py-2.5 px-3 pr-8 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium text-neutral-800 dark:text-neutral-200 appearance-none cursor-pointer";
-
 function detailCard(make, modelName) {
+  const makes = {
+    audi: [
+      { name: "A4", type: "Sedan", price: "$39,900" },
+      { name: "Q5", type: "SUV", price: "$45,600" },
+      { name: "e-tron GT", type: "Electric", price: "$106,500" },
+    ],
+    toyota: [
+      { name: "Tacoma", type: "Truck", price: "$31,500" },
+      { name: "GR Supra", type: "Sport", price: "$56,250" },
+      { name: "Land Cruiser", type: "SUV", price: "$58,250" },
+    ],
+    bmw: [
+      { name: "M3", type: "Sedan", price: "$76,000" },
+      { name: "X5", type: "SUV", price: "$65,200" },
+      { name: "i4", type: "Electric", price: "$52,200" },
+    ],
+  };
+  const brandName = { audi: "Audi", toyota: "Toyota", bmw: "BMW" };
+  const selectCls = "w-full py-2.5 px-3 pr-8 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium text-neutral-800 dark:text-neutral-200 appearance-none cursor-pointer";
   const models = makes[make] || makes.audi;
   const m = models.find(x => x.name === modelName) || models[0];
   return `
@@ -44,6 +41,24 @@ function detailCard(make, modelName) {
 }
 
 function modelSelect(make) {
+  const makes = {
+    audi: [
+      { name: "A4", type: "Sedan", price: "$39,900" },
+      { name: "Q5", type: "SUV", price: "$45,600" },
+      { name: "e-tron GT", type: "Electric", price: "$106,500" },
+    ],
+    toyota: [
+      { name: "Tacoma", type: "Truck", price: "$31,500" },
+      { name: "GR Supra", type: "Sport", price: "$56,250" },
+      { name: "Land Cruiser", type: "SUV", price: "$58,250" },
+    ],
+    bmw: [
+      { name: "M3", type: "Sedan", price: "$76,000" },
+      { name: "X5", type: "SUV", price: "$65,200" },
+      { name: "i4", type: "Electric", price: "$52,200" },
+    ],
+  };
+  const selectCls = "w-full py-2.5 px-3 pr-8 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium text-neutral-800 dark:text-neutral-200 appearance-none cursor-pointer";
   const models = makes[make] || makes.audi;
   return `
     <label class="block text-xs font-semibold uppercase tracking-wide text-neutral-450 dark:text-neutral-400 mb-2">Model</label>
@@ -58,7 +73,9 @@ function modelSelect(make) {
     </div>`;
 }
 
-server.get("/demo", () => `
+server.get("/demo", () => {
+  const selectCls = "w-full py-2.5 px-3 pr-8 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium text-neutral-800 dark:text-neutral-200 appearance-none cursor-pointer";
+  return `
 <div>
   <div class="grid grid-cols-2 gap-4">
     <div>
@@ -81,9 +98,11 @@ server.get("/demo", () => `
   <div id="detail" class="mt-3">
     ${detailCard("audi", "A4")}
   </div>
-</div>`);
+</div>`;
+});
 
 server.get(/models.*/, (req) => {
+  const makes = { audi: [{name:"A4"},{name:"Q5"},{name:"e-tron GT"}], toyota: [{name:"Tacoma"},{name:"GR Supra"},{name:"Land Cruiser"}], bmw: [{name:"M3"},{name:"X5"},{name:"i4"}] };
   const make = req.params["make"];
   const first = (makes[make] || makes.audi)[0].name;
   return modelSelect(make) +

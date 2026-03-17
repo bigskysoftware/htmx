@@ -5,8 +5,6 @@ icon: "icon-[mdi--check]"
 ---
 
 <script>
-const taken = ["admin", "htmx", "test", "user", "root", "moderator"];
-
 server.get("/demo", () =>
   `<div class="w-full max-w-sm mx-auto starting:opacity-0 transition duration-300">
     <form class="flex flex-col gap-1" autocomplete="off">
@@ -39,6 +37,7 @@ server.get("/demo", () =>
   </div>`);
 
 server.post(/\/check-username.*/, (req) => {
+  const taken = ["admin", "htmx", "test", "user", "root", "moderator"];
   const raw = (req.params.username || '').trim();
   const name = raw.toLowerCase();
   if (!name) return '<span></span>';
