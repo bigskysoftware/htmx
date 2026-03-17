@@ -27,9 +27,10 @@ server.get("/weather", () => ({ delay: 300, body: `
     <div class="flex flex-col items-center gap-1 py-3 px-2 rounded-md starting:opacity-0 starting:translate-y-1 hover:bg-neutral-50 dark:hover:bg-neutral-850" style="transition:opacity 300ms ease-out 250ms,transform 300ms ease-out 250ms,background-color 150ms ease 0ms"><span class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Fri</span><span class="text-lg font-semibold text-neutral-800 dark:text-neutral-100">74°</span><span class="text-xs text-neutral-500 dark:text-neutral-400">Sunny</span></div>
   </div>
 </div>` }));
+server.start("/demo");
 </script>
 
-<div hx-get="/demo" hx-trigger="load" class="not-prose demo-container flex justify-center min-h-[218px]"></div>
+<div id="demo-content" class="not-prose demo-container flex justify-center min-h-[218px]"></div>
 
 ## Basic usage
 

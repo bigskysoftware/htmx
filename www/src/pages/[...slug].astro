@@ -30,16 +30,24 @@ export async function getStaticPaths() {
                 props: { file, folder, collection }
             });
         });
+
+        folder.subfolders.forEach((subfolder) => {
+            paths.push({
+                params: { slug: `${collection}/${subfolder.slug}` },
+                props: { subfolder, folder, collection }
+            });
+        });
     }
 
     return paths;
 }
 
-const { file, folder, collection } = Astro.props;
+const { file, subfolder, folder, collection } = Astro.props;
 
-const isCollectionRootPage = !file;
+const isCollectionRootPage = !file && !subfolder;
+const isSubfolderIndexPage = !!subfolder;
 const isHomePage = isCollectionRootPage && collection === 'home';
-const page = isCollectionRootPage ? folder! : file;
+const page = isCollectionRootPage ? folder! : isSubfolderIndexPage ? subfolder! : file;
 
 const {Content} = await page.render();
 const {title, description, keywords} = page.frontmatter;
@@ -53,12 +61,12 @@ if (file) {
 // Display flags
 const includeSidebar = !!(folder?.subfolders?.length);
 const includeHeader = !isHomePage;
-const includeDemo = !isCollectionRootPage && collection === 'patterns';
-const includeCollectionCards = isCollectionRootPage && ['docs', 'reference'].includes(collection);
-const includeTableOfContents = !isCollectionRootPage && headings.length > 0;
-const includePagination = !isCollectionRootPage && !!(file?.prev || file?.next);
+const includeDemo = !isCollectionRootPage && !isSubfolderIndexPage && collection === 'patterns';
+const includeCollectionCards = (isCollectionRootPage && ['docs', 'reference'].includes(collection)) || isSubfolderIndexPage;
+const includeTableOfContents = !isCollectionRootPage && !isSubfolderIndexPage && headings.length > 0;
+const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
 const includeAside = includeTableOfContents || includePagination;
-const useWideLayout = isCollectionRootPage && ['about', 'docs', 'reference', 'patterns'].includes(collection);
+const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && ['about', 'docs', 'reference', 'patterns'].includes(collection);
 ---
 
 <Layout title={title}
@@ -90,7 +98,22 @@ const useWideLayout = isCollectionRootPage && ['about', 'docs', 'reference', 'pa
                         <Content/>
                         {includePagination && <Pagination prev={file!.prev} next={file!.next} />}
                     </article>
-                    {includeCollectionCards && <CollectionCards folders={folder!.subfolders.sort((a, b) => a.id.localeCompare(b.id))} {collection} />}
+                    {includeCollectionCards && !isSubfolderIndexPage && <CollectionCards folders={folder!.subfolders.sort((a, b) => a.id.localeCompare(b.id))} {collection} />}
+                    {isSubfolderIndexPage && (
+                        <nav class="not-prose mt-4">
+                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                {subfolder!.subfiles.map((f) => (
+                                    <li>
+                                        <a href={f.url}
+                                           class="flex flex-col gap-0.5 px-4 py-3 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 interact:border-neutral-400 dark:interact:border-neutral-600 interact:bg-neutral-50 dark:interact:bg-neutral-875 transition">
+                                            <span class="font-mono text-sm font-medium text-neutral-800 dark:text-neutral-200" set:html={f.frontmatter.title} />
+                                            {f.frontmatter.description && <span class="text-xs text-neutral-500 dark:text-neutral-400 truncate">{f.frontmatter.description}</span>}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                    )}
                 </div>
 
                 {includeAside && (

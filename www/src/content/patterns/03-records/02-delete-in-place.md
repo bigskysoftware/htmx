@@ -6,15 +6,14 @@ soon: true
 ---
 
 <script>
-const contacts = [
-  { name: "Joe Smith",       email: "joe@smith.org",       status: "Active" },
-  { name: "Angie MacDowell", email: "angie@macdowell.org", status: "Active" },
-  { name: "Fuqua Tarkenton", email: "fuqua@tarkenton.org", status: "Active" },
-  { name: "Kim Yee",         email: "kim@yee.org",         status: "Inactive" },
-];
-
-server.get("/demo", () => `
-<table class="w-full border-collapse">
+server.get("/demo", () => {
+  const contacts = [
+    { name: "Joe Smith",       email: "joe@smith.org",       status: "Active" },
+    { name: "Angie MacDowell", email: "angie@macdowell.org", status: "Active" },
+    { name: "Fuqua Tarkenton", email: "fuqua@tarkenton.org", status: "Active" },
+    { name: "Kim Yee",         email: "kim@yee.org",         status: "Inactive" },
+  ];
+  return ` class="w-full border-collapse">
   <thead>
     <tr>
       <th class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide">Name</th>
@@ -27,7 +26,8 @@ server.get("/demo", () => `
          class="[&>tr:last-child>td]:border-b-0">
     ${contacts.map((c, i) => rowTemplate(c, i)).join("")}
   </tbody>
-</table>`);
+</table>`;
+});
 
 server.delete(/\/contact\/\d+/, () => "");
 

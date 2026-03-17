@@ -7,33 +7,37 @@ soon: true
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
-document.addEventListener("htmx:load", (e) => {
+if (!window._sortableLoadHandler) {
+  window._sortableLoadHandler = (e) => {
     const sortables = e.detail.elt.querySelectorAll(".sortable");
     for (const sortable of sortables) {
       const sortableInstance = new Sortable(sortable, {
           animation: 150,
           ghostClass: "sortable-ghost",
-
           filter: ".htmx-indicator",
           onMove: (evt) => evt.related.className.indexOf("htmx-indicator") === -1,
-
           onEnd: function (evt) {
             this.option("disabled", true);
           }
       });
-
       sortable.addEventListener("htmx:afterSwap", () => {
         sortableInstance.option("disabled", false);
       });
     }
-});
+  };
+  document.addEventListener("htmx:load", window._sortableLoadHandler);
+}
 
 // Inject ghost class styles (Sortable applies this class name directly)
-const style = document.createElement("style");
-style.textContent = `.sortable-ghost { opacity: 0.5 !important; }`;
-document.head.appendChild(style);
+var _sortableStyle = document.getElementById('_sortable-ghost-style');
+if (!_sortableStyle) {
+  _sortableStyle = document.createElement("style");
+  _sortableStyle.id = '_sortable-ghost-style';
+  _sortableStyle.textContent = `.sortable-ghost { opacity: 0.5 !important; }`;
+  document.head.appendChild(_sortableStyle);
+}
 
-let listItems = [1, 2, 3, 4, 5];
+var _listItems = [1, 2, 3, 4, 5];
 
 server.get("/demo", () => `
 <form class="sortable" hx-post="/items" hx-trigger="end">
@@ -41,13 +45,13 @@ server.get("/demo", () => `
 </form>`);
 
 server.post("/items", (req) => {
-    listItems = req.params.item;
+    _listItems = req.params.item;
     return listContents();
 });
 
-const listContents = () => {
+function listContents() {
     return `<div class="cursor-default bg-transparent border-none px-0 py-1 my-0 w-auto text-xs text-neutral-600 dark:text-neutral-400 italic htmx-indicator">Updating...</div>\n` +
-        listItems.map((val) =>
+        _listItems.map((val) =>
             `<div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 px-3 py-2.5 my-2 w-52 cursor-grab active:cursor-grabbing rounded-md select-none text-sm text-neutral-700 dark:text-neutral-200 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-850"><input type="hidden" name="item" value="${val}"/>Item ${val}</div>`
         ).join("\n");
 };

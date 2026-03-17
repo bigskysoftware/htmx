@@ -6,11 +6,10 @@ soon: true
 ---
 
 <script>
-const inputClass = "block w-full px-3 py-2.5 text-sm border rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 outline-none transition focus:border-neutral-400 dark:focus:border-neutral-500";
-const labelClass = "block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1.5";
-const errorClass = "text-[0.675rem] text-red-600 dark:text-red-400 mt-1.5";
-
 function renderForm(errors = {}, values = {}) {
+  const inputClass = "block w-full px-3 py-2.5 text-sm border rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 outline-none transition focus:border-neutral-400 dark:focus:border-neutral-500";
+  const labelClass = "block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1.5";
+  const errorClass = "text-[0.675rem] text-red-600 dark:text-red-400 mt-1.5";
   const border = (field) => errors[field]
     ? "border-red-300 dark:border-red-700"
     : "border-neutral-200 dark:border-neutral-700";

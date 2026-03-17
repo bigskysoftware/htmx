@@ -127,8 +127,9 @@ const jsonLd = type === 'article' ? {
     <link rel="alternate" type="application/atom+xml" title="Sitewide Atom feed" href="/atom.xml">
 
     <!-- htmx & extensions -->
-    <script is:inline defer src="/js/htmx.js"></script>
-    <meta name="htmx-config" content='{"history":"reload","morphSkip":["#search-shortcut-hint"],"morphIgnore":["data-htmx-powered","_"],"logAll":false}'>
+    <meta name="htmx-config" content='{"history":"true","morphSkip":["#search-shortcut-hint"],"morphIgnore":["data-htmx-powered","_"],"logAll":false}'>
+    <script is:inline src="/js/htmx.js"></script>
+    <script is:inline src="/js/ext/hx-preload.js"></script>
 
     <!-- _hyperscript (core + render/template plugin bundled to guarantee the render
          command is registered before browserInit's processNode fires) -->

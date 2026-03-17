@@ -6,7 +6,7 @@ soon: true
 ---
 
 <script>
-const dataStore = (() => {
+var _dataStore = (() => {
   const data = {
     "joe@smith.org": { name: "Joe Smith", status: "Active" },
     "angie@macdowell.org": { name: "Angie MacDowell", status: "Active" },
@@ -30,7 +30,7 @@ const dataStore = (() => {
 })();
 
 server.get("/demo", () => {
-  const contacts = dataStore.all();
+  const contacts = _dataStore.all();
   return `<form id="checked-contacts"
       hx-post="/users"
       hx-swap="innerHTML settle:3s"
@@ -69,11 +69,11 @@ server.post("/users", (req) => {
     if (parts[0] === "active") actives[parts[1]] = true;
   }
 
-  for (const email of Object.keys(dataStore.all())) {
+  for (const email of Object.keys(_dataStore.all())) {
     if (actives[email]) {
-      activated += dataStore.activate(email);
+      activated += _dataStore.activate(email);
     } else {
-      deactivated += dataStore.deactivate(email);
+      deactivated += _dataStore.deactivate(email);
     }
   }
 

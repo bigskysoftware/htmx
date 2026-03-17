@@ -6,18 +6,18 @@ soon: true
 ---
 
 <script>
-const user = { name: "Joe Smith", email: "joe@smith.org" };
+var _user = { name: "Joe Smith", email: "joe@smith.org" };
 
 function viewHTML() {
     return `
 <div id="user-view" class="p-5 border border-neutral-200 dark:border-neutral-800 rounded-lg max-w-sm">
     <div class="mb-3">
         <span class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">Name</span>
-        <span class="text-sm font-medium text-neutral-800 dark:text-neutral-100">${user.name}</span>
+        <span class="text-sm font-medium text-neutral-800 dark:text-neutral-100">${_user.name}</span>
     </div>
     <div class="mb-4">
         <span class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">Email</span>
-        <span class="text-sm font-medium text-neutral-800 dark:text-neutral-100">${user.email}</span>
+        <span class="text-sm font-medium text-neutral-800 dark:text-neutral-100">${_user.email}</span>
     </div>
     <button class="px-3.5 py-1.5 text-sm font-medium rounded-md cursor-pointer border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 interact:bg-neutral-50 dark:interact:bg-neutral-850 active:scale-[0.98] transition" hx-get="/users/1/edit" hx-target="#user-view" hx-swap="outerHTML">Edit</button>
 </div>`;
@@ -29,12 +29,12 @@ server.get("/users/1/edit", () => `
 <form id="user-view" class="p-5 border border-neutral-200 dark:border-neutral-800 rounded-lg max-w-sm" hx-put="/users/1" hx-target="this" hx-swap="outerHTML">
     <div class="mb-3">
         <label class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">Name
-            <input class="mt-1 w-full px-2.5 py-1.5 text-sm border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-400/30 focus:border-neutral-400 dark:focus:border-neutral-500" name="name" value="${user.name}" autofocus>
+            <input class="mt-1 w-full px-2.5 py-1.5 text-sm border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-400/30 focus:border-neutral-400 dark:focus:border-neutral-500" name="name" value="${_user.name}" autofocus>
         </label>
     </div>
     <div class="mb-4">
         <label class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">Email
-            <input class="mt-1 w-full px-2.5 py-1.5 text-sm border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-400/30 focus:border-neutral-400 dark:focus:border-neutral-500" name="email" value="${user.email}" type="email">
+            <input class="mt-1 w-full px-2.5 py-1.5 text-sm border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-400/30 focus:border-neutral-400 dark:focus:border-neutral-500" name="email" value="${_user.email}" type="email">
         </label>
     </div>
     <div class="flex gap-2">
@@ -44,8 +44,8 @@ server.get("/users/1/edit", () => `
 </form>`);
 
 server.put("/users/1", (req) => {
-    user.name = req.params.name;
-    user.email = req.params.email;
+    _user.name = req.params.name;
+    _user.email = req.params.email;
     return viewHTML();
 });
 

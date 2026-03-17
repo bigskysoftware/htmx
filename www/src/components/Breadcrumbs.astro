@@ -16,14 +16,14 @@ const parent = allCrumbs.slice(0, -1).reverse().find(c => c.href) || null;
         {/* Mobile: show parent link only */}
         {parent && (
             <a href={parent.href}
-               class="sm:hidden inline-flex items-center gap-0.5 -ml-0.5 py-1 pr-2 text-xs text-neutral-600 dark:text-neutral-400 transition interact:text-blue-700 dark:interact:text-blue-300 rounded-sm">
+               class="lg:hidden inline-flex items-center gap-0.5 -ml-0.5 py-1 pr-2 text-xs text-neutral-600 dark:text-neutral-400 transition interact:text-blue-700 dark:interact:text-blue-300 rounded-sm">
                 <i class="icon-[mdi--chevron-left] text-base shrink-0" aria-hidden="true"></i>
                 <span class="truncate max-w-[30ch]" set:html={parent.label} />
             </a>
         )}
 
         {/* Desktop: full breadcrumb trail */}
-        <ol class="hidden sm:flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-600 dark:text-neutral-400">
+        <ol class="hidden lg:flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-600 dark:text-neutral-400">
             {allCrumbs.map((crumb, i) => (
                 <li class="flex items-center gap-3">
                     {i > 0 && (

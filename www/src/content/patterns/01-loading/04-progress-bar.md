@@ -5,37 +5,29 @@ icon: "icon-[vaadin--progressbar]"
 ---
 
 <script>
-const job = { complete: false, percentComplete: 0 };
+var _job = { complete: false, percentComplete: 0 };
 
-const resetJob = () => {
-    job.complete = false;
-    job.percentComplete = 0;
-};
-
-const advanceJob = () => {
-    job.percentComplete = Math.min(100, job.percentComplete + 8 + Math.floor(8 * Math.random()));
-    job.complete = job.percentComplete >= 100;
-};
-
-const progressBar = () =>
-    `<div class="flex flex-col items-center gap-2 w-full">
+function _progressBar() {
+    return `<div class="flex flex-col items-center gap-2 w-full">
         <div class="w-full h-1.5 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-800" role="progressbar"
-             aria-valuemin="0" aria-valuemax="100" aria-valuenow="${job.percentComplete}">
-            <div id="pb" class="w-full h-full rounded-full bg-neutral-800 dark:bg-neutral-300 origin-left transition-transform duration-[400ms] ease-in-out" style="transform:scaleX(${job.percentComplete / 100})"></div>
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="${_job.percentComplete}">
+            <div id="pb" class="w-full h-full rounded-full bg-neutral-800 dark:bg-neutral-300 origin-left transition-transform duration-[400ms] ease-in-out" style="transform:scaleX(${_job.percentComplete / 100})"></div>
         </div>
-        <span class="text-xs text-neutral-600 dark:text-neutral-400 tabular-nums">${job.percentComplete}%</span>
+        <span class="text-xs text-neutral-600 dark:text-neutral-400 tabular-nums">${_job.percentComplete}%</span>
     </div>`;
+}
 
-const jobView = () =>
-    `<div id="job-status" class="flex flex-col items-center justify-center gap-4 w-full"
+function _jobView() {
+    return `<div id="job-status" class="flex flex-col items-center justify-center gap-4 w-full"
           hx-trigger="every 400ms" hx-get="/job/progress" hx-swap="outerMorph">
         <div class="flex items-center justify-between w-full">
-            <p class="text-sm font-medium text-neutral-700 dark:text-neutral-200" role="status">${job.complete ? 'Complete' : 'Processing\u2026'}</p>
-            <button class="flex items-center gap-1.5 text-[0.8125rem] text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 cursor-pointer transition duration-300 ${job.complete ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
-                    hx-post="/start" hx-target="#job-status" hx-swap="outerMorph" ${job.complete ? '' : 'tabindex="-1"'}><i class="icon-[mdi--refresh] size-3.5"></i> Run again</button>
+            <p class="text-sm font-medium text-neutral-700 dark:text-neutral-200" role="status">${_job.complete ? 'Complete' : 'Processing\u2026'}</p>
+            <button class="flex items-center gap-1.5 text-[0.8125rem] text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 cursor-pointer transition duration-300 ${_job.complete ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
+                    hx-post="/start" hx-target="#job-status" hx-swap="outerMorph" ${_job.complete ? '' : 'tabindex="-1"'}><i class="icon-[mdi--refresh] size-3.5"></i> Run again</button>
         </div>
-        <div class="w-full">${progressBar()}</div>
+        <div class="w-full">${_progressBar()}</div>
     </div>`;
+}
 
 server.get("/demo", () =>
     `<div id="progress-demo" class="starting:opacity-0 transition duration-300 ease-out flex flex-col items-center justify-center text-center">
@@ -46,11 +38,12 @@ server.get("/demo", () =>
         </button>
     </div>`);
 
-server.post("/start", () => { resetJob(); return jobView(); });
+server.post("/start", () => { _job.complete = false; _job.percentComplete = 0; return _jobView(); });
 
 server.get("/job/progress", () => {
-    advanceJob();
-    return { body: jobView(), status: job.complete ? 286 : 200 };
+    _job.percentComplete = Math.min(100, _job.percentComplete + 8 + Math.floor(8 * Math.random()));
+    _job.complete = _job.percentComplete >= 100;
+    return { body: _jobView(), status: _job.complete ? 286 : 200 };
 });
 
 server.start("/demo");
