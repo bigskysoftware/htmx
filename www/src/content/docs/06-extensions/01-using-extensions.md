@@ -59,6 +59,7 @@ htmx supports a set of core extensions, maintained by the htmx development team 
 | [download](/docs/extensions/download) | Save responses as file downloads with streaming progress |
 | [ptag](/docs/extensions/ptag) | Per-element polling tags to skip unchanged content |
 | [targets](/docs/extensions/targets) | Swap the same response into multiple elements |
+| [history-cache](/docs/extensions/history-cache) | Client-side history cache in `sessionStorage` — restores pages instantly on back/forward navigation |
 
 ## Building Extensions
 

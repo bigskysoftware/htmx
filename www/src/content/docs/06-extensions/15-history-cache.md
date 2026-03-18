@@ -1,44 +1,17 @@
-+++
-title = "htmx History Cache Extension"
-+++
+---
+title: "History Cache"
+description: "Client-side history cache in sessionStorage — restores pages instantly on back/forward navigation without a network request"
+keywords: ["history", "cache", "sessionStorage", "back", "forward", "navigation"]
+---
 
 The `history-cache` extension replaces htmx's default history handling with a client-side cache stored in `sessionStorage`. When the user navigates back or forward, the extension restores the page instantly from cache instead of fetching from the server.
 
 ## Installing
 
-### Via CDN
-
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/htmx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/ext/hx-history-cache.js"></script>
+<script src="/path/to/htmx.js"></script>
+<script src="/path/to/ext/hx-history-cache.js"></script>
 ```
-
-### Download
-
-```html
-<script src="/path/to/htmx.min.js"></script>
-<script src="/path/to/hx-history-cache.js"></script>
-```
-
-### npm
-
-```sh
-npm install htmx.org@4.0.0-alpha7
-```
-
-```html
-<script src="node_modules/htmx.org/dist/htmx.min.js"></script>
-<script src="node_modules/htmx.org/dist/ext/hx-history-cache.js"></script>
-```
-
-### Module Imports
-
-```javascript
-import htmx from 'htmx.org';
-import 'htmx.org/dist/ext/hx-history-cache';
-```
-
-The extension registers automatically when loaded. No `hx-ext` attribute is needed in htmx 4.
 
 ## Usage
 
@@ -116,11 +89,11 @@ document.addEventListener('htmx:history:cache:hit', (evt) => {
 
 ## Head Restoration
 
-By default the extension saves the `<head>` snapshot but does not restore it. Including the [`head-support`](/extensions/head-support) extension enables full `<head>` restoration on cache hits — styles, scripts, and meta tags are merged back in alongside the body content.
+By default the extension saves the `<head>` snapshot but does not restore it. Including the [`head-support`](/docs/extensions/head-support) extension enables full `<head>` restoration on cache hits — styles, scripts, and meta tags are merged back in alongside the body content.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/ext/hx-history-cache.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-alpha7/dist/ext/hx-head-support.js"></script>
+<script src="/path/to/ext/hx-history-cache.js"></script>
+<script src="/path/to/ext/hx-head-support.js"></script>
 ```
 
 ## How It Works
@@ -130,4 +103,3 @@ By default the extension saves the `<head>` snapshot but does not restore it. In
    - **Hit**: fires `htmx:history:cache:hit`, sets `detail.cancelled = true`, and restores content via `htmx.swap()`. Core never makes a network request. If `head-support` is loaded, the saved `<head>` is also restored via `htmx:history:cache:restored`.
    - **Miss**: fires `htmx:history:cache:miss`. If `refreshOnMiss` is set the page reloads; otherwise core handles the fetch normally.
 3. **Cache eviction**: when the cache exceeds `size`, the oldest entry is dropped. If `sessionStorage` is full, entries are dropped from the front until the write succeeds.
-
