@@ -36,7 +36,10 @@ for (let i = -30; i <= 30; i++) {
 }
 ---
 
-<div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 grid-bg flex justify-center items-center starting:opacity-0 transition duration-500" aria-hidden="true" style="will-change: transform; contain: strict;">
+<div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 grid-bg flex justify-center items-center starting:opacity-0 transition duration-500" aria-hidden="true" style="will-change: transform; contain: strict;"
+     _="on intersection(intersecting) having threshold 0.8 from #hero
+            if intersecting remove .grid-dimmed
+            else add .grid-dimmed">
     <svg viewBox="-1000 -1000 2000 2000" preserveAspectRatio="xMidYMid slice" class="w-screen h-screen min-w-full min-h-full">
         <defs>
             <linearGradient id="horizonFade" x1="0" y1="-100" x2="0" y2="-320" gradientUnits="userSpaceOnUse">
@@ -59,13 +62,26 @@ for (let i = -30; i <= 30; i++) {
         mask-image: radial-gradient(ellipse 50% 70% at 50% 50%, black 10%, transparent 80%);
     }
     .grid-bg line {
-        stroke: rgb(0 0 0 / 0.04);
+        stroke: rgb(0 0 0 / 0.02);
         stroke-width: 1.5px;
         vector-effect: non-scaling-stroke;
+        transition: stroke 0.5s ease;
+    }
+    body:has([data-home-page]) .grid-bg line {
+        stroke: rgb(0 0 0 / 0.04);
+    }
+    body:has([data-home-page]) .grid-bg.grid-dimmed line {
+        stroke: rgb(0 0 0 / 0.02);
     }
     @media (prefers-color-scheme: dark) {
         .grid-bg line {
+            stroke: rgb(255 255 255 / 0.01);
+        }
+        body:has([data-home-page]) .grid-bg line {
             stroke: rgb(255 255 255 / 0.05);
+        }
+        body:has([data-home-page]) .grid-bg.grid-dimmed line {
+            stroke: rgb(255 255 255 / 0.01);
         }
     }
 </style>
