@@ -11,8 +11,8 @@ This extension requires the [Navigation API](https://developer.mozilla.org/en-US
 ## Installing
 
 ```html
-<script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/hx-browser-indicator.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-browser-indicator.js"></script>
 ```
 
 ## Usage

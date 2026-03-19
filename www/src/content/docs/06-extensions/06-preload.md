@@ -11,8 +11,8 @@ The `preload` extension allows you to load HTML fragments into your browser's ca
 ## Installing
 
 ```html
-<script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/hx-preload.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-preload.js"></script>
 ```
 
 ## Usage

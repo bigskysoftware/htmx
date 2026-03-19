@@ -9,8 +9,8 @@ The `targets` extension adds an `hx-targets` attribute that swaps the same respo
 ## Installing
 
 ```html
-<script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/hx-targets.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-targets.js"></script>
 ```
 
 ## Usage

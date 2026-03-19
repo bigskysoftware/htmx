@@ -17,11 +17,11 @@ needed.
 
 ### Loading an Extension
 
-Include the extension script after htmx:
+Include the extension script after htmx. Core extensions ship with htmx in the `/ext/` directory:
 
 ```html
-<script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/hx-sse.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-sse.js"></script>
 ```
 
 Or with a bundler:

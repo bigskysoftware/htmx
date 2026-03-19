@@ -11,8 +11,8 @@ Useful in polling scenarios where responses depend on what content has already b
 ## Installing
 
 ```html
-<script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/hx-ptag.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-ptag.js"></script>
 ```
 
 ## How It Works
