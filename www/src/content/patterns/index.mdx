@@ -23,7 +23,7 @@ export const groupedPatterns = folder.folders.map(sub => ({
     {groupedPatterns.map(group => (
         <section class="mt-10 first:mt-4">
             <h2 id={group.slug} class="flex items-baseline gap-2.5 mb-3 scroll-mt-[calc(var(--header-height)+var(--construction-banner-height,0px)+2rem)]">
-                <a href={`#${group.slug}`} class="text-base font-semibold text-neutral-900 dark:text-neutral-100 interact:underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 transition">
+                <a href={`#${group.slug}`} class="text-base font-semibold text-neutral-800 dark:text-neutral-100 no-underline interact:underline">
                     {group.label}
                 </a>
             </h2>

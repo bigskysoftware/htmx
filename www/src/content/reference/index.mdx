@@ -46,49 +46,54 @@ export const groups = folder.folders.map(sub => {
         _="on input
             set q to my.value.toLowerCase()
             if q is ''
-                show <.filter-group/>
-                show <.filter-item/>
+                for s in <.filter-group/> remove @hidden from s end
+                for sg in <.filter-subgroup/> remove @hidden from sg end
+                for i in <.filter-item/> remove @hidden from i end
                 for ct in <.filter-count/>
                     set parts to ct.dataset.total
                     put parts into ct
                 end
             else
                 for section in <.filter-group/>
-                    set count to 0
-                    for item in section.querySelectorAll('.filter-item')
-                        if item.dataset.filter contains q
-                            show item
-                            increment count
-                        else
-                            hide item
+                    set sectionTotal to 0
+                    for subgroup in <.filter-subgroup/> in section
+                        set subgroupTotal to 0
+                        for item in <.filter-item/> in subgroup
+                            if item.dataset.filter contains q
+                                remove @hidden from item
+                                increment subgroupTotal
+                            else
+                                add @hidden to item
+                            end
                         end
+                        set sectionTotal to sectionTotal + subgroupTotal
+                        if subgroupTotal is 0 then add @hidden to subgroup else remove @hidden from subgroup
                     end
-                    set ct to section.querySelector('.filter-count')
-                    put count into ct
-                    if count is 0 then hide section else show section
+                    put sectionTotal into first <.filter-count/> in section
+                    if sectionTotal is 0 then add @hidden to section else remove @hidden from section
                 end
             end"
     />
     {groups.map(group => {
         const totalItems = group.subgroups.reduce((n, sg) => n + sg.items.length, 0);
         return (
-            <section class="filter-group mt-10 first-of-type:mt-4">
+            <section class="filter-group mt-8">
                 <h2 id={group.slug} class="flex items-baseline gap-2.5 mb-3 scroll-mt-[calc(var(--header-height)+var(--construction-banner-height,0px)+2rem)]">
-                    <a href={`#${group.slug}`} class="text-base font-semibold text-neutral-900 dark:text-neutral-100 interact:underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 transition">
+                    <a href={`#${group.slug}`} class="text-base font-semibold text-neutral-800 dark:text-neutral-100 no-underline interact:underline">
                         {group.label}
                     </a>
                     <span class="filter-count text-xs font-normal text-neutral-400 dark:text-neutral-500 tabular-nums" data-total={totalItems}>{totalItems}</span>
                 </h2>
                 {group.subgroups.map((sg, si) => (
-                    <>
+                    <div class="filter-subgroup">
                         {sg.label && (
-                            <h3 id={`${group.slug}-${sg.label.toLowerCase()}`} class:list={["text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500 scroll-mt-[calc(var(--header-height)+var(--construction-banner-height,0px)+2rem)]", si === 0 ? "mb-1.5" : "mt-4 mb-1.5"]}>
+                            <h3 id={`${group.slug}-${sg.label.toLowerCase()}`} class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mt-6 mb-2 scroll-mt-[calc(var(--header-height)+var(--construction-banner-height,0px)+2rem)]">
                                 {sg.label}
                             </h3>
                         )}
                         <div class="grid grid-cols-[auto_1fr] gap-0.5">
                             {sg.items.map(item => (
-                                <FinderLink href={item.url} class="filter-item col-span-2 !grid grid-cols-subgrid !gap-5 items-center" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()}>
+                                <FinderLink href={item.url} class="filter-item col-span-2 grid grid-cols-subgrid gap-5 items-center" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()}>
                                     <span class="font-mono text-sm font-medium">{item.title}</span>
                                     {item.description ? (
                                         <span class="text-sm text-neutral-650 dark:text-neutral-350 group-interact/link:text-white dark:group-interact/link:text-black transition">{item.description}</span>
@@ -96,7 +101,7 @@ export const groups = folder.folders.map(sub => {
                                 </FinderLink>
                             ))}
                         </div>
-                    </>
+                    </div>
                 ))}
             </section>
         );

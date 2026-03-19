@@ -36,10 +36,8 @@ for (let i = -30; i <= 30; i++) {
 }
 ---
 
-<div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 grid-bg flex justify-center items-center starting:opacity-0 transition duration-500" aria-hidden="true" style="will-change: transform; contain: strict;"
-     _="on intersection(intersecting) having threshold 0.8 from #hero
-            if intersecting remove .grid-dimmed
-            else add .grid-dimmed">
+<!-- id referenced by Hero.astro hyperscript to dim the grid on scroll -->
+<div id="background-grid" class="fixed inset-0 overflow-hidden pointer-events-none -z-10 grid-bg flex justify-center items-center starting:opacity-0 transition duration-500" aria-hidden="true" style="will-change: transform; contain: strict;">
     <svg viewBox="-1000 -1000 2000 2000" preserveAspectRatio="xMidYMid slice" class="w-screen h-screen min-w-full min-h-full">
         <defs>
             <linearGradient id="horizonFade" x1="0" y1="-100" x2="0" y2="-320" gradientUnits="userSpaceOnUse">
