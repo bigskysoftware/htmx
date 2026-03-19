@@ -5,7 +5,7 @@ description: "Use htmx inside Web Components and Shadow DOM"
 
 htmx doesn't automatically scan inside web components' shadow DOM. You must manually initialize it.
 
-After creating your shadow DOM, call [`htmx.process`](/api.md#process):
+After creating your shadow DOM, call [`htmx.process`](/reference/methods/htmx-process):
 
 ```javascript
 customElements.define('my-counter', class extends HTMLElement {
@@ -45,7 +45,7 @@ To break out:
 
 ### Components Without Shadow DOM
 
-Still call [`htmx.process`](/api.md#process) on the component:
+Still call [`htmx.process`](/reference/methods/htmx-process) on the component:
 
 ```javascript
 customElements.define('simple-widget', class extends HTMLElement {

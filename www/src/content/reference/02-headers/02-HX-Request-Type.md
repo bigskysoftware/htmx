@@ -21,7 +21,7 @@ This header is added automatically.
 
 ### `full`
 
-Used when the [target](/docs/core-concepts/targets) is the document body, or when selecting elements from the response (with [`hx-select`](/reference/attributes/hx-select)).
+Used when the [target](/docs/core-concepts/hypermedia-controls) is the document body, or when selecting elements from the response (with [`hx-select`](/reference/attributes/hx-select)).
 
 ```html
 <!-- If target is body (explicit) -->

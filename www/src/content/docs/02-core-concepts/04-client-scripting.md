@@ -9,7 +9,7 @@ keywords: ["javascript", "js", "scripting", "hyperscript", "_hyperscript", "alpi
 
 htmx 4.0 changed event names significantly when compared with htmx 2.0, making them much more standardized.
 
-See the full event mapping in the [Changes in htmx 4.0](/migration-guide-htmx-4#event-changes) document.
+See the full event mapping in the [Changes in htmx 4.0](/docs/get-started/migration) document.
 
 **Note:** All events now provide a consistent `ctx` object with request/response information.
 
@@ -51,12 +51,12 @@ htmx.on("htmx:after:init", function (evt) {
 });
 ```
 
-The `htmx:load` event is fired every time an element is loaded into the DOM by htmx, and is effectively the equivalent
+The `htmx:after:process` event is fired every time an element is processed by htmx, and is effectively the equivalent
 to the normal `load` event.
 
 ### Initialize A 3rd Party Library With Events
 
-Using the `htmx:load` event to initialize content is so common that htmx provides a helper function:
+Using the `htmx:after:process` event to initialize content is so common that htmx provides a helper function:
 
 ```javascript
 htmx.onLoad(function (target) {
@@ -127,11 +127,6 @@ htmx provides some top level helper methods in `hx-on` handlers that make async 
 ### Scripting Examples
 
 Here is an example that adds a parameter to an htmx request
-
-{% construction_warning() %}
-```html
- <p>Need to verify symbols</p>
-{% end %}
 
 <button hx-post="/example"
         hx-on:htmx:config:request="ctx.request.parameters.example = 'Hello Scripting!'">

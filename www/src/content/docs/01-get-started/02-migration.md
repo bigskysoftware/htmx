@@ -496,4 +496,4 @@ Look for these:
 
 - [GitHub Discussions](https://github.com/bigskysoftware/htmx/discussions)
 - [Discord](https://htmx.org/discord)
-- [Examples](/examples)
+- [Patterns](/patterns)
