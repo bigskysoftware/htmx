@@ -3,34 +3,21 @@ title: "Patterns"
 description: "Patterns, recipes, and working examples."
 ---
 
-import { getCollection } from 'astro:content';
+import { getFolder } from '../../lib/content';
 import FinderLink from '../../components/FinderLink.astro';
 import Card from '../../components/Card.astro';
 
-export const allEntries = await getCollection('patterns');
-
-export const categoryEntries = allEntries
-    .filter(e => !e.id.includes('/') && e.id !== 'index')
-    .sort((a, b) => a.id.localeCompare(b.id));
-
-export const patternEntries = allEntries
-    .filter(e => e.id.includes('/'))
-    .sort((a, b) => a.id.localeCompare(b.id));
-
-export const cleanSlug = (id) => id.split('/').map(s => s.replace(/^\d+-/, '')).join('/');
-
-export const groupedPatterns = categoryEntries.map(cat => ({
-    slug: cleanSlug(cat.id),
-    label: cat.data.title,
-    items: patternEntries
-        .filter(e => e.id.startsWith(cat.id + '/'))
-        .map(e => ({
-            title: e.data.title,
-            url: `/patterns/${cleanSlug(e.id)}`,
-            description: e.data.description,
-            icon: e.data.icon || '',
-            soon: e.data.soon || false,
-        })),
+export const folder = await getFolder('patterns');
+export const groupedPatterns = folder.folders.map(sub => ({
+    slug: sub.slug,
+    label: sub.frontmatter.title,
+    items: sub.files.map(f => ({
+        title: f.frontmatter.title,
+        url: f.url,
+        description: f.frontmatter.description,
+        icon: f.frontmatter.icon || '',
+        soon: f.frontmatter.soon || false,
+    })),
 }));
 
 <div class="not-prose mt-6">

@@ -1,4 +1,74 @@
 ---
 title: "Reference"
-description: "All attributes, headers, events, and methods."
 ---
+
+import { getFolder } from '../../lib/content';
+import FinderLink from '../../components/FinderLink.astro';
+
+export const folder = await getFolder('reference');
+export const groups = folder.folders.map(sub => ({
+    slug: sub.slug,
+    label: sub.frontmatter.title,
+    items: sub.files.map(f => ({
+        title: f.frontmatter.title,
+        url: f.url,
+        description: f.frontmatter.description,
+    })),
+}));
+
+<nav class="not-prose">
+    <input
+        id="filter-input"
+        type="text"
+        placeholder="Filter reference..."
+        autocomplete="off"
+        class="w-full px-3 py-2 mb-4 text-sm border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50 focus:border-neutral-300 dark:focus:border-neutral-600"
+        _="on input
+            set q to my.value.toLowerCase()
+            if q is ''
+                show <.filter-group/>
+                show <.filter-item/>
+                for ct in <.filter-count/>
+                    set parts to ct.dataset.total
+                    put parts into ct
+                end
+            else
+                for section in <.filter-group/>
+                    set count to 0
+                    for item in section.querySelectorAll('.filter-item')
+                        if item.dataset.filter contains q
+                            show item
+                            increment count
+                        else
+                            hide item
+                        end
+                    end
+                    set ct to section.querySelector('.filter-count')
+                    put count into ct
+                    if count is 0 then hide section else show section
+                end
+            end"
+    />
+    {groups.map(group => (
+        <section class="filter-group mt-8 first:mt-0">
+            <h2 id={group.slug} class="text-lg font-semibold uppercase tracking-wide text-neutral-900 dark:text-neutral-100 mb-3 scroll-mt-[calc(var(--header-height)+var(--construction-banner-height,0px)+2rem)]">
+                <a href={`#${group.slug}`} class="interact:underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700">
+                    {group.label}
+                </a>
+                <span class="filter-count text-xs font-normal text-neutral-400 dark:text-neutral-500 tabular-nums ml-2" data-total={group.items.length}>{group.items.length}</span>
+            </h2>
+            <div class="flex flex-col gap-1">
+                {group.items.map(item => (
+                    <FinderLink href={item.url} class="filter-item" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()}>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 flex-1 min-w-0">
+                            <span class="font-mono text-sm font-medium sm:min-w-[16ch]">{item.title}</span>
+                            {item.description && (
+                                <span class="text-sm text-neutral-650 dark:text-neutral-350 group-interact/link:text-white dark:group-interact/link:text-black transition">{item.description}</span>
+                            )}
+                        </div>
+                    </FinderLink>
+                ))}
+            </div>
+        </section>
+    ))}
+</nav>

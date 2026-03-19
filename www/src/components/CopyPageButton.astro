@@ -11,7 +11,7 @@ interface Props {
 }
 
 const {file} = Astro.props;
-const content = buildCopyContent(file.id, Astro.site?.origin || 'https://htmx.org');
+const content = buildCopyContent(file.path, Astro.site?.origin || 'https://htmx.org');
 ---
 
 {content && (

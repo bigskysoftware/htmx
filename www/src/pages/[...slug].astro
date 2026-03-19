@@ -8,9 +8,10 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Pagination from '../components/Pagination.astro';
 import CollectionCards from '../components/CollectionCards.astro';
+import FinderLink from '../components/FinderLink.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { getFolder, COLLECTIONS } from '../lib/content.ts';
+import { getFolder, render, COLLECTIONS } from '../lib/content.ts';
 
 export async function getStaticPaths() {
     const paths = [];
@@ -31,12 +32,15 @@ export async function getStaticPaths() {
             });
         });
 
-        folder.subfolders.forEach((subfolder) => {
-            paths.push({
-                params: { slug: `${collection}/${subfolder.slug}` },
-                props: { subfolder, folder, collection }
+        // Reference subfolders are listed inline on /reference — no separate pages
+        if (collection !== 'reference') {
+            folder.folders.forEach((subfolder) => {
+                paths.push({
+                    params: { slug: `${collection}/${subfolder.slug}` },
+                    props: { subfolder, folder, collection }
+                });
             });
-        });
+        }
     }
 
     return paths;
@@ -49,24 +53,27 @@ const isSubfolderIndexPage = !!subfolder;
 const isHomePage = isCollectionRootPage && collection === 'home';
 const page = isCollectionRootPage ? folder! : isSubfolderIndexPage ? subfolder! : file;
 
-const {Content} = await page.render();
+const {Content} = await render(page);
 const {title, description, keywords} = page.frontmatter;
+
+// Display flags
+const isReference = collection === 'reference';
+const isReferenceIndex = isCollectionRootPage && isReference;
+const includeSidebar = !!(folder?.folders?.length) && !isReferenceIndex;
+const includeHeader = !isHomePage;
+const includeDemo = !isCollectionRootPage && !isSubfolderIndexPage && collection === 'patterns';
+const includeCollectionCards = (isCollectionRootPage && ['docs'].includes(collection)) || isSubfolderIndexPage;
+const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
+const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && ['about', 'docs', 'patterns'].includes(collection);
 
 let headings: any[] = [];
 if (file) {
-    const rendered = await file.render();
-    headings = rendered.headings;
+    headings = (await render(file)).headings;
+} else if (isReferenceIndex) {
+    headings = folder!.folders.map(sub => ({ depth: 2, slug: sub.slug, text: sub.frontmatter.title }));
 }
-
-// Display flags
-const includeSidebar = !!(folder?.subfolders?.length);
-const includeHeader = !isHomePage;
-const includeDemo = !isCollectionRootPage && !isSubfolderIndexPage && collection === 'patterns';
-const includeCollectionCards = (isCollectionRootPage && ['docs', 'reference'].includes(collection)) || isSubfolderIndexPage;
-const includeTableOfContents = !isCollectionRootPage && !isSubfolderIndexPage && headings.length > 0;
-const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
+const includeTableOfContents = headings.length > 0;
 const includeAside = includeTableOfContents || includePagination;
-const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && ['about', 'docs', 'reference', 'patterns'].includes(collection);
 ---
 
 <Layout title={title}
@@ -85,33 +92,34 @@ const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && ['about'
     {includeSidebar && <Sidebar folder={folder} file={file}/>}
 
     <div id="content-wrapper" class:list={[includeSidebar && "lg:pl-72"]}>
-        <main id="content-main-content" class="flex-1">
+        <main id="content-main-content" class="flex-1" data-home-page={isHomePage ? '' : undefined}>
             <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-center max-w-360">
 
                 <div class:list={["pt-6 sm:pt-8 lg:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", useWideLayout ? 'max-w-4xl' : 'max-w-prose']}>
                     <Breadcrumbs breadcrumbs={page.breadcrumbs} />
 
-                    {includeHeader && <PageHeader {title} {description} {file} {collection} />}
+                    {includeHeader && <PageHeader {title} description={isReferenceIndex ? undefined : description} {file} {collection} />}
 
                     <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
                         {includeDemo && <Demo />}
                         <Content/>
                         {includePagination && <Pagination prev={file!.prev} next={file!.next} />}
                     </article>
-                    {includeCollectionCards && !isSubfolderIndexPage && <CollectionCards folders={folder!.subfolders.sort((a, b) => a.id.localeCompare(b.id))} {collection} />}
+                    {includeCollectionCards && !isSubfolderIndexPage && <CollectionCards folders={folder!.folders.sort((a, b) => a.path.localeCompare(b.path))} {collection} />}
                     {isSubfolderIndexPage && (
-                        <nav class="not-prose mt-4">
-                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                {subfolder!.subfiles.map((f) => (
-                                    <li>
-                                        <a href={f.url}
-                                           class="flex flex-col gap-0.5 px-4 py-3 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 interact:border-neutral-400 dark:interact:border-neutral-600 interact:bg-neutral-50 dark:interact:bg-neutral-875 transition">
-                                            <span class="font-mono text-sm font-medium text-neutral-800 dark:text-neutral-200" set:html={f.frontmatter.title} />
-                                            {f.frontmatter.description && <span class="text-xs text-neutral-500 dark:text-neutral-400 truncate">{f.frontmatter.description}</span>}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
+                        <nav class="not-prose mt-4 flex flex-col gap-1">
+                            {subfolder!.files.map((f) => (
+                                <FinderLink href={f.url}>
+                                    <span class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4">
+                                        <span class:list={["text-[13px] sm:text-sm leading-snug truncate", isReference && "font-mono"]} set:html={f.frontmatter.title} />
+                                        {f.frontmatter.description && (
+                                            <span class="text-[11px] text-neutral-500 dark:text-neutral-450 group-interact/link:text-blue-200 dark:group-interact/link:text-black transition truncate">
+                                                {f.frontmatter.description}
+                                            </span>
+                                        )}
+                                    </span>
+                                </FinderLink>
+                            ))}
                         </nav>
                     )}
                 </div>

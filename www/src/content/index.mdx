@@ -2,14 +2,20 @@
 title: "htmx"
 description: "htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext"
 ---
-import { getCollection } from 'astro:content';
+import { getFile } from '../lib/content';
 import CDNGenerator from "../components/CDNGenerator.astro";
 import EasterEggs from "../components/EasterEggs.astro";
 import Sponsors from "../components/Sponsors.astro";
 import Hero from "../components/Hero.astro";
 import { Image } from 'astro:assets';
 import hypermediaSystems from '../assets/img/hypermedia-systems.png';
-export const sponsors = (await getCollection('sponsors')).map(sponsor => sponsor.data);
+export const sponsorsFile = await getFile('sponsors.yaml');
+export const sponsors = (sponsorsFile?.frontmatter || []).map(s => ({
+    ...s,
+    url: s.tracking !== false
+        ? `${s.url}?utm_source=htmx&utm_medium=sponsorship&utm_campaign=${s.tier}-sponsor-${new Date().getFullYear()}`
+        : s.url,
+}));
 
 <div class="not-prose">
 

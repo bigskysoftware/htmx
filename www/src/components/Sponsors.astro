@@ -1,8 +1,6 @@
 ---
-import type {CollectionEntry} from "astro:content";
-
 interface Props {
-    sponsors: CollectionEntry<'sponsors'>['data'][];
+    sponsors: Record<string, any>[];
 }
 
 import { Image } from 'astro:assets';

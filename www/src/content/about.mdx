@@ -3,7 +3,7 @@ title: "About"
 description: "The project, the team, and the community."
 ---
 
-import { getCollection } from 'astro:content';
+import { getFile } from '../lib/content';
 import { Image } from 'astro:assets';
 import Card from '../components/Card.astro';
 
@@ -13,10 +13,16 @@ import modernFrontends from '../assets/img/modern-frontends-htmx.jpg';
 import hypermediaSystemsJp from '../assets/img/hypermedia-systems-japanese.png';
 import htmxJp from '../assets/img/htmx-japanese.png';
 
-export const team = (await getCollection('team')).map(m => m.data);
+export const teamImages = import.meta.glob('/src/assets/img/team/*.{png,jpg,jpeg,webp}', {eager: true});
+export const teamFile = await getFile('team.yaml');
+export const team = (teamFile?.frontmatter || []).map(m => ({
+    ...m,
+    image: teamImages[m.image]?.default ?? m.image,
+}));
 export const creator = team.find(m => m.name === 'Carson Gross');
 export const contributors = team.filter(m => m.name !== 'Carson Gross');
-export const communityLinks = (await getCollection('community')).map(c => c.data);
+export const communityFile = await getFile('community.yaml');
+export const communityLinks = communityFile?.frontmatter || [];
 
 export const books = [
     {href: "https://hypermedia.systems", img: hypermediaSystems, title: "Hypermedia Systems"},
