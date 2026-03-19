@@ -59,12 +59,13 @@ const {title, description, keywords} = page.frontmatter;
 // Display flags
 const isReference = collection === 'reference';
 const isReferenceIndex = isCollectionRootPage && isReference;
-const includeSidebar = !!(folder?.folders?.length) && !isReferenceIndex;
+const isPatternsIndex = isCollectionRootPage && collection === 'patterns';
+const includeSidebar = !!(folder?.folders?.length) && !isReferenceIndex && !isPatternsIndex;
 const includeHeader = !isHomePage;
 const includeDemo = !isCollectionRootPage && !isSubfolderIndexPage && collection === 'patterns';
 const includeCollectionCards = (isCollectionRootPage && ['docs'].includes(collection)) || isSubfolderIndexPage;
 const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
-const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && ['about', 'docs', 'patterns'].includes(collection);
+const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && ['about', 'docs'].includes(collection);
 
 let headings: any[] = [];
 if (file) {

@@ -88,7 +88,14 @@ export default defineConfig({
 
         // Old site: simple redirects
         "/discord": "https://htmx.org/discord",
-        "/events": "/reference/events",
+        "/events": "/reference",
+
+        // Reference subcategory URLs now live as anchors on /reference
+        "/reference/attributes": "/reference",
+        "/reference/headers": "/reference",
+        "/reference/events": "/reference",
+        "/reference/config": "/reference",
+        "/reference/methods": "/reference",
         "/help": "/about",
         "/server-examples": "/about",
 

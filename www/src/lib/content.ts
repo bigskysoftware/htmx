@@ -21,6 +21,7 @@ const allPaths = Object.keys(import.meta.glob('/src/content/**/*.{md,mdx}'));
 // Lazy module loaders — called inside async functions, not at module init
 const lazyModules: Record<string, () => Promise<any>> = import.meta.glob('/src/content/**/*.{md,mdx}');
 
+
 // Cache for loaded modules to avoid re-importing
 const moduleCache = new Map<string, any>();
 
@@ -172,8 +173,17 @@ export async function getFolder(path: string): Promise<ContentFolder> {
         });
         if (!indexFullPath) return null;
 
-        const indexMod = await loadModule(indexFullPath);
         const indexRelPath = indexFullPath.replace('/src/content/', '');
+
+        // Read frontmatter from disk to avoid executing MDX module bodies.
+        // Index .mdx files may call getFolder() themselves — loading them
+        // as modules here would create a circular call.
+        let indexFrontmatter: Record<string, any> = {};
+        try {
+            const raw = readFileSync(join(process.cwd(), 'src', 'content', indexRelPath), 'utf-8');
+            const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+            if (match) indexFrontmatter = yaml.load(match[1]) as Record<string, any> ?? {};
+        } catch {}
 
         // Compute slug and URL
         const pathWithoutIndex = indexRelPath.replace(/\/index\.(md|mdx)$/, '');
@@ -182,15 +192,14 @@ export async function getFolder(path: string): Promise<ContentFolder> {
         const folderUrl = slug ? `/${folderName}/${slug}` : `/${folderName}`;
 
         // Breadcrumbs
-        const isReferenceSubfolder = folderName === 'reference' && slug !== '';
         const thisFolderBreadcrumb: Breadcrumb = {
-            label: indexMod.frontmatter.title,
-            href: isReferenceSubfolder ? `/reference#${slug}` : folderUrl
+            label: indexFrontmatter.title,
+            href: folderUrl
         };
         const breadcrumbsWithHref = [...parentBreadcrumbs, thisFolderBreadcrumb];
         const folderBreadcrumbs = parentBreadcrumbs.length > 0
-            ? [...parentBreadcrumbs, {label: indexMod.frontmatter.title}]
-            : [{label: indexMod.frontmatter.title}];
+            ? [...parentBreadcrumbs, {label: indexFrontmatter.title}]
+            : [{label: indexFrontmatter.title}];
 
         // Direct child files (not in subfolders, excluding index)
         const directFilePaths = folderPaths
@@ -252,7 +261,7 @@ export async function getFolder(path: string): Promise<ContentFolder> {
             folder: folderName,
             slug,
             url: folderUrl,
-            frontmatter: indexMod.frontmatter || {},
+            frontmatter: indexFrontmatter || {},
             breadcrumbs: folderBreadcrumbs,
             files: files.filter(f => !f.frontmatter?.hidden).sort(sortContentFiles),
             folders: childFolders,

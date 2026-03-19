@@ -6,15 +6,35 @@ import { getFolder } from '../../lib/content';
 import FinderLink from '../../components/FinderLink.astro';
 
 export const folder = await getFolder('reference');
-export const groups = folder.folders.map(sub => ({
-    slug: sub.slug,
-    label: sub.frontmatter.title,
-    items: sub.files.map(f => ({
+
+export const CORE_ATTRIBUTES = ['hx-get', 'hx-post', 'hx-put', 'hx-patch', 'hx-delete', 'hx-swap', 'hx-target', 'hx-trigger', 'hx-select', 'hx-on', 'hx-vals'];
+export const REQUEST_HEADERS = ['HX-Request', 'HX-Request-Type', 'HX-Current-URL', 'HX-Source', 'HX-Target', 'HX-Boosted', 'HX-History-Restore-Request', 'Accept', 'Last-Event-ID'];
+
+export const groups = folder.folders.map(sub => {
+    const items = sub.files.map(f => ({
         title: f.frontmatter.title,
         url: f.url,
         description: f.frontmatter.description,
-    })),
-}));
+    }));
+
+    if (sub.slug === 'attributes') {
+        const core = items.filter(i => CORE_ATTRIBUTES.includes(i.title));
+        const additional = items.filter(i => !CORE_ATTRIBUTES.includes(i.title));
+        return { slug: sub.slug, label: sub.frontmatter.title, subgroups: [
+            { label: 'Core', items: core },
+            { label: 'Additional', items: additional },
+        ]};
+    }
+    if (sub.slug === 'headers') {
+        const request = items.filter(i => REQUEST_HEADERS.includes(i.title));
+        const response = items.filter(i => !REQUEST_HEADERS.includes(i.title));
+        return { slug: sub.slug, label: sub.frontmatter.title, subgroups: [
+            { label: 'Request', items: request },
+            { label: 'Response', items: response },
+        ]};
+    }
+    return { slug: sub.slug, label: sub.frontmatter.title, subgroups: [{ label: null, items }] };
+});
 
 <nav class="not-prose">
     <input
@@ -22,7 +42,7 @@ export const groups = folder.folders.map(sub => ({
         type="text"
         placeholder="Filter reference..."
         autocomplete="off"
-        class="w-full px-3 py-2 mb-4 text-sm border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50 focus:border-neutral-300 dark:focus:border-neutral-600"
+        class="w-full px-3 py-2 mb-2 text-sm border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50 focus:border-neutral-300 dark:focus:border-neutral-600"
         _="on input
             set q to my.value.toLowerCase()
             if q is ''
@@ -49,26 +69,36 @@ export const groups = folder.folders.map(sub => ({
                 end
             end"
     />
-    {groups.map(group => (
-        <section class="filter-group mt-8 first:mt-0">
-            <h2 id={group.slug} class="text-lg font-semibold uppercase tracking-wide text-neutral-900 dark:text-neutral-100 mb-3 scroll-mt-[calc(var(--header-height)+var(--construction-banner-height,0px)+2rem)]">
-                <a href={`#${group.slug}`} class="interact:underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700">
-                    {group.label}
-                </a>
-                <span class="filter-count text-xs font-normal text-neutral-400 dark:text-neutral-500 tabular-nums ml-2" data-total={group.items.length}>{group.items.length}</span>
-            </h2>
-            <div class="flex flex-col gap-1">
-                {group.items.map(item => (
-                    <FinderLink href={item.url} class="filter-item" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()}>
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 flex-1 min-w-0">
-                            <span class="font-mono text-sm font-medium sm:min-w-[16ch]">{item.title}</span>
-                            {item.description && (
-                                <span class="text-sm text-neutral-650 dark:text-neutral-350 group-interact/link:text-white dark:group-interact/link:text-black transition">{item.description}</span>
-                            )}
+    {groups.map(group => {
+        const totalItems = group.subgroups.reduce((n, sg) => n + sg.items.length, 0);
+        return (
+            <section class="filter-group mt-10 first-of-type:mt-4">
+                <h2 id={group.slug} class="flex items-baseline gap-2.5 mb-3 scroll-mt-[calc(var(--header-height)+var(--construction-banner-height,0px)+2rem)]">
+                    <a href={`#${group.slug}`} class="text-base font-semibold text-neutral-900 dark:text-neutral-100 interact:underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 transition">
+                        {group.label}
+                    </a>
+                    <span class="filter-count text-xs font-normal text-neutral-400 dark:text-neutral-500 tabular-nums" data-total={totalItems}>{totalItems}</span>
+                </h2>
+                {group.subgroups.map((sg, si) => (
+                    <>
+                        {sg.label && (
+                            <h3 id={`${group.slug}-${sg.label.toLowerCase()}`} class:list={["text-xs font-medium uppercase tracking-widest text-neutral-400 dark:text-neutral-500 scroll-mt-[calc(var(--header-height)+var(--construction-banner-height,0px)+2rem)]", si === 0 ? "mb-1.5" : "mt-4 mb-1.5"]}>
+                                {sg.label}
+                            </h3>
+                        )}
+                        <div class="grid grid-cols-[auto_1fr] gap-0.5">
+                            {sg.items.map(item => (
+                                <FinderLink href={item.url} class="filter-item col-span-2 !grid grid-cols-subgrid !gap-5 items-center" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()}>
+                                    <span class="font-mono text-sm font-medium">{item.title}</span>
+                                    {item.description ? (
+                                        <span class="text-sm text-neutral-650 dark:text-neutral-350 group-interact/link:text-white dark:group-interact/link:text-black transition">{item.description}</span>
+                                    ) : <span />}
+                                </FinderLink>
+                            ))}
                         </div>
-                    </FinderLink>
+                    </>
                 ))}
-            </div>
-        </section>
-    ))}
+            </section>
+        );
+    })}
 </nav>

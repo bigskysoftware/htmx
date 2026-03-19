@@ -5,7 +5,6 @@ description: "Patterns, recipes, and working examples."
 
 import { getFolder } from '../../lib/content';
 import FinderLink from '../../components/FinderLink.astro';
-import Card from '../../components/Card.astro';
 
 export const folder = await getFolder('patterns');
 export const groupedPatterns = folder.folders.map(sub => ({
@@ -20,32 +19,30 @@ export const groupedPatterns = folder.folders.map(sub => ({
     })),
 }));
 
-<div class="not-prose mt-6">
+<div class="not-prose">
     {groupedPatterns.map(group => (
-        <div class="mt-12 first:mt-0">
-            <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">
-                {group.label}
+        <section class="mt-10 first:mt-4">
+            <h2 id={group.slug} class="flex items-baseline gap-2.5 mb-3 scroll-mt-[calc(var(--header-height)+var(--construction-banner-height,0px)+2rem)]">
+                <a href={`#${group.slug}`} class="text-base font-semibold text-neutral-900 dark:text-neutral-100 interact:underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 transition">
+                    {group.label}
+                </a>
             </h2>
-            <div>
-                <Card variant="lg" class="p-1.5">
-                    <div class="flex flex-col gap-1.5">
-                        {group.items.map(item => (
-                            <FinderLink href={item.soon ? undefined : item.url} data-disabled={item.soon ? '' : undefined} class={`!mx-0${item.soon ? ' cursor-not-allowed pointer-events-none opacity-50' : ''}`}>
-                                {item.icon && <i class={`${item.icon} size-5 shrink-0 mr-3 -translate-y-px group-interact/link:text-white dark:group-interact/link:text-black transition`}></i>}
-                                <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 flex-1 min-w-0">
-                                    <span class="text-sm font-chicago tracking-tight sm:min-w-[16ch]">{item.title}</span>
-                                    {item.description && (
-                                        <span class="text-sm text-neutral-600 dark:text-neutral-400 group-interact/link:text-white dark:group-interact/link:text-black transition">{item.description}</span>
-                                    )}
-                                </div>
-                                {item.soon && (
-                                    <span class="text-[9px] px-1.5 py-0.5 shrink-0 self-start sm:self-center rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">Soon</span>
-                                )}
-                            </FinderLink>
-                        ))}
-                    </div>
-                </Card>
+            <div class="flex flex-col gap-0.5">
+                {group.items.map(item => (
+                    <FinderLink href={item.soon ? undefined : item.url} data-disabled={item.soon ? '' : undefined} class={item.soon ? 'cursor-not-allowed pointer-events-none opacity-50' : ''}>
+                        {item.icon && <i class={`${item.icon} size-5 shrink-0 -translate-y-px group-interact/link:text-white dark:group-interact/link:text-black transition`}></i>}
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 flex-1 min-w-0">
+                            <span class="text-sm font-medium sm:min-w-[16ch]">{item.title}</span>
+                            {item.description && (
+                                <span class="text-sm text-neutral-650 dark:text-neutral-350 group-interact/link:text-white dark:group-interact/link:text-black transition">{item.description}</span>
+                            )}
+                        </div>
+                        {item.soon && (
+                            <span class="text-[9px] px-1.5 py-0.5 shrink-0 self-start sm:self-center rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">Soon</span>
+                        )}
+                    </FinderLink>
+                ))}
             </div>
-        </div>
+        </section>
     ))}
 </div>
