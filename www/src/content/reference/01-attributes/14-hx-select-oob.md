@@ -56,3 +56,4 @@ You can specify different swap strategies for each selected element:
 
 * [`hx-swap-oob`](/reference/attributes/hx-swap-oob)
 * [`hx-select`](/reference/attributes/hx-select)
+* [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial)

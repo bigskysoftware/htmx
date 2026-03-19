@@ -94,7 +94,7 @@ By default, elements without IDs are appended. Use `prepend` to insert them at t
 <div hx-get="/items" hx-swap="upsert sort:desc prepend">
 ```
 
-## Using with `<hx-partial>`
+## Using with [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial)
 
 You can use `<hx-partial>` with `hx-swap="upsert"` for targeted upserts in a single response:
 

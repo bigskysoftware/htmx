@@ -83,4 +83,4 @@ The extension hooks into the `htmx_before_swap` event. When `hx-targets` is set 
 ## Notes
 
 - If the selector matches zero elements, a warning is logged and the swap proceeds as normal (falling back to [`hx-target`](/reference/attributes/hx-target) or the default target).
-- Each target receives a clone of the full response. To distribute different parts of the response to different targets, use [`<hx-partial>`](/docs/get-started/migration#hx-partial) or [`hx-swap-oob`](/reference/attributes/hx-swap-oob) instead.
+- Each target receives a clone of the full response. To distribute different parts of the response to different targets, use [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial) or [`hx-swap-oob`](/reference/attributes/hx-swap-oob) instead.
