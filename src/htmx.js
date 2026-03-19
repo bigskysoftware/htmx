@@ -1639,11 +1639,15 @@ var htmx = (() => {
             this.__trigger(document, "htmx:after:history:update", historyDetail);
         }
 
+        // hx-on:<event> binds to <event> directly
+        // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
         __handleHxOnAttributes(node) {
             let searchString = this.__maybeAdjustMetaCharacter(this.__prefix("hx-on:"));
             for (let attr of node.getAttributeNames()) {
                 if (attr.startsWith(searchString)) {
                     let evtName = attr.substring(searchString.length)
+                    let mc = this.config.metaCharacter || ':';
+                    if (evtName.startsWith(mc)) evtName = 'htmx' + evtName
                     let code = node.getAttribute(attr);
                     let handler = async (evt) => {
                         try {
