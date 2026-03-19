@@ -387,14 +387,6 @@ Target multiple elements from one response. An alternative to [`hx-swap-oob`](/r
 
 Each `<hx-partial>` specifies its own [`hx-target`](/reference/attributes/hx-target) and [`hx-swap`](/reference/attributes/hx-swap) strategy. See [Multi-Target Updates](/docs/core-concepts/multi-target-updates) for full documentation.
 
-### Etag support
-
-htmx 4 supports Etag-based conditional requests automatically:
-
-- Response includes an [`Etag`](/reference/headers/ETag) header: htmx stores it on the source element
-- Next request from that element includes an [`If-None-Match`](/reference/headers/If-None-Match) header
-- `304 Not Modified` responses do not swap, avoiding unnecessary DOM updates
-
 ### View transitions
 
 [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API) support is available but
