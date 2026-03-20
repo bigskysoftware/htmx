@@ -82,5 +82,17 @@ describe('hx-on attribute', function() {
         delete window.foo
     })
 
+    it('hx-on:: shorthand expands to htmx: event', function() {
+        var btn = createProcessedHTML("<button hx-on::my-event='window.foo = true'>Foo</button>")
+        htmx.trigger(btn, "htmx:my-event")
+        window.foo.should.equal(true)
+        delete window.foo
+    })
+
+    it('hx-on:: shorthand does not fire on non-htmx event', function() {
+        var btn = createProcessedHTML("<button hx-on::my-event='window.foo = true'>Foo</button>")
+        htmx.trigger(btn, "my-event")
+        assert.equal(window.foo, undefined)
+    })
 
 })
