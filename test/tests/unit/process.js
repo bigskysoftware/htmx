@@ -84,6 +84,15 @@ describe('process() unit tests', function() {
         assert.equal(div.getAttribute('inited'), 'true')
     })
 
+    it('processes elements inside a ShadowRoot', function () {
+        let host = createProcessedHTML('<div></div>')
+        let shadow = host.attachShadow({mode: 'open'})
+        shadow.innerHTML = '<button hx-get="/test"></button><div id="target"></div>'
+        htmx.process(shadow)
+        let button = shadow.querySelector('button')
+        assert.isTrue(button.hasAttribute('data-htmx-powered'))
+    })
+
     it('skips processing if htmx:before:process is cancelled', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         div.removeAttribute('data-htmx-powered')

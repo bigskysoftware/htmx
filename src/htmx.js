@@ -896,7 +896,12 @@ var htmx = (() => {
         }
 
         process(elt) {
-            if (!elt || this.__ignore(elt)) return;
+            if (!elt) return;
+            if (!(elt instanceof Element)) {
+                for (let child of elt.children || []) this.process(child);
+                return;
+            }
+            if (this.__ignore(elt)) return;
             if (!this.__trigger(elt, "htmx:before:process")) return
             let hxOnNodes = [elt];
             let iter = this.#hxOnQuery.evaluate(elt)
