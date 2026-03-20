@@ -240,6 +240,20 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         assert.equal(queue1, queue2)
     })
 
+    it('inherited hx-sync="this:replace" resolves queue to declaring parent', function () {
+        let parent = createProcessedHTML('<div id="parent" hx-sync:inherited="this:replace"><div id="a" hx-get="/a"></div><div id="b" hx-get="/b"></div></div>')
+        let a = parent.querySelector('#a')
+        let b = parent.querySelector('#b')
+
+        let queueA = htmx.__getRequestQueue(a)
+        let queueB = htmx.__getRequestQueue(b)
+
+        // Both children should share the parent's queue
+        assert.equal(queueA, queueB)
+        assert.equal(parent._htmxRequestQueue, queueA)
+        assert.equal(htmx.__determineSyncStrategy(a), 'replace')
+    })
+
     it('abort strategy: allows first abort request when queue is empty', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)

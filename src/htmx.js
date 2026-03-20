@@ -181,7 +181,7 @@ var htmx = (() => {
         __findThisElements(elt, attrName) {
             let result = [];
             this.__attributeValue(elt, attrName, undefined, (val, elt) => {
-                if (val?.split(/\s*,\s*/).includes('this')) result.push(elt);
+                if (val?.split(/\s*[,:]\s*/).includes('this')) result.push(elt);
             });
             return result;
         }
