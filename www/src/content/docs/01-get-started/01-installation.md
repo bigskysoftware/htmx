@@ -5,41 +5,35 @@ thumbnail: "docs/installation.svg"
 keywords: [ "install", "setup", "cdn", "npm", "download", "getting started", "quick start" ]
 ---
 
-htmx is a single JavaScript file with dependencies. No build step is required.
+htmx is a single JavaScript file with no dependencies. No build step is required to use it.
 
-## Method 1: CDN (Fastest)
+## CDN
 
-1. Add this in your `<head>` tag:
+Add this in your `<head>` tag:
 
 ```html
-
 <script defer src="https://cdn.jsdelivr.net/npm/htmx.org@next"></script>
 ```
 
-<details>
-<summary>Other options</summary>
-
-**Unminified (for debugging):**
+### Unminified
 
 ```html
 <script defer src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.js"></script>
 ```
 
-**ES Module (minified):**
+### ES Module
 
 ```html
 <script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.esm.min.js"></script>
 ```
 
-**ES Module (unminified):**
+### ES Module (unminified)
 
 ```html
 <script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.esm.js"></script>
 ```
 
-</details>
-
-## Method 2: Download
+## Download
 
 Instead of using a CDN, consider [self-hosting in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
 
@@ -48,60 +42,28 @@ Instead of using a CDN, consider [self-hosting in production](https://blog.wesle
 3. Add this in your `<head>` tag:
 
 ```html
-
 <script defer src="/js/htmx.min.js"></script>
 ```
 
-<details>
-<summary>Other options</summary>
+### Other formats
 
-**Unminified (for debugging):**
+Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.js">htmx.js</a> (unminified)
 
-Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.js">htmx.js</a>
+Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.esm.min.js">htmx.esm.min.js</a> (ES module)
 
-```html
+Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.esm.js">htmx.esm.js</a> (ES module, unminified)
 
-<script defer src="/js/htmx.js"></script>
-```
-
-**ES Module (minified):**
-
-Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.esm.min.js">htmx.esm.min.js</a>
-
-```html
-
-<script type="module" src="/js/htmx.esm.min.js"></script>
-```
-
-**ES Module (unminified):**
-
-Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.esm.js">htmx.esm.js</a>
-
-```html
-
-<script type="module" src="/js/htmx.esm.js"></script>
-```
-
-</details>
-
-## Method 3: npm
-
-1. Install **htmx** via `npm`:
+## npm
 
 ```sh
 npm install htmx.org@next
 ```
 
-2. Import **htmx** in your JavaScript:
-
 ```javascript
 import 'htmx.org';
 ```
 
-<details>
-<summary>Other options</summary>
-
-**Named import (for using the JavaScript API):**
+### Named import
 
 ```javascript
 import htmx from 'htmx.org';
@@ -109,4 +71,20 @@ import htmx from 'htmx.org';
 // Now you can use htmx.ajax(), htmx.find(), etc.
 ```
 
-</details>
+## htmax
+
+The `htmax.js` file bundles htmx with the most popular extensions in a single file:
+
+* [SSE](/docs/extensions/sse)
+* [WebSockets](/docs/extensions/ws)
+* [preload](/docs/extensions/preload)
+* [browser-indicator](/docs/extensions/browser-indicator)
+* [download](/docs/extensions/download)
+* [optimistic](/docs/extensions/optimistic)
+* [targets](/docs/extensions/targets).
+
+The extensions are automatically available, you can just use their attributes directly (e.g. `hx-sse:connect`, `hx-ws:connect`).
+
+```html
+<script defer src="/js/htmax.min.js"></script>
+```

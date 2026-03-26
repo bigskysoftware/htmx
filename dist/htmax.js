@@ -2256,3 +2256,1483 @@ var htmx = (() => {
 
     return new Htmx()
 })()
+(() => {
+    let api;
+
+    // ========================================
+    // HELPERS
+    // ========================================
+
+    function getConfig(ctx) {
+        let isConnect = api.attributeValue(ctx.sourceElement, 'hx-sse:connect') != null;
+        let defaults = {
+            reconnect: isConnect,
+            reconnectDelay: 500,
+            reconnectMaxDelay: 60000,
+            reconnectMaxAttempts: Infinity,
+            reconnectJitter: 0.3,
+            pauseOnBackground: isConnect
+        };
+        let global = htmx.config.sse || {};
+        // hx-config="sse.reconnect:true sse.reconnectDelay:50ms" is parsed by
+        // core's __mergeConfig into ctx.request.sse during createRequestContext
+        let perElement = ctx.request.sse || {};
+        return {...defaults, ...global, ...perElement};
+    }
+
+    // ========================================
+    // SSE PARSER
+    // ========================================
+
+    async function* parseSSE(reader) {
+        let decoder = new TextDecoder();
+        let buffer = '';
+        let hasData = false;
+        let message = {data: '', event: '', id: '', retry: null};
+        let firstChunk = true;
+
+        try {
+            while (true) {
+                let {done, value} = await reader.read();
+                if (done) break;
+
+                let chunk = decoder.decode(value, {stream: true});
+                // Strip leading BOM (U+FEFF) per SSE spec
+                if (firstChunk) {
+                    if (chunk.charCodeAt(0) === 0xFEFF) chunk = chunk.slice(1);
+                    firstChunk = false;
+                }
+                buffer += chunk;
+
+                // Split on \r\n, \r, or \n (SSE spec allows all three)
+                let lines = buffer.split(/\r\n|\r|\n/);
+                buffer = lines.pop() || '';
+
+                for (let line of lines) {
+                    if (!line) {
+                        if (hasData) {
+                            yield message;
+                            hasData = false;
+                            message = {data: '', event: '', id: '', retry: null};
+                        }
+                        continue;
+                    }
+
+                    let colonIndex = line.indexOf(':');
+                    if (colonIndex === 0) continue; // comment line
+
+                    let field, value;
+                    if (colonIndex < 0) {
+                        // No colon: entire line is field name, value is empty string
+                        field = line;
+                        value = '';
+                    } else {
+                        field = line.slice(0, colonIndex);
+                        value = line.slice(colonIndex + 1);
+                        if (value[0] === ' ') value = value.slice(1);
+                    }
+
+                    if (field === 'data') {
+                        message.data += (hasData ? '\n' : '') + value;
+                        hasData = true;
+                    } else if (field === 'event') {
+                        message.event = value;
+                    } else if (field === 'id') {
+                        if (!value.includes('\0')) message.id = value;
+                    } else if (field === 'retry') {
+                        let retryValue = parseInt(value, 10);
+                        if (!isNaN(retryValue)) message.retry = retryValue;
+                    }
+                }
+            }
+        } finally {
+            reader.releaseLock();
+        }
+    }
+
+    // ========================================
+    // STREAMING LOOP
+    // ========================================
+
+    // Starts streaming from a response. Handles reconnection by re-fetching
+    // with the saved request context (no full pipeline re-run).
+    async function handleSSEResponse(ctx) {
+        let element = ctx.sourceElement;
+        let config = getConfig(ctx);
+        let lastEventId = null;
+        let attempt = 0;
+        let reader = null;
+        let reconnectRequested = false;
+        let delayCanceller = null;
+
+        let state = {
+            abortController: null,
+            reader: null,
+            lastEventId: null,
+            delayCanceller: null,
+            visibilityHandler: null
+        };
+        api.htmxProp(element).sse = state;
+
+        let reconnect = () => {
+            if (!element.isConnected || reconnectRequested) return;
+            reconnectRequested = true;
+            if (delayCanceller) delayCanceller();
+            reader?.cancel();
+        };
+
+        let paused = false;
+        let unpauseResolver = null;
+
+        if (config.pauseOnBackground) {
+            let visibilityHandler = () => {
+                if (document.hidden) {
+                    paused = true;
+                    reader?.cancel();
+                } else if (paused) {
+                    paused = false;
+                    if (unpauseResolver) unpauseResolver();
+                }
+            };
+            document.addEventListener('visibilitychange', visibilityHandler);
+            state.visibilityHandler = visibilityHandler;
+        }
+
+        let connectDetail = {attempt: 0, delay: 0, url: ctx.request.action, lastEventId: null, cancelled: false};
+        if (!api.triggerHtmxEvent(element, 'htmx:before:sse:connection', {connection: connectDetail}) || connectDetail.cancelled) {
+            cleanup(element, 'cancelled');
+            return;
+        }
+
+        api.triggerHtmxEvent(element, 'htmx:after:sse:connection', {
+            connection: {attempt: 0, url: ctx.request.action, status: ctx.response.status, lastEventId: null}
+        });
+
+        let currentResponse = ctx.response.raw;
+
+        try {
+            while (element.isConnected) {
+                // Reconnection (not on first iteration — we already have the response)
+                if (attempt > 0) {
+                    // Wait while paused (tab backgrounded with pauseOnBackground)
+                    if (paused) {
+                        await new Promise(r => { unpauseResolver = r; });
+                        unpauseResolver = null;
+                        if (!element.isConnected) break;
+                        attempt = 1; // reset so delay doesn't escalate from pauses
+                        reconnectRequested = true; // bypass maxAttempts check
+                    }
+
+                    if (!reconnectRequested) {
+                        if (!config.reconnect || attempt > config.reconnectMaxAttempts) break;
+                    }
+
+                    let baseDelay = htmx.parseInterval(config.reconnectDelay) ?? config.reconnectDelay;
+                    let maxDelay = htmx.parseInterval(config.reconnectMaxDelay) ?? config.reconnectMaxDelay;
+                    let delay = Math.min(
+                        baseDelay * Math.pow(2, attempt - 1),
+                        maxDelay
+                    );
+                    if (config.reconnectJitter > 0) {
+                        let jitterRange = delay * config.reconnectJitter;
+                        delay = Math.max(0, delay + (Math.random() * 2 - 1) * jitterRange);
+                    }
+
+                    let detail = {attempt, delay, url: ctx.request.action, lastEventId, cancelled: false};
+                    if (!api.triggerHtmxEvent(element, 'htmx:before:sse:connection', {connection: detail}) || detail.cancelled) break;
+
+                    await new Promise(r => {
+                        delayCanceller = r;
+                        state.delayCanceller = r;
+                        setTimeout(r, detail.delay);
+                    });
+                    delayCanceller = null;
+                    state.delayCanceller = null;
+                    if (!element.isConnected) break;
+
+                    // Re-fetch using saved request context (no full pipeline re-run)
+                    let ac = new AbortController();
+                    state.abortController = ac;
+                    try {
+                        if (lastEventId) ctx.request.headers['Last-Event-ID'] = lastEventId;
+                        currentResponse = await fetch(ctx.request.action, {
+                            ...ctx.request,
+                            signal: ac.signal
+                        });
+                    } catch (e) {
+                        if (ac.signal.aborted) break;
+                        api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e});
+                        reconnectRequested = false;
+                        attempt++;
+                        continue;
+                    }
+
+                    if (!currentResponse.ok) {
+                        api.triggerHtmxEvent(element, 'htmx:sse:error', {
+                            error: new Error(`SSE reconnect failed with status ${currentResponse.status}`),
+                            status: currentResponse.status
+                        });
+                        reconnectRequested = false;
+                        attempt++;
+                        continue;
+                    }
+
+                    api.triggerHtmxEvent(element, 'htmx:after:sse:connection', {
+                        connection: {attempt, url: ctx.request.action, status: currentResponse.status, lastEventId}
+                    });
+                    attempt = 0;
+                }
+
+                // Stream messages
+                reconnectRequested = false;
+
+                try {
+                    reader = currentResponse.body.getReader();
+                    state.reader = reader;
+
+                    for await (let msg of parseSSE(reader)) {
+                        if (!element.isConnected || reconnectRequested) break;
+
+                        let detail = {data: msg.data, event: msg.event, id: msg.id, cancelled: false};
+                        if (!api.triggerHtmxEvent(element, 'htmx:before:sse:message', {message: detail}) || detail.cancelled) continue;
+
+                        if (msg.id) {
+                            lastEventId = msg.id;
+                            state.lastEventId = msg.id;
+                        }
+                        if (msg.retry != null) config.reconnectDelay = msg.retry;
+
+                        if (detail.event) {
+                            htmx.trigger(element, detail.event, {data: detail.data, id: detail.id});
+                            api.triggerHtmxEvent(element, 'htmx:after:sse:message', {message: detail});
+
+                            // hx-sse:close="eventname" — close connection on matching event
+                            let closeEvent = api.attributeValue(element, 'hx-sse:close');
+                            if (closeEvent && detail.event === closeEvent) {
+                                cleanup(element, 'message');
+                                return;
+                            }
+                            continue;
+                        }
+
+                        // Swap content using the ctx from core (target/swap already resolved)
+                        ctx.text = detail.data;
+                        await htmx.swap(ctx);
+                        api.triggerHtmxEvent(element, 'htmx:after:sse:message', {message: detail});
+                    }
+                } catch (e) {
+                    if (!state.abortController?.signal?.aborted) {
+                        api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e});
+                    }
+                }
+
+                reader = null;
+                state.reader = null;
+                if (!element.isConnected) break;
+
+                attempt++;
+            }
+        } finally {
+            cleanup(element, element.isConnected ? 'ended' : 'removed');
+        }
+    }
+
+    // ========================================
+    // ELEMENT PROCESSING
+    // ========================================
+
+    function processElement(element) {
+        let connectUrl = api.attributeValue(element, 'hx-sse:connect');
+        if (!connectUrl) return;
+        if (element._htmx?.sse) return; // already set up
+
+        let specString = api.attributeValue(element, 'hx-trigger') || 'load';
+        api.onTrigger(element, specString, () => {
+            if (element._htmx?.sse) return; // prevent duplicate connections
+            htmx.ajax('GET', connectUrl, {source: element});
+        });
+    }
+
+    // ========================================
+    // CLEANUP
+    // ========================================
+
+    function cleanup(element, reason) {
+        let state = element?._htmx?.sse;
+        if (!state) return;
+
+        state.abortController?.abort();
+        state.reader?.cancel?.();
+        if (state.delayCanceller) state.delayCanceller();
+        if (state.visibilityHandler) {
+            document.removeEventListener('visibilitychange', state.visibilityHandler);
+        }
+        delete element._htmx.sse;
+        api.triggerHtmxEvent(element, 'htmx:sse:close', {reason: reason || 'cleanup'});
+    }
+
+    // ========================================
+    // EXTENSION REGISTRATION
+    // ========================================
+
+    htmx.registerExtension('sse', {
+        init: (internalAPI) => {
+            api = internalAPI;
+        },
+
+        // Intercept SSE responses before core consumes the body
+        htmx_before_response: (element, detail) => {
+            let ctx = detail.ctx;
+            let contentType = ctx.response.raw.headers.get('Content-Type');
+            if (!contentType?.includes('text/event-stream')) return;
+
+            // Take over — core will return without calling response.text()
+            handleSSEResponse(ctx).catch(e => {
+                api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e});
+                cleanup(element);
+            });
+            return false;
+        },
+
+        htmx_after_process: (element) => {
+            processElement(element);
+            let mc = htmx.config.metaCharacter || ':';
+            let attr = CSS.escape((htmx.config.prefix || 'hx-') + 'sse' + mc + 'connect');
+            element.querySelectorAll(`[${attr}]`).forEach(processElement);
+        },
+
+        htmx_before_cleanup: (element) => {
+            cleanup(element);
+        }
+    });
+})();
+(() => {
+    let api;
+    
+    // ========================================
+    // ATTRIBUTE HELPERS
+    // ========================================
+    
+    // Helper to build proper attribute name respecting htmx prefix
+    function buildAttrName(suffix) {
+        // htmx.config.prefix replaces 'hx-' entirely, e.g. 'data-hx-' 
+        // So 'hx-ws:connect' becomes 'data-hx-ws:connect'
+        let prefix = htmx.config.prefix || 'hx-';
+        return prefix + 'ws' + suffix;
+    }
+    
+    // Helper to get attribute value, checking colon, hyphen, and plain variants
+    // Uses api.attributeValue for automatic prefix handling and inheritance support
+    function getWsAttribute(element, attrName) {
+        // Try colon variant first (hx-ws:connect) - prefix applied automatically by htmx
+        let colonValue = api.attributeValue(element, 'hx-ws:' + attrName);
+        if (colonValue != null) return colonValue;
+        
+        // Try hyphen variant for JSX (hx-ws-connect)
+        let hyphenValue = api.attributeValue(element, 'hx-ws-' + attrName);
+        if (hyphenValue != null) return hyphenValue;
+        
+        // For 'send', also check plain 'hx-ws' (marker attribute)
+        if (attrName === 'send') {
+            let plainValue = api.attributeValue(element, 'hx-ws');
+            if (plainValue != null) return plainValue;
+        }
+        
+        return null;
+    }
+    
+    // Helper to check if element has WebSocket attribute (any variant)
+    function hasWsAttribute(element, attrName) {
+        let value = getWsAttribute(element, attrName);
+        return value !== null && value !== undefined;
+    }
+    
+    // Build selector for WS attributes
+    function buildWsSelector(attrName) {
+        let mc = htmx.config.metaCharacter || ':';
+        let mcAttr = buildAttrName(mc + attrName);
+        let hyphenAttr = buildAttrName('-' + attrName);
+        return `[${CSS.escape(mcAttr)}],[${hyphenAttr}]`;
+    }
+    
+    // ========================================
+    // CONFIGURATION
+    // ========================================
+    
+    function getConfig() {
+        const defaults = {
+            reconnect: true,
+            reconnectDelay: 1000,
+            reconnectMaxDelay: 30000,
+            reconnectJitter: true,
+            // Note: closeOnHide is NOT implemented for WebSockets. Reconnection continues in background tabs.
+            // To implement visibility-aware behavior, listen for htmx:ws:reconnect and cancel if needed.
+            pendingRequestTTL: 30000  // TTL for pending requests in ms
+        };
+        return { ...defaults, ...(htmx.config.websockets || {}) };
+    }
+    
+    // ========================================
+    // URL NORMALIZATION
+    // ========================================
+    
+    function normalizeWebSocketUrl(url) {
+        // Already a WebSocket URL
+        if (url.startsWith('ws://') || url.startsWith('wss://')) {
+            return url;
+        }
+        
+        // Convert http(s):// to ws(s)://
+        if (url.startsWith('http://')) {
+            return 'ws://' + url.slice(7);
+        }
+        if (url.startsWith('https://')) {
+            return 'wss://' + url.slice(8);
+        }
+        
+        // Relative URL - build absolute ws(s):// URL based on current location
+        let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        let host = window.location.host;
+        
+        if (url.startsWith('//')) {
+            // Protocol-relative URL
+            return protocol + url;
+        }
+        
+        if (url.startsWith('/')) {
+            // Absolute path
+            return protocol + '//' + host + url;
+        }
+        
+        // Relative path - resolve against current location
+        let basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        return protocol + '//' + host + basePath + url;
+    }
+    
+    // ========================================
+    // CONNECTION REGISTRY
+    // ========================================
+    
+    const connectionRegistry = new Map();
+    
+    function getOrCreateConnection(url, element) {
+        let normalizedUrl = normalizeWebSocketUrl(url);
+        
+        if (connectionRegistry.has(normalizedUrl)) {
+            let entry = connectionRegistry.get(normalizedUrl);
+            entry.refCount++;
+            entry.elements.add(element);
+            return entry;
+        }
+        
+        // Create entry but DON'T add to registry yet - wait for before:ws:connect
+        let entry = {
+            url: normalizedUrl,
+            socket: null,
+            refCount: 1,
+            elements: new Set([element]),
+            reconnectAttempts: 0,
+            reconnectTimer: null,
+            pendingRequests: new Map(),
+            listeners: {}  // Store listener references for proper cleanup
+        };
+        
+        // Fire cancelable event BEFORE storing in registry
+        if (!triggerEvent(element, 'htmx:before:ws:connect', { url: normalizedUrl })) {
+            // Event was cancelled - don't create connection or store entry
+            return null;
+        }
+        
+        // Event passed - now store in registry and create socket
+        connectionRegistry.set(normalizedUrl, entry);
+        createWebSocket(normalizedUrl, entry);
+        return entry;
+    }
+    
+    function createWebSocket(url, entry) {
+        let firstElement = entry.elements.values().next().value;
+        
+        // Close and remove listeners from old socket properly
+        if (entry.socket) {
+            let oldSocket = entry.socket;
+            entry.socket = null;
+            
+            // Remove listeners using stored references
+            if (entry.listeners.open) oldSocket.removeEventListener('open', entry.listeners.open);
+            if (entry.listeners.message) oldSocket.removeEventListener('message', entry.listeners.message);
+            if (entry.listeners.close) oldSocket.removeEventListener('close', entry.listeners.close);
+            if (entry.listeners.error) oldSocket.removeEventListener('error', entry.listeners.error);
+            
+            try {
+                if (oldSocket.readyState === WebSocket.OPEN || oldSocket.readyState === WebSocket.CONNECTING) {
+                    oldSocket.close();
+                }
+            } catch (e) {}
+        }
+        
+        try {
+            entry.socket = new WebSocket(url);
+            
+            // Create and store listener references
+            entry.listeners.open = () => {
+                // Reset reconnect attempts on successful connection
+                entry.reconnectAttempts = 0;
+                
+                if (firstElement) {
+                    triggerEvent(firstElement, 'htmx:after:ws:connect', { url, socket: entry.socket });
+                }
+            };
+            
+            entry.listeners.message = (event) => {
+                handleMessage(entry, event);
+            };
+            
+            entry.listeners.close = (event) => {
+                // Check if this socket is still the active one
+                if (event.target !== entry.socket) return;
+                
+                if (firstElement) {
+                    triggerEvent(firstElement, 'htmx:ws:close', { 
+                        url, 
+                        code: event.code,
+                        reason: event.reason 
+                    });
+                }
+                
+                // Check if entry is still valid (not cleared)
+                if (!connectionRegistry.has(url)) return;
+                
+                let config = getConfig();
+                if (config.reconnect && entry.refCount > 0) {
+                    scheduleReconnect(url, entry);
+                } else {
+                    cleanupPendingRequests(entry);
+                    connectionRegistry.delete(url);
+                }
+            };
+            
+            entry.listeners.error = (error) => {
+                if (firstElement) {
+                    triggerEvent(firstElement, 'htmx:ws:error', { url, error });
+                }
+            };
+            
+            // Add listeners
+            entry.socket.addEventListener('open', entry.listeners.open);
+            entry.socket.addEventListener('message', entry.listeners.message);
+            entry.socket.addEventListener('close', entry.listeners.close);
+            entry.socket.addEventListener('error', entry.listeners.error);
+            
+        } catch (error) {
+            if (firstElement) {
+                triggerEvent(firstElement, 'htmx:ws:error', { url, error });
+            }
+        }
+    }
+    
+    function scheduleReconnect(url, entry) {
+        let config = getConfig();
+        
+        // Increment attempts FIRST, then calculate delay
+        entry.reconnectAttempts++;
+        let attempts = entry.reconnectAttempts;
+        
+        let delay = Math.min(
+            (config.reconnectDelay || 1000) * Math.pow(2, attempts - 1),
+            config.reconnectMaxDelay || 30000
+        );
+        
+        if (config.reconnectJitter) {
+            delay = delay * (0.75 + Math.random() * 0.5);
+        }
+        
+        entry.reconnectTimer = setTimeout(() => {
+            if (entry.refCount > 0) {
+                let firstElement = entry.elements.values().next().value;
+                if (firstElement) {
+                    // attempts now means "this is attempt number N"
+                    triggerEvent(firstElement, 'htmx:ws:reconnect', { url, attempts });
+                }
+                createWebSocket(url, entry);
+            }
+        }, delay);
+    }
+    
+    function decrementRef(url, element) {
+        // Try both original and normalized URL
+        let normalizedUrl = normalizeWebSocketUrl(url);
+        
+        if (!connectionRegistry.has(normalizedUrl)) return;
+        
+        let entry = connectionRegistry.get(normalizedUrl);
+        entry.elements.delete(element);
+        entry.refCount--;
+        
+        if (entry.refCount <= 0) {
+            if (entry.reconnectTimer) {
+                clearTimeout(entry.reconnectTimer);
+            }
+            cleanupPendingRequests(entry);
+            if (entry.socket && entry.socket.readyState === WebSocket.OPEN) {
+                entry.socket.close();
+            }
+            connectionRegistry.delete(normalizedUrl);
+        }
+    }
+    
+    // ========================================
+    // PENDING REQUEST MANAGEMENT
+    // ========================================
+    
+    function cleanupPendingRequests(entry) {
+        entry.pendingRequests.clear();
+    }
+    
+    function cleanupExpiredRequests(entry) {
+        let config = getConfig();
+        let now = Date.now();
+        let ttl = config.pendingRequestTTL || 30000;
+        
+        for (let [requestId, pending] of entry.pendingRequests) {
+            if (now - pending.timestamp > ttl) {
+                entry.pendingRequests.delete(requestId);
+            }
+        }
+    }
+    
+    // ========================================
+    // MESSAGE SENDING
+    // ========================================
+    
+    // Check if a value looks like a URL (vs a boolean marker like "" or "true")
+    function looksLikeUrl(value) {
+        if (!value) return false;
+        // Check for URL-like patterns: paths, protocols, protocol-relative
+        return value.startsWith('/') || 
+               value.startsWith('.') ||
+               value.startsWith('ws:') || 
+               value.startsWith('wss:') || 
+               value.startsWith('http:') || 
+               value.startsWith('https:') ||
+               value.startsWith('//');
+    }
+    
+    async function sendMessage(element, event) {
+        // Find connection URL
+        let url = getWsAttribute(element, 'send');
+        if (!looksLikeUrl(url)) {
+            // Value is empty, "true", or other non-URL marker - look for ancestor connection
+            let selector = buildWsSelector('connect');
+            let ancestor = element.closest(selector);
+            if (ancestor) {
+                url = getWsAttribute(ancestor, 'connect');
+            } else {
+                url = null;
+            }
+        }
+        
+        if (!url) {
+            // Emit error event instead of console.error
+            triggerEvent(element, 'htmx:wsSendError', { 
+                element, 
+                error: 'No WebSocket connection found for element' 
+            });
+            return;
+        }
+        
+        let normalizedUrl = normalizeWebSocketUrl(url);
+        let entry = connectionRegistry.get(normalizedUrl);
+        if (!entry || !entry.socket || entry.socket.readyState !== WebSocket.OPEN) {
+            triggerEvent(element, 'htmx:wsSendError', { url: normalizedUrl, error: 'Connection not open' });
+            return;
+        }
+        
+        // Cleanup expired pending requests periodically
+        cleanupExpiredRequests(entry);
+        
+        // Build message
+        let form = element.form || element.closest('form');
+        let body = api.collectFormData(element, form, event.submitter);
+        
+        let values = {};
+        for (let [key, value] of body) {
+            if (key in values) {
+                values[key] = [].concat(values[key], value);
+            } else {
+                values[key] = value;
+            }
+        }
+        
+        // Merge hx-vals with original types preserved
+        let valsResult = api.getAttributeObject(element, 'hx-vals', obj => Object.assign(values, obj));
+        if (valsResult) await valsResult;
+        
+        // Build headers object
+        let headers = {
+            'HX-Request': 'true',
+            'HX-Current-URL': window.location.href
+        };
+        if (element.id) {
+            headers['HX-Trigger'] = element.id;
+        }
+        let targetAttr = api.attributeValue(element, 'hx-target');
+        if (targetAttr) {
+            headers['HX-Target'] = targetAttr;
+        }
+        
+        let requestId = generateUUID();
+        let message = {
+            type: 'request',
+            request_id: requestId,
+            event: event.type,
+            headers: headers,
+            values: values,
+            path: normalizedUrl
+        };
+        
+        if (element.id) {
+            message.id = element.id;
+        }
+        
+        // Allow modification via event - use 'data' as documented
+        let detail = { data: message, element, url: normalizedUrl };
+        if (!triggerEvent(element, 'htmx:before:ws:send', detail)) {
+            return;
+        }
+        
+        try {
+            entry.socket.send(JSON.stringify(detail.data));
+            
+            // Store pending request for response matching
+            entry.pendingRequests.set(requestId, { element, timestamp: Date.now() });
+            
+            triggerEvent(element, 'htmx:after:ws:send', { data: detail.data, url: normalizedUrl });
+        } catch (error) {
+            triggerEvent(element, 'htmx:wsSendError', { url: normalizedUrl, error });
+        }
+    }
+    
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            let r = Math.random() * 16 | 0;
+            let v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+    
+    // ========================================
+    // MESSAGE RECEIVING & ROUTING
+    // ========================================
+    
+    function handleMessage(entry, event) {
+        let envelope;
+        try {
+            envelope = JSON.parse(event.data);
+        } catch (e) {
+            // Not JSON - treat as raw HTML
+            let firstElement = entry.elements.values().next().value;
+            if (firstElement) {
+                handleRawMessage(firstElement, event.data);
+            }
+            return;
+        }
+        
+        // Apply defaults for channel and format
+        envelope.channel = envelope.channel || 'ui';
+        envelope.format = envelope.format || 'html';
+        
+        // Find target element for this message
+        let targetElement = null;
+        if (envelope.request_id && entry.pendingRequests.has(envelope.request_id)) {
+            targetElement = entry.pendingRequests.get(envelope.request_id).element;
+            entry.pendingRequests.delete(envelope.request_id);
+        } else {
+            // Use first element in the connection
+            targetElement = entry.elements.values().next().value;
+        }
+        
+        // Emit before:message event (cancelable)
+        if (!triggerEvent(targetElement, 'htmx:before:ws:message', { envelope, element: targetElement })) {
+            return;
+        }
+        
+        // Route based on channel
+        if (envelope.channel === 'ui' && envelope.format === 'html') {
+            handleHtmlMessage(targetElement, envelope);
+        } else {
+            // Any non-ui/html message emits htmx:wsMessage for application handling
+            // This is extensible - apps can handle json, audio, binary, custom channels, etc.
+            triggerEvent(targetElement, 'htmx:wsMessage', { ...envelope, element: targetElement });
+        }
+        
+        triggerEvent(targetElement, 'htmx:after:ws:message', { envelope, element: targetElement });
+    }
+    
+    // ========================================
+    // RAW (NON-JSON) MESSAGE HANDLING
+    // ========================================
+
+    function handleRawMessage(element, data) {
+        // Fire cancelable event - allows custom handling of non-JSON messages
+        if (!triggerEvent(element, 'htmx:ws:rawMessage', { data: data })) {
+            return;  // Event cancelled - developer handles it
+        }
+
+        // Default behavior: swap as raw HTML
+        let target = resolveTarget(element, null);
+        let targetSelector = api.attributeValue(element, 'hx-target');
+
+        // If no explicit hx-target, use swap:none so we don't wipe the
+        // connection element — but partials in the payload can still
+        // target their own destinations
+        let swapStyle = targetSelector
+            ? (api.attributeValue(element, 'hx-swap') || htmx.config.defaultSwap)
+            : 'none';
+
+        htmx.swap({
+            sourceElement: element,
+            target: target,
+            swap: swapStyle,
+            text: data,
+            transition: false
+        });
+    }
+
+    // ========================================
+    // HTML PARTIAL HANDLING - Using htmx.swap(ctx)
+    // ========================================
+    
+    function handleHtmlMessage(element, envelope) {
+        let target = resolveTarget(element, envelope.target);
+        let swapStyle = envelope.swap || api.attributeValue(element, 'hx-swap') || htmx.config.defaultSwap;
+        
+        // Always call swap even if target is null - partials in payload may have their own targets
+        htmx.swap({
+            sourceElement: element,
+            target: target,
+            swap: swapStyle,
+            text: envelope.payload || '',
+            transition: false
+        });
+    }
+    
+    function resolveTarget(element, envelopeTarget) {
+        if (envelopeTarget) {
+            if (envelopeTarget === 'this') {
+                return element;
+            }
+            return document.querySelector(envelopeTarget);
+        }
+        let targetSelector = api.attributeValue(element, 'hx-target');
+        if (targetSelector) {
+            if (targetSelector === 'this') {
+                return element;
+            }
+            return document.querySelector(targetSelector);
+        }
+        return element;
+    }
+    
+    // ========================================
+    // EVENT HELPERS
+    // ========================================
+    
+    function triggerEvent(element, eventName, detail = {}) {
+        if (!element) return true;
+        return api.triggerHtmxEvent(element, eventName, detail);
+    }
+    
+    // ========================================
+    // ELEMENT LIFECYCLE
+    // ========================================
+    
+    function initializeElement(element) {
+        if (element._htmx?.wsInitialized) return;
+
+        let connectUrl = getWsAttribute(element, 'connect');
+        if (!connectUrl) return;
+
+        api.htmxProp(element).wsInitialized = true;
+        
+        let triggerSpec = api.attributeValue(element, 'hx-trigger');
+        
+        if (!triggerSpec) {
+            // No trigger specified - connect immediately (default behavior)
+            // This is the most common use case: connect when element appears
+            let entry = getOrCreateConnection(connectUrl, element);
+            if (entry) {
+                element._htmx.wsUrl = entry.url;
+            }
+        } else {
+            // Connect based on explicit trigger
+            // Note: We only support bare event names for connection triggers.
+            // Modifiers like once, delay, throttle, from, target are NOT supported
+            // for connection establishment. Use htmx:before:ws:connect event for
+            // custom connection control logic.
+            let specs = api.parseTriggerSpecs(triggerSpec);
+            if (specs.length > 0) {
+                let spec = specs[0];
+                if (spec.name === 'load') {
+                    // Explicit load trigger - connect immediately
+                    let entry = getOrCreateConnection(connectUrl, element);
+                    if (entry) {
+                        element._htmx.wsUrl = entry.url;
+                    }
+                } else {
+                    // Set up event listener for other triggers (bare event name only)
+                    element.addEventListener(spec.name, () => {
+                        if (!element._htmx?.wsUrl) {
+                            let entry = getOrCreateConnection(connectUrl, element);
+                            if (entry) {
+                                element._htmx.wsUrl = entry.url;
+                            }
+                        }
+                    }, { once: true });
+                }
+            }
+        }
+    }
+    
+    function initializeSendElement(element) {
+        if (element._htmx?.wsSendInitialized) return;
+
+        let sendAttr = getWsAttribute(element, 'send');
+        // Only treat as URL if it looks like one (not "", "true", etc.)
+        let sendUrl = looksLikeUrl(sendAttr) ? sendAttr : null;
+        let triggerSpec = api.attributeValue(element, 'hx-trigger');
+        
+        if (!triggerSpec) {
+            // Default trigger based on element type
+            triggerSpec = element.matches('form') ? 'submit' :
+                         element.matches('input:not([type=button]),select,textarea') ? 'change' :
+                         'click';
+        }
+        
+        // Note: We only support bare event names for send triggers.
+        // Modifiers like once, delay, throttle, from, target are NOT supported.
+        // For complex trigger logic, use htmx:before:ws:send to implement custom behavior.
+        let specs = api.parseTriggerSpecs(triggerSpec);
+        if (specs.length > 0) {
+            let spec = specs[0];
+            
+            let handler = async (evt) => {
+                // Prevent default for forms
+                if (element.matches('form') && evt.type === 'submit') {
+                    evt.preventDefault();
+                }
+                
+                // If this element has its own URL, ensure connection exists
+                if (sendUrl) {
+                    if (!element._htmx?.wsUrl) {
+                        let entry = getOrCreateConnection(sendUrl, element);
+                        if (entry) {
+                            element._htmx.wsUrl = entry.url;
+                        }
+                    }
+                }
+                
+                await sendMessage(element, evt);
+            };
+            
+            element.addEventListener(spec.name, handler);
+            let htmxProp = api.htmxProp(element);
+            htmxProp.wsSendInitialized = true;
+            htmxProp.wsSendHandler = handler;
+            htmxProp.wsSendEvent = spec.name;
+        }
+    }
+    
+    function cleanupElement(element) {
+        if (element._htmx?.wsUrl) {
+            decrementRef(element._htmx.wsUrl, element);
+        }
+        
+        if (element._htmx?.wsSendHandler) {
+            element.removeEventListener(element._htmx.wsSendEvent, element._htmx.wsSendHandler);
+        }
+    }
+    
+    // ========================================
+    // BACKWARD COMPATIBILITY
+    // ========================================
+    
+    function checkLegacyAttributes(element) {
+        // Check for old ws-connect / ws-send attributes
+        if (element.hasAttribute('ws-connect') || element.hasAttribute('ws-send')) {
+            console.warn('HTMX WebSocket: Legacy attributes ws-connect and ws-send are deprecated. Please use hx-ws:connect/hx-ws-connect and hx-ws:send/hx-ws-send instead.');
+            
+            // Map legacy attributes to new ones (prefer hyphen variant for broader compatibility)
+            if (element.hasAttribute('ws-connect')) {
+                let url = element.getAttribute('ws-connect');
+                let hyphenAttr = buildAttrName('-connect');
+                if (!element.hasAttribute(hyphenAttr)) {
+                    element.setAttribute(hyphenAttr, url);
+                }
+            }
+            
+            if (element.hasAttribute('ws-send')) {
+                let hyphenAttr = buildAttrName('-send');
+                if (!element.hasAttribute(hyphenAttr)) {
+                    element.setAttribute(hyphenAttr, '');
+                }
+            }
+        }
+    }
+    
+    // ========================================
+    // EXTENSION REGISTRATION
+    // ========================================
+    
+    htmx.registerExtension('ws', {
+        init: (internalAPI) => {
+            api = internalAPI;
+            
+            // Initialize default config if not set
+            if (!htmx.config.websockets) {
+                htmx.config.websockets = {};
+            }
+        },
+        
+        htmx_after_process: (element) => {
+            const processNode = (node) => {
+                // Check for legacy attributes
+                checkLegacyAttributes(node);
+                
+                // Initialize WebSocket connection elements (check both variants)
+                if (hasWsAttribute(node, 'connect')) {
+                    initializeElement(node);
+                }
+                
+                // Initialize send elements (check both variants)
+                if (hasWsAttribute(node, 'send')) {
+                    initializeSendElement(node);
+                }
+            };
+
+            // Process the element itself
+            processNode(element);
+            
+            // Process descendants - build proper selector respecting prefix
+            let connectSelector = buildWsSelector('connect');
+            let sendSelector = buildWsSelector('send');
+            let plainAttr = buildAttrName('');
+            let fullSelector = `${connectSelector},${sendSelector},[${plainAttr}],[ws-connect],[ws-send]`;
+            
+            element.querySelectorAll(fullSelector).forEach(processNode);
+        },
+        
+        htmx_before_cleanup: (element) => {
+            cleanupElement(element);
+        }
+    });
+    
+    // Expose registry for testing
+    if (typeof window !== 'undefined' && window.htmx) {
+        window.htmx.ext = window.htmx.ext || {};
+        window.htmx.ext.ws = {
+            getRegistry: () => ({
+                clear: () => {
+                    let entries = Array.from(connectionRegistry.values());
+                    connectionRegistry.clear(); // Clear first to prevent reconnects
+                    
+                    entries.forEach(entry => {
+                        entry.refCount = 0; // Prevent pending timeouts from reconnecting
+                        if (entry.reconnectTimer) {
+                            clearTimeout(entry.reconnectTimer);
+                        }
+                        if (entry.socket) {
+                            // Remove listeners if possible or just close
+                            entry.socket.close();
+                        }
+                        entry.elements.clear();
+                        entry.pendingRequests.clear();
+                    });
+                },
+                get: (key) => connectionRegistry.get(normalizeWebSocketUrl(key)),
+                has: (key) => connectionRegistry.has(normalizeWebSocketUrl(key)),
+                size: connectionRegistry.size
+            })
+        };
+    }
+})();
+(()=>{
+    let api;
+
+    function initializePreload(elt) {
+        let preloadSpec = api.attributeValue(elt, "hx-preload");
+        if (!preloadSpec && !elt._htmx?.boosted) return;
+
+        let preloadEvents = []
+        let timeout = 5000;
+        if (preloadSpec) {
+            let specs = api.parseTriggerSpecs(preloadSpec);
+            if (specs.length === 0) return;
+            for (const spec of specs) {
+                preloadEvents.push(spec.name)
+                if (spec.timeout) {
+                    timeout = htmx.parseInterval(spec.timeout)
+                }
+            }
+        } else {
+            //only boosted links are supported
+            if (elt.tagName === "A") {
+                if(htmx.config?.preload?.boostTimeout) {
+                    timeout = htmx.parseInterval(htmx.config.preload.boostTimeout)
+                }
+                preloadEvents.push(htmx.config?.preload?.boostEvent || "mousedown");
+                preloadEvents.push("touchstart");
+            }
+        }
+
+        let preloadListener = async (evt) => {
+            let {method} = api.determineMethodAndAction(elt, evt);
+            if (method !== 'GET') return;
+
+            if (elt._htmx?.preload) return;
+
+            let ctx = api.createRequestContext(elt, evt);
+            let form = elt.form || elt.closest("form");
+            let body = api.collectFormData(elt, form, evt.submitter);
+            let valsResult = api.getAttributeObject(elt, 'hx-vals', obj => {
+                for (let key in obj) body.set(key, obj[key]);
+            });
+            if (valsResult) await valsResult;
+
+            let action = ctx.request.action.replace?.(/#.*$/, '');
+
+
+            let params = new URLSearchParams(body);
+            if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
+
+            elt._htmx.preload = {
+                prefetch: fetch(action, ctx.request),
+                action: action,
+                expiresAt: Date.now() + timeout
+            };
+
+            try {
+                await elt._htmx.preload.prefetch;
+            } catch (error) {
+                delete elt._htmx.preload;
+            }
+        };
+        for (let eventName of preloadEvents) {
+            elt.addEventListener(eventName, preloadListener);
+        }
+        elt._htmx.preloadListener = preloadListener;
+        elt._htmx.preloadEvents = preloadEvents;
+    }
+
+    htmx.registerExtension('preload', {
+        init: (internalAPI) => {
+            api = internalAPI;
+        },
+
+        htmx_after_init: (elt) => {
+            initializePreload(elt);
+        },
+
+        htmx_before_request: (elt, detail) => {
+            let {ctx} = detail;
+            if (elt._htmx?.preload &&
+                elt._htmx.preload.action === ctx.request.action &&
+                Date.now() < elt._htmx.preload.expiresAt) {
+                let prefetch = elt._htmx.preload.prefetch;
+                ctx.fetch = () => prefetch;
+                delete elt._htmx.preload;
+            } else {
+                if (elt._htmx) delete elt._htmx.preload;
+            }
+        },
+
+        htmx_before_cleanup: (elt) => {
+            if (elt._htmx?.preloadListener) {
+                for (let eventName of elt._htmx.preloadEvents) {
+                    elt.removeEventListener(eventName, elt._htmx.preloadListener);
+                }
+            }
+        }
+    });
+})()(() => {
+
+    if (typeof navigation === 'undefined') return;
+
+    let api;
+    let activeCount = 0;
+    let activeAborts = new Set();
+    let historyUpdating = false;
+    let cleanupNavigation = null;
+
+    function shouldShowIndicator(elt) {
+        if (api.attributeValue(elt, 'hx-browser-indicator') === 'true') return true;
+        if (htmx.config.boostBrowserIndicator && elt._htmx?.boosted) return true;
+        return false;
+    }
+
+    function listenForNavigate() {
+        navigation.addEventListener('navigate', (event) => {
+            let hideBrowserIndicator;
+            event.intercept({
+                handler: () => new Promise(r => { hideBrowserIndicator = r }),
+                scroll: 'manual',
+                focusReset: 'manual'
+            });
+            let abortHandler = () => {
+                if (historyUpdating) {
+                    // History update, re-hijack the navigation
+                    listenForNavigate();
+                } else {
+                    // User clicked the browser stop button - abort all in-flight requests
+                    activeAborts.forEach( abort => abort() );
+                    activeAborts.clear();
+                    activeCount = 0;
+                    cleanupNavigation = null;
+                }
+            };
+            event.signal.addEventListener('abort', abortHandler);
+            cleanupNavigation = () => {
+                event.signal.removeEventListener('abort', abortHandler);
+                hideBrowserIndicator();
+            };
+        }, {once: true});
+    }
+
+    function startIndicator() {
+        listenForNavigate();
+        navigation.navigate(location.href, { history: 'replace' });
+    }
+
+    function stopIndicator() {
+        if (cleanupNavigation) {
+            cleanupNavigation();
+            cleanupNavigation = null;
+        }
+    }
+
+    htmx.registerExtension('browser-indicator', {
+        init: (internalAPI) => {
+            api = internalAPI;
+        },
+
+        htmx_before_history_update: () => {
+            historyUpdating = true;
+        },
+
+        htmx_after_history_update: () => {
+            historyUpdating = false;
+        },
+
+        htmx_before_request: (elt, detail) => {
+            if (!shouldShowIndicator(elt)) return;
+            detail.ctx._browserIndicator = true;
+            if (detail.ctx.request?.abort) activeAborts.add(detail.ctx.request.abort);
+            activeCount++;
+            if (activeCount === 1) startIndicator();
+        },
+
+        htmx_finally_request: (elt, detail) => {
+            if (!detail.ctx._browserIndicator) return;
+            if (detail.ctx.request?.abort) activeAborts.delete(detail.ctx.request.abort);
+            if (activeCount === 0) return;
+            activeCount--;
+            if (activeCount === 0) stopIndicator();
+        }
+    });
+})();
+//==========================================================
+// hx-download.js
+//
+// An extension that adds a 'download' swap style which
+// triggers a file download instead of a DOM swap, with
+// streaming progress events for progress bars.
+//
+// Usage:
+//   <button hx-get="/file.pdf" hx-swap="download"
+//           hx-ext="download">Download</button>
+//
+// Events:
+//   htmx:download:start    {total}
+//   htmx:download:progress {loaded, total, percent}
+//   htmx:download:complete {filename, size}
+//==========================================================
+(() => {
+    htmx.registerExtension('download', {
+        htmx_before_request: (elt, {ctx}) => {
+            if (ctx.swap !== 'download') return;
+            let originalFetch = ctx.fetch;
+            ctx.fetch = async (url, options) => {
+                let response = await originalFetch(url, options);
+                let total = +response.headers.get('Content-Length') || null;
+                htmx.trigger(ctx.sourceElement, 'htmx:download:start', {total});
+
+                let reader = response.body.getReader();
+                let chunks = [], loaded = 0;
+                while (true) {
+                    let {done, value} = await reader.read();
+                    if (done) break;
+                    chunks.push(value);
+                    loaded += value.length;
+                    htmx.trigger(ctx.sourceElement, 'htmx:download:progress', {
+                        loaded, total,
+                        percent: total ? Math.round(loaded / total * 100) : null
+                    });
+                }
+
+                ctx.download = {
+                    blob: new Blob(chunks, {
+                        type: response.headers.get('Content-Type') || 'application/octet-stream'
+                    }),
+                    filename: parseFilename(response.headers, url)
+                };
+                return new Response('', {status: response.status, headers: response.headers});
+            };
+        },
+
+        htmx_before_swap: (elt, {ctx}) => {
+            if (!ctx.download) return;
+            let {blob, filename} = ctx.download;
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            htmx.trigger(ctx.sourceElement, 'htmx:download:complete', {filename, size: blob.size});
+            return false;
+        }
+    });
+
+    function parseFilename(headers, url) {
+        let cd = headers.get('Content-Disposition');
+        if (cd) {
+            let match = cd.match(/filename\*?=['"]?(?:UTF-8'')?([^'";]+)/i);
+            if (match) return decodeURIComponent(match[1]);
+        }
+        return url.split('/').pop().split('?')[0] || 'download';
+    }
+})();
+(() =>{
+
+    // TODO - this needs to be updated to use the new internal API
+
+    function normalizeSwapStyle(style) {
+        return style === 'before' ? 'beforebegin' :
+            style === 'after' ? 'afterend' :
+                style === 'prepend' ? 'afterbegin' :
+                    style === 'append' ? 'beforeend' : style;
+    }
+
+    function insertOptimisticContent(ctx) {
+        // TODO - handle htmx.config.prefix
+        ctx.optimistic = ctx.sourceElement.getAttribute("hx-optimistic");
+        if (!ctx.optimistic) {
+            return
+        }
+
+        // TODO - handle inheritance?
+        let sourceElt = document.querySelector(ctx.optimistic);
+        if (!sourceElt) return;
+
+        let target = ctx.target;
+        if (!target) return;
+
+        if (typeof target === 'string') {
+            target = document.querySelector(target);
+        }
+
+        // Create optimistic div with reset styling
+        let optimisticDiv = document.createElement('div');
+        optimisticDiv.style.cssText = 'all: initial';
+        optimisticDiv.innerHTML = sourceElt.innerHTML;
+
+        let swapStyle = normalizeSwapStyle(ctx.swap);
+        ctx.optHidden = [];
+
+        if (swapStyle === 'innerHTML') {
+            // Hide children of target
+            for (let child of target.children) {
+                child.style.display = 'none';
+                ctx.optHidden.push(child)
+            }
+            target.appendChild(optimisticDiv);
+            ctx.optimisticDiv = optimisticDiv;
+        } else if (['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(swapStyle)) {
+            target.insertAdjacentElement(swapStyle, optimisticDiv);
+            ctx.optimisticDiv = optimisticDiv;
+        } else {
+            // Assume outerHTML-like behavior, Hide target and insert div after it
+            target.style.display = 'none';
+            ctx.optHidden.push(target)
+            target.after(optimisticDiv)
+            ctx.optimisticDiv = optimisticDiv;
+        }
+    }
+
+    function removeOptimisticContent(ctx) {
+        if (!ctx.optimisticDiv) return;
+
+        // Remove optimistic div
+        ctx.optimisticDiv.remove();
+
+        // Unhide any hidden elements
+        for (let elt of ctx.optHidden) {
+            elt.style.display = '';
+        }
+    }
+
+    htmx.registerExtension('hx-optimistic', {
+        htmx_before_request : (elt, detail) => {
+            insertOptimisticContent(detail.ctx);
+        },
+        htmx_error : (elt, detail) => {
+            removeOptimisticContent(detail.ctx)
+        },
+        htmx_before_swap : (elt, detail) => {
+            removeOptimisticContent(detail.ctx)
+        }
+    });
+})();//==========================================================
+// hx-targets.js
+//
+// An extension that adds an 'hx-targets' attribute to target
+// multiple elements with the same swap content.
+//
+// Usage:
+//   <button hx-get="/api" hx-targets=".card">Click</button>
+//
+// The response will be swapped into all elements matching
+// the selector. The hx-targets attribute is inherited.
+//==========================================================
+(() => {
+    let api;
+
+    htmx.registerExtension('hx-targets', {
+        init: (internalAPI) => {
+            api = internalAPI;
+        },
+        htmx_before_swap: (elt, detail) => {
+            let {ctx, tasks} = detail;
+            let selector = api.attributeValue(ctx.sourceElement, 'hx-targets');
+            if (!selector) return;
+
+            let targets = htmx.findAll(ctx.sourceElement, selector);
+            if (!targets.length) {
+                console.warn(`htmx: '${selector}' on hx-targets did not match any elements`);
+                return;
+            }
+
+            // Replace main task with one task per target
+            let mainIndex = tasks.findIndex(t => t.type === 'main');
+            if (mainIndex === -1) return;
+
+            let mainTask = tasks[mainIndex];
+            let newTasks = Array.from(targets).map(target => ({
+                ...mainTask,
+                fragment: mainTask.fragment.cloneNode(true),
+                target
+            }));
+
+            tasks.splice(mainIndex, 1, ...newTasks);
+        }
+    });
+})();

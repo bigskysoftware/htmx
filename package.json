@@ -27,7 +27,8 @@
     "dist/skills"
   ],
   "scripts": {
-    "build": "npm run build:iife && npm run build:esm && npm run build:minify && npm run build:ext && npm run build:editors && npm run build:skills && npm run build:compress",
+    "build": "npm run build:iife && npm run build:esm && npm run build:minify && npm run build:ext && npm run build:htmax && npm run build:editors && npm run build:skills && npm run build:compress",
+    "build:htmax": "EXTS='hx-sse hx-ws hx-preload hx-browser-indicator hx-download hx-optimistic hx-targets'; cat dist/htmx.js $(for e in $EXTS; do echo dist/ext/$e.js; done) > dist/htmax.js && terser --compress --mangle --source-map -o dist/htmax.min.js dist/htmax.js",
     "build:skills": "mkdir -p dist/skills && cp src/skills/*.md dist/skills/",
     "build:iife": "sed 's/__/#/g' src/htmx.js > dist/htmx.js",
     "build:esm": "sed 's/__/#/g' src/htmx.js > dist/htmx.esm.js && printf '\\nif (typeof window !== \"undefined\") window.htmx = htmx;\\nexport default htmx;\\n' >> dist/htmx.esm.js",
