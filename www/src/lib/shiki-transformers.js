@@ -51,13 +51,11 @@ export const codeBlockTransformer = {
                         remove .icon-\\[radix-icons--copy\\] from first <i/> in me
                         set @title of me to 'Copied!'
                         add @data-copied
-                        put 'Copied!' into #status-bar
                         wait 2s
                         add .icon-\\[radix-icons--copy\\] to first <i/> in me
                         remove .icon-\\[radix-icons--check\\] from first <i/> in me
                         set @title of me to 'Copy to clipboard'
-                        remove @data-copied
-                        put '' into #status-bar`,
+                        remove @data-copied`,
                 title: 'Copy to clipboard'
             },
             children: [

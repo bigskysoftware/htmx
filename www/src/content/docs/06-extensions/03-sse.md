@@ -10,11 +10,11 @@ SSE is a lightweight alternative to WebSockets that works over existing HTTP con
 
 ## Installing
 
-Include the extension script after htmx:
+Include the extension script after htmx. It ships with htmx in the `/ext/` directory:
 
 ```html
-<script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/hx-sse.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-sse.js"></script>
 ```
 
 ## How It Works

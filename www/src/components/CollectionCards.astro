@@ -29,7 +29,7 @@ const getThumbnail = (path: string | undefined): string | null => {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-0">
         {folders.map((item) => {
             const thumbnail = getThumbnail(item.frontmatter.thumbnail);
-            const allSoon = item.subfiles.length > 0 && item.subfiles.every(f => f.frontmatter.soon);
+            const allSoon = item.files.length > 0 && item.files.every(f => f.frontmatter.soon);
 
             return (
                 <Card variant="lg" class:list={[

@@ -106,7 +106,7 @@ Use [`htmx.config.history`](/reference/config/htmx-config-history) `= "reload"` 
 In htmx 2, out-of-band ([`hx-swap-oob`](/reference/attributes/hx-swap-oob)) elements swapped **before** the main
 content.
 
-In htmx 4, the main content swaps first. OOB and `hx-partial` elements swap after (in document order).
+In htmx 4, the main content swaps first. OOB and [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial) elements swap after (in document order).
 
 This matters if an OOB swap creates or modifies DOM that the main swap depends on. If your app relies on that ordering,
 restructure so each swap is independent.
@@ -354,10 +354,9 @@ specificity.
 
 ### `<hx-partial>`
 
-Target multiple elements from one response:
+Target multiple elements from one response. An alternative to [`hx-swap-oob`](/reference/attributes/hx-swap-oob) for when you need explicit control over targeting and swap strategy:
 
 ```html
-
 <hx-partial hx-target="#messages" hx-swap="beforeend">
     <div>New message</div>
 </hx-partial>
@@ -367,16 +366,7 @@ Target multiple elements from one response:
 </hx-partial>
 ```
 
-Each `<hx-partial>` specifies its own [`hx-target`](/reference/attributes/hx-target) and [
-`hx-swap`](/reference/attributes/hx-swap) strategy. A cleaner alternative to out-of-band swaps.
-
-### Etag support
-
-htmx 4 supports Etag-based conditional requests automatically:
-
-- Response includes an [`Etag`](/reference/headers/ETag) header: htmx stores it on the source element
-- Next request from that element includes an [`If-None-Match`](/reference/headers/If-None-Match) header
-- `304 Not Modified` responses do not swap, avoiding unnecessary DOM updates
+Each `<hx-partial>` specifies its own [`hx-target`](/reference/attributes/hx-target) and [`hx-swap`](/reference/attributes/hx-swap) strategy. See [Multi-Target Updates](/docs/core-concepts/multi-target-updates) for full documentation.
 
 ### View transitions
 
@@ -487,4 +477,4 @@ Look for these:
 
 - [GitHub Discussions](https://github.com/bigskysoftware/htmx/discussions)
 - [Discord](https://htmx.org/discord)
-- [Examples](/examples)
+- [Patterns](/patterns)

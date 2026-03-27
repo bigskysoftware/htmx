@@ -12,33 +12,25 @@ htmx is a single JavaScript file with no dependencies. No build step is required
 Add this in your `<head>` tag:
 
 ```html
-<script defer src="https://cdn.jsdelivr.net/npm/htmx.org@next"
-        integrity="sha384-hUj4cz/Dd2p+Dq0r8A6TAMS1u7gu2bTyisk8xCQX3nodazPP+fRmcAWJrTh4Ycwb"
-        crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/htmx.org@next"></script>
 ```
 
 ### Unminified
 
 ```html
-<script defer src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.js"
-        integrity="sha384-CHKZYHwIgmpkwoWtoPaiFIiMxP1Up7yHcsZ2NeECzLxRTXCO0mqXlujZwdJgFsFC"
-        crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.js"></script>
 ```
 
 ### ES Module
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.esm.min.js"
-        integrity="sha384-OPW5afG/4fljvTHsMqWvLnhClMkpDn0js3fDdgGseCQ5ijf4CgOH6yBk4Mh+Lsvb"
-        crossorigin="anonymous"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.esm.min.js"></script>
 ```
 
 ### ES Module (unminified)
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.esm.js"
-        integrity="sha384-WhiGE30cpMIwAk95UYcKunr7TdMcxfJ9ECtjkYo8ghgAyYXtS9jA4c0TXkVcqBsM"
-        crossorigin="anonymous"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.esm.js"></script>
 ```
 
 ## Download

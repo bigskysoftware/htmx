@@ -48,8 +48,8 @@ const isPatterns = folder.folder === 'patterns';
         </a>
 
         {/* Grouped files (subfolders with their files) */}
-        {folder.subfolders.map((subFolder) => {
-            const files = subFolder.subfiles;
+        {folder.folders.map((subFolder) => {
+            const files = subFolder.files;
             const containsCurrentPage = files.some((f: ContentFile) => currentUrl === f.url);
 
             return (
@@ -113,7 +113,7 @@ const isPatterns = folder.folder === 'patterns';
         })}
 
         {/* Direct files (not nested in subfolders) */}
-        {folder.subfiles.map((f: ContentFile) => {
+        {folder.files.map((f: ContentFile) => {
             const isActive = currentUrl === f.url;
             return (
                 <a href={f.url}

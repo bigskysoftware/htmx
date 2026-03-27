@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
+import { getFile } from '../lib/content';
 import bssBars from '../assets/img/bss-bars.png';
 
 interface Props {
@@ -32,10 +32,10 @@ const navigationSections = [
     },
     {
         name: "Community",
-        items: (await getCollection('community')).map(communityLink => ({
-            name: communityLink.data.name,
-            url: communityLink.data.url,
-            iconClass: communityLink.data.iconClass,
+        items: ((await getFile('community.yaml'))?.frontmatter || []).map((c: any) => ({
+            name: c.name,
+            url: c.url,
+            iconClass: c.iconClass,
         }))
     },
     {
