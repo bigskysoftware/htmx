@@ -424,17 +424,9 @@ All events provide a consistent `ctx` object with request/response information.
 | [`morphSkip`](/reference/config/htmx-config-morphSkip)                 | `''`            | CSS selector for elements to skip during morph                |
 | [`morphSkipChildren`](/reference/config/htmx-config-morphSkipChildren) | `''`            | CSS selector for elements whose children to skip during morph |
 
-### SSE extension
-
-The SSE extension uses `fetch()` and [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream)
-instead of [`EventSource`](https://developer.mozilla.org/en-US/docs/Web/API/EventSource). This enables request bodies,
-custom headers, and all HTTP methods.
-
-See the [SSE extension documentation](/docs/extensions/sse) for details.
-
 ### Core extensions
 
-htmx 4 ships with 9 core extensions:
+htmx 4 ships with 9 core extensions. The SSE and WebSocket extensions have been significantly rewritten. See their upgrade guides for details.
 
 | Extension                                                 | Description                                                                          |
 |-----------------------------------------------------------|--------------------------------------------------------------------------------------|
@@ -444,9 +436,9 @@ htmx 4 ships with 9 core extensions:
 | [`htmx-2-compat`](/docs/extensions/htmx-2-compat)         | Restores implicit inheritance, old event names, and previous error-swapping defaults |
 | [`optimistic`](/docs/extensions/optimistic)               | Shows expected content from a template before the server responds                    |
 | [`preload`](/docs/extensions/preload)                     | Triggers requests early (on mouseover/mousedown) for near-instant page loads         |
-| [`sse`](/docs/extensions/sse)                             | Server-Sent Events streaming support                                                 |
+| [`sse`](/docs/extensions/sse)                             | Server-Sent Events streaming support ([upgrade guide](/docs/extensions/sse#upgrading-from-htmx-2x)) |
 | [`upsert`](/docs/extensions/upsert)                       | Updates existing elements by ID and inserts new ones, preserving unmatched elements  |
-| [`ws`](/docs/extensions/ws)                               | Bi-directional Web Socket communication                                              |
+| [`ws`](/docs/extensions/ws)                               | Bi-directional WebSocket communication ([upgrade guide](/docs/extensions/ws#upgrading-from-htmx-2x)) |
 
 ## Checklist
 
