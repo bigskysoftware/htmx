@@ -1,7 +1,7 @@
 ---
 title: "Multi-Target Updates"
 description: "Update multiple elements from a single response"
-keywords: ["oob", "out of band", "multiple swaps", "swap-oob"]
+keywords: ["oob", "out of band", "multiple swaps", "swap-oob", "hx-partial", "partial", "template hx"]
 ---
 
 ## The Problem
@@ -72,22 +72,22 @@ Use out-of-band swaps when:
 - You want simple, ID-based updates
 - You're updating notification areas, counters, or status indicators
 
-## Partial Tags
+## Partials (`<hx-partial>`)
 
-Use partial tags when you need explicit control over targeting.
+Use partials when you need explicit control over targeting.
 
-Wrap content in a `<template>` tag with `type="partial"`. Specify where it goes with [`hx-target`](/reference/attributes/hx-target).
+Wrap content in `<hx-partial>` tags. Specify where it goes with [`hx-target`](/reference/attributes/hx-target).
 
 **Server response:**
 
 ```html
-<template hx type="partial" hx-target="#messages" hx-swap="beforeend">
+<hx-partial hx-target="#messages" hx-swap="beforeend">
     <div class="message">New message content</div>
-</template>
+</hx-partial>
 
-<template hx type="partial" hx-target="#notifications">
+<hx-partial hx-target="#notifications">
     <span class="badge">5</span>
-</template>
+</hx-partial>
 
 <form id="my-form">
     <!-- Main form content -->
@@ -95,21 +95,29 @@ Wrap content in a `<template>` tag with `type="partial"`. Specify where it goes 
 ```
 
 **Result:**
-- First template's content appends to `#messages`
-- Second template's content replaces contents of `#notifications`
+- First partial's content appends to `#messages`
+- Second partial's content replaces contents of `#notifications`
 - Form updates in its normal target location
 
 ### Attributes
 
-Each `<template>` tag accepts:
+Each `<hx-partial>` accepts:
 
-- `type="partial"` - Required. Identifies this as a partial
-- `hx-target` - Required. CSS selector for where to place content
-- `hx-swap` - Optional. Swap style (defaults to `innerHTML`)
+- [`hx-target`](/reference/attributes/hx-target) - CSS selector for where to place content
+- `id` - Shorthand alternative to `hx-target`. Targets the element with that ID (e.g. `<hx-partial id="messages">` targets `#messages`)
+- [`hx-swap`](/reference/attributes/hx-swap) - Optional. Swap style (defaults to `innerHTML`)
+
+Either `hx-target` or `id` is required. If both are present, `hx-target` takes precedence.
+
+<details>
+<summary>Alternative syntax for template languages that strip unknown tags</summary>
+
+You can use the equivalent `<template>` form: `<template hx type="partial" hx-target="..." hx-swap="...">`. htmx converts `<hx-partial>` to this form internally.
+</details>
 
 ### When to Use Partials
 
-Use partial tags when:
+Use partials when:
 - Elements don't have `id` attributes
 - You need to target by class or other selectors
 - You want explicit control over what goes where

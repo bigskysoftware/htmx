@@ -87,8 +87,6 @@ htmx supports htmx-specific response headers:
 | `HX-Retarget`                                    | a CSS selector that updates the target of the content update to a different element on the page                                                                                    |
 | `HX-Reselect`                                    | a CSS selector that allows you to choose which part of the response is used to be swapped in. Overrides an existing [`hx-select`](/reference/attributes/hx-select) on the triggering element |
 | [`HX-Trigger`](/reference/headers/HX-Trigger)              | allows you to trigger client-side events                                                                                                                                           |
-| [`HX-Trigger-After-Settle`](/reference/headers/HX-Trigger) | allows you to trigger client-side events after the settle step                                                                                                                     |
-| [`HX-Trigger-After-Swap`](/reference/headers/HX-Trigger)   | allows you to trigger client-side events after the swap step                                                                                                                       |
 
 For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](/reference/headers/HX-Trigger).
 

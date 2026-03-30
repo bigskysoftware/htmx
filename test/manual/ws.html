@@ -385,11 +385,16 @@
         }
 
         // Listen to WebSocket events
-        document.addEventListener('htmx:before:ws:connect', (e) => {
-            logEvent('CONNECT', `Connecting to ${e.detail.url}`);
+        document.addEventListener('htmx:before:ws:connection', (e) => {
+            let attempt = e.detail.connection.attempt;
+            if (attempt === 0) {
+                logEvent('CONNECT', `Connecting to ${e.detail.connection.url}`);
+            } else {
+                logEvent('RECONNECT', `Attempting reconnection (attempt ${attempt})`);
+            }
         });
 
-        document.addEventListener('htmx:after:ws:connect', (e) => {
+        document.addEventListener('htmx:after:ws:connection', (e) => {
             logEvent('CONNECTED', `Connected to ${e.detail.url}`);
         });
 
@@ -399,10 +404,6 @@
 
         document.addEventListener('htmx:ws:error', (e) => {
             logEvent('ERROR', `WebSocket error: ${e.detail.url}`);
-        });
-
-        document.addEventListener('htmx:ws:reconnect', (e) => {
-            logEvent('RECONNECT', `Attempting reconnection (attempt ${e.detail.attempts + 1})`);
         });
 
         document.addEventListener('htmx:before:ws:send', (e) => {

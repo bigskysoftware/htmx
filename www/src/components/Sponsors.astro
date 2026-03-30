@@ -1,8 +1,6 @@
 ---
-import type {CollectionEntry} from "astro:content";
-
 interface Props {
-    sponsors: CollectionEntry<'sponsors'>['data'][];
+    sponsors: Record<string, any>[];
 }
 
 import { Image } from 'astro:assets';
@@ -71,7 +69,6 @@ const tiers = Object.keys(sponsorsByTier);
                                                                     { 'max-h-[55px] w-[180px]': tier === 'silver' }
                                                                 ]}
                                                                 width="100%"
-                                                                height="auto"
                                                         />
                                                 ) : (
                                                         <Image

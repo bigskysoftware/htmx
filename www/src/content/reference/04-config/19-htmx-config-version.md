@@ -1,14 +1,12 @@
 ---
-title: "htmx.config.version"
+title: "htmx.version"
 description: "Current htmx version (read-only)"
 ---
 
-The `htmx.config.version` property contains the current htmx version string.
-
-This is a read-only value set by htmx.
+The `htmx.version` property contains the current htmx version string (read-only).
 
 ## Example
 
 ```javascript
-console.log(htmx.config.version); // "4.0.0-alpha3"
+console.log(htmx.version); // "4.0.0-alpha3"
 ```

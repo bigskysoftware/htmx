@@ -5,7 +5,7 @@ description: "Enable View Transitions API support"
 
 The `htmx.config.transitions` option, when set to `true`, causes htmx to use the View Transitions API for smooth animations between page updates.
 
-**Default:** `true`
+**Default:** `false`
 
 ## Example
 

@@ -131,7 +131,7 @@ frameworks
 (caching, SQL tuning, etc.)
 
 And, by choosing a hypermedia-oriented front end technology like htmx, you can
-create [excellent user experiences](/examples) within
+create [excellent user experiences](/patterns) within
 that model.
 
 Everything old is new again, but, this time, a little bit better.

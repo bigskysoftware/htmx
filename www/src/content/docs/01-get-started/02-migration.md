@@ -106,7 +106,7 @@ Use [`htmx.config.history`](/reference/config/htmx-config-history) `= "reload"` 
 In htmx 2, out-of-band ([`hx-swap-oob`](/reference/attributes/hx-swap-oob)) elements swapped **before** the main
 content.
 
-In htmx 4, the main content swaps first. OOB and `hx-partial` elements swap after (in document order).
+In htmx 4, the main content swaps first. OOB and [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial) elements swap after (in document order).
 
 This matters if an OOB swap creates or modifies DOM that the main swap depends on. If your app relies on that ordering,
 restructure so each swap is independent.
@@ -354,10 +354,9 @@ specificity.
 
 ### `<hx-partial>`
 
-Target multiple elements from one response:
+Target multiple elements from one response. An alternative to [`hx-swap-oob`](/reference/attributes/hx-swap-oob) for when you need explicit control over targeting and swap strategy:
 
 ```html
-
 <hx-partial hx-target="#messages" hx-swap="beforeend">
     <div>New message</div>
 </hx-partial>
@@ -367,16 +366,7 @@ Target multiple elements from one response:
 </hx-partial>
 ```
 
-Each `<hx-partial>` specifies its own [`hx-target`](/reference/attributes/hx-target) and [
-`hx-swap`](/reference/attributes/hx-swap) strategy. A cleaner alternative to out-of-band swaps.
-
-### Etag support
-
-htmx 4 supports Etag-based conditional requests automatically:
-
-- Response includes an [`Etag`](/reference/headers/ETag) header: htmx stores it on the source element
-- Next request from that element includes an [`If-None-Match`](/reference/headers/If-None-Match) header
-- `304 Not Modified` responses do not swap, avoiding unnecessary DOM updates
+Each `<hx-partial>` specifies its own [`hx-target`](/reference/attributes/hx-target) and [`hx-swap`](/reference/attributes/hx-swap) strategy. See [Multi-Target Updates](/docs/core-concepts/multi-target-updates) for full documentation.
 
 ### View transitions
 
@@ -434,17 +424,9 @@ All events provide a consistent `ctx` object with request/response information.
 | [`morphSkip`](/reference/config/htmx-config-morphSkip)                 | `''`            | CSS selector for elements to skip during morph                |
 | [`morphSkipChildren`](/reference/config/htmx-config-morphSkipChildren) | `''`            | CSS selector for elements whose children to skip during morph |
 
-### SSE extension
-
-The SSE extension uses `fetch()` and [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream)
-instead of [`EventSource`](https://developer.mozilla.org/en-US/docs/Web/API/EventSource). This enables request bodies,
-custom headers, and all HTTP methods.
-
-See the [SSE extension documentation](/docs/extensions/sse) for details.
-
 ### Core extensions
 
-htmx 4 ships with 9 core extensions:
+htmx 4 ships with 9 core extensions. The SSE and WebSocket extensions have been significantly rewritten. See their upgrade guides for details.
 
 | Extension                                                 | Description                                                                          |
 |-----------------------------------------------------------|--------------------------------------------------------------------------------------|
@@ -454,9 +436,9 @@ htmx 4 ships with 9 core extensions:
 | [`htmx-2-compat`](/docs/extensions/htmx-2-compat)         | Restores implicit inheritance, old event names, and previous error-swapping defaults |
 | [`optimistic`](/docs/extensions/optimistic)               | Shows expected content from a template before the server responds                    |
 | [`preload`](/docs/extensions/preload)                     | Triggers requests early (on mouseover/mousedown) for near-instant page loads         |
-| [`sse`](/docs/extensions/sse)                             | Server-Sent Events streaming support                                                 |
+| [`sse`](/docs/extensions/sse)                             | Server-Sent Events streaming support ([upgrade guide](/docs/extensions/sse#upgrading-from-htmx-2x)) |
 | [`upsert`](/docs/extensions/upsert)                       | Updates existing elements by ID and inserts new ones, preserving unmatched elements  |
-| [`ws`](/docs/extensions/ws)                               | Bi-directional Web Socket communication                                              |
+| [`ws`](/docs/extensions/ws)                               | Bi-directional WebSocket communication ([upgrade guide](/docs/extensions/ws#upgrading-from-htmx-2x)) |
 
 ## Checklist
 
@@ -487,4 +469,4 @@ Look for these:
 
 - [GitHub Discussions](https://github.com/bigskysoftware/htmx/discussions)
 - [Discord](https://htmx.org/discord)
-- [Examples](/examples)
+- [Patterns](/patterns)

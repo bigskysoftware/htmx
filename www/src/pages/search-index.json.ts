@@ -78,7 +78,7 @@ export const GET: APIRoute = async () => {
 
                 // Add subfolder entries (e.g., Reference > Headers, Docs > Getting Started)
                 const addSubfolders = (parentFolder: typeof folder) => {
-                    for (const subfolder of parentFolder.subfolders) {
+                    for (const subfolder of parentFolder.folders) {
                         const breadcrumb = subfolder.breadcrumbs
                             .slice(1, -1)
                             .map(b => b.label);
@@ -101,9 +101,9 @@ export const GET: APIRoute = async () => {
 
                 for (const file of files) {
                     let sections: Array<{title: string, anchor: string, content: string}> = [];
-                    const fileId = file.id.startsWith(`${collectionId}/`)
-                        ? file.id.replace(`${collectionId}/`, '')
-                        : file.id;
+                    const fileId = file.path.startsWith(`${collectionId}/`)
+                        ? file.path.replace(`${collectionId}/`, '')
+                        : file.path;
 
                     for (const ext of ['.md', '.mdx']) {
                         try {

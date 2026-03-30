@@ -5,8 +5,14 @@ import HeroDemo from "./HeroDemo.astro";
 ---
 
 <!-- Hero -->
-<section class="not-prose pt-8 sm:pt-24 pb-12 sm:pb-16 w-screen relative left-1/2 -ml-[50vw]">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" style="transform: translateZ(0); isolation: isolate;">
+<section id="hero" class="not-prose pt-8 sm:pt-24 pb-12 sm:pb-16 w-screen relative left-1/2 -ml-[50vw]"
+         _="on intersection(intersecting) having threshold 0.8
+            if intersecting
+                remove .grid-dimmed from #background-grid
+            else
+                add .grid-dimmed to #background-grid">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+         style="transform: translateZ(0); isolation: isolate;">
 
         <h1 class="flex flex-col sm:gap-3 lg:gap-4 text-5xl sm:text-6xl lg:text-7xl font-bold font-chicago text-black dark:text-white"
             style="transform: translateZ(0);">
@@ -30,8 +36,8 @@ import HeroDemo from "./HeroDemo.astro";
         </div>
 
         <div class="mt-9 sm:mt-13 flex flex-col items-center gap-6 sm:gap-9">
-            <CDNSnippet />
-            <HeroStats />
+            <CDNSnippet/>
+            <HeroStats/>
         </div>
 
     </div>

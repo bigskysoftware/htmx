@@ -282,7 +282,7 @@ This loads `/news` immediately on page load, and then again with a 1 second dela
 
 ## Via JavaScript
 
-The AJAX request can be triggered via JavaScript using [`htmx.trigger()`](/api.md#trigger).
+The AJAX request can be triggered via JavaScript using [`htmx.trigger()`](/reference/methods/htmx-trigger).
 
 ## Notes
 

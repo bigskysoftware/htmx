@@ -4,9 +4,9 @@
  * Renders the title, optional copy button, and either a description
  * (most pages) or a byline with author/date/reading time (essays).
  */
-import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import CopyPageButton from './CopyPageButton.astro';
+import { getFile } from '../lib/content';
 import type { ContentFile } from '../lib/content';
 
 interface Props {
@@ -29,13 +29,17 @@ let byline: {
     readingMinutes?: number;
 } | null = null;
 
+const teamImages = import.meta.glob<{default: ImageMetadata}>('/src/assets/img/team/*.{png,jpg,jpeg,webp}', {eager: true});
+
 if (isEssay) {
     const fm = file!.frontmatter;
-    const team = await getCollection('team');
+    const teamFile = await getFile('team.yaml');
+    const team = teamFile?.frontmatter || [];
 
     const authors = (fm.authors || []).map((name: string) => {
-        const member = team.find(m => m.data.name === name);
-        return { name, url: member?.data.url, image: member?.data.image };
+        const member = team.find((m: any) => m.name === name);
+        const image = member?.image ? (teamImages[member.image]?.default ?? member.image) : undefined;
+        return { name, url: member?.url, image };
     });
 
     const created = fm.created ? (fm.created instanceof Date ? fm.created : new Date(fm.created)) : undefined;
@@ -44,7 +48,7 @@ if (isEssay) {
     // Reading time
     const essayRaw = import.meta.glob('/src/content/essays/*.{md,mdx}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
     let readingMinutes: number | undefined;
-    const raw = essayRaw[`/src/content/${file!.id}`];
+    const raw = essayRaw[`/src/content/${file!.path}`];
     if (raw) {
         const body = raw.replace(/^---[\s\S]*?---/, '');
         readingMinutes = Math.max(1, Math.round(body.trim().split(/\s+/).length / 250));
@@ -62,7 +66,7 @@ const showModified = byline?.modified && byline?.created &&
 const primaryAuthor = byline?.authors[0];
 ---
 
-<div class="not-prose mb-6 mt-4 sm:mb-8 sm:mt-6 lg:mb-12 lg:mt-8 space-y-3.5 sm:space-y-4.5 lg:space-y-6.5">
+<div class="not-prose mb-6 mt-4 sm:mb-8 sm:mt-6 lg:mb-8 lg:mt-6 space-y-3.5 sm:space-y-4">
     <div class="flex items-center justify-between gap-1 sm:gap-1.5 lg:gap-2">
         <h1 class="flex-1 font-chicago text-2xl sm:text-[2em]/12 font-bold text-neutral-900 dark:text-neutral-100" set:html={title} />
         {showCopyButton && <CopyPageButton file={file!} />}

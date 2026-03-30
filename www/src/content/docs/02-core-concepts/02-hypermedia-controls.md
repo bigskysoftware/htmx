@@ -345,6 +345,7 @@ You can modify this by using the [`hx-swap`](/reference/attributes/hx-swap) attr
 | `none`                      | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed) |
 | `innerMorph`                | morphs the children of the target element, preserving as much of the existing DOM as possible                                             |
 | `outerMorph`                | morphs the target element itself, preserving as much of the existing DOM as possible                                                      |
+| `textContent`               | Set the target's text content (no HTML parsing)                                                                                           |
 
 ### Morph Swaps
 

@@ -9,8 +9,8 @@ The `upsert` extension adds a new swap style that intelligently updates existing
 ## Installing
 
 ```html
-<script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/hx-upsert.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-upsert.js"></script>
 ```
 
 ## Usage
@@ -94,7 +94,7 @@ By default, elements without IDs are appended. Use `prepend` to insert them at t
 <div hx-get="/items" hx-swap="upsert sort:desc prepend">
 ```
 
-## Using with `<hx-partial>`
+## Using with [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial)
 
 You can use `<hx-partial>` with `hx-swap="upsert"` for targeted upserts in a single response:
 

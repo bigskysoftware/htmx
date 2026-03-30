@@ -106,6 +106,16 @@
         touch-action: manipulation;
     }
 
+    /* Respect user's motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+
     /* Use Chicago font in headings */
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-chicago), serif;

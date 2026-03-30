@@ -142,3 +142,7 @@ the inner fragment will still be processed as an oob swap, removing it from the 
 This behavior can be changed by setting the config `htmx.config.allowNestedOobSwaps` to `false`. If this config option
 is `false`, OOB swaps are only processed when the element is *adjacent to* the main response element, OOB swaps
 elsewhere will be ignored and oob-swap-related attributes stripped.
+
+## See Also
+
+- [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial) — an alternative for multi-target updates with explicit control over targeting and swap strategy
