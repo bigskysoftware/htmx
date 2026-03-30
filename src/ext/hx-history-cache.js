@@ -27,6 +27,52 @@
         return htmx.find(`[${prefix('hx-history-elt')}]`) || document.body;
     }
 
+    const ATTR_VALUE   = 'data-htmx-history-value';
+    const ATTR_CHECKED = 'data-htmx-history-checked';
+    const ATTR_SCROLL  = 'data-htmx-history-scroll';
+
+    function annotateState(root) {
+        root.querySelectorAll('input, textarea, select').forEach(el => {
+            let type = el.type?.toLowerCase();
+            if (type === 'file' || type === 'password') return;
+            if (type === 'checkbox' || type === 'radio') {
+                if (el.checked) el.setAttribute(ATTR_CHECKED, '1');
+            } else if (el.tagName === 'SELECT' && el.multiple) {
+                let selected = Array.from(el.options).filter(o => o.selected).map(o => o.value);
+                if (selected.length) el.setAttribute(ATTR_VALUE, JSON.stringify(selected));
+            } else if (el.value) {
+                el.setAttribute(ATTR_VALUE, el.value);
+            }
+        });
+        root.querySelectorAll('*').forEach(el => {
+            if (el.scrollTop > 0 || el.scrollLeft > 0)
+                el.setAttribute(ATTR_SCROLL, `${el.scrollTop},${el.scrollLeft}`);
+        });
+    }
+
+    function restoreAnnotations(root) {
+        root.querySelectorAll(`[${ATTR_CHECKED}]`).forEach(el => {
+            el.checked = true;
+            el.removeAttribute(ATTR_CHECKED);
+        });
+        root.querySelectorAll(`[${ATTR_VALUE}]`).forEach(el => {
+            let raw = el.getAttribute(ATTR_VALUE);
+            if (el.tagName === 'SELECT' && el.multiple) {
+                let values = JSON.parse(raw);
+                Array.from(el.options).forEach(o => { o.selected = values.includes(o.value); });
+            } else {
+                el.value = raw;
+            }
+            el.removeAttribute(ATTR_VALUE);
+        });
+        root.querySelectorAll(`[${ATTR_SCROLL}]`).forEach(el => {
+            let [top, left] = el.getAttribute(ATTR_SCROLL).split(',').map(Number);
+            el.scrollTop = top;
+            el.scrollLeft = left;
+            el.removeAttribute(ATTR_SCROLL);
+        });
+    }
+
     function cleanContent(elt) {
         let clone = elt.cloneNode(true);
         clone.querySelectorAll('.htmx-request').forEach(el => el.classList.remove('htmx-request'));
@@ -79,14 +125,14 @@
         if (htmx.find(`[${prefix('hx-history')}="false"]`)) return;
 
         let target = getHistoryTarget();
-        let content = cleanContent(target);
+        annotateState(target);
         let head = document.head.outerHTML;
         let scroll = window.scrollY;
         let title = document.title;
 
-        let detail = { target, content, head };
+        let detail = { target, head };
         if (api.triggerHtmxEvent(document, 'htmx:history:cache:before:save', detail) === false) return;
-        content = detail.content;
+        let content = cleanContent(target);
         head = detail.head;
 
         // Reuse existing htmxId if this entry already fell back to sessionStorage
@@ -154,7 +200,11 @@
 
         let state = history.state;
         document.title = state?.title || document.title;
-        requestAnimationFrame(() => window.scrollTo(0, state?.scroll || 0));
+        requestAnimationFrame(() => {
+            window.scrollTo(0, state?.scroll || 0);
+            restoreAnnotations(getHistoryTarget());
+            api.triggerHtmxEvent(document, 'htmx:history:cache:after:restore', { item });
+        });
     }
 
     htmx.registerExtension('history-cache', {

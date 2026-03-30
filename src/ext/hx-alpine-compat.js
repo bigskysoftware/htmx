@@ -76,7 +76,22 @@
         },
 
         htmx_history_cache_before_save: (elt, detail) => {
-            window.Alpine?.destroyTree?.(detail.target);
+            if (!window.Alpine?.destroyTree) return;
+            detail.target.querySelectorAll('[x-data]').forEach(el => {
+                if (el._x_dataStack) {
+                    el.setAttribute('data-alpine-state', JSON.stringify(el._x_dataStack[0]));
+                }
+            });
+            window.Alpine.destroyTree(detail.target);
+        },
+
+        htmx_history_cache_after_restore: (elt, detail) => {
+            if (!window.Alpine) return;
+            document.querySelectorAll('[data-alpine-state]').forEach(el => {
+                let saved = JSON.parse(el.getAttribute('data-alpine-state'));
+                el.removeAttribute('data-alpine-state');
+                if (el._x_dataStack) Object.assign(el._x_dataStack[0], saved);
+            });
         },
 
         htmx_after_swap: (elt, detail) => {
