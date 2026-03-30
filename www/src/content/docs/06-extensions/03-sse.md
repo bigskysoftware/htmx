@@ -10,8 +10,6 @@ SSE is a lightweight alternative to WebSockets that works over existing HTTP con
 
 ## Installing
 
-Include the extension script after htmx. It ships with htmx in the `/ext/` directory:
-
 ```html
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-sse.js"></script>
@@ -121,22 +119,25 @@ Messages without an `event:` field are swapped into the DOM as HTML content.
 
 Configure SSE behavior globally via `htmx.config.sse` or per-element via [`hx-config`](/reference/attributes/hx-config):
 
-```html
-<!-- Global config -->
-<meta name="htmx-config" content='{
-    "sse": {
-        "reconnect": true,
-        "reconnectDelay": 500,
-        "reconnectMaxDelay": 60000,
-        "reconnectMaxAttempts": 50,
-        "reconnectJitter": 0.3,
-        "pauseOnBackground": false
-    }
-}'>
-
-<!-- Per-element override -->
-<div hx-sse:connect="/stream" hx-config='{"sse": {"reconnect": false}}'>
+```javascript
+htmx.config.sse = {
+    reconnect: true,              // Auto-reconnect on stream end (default: true for hx-sse:connect, false for hx-get)
+    reconnectDelay: 500,          // Initial reconnect delay in ms (default: 500)
+    reconnectMaxDelay: 60000,     // Maximum reconnect delay in ms (default: 60000)
+    reconnectMaxAttempts: Infinity,// Maximum reconnection attempts (default: Infinity)
+    reconnectJitter: 0.3,         // Jitter factor 0-1 for delay randomization (default: 0.3)
+    pauseOnBackground: true       // Disconnect when tab is backgrounded (default: true for hx-sse:connect, false for hx-get)
+};
 ```
+
+```html
+<!-- Per-element override -->
+<div hx-sse:connect="/stream" hx-config="sse.reconnectDelay:1s sse.reconnectMaxAttempts:50">
+```
+
+Delay values accept time strings: `"500ms"`, `"1s"`, `"2m"`, or raw milliseconds.
+
+Defaults for `reconnect` and `pauseOnBackground` depend on how the SSE connection is established:
 
 | Option | Default (`hx-sse:connect`) | Default (`hx-get`) | Description |
 |--------|---------------------------|---------------------|-------------|
@@ -145,7 +146,7 @@ Configure SSE behavior globally via `htmx.config.sse` or per-element via [`hx-co
 | `reconnectMaxDelay` | `60000` | `60000` | Maximum reconnect delay (ms) |
 | `reconnectMaxAttempts` | `Infinity` | `Infinity` | Maximum reconnection attempts |
 | `reconnectJitter` | `0.3` | `0.3` | Jitter factor (0-1) for delay randomization |
-| `pauseOnBackground` | `true` | `false` | Disconnect when the tab is backgrounded, reconnect when visible (see [Background Tab Behavior](#background-tab-behavior)) |
+| `pauseOnBackground` | `true` | `false` | Disconnect when tab is backgrounded, reconnect when visible (see [Background Tab Behavior](#background-tab-behavior)) |
 
 ### Reconnection Strategy
 
@@ -223,10 +224,53 @@ that were sent in the meantime.
 
 ## Events
 
-### `htmx:before:sse:connection`
+### Connection Lifecycle
 
-Fired before a connection attempt (initial or reconnection). Set `detail.connection.cancelled = true` to prevent the connection.
+| Event | Cancelable | Detail | Description |
+|-------|------------|--------|-------------|
+| `htmx:before:sse:connection` | ✅ | `{connection}` | Before connection attempt (initial or reconnect) |
+| `htmx:after:sse:connection` | ❌ | `{connection}` | After successful connection |
+| `htmx:sse:close` | ❌ | `{connection, reason}` | When connection closes (see below) |
+| `htmx:sse:error` | ❌ | `{error, url, status}` | On stream error |
 
+The `connection` detail is the actual internal connection object, which includes:
+- `attempt`: `0` for initial connection, `> 0` for reconnections
+- `url`: the SSE endpoint URL
+- `config`: the resolved configuration for this connection
+- `lastEventId`: the last event ID received
+- `status`: the HTTP status code (available on `after` events)
+- `cancelled`: set to `true` in `before` events to cancel the connection
+
+The `htmx:sse:close` detail includes:
+- `connection`  - the connection object
+- `reason`  - why the connection closed:
+  - `"message"`  - closed by `hx-sse:close` matching a named event
+  - `"removed"`  - the element was removed from the DOM
+  - `"ended"`  - the stream ended naturally or reconnection was exhausted
+  - `"cancelled"`  - the initial connection was cancelled via `htmx:before:sse:connection`
+  - `"cleanup"`  - closed during element cleanup (e.g., parent swap)
+
+The `htmx:sse:error` detail includes:
+- `error`: the error object
+- `url`: the SSE endpoint URL
+- `status`: the HTTP status code (only present for non-2xx reconnect responses)
+
+### Message Events
+
+| Event | Cancelable | Detail | Description |
+|-------|------------|--------|-------------|
+| `htmx:before:sse:message` | ✅ | `{message: {data, event, id, cancelled}}` | Before processing an SSE message |
+| `htmx:after:sse:message` | ❌ | `{message: {data, event, id}}` | After processing an SSE message |
+
+The `message` detail includes:
+- `data`: the message data (modifiable)
+- `event`: the event type (modifiable)
+- `id`: the message ID (if specified)
+- `cancelled`: set to `true` in the `before` event to skip processing
+
+### Event Examples
+
+**Cancel Connection Based on Condition:**
 ```javascript
 document.body.addEventListener('htmx:before:sse:connection', function(evt) {
     if (evt.detail.connection.attempt > 10) {
@@ -235,25 +279,7 @@ document.body.addEventListener('htmx:before:sse:connection', function(evt) {
 });
 ```
 
-- `detail.connection.attempt` - attempt number (`0` = initial, `> 0` = reconnection)
-- `detail.connection.delay` - the delay before connection (ms), modifiable
-- `detail.connection.url` - the SSE endpoint URL
-- `detail.connection.lastEventId` - the last event ID received
-- `detail.connection.cancelled` - set to `true` to cancel
-
-### `htmx:after:sse:connection`
-
-Fired after a successful connection (or reconnection) to the SSE stream.
-
-- `detail.connection.attempt` - attempt number (`0` = initial, `> 0` = reconnection)
-- `detail.connection.url` - the SSE endpoint URL
-- `detail.connection.status` - the HTTP status code
-- `detail.connection.lastEventId` - the last event ID received
-
-### `htmx:before:sse:message`
-
-Fired before each SSE message is processed. All fields are modifiable.
-
+**Skip Heartbeat Messages:**
 ```javascript
 document.body.addEventListener('htmx:before:sse:message', function(evt) {
     // Skip heartbeats
@@ -266,33 +292,68 @@ document.body.addEventListener('htmx:before:sse:message', function(evt) {
 });
 ```
 
-- `detail.message.data` - the message data (modifiable)
-- `detail.message.event` - the event type (modifiable)
-- `detail.message.id` - the message ID (if specified)
-- `detail.message.cancelled` - set to `true` to skip
+## Examples
 
-### `htmx:after:sse:message`
+### LLM Streaming Response
 
-Fired after an SSE message has been processed.
+A one-off stream using `hx-post`  - the server returns `text/event-stream` and the extension handles it automatically:
 
-- `detail.message` - same shape as `htmx:before:sse:message`
+```html
+<form hx-post="/chat" hx-target="#response" hx-swap="innerHTML">
+    <textarea name="prompt" placeholder="Ask something..."></textarea>
+    <button type="submit">Send</button>
+</form>
+<div id="response"></div>
+```
 
-### `htmx:sse:error`
+The server streams tokens as SSE messages. Each message replaces the target content, so the user sees the response being "typed" in real-time. `hx-sse:connect` is not needed here. The extension enables streaming via normal `hx-post` (or `hx-get`, `hx-put`, etc.) attributes, based on the response `Content-Type` header.
 
-Fired when a stream error occurs.
+### Live Event Bus
 
-- `detail.error` - the error object
+A persistent connection that pushes targeted updates anywhere on the page using [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial):
 
-### `htmx:sse:close`
+```html
+<div hx-sse:connect="/events"></div>
 
-Fired when an SSE connection is closed.
+<!-- These can be anywhere on the page -->
+<div id="feed"></div>
+<div id="status"></div>
+```
 
-- `detail.reason` - why the connection was closed:
-  - `"message"` - closed by `hx-sse:close` matching a named event
-  - `"removed"` - the element was removed from the DOM
-  - `"ended"` - the stream ended naturally or reconnection was exhausted
-  - `"cancelled"` - the initial connection was cancelled via `htmx:before:sse:connection`
-  - `"cleanup"` - closed during element cleanup (e.g., parent swap)
+The server uses `<hx-partial>` with `hx-target` to control where each message goes:
+```
+data: <hx-partial hx-target="#feed" hx-swap="beforeend"><div class="event">User joined</div></hx-partial>
+
+data: <hx-partial hx-target="#feed" hx-swap="beforeend"><div class="event">New comment</div></hx-partial>
+
+data: <hx-partial hx-target="#status"><span>3 users online</span></hx-partial>
+```
+
+Each `<hx-partial>` targets any element in the DOM via `hx-target` (or `id` as a shorthand). The connection element itself doesn't need `hx-target` or `hx-swap` - the server controls where content goes.
+
+### Dashboard with Named Events
+
+Use named SSE events to route different data types to JavaScript handlers:
+
+```html
+<div hx-sse:connect="/dashboard"
+     hx-on:cpu="htmx.find('#cpu').textContent = event.detail.data"
+     hx-on:memory="htmx.find('#memory').textContent = event.detail.data">
+    <div>CPU: <span id="cpu">--</span></div>
+    <div>Memory: <span id="memory">--</span></div>
+</div>
+```
+
+Server sends named events:
+```
+event: cpu
+data: 45%
+
+event: memory
+data: 2.3 GB
+```
+
+Named events are dispatched as DOM events (not swapped), so you handle them with `hx-on` or `addEventListener`.
 
 ## Upgrading from htmx 2.x
 
@@ -324,6 +385,8 @@ This means:
     with every SSE message received from the chatroom.
 </div>
 ```
+
+The old `sse-connect` and `sse-close` attributes still work but emit a deprecation warning.
 
 ### Event Changes
 

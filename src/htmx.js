@@ -366,6 +366,10 @@ var htmx = (() => {
                 this.__mergeConfig(sourceElement._htmx.boosted, ctx);
             }
             ctx.target = this.__resolveTarget(sourceElement, ctx.target);
+            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
+            if (ctx.target) {
+                ctx.request.headers["HX-Target"] = this.__buildIdentifier(ctx.target);
+            }
 
             // Apply hx-config overrides
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
@@ -450,12 +454,6 @@ var htmx = (() => {
             // Handle dynamic headers
             let headersResult = this.__handleHxHeaders(elt, ctx.request.headers)
             if (headersResult) await headersResult  // Only await if it returned a promise
-
-            // Add HX-Request-Type and HX-Target headers
-            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
-            if (ctx.target) {
-                ctx.request.headers["HX-Target"] = this.__buildIdentifier(ctx.target);
-            }
 
             // Setup event-dependent request details
             Object.assign(ctx.request, {
