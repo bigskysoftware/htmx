@@ -363,10 +363,7 @@
         let body = {};
         for (let [key, value] of formData) {
             if (key in body) {
-                if (!Array.isArray(body[key])) {
-                    body[key] = [body[key]];
-                }
-                body[key].push(value);
+                body[key] = [].concat(body[key], value);
             } else {
                 body[key] = value;
             }
