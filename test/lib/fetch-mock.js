@@ -227,8 +227,9 @@ class FetchMock {
             });
 
             // Process the response
-            Promise.resolve(response instanceof Promise ? response : response)
+            Promise.resolve(response)
                 .then(result => {
+                    if (typeof result === 'string') result = new MockResponse(result);
                     if (!controller.signal.aborted) {
                         resolve(result);
                     }
