@@ -358,23 +358,20 @@
         // Build body from form data
         let form = element.form || element.closest('form');
         let formData = api.collectFormData(element, form, event.submitter);
-        let valsResult = api.getAttributeObject(element, 'hx-vals', obj => {
-            for (let key in obj) formData.set(key, obj[key]);
-        });
-        if (valsResult) await valsResult;
 
         // Preserve multi-value form fields (checkboxes, multi-selects)
         let body = {};
         for (let [key, value] of formData) {
             if (key in body) {
-                if (!Array.isArray(body[key])) {
-                    body[key] = [body[key]];
-                }
-                body[key].push(value);
+                body[key] = [].concat(body[key], value);
             } else {
                 body[key] = value;
             }
         }
+
+        // Merge hx-vals after serialization to preserve JS types (numbers, booleans)
+        let valsResult = api.getAttributeObject(element, 'hx-vals', obj => Object.assign(body, obj));
+        if (valsResult) await valsResult;
 
         let detail = { headers, body };
         if (!api.triggerHtmxEvent(element, 'htmx:before:ws:request', detail)) {

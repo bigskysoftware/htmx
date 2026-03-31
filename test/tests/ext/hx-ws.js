@@ -322,6 +322,40 @@ describe('hx-ws WebSocket extension', function() {
             let sent = JSON.parse(ws.lastSent);
             assert.equal(sent.body.extra, 'data');
         });
+
+        it('preserves JS types (number, boolean) from hx-vals', async function() {
+            let div = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test">
+                    <button hx-ws:send hx-vals='{"count": 42, "active": true, "ratio": 1.5}' hx-trigger="click">Send</button>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            div.querySelector('button').click();
+            await htmx.timeout(20);
+
+            let sent = JSON.parse(mockWebSocketInstances[0].lastSent);
+            assert.strictEqual(sent.body.count, 42, 'number should not be coerced to string');
+            assert.strictEqual(sent.body.active, true, 'boolean should not be coerced to string');
+            assert.strictEqual(sent.body.ratio, 1.5, 'float should not be coerced to string');
+        });
+
+        it('hx-vals overrides form field with correct type', async function() {
+            let div = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test">
+                    <form hx-ws:send hx-vals='{"count": 99}' hx-trigger="submit">
+                        <input name="count" value="1">
+                    </form>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            div.querySelector('form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+            await htmx.timeout(20);
+
+            let sent = JSON.parse(mockWebSocketInstances[0].lastSent);
+            assert.strictEqual(sent.body.count, 99, 'hx-vals number should win over form string value');
+        });
         
         it('finds connection from nearest ancestor', async function() {
             let div = createProcessedHTML(`
