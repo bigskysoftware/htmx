@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.0.0-beta1] - 2026-04-xx
+
+* Added `hx-history-cache` extension for client-side history caching via `sessionStorage` / `history.state` ([#3698](https://github.com/bigskysoftware/htmx/pull/3698))
+* Added `htmax.js` — a bundled distribution including the most popular opt-in extensions
+* Aligned WS and SSE extension APIs: consistent event detail shapes, `api.triggerHtmxEvent`/`api.htmxProp` usage, renamed `htmx.config.websockets` to `htmx.config.ws` ([#3717](https://github.com/bigskysoftware/htmx/pull/3717))
+  * WS: orphaned connection cleanup, `pauseOnBackground`, exponential backoff with jitter, per-element config, `HX-Request-ID` correlation, `{headers, body}` send format, legacy attribute compat
+  * SSE: legacy `sse-connect` compat, exposed config on connection object
+* Restored `hx-on::` shorthand from htmx 2 ([#3711](https://github.com/bigskysoftware/htmx/pull/3711))
+* Bug Fixes
+  * Fixed `hx-sync` `this` resolution ([#3698](https://github.com/bigskysoftware/htmx/pull/3698))
+  * Fixed processing of non-Element nodes (ShadowRoot, DocumentFragment)
+  * Preserved JSON types in WS `hx-vals` handling ([#3718](https://github.com/bigskysoftware/htmx/pull/3718))
+
 ## [4.0.0-alpha8] - 2026-03-16
 
 * Extracted SSE from core into standalone extension (`hx-sse.js`) ([#3666](https://github.com/bigskysoftware/htmx/pull/3666))
