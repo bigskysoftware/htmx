@@ -106,13 +106,13 @@ Send multiple updates in one message:
 The extension respects these config options:
 
 ```javascript
-htmx.config.websockets = {
+htmx.config.ws = {
     reconnect: true,              // Auto-reconnect on disconnect
-    reconnectDelay: 1000,         // Initial delay (ms)
-    reconnectMaxDelay: 30000,     // Max delay (ms)
-    reconnectJitter: true,        // Add randomness to delays
-    autoConnect: false,           // Connect without hx-trigger
-    closeOnHide: true              // Close stream when tab is hidden
+    reconnectDelay: 500,          // Initial delay (ms)
+    reconnectMaxDelay: 60000,     // Max delay (ms)
+    reconnectMaxAttempts: Infinity,// Max reconnect attempts
+    reconnectJitter: 0.3,         // Jitter factor (0-1)
+    pauseOnBackground: true       // Pause connection when tab is backgrounded
 };
 ```
 
@@ -160,10 +160,9 @@ htmx.config.websockets = {
 ## 🐛 Debugging
 
 The demo includes a live event log that shows:
-- Connection events (`htmx:before:ws:connect`, `htmx:after:ws:connect`)
+- Connection events (`htmx:before:ws:connection`, `htmx:after:ws:connection`)
 - Message events (`htmx:before:ws:send`, `htmx:after:ws:message`)
 - Error events (`htmx:ws:error`, `htmx:ws:close`)
-- Reconnection attempts (`htmx:ws:reconnect`)
 
 ## 🤝 Contributing
 

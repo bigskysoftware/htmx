@@ -103,8 +103,11 @@ Wrap content in `<hx-partial>` tags. Specify where it goes with [`hx-target`](/r
 
 Each `<hx-partial>` accepts:
 
-- [`hx-target`](/reference/attributes/hx-target) - Required. CSS selector for where to place content
+- [`hx-target`](/reference/attributes/hx-target) - CSS selector for where to place content
+- `id` - Shorthand alternative to `hx-target`. Targets the element with that ID (e.g. `<hx-partial id="messages">` targets `#messages`)
 - [`hx-swap`](/reference/attributes/hx-swap) - Optional. Swap style (defaults to `innerHTML`)
+
+Either `hx-target` or `id` is required. If both are present, `hx-target` takes precedence.
 
 <details>
 <summary>Alternative syntax for template languages that strip unknown tags</summary>
