@@ -1167,7 +1167,7 @@ var htmx = (() => {
                     }
                 }
             }
-            if (swapSpec.show) {
+            if (swapSpec.show === 'top' || swapSpec.show === 'bottom') {
                 let showTarget = swapSpec.showTarget ? this.__findExt(swapSpec.showTarget) : target;
                 showTarget?.scrollIntoView(swapSpec.show === 'top')
             }

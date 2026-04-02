@@ -235,7 +235,7 @@ Values: `top`, `bottom`
 Target a different element:
 
 ```html
-<div hx-swap="innerHTML scroll:#other:top"></div>
+<div hx-swap="innerHTML scroll:top scrollTarget:#other"></div>
 ```
 
 Scroll the window:
@@ -257,7 +257,7 @@ Values: `top`, `bottom`, `none`
 Show a different element:
 
 ```html
-<div hx-swap="innerHTML show:#other:top"></div>
+<div hx-swap="innerHTML show:top showTarget:#other"></div>
 ```
 
 Boosted forms default to `show:top`. Disable:
