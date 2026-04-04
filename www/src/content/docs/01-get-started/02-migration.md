@@ -311,6 +311,19 @@ Note: `htmx.onLoad()` now listens on [`htmx:after:process`](/reference/events/ht
 | [`hx-ignore`](/reference/attributes/hx-ignore)     | Disable htmx processing (was `hx-disable`)                            |
 | [`hx-validate`](/reference/attributes/hx-validate) | Control form validation behavior                                      |
 
+### [`hx-swap`](/reference/attributes/hx-swap) scroll modifiers
+
+The `show` and `scroll` modifiers no longer support the combined `selector:position` syntax. Use separate keys instead:
+
+```html
+<!-- htmx 2 (broken in 4) -->
+<div hx-swap="innerHTML show:#other:top"></div>
+
+<!-- htmx 4 -->
+<div hx-swap="innerHTML show:top showTarget:#other"></div>
+<div hx-swap="innerHTML scroll:bottom scrollTarget:#other"></div>
+```
+
 ### [`hx-swap`](/reference/attributes/hx-swap) styles
 
 ```html
