@@ -102,7 +102,7 @@ var htmx = (() => {
         }
 
         #initHtmxConfig() {
-            this.version = '4.0.0-alpha8'
+            this.version = '4.0.0-beta1'
             this.config = {
                 logAll: false,
                 prefix: "",
@@ -366,6 +366,10 @@ var htmx = (() => {
                 this.#mergeConfig(sourceElement._htmx.boosted, ctx);
             }
             ctx.target = this.#resolveTarget(sourceElement, ctx.target);
+            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
+            if (ctx.target) {
+                ctx.request.headers["HX-Target"] = this.#buildIdentifier(ctx.target);
+            }
 
             // Apply hx-config overrides
             let configAttr = this.#attributeValue(sourceElement, "hx-config");
@@ -450,12 +454,6 @@ var htmx = (() => {
             // Handle dynamic headers
             let headersResult = this.#handleHxHeaders(elt, ctx.request.headers)
             if (headersResult) await headersResult  // Only await if it returned a promise
-
-            // Add HX-Request-Type and HX-Target headers
-            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
-            if (ctx.target) {
-                ctx.request.headers["HX-Target"] = this.#buildIdentifier(ctx.target);
-            }
 
             // Setup event-dependent request details
             Object.assign(ctx.request, {
@@ -1169,7 +1167,7 @@ var htmx = (() => {
                     }
                 }
             }
-            if (swapSpec.show) {
+            if (swapSpec.show === 'top' || swapSpec.show === 'bottom') {
                 let showTarget = swapSpec.showTarget ? this.#findExt(swapSpec.showTarget) : target;
                 showTarget?.scrollIntoView(swapSpec.show === 'top')
             }

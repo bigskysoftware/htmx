@@ -177,6 +177,17 @@
         },
         htmx_after_swap: (elt, detail) => {
             for (const node of detail.ctx._deferredHeadScripts || []) appendNode(node)
+        },
+        htmx_history_cache_before_restore: (elt, detail) => {
+            if (detail.head) {
+                // mergeHead awaits stylesheets/blocking scripts, returns deferred scripts.
+                // Set detail.ready so history-cache awaits before swapping body.
+                // Stash deferred scripts on detail — history-cache copies them onto the swap ctx
+                // so htmx_after_swap picks them up.
+                detail.ready = mergeHead(detail.head, 'merge').then(deferred => {
+                    detail._deferredHeadScripts = deferred;
+                });
+            }
         }
     })
 
