@@ -19,7 +19,7 @@
                 var includeValsElt = htmx.closest(evt.detail.elt, "[include-vals],[data-include-vals]");
                 if (includeValsElt) {
                     var includeVals = includeValsElt.getAttribute("include-vals") || includeValsElt.getAttribute("data-include-vals");
-                    var valuesToInclude = eval("({" + includeVals + "})");
+                    var valuesToInclude = JSON.parse("{" + includeVals + "}");
                     mergeObjects(evt.detail.parameters, valuesToInclude);
                 }
             }
