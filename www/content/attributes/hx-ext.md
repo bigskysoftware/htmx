@@ -28,6 +28,14 @@ hierarchy and it will apply to all child elements.
   </div>
 </div>
 ```
+To enable multiple extensions, use a comma-separated list:
+
+```html
+<div hx-ext="debug, json-enc">
+  ...
+</div>
+```
+
 ```html
 <body hx-ext="preload,morph">
   "preload" and "morph" extensions are used in this part of the tree...
