@@ -8,6 +8,10 @@ describe('Core htmx API test', function() {
     clearWorkArea()
   })
 
+  it('should expose saveCurrentPageToHistory', function() {
+    (typeof htmx.saveCurrentPageToHistory).should.equal('function')
+  })
+
   it('should find properly', function() {
     var div = make("<div id='d1' class='c1 c2'>")
     div.should.equal(htmx.find('#d1'))
