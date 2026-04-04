@@ -52,7 +52,7 @@
                     if (id) {
                         let existing = document.getElementById(id);
                         if (existing) {
-                            existing.outerHTML = newEl.outerHTML
+                            existing.replaceWith(newEl);
                             continue;
                         }
                     }
