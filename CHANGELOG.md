@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0-beta1] - 2026-04-xx
+## [4.0.0-beta1] - 2026-04-06
 
 * Added `hx-history-cache` extension for client-side history caching via `sessionStorage` / `history.state` ([#3698](https://github.com/bigskysoftware/htmx/pull/3698))
 * Added `htmax.js` — a bundled distribution including the most popular opt-in extensions
