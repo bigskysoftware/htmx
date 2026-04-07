@@ -17,21 +17,21 @@ The `preload` extension allows you to load HTML fragments into your browser's ca
 
 ## Usage
 
-Add a `preload` attribute to any hyperlinks and [`hx-get`](/reference/attributes/hx-get) elements you want to preload. By default, resources will be loaded as soon as the `mousedown` event begins, giving your application a roughly 100-200ms head start on serving responses.
+Add an `hx-preload` attribute to any hyperlinks and [`hx-get`](/reference/attributes/hx-get) elements you want to preload. By default, resources will be loaded as soon as the `mousedown` event begins, giving your application a roughly 100-200ms head start on serving responses.
 
 ```html
-<a href="/server/1" preload>Preloaded on mousedown</a>
-<button hx-get="/server/2" preload>Preloaded with htmx headers</button>
+<a href="/server/1" hx-preload>Preloaded on mousedown</a>
+<button hx-get="/server/2" hx-preload>Preloaded with htmx headers</button>
 ```
 
 All preload requests include an additional `"HX-Preloaded": "true"` header.
 
 ### Inheriting Preload Settings
 
-You can add the `preload` attribute to a parent element, and all links within it will be preloaded:
+You can add the `hx-preload` attribute to a parent element, and all links within it will be preloaded:
 
 ```html
-<ul preload>
+<ul hx-preload>
     <li><a href="/page/1">This will be preloaded</a></li>
     <li><a href="/page/2">This will also be preloaded</a></li>
 </ul>
@@ -39,21 +39,21 @@ You can add the `preload` attribute to a parent element, and all links within it
 
 ## Configuration
 
-### `preload="mousedown"` (default)
+### `hx-preload="mousedown"` (default)
 
 Begins loading when the user presses the mouse down. Conservative — guarantees the user intends to click. Gives your server a 100-200ms head start.
 
-### `preload="mouseover"`
+### `hx-preload="mouseover"`
 
 Preloads when the user's mouse hovers over the link. A 100ms delay prevents loading when the user scrolls past. More aggressive — gives your server several hundred milliseconds of head start.
 
-### `preload="custom-event-name"`
+### `hx-preload="custom-event-name"`
 
 Preload can listen to any custom event. The extension generates a `preload:init` event that can trigger preloads as soon as an element is processed by htmx.
 
-### `preload="always"`
+### `hx-preload="always"`
 
-By default, the extension preloads each element once. Use `preload="always"` to preload on every trigger. Can be combined with other options: `preload="always mouseover"`.
+By default, the extension preloads each element once. Use `hx-preload="always"` to preload on every trigger. Can be combined with other options: `hx-preload="always mouseover"`.
 
 ## Limitations
 
