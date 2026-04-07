@@ -181,7 +181,7 @@ var htmx = (() => {
         #findThisElements(elt, attrName) {
             let result = [];
             this.#attributeValue(elt, attrName, undefined, (val, elt) => {
-                if (val?.split(/\s*,\s*/).includes('this')) result.push(elt);
+                if (val?.split(/\s*[,:]\s*/).includes('this')) result.push(elt);
             });
             return result;
         }
@@ -546,9 +546,9 @@ var htmx = (() => {
                 }
 
                 if (ctx.status === "issuing") {
-                    if (ctx.hx.retarget) ctx.target = ctx.hx.retarget;
-                    if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;
-                    if (ctx.hx.reselect) ctx.select = ctx.hx.reselect;
+                    if (ctx.hx.retarget) ctx.target = ctx.hx.retarget;   // HX-Retarget
+                    if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;       // HX-Reswap
+                    if (ctx.hx.reselect) ctx.select = ctx.hx.reselect; // HX-Reselect
                     ctx.status = "response received";
                     this.#handleStatusCodes(ctx);
                     await this.swap(ctx);
@@ -574,7 +574,8 @@ var htmx = (() => {
             }
         }
 
-        // Extract HX-* headers into ctx.hx
+        // Extract HX-* response headers into ctx.hx
+        // Maps: HX-Trigger → ctx.hx.trigger, HX-Push-Url → ctx.hx.pushurl, etc.
         #extractHxHeaders(ctx) {
             ctx.hx = {}
             for (let [k, v] of ctx.response.raw.headers) {
@@ -584,20 +585,21 @@ var htmx = (() => {
             }
         }
 
-        // returns true if the header aborts the current response handling
+        // Handle response headers that abort normal swap processing.
+        // Returns true if the response was fully handled by a header.
         #handleHeadersAndMaybeReturnEarly(ctx) {
-            if (ctx.hx.trigger) {
+            if (ctx.hx.trigger) { // HX-Trigger
                 this.#handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
             }
-            if (ctx.hx.refresh === 'true') {
+            if (ctx.hx.refresh === 'true') { // HX-Refresh
                 location.reload();
                 return true // TODO - necessary?  wouldn't it abort the current js?
             }
-            if (ctx.hx.redirect) {
+            if (ctx.hx.redirect) { // HX-Redirect
                 location.href = ctx.hx.redirect;
                 return true // TODO - same, necessary?
             }
-            if (ctx.hx.location) {
+            if (ctx.hx.location) { // HX-Location
                 let path = ctx.hx.location, opts = {};
                 if (path[0] === '{' || /[\s,]/.test(path)) {
                     opts = this.#parseConfig(path);
@@ -622,16 +624,18 @@ var htmx = (() => {
         #determineSyncStrategy(elt) {
             let syncValue = this.#attributeValue(elt, "hx-sync");
             if (!syncValue) return "queue first";
-            return syncValue.split(":").pop();
+            let strategy = syncValue.split(":").pop().trim();
+            return /^(drop|abort|replace|queue)/.test(strategy) ? strategy : "queue first";
         }
 
         #getRequestQueue(elt) {
             let syncValue = this.#attributeValue(elt, "hx-sync");
             let syncElt = elt
-            if (syncValue && syncValue.includes(":")) {
-                let strings = syncValue.split(":");
-                let selector = strings[0];
-                syncElt = this.#findOrWarn(elt, selector, "hx-sync") || elt;
+            if (syncValue) {
+                let selector = syncValue.includes(":")
+                    ? syncValue.slice(0, syncValue.lastIndexOf(":")).trim()
+                    : (/^(drop|abort|replace|queue)/.test(syncValue) ? null : syncValue);
+                if (selector) syncElt = this.#findOrWarn(elt, selector, "hx-sync") || elt;
             }
             return syncElt._htmxRequestQueue ||= new ReqQ()
         }
@@ -892,7 +896,12 @@ var htmx = (() => {
         }
 
         process(elt) {
-            if (!elt || this.#ignore(elt)) return;
+            if (!elt) return;
+            if (!(elt instanceof Element)) {
+                for (let child of elt.children || []) this.process(child);
+                return;
+            }
+            if (this.#ignore(elt)) return;
             if (!this.#trigger(elt, "htmx:before:process")) return
             let hxOnNodes = [elt];
             let iter = this.#hxOnQuery.evaluate(elt)
@@ -1005,6 +1014,7 @@ var htmx = (() => {
         }
 
         #makeFragment(text) {
+            // Convert <hx-*> tags (e.g. <hx-partial>, <hx-oob>) to <template hx type="*">
             let response = text.replace(/<hx-([a-z]+)(\s+|>)/gi, '<template hx type="$1"$2').replace(/<\/hx-[a-z]+>/gi, '</template>');
             let title = '';
             response = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, m => (title = this.#parseHTML(m).title, ''));
@@ -1587,8 +1597,8 @@ var htmx = (() => {
         #resolveHistoryAction(ctx) {
             let {sourceElement, push, replace, hx, response} = ctx;
 
-            // allow headers to override history action
-            if (hx?.pushurl || hx?.replaceurl) {
+            // allow response headers to override history action
+            if (hx?.pushurl || hx?.replaceurl) { // HX-Push-Url, HX-Replace-Url
                 push = hx.pushurl;
                 replace = hx.replaceurl;
             }
@@ -1634,11 +1644,15 @@ var htmx = (() => {
             this.#trigger(document, "htmx:after:history:update", historyDetail);
         }
 
+        // hx-on:<event> binds to <event> directly
+        // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
         #handleHxOnAttributes(node) {
             let searchString = this.#maybeAdjustMetaCharacter(this.#prefix("hx-on:"));
             for (let attr of node.getAttributeNames()) {
                 if (attr.startsWith(searchString)) {
                     let evtName = attr.substring(searchString.length)
+                    let mc = this.config.metaCharacter || ':';
+                    if (evtName.startsWith(mc)) evtName = 'htmx' + evtName
                     let code = node.getAttribute(attr);
                     let handler = async (evt) => {
                         try {

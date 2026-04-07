@@ -1,0 +1,367 @@
+body {
+  background: #031921;
+  color: #fff;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
+    Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+  margin: 0;
+  padding: 0;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+}
+
+#game {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+#game canvas {
+  object-fit: contain;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  height: 100%;
+}
+
+#controller {
+  display: none;
+  position: fixed;
+  bottom: 0px;
+  height: 210px;
+  width: 100%;
+  touch-action: none;
+  opacity: 0.8;
+}
+
+#controller_dpad {
+  position: absolute;
+  bottom: 20px;
+  left: 0px;
+  width: 184px;
+  height: 184px;
+}
+
+#controller_dpad:before {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 48px;
+  background: #5c5c5c;
+  background: radial-gradient(
+    ellipse at center,
+    #5c5c5c 0%,
+    #555 59%,
+    #5c5c5c 60%
+  );
+  position: absolute;
+  left: 68px;
+  top: 68px;
+}
+
+#controller_left {
+  position: absolute;
+  left: 20px;
+  top: 68px;
+  width: 48px;
+  height: 48px;
+  background: #666;
+  background: radial-gradient(ellipse at center, #666 0%, #5c5c5c 80%);
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#controller_right {
+  position: absolute;
+  left: 116px;
+  top: 68px;
+  width: 48px;
+  height: 48px;
+  background: #666;
+  background: radial-gradient(ellipse at center, #666 0%, #5c5c5c 80%);
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#controller_up {
+  position: absolute;
+  left: 68px;
+  top: 20px;
+  width: 48px;
+  height: 48px;
+  background: #666;
+  background: radial-gradient(ellipse at center, #666 0%, #5c5c5c 80%);
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+#controller_down {
+  position: absolute;
+  left: 68px;
+  top: 116px;
+  width: 48px;
+  height: 48px;
+  background: #666;
+  background: radial-gradient(ellipse at center, #666 0%, #5c5c5c 80%);
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#controller_a {
+  position: absolute;
+  bottom: 110px;
+  right: 20px;
+}
+
+#controller_b {
+  position: absolute;
+  bottom: 80px;
+  right: 100px;
+}
+
+.roundBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 32px;
+  color: #440f1f;
+  line-height: 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: 64px;
+  background: #870a4c;
+  background: radial-gradient(ellipse at center, #ab1465 0%, #8b1e57 100%);
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.2);
+}
+
+.capsuleBtn {
+  font-weight: bold;
+  font-size: 10px;
+  color: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 40px;
+  text-transform: uppercase;
+  width: 64px;
+  height: 32px;
+  border-radius: 40px;
+  background: #222;
+  background: radial-gradient(ellipse at center, #666 0%, #555 100%);
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.2);
+}
+
+#controller_start {
+  position: absolute;
+  bottom: 20px;
+  right: 15px;
+}
+
+#controller_select {
+  position: absolute;
+  bottom: 20px;
+  right: 100px;
+}
+
+.btnPressed {
+  opacity: 0.5;
+}
+
+.spinner {
+  height: 50px;
+  width: 50px;
+  margin: 0px auto;
+  -webkit-animation: rotation 0.8s linear infinite;
+  -moz-animation: rotation 0.8s linear infinite;
+  -o-animation: rotation 0.8s linear infinite;
+  animation: rotation 0.8s linear infinite;
+  border-left: 10px solid #306850;
+  border-right: 10px solid #306850;
+  border-bottom: 10px solid #306850;
+  border-top: 10px solid #88c070;
+  border-radius: 100%;
+  background-color: #031921;
+}
+@-webkit-keyframes rotation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@-moz-keyframes rotation {
+  from {
+    -moz-transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+@-o-keyframes rotation {
+  from {
+    -o-transform: rotate(0deg);
+  }
+  to {
+    -o-transform: rotate(360deg);
+  }
+}
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media only screen and (max-width: 640px) {
+  #game canvas {
+    margin-top: 0px;
+    width: 100%;
+    max-width: 512px;
+    border: 0px;
+    border-radius: 0px;
+  }
+}
+
+@media only screen and (max-device-width: 812px) and (orientation: portrait) {
+  body {
+    margin: 0;
+  }
+
+  #game {
+    width: 100%;
+    position: fixed;
+    touch-action: none;
+  }
+
+  #game canvas {
+    margin: 0;
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+@media only screen and (max-device-width: 320px) and (orientation: portrait) {
+  #controller_dpad {
+    left: -5px;
+    bottom: -5px;
+  }
+
+  #controller_a {
+    right: 5px;
+    bottom: 95px;
+  }
+
+  #controller_b {
+    right: 80px;
+  }
+
+  #controller_start {
+    right: 5px;
+  }
+
+  #controller_select {
+    right: 80px;
+  }
+}
+
+@media only screen and (max-width: 500px) and (max-height: 400px) {
+  #controller {
+    display: none;
+  }
+}
+
+/* Small devices in landscape */
+@media only screen and (max-device-width: 300px) and (orientation: landscape) {
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #game:after {
+    content: "PLEASE ROTATE ↻";
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  #game canvas {
+    display: none;
+    max-width: 480px;
+  }
+
+  #controller {
+    display: none;
+  }
+}
+
+/* Devices large enough for landscape */
+@media only screen and (min-width: 300px) and (orientation: landscape) {
+  #controller {
+    bottom: 50%;
+    transform: translateY(50%);
+    opacity: 0.5;
+  }
+}
+
+#debug {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:10px;
+  position:fixed;
+  top:0px;
+  left:0px;
+  right:0px;
+  bottom:0px;
+  background:rgba(0,0,0,0.5);
+}
+
+#debug div {
+  background: white;
+  color: black;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transform: position;
+  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  display: flex;
+  align-items: center;
+}
+
+#debug span {
+  padding: 5px 8px;
+}
+
+#debug button {
+  background: transparent;
+  border: none;
+  border-left: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+#debug button:hover {
+  background: #eee;
+}
+
+#debug button:active {
+  background: #ddd;
+}

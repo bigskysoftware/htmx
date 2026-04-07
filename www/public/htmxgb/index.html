@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>HTMXGB</title>
+    <meta name="author" content="scum" />
+    
+    
+  </head>
+  <body>
+    <div id="game">
+      <canvas id="mainCanvas" width="256" height="224">No Canvas Support</canvas>
+    </div>
+    <div id="controller">
+      <div id="controller_dpad">
+        <div id="controller_left"></div>
+        <div id="controller_right"></div>
+        <div id="controller_up"></div>
+        <div id="controller_down"></div>
+      </div>
+      <div id="controller_select" class="capsuleBtn">Select</div>
+      <div id="controller_start" class="capsuleBtn">Start</div>
+      <div id="controller_b" class="roundBtn">B</div>
+      <div id="controller_a" class="roundBtn">A</div>
+    </div>      
+    <script>
+      const customControls = {"up":["ArrowUp","w"],"down":["ArrowDown","s"],"left":["ArrowLeft","a"],"right":["ArrowRight","d"],"a":["Alt","z","j"],"b":["Control","k","x"],"start":["Enter"],"select":["Shift"]}
+    </script>
+    <script src="binjgb.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/debugger.js"></script>
+</body>
