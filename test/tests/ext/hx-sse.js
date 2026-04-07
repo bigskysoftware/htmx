@@ -1048,6 +1048,18 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    it('sends Accept: text/html, text/event-stream header on every request', async function() {
+        const stream = mockStreamResponse('/accept-header-test');
+        createProcessedHTML('<button hx-get="/accept-header-test" hx-swap="innerHTML">Go</button>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        assert.equal(fetchMock.getLastCall().request.headers['Accept'], 'text/html, text/event-stream');
+
+        stream.close();
+    });
+
     it('supports legacy sse-connect attribute with deprecation warning', async function() {
         let warnCalled = false;
         let originalWarn = console.warn;
