@@ -60,3 +60,7 @@ By default, the extension preloads each element once. Use `hx-preload="always"` 
 - Only `GET` requests can be preloaded (including `<a href="">` and `hx-get=""`). POST, PUT, and DELETE will not be preloaded.
 - When listening to `mouseover` events, preload waits 100ms before downloading. If the mouse leaves before the timeout, the resource is not preloaded.
 - Preloaded responses will only be cached if the response headers allow it (e.g., `Cache-Control: private, max-age=60`).
+
+## Upgrading from htmx 2.x
+
+- The `preload` attribute is now named `hx-preload`.
