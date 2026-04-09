@@ -94,6 +94,11 @@ if(window.location.search=="?ads=true") {
 </a>
 </div>
 
+<div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; color: black; filter: drop-shadow(3px 3px darkgray)">
+<b>NEWS:</b> htmx v4 is under active development and is now in beta, with a target release date of Summer '26!  More details
+at <a href="https://four.htmx.org">https://four.htmx.org</a>
+</div>
+
 <h2>introduction</h2>
 
 htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md#websockets-and-sse) and [Server Sent Events](@/docs.md#websockets-and-sse)
