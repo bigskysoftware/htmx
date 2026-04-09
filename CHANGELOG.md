@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.0.0-beta2] - 2026-04-10
+
+* Added `upgrade-check` CLI tool for migrating htmx 2.x projects to 4.x (`npx htmx.org@next upgrade-check`)
+* Bug Fixes
+  * Fixed comma handling in trigger spec parsing (e.g. `click[myFunc(a,b)]`) ([#3738](https://github.com/bigskysoftware/htmx/pull/3738))
+  * Fixed extension packaging by removing `exports` rule from `package.json` ([#3737](https://github.com/bigskysoftware/htmx/pull/3737))
+  * Added back stream accept header on all SSE-enabled requests ([#3733](https://github.com/bigskysoftware/htmx/pull/3733))
+
 ## [4.0.0-beta1] - 2026-04-06
 
 * Added `hx-history-cache` extension for client-side history caching via `sessionStorage` / `history.state` ([#3698](https://github.com/bigskysoftware/htmx/pull/3698))
