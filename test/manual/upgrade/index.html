@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My htmx 2 App</title>
+    <meta name="htmx-config" content='{"defaultSwapStyle": "outerHTML", "historyCacheSize": 20, "scrollIntoViewOnBoost": true}'>
+    <script src="/static/htmx.js"></script>
+    <script src="/static/ext/sse.js"></script>
+    <script src="/static/ext/ws.js"></script>
+</head>
+<body hx-boost="true" hx-ext="sse, ws">
+
+    <nav hx-target="#main" hx-push-url="true">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+    </nav>
+
+    <main id="main">
+        <h1>Dashboard</h1>
+
+        <!-- Search with inherited target and indicator -->
+        <div hx-target="#search-results" hx-indicator="#spinner">
+            <input type="search" name="q"
+                   hx-get="/search"
+                   hx-trigger="keyup changed delay:300ms">
+            <img id="spinner" class="htmx-indicator" src="/spinner.gif">
+            <div id="search-results"></div>
+        </div>
+
+        <!-- Form with removed attributes -->
+        <form hx-post="/items" hx-vars="csrf:getToken()" hx-params="not password">
+            <input name="title" required>
+            <input name="password" type="password">
+            <button type="submit" hx-disabled-elt="this">Save</button>
+        </form>
+
+        <!-- Confirm dialog with inheritance -->
+        <div hx-confirm="Are you sure?">
+            <button hx-delete="/items/1">Delete Item 1</button>
+            <button hx-delete="/items/2">Delete Item 2</button>
+            <button hx-delete="/items/3">Delete Item 3</button>
+        </div>
+
+        <!-- Old swap syntax -->
+        <div hx-get="/notifications"
+             hx-swap="innerHTML show:#notification-area:top"
+             hx-trigger="every 30s">
+        </div>
+
+        <!-- hx-disable meaning "skip processing" -->
+        <div hx-disable>
+            <pre><code>hx-get="/example"</code></pre>
+        </div>
+    </main>
+
+    <aside>
+        <div hx-history-elt>
+            <div id="sidebar-content"></div>
+        </div>
+    </aside>
+
+    <script>
+        htmx.on('htmx:afterSwap', function(e) {
+            highlightCode(e.detail.elt);
+        });
+        htmx.on('htmx:configRequest', function(e) {
+            e.detail.headers['X-CSRF-Token'] = getToken();
+        });
+        htmx.config.globalViewTransitions = true;
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!-- Partial: Item list with bulk actions -->
+<div id="item-list" hx-target="this" hx-swap="outerHTML" hx-confirm="This will affect all selected items. Continue?">
+
+    <div class="toolbar" hx-include="#item-list [name='selected']">
+        <button hx-post="/items/archive" hx-disabled-elt="closest .toolbar">
+            Archive Selected
+        </button>
+        <button hx-delete="/items/bulk"
+                hx-prompt="Type DELETE to confirm"
+                hx-disabled-elt="closest .toolbar">
+            Delete Selected
+        </button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th><input type="checkbox" hx-on::click="toggleAll(this)"></th>
+                <th hx-get="/items?sort=name" hx-swap="outerHTML scroll:#item-list:top">Name</th>
+                <th hx-get="/items?sort=date" hx-swap="outerHTML scroll:#item-list:top">Date</th>
+            </tr>
+        </thead>
+        <tbody id="item-rows">
+            <tr>
+                <td><input type="checkbox" name="selected" value="1"></td>
+                <td>Item 1</td>
+                <td>2025-01-01</td>
+                <td>
+                    <button hx-get="/items/1/edit" hx-target="closest tr" hx-swap="outerHTML">
+                        Edit
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div hx-get="/items?page=2"
+         hx-trigger="revealed"
+         hx-swap="outerHTML"
+         hx-indicator="#load-more-spinner">
+        <img id="load-more-spinner" class="htmx-indicator" src="/spinner.gif">
+        Loading more...
+    </div>
+</div>
