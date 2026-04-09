@@ -7,17 +7,6 @@
   "jsdelivr": "dist/htmx.min.js",
   "unpkg": "dist/htmx.min.js",
   "types": "dist/htmx.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/htmx.d.ts",
-      "import": "./dist/htmx.esm.js",
-      "require": "./dist/htmx.js",
-      "default": "./dist/htmx.js"
-    }
-  },
-  "bin": {
-    "upgrade-check": "./dist/scripts/upgrade-check.js"
-  },
   "files": [
     "LICENSE",
     "README.md",
@@ -30,6 +19,9 @@
     "dist/skills",
     "dist/scripts"
   ],
+  "bin": {
+    "upgrade-check": "./dist/scripts/upgrade-check.js"
+  },
   "scripts": {
     "build": "npm run build:iife && npm run build:esm && npm run build:minify && npm run build:ext && npm run build:htmax && npm run build:editors && npm run build:skills && npm run build:scripts && npm run build:compress",
     "build:htmax": "EXTS='hx-sse hx-ws hx-preload hx-browser-indicator hx-download hx-optimistic hx-targets'; cat dist/htmx.js $(for e in $EXTS; do echo dist/ext/$e.js; done) > dist/htmax.js && terser --compress --mangle --source-map -o dist/htmax.min.js dist/htmax.js",

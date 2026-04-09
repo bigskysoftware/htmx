@@ -262,14 +262,13 @@ var htmx = (() => {
         }
 
         __parseTriggerSpecs(spec) {
-            return spec.split(',').map(s => {
-                let m = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/);
-                if (!m || !m[1]) return null;
-                if (m[1].includes('[') && !m[1].includes(']')) throw "unterminated:" + m[1];
-                let result = m[2] ? this.__parseConfig(m[2]) : {};
-                result.name = m[1];
-                return result;
-            }).filter(s => s);
+            // Split on commas that are NOT inside [...] — handles filters like click[myFunc(a,b)]
+            return spec.split(/,(?![^\[]*\])/).flatMap(s => {
+                let [,name,rest] = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/) ?? [];
+                if (!name) return [];  // skip empty/whitespace-only tokens
+                if (/\[[^\]]*$/.test(name)) throw "unterminated:" + name;  // e.g. click[ctrlKey
+                return [{name, ...this.__parseConfig(rest)}];  // spread modifiers (delay, throttle, etc.) onto result
+            });
         }
 
         __determineMethodAndAction(elt, evt) {
