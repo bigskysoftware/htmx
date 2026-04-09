@@ -7,14 +7,6 @@
   "jsdelivr": "dist/htmx.min.js",
   "unpkg": "dist/htmx.min.js",
   "types": "dist/htmx.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/htmx.d.ts",
-      "import": "./dist/htmx.esm.js",
-      "require": "./dist/htmx.js",
-      "default": "./dist/htmx.js"
-    }
-  },
   "files": [
     "LICENSE",
     "README.md",
