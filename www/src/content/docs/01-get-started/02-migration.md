@@ -448,7 +448,7 @@ htmx 4 ships with 9 core extensions. The SSE and WebSocket extensions have been 
 | [`head-support`](/docs/extensions/head-support)           | Merges head tag information (styles, etc.) in htmx requests                          |
 | [`htmx-2-compat`](/docs/extensions/htmx-2-compat)         | Restores implicit inheritance, old event names, and previous error-swapping defaults |
 | [`optimistic`](/docs/extensions/optimistic)               | Shows expected content from a template before the server responds                    |
-| [`preload`](/docs/extensions/preload)                     | Triggers requests early (on mouseover/mousedown) for near-instant page loads         |
+| [`preload`](/docs/extensions/preload)                     | Triggers requests early (on mouseover/mousedown) for near-instant page loads ([upgrade guide](/docs/extensions/preload#upgrading-from-htmx-2x)) |
 | [`sse`](/docs/extensions/sse)                             | Server-Sent Events streaming support ([upgrade guide](/docs/extensions/sse#upgrading-from-htmx-2x)) |
 | [`upsert`](/docs/extensions/upsert)                       | Updates existing elements by ID and inserts new ones, preserving unmatched elements  |
 | [`ws`](/docs/extensions/ws)                               | Bi-directional WebSocket communication ([upgrade guide](/docs/extensions/ws#upgrading-from-htmx-2x)) |
@@ -456,16 +456,15 @@ htmx 4 ships with 9 core extensions. The SSE and WebSocket extensions have been 
 ## Checklist
 
 1. Add config options or load [`htmx-2-compat`](/docs/extensions/htmx-2-compat) for backward compatibility
-2. Rename `hx-disable` to [`hx-ignore`](/reference/attributes/hx-ignore), then `hx-disabled-elt` to [
-   `hx-disable`](/reference/attributes/hx-disable)
-3. Replace removed attributes with alternatives
-4. Find/replace event names in JavaScript and `hx-on` attributes
-5. Replace removed API methods with native JS
-6. Update extensions
-7. Rename changed config keys
-8. Test error handling (4xx/5xx now swap by default)
-9. Test attribute inheritance
-10. Test history navigation
+1. Rename `hx-disable` to [`hx-ignore`](/reference/attributes/hx-ignore), then `hx-disabled-elt` to [`hx-disable`](/reference/attributes/hx-disable)
+1. Replace removed attributes with alternatives
+1. Find/replace event names in JavaScript and `hx-on` attributes
+1. Replace removed API methods with native JS
+1. Update extensions
+1. Rename changed config keys
+1. Test error handling (4xx/5xx now swap by default)
+1. Test attribute inheritance
+1. Test history navigation
 
 ## Migration Notes
 
