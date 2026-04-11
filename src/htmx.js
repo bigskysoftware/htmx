@@ -1329,11 +1329,10 @@ var htmx = (() => {
                     target.textContent = fragment.textContent;
                 } else if (swapStyle === 'outerHTML') {
                     if (parentNode) {
-                        let sibling = target.previousSibling;
                         this.__insertNodes(parentNode, target, fragment);
                         this.__cleanup(target)
                         parentNode.removeChild(target);
-                        target = sibling?.nextSibling || parentNode.firstChild || parentNode
+                        target = newContent[0] || parentNode
                     }
                 } else if (swapStyle === 'innerMorph') {
                     this.__morph(target, fragment, true);
