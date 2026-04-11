@@ -15,7 +15,7 @@ directly in HTML, using [attributes](https://htmx.org/reference#attributes), so 
 [modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
-htmx is small ([~14k min.gz'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),
+htmx is small ([~12k min.gz'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) &
 [extendable](https://htmx.org/extensions)
 
@@ -32,7 +32,9 @@ By removing these arbitrary constraints htmx completes HTML as a
 ## quick start
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta2/dist/htmx.min.js"
+          integrity="sha384-Oy2c9csBEA+9v16GUyopnXJLPb4gkvyTURnEnThDuxz8iQHiSwNAZduw0dMGmB/b"
+          crossorigin="anonymous"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -75,29 +77,22 @@ Run:
 npm install
 ```
 
-Then, run a web server in the root.
-
-This is easiest with:
+Then run the test suite:
 
 ```
-npx serve
+npm test
 ```
 
-You can then run the test suite by navigating to:
+At this point you can modify `/src/htmx.js` to add features, and then add tests in the appropriate area under `/test/tests`.
 
-<http://0.0.0.0:3000/test/>
-
-At this point you can modify `/src/htmx.js` to add features, and then add tests in the appropriate area under `/test`.
-
-* `/test/index.html` - the root test page from which all other tests are included
-* `/test/attributes` - attribute specific tests
-* `/test/core` - core functionality tests
-* `/test/core/regressions.js` - regression tests
-* `/test/ext` - extension tests
+* `/test/tests/unit` - unit tests for individual functions
+* `/test/tests/attributes` - attribute specific tests
+* `/test/tests/end2end` - end-to-end tests
+* `/test/tests/ext` - extension tests
 * `/test/manual` - manual tests that cannot be automated
 
-htmx uses the [mocha](https://mochajs.org/) testing framework, the [chai](https://www.chaijs.com/) assertion framework
-and [sinon](https://sinonjs.org/releases/v9/fake-xhr-and-server/) to mock out AJAX requests.  They are all OK.
+htmx uses [@web/test-runner](https://modern-web.dev/docs/test-runner/overview/) with [Playwright](https://playwright.dev/)
+and the [chai](https://www.chaijs.com/) assertion framework.
 
 ## haiku
 
