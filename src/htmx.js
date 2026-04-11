@@ -603,7 +603,7 @@ var htmx = (() => {
                     path = opts.path;
                     delete opts.path;
                 }
-                opts.push = opts.push || 'true';
+                opts.push ??= 'true';
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
             }
