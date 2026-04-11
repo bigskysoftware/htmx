@@ -289,6 +289,77 @@ describe('swap() unit tests', function() {
         triggered.should.be.true;
     })
 
+    it('bubbles settle events up from replacement element after outerHTML swap', async function () {
+        createProcessedHTML("<div id='d1'>Original</div>")
+        let beforeSettleTarget, afterSettleTarget;
+        htmx.on('htmx:before:settle', (e) => { beforeSettleTarget = e.target; });
+        htmx.on('htmx:after:settle', (e) => { afterSettleTarget = e.target; });
+        await htmx.swap({"target":"#d1", "text":"<span id='replaced'>Replaced</span>", "swap":"outerHTML"})
+        let replacement = find('#replaced');
+        assert.isNotNull(replacement);
+        beforeSettleTarget.should.equal(replacement);
+        afterSettleTarget.should.equal(replacement);
+        document.body.contains(beforeSettleTarget).should.be.true;
+        document.body.contains(afterSettleTarget).should.be.true;
+    })
+
+    it('bubbles settle events after outerHTML swap when target has no previous sibling', async function () {
+        createProcessedHTML("<div id='d1'>First</div><div id='d2'>Second</div>")
+        let settleTarget;
+        htmx.on('htmx:after:settle', (e) => { settleTarget = e.target; });
+        await htmx.swap({"target":"#d1", "text":"<span id='new-first'>New</span>", "swap":"outerHTML"})
+        let replacement = find('#new-first');
+        assert.isNotNull(replacement);
+        settleTarget.should.equal(replacement);
+        document.body.contains(settleTarget).should.be.true;
+    })
+
+    it('bubbles settle events when outerHTML replacement content starts with a text node', async function () {
+        createProcessedHTML("<div id='d1'>Original</div>")
+        let settleTarget;
+        htmx.on('htmx:after:settle', (e) => { settleTarget = e.target; });
+        await htmx.swap({"target":"#d1", "text":"Hello <span id='replaced'>World</span>", "swap":"outerHTML"})
+        playground().innerText.should.contain("Hello")
+        playground().innerText.should.contain("World")
+        assert.isOk(settleTarget);
+        document.body.contains(settleTarget).should.be.true;
+    })
+
+    it('bubbles settle events when outerHTML target comes after a text node', async function () {
+        playground().innerHTML = "Text before <div id='d1'>Original</div>";
+        htmx.process(playground());
+        let settleTarget;
+        htmx.on('htmx:after:settle', (e) => { settleTarget = e.target; });
+        await htmx.swap({"target":"#d1", "text":"<span id='replaced'>Replaced</span>", "swap":"outerHTML"})
+        let replacement = find('#replaced');
+        assert.isNotNull(replacement);
+        settleTarget.should.equal(replacement);
+        document.body.contains(settleTarget).should.be.true;
+    })
+
+    it('bubbles settle events when outerHTML swap empties the parent (empty fragment, sole child)', async function () {
+        createProcessedHTML("<div id='wrapper'><div id='d1'>Original</div></div>")
+        let wrapper = find('#wrapper');
+        let beforeSettleTarget, afterSettleTarget;
+        wrapper.addEventListener('htmx:before:settle', (e) => { beforeSettleTarget = e.target; });
+        wrapper.addEventListener('htmx:after:settle', (e) => { afterSettleTarget = e.target; });
+        await htmx.swap({"target":"#d1", "text":"", "swap":"outerHTML"})
+        wrapper.children.length.should.equal(0);
+        beforeSettleTarget.should.equal(wrapper);
+        afterSettleTarget.should.equal(wrapper);
+    })
+
+    it('bubbles settle events when target follows a text node AND replacement starts with a text node', async function () {
+        playground().innerHTML = "Before text <div id='d1'>Original</div>";
+        htmx.process(playground());
+        let settleTarget;
+        htmx.on('htmx:after:settle', (e) => { settleTarget = e.target; });
+        await htmx.swap({"target":"#d1", "text":"inserted text <span id='replaced'>After</span>", "swap":"outerHTML"})
+        assert.isOk(settleTarget);
+        document.body.contains(settleTarget).should.be.true;
+        playground().innerText.should.contain("Before text inserted text After");
+    })
+
     it('triggers view transition events with transition:true', async function () {
         if (!document.startViewTransition) {
             this.skip();
