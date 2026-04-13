@@ -321,7 +321,8 @@
             console.warn('HTMX SSE: Legacy attribute sse-connect is deprecated. Use hx-sse:connect instead.');
 
             let url = element.getAttribute('sse-connect');
-            let attr = (htmx.config.prefix || 'hx-') + 'sse' + (htmx.config.metaCharacter || ':') + 'connect';
+            let prefixes = htmx.config.prefix ? htmx.config.prefix.split(',') : ['hx-'];
+            let attr = prefixes[0].trim() + 'sse' + (htmx.config.metaCharacter || ':') + 'connect';
             if (!element.hasAttribute(attr)) {
                 element.setAttribute(attr, url);
             }
@@ -362,8 +363,9 @@
             checkLegacyAttributes(element);
             processElement(element);
             let mc = htmx.config.metaCharacter || ':';
-            let attr = CSS.escape((htmx.config.prefix || 'hx-') + 'sse' + mc + 'connect');
-            element.querySelectorAll(`[${attr}],[sse-connect]`).forEach((el) => {
+            let prefixes = htmx.config.prefix ? htmx.config.prefix.split(',') : ['hx-'];
+            let sseSelector = prefixes.map(p => `[${CSS.escape(p.trim() + 'sse' + mc + 'connect')}]`).join(',');
+            element.querySelectorAll(`${sseSelector},[sse-connect]`).forEach((el) => {
                 checkLegacyAttributes(el);
                 processElement(el);
             });

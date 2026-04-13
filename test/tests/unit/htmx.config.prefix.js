@@ -23,10 +23,10 @@ describe('htmx.config.prefix functionality', function() {
     it('custom prefix replaces hx- in attributes', function() {
         htmx.config.prefix = "data-hx-";
 
-        let result = htmx.__prefix("hx-get");
+        let result = htmx.__prefixes("hx-get")[0];
         assert.equal(result, "data-hx-get");
 
-        result = htmx.__prefix("hx-target");
+        result = htmx.__prefixes("hx-target")[0];
         assert.equal(result, "data-hx-target");
 
         htmx.config.prefix = "";
@@ -64,8 +64,49 @@ describe('htmx.config.prefix functionality', function() {
     it('empty prefix value is handled correctly', function() {
         htmx.config.prefix = "";
 
-        let result = htmx.__prefix("hx-get");
+        let result = htmx.__prefixes("hx-get")[0];
         assert.equal(result, "hx-get");
+    });
+
+    it('multiple prefixes returns all variants', function() {
+        htmx.config.prefix = "hx-,data-hx-";
+
+        let result = htmx.__prefixes("hx-get");
+        assert.deepEqual(result, ["hx-get", "data-hx-get"]);
+
+        htmx.config.prefix = "";
+    });
+
+    it('multiple prefixes: first matching prefix wins in __attributeValue', function() {
+        htmx.config.prefix = "hx-,data-hx-";
+
+        let btn = createDisconnectedHTML('<button hx-get="/first" data-hx-get="/second"></button>');
+        assert.equal(htmx.__attributeValue(btn, "hx-get"), "/first");
+
+        htmx.config.prefix = "";
+    });
+
+    it('multiple prefixes: second prefix found when first is absent', function() {
+        htmx.config.prefix = "hx-,data-hx-";
+
+        let btn = createDisconnectedHTML('<button data-hx-get="/second"></button>');
+        assert.equal(htmx.__attributeValue(btn, "hx-get"), "/second");
+
+        htmx.config.prefix = "";
+    });
+
+    it('multiple prefixes: inheritance works with either prefix on parent', function() {
+        htmx.config.prefix = "hx-,data-hx-";
+
+        let container = createDisconnectedHTML(
+            '<div data-hx-target:inherited="#output">' +
+            '  <button hx-get="/test"></button>' +
+            '</div>'
+        );
+        let button = container.querySelector('button');
+        assert.equal(htmx.__attributeValue(button, "hx-target"), "#output");
+
+        htmx.config.prefix = "";
     });
 
     it('custom prefix works with attribute inheritance', function() {

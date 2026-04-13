@@ -9,9 +9,10 @@
                     style === 'append' ? 'beforeend' : style;
     }
 
+    let api;
+
     function insertOptimisticContent(ctx) {
-        // TODO - handle htmx.config.prefix
-        ctx.optimistic = ctx.sourceElement.getAttribute("hx-optimistic");
+        ctx.optimistic = api.attributeValue(ctx.sourceElement, "hx-optimistic");
         if (!ctx.optimistic) {
             return
         }
@@ -68,6 +69,7 @@
     }
 
     htmx.registerExtension('hx-optimistic', {
+        init: (internalAPI) => { api = internalAPI; },
         htmx_before_request : (elt, detail) => {
             insertOptimisticContent(detail.ctx);
         },
