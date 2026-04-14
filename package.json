@@ -69,8 +69,6 @@
     "brotli-cli": "^2.1.1",
     "terser": "^5.46.0",
     "ws": "^8.19.0"
-  },
-  "dependencies": {
     "playwright": "^1.58.2"
-  }
+  },
 }
