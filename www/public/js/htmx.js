@@ -102,7 +102,7 @@ var htmx = (() => {
         }
 
         #initHtmxConfig() {
-            this.version = '4.0.0-beta1'
+            this.version = '4.0.0-beta2'
             this.config = {
                 logAll: false,
                 prefix: "",
@@ -262,14 +262,13 @@ var htmx = (() => {
         }
 
         #parseTriggerSpecs(spec) {
-            return spec.split(',').map(s => {
-                let m = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/);
-                if (!m || !m[1]) return null;
-                if (m[1].includes('[') && !m[1].includes(']')) throw "unterminated:" + m[1];
-                let result = m[2] ? this.#parseConfig(m[2]) : {};
-                result.name = m[1];
-                return result;
-            }).filter(s => s);
+            // Split on commas that are NOT inside [...] — handles filters like click[myFunc(a,b)]
+            return spec.split(/,(?![^\[]*\])/).flatMap(s => {
+                let [,name,rest] = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/) ?? [];
+                if (!name) return [];  // skip empty/whitespace-only tokens
+                if (/\[[^\]]*$/.test(name)) throw "unterminated:" + name;  // e.g. click[ctrlKey
+                return [{name, ...this.#parseConfig(rest)}];  // spread modifiers (delay, throttle, etc.) onto result
+            });
         }
 
         #determineMethodAndAction(elt, evt) {
@@ -604,7 +603,7 @@ var htmx = (() => {
                     path = opts.path;
                     delete opts.path;
                 }
-                opts.push = opts.push || 'true';
+                opts.push ??= 'true';
                 this.ajax('GET', path, opts);
                 return true // TODO this seems legit
             }
@@ -1333,6 +1332,7 @@ var htmx = (() => {
                         this.#insertNodes(parentNode, target, fragment);
                         this.#cleanup(target)
                         parentNode.removeChild(target);
+                        target = newContent[0] || parentNode
                     }
                 } else if (swapStyle === 'innerMorph') {
                     this.#morph(target, fragment, true);

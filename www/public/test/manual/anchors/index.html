@@ -1,0 +1,13 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Test if indicators are invisible by default</title>
+    <script src="../../../src/htmx.js"></script>
+</head>
+<body style="padding:20px;font-family: sans-serif">
+
+<a hx-boost="true" href="has-anchors.html#anchor1">Anchor 1</a>
+
+<button hx-push-url="true" hx-get="has-anchors.html#anchor2" hx-target="body">Anchor 2</button>
+
+</body>

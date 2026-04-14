@@ -36,6 +36,23 @@ names, and previous error-swapping defaults:
 
 Most htmx 2 apps should work with either approach. Then migrate incrementally using this guide.
 
+## Upgrade Checker
+
+htmx 4 ships with a command-line tool scans your templates and JS files for htmx 2 code that needs updating. It checks 
+for removed attributes, old event names, inheritance patterns, extension changes, etc.
+
+```bash
+npx htmx.org@next upgrade-check -- ./path/to/project/root
+
+npx htmx.org@next upgrade-check --ext .vue ./path/to/project/root
+```
+
+By default, the tool scans `.html`, `.php`, `.js`, `.ts`, `.jinja`, `.jinja2`, `.j2`, `.erb`, and `.hbs` files.
+
+Output is `file:line` format, clickable in most editors. You can add additional file types with the `--ext` option.
+
+The tool requires Python 3.
+
 ## What Changed
 
 ### `fetch()` replaces `XMLHttpRequest`
@@ -455,16 +472,18 @@ htmx 4 ships with 9 core extensions. The SSE and WebSocket extensions have been 
 
 ## Checklist
 
-1. Add config options or load [`htmx-2-compat`](/docs/extensions/htmx-2-compat) for backward compatibility
-1. Rename `hx-disable` to [`hx-ignore`](/reference/attributes/hx-ignore), then `hx-disabled-elt` to [`hx-disable`](/reference/attributes/hx-disable)
-1. Replace removed attributes with alternatives
-1. Find/replace event names in JavaScript and `hx-on` attributes
-1. Replace removed API methods with native JS
-1. Update extensions
-1. Rename changed config keys
-1. Test error handling (4xx/5xx now swap by default)
-1. Test attribute inheritance
-1. Test history navigation
+1. Optionally, add config options or load [`htmx-2-compat`](/docs/extensions/htmx-2-compat) for backward compatibility
+2. Run the [upgrade checker](#upgrade-checker) to get a full list of issues
+3. Rename `hx-disable` to [`hx-ignore`](/reference/attributes/hx-ignore), then `hx-disabled-elt` to [
+   `hx-disable`](/reference/attributes/hx-disable)
+4. Replace removed attributes with alternatives
+5. Find/replace event names in JavaScript and `hx-on` attributes
+6. Replace removed API methods with native JS
+7. Update extensions
+8. Rename changed config keys
+9. Test error handling (4xx/5xx now swap by default)
+10. Test attribute inheritance
+11. Test history navigation
 
 ## Migration Notes
 

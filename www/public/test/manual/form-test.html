@@ -1,0 +1,36 @@
+<html>
+<body>
+<form id="f1">
+    input 1: <input id="i1" type = "text" name = "i1" /><br/>
+    <button id="b1">Button 1</button><br/>
+    input 2: <input id="i2" type = "text" name = "i1" /><br/>
+</form>
+
+<button id="b2" onclick="i1.focus();">Focus i1</button><br/>
+</body>
+<script>
+    f1.addEventListener("submit", function(evt){
+        evt.preventDefault();
+        console.log("submitted")
+        console.log("active element: ", document.activeElement)
+        return false;
+    })
+    f1.addEventListener("focusin", function(evt){
+        console.log("focusin", evt.target)
+        console.log("active element: ", document.activeElement)
+        return false;
+    })
+    f1.addEventListener("focusout", function(evt){
+        console.log("focusout", evt.target)
+        console.log("active element: ", document.activeElement)
+        return false;
+    })
+    f1.addEventListener("click", function(evt){
+        console.log("click", evt.target)
+        console.log("active element: ", document.activeElement)
+        evt.target.focus();
+        console.log("active element: ", document.activeElement)
+        return false;
+    })
+</script>
+</html>

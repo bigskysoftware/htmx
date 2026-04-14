@@ -340,6 +340,10 @@
             api = internalAPI;
         },
 
+        htmx_config_request: (element, detail) => {
+            detail.ctx.request.headers['Accept'] = 'text/html, text/event-stream';
+        },
+
         // Intercept SSE responses before core consumes the body
         htmx_before_response: (element, detail) => {
             let ctx = detail.ctx;

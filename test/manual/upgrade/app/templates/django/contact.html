@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div hx-target="#form-messages" hx-swap="innerHTML">
+
+    <div id="form-messages"></div>
+
+    <form hx-post="{% url 'contact_submit' %}"
+          hx-vars="csrfToken:'{{ csrf_token }}'"
+          hx-request='{"timeout": 15000}'
+          hx-disabled-elt="#submit-btn"
+          hx-on:htmx:afterSwap="clearForm(this)"
+          hx-on::configRequest="addTimezone(event)">
+
+        <div class="field">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" required>
+        </div>
+
+        <div class="field">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" required>
+        </div>
+
+        <div class="field">
+            <label for="message">Message</label>
+            <textarea name="message" id="message" required
+                      hx-on:htmx:validation:validate="customValidate(this)"></textarea>
+        </div>
+
+        {% if show_department %}
+        <div class="field">
+            <select name="department"
+                    hx-get="{% url 'department_contacts' %}"
+                    hx-target="#contact-person"
+                    hx-indicator="#dept-spinner"
+                    hx-params="department">
+                <option value="">Select department...</option>
+                {% for dept in departments %}
+                <option value="{{ dept.id }}">{{ dept.name }}</option>
+                {% endfor %}
+            </select>
+            <img id="dept-spinner" class="htmx-indicator" src="{% static 'spinner.gif' %}">
+            <div id="contact-person"></div>
+        </div>
+        {% endif %}
+
+        <button type="submit" id="submit-btn">Send Message</button>
+    </form>
+</div>
+{% endblock %}

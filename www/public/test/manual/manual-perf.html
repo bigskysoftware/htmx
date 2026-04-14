@@ -1,0 +1,81 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
+</head>
+<body style="padding:20px;font-family: sans-serif">
+<div id="mocha"></div>
+<script src="../../node_modules/chai/chai.js"></script>
+<script src="../../node_modules/mocha/mocha.js"></script>
+<script src="../../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../../src/htmx.js"></script>
+<script class="mocha-init">
+    mocha.setup('bdd');
+    mocha.checkLeaks();
+    should = chai.should();
+</script>
+
+<script src="../util/util.js"></script>
+<script>
+    describe("Manual Perf Tests", function() {
+
+        beforeEach(function () {
+            this.server = makeServer();
+            clearWorkArea();
+        });
+        afterEach(function () {
+            this.server.restore();
+            clearWorkArea();
+        });
+
+        function stringRepeat(str, num) {
+            num = Number(num);
+
+            var result = '';
+            while (true) {
+                if (num & 1) { // (1)
+                    result += str;
+                }
+                num >>>= 1; // (2)
+                if (num <= 0) break;
+                str += str;
+            }
+
+            return result;
+        }
+
+        it("DOM processing should be fast", function(){
+            this.server.respondWith("GET", "/test", "Clicked!");
+
+            // create an entry with a large content string (256k) and see how fast we can write and read it
+            // to local storage as a single entry
+            var str = stringRepeat("<div>", 30) + stringRepeat("<div><div><span><button hx-get='/test'> Test Get Button </button></span></div></div>\n", 500) + stringRepeat("</div>", 30);
+            var start = performance.now();
+            var stuff = make(str);
+            var end = performance.now();
+            var timeInMs = end - start;
+
+            // make sure the DOM actually processed
+            var firstBtn = stuff.querySelector("button");
+            firstBtn.click();
+            this.server.respond();
+            firstBtn.innerHTML.should.equal("Clicked!");
+
+            chai.assert(timeInMs < 100, "Should take less than 100ms on most platforms, took: " + timeInMs + "ms");
+        })
+
+    });
+</script>
+
+
+<script class="mocha-exec">
+    mocha.run();
+</script>
+<em>Work Area</em>
+<hr/>
+<div id="work-area" hx-history-elt>
+</div>
+</body>
+</html>
