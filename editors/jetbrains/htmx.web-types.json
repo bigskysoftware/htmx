@@ -481,7 +481,7 @@
         },
         {
           "name": "oobErrorNoTarget",
-          "description": "This event is triggered when an [out of band swap](@/docs.md#oob_swaps) does not have a corresponding element\nin the DOM to switch with.\n\n##### Details\n\n* `detail.content` - the element with the bad oob `id`\n\n",
+          "description": "This event is triggered when an [out of band swap](@/docs.md#oob_swaps) does not have a corresponding element\nin the DOM to switch with.\n\n##### Details\n\n* `detail.content` - the element with the bad oob `id`\n* `detail.target` - the bad CSS selector\n\n",
           "doc-url": "https://htmx.org/events/#htmx:oobErrorNoTarget"
         },
         {
