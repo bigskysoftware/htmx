@@ -1975,7 +1975,7 @@ var htmx = (function() {
         }
       }
 
-      target.classList.remove(htmx.config.swappingClass)
+      removeClassFromElement(target, htmx.config.swappingClass)
       forEach(settleInfo.elts, function(elt) {
         if (elt.classList) {
           elt.classList.add(htmx.config.settlingClass)
@@ -1996,7 +1996,7 @@ var htmx = (function() {
         })
         forEach(settleInfo.elts, function(elt) {
           if (elt.classList) {
-            elt.classList.remove(htmx.config.settlingClass)
+            removeClassFromElement(elt, htmx.config.settlingClass)
           }
           triggerEvent(elt, 'htmx:afterSettle', swapOptions.eventInfo)
         })
@@ -3412,7 +3412,7 @@ var htmx = (function() {
     forEach(indicators, function(ic) {
       const internalData = getInternalData(ic)
       if (internalData.requestCount === 0) {
-        ic.classList.remove.call(ic.classList, htmx.config.requestClass)
+        removeClassFromElement(ic, htmx.config.requestClass)
       }
     })
     forEach(disabled, function(disabledElement) {
