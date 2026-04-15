@@ -39,6 +39,18 @@ describe('hx-disabled-elt attribute', function() {
     fieldset.hasAttribute('disabled').should.equal(false)
   })
 
+  it('preserve pre-disabled elements', function() {
+    this.server.respondWith('GET', '/test', 'ok')
+    const b1 = make('<button hx-get="/test" hx-disabled-elt="#b2">Click Me!</button>')
+    const b2 = make('<button id="b2" disabled></button>')
+    b2.hasAttribute('disabled').should.equal(true)
+    b2.hasAttribute('data-disabled-by-htmx').should.equal(false)
+    b1.click()
+    b2.hasAttribute('disabled').should.equal(true)
+    this.server.respond()
+    b2.hasAttribute('disabled').should.equal(true)
+  })
+
   it('multiple requests with same disabled elt are handled properly', function() {
     this.server.respondWith('GET', '/test', 'Clicked!')
     var b1 = make('<button hx-get="/test" hx-disabled-elt="#b3">Click Me!</button>')
