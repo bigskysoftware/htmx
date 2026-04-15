@@ -442,6 +442,38 @@ describe('Core htmx AJAX headers', function() {
     }, 30)
   })
 
+  it('should replace Url on HX-Location if push is false and replace is set', function(done) {
+    sessionStorage.setItem('htmx-current-path-for-history', '/old')
+    this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"push":false, "replace":"true", "path":"/test2", "target":"#work-area"}' }, ''])
+    this.server.respondWith('GET', '/test2', [200, {}, '<div>Yay! Welcome</div>'])
+    var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
+    div.click()
+    this.server.respond()
+    this.server.respond()
+    setTimeout(function() {
+      getWorkArea().innerHTML.should.equal('<div>Yay! Welcome</div>')
+      var path = sessionStorage.getItem('htmx-current-path-for-history')
+      path.should.equal('/test2')
+      done()
+    }, 30)
+  })
+
+  it('should replace Url on HX-Location if push is string false and replace is set', function(done) {
+    sessionStorage.setItem('htmx-current-path-for-history', '/old')
+    this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"push":"false", "replace":"true", "path":"/test2", "target":"#work-area"}' }, ''])
+    this.server.respondWith('GET', '/test2', [200, {}, '<div>Yay! Welcome</div>'])
+    var div = make('<div id="testdiv" hx-trigger="click" hx-get="/test"></div>')
+    div.click()
+    this.server.respond()
+    this.server.respond()
+    setTimeout(function() {
+      getWorkArea().innerHTML.should.equal('<div>Yay! Welcome</div>')
+      var path = sessionStorage.getItem('htmx-current-path-for-history')
+      path.should.equal('/test2')
+      done()
+    }, 30)
+  })
+
   it('should push different Url on HX-Location if push Url is string', function(done) {
     sessionStorage.removeItem('htmx-current-path-for-history')
     var HTMX_HISTORY_CACHE_NAME = 'htmx-history-cache'
