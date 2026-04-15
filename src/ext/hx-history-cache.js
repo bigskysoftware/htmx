@@ -8,8 +8,9 @@
     }
 
     function prefixSelector(attr, value) {
-        let prefixes = htmx.config.prefix ? htmx.config.prefix.split(',') : ['hx-'];
-        return prefixes.map(p => `[${attr.replace('hx-', p.trim())}${value != null ? `="${value}"` : ''}]`).join(',');
+        let result = [`[${attr}${value != null ? `="${value}"` : ''}]`];
+        if (htmx.config.prefix) result.push(`[${attr.replace('hx-', htmx.config.prefix)}${value != null ? `="${value}"` : ''}]`);
+        return result.join(',');
     }
 
     function canUseStorage() {

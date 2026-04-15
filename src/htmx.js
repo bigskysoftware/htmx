@@ -105,7 +105,7 @@ var htmx = (() => {
             this.version = '4.0.0-beta2'
             this.config = {
                 logAll: false,
-                prefix: "",
+                prefix: "data-hx-",
                 transitions: false,
                 history: true,
                 mode: 'same-origin',
@@ -156,25 +156,29 @@ var htmx = (() => {
         }
 
         __ignore(elt) {
-            return !elt.closest || this.__prefixes("hx-ignore").some(p => elt.closest(`[${p}]`) != null)
+            let p = this.config.prefix;
+            return !elt.closest || elt.closest('[hx-ignore]') != null || (p && elt.closest(`[${p}ignore]`) != null);
         }
 
-        __prefixes(s) {
-            let prefixes = this.config.prefix ? this.config.prefix.split(',') : ['hx-'];
-            return prefixes.map(p => s.replace('hx-', p));
+        __attr(elt, name) {
+            let p = this.config.prefix;
+            return elt.getAttribute(name) ?? (p ? elt.getAttribute(name.replace('hx-', p)) : null);
         }
 
-        __prefixedAttrName(elt, name) {
-            return this.__prefixes(name).find(p => elt.hasAttribute(p));
-        }
-
-        __prefixedAttr(elt, name) {
-            let attr = this.__prefixedAttrName(elt, name);
-            return attr ? elt.getAttribute(attr) : null;
+        __attrName(elt, name) {
+            let p = this.config.prefix && name.replace('hx-', this.config.prefix);
+            return elt.hasAttribute(name) ? name : (p && elt.hasAttribute(p) ? p : null);
         }
 
         __prefixSelector(...names) {
-            return names.flatMap(n => this.__prefixes(n)).map(n => `[${CSS.escape(n)}]`).join(',');
+            let p = this.config.prefix;
+            return names.flatMap(n => p ? [n, n.replace('hx-', p)] : [n]).map(n => `[${CSS.escape(n)}]`).join(',');
+        }
+
+        __prefixes(s) {
+            let result = [s];
+            if (this.config.prefix) result.push(s.replace('hx-', this.config.prefix));
+            return result;
         }
 
         __queryEltAndDescendants(elt, selector) {
@@ -204,13 +208,12 @@ var htmx = (() => {
             let unprefixed = name;
             let inherited = this.__maybeAdjustMetaCharacter(":inherited");
             let append = this.__maybeAdjustMetaCharacter(":append");
-            let inheritAppendNames = this.__prefixes(name + inherited + append);
             let inheritSelector = this.__prefixSelector(this.config.implicitInheritance ? name : name + inherited, name + inherited + append);
 
-            let val = this.__prefixedAttr(elt, name) ?? this.__prefixedAttr(elt, name + inherited);
+            let val = this.__attr(elt, name) ?? this.__attr(elt, name + inherited);
             if (val != null) return eltCollector ? eltCollector(val, elt) : val;
 
-            let appendName = [...this.__prefixes(name + append), ...inheritAppendNames].find(n => elt.hasAttribute(n));
+            let appendName = this.__attrName(elt, name + append) ?? this.__attrName(elt, name + inherited + append);
             if (appendName) {
                 let appendValue = elt.getAttribute(appendName);
                 let parent = elt.parentNode?.closest?.(inheritSelector);
@@ -226,7 +229,7 @@ var htmx = (() => {
             if (parent) {
                 val = this.__attributeValue(parent, unprefixed, undefined, eltCollector);
                 if (!eltCollector && val && this.config.implicitInheritance) {
-                    this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name: this.__prefixes(name)[0], parent})
+                    this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
                 }
                 return val;
             }
@@ -1086,7 +1089,7 @@ var htmx = (() => {
 
             // Process elements with hx-swap-oob attribute
             for (let oobElt of fragment.querySelectorAll(this.__prefixSelector('hx-swap-oob'))) {
-                let oobAttr = this.__prefixedAttrName(oobElt, 'hx-swap-oob');
+                let oobAttr = this.__attrName(oobElt, 'hx-swap-oob');
                 let oobValue = oobElt.getAttribute(oobAttr);
                 oobElt.removeAttribute(oobAttr);
                 this.__createOOBTask(tasks, oobElt, oobValue, sourceElement);
@@ -1120,10 +1123,10 @@ var htmx = (() => {
                 let type = templateElt.getAttribute('type');
                 
                 if (type === 'partial') {
-                    let targetSelector = this.__prefixedAttr(templateElt, 'hx-target') || (templateElt.id ? '#' + CSS.escape(templateElt.id) : null);
+                    let targetSelector = this.__attr(templateElt, 'hx-target') || (templateElt.id ? '#' + CSS.escape(templateElt.id) : null);
                     if (targetSelector) {
                         this.__processScripts(templateElt.content);
-                        let swapSpec = this.__parseSwapSpec(this.__prefixedAttr(templateElt, 'hx-swap') || this.config.defaultSwap);
+                        let swapSpec = this.__parseSwapSpec(this.__attr(templateElt, 'hx-swap') || this.config.defaultSwap);
                         for (let target of document.querySelectorAll(targetSelector)) {
                             tasks.push({
                                 type: 'partial',

@@ -23,11 +23,9 @@ describe('htmx.config.prefix functionality', function() {
     it('custom prefix replaces hx- in attributes', function() {
         htmx.config.prefix = "data-hx-";
 
-        let result = htmx.__prefixes("hx-get")[0];
-        assert.equal(result, "data-hx-get");
-
-        result = htmx.__prefixes("hx-target")[0];
-        assert.equal(result, "data-hx-target");
+        let btn = createDisconnectedHTML('<button data-hx-get="/custom"></button>');
+        assert.equal(htmx.__attr(btn, "hx-get"), "/custom");
+        assert.equal(htmx.__attr(btn, "hx-target"), null);
 
         htmx.config.prefix = "";
     });
@@ -61,24 +59,33 @@ describe('htmx.config.prefix functionality', function() {
         htmx.config.prefix = "";
     });
 
-    it('empty prefix value is handled correctly', function() {
+    it('empty prefix disables secondary prefix', function() {
         htmx.config.prefix = "";
 
-        let result = htmx.__prefixes("hx-get")[0];
-        assert.equal(result, "hx-get");
+        let btn = createDisconnectedHTML('<button hx-get="/primary"></button>');
+        assert.equal(htmx.__attr(btn, "hx-get"), "/primary");
     });
 
-    it('multiple prefixes returns all variants', function() {
-        htmx.config.prefix = "hx-,data-hx-";
+    it('hx- always works regardless of prefix setting', function() {
+        htmx.config.prefix = "data-hx-";
 
-        let result = htmx.__prefixes("hx-get");
-        assert.deepEqual(result, ["hx-get", "data-hx-get"]);
+        let btn = createDisconnectedHTML('<button hx-get="/primary"></button>');
+        assert.equal(htmx.__attributeValue(btn, "hx-get"), "/primary");
 
         htmx.config.prefix = "";
     });
 
-    it('multiple prefixes: first matching prefix wins in __attributeValue', function() {
-        htmx.config.prefix = "hx-,data-hx-";
+    it('secondary prefix found when hx- is absent', function() {
+        htmx.config.prefix = "data-hx-";
+
+        let btn = createDisconnectedHTML('<button data-hx-get="/secondary"></button>');
+        assert.equal(htmx.__attributeValue(btn, "hx-get"), "/secondary");
+
+        htmx.config.prefix = "";
+    });
+
+    it('hx- wins over secondary prefix when both present', function() {
+        htmx.config.prefix = "data-hx-";
 
         let btn = createDisconnectedHTML('<button hx-get="/first" data-hx-get="/second"></button>');
         assert.equal(htmx.__attributeValue(btn, "hx-get"), "/first");
@@ -86,17 +93,8 @@ describe('htmx.config.prefix functionality', function() {
         htmx.config.prefix = "";
     });
 
-    it('multiple prefixes: second prefix found when first is absent', function() {
-        htmx.config.prefix = "hx-,data-hx-";
-
-        let btn = createDisconnectedHTML('<button data-hx-get="/second"></button>');
-        assert.equal(htmx.__attributeValue(btn, "hx-get"), "/second");
-
-        htmx.config.prefix = "";
-    });
-
-    it('multiple prefixes: inheritance works with either prefix on parent', function() {
-        htmx.config.prefix = "hx-,data-hx-";
+    it('inheritance works with secondary prefix on parent', function() {
+        htmx.config.prefix = "data-hx-";
 
         let container = createDisconnectedHTML(
             '<div data-hx-target:inherited="#output">' +

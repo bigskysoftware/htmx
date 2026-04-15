@@ -1,45 +1,33 @@
 ---
 title: "htmx.config.prefix"
-description: "Set a custom attribute prefix"
+description: "Set a secondary attribute prefix"
 ---
 
-The `htmx.config.prefix` option allows you to use a custom prefix for htmx attributes instead of `hx-`.
+The `htmx.config.prefix` option sets a secondary attribute prefix that htmx recognises in addition to the primary `hx-` prefix, which always works regardless of this setting.
 
-Multiple prefixes can be specified as a comma-separated list, allowing htmx to recognise attributes under any of the given prefixes simultaneously.
+**Default:** `"data-hx-"`
 
-**Default:** `""` (no prefix, use `hx-`)
+This means `data-hx-get`, `data-hx-target`, etc. work out of the box alongside `hx-get`, `hx-target`, etc. — matching the htmx 2 dual-attribute behaviour.
 
-## Examples
+When both prefixes are present on the same element, `hx-` wins.
 
-### Single custom prefix
-
-```javascript
-htmx.config.prefix = "data-hx-";
-```
+## Disable the secondary prefix
 
 ```html
-<meta name="htmx-config" content='{"prefix":"data-hx-"}'>
+<meta name="htmx-config" content='{"prefix":""}'>
 ```
 
-Now you can use `data-hx-get` instead of [`hx-get`](/reference/attributes/hx-get), etc.
-
-### Multiple prefixes
-
-```javascript
-htmx.config.prefix = "hx-,data-hx-";
-```
+## Use a custom secondary prefix
 
 ```html
-<meta name="htmx-config" content='{"prefix":"hx-,data-hx-"}'>
+<meta name="htmx-config" content='{"prefix":"data-boost-"}'>
 ```
 
-With multiple prefixes, both `hx-get` and `data-hx-get` are recognised. When an element has both, the first matching prefix wins.
-
-This is useful for gradual migration or for environments that require `data-` prefixed attributes for HTML validity.
+Now both `hx-get` and `data-boost-get` are recognised.
 
 ## Important: Set via meta tag
 
-The prefix is read once during htmx initialisation. Setting it via JavaScript after the page has loaded may not apply correctly, as elements will already have been processed with the previous prefix.
+The prefix is read once during htmx initialisation. Setting it via JavaScript after the page has loaded will not apply correctly, as elements will already have been processed.
 
 Always configure the prefix using the meta tag:
 
