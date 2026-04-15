@@ -1,6 +1,12 @@
 describe('hx-replace-url attribute', function() {
   var HTMX_HISTORY_CACHE_NAME = 'htmx-history-cache'
 
+  // Helper to normalize paths like htmx does
+  function normalizePath(path) {
+    const url = new URL(path, window.location.href)
+    return url.pathname
+  }
+
   beforeEach(function() {
     this.server = makeServer()
     clearWorkArea()
@@ -22,7 +28,7 @@ describe('hx-replace-url attribute', function() {
     this.server.respond()
     getWorkArea().textContent.should.equal('second')
     var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
-    cache[cache.length - 1].url.should.equal('/test')
+    cache[cache.length - 1].url.should.equal(normalizePath('/test'))
   })
 
   it('should handle HX-Replace-Url response header', function() {

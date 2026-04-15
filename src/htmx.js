@@ -844,10 +844,11 @@ var htmx = (function() {
    * @returns {string}
    */
   function normalizePath(path) {
-    // use dummy base URL to allow normalize on path only
-    const url = new URL(path, 'http://x')
-    if (url) {
+    try {
+      const url = new URL(path, window.location.href)
       path = url.pathname + url.search
+    } catch (e) {
+      // fallback for malformed URLs
     }
     // remove trailing slash, unless index page
     if (path != '/') {
@@ -3394,8 +3395,10 @@ var htmx = (function() {
     forEach(disabledElts, function(disabledElement) {
       const internalData = getInternalData(disabledElement)
       internalData.requestCount = (internalData.requestCount || 0) + 1
-      disabledElement.setAttribute('disabled', '')
-      disabledElement.setAttribute('data-disabled-by-htmx', '')
+      if (!disabledElement.hasAttribute('disabled')) {
+        disabledElement.setAttribute('disabled', '')
+        disabledElement.setAttribute('data-disabled-by-htmx', '')
+      }
     })
     return disabledElts
   }
@@ -3417,7 +3420,7 @@ var htmx = (function() {
     })
     forEach(disabled, function(disabledElement) {
       const internalData = getInternalData(disabledElement)
-      if (internalData.requestCount === 0) {
+      if (internalData.requestCount === 0 && disabledElement.hasAttribute('data-disabled-by-htmx')) {
         disabledElement.removeAttribute('disabled')
         disabledElement.removeAttribute('data-disabled-by-htmx')
       }
