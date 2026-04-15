@@ -7,7 +7,7 @@ description: "Migrate from htmx 2.x to htmx 4.x."
 
 There are two major behavioral changes between htmx 2.x and 4.x:
 
-* In htmx 2.0 attribute inheritance is *implicit* by default while in 4.0 it is explicity by default
+* In htmx 2.0 attribute inheritance is *implicit* by default while in 4.0 it is explicit by default
 * In htmx 2.0, `400` and `500` response codes are not swapped by default, whereas in htmx 4.0 these requests will be
   swapped
 
