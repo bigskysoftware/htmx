@@ -80,7 +80,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^22.18.8",
+    "@types/node": "^22.19.17",
     "@types/parse5": "^7.0.0",
     "@web/test-runner": "^0.20.2",
     "@web/test-runner-playwright": "^0.11.0",
@@ -91,11 +91,11 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-mocha": "^10.5.0",
     "fs-extra": "^9.1.0",
-    "mocha": "^11.7.4",
+    "mocha": "^11.7.5",
     "mock-socket": "^9.3.1",
     "sinon": "^10.0.1",
     "typescript": "^5.9.3",
     "uglify-js": "^3.19.3",
-    "ws": "^8.18.1"
+    "ws": "^8.20.0"
   }
 }
