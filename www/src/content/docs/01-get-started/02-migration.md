@@ -188,7 +188,7 @@ Rename in this order to avoid conflicts:
 
 All events follow a new pattern: `htmx:phase:action[:sub-action]`
 
-All error events are consolidated to [`htmx:error`](/reference/events/htmx-error).
+Most error events are consolidated to [`htmx:error`](/reference/events/htmx-error). HTTP error responses have a dedicated [`htmx:response:error`](/reference/events/htmx-response-error) event.
 
 | htmx 2.x                    | htmx 4.x                                                                          |
 |-----------------------------|-----------------------------------------------------------------------------------|
@@ -211,7 +211,7 @@ All error events are consolidated to [`htmx:error`](/reference/events/htmx-error
 | `htmx:oobBeforeSwap`        | [`htmx:before:swap`](/reference/events/htmx-before-swap)                          |
 | `htmx:pushedIntoHistory`    | [`htmx:after:history:push`](/reference/events/htmx-after-push-into-history)       |
 | `htmx:replacedInHistory`    | [`htmx:after:history:replace`](/reference/events/htmx-after-replace-into-history) |
-| `htmx:responseError`        | [`htmx:error`](/reference/events/htmx-error)                                      |
+| `htmx:responseError`        | [`htmx:response:error`](/reference/events/htmx-response-error)                    |
 | `htmx:sendError`            | [`htmx:error`](/reference/events/htmx-error)                                      |
 | `htmx:swapError`            | [`htmx:error`](/reference/events/htmx-error)                                      |
 | `htmx:targetError`          | [`htmx:error`](/reference/events/htmx-error)                                      |

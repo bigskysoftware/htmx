@@ -69,7 +69,7 @@ EVENT_RENAMES = {
     "htmx:oobBeforeSwap": "htmx:before:swap",
     "htmx:pushedIntoHistory": "htmx:after:history:push",
     "htmx:replacedInHistory": "htmx:after:history:replace",
-    "htmx:responseError": "htmx:error",
+    "htmx:responseError": "htmx:response:error",
     "htmx:sendError": "htmx:error",
     "htmx:swapError": "htmx:error",
     "htmx:targetError": "htmx:error",

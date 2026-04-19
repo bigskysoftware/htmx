@@ -546,6 +546,10 @@ var htmx = (() => {
                 ctx.text = await response.text();
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
 
+                if (ctx.response.status >= 400) {
+                    this.__trigger(elt, "htmx:response:error", {ctx})
+                }
+
                 if(this.__handleHeadersAndMaybeReturnEarly(ctx)){
                     ctx.keepIndicators = true;
                     return
