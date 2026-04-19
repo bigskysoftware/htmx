@@ -991,7 +991,7 @@ var htmx = (() => {
 
         __handlePreservedElements(fragment) {
             let pantry = document.createElement('div');
-            pantry.style.display = 'none';
+            pantry.hidden = true;
             document.body.insertAdjacentElement('afterend', pantry);
             let newPreservedElts = fragment.querySelectorAll?.(this.__prefixSelector('hx-preserve')) || [];
             for (let preservedElt of newPreservedElts) {
