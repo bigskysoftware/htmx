@@ -624,6 +624,7 @@ describe('hx-history-cache extension', function () {
             let savedDetail = null;
             document.addEventListener('htmx:history:cache:after:save', e => { savedDetail = e.detail; }, { once: true });
 
+            historyElt.remove();
             let prefixedElt = document.createElement('div');
             prefixedElt.setAttribute('data-hx-history-elt', '');
             prefixedElt.innerHTML = '<p>prefixed target</p>';
@@ -643,6 +644,7 @@ describe('hx-history-cache extension', function () {
     it('respects htmx.config.prefix for hx-history="false"', async function () {
         htmx.config.prefix = 'data-hx-';
         try {
+            historyElt.remove();
             let sensitiveElt = document.createElement('div');
             sensitiveElt.setAttribute('data-hx-history-elt', '');
             sensitiveElt.setAttribute('data-hx-history', 'false');

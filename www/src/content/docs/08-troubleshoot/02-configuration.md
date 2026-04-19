@@ -14,7 +14,7 @@ They are listed below:
 | Config Variable                   | Info                                                                                                                                                                                                                                                                       |
 |-----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `htmx.config.logAll`              | defaults to `false`, if set to `true` htmx will log all events to the console for debugging                                                                                                                                                                                |
-| `htmx.config.prefix`              | defaults to `""` (empty string), allows you to use a custom prefix for htmx attributes (e.g., `"data-hx-"` to use `data-hx-get` instead of `hx-get`)                                                                                                                       |
+| `htmx.config.prefix`              | defaults to `"data-hx-"`, a secondary attribute prefix recognised alongside the always-active `hx-` prefix (e.g. `data-hx-get` works by default). Set to `""` to disable. **Must be set via meta tag** — setting this after page load will not apply correctly. |
 | `htmx.config.transitions`         | defaults to `false`, whether to use view transitions when swapping content (if browser supports it)                                                                                                                                                                         |
 | `htmx.config.history`             | defaults to `true`, whether to enable history support. Set to `"reload"` to do a full page reload on history navigation instead of an AJAX request                                                                                                                          |
 | `htmx.config.mode`                | defaults to `'same-origin'`, the fetch mode for AJAX requests. Can be `'cors'`, `'no-cors'`, or `'same-origin'`                                                                                                                                                            |
@@ -38,7 +38,9 @@ They are listed below:
 
 </div>
 
-You can set them directly in javascript, or you can use a `meta` tag:
+You can set most options directly in JavaScript, or you can use a `meta` tag:
+
+> **Note:** Some options are read only once during initialisation and must be set via the `meta` tag to take effect. These include `prefix`, `extensions`, and `metaCharacter`.
 
 <meta name="htmx-config" content='{"defaultSwap":"innerHTML"}'>
 ```

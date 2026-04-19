@@ -26,7 +26,7 @@ htmx.config.defaultTimeout = 5000;
 
 - `version` - htmx version (read-only)
 - `logAll` - Log all htmx events (default: `false`)
-- `prefix` - Attribute prefix (default: `""`)
+- `prefix` - Secondary attribute prefix recognised alongside `hx-` (default: `"data-hx-"`)
 - `transitions` - Enable view transitions (default: `false`)
 - `history` - Enable history support (default: `true`)
 - `mode` - Request mode for fetch (default: `"same-origin"`)
