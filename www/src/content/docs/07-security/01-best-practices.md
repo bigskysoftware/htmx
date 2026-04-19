@@ -87,6 +87,22 @@ All of these features can be replaced with standard event listeners and thus are
 
 Thus you can disable `eval()` via a CSP and continue to use htmx.
 
+### CSP & Inline Styles
+
+Annother area htmx can run into is with CSS transition and morphins swaps.  Both of these copy attributes (including `style`) between old and new elements during the settle
+phase. Under a strict `style-src` policy without `'unsafe-inline'`, these `setAttribute("style", ...)` calls will
+produce CSP violations.
+
+If you use a strict `style-src` CSP you should add `"style"` to [`morphIgnore`](/reference/config/htmx-config-morphIgnore):
+
+```html
+<meta name="htmx-config" content='{"morphIgnore":["data-htmx-powered","style"]}'>
+```
+
+This tells htmx to skip `style` attributes when copying attributes during settle and morph operations. 
+
+Class-based CSS transitions continue to work normally.
+
 ## CSRF Prevention
 
 The assignment and checking of CSRF tokens are typically backend responsibilities, but `htmx` can support returning the
