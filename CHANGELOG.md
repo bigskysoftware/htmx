@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.0.0-beta3] - 2026-04-25
+
+* `htmx.config.prefix` now defaults to `"data-hx-"`, so both `hx-*` and `data-hx-*` attributes work out of the box matching htmx 2 behavior. Set to `""` to disable. ([#3744](https://github.com/bigskysoftware/htmx/pull/3744))
+* Added `htmx:response:error` event for HTTP 4xx/5xx responses, restoring the convenience of htmx 2's `htmx:responseError` ([#3755](https://github.com/bigskysoftware/htmx/issues/3755))
+* `hx-download` extension now auto-detects downloads via `Content-Disposition` header — no need for `hx-download` attribute on individual elements ([#3756](https://github.com/bigskysoftware/htmx/pull/3756))
+* Bug Fixes
+  * Fixed CSP violation from inline style write on internal pantry element ([#3753](https://github.com/bigskysoftware/htmx/issues/3753))
+  * Documented `morphIgnore: ["style"]` workaround for CSP violations during settle/morph ([#3754](https://github.com/bigskysoftware/htmx/issues/3754))
+  * Fixed `hx-on` docs referencing htmx 2 event names (`before-request` --> `before:request`) ([#3749](https://github.com/bigskysoftware/htmx/issues/3749))
+
 ## [4.0.0-beta2] - 2026-04-14
 
 * Added `upgrade-check` CLI tool for migrating htmx 2.x projects to 4.x (`npx htmx.org@next upgrade-check`)
