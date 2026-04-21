@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.10] - 2026-04-21
+
+* [Fixed](https://github.com/bigskysoftware/htmx/issues/3757) restored missing TypeScript type definitions (`htmx.esm.d.ts`) accidentally removed in 2.0.9
+* [Fixed](https://github.com/bigskysoftware/htmx/pull/3752) improved escaping of tag and id in settle lookup using `CSS.escape()` (thanks @MichaelWest22)
+
 ## [2.0.9] - 2026-04-15
 
 * [Fixed](https://github.com/bigskysoftware/htmx/commit/a706897e84ed271528658c84a0b73eb5e3f2fe57) `HX-Location` to correctly honor `replace` when `push` is `false` (thanks @MichaelWest22)
