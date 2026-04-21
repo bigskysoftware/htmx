@@ -296,7 +296,7 @@ var htmx = (function() {
     location,
     /** @type {typeof internalEval} */
     _: null,
-    version: '2.0.8'
+    version: '2.0.9'
   }
   // Tsc madness part 2
   htmx.onLoad = onLoadHelper
@@ -1509,7 +1509,7 @@ var htmx = (function() {
       oobElement.parentNode.removeChild(oobElement)
     } else {
       oobElement.parentNode.removeChild(oobElement)
-      triggerErrorEvent(getDocument().body, 'htmx:oobErrorNoTarget', { content: oobElement })
+      triggerErrorEvent(getDocument().body, 'htmx:oobErrorNoTarget', { content: oobElement, target: selector })
     }
     return oobValue
   }
@@ -1560,10 +1560,8 @@ var htmx = (function() {
     forEach(fragment.querySelectorAll('[id]'), function(newNode) {
       const id = getRawAttribute(newNode, 'id')
       if (id && id.length > 0) {
-        const normalizedId = id.replace("'", "\\'")
-        const normalizedTag = newNode.tagName.replace(':', '\\:')
         const parentElt = asParentNode(parentNode)
-        const oldNode = parentElt && parentElt.querySelector(normalizedTag + "[id='" + normalizedId + "']")
+        const oldNode = parentElt && parentElt.querySelector(CSS.escape(newNode.tagName) + '#' + CSS.escape(id))
         if (oldNode && oldNode !== parentElt) {
           const newAttributes = newNode.cloneNode()
           cloneAttributes(newNode, oldNode)
@@ -1979,7 +1977,7 @@ var htmx = (function() {
       removeClassFromElement(target, htmx.config.swappingClass)
       forEach(settleInfo.elts, function(elt) {
         if (elt.classList) {
-          elt.classList.add(htmx.config.settlingClass)
+          addClassToElement(elt, htmx.config.settlingClass)
         }
         triggerEvent(elt, 'htmx:afterSwap', swapOptions.eventInfo)
       })
@@ -3112,7 +3110,7 @@ var htmx = (function() {
       htmx.logger(elt, eventName, detail)
     }
     if (detail.error) {
-      logError(detail.error)
+      logError(detail.error + (detail.target ? ', ' + detail.target : ''))
       triggerEvent(elt, 'htmx:error', { errorInfo: detail })
     }
     let eventResult = elt.dispatchEvent(event)
@@ -3378,7 +3376,7 @@ var htmx = (function() {
     forEach(indicators, function(ic) {
       const internalData = getInternalData(ic)
       internalData.requestCount = (internalData.requestCount || 0) + 1
-      ic.classList.add.call(ic.classList, htmx.config.requestClass)
+      addClassToElement(ic, htmx.config.requestClass)
     })
     return indicators
   }
@@ -4915,7 +4913,7 @@ var htmx = (function() {
         swapSpec.ignoreTitle = ignoreTitle
       }
 
-      target.classList.add(htmx.config.swappingClass)
+      addClassToElement(target, htmx.config.swappingClass)
 
       if (responseInfoSelect) {
         selectOverride = responseInfoSelect

@@ -24,6 +24,7 @@ page_template = "essay.html"
 * [Does Hypermedia Scale?](@/essays/does-hypermedia-scale.md)
 
 ### Real World htmx Experiences
+* [Building Critical Infrastructure with htmx: Network Automation for the Paris 2024 Olympics](@/essays/paris-2024-olympics-htmx-network-automation.md)
 * [A Real World React to htmx Port](@/essays/a-real-world-react-to-htmx-port.md)
 * [Another Real World React to htmx Port](@/essays/another-real-world-react-to-htmx-port.md)
 * [A Real World wasm to htmx Port](@/essays/a-real-world-wasm-to-htmx-port.md)

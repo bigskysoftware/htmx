@@ -5,7 +5,7 @@
     "AJAX",
     "HTML"
   ],
-  "version": "2.0.8",
+  "version": "2.0.9",
   "homepage": "https://htmx.org/",
   "bugs": {
     "url": "https://github.com/bigskysoftware/htmx/issues"
@@ -41,7 +41,8 @@
     "ws-tests": "cd ./test/ws-sse && node ./server.js",
     "web-types-generate": "node ./scripts/generate-web-types.mjs",
     "www": "bash ./scripts/www.sh",
-    "sha": "bash ./scripts/sha.sh"
+    "sha": "bash ./scripts/sha.sh",
+    "update-sha": "bash ./scripts/update-sha.sh"
   },
   "repository": {
     "type": "git",

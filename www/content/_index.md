@@ -94,6 +94,11 @@ if(window.location.search=="?ads=true") {
 </a>
 </div>
 
+<div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; color: black; filter: drop-shadow(3px 3px darkgray)">
+<b>NEWS:</b> htmx v4 is under active development and is now in beta, with a target release date of Summer '26!  More details
+at <a href="https://four.htmx.org">https://four.htmx.org</a>
+</div>
+
 <h2>introduction</h2>
 
 htmx gives you access to [AJAX](@/docs.md#ajax), [CSS Transitions](@/docs.md#css_transitions), [WebSockets](@/docs.md#websockets-and-sse) and [Server Sent Events](@/docs.md#websockets-and-sse)
@@ -117,7 +122,7 @@ By removing these constraints, htmx completes HTML as a [hypertext](https://en.w
 <h2>quick start</h2>
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.9/dist/htmx.min.js"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -285,25 +290,36 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </div>
 <div>
         <a data-github-account="appleple" href="https://www.a-blogcms.jp/">
-          <img src="/img/ablogcms_logo.svg" style="width:100%;max-width:250px">
+          <img src="/img/ablogcms_logo.svg" alt="a-blog cms" style="width:100%;max-width:250px">
         </a>
 </div>
 <div>
-        <a data-github-account="CoverageCritic" alt="Find Internet Providers With Broadband Map" href="https://broadbandmap.com/">
-           <img class="dark-hidden" src="/img/BroadbandMapLogo2LineLightMode.png" style="width:100%;max-width:250px">
-           <img class="dark-visible" src="/img/BroadbandMapLogo2LineDarkMode.png" style="width:100%;max-width:250px">
+        <a data-github-account="CoverageCritic" href="https://broadbandmap.com/">
+           <img class="dark-hidden" alt="Find Internet Providers With Broadband Map" src="/img/BroadbandMapLogo2LineLightMode.png" style="width:100%;max-width:250px">
+           <img class="dark-visible" alt="Find Internet Providers With Broadband Map" src="/img/BroadbandMapLogo2LineDarkMode.png" style="width:100%;max-width:250px">
         </a>
 </div>
 <div>
-        <a data-github-account="Follower24" alt="Follower24" href="https://www.follower24.de/">
-           <img class="dark-hidden" src="/img/follower_light.svg" style="width:100%;max-width:250px">
-           <img class="dark-visible" src="/img/follower_dark.svg" style="width:100%;max-width:250px">
+        <a data-github-account="Follower24" href="https://www.follower24.de/">
+           <img class="dark-hidden" alt="Follower24" src="/img/follower_light.svg" style="width:100%;max-width:250px">
+           <img class="dark-visible" alt="Follower24" src="/img/follower_dark.svg" style="width:100%;max-width:250px">
         </a>
 </div>
 <div>
-    <a data-github-account="ExchangeRate-API" alt="The Accurate & Reliable Exchange Rate API" href="https://www.exchangerate-api.com">
-       <img class="dark-hidden" src="/img/exchange-rate-api.png" style="width:100%;max-width:250px">
-       <img class="dark-visible" src="/img/exchange-rate-api-dark.png" style="width:100%;max-width:250px">
+    <a data-github-account="ExchangeRate-API" href="https://www.exchangerate-api.com">
+       <img class="dark-hidden" alt="The Accurate & Reliable Exchange Rate API" src="/img/exchange-rate-api.png" style="width:100%;max-width:250px">
+       <img class="dark-visible" alt="The Accurate & Reliable Exchange Rate API" src="/img/exchange-rate-api-dark.png" style="width:100%;max-width:250px">
+    </a>
+</div>
+<div>
+    <a data-github-account="mersano" href="https://instant-famous.com/">
+       <img src="/img/rsz_instant_famous.png" alt="Instant Famous" style="width:100%;max-width:250px">
+    </a>
+</div>
+<div></div>
+<div>
+    <a data-github-account="blacksandsmedia" href="https://hellostake.com/au/referral-code">
+       <img src="/img/stake.jpeg" alt="Stake" style="width:100%;max-width:250px">
     </a>
 </div>
 </div>

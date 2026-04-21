@@ -384,6 +384,7 @@ in the DOM to switch with.
 ##### Details
 
 * `detail.content` - the element with the bad oob `id`
+* `detail.target` - the bad CSS selector
 
 ### Event - `htmx:onLoadError` {#htmx:onLoadError}
 

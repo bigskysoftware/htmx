@@ -91,7 +91,7 @@ within the language:
 * Now any element, not just the entire window, can be the target for update by the request
 
 Note that when you are using htmx, on the server side you typically respond with *HTML*, not *JSON*.  This keeps you firmly
-within the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm),
+within the [original web programming model](https://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm),
 using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS)
 without even needing to really understand that concept.
 
@@ -101,7 +101,7 @@ It's worth mentioning that, if you prefer, you can use the [`data-`](https://htm
 <a data-hx-post="/click">Click Me!</a>
 ```
 
-If you understand the concepts around htmx and want to see the quirks of the library, please see our 
+If you understand the concepts around htmx and want to see the quirks of the library, please see our
 [QUIRKS](@/QUIRKS.md) page.
 
 ## 1.x to 2.x Migration Guide
@@ -123,13 +123,13 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 your head tag and get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.9/dist/htmx.min.js" integrity="sha384-ESlCao+z/oasnu2Uc/5K1LQTI7YCF2KKO4xakCPQCFuiHhCh8Oa/R5NwHY6guZ3m" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available as well:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.js" integrity="sha384-ezjq8118wdwdRMj+nX4bevEi+cDLTbhLAeFF688VK8tPDGeLUe0WoY2MZtSla72F" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.9/dist/htmx.js" integrity="sha384-cXTCSy4Zn7qemud9yShqFivG9MoMBwLrbVbZ6QPW8lIouC2ZiTekwPrSj2P9Ev0U" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider
@@ -139,7 +139,7 @@ While the CDN approach is extremely simple, you may want to consider
 
 The next easiest way to install htmx is to simply copy it into your project.
 
-Download `htmx.min.js` [from jsDelivr](https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js) and add it to the appropriate directory in your project
+Download `htmx.min.js` [from jsDelivr](https://cdn.jsdelivr.net/npm/htmx.org@2.0.9/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
 
 ```html
@@ -151,7 +151,7 @@ and include it where necessary with a `<script>` tag:
 For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
-npm install htmx.org@2.0.8
+npm install htmx.org@2.0.9
 ```
 
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
@@ -1142,7 +1142,7 @@ You can see all available extensions on the [Extensions](/extensions) page.
 The fastest way to install htmx extensions created by others is to load them via a CDN. Remember to always include the core htmx library before the extensions and [enable the extension](#enabling-extensions). For example, if you would like to use the [response-targets](/extensions/response-targets) extension, you can add this to your head tag:
 ```HTML
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.9/dist/htmx.min.js" integrity="sha384-ESlCao+z/oasnu2Uc/5K1LQTI7YCF2KKO4xakCPQCFuiHhCh8Oa/R5NwHY6guZ3m" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.4" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="extension-name">
@@ -1163,7 +1163,7 @@ If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
 - Import both packages to your `index.js`
 ```JS
 import `htmx.org`;
-import `htmx-ext-extension-name`; // replace `extension-name` with the name of the extension 
+import `htmx-ext-extension-name`; // replace `extension-name` with the name of the extension
 ```
 
 Note: [Idiomorph](/extensions/idiomorph) does not follow the naming convention of htmx extensions. Use `idiomorph` instead of `htmx-ext-idiomorph`. For example, `https://cdn.jsdelivr.net/npm/idiomorph` or `npm install idiomorph`.
@@ -1379,7 +1379,7 @@ Here is an example of the code in action:
 
 ## Scripting {#scripting}
 
-While htmx encourages a hypermedia approach to building web applications, it offers many options for client scripting. Scripting is included in the REST-ful description of web architecture, see: [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7). As much as is feasible, we recommend a [hypermedia-friendly](/essays/hypermedia-friendly-scripting) approach to scripting in your web application:
+While htmx encourages a hypermedia approach to building web applications, it offers many options for client scripting. Scripting is included in the REST-ful description of web architecture, see: [Code-On-Demand](https://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_7). As much as is feasible, we recommend a [hypermedia-friendly](/essays/hypermedia-friendly-scripting) approach to scripting in your web application:
 
 * [Respect HATEOAS](/essays/hypermedia-friendly-scripting#prime_directive)
 * [Use events to communicate between components](/essays/hypermedia-friendly-scripting#events)
@@ -1697,7 +1697,7 @@ for exploring this topic.
 
 ### CSRF Prevention
 
-The assignment and checking of CSRF tokens are typically backend responsibilities, but `htmx` can support returning the CSRF token automatically with every request using the `hx-headers` attribute. The attribute needs to be added to the element issuing the request or one of its ancestor elements. This makes the `html` and `body` elements effective global vehicles for adding the CSRF token to the `HTTP` request header, as illustrated below. 
+The assignment and checking of CSRF tokens are typically backend responsibilities, but `htmx` can support returning the CSRF token automatically with every request using the `hx-headers` attribute. The attribute needs to be added to the element issuing the request or one of its ancestor elements. This makes the `html` and `body` elements effective global vehicles for adding the CSRF token to the `HTTP` request header, as illustrated below.
 
 Note: `hx-boost` does not update the `<html>` or `<body>` tags; if using this feature with `hx-boost`, make sure to include the CSRF token on an element that _will_ get replaced. Many web frameworks support automatically inserting the CSRF token as a hidden input in HTML forms. This is encouraged whenever possible.
 
@@ -1713,7 +1713,7 @@ Note: `hx-boost` does not update the `<html>` or `<body>` tags; if using this fe
     </body>
 ```
 
-The above elements are usually unique in an HTML document and should be easy to locate within templates. 
+The above elements are usually unique in an HTML document and should be easy to locate within templates.
 
 
 ## Configuring htmx {#config}

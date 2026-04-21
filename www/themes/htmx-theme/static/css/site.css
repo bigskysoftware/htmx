@@ -465,7 +465,7 @@ h1,h2,h3,h4{
 
     /* Menu */
   .menu,
-  .navigation > div{
+  .navigation > nav{
       display:flex;
       align-items:center;
   }
