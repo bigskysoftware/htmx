@@ -289,8 +289,8 @@ Use [`HX-Trigger`](/reference/headers/HX-Trigger) or JavaScript instead.
 
 Unchanged: [`HX-Trigger`](/reference/headers/HX-Trigger), [`HX-Location`](/reference/headers/HX-Location), [
 `HX-Push-Url`](/reference/headers/HX-Push-Url), [`HX-Redirect`](/reference/headers/HX-Redirect), [
-`HX-Refresh`](/reference/headers/HX-Refresh), [`HX-Replace-Url`](/reference/headers/HX-Replace-Url), `HX-Retarget`,
-`HX-Reswap`, `HX-Reselect`.
+`HX-Refresh`](/reference/headers/HX-Refresh), [`HX-Replace-Url`](/reference/headers/HX-Replace-Url), [
+`HX-Retarget`](/reference/headers/HX-Retarget), [`HX-Reswap`](/reference/headers/HX-Reswap), [`HX-Reselect`](/reference/headers/HX-Reselect).
 
 ### JavaScript API changes
 
