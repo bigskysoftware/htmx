@@ -341,6 +341,18 @@ describe('Core htmx AJAX Tests', function() {
     }, 20)
   })
 
+  it('properly settles attributes elements with multiple single quotes in id', function(done) {
+    this.server.respondWith('GET', '/test', "<div hx-get='/test'><div width='bar' id=\"fo'o'bar\"></div></div>")
+    var div = make("<div hx-get='/test' hx-swap='outerHTML settle:10ms'><div id=\"fo'o'bar\"></div></div>")
+    div.click()
+    this.server.respond()
+    should.equal(byId("fo'o'bar").getAttribute('width'), null)
+    setTimeout(function() {
+      should.equal(byId("fo'o'bar").getAttribute('width'), 'bar')
+      done()
+    }, 20)
+  })
+
   it('properly settles attributes elements with double quotes in id', function(done) {
     this.server.respondWith('GET', '/test', "<div hx-get='/test'><div width='bar' id='d1\"'></div></div>")
     var div = make("<div hx-get='/test' hx-swap='outerHTML settle:10ms'><div id='d1\"'></div></div>")
@@ -990,6 +1002,20 @@ describe('Core htmx AJAX Tests', function() {
     this.server.respond()
 
     btn.innerHTML.should.equal('<with:colon id="foobar">Foobar</with:colon>')
+  })
+
+  it('falls back to DOMParser when parseHTMLUnsafe is not available', function() {
+    const original = Document.parseHTMLUnsafe
+    try {
+      delete Document.parseHTMLUnsafe
+      this.server.respondWith('GET', '/test', '<div id="d1">Fallback</div>')
+      var div = make('<div hx-get="/test" hx-select="#d1"></div>')
+      div.click()
+      this.server.respond()
+      div.innerHTML.should.equal('<div id="d1">Fallback</div>')
+    } finally {
+      Document.parseHTMLUnsafe = original
+    }
   })
 
   it('properly handles clicked submit button with a value inside a htmx form', function() {
