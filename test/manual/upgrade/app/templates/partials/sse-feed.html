@@ -1,0 +1,38 @@
+<!-- Partial: SSE live feed -->
+<div hx-ext="sse">
+    <div sse-connect="/api/events" sse-swap="message">
+        <div id="live-feed">
+            Waiting for events...
+        </div>
+    </div>
+
+    <div sse-connect="/api/notifications" sse-swap="notification">
+        <div id="notification-area"></div>
+    </div>
+</div>
+
+<!-- WebSocket chat -->
+<div hx-ext="ws">
+    <div ws-connect="/ws/chat">
+        <div id="chat-messages"></div>
+        <form ws-send>
+            <input name="message" placeholder="Type a message...">
+            <button type="submit" hx-disabled-elt="this">Send</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.body.addEventListener('htmx:sseOpen', function(e) {
+        console.log('SSE connected to', e.detail.url);
+    });
+    document.body.addEventListener('htmx:sseError', function(e) {
+        showToast('Connection lost, reconnecting...');
+    });
+    document.body.addEventListener('htmx:wsOpen', function(e) {
+        console.log('WebSocket connected');
+    });
+    document.body.addEventListener('htmx:wsClose', function(e) {
+        console.log('WebSocket closed');
+    });
+</script>

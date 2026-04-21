@@ -577,8 +577,8 @@ htmx 2 uses camelCase: `htmx:afterSwap`, `htmx:beforeRequest`, `htmx:configReque
 
 htmx 4 uses colons: `htmx:after:swap`, `htmx:before:request`, `htmx:config:request`.
 
-All error events (`htmx:responseError`, `htmx:sendError`, `htmx:swapError`, `htmx:targetError`, `htmx:timeout`) are
-consolidated into `htmx:error` in htmx 4.
+Most error events (`htmx:sendError`, `htmx:swapError`, `htmx:targetError`, `htmx:timeout`) are consolidated into
+`htmx:error` in htmx 4. HTTP error responses fire `htmx:response:error` (replacing `htmx:responseError`).
 
 ### Configuration
 

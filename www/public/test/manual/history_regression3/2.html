@@ -1,0 +1,16 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <script type="application/javascript" src="../../../src/htmx.js"></script>
+    <meta name="htmx-config" content='{"historyCacheSize":0, "refreshOnHistoryMiss" : true}'>
+    <title>History - 2</title>
+</head>
+<body style="padding:20px;font-family: sans-serif" hx-boost="true">
+<h1>History Test</h1>
+<a hx-get="1.html" hx-push-url="true" hx-target="body">1</a>
+<a hx-get="2.html" hx-push-url="true" hx-target="body">2</a>
+<a hx-get="3.html" hx-push-url="true" hx-target="body">3</a>
+<a hx-get="4.html" hx-push-url="true" hx-target="body">4</a>
+<h3>Page 2</h3>
+</body>
+</html>

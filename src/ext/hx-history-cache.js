@@ -7,8 +7,10 @@
         return htmx.config.historyCache;
     }
 
-    function prefix(attr) {
-        return htmx.config.prefix ? attr.replace('hx-', htmx.config.prefix) : attr;
+    function prefixSelector(attr, value) {
+        let result = [`[${attr}${value != null ? `="${value}"` : ''}]`];
+        if (htmx.config.prefix) result.push(`[${attr.replace('hx-', htmx.config.prefix)}${value != null ? `="${value}"` : ''}]`);
+        return result.join(',');
     }
 
     function canUseStorage() {
@@ -24,7 +26,7 @@
     }
 
     function getHistoryTarget() {
-        return htmx.find(`[${prefix('hx-history-elt')}]`) || document.body;
+        return htmx.find(prefixSelector('hx-history-elt')) || document.body;
     }
 
     const ATTR_VALUE   = 'data-htmx-history-value';
@@ -122,7 +124,7 @@
     // --- two-tier save/get ---
 
     function saveCurrentPage() {
-        if (htmx.find(`[${prefix('hx-history')}="false"]`)) return;
+        if (htmx.find(prefixSelector('hx-history', 'false'))) return;
 
         let target = getHistoryTarget();
         annotateState(target);

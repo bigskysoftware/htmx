@@ -33,6 +33,20 @@ describe('hx-upsert extension', function() {
         assert.equal(div.querySelector('#item-1').textContent, 'Updated')
     })
 
+    it('replaced element is live and can trigger a new request', async function () {
+        mockResponse('GET', '/test', '<div id="item-1"><button id="btn" hx-get="/test2" hx-trigger="click consume" hx-target="#item-1" hx-swap="innerHTML">Click</button></div>')
+        mockResponse('GET', '/test2', 'Triggered')
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="upsert"><div id="item-1">Original</div></div>');
+        div.click()
+        await htmx.timeout(20)
+        let btn = div.querySelector('#btn')
+        assert.isNotNull(btn, 'button should exist after first swap')
+        assert.isTrue(!!btn._htmx?.initialized, 'button should be htmx-initialized')
+        btn.click()
+        await htmx.timeout(20)
+        assert.equal(div.querySelector('#item-1').textContent, 'Triggered')
+    })
+
     it('inserts new element', async function () {
         mockResponse('GET', '/test', '<div id="item-2">New</div>')
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="upsert"><div id="item-1">Original</div></div>');

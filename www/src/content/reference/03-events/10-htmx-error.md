@@ -11,6 +11,8 @@ The `htmx:error` event fires when an exception occurs during the request or swap
 - Swap errors (invalid content, DOM errors)
 - Any other exception during the htmx request lifecycle
 
+This event does **not** fire for HTTP error statuses (4xx/5xx) — use [`htmx:response:error`](/reference/events/htmx-response-error) for those.
+
 ## Event Detail
 
 - `ctx` - Request context at time of error

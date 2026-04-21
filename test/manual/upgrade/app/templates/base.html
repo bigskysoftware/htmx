@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="htmx-config" content='{"selfRequestsOnly": true, "includeIndicatorStyles": true, "timeout": 30000}'>
+    <title>My App</title>
+</head>
+<body hx-boost="true" hx-headers='{"X-CSRFToken": "abc123"}'>
+
+    <header hx-target="#content" hx-swap="innerHTML show:.content-top:top" hx-push-url="true">
+        <nav>
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/settings">Settings</a>
+        </nav>
+    </header>
+
+    <div id="content" hx-history-elt>
+        <!-- Page content injected here -->
+    </div>
+
+    <footer>
+        <p hx-disinherit="*">
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
+        </p>
+    </footer>
+
+    <script>
+        htmx.logAll();
+        htmx.config.defaultSwapStyle = "innerHTML";
+        htmx.config.historyCacheSize = 50;
+    </script>
+</body>
+</html>

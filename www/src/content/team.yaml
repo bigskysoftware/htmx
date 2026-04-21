@@ -39,3 +39,8 @@
   image: /src/assets/img/team/stu.png
   github: bigskysoftware
   content: Full-Stack Human, Part-Time AI Whisperer, and HTMX Preacher at Large.
+
+- name: André Ahlert Junior
+  image: /src/assets/img/team/andre.png
+  github: andreahlert
+  content: Building the tools htmx deserves, one extension at a time.

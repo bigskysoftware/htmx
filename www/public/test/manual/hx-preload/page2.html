@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Page 2 - hx-preload Test</title>
+    <meta name="htmx-config" content='{"selfRequestsOnly":false}'>
+    <script src="../../../src/htmx.js"></script>
+    <script src="../../../src/ext/hx-preload.js"></script>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
+        .card { border: 1px solid #ccc; padding: 1em; margin: 1em 0; border-radius: 4px; }
+        a { color: #07c; }
+    </style>
+</head>
+<body>
+
+<h1>Page 2</h1>
+<p>You navigated here. The request should have been preloaded.</p>
+
+<div class="card">
+    <a hx-boost="true" href="index.html">Back to index (boosted)</a>
+</div>
+
+</body>
+</html>

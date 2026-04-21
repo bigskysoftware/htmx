@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        window.fetch = function(url, options) {
+            return new Promise((resolve) => {
+                setTimeout(() => resolve({
+                    ok: true,
+                    status: 200,
+                    headers: new Headers({'HX-Redirect': 'https://htmx.org'}),
+                    text: () => Promise.resolve(''),
+                    clone() { return this; }
+                }), 1500);
+            });
+        };
+    </script>
+    <script src="../../src/htmx.js"></script>
+</head>
+<body>
+    <h1>HX-Redirect indicator preservation</h1>
+    <p>
+        Click the button. The <code>.htmx-request</code> class and <code>disabled</code> state
+        should remain active during the 1.5s delay <em>and</em> after the response arrives
+        (while the page would normally be redirecting). They should <strong>not</strong> be
+        removed before navigation.
+    </p>
+
+    <button id="btn"
+            hx-post="/redirect"
+            hx-disabled-elt="#btn"
+            hx-indicator="#spinner">
+        Click me
+    </button>
+
+    <span id="spinner" class="htmx-indicator"> ⏳ loading...</span>
+
+    <p>
+        Button should stay <strong>disabled</strong> and spinner should stay
+        <strong>visible</strong> after the response — not flash back to normal.
+    </p>
+
+    <p>
+        <strong>keepIndicators override:</strong> set <code>ctx.keepIndicators = false</code>
+        via event to force cleanup even on redirect:
+    </p>
+
+    <button id="btn2"
+            hx-post="/redirect"
+            hx-disabled-elt="#btn2"
+            hx-indicator="#spinner2"
+            hx-on:htmx:finally:request="event.detail.ctx.keepIndicators = false">
+        Click me (indicators cleared on redirect)
+    </button>
+
+    <span id="spinner2" class="htmx-indicator"> ⏳ loading...</span>
+</body>
+</html>

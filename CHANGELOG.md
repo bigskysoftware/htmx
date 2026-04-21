@@ -1,6 +1,27 @@
 # Changelog
 
-## [4.0.0-beta1] - 2026-04-xx
+## [4.0.0-beta3] - 2026-04-25
+
+* `htmx.config.prefix` now defaults to `"data-hx-"`, so both `hx-*` and `data-hx-*` attributes work out of the box matching htmx 2 behavior. Set to `""` to disable. ([#3744](https://github.com/bigskysoftware/htmx/pull/3744))
+* Added `htmx:response:error` event for HTTP 4xx/5xx responses, restoring the convenience of htmx 2's `htmx:responseError` ([#3755](https://github.com/bigskysoftware/htmx/issues/3755))
+* `hx-download` extension now auto-detects downloads via `Content-Disposition` header — no need for `hx-download` attribute on individual elements ([#3756](https://github.com/bigskysoftware/htmx/pull/3756))
+* Bug Fixes
+  * Fixed CSP violation from inline style write on internal pantry element ([#3753](https://github.com/bigskysoftware/htmx/issues/3753))
+  * Documented `morphIgnore: ["style"]` workaround for CSP violations during settle/morph ([#3754](https://github.com/bigskysoftware/htmx/issues/3754))
+  * Fixed `hx-on` docs referencing htmx 2 event names (`before-request` --> `before:request`) ([#3749](https://github.com/bigskysoftware/htmx/issues/3749))
+
+## [4.0.0-beta2] - 2026-04-14
+
+* Added `upgrade-check` CLI tool for migrating htmx 2.x projects to 4.x (`npx htmx.org@next upgrade-check`)
+* Bug Fixes
+  * Fixed comma handling in trigger spec parsing (e.g. `click[myFunc(a,b)]`) ([#3738](https://github.com/bigskysoftware/htmx/pull/3738))
+  * Fixed extension packaging by removing `exports` rule from `package.json` ([#3737](https://github.com/bigskysoftware/htmx/pull/3737))
+  * Added back stream accept header on all SSE-enabled requests ([#3733](https://github.com/bigskysoftware/htmx/pull/3733))
+  * Fixed settle events not bubbling after `outerHTML` swaps ([#3739](https://github.com/bigskysoftware/htmx/pull/3739))
+  * Fixed `hx-location` ignoring explicit `push: false` when combined with `replace` ([#3740](https://github.com/bigskysoftware/htmx/pull/3740))
+  * Removed accidental `playwright` dependency ([#3747](https://github.com/bigskysoftware/htmx/pull/3747))
+
+## [4.0.0-beta1] - 2026-04-06
 
 * Added `hx-history-cache` extension for client-side history caching via `sessionStorage` / `history.state` ([#3698](https://github.com/bigskysoftware/htmx/pull/3698))
 * Added `htmax.js` — a bundled distribution including the most popular opt-in extensions

@@ -111,5 +111,27 @@ describe('htmx events', function() {
         assertTextContentIs('div', 'Original')
     })
 
+    it('htmx:response:error fires on HTTP 4xx/5xx', async function () {
+        fetchMock.mockErrorResponse('GET', '/test', 500, 'Internal Server Error')
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
+        let errorStatus = null
+        div.addEventListener('htmx:response:error', (e) => {
+            errorStatus = e.detail.ctx.response.status
+        })
+        div.click()
+        await forRequest()
+        assert.equal(errorStatus, 500)
+    })
+
+    it('htmx:response:error does not fire on HTTP 2xx', async function () {
+        mockResponse('GET', '/test', 'OK')
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
+        let fired = false
+        div.addEventListener('htmx:response:error', () => { fired = true })
+        div.click()
+        await forRequest()
+        assert.isFalse(fired)
+    })
+
     // TODO - verify shape of details in these events
 })

@@ -1,0 +1,22 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <script type="application/javascript" src="../../../src/htmx.js"></script>
+    <title>History - Index</title>
+    <script>
+        htmx.logAll();
+    </script>
+</head>
+<body style="padding:20px;font-family: sans-serif">
+<h1>History Disabled Elt Test</h1>
+<p>
+    Click the button and then click back and the second button shouldn't be disabled...
+</p>
+<button hx-get="1.html" hx-disabled-elt="#another-button" hx-push-url="true">
+    Click Me
+</button>
+<button id="another-button">
+    Another button
+</button>
+</body>
+</html>

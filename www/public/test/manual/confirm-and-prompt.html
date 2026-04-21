@@ -1,0 +1,28 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Test if indicators are invisible by default</title>
+    <script src="../../src/htmx.js"></script>
+</head>
+<body style="padding:20px;font-family: sans-serif">
+<script src="../../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../../src/htmx.js"></script>
+<script src="../util/util.js"></script>
+<script>
+    server = makeServer();
+    server.autoRespond = true;
+    server.respondWith("GET", "/prompt", function(xhr){
+        xhr.respond(200, {}, "You entered: " + xhr.requestHeaders["HX-Prompt"]);
+    })
+    server.respondWith("GET", "/confirm", function(xhr){
+        xhr.respond(200, {}, "Confirmed")
+    })
+</script>
+<h1>Prompt & Confirm Tests</h1>
+<button hx-get="/prompt" hx-prompt="Enter some text and it should be echoed in this button">Click For Prompt</button>
+<br/>
+<br/>
+<br/>
+<button hx-get="/confirm" hx-confirm="Confirm The Action">Click For Confirm</button>
+</body>
+</html>

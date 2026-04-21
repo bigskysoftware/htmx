@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hx-preload Test</title>
+    <meta name="htmx-config" content='{"selfRequestsOnly":false}'>
+    <script src="../../../src/htmx.js"></script>
+    <script src="../../../src/ext/hx-preload.js"></script>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
+        .card { border: 1px solid #ccc; padding: 1em; margin: 1em 0; border-radius: 4px; }
+        a { color: #07c; }
+        code { background: #f0f0f0; padding: 0.2em 0.4em; border-radius: 3px; }
+        #output { min-height: 50px; border: 1px dashed #aaa; padding: 1em; margin-top: 0.5em; }
+    </style>
+</head>
+<body>
+
+<h1>hx-preload Manual Test</h1>
+<p>Open the Network tab in DevTools to observe preload fetch requests.</p>
+
+<div class="card">
+    <h3>1. Preload on mousedown (default for boosted links)</h3>
+    <p>Boosted links preload automatically on <code>mousedown</code>. Press and hold to see the prefetch, then release to navigate.</p>
+    <a hx-boost="true" href="page2.html">Go to Page 2 (boosted)</a>
+</div>
+
+<div class="card">
+    <h3>2. Preload on mouseover</h3>
+    <p>Hover over the link to trigger a preload.</p>
+    <a hx-get="page2.html" hx-target="#output" hx-preload="mouseover">
+        Hover to preload, click to swap
+    </a>
+    <div id="output">Response will appear here</div>
+</div>
+
+<div class="card">
+    <h3>3. Preload on mousedown (explicit)</h3>
+    <button hx-get="fragment.html" hx-target="#output2" hx-preload="mousedown">
+        Press &amp; release to load
+    </button>
+    <div id="output2">Response will appear here</div>
+</div>
+
+</body>
+</html>

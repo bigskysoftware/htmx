@@ -114,6 +114,13 @@ describe('__parseTriggerSpecs unit tests', function() {
         })
     })
 
+    it('does not split on comma inside function call filter when combined with other events', function () {
+        let specs = htmx.__parseTriggerSpecs('click[myFunc(a,b)], keyup')
+        assert.equal(specs.length, 2)
+        assert.equal(specs[0].name, 'click[myFunc(a,b)]')
+        assert.equal(specs[1].name, 'keyup')
+    })
+
     it('parses complex trigger spec', function () {
         let specs = htmx.__parseTriggerSpecs('click[ctrlKey] delay:100ms throttle:200ms from:body target:.item once')
         assert.equal(specs.length, 1)

@@ -36,6 +36,23 @@ names, and previous error-swapping defaults:
 
 Most htmx 2 apps should work with either approach. Then migrate incrementally using this guide.
 
+## Upgrade Checker
+
+htmx 4 ships with a command-line tool scans your templates and JS files for htmx 2 code that needs updating. It checks 
+for removed attributes, old event names, inheritance patterns, extension changes, etc.
+
+```bash
+npx htmx.org@next upgrade-check -- ./path/to/project/root
+
+npx htmx.org@next upgrade-check --ext .vue ./path/to/project/root
+```
+
+By default, the tool scans `.html`, `.php`, `.js`, `.ts`, `.jinja`, `.jinja2`, `.j2`, `.erb`, and `.hbs` files.
+
+Output is `file:line` format, clickable in most editors. You can add additional file types with the `--ext` option.
+
+The tool requires Python 3.
+
 ## What Changed
 
 ### `fetch()` replaces `XMLHttpRequest`
@@ -171,7 +188,7 @@ Rename in this order to avoid conflicts:
 
 All events follow a new pattern: `htmx:phase:action[:sub-action]`
 
-All error events are consolidated to [`htmx:error`](/reference/events/htmx-error).
+Most error events are consolidated to [`htmx:error`](/reference/events/htmx-error). HTTP error responses have a dedicated [`htmx:response:error`](/reference/events/htmx-response-error) event.
 
 | htmx 2.x                    | htmx 4.x                                                                          |
 |-----------------------------|-----------------------------------------------------------------------------------|
@@ -194,7 +211,7 @@ All error events are consolidated to [`htmx:error`](/reference/events/htmx-error
 | `htmx:oobBeforeSwap`        | [`htmx:before:swap`](/reference/events/htmx-before-swap)                          |
 | `htmx:pushedIntoHistory`    | [`htmx:after:history:push`](/reference/events/htmx-after-push-into-history)       |
 | `htmx:replacedInHistory`    | [`htmx:after:history:replace`](/reference/events/htmx-after-replace-into-history) |
-| `htmx:responseError`        | [`htmx:error`](/reference/events/htmx-error)                                      |
+| `htmx:responseError`        | [`htmx:response:error`](/reference/events/htmx-response-error)                    |
 | `htmx:sendError`            | [`htmx:error`](/reference/events/htmx-error)                                      |
 | `htmx:swapError`            | [`htmx:error`](/reference/events/htmx-error)                                      |
 | `htmx:targetError`          | [`htmx:error`](/reference/events/htmx-error)                                      |
@@ -310,6 +327,19 @@ Note: `htmx.onLoad()` now listens on [`htmx:after:process`](/reference/events/ht
 | [`hx-config`](/reference/attributes/hx-config)     | Per-element request config (JSON or `key:value` syntax)               |
 | [`hx-ignore`](/reference/attributes/hx-ignore)     | Disable htmx processing (was `hx-disable`)                            |
 | [`hx-validate`](/reference/attributes/hx-validate) | Control form validation behavior                                      |
+
+### [`hx-swap`](/reference/attributes/hx-swap) scroll modifiers
+
+The `show` and `scroll` modifiers no longer support the combined `selector:position` syntax. Use separate keys instead:
+
+```html
+<!-- htmx 2 (broken in 4) -->
+<div hx-swap="innerHTML show:#other:top"></div>
+
+<!-- htmx 4 -->
+<div hx-swap="innerHTML show:top showTarget:#other"></div>
+<div hx-swap="innerHTML scroll:bottom scrollTarget:#other"></div>
+```
 
 ### [`hx-swap`](/reference/attributes/hx-swap) styles
 
@@ -435,24 +465,25 @@ htmx 4 ships with 9 core extensions. The SSE and WebSocket extensions have been 
 | [`head-support`](/docs/extensions/head-support)           | Merges head tag information (styles, etc.) in htmx requests                          |
 | [`htmx-2-compat`](/docs/extensions/htmx-2-compat)         | Restores implicit inheritance, old event names, and previous error-swapping defaults |
 | [`optimistic`](/docs/extensions/optimistic)               | Shows expected content from a template before the server responds                    |
-| [`preload`](/docs/extensions/preload)                     | Triggers requests early (on mouseover/mousedown) for near-instant page loads         |
+| [`preload`](/docs/extensions/preload)                     | Triggers requests early (on mouseover/mousedown) for near-instant page loads ([upgrade guide](/docs/extensions/preload#upgrading-from-htmx-2x)) |
 | [`sse`](/docs/extensions/sse)                             | Server-Sent Events streaming support ([upgrade guide](/docs/extensions/sse#upgrading-from-htmx-2x)) |
 | [`upsert`](/docs/extensions/upsert)                       | Updates existing elements by ID and inserts new ones, preserving unmatched elements  |
 | [`ws`](/docs/extensions/ws)                               | Bi-directional WebSocket communication ([upgrade guide](/docs/extensions/ws#upgrading-from-htmx-2x)) |
 
 ## Checklist
 
-1. Add config options or load [`htmx-2-compat`](/docs/extensions/htmx-2-compat) for backward compatibility
-2. Rename `hx-disable` to [`hx-ignore`](/reference/attributes/hx-ignore), then `hx-disabled-elt` to [
+1. Optionally, add config options or load [`htmx-2-compat`](/docs/extensions/htmx-2-compat) for backward compatibility
+2. Run the [upgrade checker](#upgrade-checker) to get a full list of issues
+3. Rename `hx-disable` to [`hx-ignore`](/reference/attributes/hx-ignore), then `hx-disabled-elt` to [
    `hx-disable`](/reference/attributes/hx-disable)
-3. Replace removed attributes with alternatives
-4. Find/replace event names in JavaScript and `hx-on` attributes
-5. Replace removed API methods with native JS
-6. Update extensions
-7. Rename changed config keys
-8. Test error handling (4xx/5xx now swap by default)
-9. Test attribute inheritance
-10. Test history navigation
+4. Replace removed attributes with alternatives
+5. Find/replace event names in JavaScript and `hx-on` attributes
+6. Replace removed API methods with native JS
+7. Update extensions
+8. Rename changed config keys
+9. Test error handling (4xx/5xx now swap by default)
+10. Test attribute inheritance
+11. Test history navigation
 
 ## Migration Notes
 

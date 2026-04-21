@@ -340,6 +340,10 @@
             api = internalAPI;
         },
 
+        htmx_config_request: (element, detail) => {
+            detail.ctx.request.headers['Accept'] = 'text/html, text/event-stream';
+        },
+
         // Intercept SSE responses before core consumes the body
         htmx_before_response: (element, detail) => {
             let ctx = detail.ctx;
@@ -358,8 +362,10 @@
             checkLegacyAttributes(element);
             processElement(element);
             let mc = htmx.config.metaCharacter || ':';
-            let attr = CSS.escape((htmx.config.prefix || 'hx-') + 'sse' + mc + 'connect');
-            element.querySelectorAll(`[${attr}],[sse-connect]`).forEach((el) => {
+            let sseAttr = CSS.escape('hx-sse' + mc + 'connect');
+            let sseSelector = `[${sseAttr}]`;
+            if (htmx.config.prefix) sseSelector += `,[${CSS.escape(htmx.config.prefix + 'sse' + mc + 'connect')}]`;
+            element.querySelectorAll(`${sseSelector},[sse-connect]`).forEach((el) => {
                 checkLegacyAttributes(el);
                 processElement(el);
             });

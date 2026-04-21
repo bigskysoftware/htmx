@@ -3,8 +3,10 @@
     
     // Build a CSS selector for querySelectorAll, respecting prefix + metaCharacter
     function wsSelector(suffix) {
-        let attr = (htmx.config.prefix || 'hx-') + 'ws' + (htmx.config.metaCharacter || ':') + suffix;
-        return `[${CSS.escape(attr)}]`;
+        let mc = htmx.config.metaCharacter || ':';
+        let sel = `[${CSS.escape('hx-ws' + mc + suffix)}]`;
+        if (htmx.config.prefix) sel += `,[${CSS.escape(htmx.config.prefix + 'ws' + mc + suffix)}]`;
+        return sel;
     }
 
 
@@ -537,14 +539,16 @@
 
             if (element.hasAttribute('ws-connect')) {
                 let url = element.getAttribute('ws-connect');
-                let attr = (htmx.config.prefix || 'hx-') + 'ws' + (htmx.config.metaCharacter || ':') + 'connect';
+                let mc = htmx.config.metaCharacter || ':';
+                let attr = (htmx.config.prefix || 'hx-') + 'ws' + mc + 'connect';
                 if (!element.hasAttribute(attr)) {
                     element.setAttribute(attr, url);
                 }
             }
 
             if (element.hasAttribute('ws-send')) {
-                let attr = (htmx.config.prefix || 'hx-') + 'ws' + (htmx.config.metaCharacter || ':') + 'send';
+                let mc = htmx.config.metaCharacter || ':';
+                let attr = (htmx.config.prefix || 'hx-') + 'ws' + mc + 'send';
                 if (!element.hasAttribute(attr)) {
                     element.setAttribute(attr, '');
                 }

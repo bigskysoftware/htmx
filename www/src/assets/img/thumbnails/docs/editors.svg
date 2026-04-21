@@ -1,0 +1,84 @@
+<svg viewBox="0 0 128 128" overflow="visible" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .editor-icon {
+        --v1: var(--color-neutral-150);
+        --v2: var(--color-neutral-200);
+        --v3: var(--color-neutral-300);
+        --v4: var(--color-neutral-350);
+        --accent: var(--color-neutral-400);
+        }
+        @media (prefers-color-scheme: dark) {
+        .editor-icon {
+        --v1: var(--color-neutral-650);
+        --v2: var(--color-neutral-700);
+        --v3: var(--color-neutral-750);
+        --v4: var(--color-neutral-850);
+        --accent: var(--color-neutral-850);
+        }
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .editor-icon {
+        --v1: var(--color-neutral-150);
+        --v2: var(--color-neutral-200);
+        --v3: var(--color-neutral-350);
+        --v4: var(--color-neutral-450);
+        --accent: var(--color-neutral-500);
+        }
+        @media (prefers-color-scheme: dark) {
+        .group:has(a:hover, a:focus-visible, a:active) .editor-icon {
+        --v1: var(--color-neutral-300);
+        --v2: var(--color-neutral-400);
+        --v3: var(--color-neutral-500);
+        --v4: var(--color-neutral-600);
+        --accent: var(--color-neutral-350);
+        }
+        }
+
+        .editor-icon .gs { transition: fill 150ms, stroke 150ms; stroke-width: 0.5; stroke-linejoin: round; }
+        .editor-icon .gs1 { fill: var(--v1); stroke: var(--v1); }
+        .editor-icon .gs2 { fill: var(--v2); stroke: var(--v2); }
+        .editor-icon .gs3 { fill: var(--v3); stroke: var(--v3); }
+        .editor-icon .gs4 { fill: var(--v4); stroke: var(--v4); }
+        .editor-icon .gs-accent { fill: var(--accent); stroke: var(--accent); transition: fill 150ms, stroke 150ms; }
+
+        .editor-icon .cursor {
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .group:has(a:hover, a:focus-visible, a:active) .editor-icon .cursor {
+        transform: translate(6px, -3px);
+        }
+    </style>
+
+    <g class="editor-icon">
+        <!-- Screen: isometric monitor face -->
+        <polygon class="gs gs1" points="24,48 64,28 104,48 64,68" />
+        <polygon class="gs gs3" points="24,48 64,68 64,82 24,62" />
+        <polygon class="gs gs4" points="64,68 104,48 104,62 64,82" />
+
+        <!-- Title bar -->
+        <polygon class="gs gs2" points="32,48 64,32 96,48 64,64" />
+
+        <!-- Code lines on screen -->
+        <line class="gs gs4" x1="40" y1="52" x2="56" y2="44" style="stroke-width: 2;" />
+        <line class="gs gs4" x1="46" y1="56" x2="68" y2="45" style="stroke-width: 2;" />
+        <line class="gs gs4" x1="40" y1="60" x2="60" y2="50" style="stroke-width: 2;" />
+
+        <!-- Accent code lines -->
+        <line class="gs-accent" x1="60" y1="44" x2="72" y2="38" style="stroke-width: 2;" />
+        <line class="gs-accent" x1="72" y1="45" x2="82" y2="40" style="stroke-width: 2;" />
+
+        <!-- Cursor blink -->
+        <g class="cursor">
+            <polygon class="gs-accent" points="64,50 66,49 66,53 64,54" />
+        </g>
+
+        <!-- Stand -->
+        <polygon class="gs gs3" points="58,82 64,79 70,82 64,85" />
+        <polygon class="gs gs4" points="58,82 64,85 64,90 58,87" />
+        <polygon class="gs gs3" points="64,85 70,82 70,87 64,90" />
+
+        <!-- Base -->
+        <polygon class="gs gs2" points="48,90 64,82 80,90 64,98" />
+        <polygon class="gs gs3" points="48,90 64,98 64,100 48,92" />
+        <polygon class="gs gs4" points="64,98 80,90 80,92 64,100" />
+    </g>
+</svg>
