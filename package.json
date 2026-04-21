@@ -30,7 +30,7 @@
     "lint": "eslint src/htmx.js test/attributes/ test/core/ test/util/ scripts/*.mjs",
     "format": "eslint --fix src/htmx.js test/attributes/ test/core/ test/util/ scripts/*.mjs",
     "types-check": "tsc src/htmx.js --noEmit --checkJs --target es6 --lib dom,dom.iterable --moduleResolution node",
-    "types-generate": "tsc dist/htmx.esm.js --declaration --emitDeclarationOnly --allowJs --outDir dist",
+    "types-generate": "tsc dist/htmx.esm.js --declaration --emitDeclarationOnly --allowJs --skipLibCheck --outDir dist",
     "test": "npm run lint && npm run types-check && npm run test:chrome",
     "test:debug": "web-test-runner --manual --open",
     "test:chrome": "playwright install chromium && web-test-runner --browsers chromium --playwright",
