@@ -258,7 +258,7 @@ XHR events are removed (htmx uses `fetch()` now):
 `addedClass`, `allowEval`, `allowNestedOobSwaps`, `allowScriptTags`, `attributesToSettle`, `defaultSwapDelay`,
 `disableSelector` (use [`hx-ignore`](/reference/attributes/hx-ignore)), `getCacheBusterParam`, `historyCacheSize`,
 `ignoreTitle` (still works per-swap via [`hx-swap`](/reference/attributes/hx-swap)`="... ignoreTitle:true"`),
-`inlineStyleNonce` (removed — indicator CSS now uses [Constructable Stylesheets](https://caniuse.com/mdn-api_cssstylesheet_cssstylesheet) and does not require a nonce),
+`inlineStyleNonce` (removed — indicator CSS now uses [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) and does not require a nonce),
 `methodsThatUseUrlParams`, `refreshOnHistoryMiss`, `responseHandling` (use [
 `hx-status`](/reference/attributes/hx-status) and [`noSwap`](/reference/config/htmx-config-noSwap)), `scrollBehavior`,
 `scrollIntoViewOnBoost`, `selfRequestsOnly` (use [`htmx.config.mode`](/reference/config/htmx-config-mode)),
