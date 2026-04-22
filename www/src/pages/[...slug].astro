@@ -74,7 +74,6 @@ if (file) {
     headings = folder!.folders.map(sub => ({ depth: 2, slug: sub.slug, text: sub.frontmatter.title }));
 }
 const includeTableOfContents = headings.length > 0;
-const includeAside = includeTableOfContents || includePagination;
 ---
 
 <Layout title={title}
@@ -125,30 +124,21 @@ const includeAside = includeTableOfContents || includePagination;
                     )}
                 </div>
 
-                {includeAside && (
+                {includeTableOfContents && (
                         <aside class:list={[
                             "hidden xl:flex xl:flex-col xl:w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) h-[calc(100vh-var(--header-height))] pt-27 pb-8 pr-4",
                             includeSidebar ? "xl:-me-16" : "xl:-me-[19rem]",
                         ]}>
-                            {includePagination && (
-                                    <div class:list={["shrink-0", includeTableOfContents && "mb-8"]}>
-                                        <Pagination prev={file!.prev} next={file!.next} variant="compact" />
-                                    </div>
-                            )}
-                            {includeTableOfContents && (
-                                    <>
-                                        <div class="shrink-0 mb-2">
-                                            <h2 class="text-[0.675rem] font-sans tracking-wide uppercase text-neutral-500">
-                                                On this page
-                                            </h2>
-                                        </div>
-                                        <div class="flex-1 min-h-0 overflow-hidden">
-                                            <div class="h-full overflow-y-auto scrollbar-subtle">
-                                                <TableOfContents {headings}/>
-                                            </div>
-                                        </div>
-                                    </>
-                            )}
+                            <div class="shrink-0 mb-2">
+                                <h2 class="text-[0.675rem] font-sans tracking-wide uppercase text-neutral-500">
+                                    On this page
+                                </h2>
+                            </div>
+                            <div class="flex-1 min-h-0 overflow-hidden">
+                                <div class="h-full overflow-y-auto scrollbar-subtle">
+                                    <TableOfContents {headings}/>
+                                </div>
+                            </div>
                         </aside>
                 )}
             </div>
