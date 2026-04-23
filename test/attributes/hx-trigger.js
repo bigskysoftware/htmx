@@ -40,6 +40,22 @@ describe('hx-trigger attribute', function() {
     div.innerHTML.should.equal('Requests: 1')
   })
 
+  it('changed modifier works for checkboxes', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    var input = make('<input type="checkbox" hx-trigger="click changed" hx-target="#d1" hx-get="/test"/>')
+    var div = make('<div id="d1"></div>')
+    input.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 1')
+    input.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Requests: 2')
+  })
+
   it('changed modifier works along from clause with single input', function() {
     var requests = 0
     this.server.respondWith('GET', '/test', function(xhr) {
