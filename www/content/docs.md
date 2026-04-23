@@ -245,6 +245,8 @@ Other modifiers you can use for triggers are:
 * `changed` - only issue a request if the value of the element has changed
 *  `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
 issuing the request.  If the event triggers again, the countdown is reset.
+If multiple nodes are targetted by one trigger specification, they share a delay.
+If a node has multiple triggers with the delay modifier, they act independently.
 *  `throttle:<time interval>` - wait the given amount of time (e.g. `1s`) before
 issuing the request.  Unlike `delay` if a new event occurs before the time limit is hit the event will be discarded,
 so the request will trigger at the end of the time period.
