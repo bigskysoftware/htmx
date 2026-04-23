@@ -5215,6 +5215,7 @@ var htmx = (function() {
  * @property {string} [queue]
  * @property {string} [root]
  * @property {string} [threshold]
+ * @property {number} [hold]
  */
 
 /**
