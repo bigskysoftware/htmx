@@ -1147,6 +1147,35 @@ describe('Core htmx AJAX Tests', function() {
     values.should.deep.equal({ action: ['A', 'C'] })
   })
 
+  it('properly handles clicked submit button with a value stacking with regular input and method is GET', function() {
+    const theHtml = '<form hx-get="/test">' +
+                    '<input type="hidden" name="action" value="A">' +
+                    '<button id="btnA" type="submit">A</button>' +
+                    '<button id="btnB" type="submit" name="action" value="B">B</button>' +
+                    '<button id="btnC" type="submit" name="action" value="C">C</button>' +
+                    '</form>'
+
+    this.server.respondWith('GET', /\/test.*/, function(xhr) {
+      xhr.respond(200, {}, theHtml)
+    })
+
+    make(theHtml)
+
+    byId('btnA').click()
+    this.server.respond()
+    this.server.requests[0].url.should.contain('action=A')
+
+    byId('btnB').click()
+    this.server.respond()
+    this.server.requests[1].url.should.contain('action=A')
+    this.server.requests[1].url.should.contain('action=B')
+
+    byId('btnC').click()
+    this.server.respond()
+    this.server.requests[2].url.should.contain('action=A')
+    this.server.requests[2].url.should.contain('action=C')
+  })
+
   it('properly handles clicked submit input with a value stacking with regular input', function() {
     var values
     this.server.respondWith('Post', '/test', function(xhr) {
@@ -1172,6 +1201,35 @@ describe('Core htmx AJAX Tests', function() {
     byId('btnC').click()
     this.server.respond()
     values.should.deep.equal({ action: ['A', 'C'] })
+  })
+
+  it('properly handles clicked submit input with a value stacking with regular input and method is GET', function() {
+    const theHtml = '<form hx-get="/test">' +
+                    '<input type="hidden" name="action" value="A">' +
+                    '<input id="btnA" type="submit">A</input>' +
+                    '<input id="btnB" type="submit" name="action" value="B">B</input>' +
+                    '<input id="btnC" type="submit" name="action" value="C">C</input>' +
+                    '</form>'
+
+    this.server.respondWith('GET', /\/test.*/, function(xhr) {
+      xhr.respond(200, {}, theHtml)
+    })
+
+    make(theHtml)
+
+    byId('btnA').click()
+    this.server.respond()
+    this.server.requests[0].url.should.contain('action=A')
+
+    byId('btnB').click()
+    this.server.respond()
+    this.server.requests[1].url.should.contain('action=A')
+    this.server.requests[1].url.should.contain('action=B')
+
+    byId('btnC').click()
+    this.server.respond()
+    this.server.requests[2].url.should.contain('action=A')
+    this.server.requests[2].url.should.contain('action=C')
   })
 
   it('properly handles clicked submit button with a value inside a form, referencing another form', function() {
