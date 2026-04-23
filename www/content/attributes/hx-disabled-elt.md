@@ -8,7 +8,7 @@ description = """\
 The `hx-disabled-elt` attribute allows you to specify elements that will have the `disabled` attribute
 added to them for the duration of the request. The value of this attribute can be:
 
-* A CSS query selector of the element to disable.
+* A CSS query selector of the elements to disable.
 * `this` to disable the element itself
 * `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)
   ancestor element or itself, that matches the given CSS selector
@@ -20,6 +20,8 @@ added to them for the duration of the request. The value of this attribute can b
 * `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)
 * `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
   (e.g. `previous input` will disable the closest previous sibling `input` element)
+
+Or a comma-separated list of the above options (except for `this`).
 
 Here is an example with a button that will disable itself during a request:
 
@@ -36,14 +38,14 @@ The `hx-disabled-elt` attribute also supports specifying multiple CSS selectors 
  elements during the request. Here is an example that disables buttons and text input fields of a particular form during the request:
 
 ```html
-<form hx-post="/example" hx-disabled-elt="find input[type='text'], find button">
+<form id="myForm" hx-post="/example" hx-disabled-elt="#myForm input[type='text'], #myForm button">
     <input type="text" placeholder="Type here...">
     <button type="submit">Send</button>
 </form>
 ```
 
 Note that you can also use the `inherit` keyword to inherit parent values for a disabled elements and add additional 
-disabled element CSS selectors:
+disabled elements:
 
 ```html
 <main hx-disabled-elt="#logout-button">
