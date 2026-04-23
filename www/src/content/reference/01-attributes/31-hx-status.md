@@ -101,7 +101,7 @@ Use the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/
 
 ## Notes
 
-* Values override response headers ([`HX-Retarget`](/reference/headers/HX-Trigger), `HX-Reswap`, etc.)
+* Values override response headers ([`HX-Retarget`](/reference/headers/HX-Retarget), [`HX-Reswap`](/reference/headers/HX-Reswap), [`HX-Reselect`](/reference/headers/HX-Reselect), etc.)
 * Without `hx-status`, htmx swaps all responses except [`204`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/204) and [`304`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/304)
 
 ## See Also
