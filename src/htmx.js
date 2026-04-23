@@ -73,7 +73,7 @@ var htmx = (() => {
         constructor() {
             this.__initHtmxConfig();
             this.__initRequestIndicatorCss();
-            this.#actionSelector = this.__prefixSelector("hx-action","hx-get","hx-post","hx-put","hx-patch","hx-delete");
+            this.#actionSelector = this.__prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]');
             this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.__prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
             this.#internalAPI = {
                 attributeValue: this.__attributeValue.bind(this),
@@ -170,14 +170,13 @@ var htmx = (() => {
             return elt.hasAttribute(name) ? name : (p && elt.hasAttribute(p) ? p : null);
         }
 
-        __prefixSelector(...names) {
-            let p = this.config.prefix;
-            return names.flatMap(n => p ? [n, n.replace('hx-', p)] : [n]).map(n => `[${CSS.escape(n)}]`).join(',');
+        __prefixSelector(s) {
+            return this.__prefixes(s).join(',');
         }
 
         __prefixes(s) {
             let result = [s];
-            if (this.config.prefix) result.push(s.replace('hx-', this.config.prefix));
+            if (this.config.prefix) result.push(s.replaceAll('hx-', this.config.prefix));
             return result;
         }
 
@@ -205,21 +204,22 @@ var htmx = (() => {
         }
 
         __attributeValue(elt, name, defaultVal, eltCollector) {
-            let unprefixed = name;
             let inherited = this.__maybeAdjustMetaCharacter(":inherited");
             let append = this.__maybeAdjustMetaCharacter(":append");
-            let inheritSelector = this.__prefixSelector(this.config.implicitInheritance ? name : name + inherited, name + inherited + append);
 
             let val = this.__attr(elt, name) ?? this.__attr(elt, name + inherited);
             if (val != null) return eltCollector ? eltCollector(val, elt) : val;
 
+            let n1 = CSS.escape(this.config.implicitInheritance ? name : name + inherited);
+            let n2 = CSS.escape(name + inherited + append);
+            let inheritSelector = this.__prefixSelector(`[${n1}],[${n2}]`);
             let appendName = this.__attrName(elt, name + append) ?? this.__attrName(elt, name + inherited + append);
             if (appendName) {
                 let appendValue = elt.getAttribute(appendName);
                 let parent = elt.parentNode?.closest?.(inheritSelector);
                 if (eltCollector) eltCollector(appendValue, elt);
                 if (parent) {
-                    let parentVal = this.__attributeValue(parent, unprefixed, undefined, eltCollector);
+                    let parentVal = this.__attributeValue(parent, name, undefined, eltCollector);
                     return parentVal ? (parentVal + "," + appendValue).replace(/[{}]/g, '') : appendValue;
                 }
                 return appendValue;
@@ -227,7 +227,7 @@ var htmx = (() => {
 
             let parent = elt.parentNode?.closest?.(inheritSelector);
             if (parent) {
-                val = this.__attributeValue(parent, unprefixed, undefined, eltCollector);
+                val = this.__attributeValue(parent, name, undefined, eltCollector);
                 if (!eltCollector && val && this.config.implicitInheritance) {
                     this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
                 }
@@ -997,7 +997,7 @@ var htmx = (() => {
             let pantry = document.createElement('div');
             pantry.hidden = true;
             document.body.insertAdjacentElement('afterend', pantry);
-            let newPreservedElts = fragment.querySelectorAll?.(this.__prefixSelector('hx-preserve')) || [];
+            let newPreservedElts = fragment.querySelectorAll?.(this.__prefixSelector('[hx-preserve]')) || [];
             for (let preservedElt of newPreservedElts) {
                 let currentElt = document.getElementById(preservedElt.id);
                 if (currentElt) {
@@ -1092,7 +1092,7 @@ var htmx = (() => {
             }
 
             // Process elements with hx-swap-oob attribute
-            for (let oobElt of fragment.querySelectorAll(this.__prefixSelector('hx-swap-oob'))) {
+            for (let oobElt of fragment.querySelectorAll(this.__prefixSelector('[hx-swap-oob]'))) {
                 let oobAttr = this.__attrName(oobElt, 'hx-swap-oob');
                 let oobValue = oobElt.getAttribute(oobAttr);
                 oobElt.removeAttribute(oobAttr);
