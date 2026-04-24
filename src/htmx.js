@@ -1818,6 +1818,9 @@ var htmx = (function() {
       case 'delete':
         swapDelete(target)
         return
+      case 'textContent':
+        target.textContent = fragment.textContent
+        return
       default:
         var extensions = getExtensions(elt)
         for (let i = 0; i < extensions.length; i++) {

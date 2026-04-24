@@ -128,6 +128,28 @@ describe('hx-swap-oob attribute', function() {
     byId('d1').innerHTML.should.equal('Swapped5')
   })
 
+  it('handles textContent response properly', function() {
+    this.server.respondWith('GET', '/test', "Clicked<div id='d1' hx-swap-oob='textContent'><h1>Swapped</h1></div>")
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<div id="d1"><span>old</span></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked')
+    byId('d1').innerHTML.should.equal('Swapped')
+    byId('d1').textContent.should.equal('Swapped')
+  })
+
+  it('handles textContent oob swap with selector', function() {
+    this.server.respondWith('GET', '/test', "<div>Clicked</div><div hx-swap-oob='textContent:#d1'><em>new</em></div>")
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<div id="d1"><strong>old</strong></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('<div>Clicked</div>')
+    byId('d1').innerHTML.should.equal('new')
+    byId('d1').textContent.should.equal('new')
+  })
+
   it('oob swaps can be nested in content with config {"allowNestedOobSwaps": true}', function() {
     htmx.config.allowNestedOobSwaps = true
     this.server.respondWith('GET', '/test', "<div>Clicked<div id='d1' foo='bar' hx-swap-oob='innerHTML'>Swapped6</div></div>")
