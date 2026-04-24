@@ -16,10 +16,10 @@ request.  The value of this attribute can be:
 * `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
 * `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)
 * `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.
-  (e.g. `next .error` will target the closest following sibling element with `error` class)
+  (e.g. `next .error` will target the next element with `error` class — note this scans the whole DOM forward, not just siblings)
 * `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)
 * `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
-  (e.g. `previous .error` will target the closest previous sibling with `error` class)
+  (e.g. `previous .error` will target the previous element with `error` class — note this scans the whole DOM backward, not just siblings)
 
 
 Here is an example that targets a div:

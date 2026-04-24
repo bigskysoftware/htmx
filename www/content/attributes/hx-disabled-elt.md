@@ -16,10 +16,10 @@ added to them for the duration of the request. The value of this attribute can b
 * `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector
 * `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)
 * `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector
-  (e.g. `next button` will disable the closest following sibling `button` element)
+  (e.g. `next button` will disable the closest following `button` element — note this scans the whole DOM forward, not just siblings)
 * `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)
 * `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
-  (e.g. `previous input` will disable the closest previous sibling `input` element)
+  (e.g. `previous input` will disable the closest previous `input` element — note this scans the whole DOM backward, not just siblings)
 
 Here is an example with a button that will disable itself during a request:
 
