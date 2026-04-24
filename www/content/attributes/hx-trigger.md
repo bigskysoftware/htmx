@@ -71,10 +71,10 @@ is seen again before the delay completes, it is ignored, the element will trigge
     * `find <CSS selector>` - finds the closest child matching the given css selector
     * `next` resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)
     * `next <CSS selector>` scans the DOM forward for the first element that matches the given CSS selector.
-      (e.g. `next .error` will target the closest following sibling element with `error` class)
+      (e.g. `next .error` will target the next element with `error` class — note this scans the whole DOM forward, not just siblings)
     * `previous` resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)
     * `previous <CSS selector>` scans the DOM backwards for the first element that matches the given CSS selector.
-      (e.g. `previous .error` will target the closest previous sibling with `error` class)
+      (e.g. `previous .error` will target the previous element with `error` class — note this scans the whole DOM backward, not just siblings)
 * `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for
 triggers from elements that might not be in the DOM at the point of initialization, by, for example, listening on the body,
 but with a target filter for a child element
