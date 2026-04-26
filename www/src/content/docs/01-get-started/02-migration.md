@@ -258,6 +258,7 @@ XHR events are removed (htmx uses `fetch()` now):
 `addedClass`, `allowEval`, `allowNestedOobSwaps`, `allowScriptTags`, `attributesToSettle`, `defaultSwapDelay`,
 `disableSelector` (use [`hx-ignore`](/reference/attributes/hx-ignore)), `getCacheBusterParam`, `historyCacheSize`,
 `ignoreTitle` (still works per-swap via [`hx-swap`](/reference/attributes/hx-swap)`="... ignoreTitle:true"`),
+`inlineStyleNonce` (removed — indicator CSS now uses [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) and does not require a nonce),
 `methodsThatUseUrlParams`, `refreshOnHistoryMiss`, `responseHandling` (use [
 `hx-status`](/reference/attributes/hx-status) and [`noSwap`](/reference/config/htmx-config-noSwap)), `scrollBehavior`,
 `scrollIntoViewOnBoost`, `selfRequestsOnly` (use [`htmx.config.mode`](/reference/config/htmx-config-mode)),
@@ -447,7 +448,6 @@ All events provide a consistent `ctx` object with request/response information.
 | [`extensions`](/reference/config/htmx-config-extensions)               | `''`            | Comma-separated list of allowed extension names               |
 | [`mode`](/reference/config/htmx-config-mode)                           | `'same-origin'` | Fetch mode (replaces `selfRequestsOnly`)                      |
 | [`inlineScriptNonce`](/reference/config/htmx-config-inlineScriptNonce) | `''`            | Nonce for inline scripts                                      |
-| [`inlineStyleNonce`](/reference/config/htmx-config-inlineStyleNonce)   | `''`            | Nonce for inline styles                                       |
 | [`metaCharacter`](/reference/config/htmx-config-metaCharacter)         | `':'`           | Separator character in attribute/event names                  |
 | [`morphIgnore`](/reference/config/htmx-config-morphIgnore)             | `''`            | CSS selector for elements to ignore during morph              |
 | [`morphScanLimit`](/reference/config/htmx-config-morphScanLimit)       |                 | Max elements to scan during morph matching                    |

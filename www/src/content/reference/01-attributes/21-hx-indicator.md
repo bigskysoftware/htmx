@@ -112,12 +112,5 @@ This simulates what a spinner might look like in that situation:
 <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
 ```
 
-* the `htmx-indicator` CSS added when this config is not disabled uses an inline style tag which may need you to set
-  `inlineStyleNonce` config if you have a strict nonce based CSP policy for `style-src`
-
-```html
-<meta name="htmx-config" content='{"inlineStyleNonce": "random-nonce"}'>
-```
-
-* If your CSP needs to block all inline style tags then disable `includeIndicatorStyles` and host your own CSS file with
-  a copy of your preferred `htmx-indicator` style from above
+* If you want to use your own CSS and disable the built-in indicator styles entirely, set `includeIndicatorCSS` to
+  `false` and host your own CSS file with a copy of your preferred `htmx-indicator` style from above
