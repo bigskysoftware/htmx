@@ -105,11 +105,11 @@ This simulates what a spinner might look like in that situation:
 * In the absence of an explicit indicator, the `htmx-request` class will be added to the element triggering the
   request
 * If you want to use your own CSS but still use `htmx-indicator` as class name, then you need to disable
-  `includeIndicatorStyles`. See [Configuring htmx](/docs/troubleshoot/configuration). The easiest way is to add this to the
+  `includeIndicatorCSS`. See [Configuring htmx](/docs/troubleshoot/configuration). The easiest way is to add this to the
   `<head>` of your HTML:
 
 ```html
-<meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
+<meta name="htmx-config" content='{"includeIndicatorCSS": false}'>
 ```
 
 * If you want to use your own CSS and disable the built-in indicator styles entirely, set `includeIndicatorCSS` to
