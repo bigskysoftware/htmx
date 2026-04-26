@@ -113,7 +113,8 @@ Fix: add [`hx-include`](/reference/attributes/hx-include)`="closest form"` where
 ### No history cache
 
 History no longer caches pages in [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
-When navigating back, htmx re-fetches the page and swaps it into `<body>`.
+When navigating back, htmx re-fetches the page and swaps it into `<body>`, or into the `[hx-history-elt]` element if
+one is present — the same behavior as htmx 2.
 
 Use [`htmx.config.history`](/reference/config/htmx-config-history) `= "reload"` for a full page reload instead. Use
 `htmx.config.history = false` to disable.
@@ -182,7 +183,6 @@ Rename in this order to avoid conflicts:
 | `hx-inherit`     | Not needed (inheritance is explicit)                                                              |
 | `hx-request`     | [`hx-config`](/reference/attributes/hx-config)                                                    |
 | `hx-history`     | Removed (no [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)) |
-| `hx-history-elt` | Removed                                                                                           |
 
 ### Renamed events
 

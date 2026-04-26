@@ -46,7 +46,6 @@ hx-disabled-elt  →  hx-disable    (htmx 2's "disable elements during request")
 | `hx-inherit="..."`    | Remove (use `:inherited` modifier on individual attributes) |
 | `hx-request='...'`    | `hx-config='...'` (same JSON format)                        |
 | `hx-history="false"`  | Remove (history no longer uses localStorage)                |
-| `hx-history-elt`      | Remove (history uses target element)                        |
 
 ## Step 3: Update Attribute Inheritance
 
