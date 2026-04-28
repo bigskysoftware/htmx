@@ -1599,11 +1599,10 @@ var htmx = (() => {
                     location.reload();
                 } else {
                     this.#historyAbort = new AbortController();
-                    let isPartialTarget = historyElt !== document.body;
                     this.ajax('GET', path, {
                         target: historyElt,
-                        swap: `innerHTML${isPartialTarget ? ' strip:true' : ''}`,
-                        select: isPartialTarget ? this.__prefixSelector('[hx-history-elt]') : undefined,
+                        swap: 'outerHTML',
+                        select: historyElt !== document.body ? this.__prefixSelector('[hx-history-elt]') : undefined,
                         request: {
                             headers: {'HX-History-Restore-Request': 'true'},
                             signal: this.#historyAbort.signal
