@@ -163,6 +163,38 @@ describe('hx-push-url and hx-replace-url attributes', function() {
     });
 });
 
+describe('outerHTML swap into document.body', function() {
+    let savedAttrs;
+    let savedChildren;
+
+    beforeEach(() => {
+        setupTest(this.currentTest);
+        savedAttrs = [...document.body.attributes].map(a => ({ name: a.name, value: a.value }));
+        savedChildren = [...document.body.childNodes];
+    });
+
+    afterEach(() => {
+        for (let a of [...document.body.attributes]) document.body.removeAttribute(a.name);
+        for (let a of savedAttrs) document.body.setAttribute(a.name, a.value);
+        document.body.replaceChildren(...savedChildren);
+        cleanupTest();
+    });
+
+    it('syncs body attributes from response and replaces children', async function() {
+        document.body.setAttribute('data-original', 'yes');
+        await htmx.swap({
+            target: document.body,
+            swap: 'outerHTML',
+            text: '<html><body class="injected" data-test-x="1"><div id="bodyswap-marker"></div></body></html>',
+            sourceElement: document.body
+        });
+        document.body.classList.contains('injected').should.equal(true);
+        document.body.getAttribute('data-test-x').should.equal('1');
+        (document.body.getAttribute('data-original') === null).should.equal(true);
+        document.getElementById('bodyswap-marker').should.not.equal(null);
+    });
+});
+
 describe('hx-history-elt scopes history restore', function() {
 
     beforeEach(() => { setupTest(this.currentTest); });

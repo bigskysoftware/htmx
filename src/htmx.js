@@ -1027,13 +1027,14 @@ var htmx = (() => {
             response = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, m => (title = this.__parseHTML(m).title, ''));
             let startTag = response.match(/<([a-z][^\/>\x20\t\r\n\f]*)/i)?.[1]?.toLowerCase();
 
-            let doc, fragment;
+            let doc, fragment, body;
             if (startTag === 'html' || startTag === 'body') {
                 doc = this.__parseHTML(response);
                 fragment = document.createDocumentFragment();
                 while (doc.body.childNodes.length > 0) {
                     fragment.append(doc.body.childNodes[0]);
                 }
+                body = doc.body;
             } else {
                 doc = this.__parseHTML(`<template>${response}</template>`);
                 fragment = doc.querySelector('template').content;
@@ -1051,7 +1052,8 @@ var htmx = (() => {
 
             return {
                 fragment,
-                title
+                title,
+                body
             };
         }
 
@@ -1209,8 +1211,9 @@ var htmx = (() => {
 
         async swap(ctx) {
             this.__handleHistoryUpdate(ctx);
-            let {fragment, title} = this.__makeFragment(ctx.text);
-            ctx.title = title;
+            let parsed = this.__makeFragment(ctx.text);
+            ctx.title = parsed.title;
+            let { fragment } = parsed;
             let tasks = [];
 
             // Process OOB and partials
@@ -1219,7 +1222,7 @@ var htmx = (() => {
             tasks.push(...oobTasks, ...partialTasks);
 
             // Process main swap first
-            let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
+            let mainSwap = this.__processMainSwap(ctx, parsed, partialTasks);
             if (mainSwap) {
                 tasks.unshift(mainSwap);
             }
@@ -1255,7 +1258,8 @@ var htmx = (() => {
             this.__handleAnchorScroll(ctx);
         }
 
-        __processMainSwap(ctx, fragment, partialTasks) {
+        __processMainSwap(ctx, parsed, partialTasks) {
+            let { fragment, body } = parsed;
             // Create main task if needed
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
             // skip creating main swap if extracting partials resulted in empty response except for delete style
@@ -1268,20 +1272,20 @@ var htmx = (() => {
                 if (this.__isBoosted(ctx.sourceElement)) {
                     swapSpec.show ||= 'top';
                 }
-                let mainSwap = {
+                return {
                     type: 'main',
                     fragment,
+                    body,
                     target: this.__resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
                     swapSpec,
                     sourceElement: ctx.sourceElement,
                     transition: ctx.transition && swapSpec.transition !== false
                 };
-                return mainSwap;
             }
         }
 
         async __insertContent(task, cssTransition = true) {
-            let {target, swapSpec, fragment} = task;
+            let {target, swapSpec, fragment, body} = task;
             if (typeof target === 'string') {
                 target = document.querySelector(target);
             }
@@ -1327,11 +1331,15 @@ var htmx = (() => {
             let pantry = this.__handlePreservedElements(fragment);
             let newContent = [...fragment.childNodes]
             try {
-                if (swapStyle === 'innerHTML' || (swapStyle === 'outerHTML' && target === document.body)) {
+                let outerBodySwap = swapStyle === 'outerHTML' && target === document.body;
+                if (swapStyle === 'innerHTML' || outerBodySwap) {
                     for (const child of target.children) {
                         this.__cleanup(child)
                     }
                     target.replaceChildren(...fragment.childNodes);
+                    if (outerBodySwap && body) {
+                        this.__copyAttributes(document.body, body)
+                    }
                 } else if (swapStyle === 'textContent') {
                     for (const child of target.querySelectorAll('[data-htmx-powered]')) {
                         this.__cleanup(child)

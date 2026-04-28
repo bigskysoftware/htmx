@@ -81,4 +81,17 @@ describe('__makeFragment unit tests', function() {
         fragment.children[1].tagName.should.equal('TBODY');
     })
 
+    it('captures body element with attributes from full-page response', function () {
+        let {body} = htmx.__makeFragment('<html><body class="dark" data-theme="x"><div>content</div></body></html>');
+        body.should.not.equal(undefined);
+        body.tagName.should.equal('BODY');
+        body.getAttribute('class').should.equal('dark');
+        body.getAttribute('data-theme').should.equal('x');
+    })
+
+    it('returns undefined body for partial responses', function () {
+        let {body} = htmx.__makeFragment('<div>partial</div>');
+        assert.isUndefined(body);
+    })
+
 });
