@@ -162,3 +162,43 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         }
     });
 });
+
+describe('hx-history-elt scopes history restore', function() {
+
+    beforeEach(() => { setupTest(this.currentTest); });
+    afterEach(() => { cleanupTest(); });
+
+    it('restoring history with hx-history-elt swaps only that element and leaves siblings intact', async function() {
+        playground().innerHTML = `
+            <div id="sentinel">untouched</div>
+            <main hx-history-elt><p id="orig">old</p></main>
+            <div id="sentinel-after">also untouched</div>
+        `;
+        htmx.process(playground());
+
+        let response = `<html><head><title>x</title></head><body>
+            <header>HEADER LEAK</header>
+            <main hx-history-elt><p id="new">new</p></main>
+            <footer>FOOTER LEAK</footer>
+        </body></html>`;
+        mockResponse('GET', '/restore-test', response);
+
+        htmx.__restoreHistory('/restore-test');
+        await forRequest();
+
+        let sentinel = document.getElementById('sentinel');
+        let sentinelAfter = document.getElementById('sentinel-after');
+        sentinel.should.not.equal(null);
+        sentinel.textContent.should.equal('untouched');
+        sentinelAfter.should.not.equal(null);
+        sentinelAfter.textContent.should.equal('also untouched');
+
+        let elt = playground().querySelector('[hx-history-elt]');
+        elt.should.not.equal(null);
+        elt.querySelector('#new').should.not.equal(null);
+        (elt.querySelector('#orig') === null).should.equal(true);
+
+        document.body.textContent.should.not.include('HEADER LEAK');
+        document.body.textContent.should.not.include('FOOTER LEAK');
+    });
+});
