@@ -1,5 +1,6 @@
 (() => {
     let api;
+    let _currentId = null;
 
     const INDEX_KEY = 'htmx-history-index';
 
@@ -7,9 +8,9 @@
         return htmx.config.historyCache;
     }
 
-    function prefixSelector(attr, value) {
-        let result = [`[${attr}${value != null ? `="${value}"` : ''}]`];
-        if (htmx.config.prefix) result.push(`[${attr.replace('hx-', htmx.config.prefix)}${value != null ? `="${value}"` : ''}]`);
+    function prefixSelector(s) {
+        let result = [s];
+        if (htmx.config.prefix) result.push(s.replaceAll('hx-', htmx.config.prefix));
         return result.join(',');
     }
 
@@ -26,7 +27,7 @@
     }
 
     function getHistoryTarget() {
-        return htmx.find(prefixSelector('hx-history-elt')) || document.body;
+        return htmx.find(prefixSelector('[hx-history-elt]')) || document.body;
     }
 
     const ATTR_VALUE   = 'data-htmx-history-value';
@@ -85,7 +86,19 @@
         return clone.innerHTML;
     }
 
-    // --- sessionStorage index (LRU list of htmxIds) ---
+    // --- Stamp the current history entry with an htmxId and track it ---
+
+    function stampCurrentEntry() {
+        let state = history.state || { htmx: true };
+        let id = state.htmxId;
+        if (!id) {
+            id = genId();
+            history.replaceState({ ...state, htmxId: id }, '', location.href);
+        }
+        _currentId = id;
+    }
+
+    // --- sessionStorage (LRU index of htmxIds) ---
 
     function readIndex() {
         try { return JSON.parse(sessionStorage.getItem(INDEX_KEY)) || []; } catch { return []; }
@@ -95,15 +108,13 @@
         sessionStorage.setItem(INDEX_KEY, JSON.stringify(index));
     }
 
-    function saveToSessionStorage(htmxId, content, head) {
-        if (cfg().size <= 0) return false;
+    function saveToStorage(htmxId, entry) {
+        if (!canUseStorage() || cfg().size <= 0) return false;
         let index = readIndex().filter(id => id !== htmxId);
-        // evict oldest until we're under the limit (leaving room for our new entry)
         while (index.length >= cfg().size) {
             sessionStorage.removeItem('htmx-history-' + index.shift());
         }
-        // try to write, evicting more if sessionStorage is full
-        let data = JSON.stringify({ content, head });
+        let data = JSON.stringify(entry);
         while (true) {
             try {
                 sessionStorage.setItem('htmx-history-' + htmxId, data);
@@ -117,14 +128,17 @@
         }
     }
 
-    function getFromSessionStorage(htmxId) {
+    function getFromStorage(htmxId) {
         try { return JSON.parse(sessionStorage.getItem('htmx-history-' + htmxId)); } catch { return null; }
     }
 
-    // --- two-tier save/get ---
+    // --- save / get ---
 
-    function saveCurrentPage() {
-        if (htmx.find(prefixSelector('hx-history', 'false'))) return;
+
+    function saveCurrentPage(targetId) {
+        targetId = targetId || _currentId;
+        if (!targetId) return;
+        if (htmx.find(prefixSelector('[hx-history="false"]'))) return;
 
         let target = getHistoryTarget();
         annotateState(target);
@@ -137,59 +151,21 @@
         let content = cleanContent(target);
         head = detail.head;
 
-        // Reuse existing htmxId if this entry already fell back to sessionStorage
-        let existingId = history.state?.htmxId;
-
-        if (existingId) {
-            // Already using sessionStorage for this entry — update it there
-            history.replaceState({ ...history.state, scroll, title }, '', location.href);
-            if (canUseStorage()) saveToSessionStorage(existingId, content, head);
-        } else {
-            // Tier 1: try storing content directly in history.state
-            try {
-                history.replaceState({
-                    ...history.state,
-                    htmxContent: { content, head },
-                    scroll,
-                    title
-                }, '', location.href);
-            } catch (e) {
-                // Tier 2: overflow — mint an htmxId, store content in sessionStorage
-                let htmxId = genId();
-                history.replaceState({
-                    ...history.state,
-                    htmxId,
-                    htmxContent: undefined,
-                    scroll,
-                    title
-                }, '', location.href);
-                if (canUseStorage()) saveToSessionStorage(htmxId, content, head);
-            }
-        }
-
+        saveToStorage(targetId, { content, head, scroll, title });
         api.triggerHtmxEvent(document, 'htmx:history:cache:after:save', { content, head, scroll, title });
     }
 
     function getCachedContent() {
-        let state = history.state;
-        if (!state) return null;
-
-        // Tier 1: content directly in history.state
-        if (state.htmxContent) return state.htmxContent;
-
-        // Tier 2: htmxId points to sessionStorage
-        if (state.htmxId && canUseStorage()) return getFromSessionStorage(state.htmxId);
-
-        return null;
+        let id = history.state?.htmxId;
+        if (!id) return null;
+        return canUseStorage() ? getFromStorage(id) : null;
     }
 
     async function restoreFromCache(item) {
-        // Let head extension merge stylesheets/blocking scripts before body swap
         let detail = { head: item.head, ready: null };
         api.triggerHtmxEvent(document, 'htmx:history:cache:before:restore', detail);
         if (detail.ready) await detail.ready;
 
-        // Swap body — pass deferred scripts on ctx so htmx_after_swap picks them up
         let ctx = {
             sourceElement: document.body,
             target: getHistoryTarget(),
@@ -200,10 +176,9 @@
         };
         await htmx.swap(ctx);
 
-        let state = history.state;
-        document.title = state?.title || document.title;
+        document.title = item.title || document.title;
         requestAnimationFrame(() => {
-            window.scrollTo(0, state?.scroll || 0);
+            window.scrollTo(0, item.scroll || 0);
             restoreAnnotations(getHistoryTarget());
             api.triggerHtmxEvent(document, 'htmx:history:cache:after:restore', { item });
         });
@@ -217,15 +192,38 @@
             htmx.config.historyCache.refreshOnMiss ??= false;
             htmx.config.historyCache.disable       ??= false;
             htmx.config.historyCache.swapStyle     ??= 'innerHTML';
+            stampCurrentEntry();
         },
 
+        // Before core pushes/replaces, save the outgoing page
         htmx_before_history_update: (elt, detail) => {
             if (cfg().disable) return;
+            if (!_currentId) stampCurrentEntry();
             saveCurrentPage();
+        },
+
+        // After core pushes/replaces, stamp the new entry and track it
+        htmx_after_history_update: () => {
+            if (cfg().disable) return;
+            stampCurrentEntry();
         },
 
         htmx_before_history_restore: (elt, detail) => {
             if (cfg().disable) return;
+
+            let outgoingId = _currentId;
+            let destinationId = history.state?.htmxId;
+
+            if (outgoingId && outgoingId !== destinationId) {
+                saveCurrentPage(outgoingId);
+            }
+
+            if (!destinationId) {
+                stampCurrentEntry();
+            } else {
+                _currentId = destinationId;
+            }
+
             let item = getCachedContent();
             if (!item) {
                 let missDetail = { path: detail.path, refreshOnMiss: cfg().refreshOnMiss };

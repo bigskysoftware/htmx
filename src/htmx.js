@@ -1327,7 +1327,7 @@ var htmx = (() => {
             let pantry = this.__handlePreservedElements(fragment);
             let newContent = [...fragment.childNodes]
             try {
-                if (swapStyle === 'innerHTML') {
+                if (swapStyle === 'innerHTML' || (swapStyle === 'outerHTML' && target === document.body)) {
                     for (const child of target.children) {
                         this.__cleanup(child)
                     }
@@ -1585,14 +1585,17 @@ var htmx = (() => {
 
         __restoreHistory(path) {
             path = path || location.pathname + location.search;
+            let historyElt = document.querySelector(this.__prefixSelector('[hx-history-elt]')) || document.body;
             if (this.__trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
                 if (this.config.history === "reload") {
                     location.reload();
                 } else {
                     this.#historyAbort = new AbortController();
+                    let isPartialTarget = historyElt !== document.body;
                     this.ajax('GET', path, {
-                        target: 'body',
-                        swap: 'innerHTML',
+                        target: historyElt,
+                        swap: `innerHTML${isPartialTarget ? ' strip:true' : ''}`,
+                        select: isPartialTarget ? this.__prefixSelector('[hx-history-elt]') : undefined,
                         request: {
                             headers: {'HX-History-Restore-Request': 'true'},
                             signal: this.#historyAbort.signal
