@@ -204,6 +204,26 @@
         assert.equal(teleportTarget.querySelectorAll('.tp-content').length, 1);
     });
 
+    it('does not throw when restoring state with getter and method properties', async function () {
+        let elt = await saveAndRestoreAlpine(root => {
+            root.innerHTML =
+                '<div x-data="{' +
+                '  selectedCategory: \'all\',' +
+                '  searchTerm: \'htmx\',' +
+                '  cartItems: 3,' +
+                '  products: [],' +
+                '  get filteredProducts() { return this.products; },' +
+                '  addToCart(p) { this.cartItems++; }' +
+                '}">' +
+                '  <span id="cart" x-text="cartItems"></span>' +
+                '  <span id="cat" x-text="selectedCategory"></span>' +
+                '</div>';
+        });
+        // Plain data restored, no exception thrown
+        assert.equal(elt.querySelector('#cart').textContent, '3');
+        assert.equal(elt.querySelector('#cat').textContent, 'all');
+    });
+
     it('teleport target is empty after destroyTree runs before snapshot', async function () {
         let cachedPath = location.pathname + location.search;
         createProcessedHTML(`
