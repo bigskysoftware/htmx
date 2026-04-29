@@ -197,6 +197,7 @@ describe('bootstrap unit tests', function() {
             'onLoad',
             'parseInterval',
             'process',
+            'q',
             'swap',
             'takeClass',
             'timeout',
