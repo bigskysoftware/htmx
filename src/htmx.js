@@ -64,6 +64,7 @@ var htmx = (() => {
         #internalAPI;
         #Function = Function;
         #AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        #ttPolicy = { createHTML: s => s, createScript: s => s };
         #actionSelector
         #boostSelector = "a,form";
         #verbs = ["get", "post", "put", "patch", "delete"];
@@ -87,9 +88,10 @@ var htmx = (() => {
                 insertContent: this.__insertContent.bind(this),
                 morph: this.__morph.bind(this),
                 isSoftMatch: this.__isSoftMatch.bind(this),
-                initEvalFunctions: (syncFn, asyncFn) => {
-                    this.#Function = syncFn;
-                    this.#AsyncFunction = asyncFn;
+                initEvalFunctions: (ttPolicy, syncFn, asyncFn) => {
+                    this.#ttPolicy = ttPolicy;
+                    if (syncFn) this.#Function = syncFn;
+                    if (asyncFn) this.#AsyncFunction = asyncFn;
                 },
                 onTrigger: this.__onTrigger.bind(this),
                 htmxProp: this.__htmxProp.bind(this),
@@ -1011,7 +1013,8 @@ var htmx = (() => {
         }
 
         __parseHTML(resp) {
-            return Document.parseHTMLUnsafe?.(resp) || new DOMParser().parseFromString(resp, 'text/html');
+            let trusted = this.#ttPolicy.createHTML(resp);
+            return Document.parseHTMLUnsafe?.(trusted) || new DOMParser().parseFromString(trusted, 'text/html');
         }
 
         __makeFragment(text) {
@@ -1192,7 +1195,7 @@ var htmx = (() => {
                 if (this.config.inlineScriptNonce) {
                     newScript.nonce = this.config.inlineScriptNonce;
                 }
-                newScript.textContent = oldScript.textContent;
+                newScript.textContent = this.#ttPolicy.createScript(oldScript.textContent);
                 oldScript.replaceWith(newScript);
             }
         }
