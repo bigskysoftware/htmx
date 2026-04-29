@@ -53,21 +53,21 @@ You can configure boost behavior using a config string that sets swap, target, a
 on the `hx-boost` attribute. Use `hx-boost:inherited` to pass that config down to all boosted descendants:
 
 ```html
-<body hx-boost:inherited='swap:"innerHTML", target:"#main", select:"#content"'>
+<body hx-boost:inherited="swap:innerHTML target:#main select:#content">
   <div id="main">
     <!-- Boosted links inherit the config -->
     <a href="/page1">Go To Page 1</a>
     <a href="/page2">Go To Page 2</a>
 
     <!-- Override with a different boost config -->
-    <div hx-boost:inherited='swap:"outerHTML", target:"#result"'>
+    <div hx-boost:inherited="swap:outerHTML target:#result">
       <a href="/page3">Page 3 (uses div config)</a>
 
       <!-- Disable boost for a specific link -->
       <a href="/external" hx-boost="false">External</a>
 
       <!-- Custom boost config on the element itself overrides all -->
-      <a href="/page4" hx-boost='swap:"beforeend", target:"#list"'>Page 4</a>
+      <a href="/page4" hx-boost="swap:beforeend target:#list">Page 4</a>
     </div>
 
     <!-- Non-boosted elements are unaffected -->
