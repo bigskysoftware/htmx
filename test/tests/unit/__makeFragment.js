@@ -20,12 +20,14 @@ describe('__makeFragment unit tests', function() {
 
     it('handles html tag', function () {
         let {fragment} = htmx.__makeFragment('<html><body><div>Test</div></body></html>');
-        fragment.children[0].tagName.should.equal('DIV');
+        fragment.children[0].tagName.should.equal('BODY');
+        fragment.children[0].children[0].tagName.should.equal('DIV');
     })
 
     it('handles body tag', function () {
         let {fragment} = htmx.__makeFragment('<body><div>Test</div></body>');
-        fragment.children[0].tagName.should.equal('DIV');
+        fragment.children[0].tagName.should.equal('BODY');
+        fragment.children[0].children[0].tagName.should.equal('DIV');
     })
 
     it('converts partial tags to template', function () {

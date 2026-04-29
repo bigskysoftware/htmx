@@ -36,7 +36,7 @@ All options live under `htmx.config.historyCache` and can be set via a meta tag:
 To use morphing for smoother restores:
 
 ```html
-<meta name="htmx-config" content='{"historyCache": {"swapStyle": "innerMorph"}}'>
+<meta name="htmx-config" content='{"historyCache": {"swapStyle": "outerMorph"}}'>
 ```
 
 | Option | Default | Description |
@@ -44,7 +44,7 @@ To use morphing for smoother restores:
 | `size` | `10` | Maximum number of pages to keep in the cache. Oldest entries are evicted first. Set to `0` to disable caching entirely. |
 | `refreshOnMiss` | `false` | When `true`, forces a full page reload if the requested history entry is not in the cache. |
 | `disable` | `false` | Disables the extension without unloading it. |
-| `swapStyle` | `"innerHTML"` | The htmx swap style used when restoring cached content. Can be set to `"innerMorph"` for smooth DOM diffing instead of a full replacement. |
+| `swapStyle` | `"outerSync"` | The htmx swap style used when restoring cached content. Defaults to `outerSync`, which preserves the target element in the DOM (keeping listeners and component state) while syncing its attributes and replacing its children. Use `innerHTML` to replace children only without syncing attributes. Can be set to `"innerMorph"` or `"outerMorph"` for smooth DOM diffing. |
 
 ## Events
 

@@ -138,6 +138,21 @@ Exclude specific elements from morphing:
 - [`htmx.config.morphSkip`](/reference/config/htmx-config-morphskip) - Skip entire elements
 - [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphskipchildren) - Skip children only
 
+### `outerSync`
+
+Syncs attributes from the response's outer element onto the target, then replaces the target's children. The target element itself stays in the DOM — listeners and component state are preserved.
+
+Useful when the server returns a full element (e.g. `<section class="active">...</section>`) and you want the target's attributes updated without replacing the element itself.
+
+```html
+<!-- Target keeps its listeners, gets new attrs + children -->
+<section id="main" hx-get="..." hx-swap="outerSync">
+  ...
+</section>
+```
+
+`outerHTML` on `document.body` automatically upgrades to `outerSync` so that body attributes (classes, data-attrs) are preserved across full-page swaps.
+
 ### `delete`
 
 Removes element (ignores response content).
@@ -284,5 +299,4 @@ Controls whether the outer element of the response content is removed before swa
 
 ## Caveats
 
-* Due to DOM limitations, it's not possible to use the `outerHTML` method on the `<body>` element.
-  htmx will change `outerHTML` on `<body>` to use `innerHTML`.
+* `outerHTML` on `document.body` automatically upgrades to `outerSync` to preserve body attributes (classes, data-attrs). Use `outerSync` explicitly if you want this behaviour on other elements.
