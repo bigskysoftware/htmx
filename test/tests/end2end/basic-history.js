@@ -210,6 +210,68 @@ describe('outerSync swap into document.body', function() {
     });
 });
 
+describe('full-page response strip auto-upgrade', function() {
+
+    beforeEach(() => { setupTest(this.currentTest); });
+    afterEach(() => { cleanupTest(); });
+
+    it('innerHTML on full-page response strips body wrapper', async function() {
+        playground().innerHTML = '<div id="target">old</div>';
+        await htmx.swap({
+            target: '#target',
+            swap: 'innerHTML',
+            text: '<html><body><span id="new-child">new</span></body></html>',
+            sourceElement: playground()
+        });
+        let target = playground().querySelector('#target');
+        target.should.not.equal(null);
+        (target.querySelector('body') === null).should.equal(true);
+        target.querySelector('#new-child').should.not.equal(null);
+        target.querySelector('#new-child').textContent.should.equal('new');
+    });
+
+    it('innerMorph on full-page response strips body wrapper', async function() {
+        playground().innerHTML = '<div id="target"><span id="orig">old</span></div>';
+        await htmx.swap({
+            target: '#target',
+            swap: 'innerMorph',
+            text: '<html><body><span id="new-child">new</span></body></html>',
+            sourceElement: playground()
+        });
+        let target = playground().querySelector('#target');
+        target.should.not.equal(null);
+        (target.querySelector('body') === null).should.equal(true);
+        target.querySelector('#new-child').should.not.equal(null);
+    });
+
+    it('beforeend on full-page response strips body wrapper', async function() {
+        playground().innerHTML = '<div id="target"><span id="orig">old</span></div>';
+        await htmx.swap({
+            target: '#target',
+            swap: 'beforeend',
+            text: '<html><body><span id="appended">added</span></body></html>',
+            sourceElement: playground()
+        });
+        let target = playground().querySelector('#target');
+        (target.querySelector('body') === null).should.equal(true);
+        target.querySelector('#orig').should.not.equal(null);
+        target.querySelector('#appended').should.not.equal(null);
+    });
+
+    it('partial response is unaffected by strip auto-upgrade', async function() {
+        playground().innerHTML = '<div id="target">old</div>';
+        await htmx.swap({
+            target: '#target',
+            swap: 'innerHTML',
+            text: '<span id="partial-child">partial</span>',
+            sourceElement: playground()
+        });
+        let target = playground().querySelector('#target');
+        target.querySelector('#partial-child').should.not.equal(null);
+        target.querySelector('#partial-child').textContent.should.equal('partial');
+    });
+});
+
 describe('hx-history-elt scopes history restore', function() {
 
     beforeEach(() => { setupTest(this.currentTest); });
