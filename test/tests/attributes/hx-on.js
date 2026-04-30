@@ -187,14 +187,6 @@ describe('hx-on attribute modifiers', function() {
         delete window.foo;
     });
 
-    it('q is available in hx-on scope and bound to element', function() {
-        playground().innerHTML = '<button hx-on:click="window.foo = q(\'next #target\').textContent">x</button><div id="target">tgt</div>';
-        htmx.process(playground());
-        playground().querySelector('button').click();
-        window.foo.should.equal('tgt');
-        delete window.foo;
-    });
-
     it('multiple modifiers can be chained (.halt.once)', function() {
         window.fooCount = 0;
         let btn = createProcessedHTML('<button hx-on:click.halt.once="window.fooCount++">x</button>');

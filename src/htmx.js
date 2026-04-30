@@ -69,11 +69,6 @@ var htmx = (() => {
         #transitionQueue
         #historyAbort
         #processingTransition
-        #liveFns = new Set();
-        #liveRecomputePending = false;
-        #liveDebounceSym = Symbol();
-        #liveMutationObserver;
-        #liveRecomputeBound;
 
         constructor() {
             this.__initHtmxConfig();
@@ -94,7 +89,8 @@ var htmx = (() => {
                 isSoftMatch: this.__isSoftMatch.bind(this),
                 onTrigger: this.__onTrigger.bind(this),
                 htmxProp: this.__htmxProp.bind(this),
-                triggerHtmxEvent: this.__trigger.bind(this)
+                triggerHtmxEvent: this.__trigger.bind(this),
+                executeJavaScriptAsync: this.__executeJavaScriptAsync.bind(this)
             };
             let init = () => {
                 this.__initHistoryHandling()
@@ -888,7 +884,9 @@ var htmx = (() => {
         async __executeJavaScriptAsync(thisArg, obj, code, expression = true) {
             let args = {}
             Object.assign(args, this.__apiMethods(thisArg))
-            Object.assign(args, this.__makeReactiveScope(thisArg))
+            let scope = {};
+            this.__triggerExtensions(thisArg, "htmx:scope", { scope });
+            Object.assign(args, scope);
             Object.assign(args, obj)
             let keys = Object.keys(args);
             let values = Object.values(args);
@@ -901,7 +899,9 @@ var htmx = (() => {
         __executeFilter(thisArg, event, code) {
             let args = {}
             Object.assign(args, this.__apiMethods(thisArg))
-            Object.assign(args, this.__makeReactiveScope(thisArg))
+            let scope = {};
+            this.__triggerExtensions(thisArg, "htmx:scope", { scope });
+            Object.assign(args, scope);
             for (let key in event) {
                 args[key] = event[key];
             }
@@ -926,7 +926,6 @@ var htmx = (() => {
             for (let hxOnNode of hxOnNodes) {
                 if (!this.__ignore(hxOnNode)) {
                     this.__handleHxOnAttributes(hxOnNode);
-                    this.__processHxLive(hxOnNode);
                 }
             }
             for (let child of this.__queryEltAndDescendants(elt, this.#actionSelector)) {
@@ -1218,51 +1217,55 @@ var htmx = (() => {
         //============================================================================================
 
         async swap(ctx) {
-            this.__handleHistoryUpdate(ctx);
-            let {fragment, title} = this.__makeFragment(ctx.text);
-            ctx.title = title;
-            let tasks = [];
+            try {
+                this.__handleHistoryUpdate(ctx);
+                let {fragment, title} = this.__makeFragment(ctx.text);
+                ctx.title = title;
+                let tasks = [];
 
-            // Process OOB and partials
-            let oobTasks = this.__processOOB(fragment, ctx.sourceElement, ctx.selectOOB);
-            let partialTasks = this.__processPartials(fragment, ctx);
-            tasks.push(...oobTasks, ...partialTasks);
+                // Process OOB and partials
+                let oobTasks = this.__processOOB(fragment, ctx.sourceElement, ctx.selectOOB);
+                let partialTasks = this.__processPartials(fragment, ctx);
+                tasks.push(...oobTasks, ...partialTasks);
 
-            // Process main swap first
-            let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
-            if (mainSwap) {
-                tasks.unshift(mainSwap);
-            }
-
-            if(!this.__trigger(ctx.sourceElement, "htmx:before:swap", {ctx, tasks})){
-                return
-            }
-
-            let swapPromises = [];
-            let transitionTasks = [];
-            for (let task of tasks) {
-                if (task.swapSpec?.transition ?? mainSwap?.transition ?? ctx.transition) {
-                    transitionTasks.push(task);
-                } else {
-                    swapPromises.push(this.__insertContent(task));
+                // Process main swap first
+                let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
+                if (mainSwap) {
+                    tasks.unshift(mainSwap);
                 }
-            }
 
-            // submit all transition tasks in the transition queue w/no CSS transitions
-            if (transitionTasks.length > 0) {
-                let tasksWrapper = async ()=> {
-                    for (let task of transitionTasks) {
-                        await this.__insertContent(task, false)
+                if(!this.__trigger(ctx.sourceElement, "htmx:before:swap", {ctx, tasks})){
+                    return
+                }
+
+                let swapPromises = [];
+                let transitionTasks = [];
+                for (let task of tasks) {
+                    if (task.swapSpec?.transition ?? mainSwap?.transition ?? ctx.transition) {
+                        transitionTasks.push(task);
+                    } else {
+                        swapPromises.push(this.__insertContent(task));
                     }
                 }
-                swapPromises.push(this.__submitTransitionTask(tasksWrapper));
+
+                // submit all transition tasks in the transition queue w/no CSS transitions
+                if (transitionTasks.length > 0) {
+                    let tasksWrapper = async ()=> {
+                        for (let task of transitionTasks) {
+                            await this.__insertContent(task, false)
+                        }
+                    }
+                    swapPromises.push(this.__submitTransitionTask(tasksWrapper));
+                }
+
+                await Promise.all(swapPromises);
+
+                this.__trigger(ctx.sourceElement, "htmx:after:swap", {ctx});
+                if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
+                this.__handleAnchorScroll(ctx);
+            } finally {
+                this.__trigger(ctx.sourceElement, "htmx:swap:finally", {ctx});
             }
-
-            await Promise.all(swapPromises);
-
-            this.__trigger(ctx.sourceElement, "htmx:after:swap", {ctx});
-            if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
-            this.__handleAnchorScroll(ctx);
         }
 
         __processMainSwap(ctx, fragment, partialTasks) {
@@ -1679,7 +1682,6 @@ var htmx = (() => {
                 let target = has('outside') ? document : node;
                 let opts = { capture: has('capture'), passive: has('passive') };
                 let halt = has('halt');
-                let debounce = this.__makeLiveDebounce();
                 let handler = async (evt) => {
                     if (has('self') && evt.target !== node) return;
                     if (has('outside') && node.contains(evt.target)) return;
@@ -1687,10 +1689,10 @@ var htmx = (() => {
                     if (halt || has('stop')) evt.stopPropagation();
                     if (has('once')) target.removeEventListener(evtName, handler, opts);
                     try {
-                        await this.__executeJavaScriptAsync(node, { event: evt, debounce },
+                        await this.__executeJavaScriptAsync(node, { event: evt },
                             `with(event?.detail||{}){${code}}`, false);
                     } catch (e) {
-                        if (e !== this.#liveDebounceSym) console.error(e);
+                        if (typeof e !== 'symbol') console.error(e);
                     }
                 };
                 target.addEventListener(evtName, handler, opts);
@@ -2284,166 +2286,9 @@ var htmx = (() => {
             }
         }
 
-        // ===== hx-live + q() reactive helpers (moxi integration) =====
-
-        __ensureLiveActive() {
-            if (this.#liveMutationObserver) return;
-            this.#liveRecomputeBound = () => this.__recomputeLive();
-            document.addEventListener('input', this.#liveRecomputeBound, true);
-            document.addEventListener('change', this.#liveRecomputeBound, true);
-            this.#liveMutationObserver = new MutationObserver(this.#liveRecomputeBound);
-            this.#liveMutationObserver.observe(document.documentElement, {
-                childList: true, subtree: true, attributes: true, characterData: true
-            });
-        }
-
-        __deactivateLive() {
-            if (!this.#liveMutationObserver) return;
-            document.removeEventListener('input', this.#liveRecomputeBound, true);
-            document.removeEventListener('change', this.#liveRecomputeBound, true);
-            this.#liveMutationObserver.disconnect();
-            this.#liveMutationObserver = null;
-            this.#liveRecomputeBound = null;
-        }
-
-        __processHxLive(elt) {
-            let attrName = this.__attrName(elt, 'hx-live');
-            if (!attrName) return;
-            let prop = this.__htmxProp(elt);
-            if (prop.liveRegistered) return;
-            prop.liveRegistered = true;
-            this.__ensureLiveActive();
-            let code = elt.getAttribute(attrName);
-            let debounce = this.__makeLiveDebounce();
-            let run = async () => {
-                if (!elt.isConnected) {
-                    this.#liveFns.delete(run);
-                    return;
-                }
-                try {
-                    await this.__executeJavaScriptAsync(elt, { debounce }, code, false);
-                } catch (e) {
-                    if (e !== this.#liveDebounceSym) console.error(e);
-                }
-            };
-            this.#liveFns.add(run);
-            run();
-        }
-
-        // Returns the shared-across-handlers helpers. `debounce` is per-handler
-        // and is added by the caller (since each handler needs its own state).
-        __makeReactiveScope(elt) {
-            return {
-                q: this.__makeQ(elt),
-                wait: this.__makeLiveWait(elt),
-                trigger: (type, detail, bubbles) => this.trigger(elt, type, detail, bubbles)
-            };
-        }
-
-        __recomputeLive() {
-            if (this.#liveRecomputePending) return;
-            this.#liveRecomputePending = true;
-            queueMicrotask(() => {
-                this.#liveFns.forEach(f => f());
-                if (this.#liveFns.size === 0) this.__deactivateLive();
-                setTimeout(() => { this.#liveRecomputePending = false; });
-            });
-        }
-
-        __makeLiveDebounce() {
-            let last = 0, reject;
-            let dbSym = this.#liveDebounceSym;
-            return ms => new Promise((res, rej) => {
-                reject?.(dbSym);
-                reject = rej;
-                let id = ++last;
-                setTimeout(() => id === last && (reject = null, res()), ms);
-            });
-        }
-
-        __makeLiveWait(ctx) {
-            return x => new Promise(r => {
-                if (typeof x === 'number') setTimeout(r, x);
-                else ctx.addEventListener(x, r, { once: true });
-            });
-        }
-
-        q(selectorOrElt) {
-            return this.__makeQ(document.documentElement)(selectorOrElt);
-        }
-
-        __makeQ(ctx) {
-            return selectorOrElt => {
-                if (typeof selectorOrElt !== 'string') {
-                    return this.__qProxy(
-                        selectorOrElt?.nodeType ? [selectorOrElt] : [...(selectorOrElt || [])]
-                    );
-                }
-                let sel = selectorOrElt;
-                let inMatch = sel.match(/^(.+)\s+in\s+(.+)$/);
-                let root = document;
-                if (inMatch) {
-                    sel = inMatch[1];
-                    root = inMatch[2] === 'this' ? ctx : document.querySelector(inMatch[2]);
-                }
-                if (!root) return this.__qProxy([]);
-                let dirMatch = sel.match(/^(next|prev|closest|first|last)\s+(.+)$/);
-                let elts;
-                if (dirMatch) {
-                    let [, dir, s] = dirMatch;
-                    let cdp = e => ctx.compareDocumentPosition(e);
-                    if (dir === 'closest') {
-                        let c = ctx.closest?.(s);
-                        elts = c ? [c] : [];
-                    } else {
-                        let all = [...root.querySelectorAll(s)];
-                        if (dir === 'first') elts = all.slice(0, 1);
-                        else if (dir === 'last') elts = all.slice(-1);
-                        else if (dir === 'next') {
-                            let n = all.find(e => cdp(e) & 4);
-                            elts = n ? [n] : [];
-                        } else {
-                            let p = all.reverse().find(e => cdp(e) & 2);
-                            elts = p ? [p] : [];
-                        }
-                    }
-                } else {
-                    elts = [...root.querySelectorAll(sel)];
-                }
-                return this.__qProxy(elts);
-            };
-        }
-
-        __qProxy(elts) {
-            let positions = { before: 'beforebegin', after: 'afterend', start: 'afterbegin', end: 'beforeend' };
-            return new Proxy({}, {
-                get: (_, p) => {
-                    if (p === 'count') return elts.length;
-                    if (p === 'arr') return () => elts.slice();
-                    if (p === Symbol.iterator) return () => elts.values();
-                    if (p === 'trigger') return (t, d, b) => elts.forEach(e => this.trigger(e, t, d, b));
-                    if (p === 'insert') return (pos, s) =>
-                        elts.forEach(e => e.insertAdjacentHTML(positions[pos], s));
-                    if (p === 'take') return (cls, from) => {
-                        let sources = typeof from === 'string'
-                            ? document.querySelectorAll(from)
-                            : (from || []);
-                        for (let e of sources) e.classList.remove(cls);
-                        for (let e of elts) e.classList.add(cls);
-                    };
-                    let v = elts[0]?.[p];
-                    if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
-                    if (v && typeof v === 'object') return this.__qProxy(elts.map(e => e[p]));
-                    return v;
-                },
-                set: (_, p, v) => {
-                    elts.forEach(e => e[p] = v);
-                    this.__recomputeLive();
-                    return true;
-                }
-            });
-        }
     }
 
     return new Htmx()
 })()
+
+;
