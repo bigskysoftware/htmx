@@ -148,7 +148,7 @@ htmx 2 uses camelCase event names. htmx 4 uses colon-separated names.
 | `htmx:beforeTransition`     | `htmx:before:viewTransition`      |
 | `htmx:oobBeforeSwap`        | `htmx:before:swap`                |
 | `htmx:oobAfterSwap`         | `htmx:after:swap`                 |
-| `htmx:responseError`        | `htmx:error`                      |
+| `htmx:responseError`        | `htmx:response:error`             |
 | `htmx:sendError`            | `htmx:error`                      |
 | `htmx:sendAbort`            | `htmx:error`                      |
 | `htmx:swapError`            | `htmx:error`                      |
