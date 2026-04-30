@@ -145,7 +145,7 @@
                 asyncFn = makeNoncedConstructor(true);
             }
 
-            api.initEvalFunctions(ttPolicy, syncFn, asyncFn);
+            api.initSecurity(ttPolicy, syncFn, asyncFn);
         },
 
         htmx_before_init: checkNonce,
@@ -170,8 +170,17 @@
         },
 
         // Blocks boosted form submissions where an unnnonced submitter overrides formaction.
+        // Also blocks js:/javascript: action URLs — entity encoding doesn't neutralise these
+        // so they may survive template rendering and execute unexpectedly.
         htmx_config_request: (elt, detail) => {
             if (!pageNonce) return false;
+            let action = detail.ctx?.request?.action;
+            if (action && /^(js|javascript):/i.test(action)) {
+                console.error(`hx-nonce: blocked js:/javascript: action URL on <${elt.tagName.toLowerCase()}${elt.id ? '#'+elt.id : ''}>.`);
+                htmx.trigger(elt, 'htmx:security:violation', { reason: 'javascript-url', action, ctx: detail.ctx });
+                detail.cancelled = true;
+                return false;
+            }
             let submitter = detail.ctx?.sourceEvent?.submitter;
             if (!elt._htmx?.boosted || !submitter?.getAttribute('formaction')) return;
             if (getNonce(submitter) !== pageNonce) {

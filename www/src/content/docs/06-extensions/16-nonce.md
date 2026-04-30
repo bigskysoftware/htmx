@@ -40,7 +40,9 @@ Your templating engine should stamp `hx-nonce` on every element that carries htm
 <div hx-get="/search?q={{ user_input | escape }}" hx-nonce="...">...</div>
 ```
 
-All major templating engines should help you escape output by default — make sure you are not bypassing this with raw/unescaped output filters. If an attacker can inject unescaped content into an htmx attribute value on a nonced element, `hx-nonce` will not protect you.
+All major templating engines escape HTML entities (`"`, `'`, `<`, `>`, `&`) by default — make sure you are not bypassing this with raw/unescaped output filters (`| raw`, `| safe`, `raw()` etc.), which would allow a `"` in user input to break out of the attribute and inject new attributes.
+
+URL-valued attributes (`hx-get`, `hx-post`, etc.) are also blocked by the extension if the value is a `js:` or `javascript:` URI — these schemes survive entity encoding and are not valid action URLs.
 
 Set a `Content-Security-Policy` header with a per-request nonce and stamp `hx-nonce` on every htmx element:
 
@@ -102,7 +104,7 @@ This is the ideal replacement for `htmx.config.inlineScriptNonce`. Do not use `i
 | Event | Fired when |
 |-------|-----------|
 | `htmx:security:strip` | Element stripped due to missing or mismatched nonce |
-| `htmx:security:violation` | Nonce mismatch at eval time or unnnonced boosted form submitter |
+| `htmx:security:violation` | Nonce mismatch at eval time, unnonced boosted form submitter, or `js:`/`javascript:` action URL |
 
 ```js
 document.addEventListener('htmx:security:strip', e => {
@@ -110,4 +112,4 @@ document.addEventListener('htmx:security:strip', e => {
 });
 ```
 
-`detail.reason` is `'missing-nonce'` or `'nonce-mismatch'`.
+`detail.reason` is `'missing-nonce'`, `'nonce-mismatch'`, or `'javascript-url'`.

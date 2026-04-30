@@ -88,7 +88,7 @@ var htmx = (() => {
                 insertContent: this.__insertContent.bind(this),
                 morph: this.__morph.bind(this),
                 isSoftMatch: this.__isSoftMatch.bind(this),
-                initEvalFunctions: (ttPolicy, syncFn, asyncFn) => {
+                initSecurity: (ttPolicy, syncFn, asyncFn) => {
                     this.#ttPolicy = ttPolicy;
                     if (syncFn) this.#Function = syncFn;
                     if (asyncFn) this.#AsyncFunction = asyncFn;
