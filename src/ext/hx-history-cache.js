@@ -83,7 +83,7 @@
             el.removeAttribute('disabled');
             el.removeAttribute('data-disabled-by-htmx');
         });
-        return clone.innerHTML;
+        return clone.outerHTML;
     }
 
     // --- Stamp the current history entry with an htmxId and track it ---
@@ -191,7 +191,7 @@
             htmx.config.historyCache.size          ??= 10;
             htmx.config.historyCache.refreshOnMiss ??= false;
             htmx.config.historyCache.disable       ??= false;
-            htmx.config.historyCache.swapStyle     ??= 'innerHTML';
+            htmx.config.historyCache.swapStyle     ??= 'outerSync';
             stampCurrentEntry();
         },
 

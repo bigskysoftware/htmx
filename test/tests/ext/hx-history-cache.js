@@ -24,7 +24,7 @@ describe('hx-history-cache extension', function () {
     beforeEach(() => {
         setupTest();
         sessionStorage.clear();
-        htmx.config.historyCache = { size: 10, refreshOnMiss: false, disable: false, swapStyle: 'innerHTML' };
+        htmx.config.historyCache = { size: 10, refreshOnMiss: false, disable: false, swapStyle: 'outerSync' };
 
         historyElt = document.createElement('div');
         historyElt.setAttribute('hx-history-elt', '');

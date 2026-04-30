@@ -1028,9 +1028,7 @@ var htmx = (() => {
             if (startTag === 'html' || startTag === 'body') {
                 doc = this.__parseHTML(response);
                 fragment = document.createDocumentFragment();
-                while (doc.body.childNodes.length > 0) {
-                    fragment.append(doc.body.childNodes[0]);
-                }
+                fragment.append(doc.body);
             } else {
                 doc = this.__parseHTML(`<template>${response}</template>`);
                 fragment = doc.querySelector('template').content;
@@ -1288,6 +1286,11 @@ var htmx = (() => {
             }
             let swapStyle = swapSpec.style;
             if (swapStyle === 'none') return;
+            // full-page response: fragment has a <body> wrapper — upgrade outerHTML to outerSync, strip for everything else
+            if (fragment.firstElementChild?.tagName === 'BODY') {
+                if (swapStyle === 'outerHTML') swapStyle = 'outerSync';
+                else if (!swapStyle.startsWith('outer')) swapSpec.strip = true;
+            }
             if (swapSpec.strip && fragment.firstElementChild) {
                 fragment = document.createDocumentFragment();
                 fragment.append(...(task.fragment.firstElementChild.content || task.fragment.firstElementChild).childNodes);
@@ -1324,7 +1327,7 @@ var htmx = (() => {
             let pantry = this.__handlePreservedElements(fragment);
             let newContent = [...fragment.childNodes]
             try {
-                if (swapStyle === 'innerHTML' || (swapStyle === 'outerHTML' && target === document.body)) {
+                if (swapStyle === 'innerHTML') {
                     for (const child of target.children) {
                         this.__cleanup(child)
                     }
@@ -1341,6 +1344,12 @@ var htmx = (() => {
                         parentNode.removeChild(target);
                         target = newContent[0] || parentNode
                     }
+                } else if (swapStyle === 'outerSync') {
+                    this.__copyAttributes(target, fragment.firstElementChild);
+                    for (const child of target.children) {
+                        this.__cleanup(child)
+                    }
+                    target.replaceChildren(...fragment.firstElementChild.childNodes);
                 } else if (swapStyle === 'innerMorph') {
                     this.__morph(target, fragment, true);
                     newContent = [...target.childNodes];
@@ -1588,11 +1597,10 @@ var htmx = (() => {
                     location.reload();
                 } else {
                     this.#historyAbort = new AbortController();
-                    let isPartialTarget = historyElt !== document.body;
                     this.ajax('GET', path, {
                         target: historyElt,
-                        swap: `innerHTML${isPartialTarget ? ' strip:true' : ''}`,
-                        select: isPartialTarget ? this.__prefixSelector('[hx-history-elt]') : undefined,
+                        swap: 'outerSync',
+                        select: historyElt !== document.body ? this.__prefixSelector('[hx-history-elt]') : undefined,
                         request: {
                             headers: {'HX-History-Restore-Request': 'true'},
                             signal: this.#historyAbort.signal
