@@ -89,7 +89,7 @@ var htmx = (() => {
                 morph: this.__morph.bind(this),
                 isSoftMatch: this.__isSoftMatch.bind(this),
                 initSecurity: (ttPolicy, syncFn, asyncFn) => {
-                    this.#ttPolicy = ttPolicy;
+                    if (ttPolicy) this.#ttPolicy = ttPolicy;
                     if (syncFn) this.#Function = syncFn;
                     if (asyncFn) this.#AsyncFunction = asyncFn;
                 },
