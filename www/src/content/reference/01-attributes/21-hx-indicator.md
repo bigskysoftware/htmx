@@ -89,6 +89,25 @@ call it out with the `hx-indicator` attribute:
 </button>
 ```
 
+## Delaying the Indicator
+
+For fast requests, briefly flashing a spinner can look jittery.  
+
+You can control this by adding a delay to the CSS transition for showing the indicator:
+
+```css
+.htmx-indicator {
+    opacity: 0;
+    visibility: hidden;
+}
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 200ms ease-in 200ms;  /* fade duration, then delay */
+}
+```
+
 ## Demo
 
 This simulates what a spinner might look like in that situation:
