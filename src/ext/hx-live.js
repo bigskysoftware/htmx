@@ -165,7 +165,7 @@
                     return;
                 }
                 try {
-                    await api.executeJavaScriptAsync(elt, { debounce }, code, false);
+                    await api.executeJavaScript(elt, { debounce }, code, false);
                 } catch (e) {
                     if (e !== dbSym) console.error(e);
                 }
