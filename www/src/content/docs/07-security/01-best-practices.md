@@ -65,41 +65,52 @@ Browsers also provide tools for further securing your web application. The most 
 [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP). Using a CSP you can tell the
 browser to, for example, not issue requests to non-origin hosts, to not evaluate inline script tags, etc.
 
-Here is an example CSP in a `meta` tag:
+CSP can be set via an HTTP header or a `<meta>` tag. HTTP headers are preferred — `<meta>` tags
+do not enforce all directives and scripts that appear before the `<meta>` tag in the document are
+not covered by it:
 
-```html
-<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+```http
+Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-<nonce>'
 ```
 
 A full discussion of CSPs is beyond the scope of this document, but
 the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provides a good jumping-off point
 for exploring this topic.
 
+### hx-nonce Extension
+
+For sites using CSP script nonces, the [`hx-nonce` extension](/docs/extensions/nonce) provides deep integration:
+
+- Gates all htmx attribute processing behind a per-request nonce, blocking injected htmx attributes
+- Automatically creates a `'htmx'` [Trusted Types](https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API) policy so only htmx can write HTML into DOM sinks
+- Replaces `new Function()` eval with nonce-based script injection when `safeEval:true` is set, removing the need for `unsafe-eval`
+
+See the [hx-nonce extension docs](/docs/extensions/nonce) for full setup instructions.
+
 ### htmx & Eval
 
-htmx uses eval for some functionality:
+htmx uses `new Function()` for some optional features:
 
 * Event filters
 * The [`hx-on`](/reference/attributes/hx-on) attribute
-* Handling most attribute values that starts with `js:` or `javascript:`
+* Attribute values starting with `js:` or `javascript:`
 
-All of these features can be replaced with standard event listeners and thus are not crucial to using htmx.
+All of these are optional. If you don't use them you can omit `unsafe-eval` from your CSP entirely.
 
-Thus you can disable `eval()` via a CSP and continue to use htmx.
+If you do use these features, the [`hx-nonce` extension](/docs/extensions/nonce) with `safeEval:true` replaces
+`new Function()` with nonce-based script injection, enabling them without `unsafe-eval`.
 
 ### CSP & Inline Styles
 
-Annother area htmx can run into is with CSS transition and morphins swaps.  Both of these copy attributes (including `style`) between old and new elements during the settle
-phase. Under a strict `style-src` policy without `'unsafe-inline'`, these `setAttribute("style", ...)` calls will
-produce CSP violations.
+htmx injects its indicator CSS using [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) (`document.adoptedStyleSheets`), which are not subject to `style-src` CSP restrictions.
 
-If you use a strict `style-src` CSP you should add `"style"` to [`morphIgnore`](/reference/config/htmx-config-morphIgnore):
+The one area to be aware of is morph swaps when used alongside JS frameworks like Alpine that set `style` attributes via JavaScript. During morph, htmx's `__copyAttributes` reads all attributes from the new element and copies them to the old one — including any `style` attributes set by the framework. Under a strict `style-src` policy without `'unsafe-inline'`, this `setAttribute("style", ...)` call will produce a CSP violation.
+
+Add `"style"` to [`morphIgnore`](/reference/config/htmx-config-morphIgnore) to skip it:
 
 ```html
 <meta name="htmx-config" content='{"morphIgnore":["data-htmx-powered","style"]}'>
 ```
-
-This tells htmx to skip `style` attributes when copying attributes during settle and morph operations. 
 
 Class-based CSS transitions continue to work normally.
 

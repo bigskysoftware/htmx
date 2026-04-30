@@ -62,6 +62,9 @@ var htmx = (() => {
         __approvedExt = '';
         __registeredExt = new Set();
         #internalAPI;
+        #Function = Function;
+        #AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        #ttPolicy = { createHTML: s => s, createScript: s => s };
         #actionSelector
         #boostSelector = "a,form";
         #verbs = ["get", "post", "put", "patch", "delete"];
@@ -85,6 +88,11 @@ var htmx = (() => {
                 insertContent: this.__insertContent.bind(this),
                 morph: this.__morph.bind(this),
                 isSoftMatch: this.__isSoftMatch.bind(this),
+                initSecurity: (ttPolicy, syncFn, asyncFn) => {
+                    if (ttPolicy) this.#ttPolicy = ttPolicy;
+                    if (syncFn) this.#Function = syncFn;
+                    if (asyncFn) this.#AsyncFunction = asyncFn;
+                },
                 onTrigger: this.__onTrigger.bind(this),
                 htmxProp: this.__htmxProp.bind(this),
                 triggerHtmxEvent: this.__trigger.bind(this)
@@ -473,7 +481,7 @@ var htmx = (() => {
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
             if (javascriptContent != null) {
                 let data = Object.fromEntries(ctx.request.body);
-                await this.__executeJavaScriptAsync(ctx.sourceElement, data, javascriptContent, false);
+                await this.__executeJavaScript(ctx.sourceElement, data, javascriptContent, false);
                 return
             } else if (usesQueryParams) {
                 let url = new URL(ctx.request.action, document.baseURI);
@@ -517,7 +525,7 @@ var htmx = (() => {
                         let detail = {ctx, issueRequest: () => resolve(true), dropRequest: () => resolve(false)};
                         if (this.__trigger(elt, "htmx:confirm", detail)) {
                             let js = this.__extractJavascriptContent(ctx.confirm);
-                            resolve(js ? this.__executeJavaScriptAsync(elt, {}, js, true) : window.confirm(ctx.confirm));
+                            resolve(js ? this.__executeJavaScript(elt, {}, js, true) : window.confirm(ctx.confirm));
                         }
                     });
                     if (!confirmed) return;
@@ -793,7 +801,8 @@ var htmx = (() => {
                     let original = spec.handler
                     spec.handler = (evt) => {
                         if (this.__shouldCancel(evt)) evt.preventDefault()
-                        if (this.__executeFilter(elt, evt, filter)) {
+                        let evtArgs = {}; for (let k in evt) evtArgs[k] = evt[k];
+                        if (this.__executeJavaScript(elt, evtArgs, filter, true, false)) {
                             original(evt)
                         }
                     }
@@ -878,27 +887,14 @@ var htmx = (() => {
             return bound;
         }
 
-        async __executeJavaScriptAsync(thisArg, obj, code, expression = true) {
+        __executeJavaScript(thisArg, obj, code, expression = true, isAsync = true) {
             let args = {}
             Object.assign(args, this.__apiMethods(thisArg))
             Object.assign(args, obj)
             let keys = Object.keys(args);
             let values = Object.values(args);
-            let AsyncFunction = Object.getPrototypeOf(async function () {
-            }).constructor;
-            let func = new AsyncFunction(...keys, expression ? `return (${code})` : code);
-            return await func.call(thisArg, ...values);
-        }
-
-        __executeFilter(thisArg, event, code) {
-            let args = {}
-            Object.assign(args, this.__apiMethods(thisArg))
-            for (let key in event) {
-                args[key] = event[key];
-            }
-            let keys = Object.keys(args);
-            let values = Object.values(args);
-            let func = new Function(...keys, `return (${code})`);
+            let FunctionConstructor = isAsync ? this.#AsyncFunction : this.#Function;
+            let func = new FunctionConstructor(...keys, expression ? `return (${code})` : code);
             return func.call(thisArg, ...values);
         }
 
@@ -915,7 +911,7 @@ var htmx = (() => {
             let node = null
             while (node = iter.iterateNext()) hxOnNodes.push(node)
             for (let hxOnNode of hxOnNodes) {
-                if (!this.__ignore(hxOnNode)) {
+                if (!this.__ignore(hxOnNode) && this.__trigger(hxOnNode, "htmx:before:on:init", {}, true)) {
                     this.__handleHxOnAttributes(hxOnNode)
                 }
             }
@@ -1017,7 +1013,8 @@ var htmx = (() => {
         }
 
         __parseHTML(resp) {
-            return Document.parseHTMLUnsafe?.(resp) || new DOMParser().parseFromString(resp, 'text/html');
+            let trusted = this.#ttPolicy.createHTML(resp);
+            return Document.parseHTMLUnsafe?.(trusted) || new DOMParser().parseFromString(trusted, 'text/html');
         }
 
         __makeFragment(text) {
@@ -1198,7 +1195,7 @@ var htmx = (() => {
                 if (this.config.inlineScriptNonce) {
                     newScript.nonce = this.config.inlineScriptNonce;
                 }
-                newScript.textContent = oldScript.textContent;
+                newScript.textContent = this.#ttPolicy.createScript(oldScript.textContent);
                 oldScript.replaceWith(newScript);
             }
         }
@@ -1668,7 +1665,7 @@ var htmx = (() => {
                     let code = node.getAttribute(attr);
                     let handler = async (evt) => {
                         try {
-                            await this.__executeJavaScriptAsync(node, {"event": evt}, code, false)
+                            await this.__executeJavaScript(node, {"event": evt}, code, false)
                         } catch (e) {
                             console.error(e);
                         }
@@ -1798,7 +1795,7 @@ var htmx = (() => {
                     javascriptContent = '{' + javascriptContent + '}';
                 }
                 // Return promise for async evaluation
-                return this.__executeJavaScriptAsync(elt, {}, javascriptContent, true).then(obj => {
+                return this.__executeJavaScript(elt, {}, javascriptContent, true).then(obj => {
                     callback(obj);
                 });
             } else {
