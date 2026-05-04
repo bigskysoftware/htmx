@@ -210,4 +210,50 @@ describe('__initializeTriggers unit tests', function() {
         assert.equal(2, called)
     });
 
+    describe('intersect modifiers', function() {
+        let originalIO;
+        let captured;
+
+        beforeEach(() => {
+            captured = [];
+            originalIO = window.IntersectionObserver;
+            window.IntersectionObserver = function(cb, opts) {
+                captured.push(opts);
+                return new originalIO(cb, opts);
+            };
+        });
+
+        afterEach(() => {
+            window.IntersectionObserver = originalIO;
+        });
+
+        it('passes threshold modifier to IntersectionObserver', function() {
+            createProcessedHTML('<div hx-action="js:null" hx-trigger="intersect threshold:0.5">Test</div>');
+            assert.equal(captured.length, 1);
+            assert.equal(captured[0].threshold, 0.5);
+        });
+
+        it('passes root modifier to IntersectionObserver', function() {
+            playground().innerHTML = '<div id="scroller"><div id="target" hx-action="js:null" hx-trigger="intersect root:#scroller">Test</div></div>';
+            htmx.process(playground());
+            assert.equal(captured.length, 1);
+            assert.equal(captured[0].root, document.getElementById('scroller'));
+        });
+
+        it('passes both root and threshold modifiers', function() {
+            playground().innerHTML = '<div id="scroller2"><div id="target2" hx-action="js:null" hx-trigger="intersect root:#scroller2 threshold:0.25">Test</div></div>';
+            htmx.process(playground());
+            assert.equal(captured.length, 1);
+            assert.equal(captured[0].root, document.getElementById('scroller2'));
+            assert.equal(captured[0].threshold, 0.25);
+        });
+
+        it('passes empty options when no modifiers given', function() {
+            createProcessedHTML('<div hx-action="js:null" hx-trigger="intersect">Test</div>');
+            assert.equal(captured.length, 1);
+            assert.isUndefined(captured[0].root);
+            assert.isUndefined(captured[0].threshold);
+        });
+    });
+
 });

@@ -95,7 +95,8 @@ var htmx = (() => {
                 },
                 onTrigger: this.__onTrigger.bind(this),
                 htmxProp: this.__htmxProp.bind(this),
-                triggerHtmxEvent: this.__trigger.bind(this)
+                triggerHtmxEvent: this.__trigger.bind(this),
+                executeJavaScript: this.__executeJavaScript.bind(this)
             };
             let init = () => {
                 this.__initHistoryHandling()
@@ -453,7 +454,6 @@ var htmx = (() => {
             let body = this.__collectFormData(elt, form, evt.submitter, ctx.request.validate)
             if (!body) return  // Validation failed
             let valsResult = this.__getAttributeObject(elt, "hx-vals", obj => {
-                ctx.vals = obj;
                 for (let key in obj) body.set(key, obj[key]);
             });
             if (valsResult) await valsResult; // Only await if it returned a promise
@@ -608,11 +608,11 @@ var htmx = (() => {
             }
             if (ctx.hx.refresh === 'true') { // HX-Refresh
                 location.reload();
-                return true // TODO - necessary?  wouldn't it abort the current js?
+                return true
             }
             if (ctx.hx.redirect) { // HX-Redirect
                 location.href = ctx.hx.redirect;
-                return true // TODO - same, necessary?
+                return true
             }
             if (ctx.hx.location) { // HX-Location
                 let path = ctx.hx.location, opts = {};
@@ -623,7 +623,7 @@ var htmx = (() => {
                 }
                 opts.push ??= 'true';
                 this.ajax('GET', path, opts);
-                return true // TODO this seems legit
+                return true
             }
         }
 
@@ -716,12 +716,8 @@ var htmx = (() => {
 
                 if (eventName === 'intersect' || eventName === "revealed") {
                     let observerOptions = {}
-                    if (spec.opts?.root) {
-                        observerOptions.root = this.__findOrWarn(elt, spec.opts.root)
-                    }
-                    if (spec.opts?.threshold) {
-                        observerOptions.threshold = parseFloat(spec.opts.threshold)
-                    }
+                    if (spec.root) observerOptions.root = this.__findOrWarn(elt, spec.root)
+                    if (spec.threshold) observerOptions.threshold = parseFloat(spec.threshold)
                     let isRevealed = eventName === "revealed"
                     spec.observer = new IntersectionObserver((entries) => {
                         for (let i = 0; i < entries.length; i++) {
@@ -890,6 +886,9 @@ var htmx = (() => {
         __executeJavaScript(thisArg, obj, code, expression = true, isAsync = true) {
             let args = {}
             Object.assign(args, this.__apiMethods(thisArg))
+            let scope = {};
+            this.__triggerExtensions(thisArg, "htmx:scope", { scope });
+            Object.assign(args, scope);
             Object.assign(args, obj)
             let keys = Object.keys(args);
             let values = Object.values(args);
@@ -912,7 +911,7 @@ var htmx = (() => {
             while (node = iter.iterateNext()) hxOnNodes.push(node)
             for (let hxOnNode of hxOnNodes) {
                 if (!this.__ignore(hxOnNode) && this.__trigger(hxOnNode, "htmx:before:on:init", {}, true)) {
-                    this.__handleHxOnAttributes(hxOnNode)
+                    this.__handleHxOnAttributes(hxOnNode);
                 }
             }
             for (let child of this.__queryEltAndDescendants(elt, this.#actionSelector)) {
@@ -1203,51 +1202,55 @@ var htmx = (() => {
         //============================================================================================
 
         async swap(ctx) {
-            this.__handleHistoryUpdate(ctx);
-            let {fragment, title} = this.__makeFragment(ctx.text);
-            ctx.title = title;
-            let tasks = [];
+            try {
+                this.__handleHistoryUpdate(ctx);
+                let {fragment, title} = this.__makeFragment(ctx.text);
+                ctx.title = title;
+                let tasks = [];
 
-            // Process OOB and partials
-            let oobTasks = this.__processOOB(fragment, ctx.sourceElement, ctx.selectOOB);
-            let partialTasks = this.__processPartials(fragment, ctx);
-            tasks.push(...oobTasks, ...partialTasks);
+                // Process OOB and partials
+                let oobTasks = this.__processOOB(fragment, ctx.sourceElement, ctx.selectOOB);
+                let partialTasks = this.__processPartials(fragment, ctx);
+                tasks.push(...oobTasks, ...partialTasks);
 
-            // Process main swap first
-            let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
-            if (mainSwap) {
-                tasks.unshift(mainSwap);
-            }
-
-            if(!this.__trigger(ctx.sourceElement, "htmx:before:swap", {ctx, tasks})){
-                return
-            }
-
-            let swapPromises = [];
-            let transitionTasks = [];
-            for (let task of tasks) {
-                if (task.swapSpec?.transition ?? mainSwap?.transition ?? ctx.transition) {
-                    transitionTasks.push(task);
-                } else {
-                    swapPromises.push(this.__insertContent(task));
+                // Process main swap first
+                let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
+                if (mainSwap) {
+                    tasks.unshift(mainSwap);
                 }
-            }
 
-            // submit all transition tasks in the transition queue w/no CSS transitions
-            if (transitionTasks.length > 0) {
-                let tasksWrapper = async ()=> {
-                    for (let task of transitionTasks) {
-                        await this.__insertContent(task, false)
+                if(!this.__trigger(ctx.sourceElement, "htmx:before:swap", {ctx, tasks})){
+                    return
+                }
+
+                let swapPromises = [];
+                let transitionTasks = [];
+                for (let task of tasks) {
+                    if (task.swapSpec?.transition ?? mainSwap?.transition ?? ctx.transition) {
+                        transitionTasks.push(task);
+                    } else {
+                        swapPromises.push(this.__insertContent(task));
                     }
                 }
-                swapPromises.push(this.__submitTransitionTask(tasksWrapper));
+
+                // submit all transition tasks in the transition queue w/no CSS transitions
+                if (transitionTasks.length > 0) {
+                    let tasksWrapper = async ()=> {
+                        for (let task of transitionTasks) {
+                            await this.__insertContent(task, false)
+                        }
+                    }
+                    swapPromises.push(this.__submitTransitionTask(tasksWrapper));
+                }
+
+                await Promise.all(swapPromises);
+
+                this.__trigger(ctx.sourceElement, "htmx:after:swap", {ctx});
+                if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
+                this.__handleAnchorScroll(ctx);
+            } finally {
+                this.__trigger(ctx.sourceElement, "htmx:swap:finally", {ctx});
             }
-
-            await Promise.all(swapPromises);
-
-            this.__trigger(ctx.sourceElement, "htmx:after:swap", {ctx});
-            if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
-            this.__handleAnchorScroll(ctx);
         }
 
         __processMainSwap(ctx, fragment, partialTasks) {
@@ -1455,7 +1458,7 @@ var htmx = (() => {
         }
 
         forEvent(event, timeout, on = document) {
-            return new Promise((resolve, reject) => {
+            return new Promise(resolve => {
                 let handler = (evt) => {
                     clearTimeout(timeoutId);
                     resolve(evt);
@@ -1466,7 +1469,7 @@ var htmx = (() => {
                     resolve(null);
                 }, timeout);
 
-                on.addEventListener(event, handler, { once: true });
+                on.addEventListener(event, handler, {once: true});
             })
         }
 
@@ -1525,7 +1528,6 @@ var htmx = (() => {
             let result = !detail.cancelled && target.dispatchEvent(evt);
             return result
         }
-        // TODO - make async
         ajax(verb, path, context) {
             // Normalize context to object
             if (!context || context instanceof Element || typeof context === 'string') {
@@ -1662,25 +1664,36 @@ var htmx = (() => {
 
         // hx-on:<event> binds to <event> directly
         // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
+        // Modifiers (dot-separated): .prevent .stop .halt .once .self .outside .capture .passive .cc
         __handleHxOnAttributes(node) {
             let searchStrings = this.__prefixes("hx-on:").map(p => this.__maybeAdjustMetaCharacter(p));
+            let mc = this.config.metaCharacter || ':';
             for (let attr of node.getAttributeNames()) {
                 let searchString = searchStrings.find(s => attr.startsWith(s));
-                if (searchString) {
-                    let evtName = attr.substring(searchString.length)
-                    let mc = this.config.metaCharacter || ':';
-                    if (evtName.startsWith(mc)) evtName = 'htmx' + evtName
-                    let code = node.getAttribute(attr);
-                    let handler = async (evt) => {
-                        try {
-                            await this.__executeJavaScript(node, {"event": evt}, code, false)
-                        } catch (e) {
-                            console.error(e);
-                        }
-                    };
-                    node.addEventListener(evtName, handler);
-                    this.__htmxProp(node).listeners.push({fromElt: node, eventName: evtName, handler});
-                }
+                if (!searchString) continue;
+                let [evtName, ...mods] = attr.substring(searchString.length).split('.');
+                let has = m => mods.includes(m);
+                if (evtName.startsWith(mc)) evtName = 'htmx' + evtName;
+                if (has('cc')) evtName = evtName.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+                let code = node.getAttribute(attr);
+                let target = has('outside') ? document : node;
+                let opts = { capture: has('capture'), passive: has('passive') };
+                let halt = has('halt');
+                let handler = async (evt) => {
+                    if (has('self') && evt.target !== node) return;
+                    if (has('outside') && node.contains(evt.target)) return;
+                    if (halt || has('prevent')) evt.preventDefault();
+                    if (halt || has('stop')) evt.stopPropagation();
+                    if (has('once')) target.removeEventListener(evtName, handler, opts);
+                    try {
+                        await this.__executeJavaScript(node, { event: evt },
+                            `with(event?.detail||{}){${code}}`, false);
+                    } catch (e) {
+                        if (typeof e !== 'symbol') console.error(e);
+                    }
+                };
+                target.addEventListener(evtName, handler, opts);
+                this.__htmxProp(node).listeners.push({fromElt: target, eventName: evtName, handler});
             }
         }
 
@@ -2269,7 +2282,10 @@ var htmx = (() => {
                 return string;
             }
         }
+
     }
 
     return new Htmx()
 })()
+
+;

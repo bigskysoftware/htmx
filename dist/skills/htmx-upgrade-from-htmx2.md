@@ -46,7 +46,6 @@ hx-disabled-elt  →  hx-disable    (htmx 2's "disable elements during request")
 | `hx-inherit="..."`    | Remove (use `:inherited` modifier on individual attributes) |
 | `hx-request='...'`    | `hx-config='...'` (same JSON format)                        |
 | `hx-history="false"`  | Remove (history no longer uses localStorage)                |
-| `hx-history-elt`      | Remove (history uses target element)                        |
 
 ## Step 3: Update Attribute Inheritance
 
@@ -148,7 +147,7 @@ htmx 2 uses camelCase event names. htmx 4 uses colon-separated names.
 | `htmx:beforeTransition`     | `htmx:before:viewTransition`      |
 | `htmx:oobBeforeSwap`        | `htmx:before:swap`                |
 | `htmx:oobAfterSwap`         | `htmx:after:swap`                 |
-| `htmx:responseError`        | `htmx:error`                      |
+| `htmx:responseError`        | `htmx:response:error`             |
 | `htmx:sendError`            | `htmx:error`                      |
 | `htmx:sendAbort`            | `htmx:error`                      |
 | `htmx:swapError`            | `htmx:error`                      |
