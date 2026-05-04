@@ -132,6 +132,15 @@ describe('hx-live extension', function () {
         elt.dataset.v.should.equal('done');
     });
 
+    it('hx-live body supports top-level await directly', async function() {
+        let elt = createProcessedHTML(
+            `<output hx-live="!this.dataset.s && (this.dataset.s='1', this.dataset.v = 'pending', await wait(5), this.dataset.v = 'done')"></output>`
+        );
+        elt.dataset.v.should.equal('pending');
+        await htmx.timeout(30);
+        elt.dataset.v.should.equal('done');
+    });
+
     it('wait(ms, event) resolves on event before timeout', async function() {
         let elt = createProcessedHTML('<output hx-live="(async () => { await wait(1000, \'go\'); this.dataset.v = \'fired\'; })()"></output>');
         await htmx.timeout(5);
