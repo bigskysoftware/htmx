@@ -77,9 +77,7 @@ var htmx = (() => {
             this.__initHtmxConfig();
             this.__initRequestIndicatorCss();
             this.#actionSelector = this.__prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]');
-            let onPreds = this.__prefixes("hx-on").map(p => `starts-with(name(), "${p}")`);
-            let livePreds = this.__prefixes("hx-live").map(p => `name()="${p}"`);
-            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${[...onPreds, ...livePreds].join(' or ')}]]`);
+            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.__prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
             this.#internalAPI = {
                 attributeValue: this.__attributeValue.bind(this),
                 parseTriggerSpecs: this.__parseTriggerSpecs.bind(this),
