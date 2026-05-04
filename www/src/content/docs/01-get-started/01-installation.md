@@ -81,7 +81,8 @@ The `htmax.js` file bundles htmx with the most popular extensions in a single fi
 * [browser-indicator](/docs/extensions/browser-indicator)
 * [download](/docs/extensions/download)
 * [optimistic](/docs/extensions/optimistic)
-* [targets](/docs/extensions/targets).
+* [targets](/docs/extensions/targets)
+* [live](/docs/extensions/live).
 
 The extensions are automatically available, you can just use their attributes directly (e.g. `hx-sse:connect`, `hx-ws:connect`).
 
