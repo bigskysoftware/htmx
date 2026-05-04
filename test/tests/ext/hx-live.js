@@ -365,6 +365,44 @@ describe('hx-live extension', function () {
     // scope injection in hx-on (via htmx:scope hook)
     // -------------------------------------------------------------------------
 
+    it('chained q: climb-and-collect via closest', function() {
+        playground().innerHTML = `
+            <div class="field"><input class="x invalid"></div>
+            <div class="field"><input class="x"></div>
+            <div class="field"><input class="x invalid"></div>
+        `;
+        let proxy = htmx.q('.invalid').q('closest .field');
+        proxy.count.should.equal(2);
+    });
+
+    it('chained q: first per group', function() {
+        playground().innerHTML = `
+            <section><span class="i">a</span><span class="i">b</span></section>
+            <section><span class="i">c</span><span class="i">d</span></section>
+        `;
+        let proxy = htmx.q('section').q('first .i');
+        proxy.count.should.equal(2);
+        proxy.arr().map(e => e.textContent).should.deep.equal(['a', 'c']);
+    });
+
+    it('chained q: plain selector scopes to descendants of each parent', function() {
+        playground().innerHTML = `
+            <article><p class="t">a</p></article>
+            <article><p class="t">b</p></article>
+            <p class="t">outside</p>
+        `;
+        let proxy = htmx.q('article').q('.t');
+        proxy.count.should.equal(2);
+    });
+
+    it('chained q: dedups overlapping results', function() {
+        playground().innerHTML = `
+            <div class="parent"><div class="parent"><span class="x"></span></div></div>
+        `;
+        let proxy = htmx.q('.parent').q('.x');
+        proxy.count.should.equal(1);
+    });
+
     it('q is available in hx-on scope and bound to element', function() {
         playground().innerHTML = '<button hx-on:click="window.foo = q(\'next #target\').textContent">x</button><div id="target">tgt</div>';
         htmx.process(playground());

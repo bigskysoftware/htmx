@@ -74,7 +74,7 @@
         });
     }
 
-    function makeQ(ctx) {
+    function makeQ(ctx, defaultRoot = document) {
         return selectorOrElt => {
             if (typeof selectorOrElt !== 'string') {
                 return qProxy(
@@ -83,7 +83,7 @@
             }
             let sel = selectorOrElt;
             let inMatch = sel.match(/^(.+)\s+in\s+(.+)$/);
-            let root = document;
+            let root = defaultRoot;
             if (inMatch) {
                 sel = inMatch[1];
                 root = inMatch[2] === 'this' ? ctx : document.querySelector(inMatch[2]);
@@ -123,6 +123,11 @@
                 if (p === 'count') return elts.length;
                 if (p === 'arr') return () => elts.slice();
                 if (p === Symbol.iterator) return () => elts.values();
+                if (p === 'q') return s => {
+                    let out = new Set();
+                    for (let e of elts) for (let r of makeQ(e, e)(s).arr()) out.add(r);
+                    return qProxy([...out]);
+                };
                 if (p === 'trigger') return (t, d, b) => elts.forEach(e => htmx.trigger(e, t, d, b));
                 if (p === 'insert') return (pos, s) =>
                     elts.forEach(e => e.insertAdjacentHTML(positions[pos], s));
