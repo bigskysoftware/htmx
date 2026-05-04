@@ -132,6 +132,51 @@ describe('hx-live extension', function () {
         elt.dataset.v.should.equal('done');
     });
 
+    it('wait(ms, event) resolves on event before timeout', async function() {
+        let elt = createProcessedHTML('<output hx-live="(async () => { await wait(1000, \'go\'); this.dataset.v = \'fired\'; })()"></output>');
+        await htmx.timeout(5);
+        elt.dispatchEvent(new CustomEvent('go'));
+        await htmx.timeout(5);
+        elt.dataset.v.should.equal('fired');
+    });
+
+    it('wait(ms, event) resolves on timeout when event never fires', async function() {
+        let elt = createProcessedHTML('<output hx-live="(async () => { await wait(10, \'never\'); this.dataset.v = \'timed-out\'; })()"></output>');
+        await htmx.timeout(40);
+        elt.dataset.v.should.equal('timed-out');
+    });
+
+    it('wait resolves a timeout with the ms value (discriminator)', async function() {
+        window.__waitResult = null;
+        let elt = createProcessedHTML(
+            `<output hx-live="!this.dataset.s && (this.dataset.s='1', (async()=>{ window.__waitResult = await wait(5, 'never') })())"></output>`
+        );
+        await htmx.timeout(30);
+        window.__waitResult.should.equal(5);
+        delete window.__waitResult;
+    });
+
+    it('wait races multiple events and timeouts', async function() {
+        let elt = createProcessedHTML('<output hx-live="(async () => { await wait(\'a\', \'b\', 1000); this.dataset.v = \'fired\'; })()"></output>');
+        await htmx.timeout(5);
+        elt.dispatchEvent(new CustomEvent('b'));
+        await htmx.timeout(5);
+        elt.dataset.v.should.equal('fired');
+    });
+
+    it('wait cleans up listeners after timeout wins', async function() {
+        let count = 0;
+        let elt = createProcessedHTML(
+            `<output hx-live="!this.dataset.started && (this.dataset.started='1', (async()=>{ await wait(5, 'cleanup-evt'); this.dataset.done='1' })())"></output>`
+        );
+        elt.addEventListener('cleanup-evt', () => count++);
+        await htmx.timeout(30);
+        elt.dataset.done.should.equal('1');
+        // wait timed out; its internal listener should be removed.
+        elt.dispatchEvent(new CustomEvent('cleanup-evt'));
+        count.should.equal(1);
+    });
+
     it('trigger() fires a CustomEvent from the element', async function() {
         let fired = null;
         playground().innerHTML = '<output hx-live="trigger(\'live-fire\', { x: 1 })"></output>';

@@ -68,9 +68,25 @@
     }
 
     function makeWait(ctx) {
-        return x => new Promise(r => {
-            if (typeof x === 'number') setTimeout(r, x);
-            else ctx.addEventListener(x, r, { once: true });
+        return (...args) => new Promise(r => {
+            if (!args.length) return r();
+            let done, cleanups = [];
+            let resolve = v => {
+                if (done) return;
+                done = true;
+                for (let c of cleanups) c();
+                r(v);
+            };
+            for (let a of args) {
+                if (typeof a === 'number') {
+                    let id = setTimeout(() => resolve(a), a);
+                    cleanups.push(() => clearTimeout(id));
+                } else {
+                    let h = e => resolve(e);
+                    ctx.addEventListener(a, h, { once: true });
+                    cleanups.push(() => ctx.removeEventListener(a, h));
+                }
+            }
         });
     }
 
