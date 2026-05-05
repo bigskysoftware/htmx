@@ -19,50 +19,82 @@ The `preload` extension allows you to load HTML fragments into your browser's ca
 
 ## Usage
 
-Add an `hx-preload` attribute to any hyperlinks and [`hx-get`](/reference/attributes/hx-get) elements you want to preload. By default, resources will be loaded as soon as the `mousedown` event begins, giving your application a roughly 100-200ms head start on serving responses.
+Add an `hx-preload` attribute to any boosted hyperlinks and [`hx-get`](/reference/attributes/hx-get) elements you want to preload. By default, resources will be loaded as soon as the `mousedown` event begins, giving your application a roughly 100-200ms head start on serving responses.
 
 ```html
-<a href="/server/1" hx-preload>Preloaded on mousedown</a>
-<button hx-get="/server/2" hx-preload>Preloaded with htmx headers</button>
+<button hx-get="/server/1" hx-preload>Preloaded on mousedown</button>
+<button hx-get="/server/2" hx-preload="mouseover">Preloaded on mouseover</button>
 ```
 
-All preload requests include an additional `"HX-Preloaded": "true"` header.
+All preload requests include an additional `HX-Preloaded: true` header.
 
-### Inheriting Preload Settings
+## hx-boost Integration
 
-You can add the `hx-preload` attribute to a parent element, and all links within it will be preloaded:
+When the preload extension is loaded, all [`hx-boost`](/reference/attributes/hx-boost) anchor tags are automatically preloaded on `mousedown` without needing an explicit `hx-preload` attribute. To opt out of this behaviour, set `htmx.config.preload.autoBoost = false`.
 
 ```html
-<ul hx-preload>
-    <li><a href="/page/1">This will be preloaded</a></li>
-    <li><a href="/page/2">This will also be preloaded</a></li>
-</ul>
+<!-- these are all automatically preloaded when the preload extension is loaded -->
+<nav hx-boost="true">
+    <a href="/page1">Page 1</a>
+    <a href="/page2">Page 2</a>
+</nav>
 ```
 
-## Configuration
+To disable auto-preloading of boosted links:
 
-### `hx-preload="mousedown"` (default)
+```html
+<meta name="htmx-config" content='preload:{"autoBoost":false}'>
+```
+
+Plain `<a href>` links without `hx-boost` cannot be preloaded, as preloading works by warming an htmx request — it does not intercept browser navigation.
+
+## Trigger Events
+
+### `hx-preload` / `hx-preload="mousedown"` (default)
 
 Begins loading when the user presses the mouse down. Conservative — guarantees the user intends to click. Gives your server a 100-200ms head start.
 
 ### `hx-preload="mouseover"`
 
-Preloads when the user's mouse hovers over the link. A 100ms delay prevents loading when the user scrolls past. More aggressive — gives your server several hundred milliseconds of head start.
+Preloads when the user's mouse hovers over the element. More aggressive — gives your server several hundred milliseconds of head start.
 
 ### `hx-preload="custom-event-name"`
 
-Preload can listen to any custom event. The extension generates a `preload:init` event that can trigger preloads as soon as an element is processed by htmx.
+Preload can listen to any event name supported by htmx trigger specs.
 
-### `hx-preload="always"`
+```html
+<button hx-get="/data" hx-preload="focus">Preload on focus</button>
+```
 
-By default, the extension preloads each element once. Use `hx-preload="always"` to preload on every trigger. Can be combined with other options: `hx-preload="always mouseover"`.
+## Configuration
+
+All options are set via `htmx.config.preload`:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `autoBoost` | `true` | Automatically preload all `hx-boost` anchor tags on `mousedown` |
+| `boostEvent` | `"mousedown"` | The event used to trigger preloading for auto-boosted links |
+| `boostTimeout` | `5000` | Milliseconds before a preloaded response for a boosted link expires |
+
+```html
+<meta name="htmx-config" content='preload:{"autoBoost":true,"boostEvent":"mouseover","boostTimeout":"3s"}'>
+```
+
+## Timeout
+
+Preloaded responses expire after 5 seconds by default. Use the `timeout` modifier to override per element:
+
+```html
+<button hx-get="/data" hx-preload="mousedown timeout:2s">Expires after 2s</button>
+```
 
 ## Limitations
 
-- Only `GET` requests can be preloaded (including `<a href="">` and `hx-get=""`). POST, PUT, and DELETE will not be preloaded.
-- When listening to `mouseover` events, preload waits 100ms before downloading. If the mouse leaves before the timeout, the resource is not preloaded.
-- Preloaded responses will only be cached if the response headers allow it (e.g., `Cache-Control: private, max-age=60`).
+- Only `GET` requests can be preloaded. `POST`, `PUT`, `PATCH` and `DELETE` will not be preloaded.
+- Plain `<a href>` links without `hx-boost` or `hx-get` cannot be preloaded.
+- Preloaded responses will only be reused if the actual request is made before the timeout expires.
 
 ## Upgrading from htmx 2.x
 
 - The `preload` attribute is now named `hx-preload`.
+- Inherited preload via a parent element now requires the `:inherited` modifier: `hx-preload:inherited`.
