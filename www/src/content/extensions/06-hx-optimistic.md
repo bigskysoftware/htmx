@@ -1,6 +1,8 @@
 ---
-title: "Optimistic UI"
-description: "Optimistic UI updates that apply changes before the server responds"
+title: "hx-optimistic"
+description: "Apply optimistic UI updates before the server responds"
+category: "UX"
+icon: "icon-[mdi--lightning-bolt-outline]"
 keywords: ["optimistic", "ui", "instant", "updates"]
 ---
 

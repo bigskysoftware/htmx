@@ -1,6 +1,8 @@
 ---
-title: "Live"
-description: "Reactive JavaScript expressions, a q() selector helper, and scope helpers for hx-on."
+title: "hx-live"
+description: "Add reactive expressions and a compact q() selector helper"
+category: "UX"
+icon: "icon-[mdi--lightning-bolt]"
 keywords: ["live", "reactive", "q", "selector", "hyperscript"]
 ---
 

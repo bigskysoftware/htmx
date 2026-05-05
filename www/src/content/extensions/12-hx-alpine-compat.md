@@ -1,6 +1,8 @@
 ---
-title: "Alpine.js Compatibility"
-description: "Compatibility layer for using htmx with Alpine.js"
+title: "hx-alpine-compat"
+description: "Run htmx alongside Alpine.js without conflicts"
+category: "Compatibility"
+icon: "icon-[simple-icons--alpinedotjs]"
 keywords: ["alpine", "alpinejs", "compatibility", "integration", "history"]
 ---
 

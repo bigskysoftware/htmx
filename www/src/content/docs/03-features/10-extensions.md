@@ -1,19 +1,18 @@
 ---
-title: "Using Extensions"
-description: "Install, configure, and build htmx extensions."
+title: "Extensions"
+description: "Load, configure, and build htmx extensions."
 keywords: ["extensions", "plugins", "custom", "building", "creating"]
 ---
 
-htmx supports extensions to augment its core hypermedia infrastructure. The extension mechanism takes pressure off the
-core library to add new features, allowing it to focus on its main purpose of generalizing hypermedia controls.
+htmx supports extensions to augment its core hypermedia infrastructure. The extension mechanism takes pressure off the core library to add new features, allowing it to focus on its main purpose of generalizing hypermedia controls.
+
+For the catalog of core extensions shipped with htmx, see [/extensions](/extensions).
 
 ## Using Extensions
 
-In htmx 4, extensions hook into standard events rather than callback extension points. They are lightweight with no
-performance penalty.
+In htmx 4, extensions hook into standard events rather than callback extension points. They are lightweight with no performance penalty.
 
-Extensions apply page-wide without requiring `hx-ext` on parent elements. They activate via custom attributes where
-needed.
+Extensions apply page-wide without requiring `hx-ext` on parent elements. They activate via custom attributes where needed.
 
 ### Loading an Extension
 
@@ -40,26 +39,6 @@ To restrict which extensions can register, use an allow list:
 ```
 
 When this config is set, only the listed extensions will be loaded. Without it, all registered extensions are active.
-
-### Core Extensions
-
-htmx supports a set of core extensions, maintained by the htmx development team and shipped with htmx:
-
-| Extension | Description |
-|-----------|-------------|
-| [sse](/docs/extensions/sse) | [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) streaming |
-| [ws](/docs/extensions/ws) | [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API) bidirectional communication |
-| [head-support](/docs/extensions/head-support) | Merge `<head>` tag information (styles, scripts) in htmx responses |
-| [preload](/docs/extensions/preload) | Preload content on hover or other events |
-| [browser-indicator](/docs/extensions/browser-indicator) | Show the browser's native loading indicator during requests |
-| [alpine-compat](/docs/extensions/alpine-compat) | Compatibility with Alpine.js |
-| [htmx-2-compat](/docs/extensions/htmx-2-compat) | Compatibility layer for htmx 2.x code |
-| [optimistic](/docs/extensions/optimistic) | Optimistic UI updates |
-| [upsert](/docs/extensions/upsert) | Update-or-insert swap strategy for dynamic lists |
-| [download](/docs/extensions/download) | Save responses as file downloads with streaming progress |
-| [ptag](/docs/extensions/ptag) | Per-element polling tags to skip unchanged content |
-| [targets](/docs/extensions/targets) | Swap the same response into multiple elements |
-| [history-cache](/docs/extensions/history-cache) | Client-side history cache in `sessionStorage` — restores pages instantly on back/forward navigation |
 
 ## Building Extensions
 
@@ -222,44 +201,4 @@ htmx.registerExtension("my-swap", {
 });
 ```
 
-### Migrating from htmx 2.x
-
-The htmx 4 extension API is completely different from htmx 2.x:
-
-| htmx 2.x | htmx 4 | Migration Notes |
-|-----------|---------|-----------------|
-| `init(api)` | `init(api)` | Same name, store API reference for other hooks |
-| `getSelectors()` | `htmx_after_init` | Check `api.attributeValue(elt, "attr")` instead of returning selectors |
-| `onEvent(name, evt)` | Specific hooks | Replace with `htmx_before_request`, `htmx_after_swap`, etc. (use underscores) |
-| `transformResponse(text, xhr, elt)` | `htmx_after_request` | Modify `detail.ctx.text` directly |
-| `isInlineSwap(swapStyle)` | Not needed | Move logic into `handle_swap` |
-| `handleSwap(style, target, fragment)` | `handle_swap` | Args are `(swapStyle, target, fragment, swapSpec)`, return truthy if handled |
-| `encodeParameters(xhr, params, elt)` | `htmx_config_request` | Modify `detail.ctx.request.body` (FormData) and headers directly |
-
-**Old API (htmx 2.x):**
-
-```javascript
-htmx.defineExtension("old", {
-    onEvent: function (name, evt) {},
-    transformResponse: function (text, xhr, elt) {},
-    handleSwap: function (swapStyle, target, fragment, settleInfo) {},
-});
-```
-
-**New API (htmx 4):**
-
-```javascript
-htmx.registerExtension("new", {
-    htmx_before_request: (elt, detail) => {},
-    htmx_after_request: (elt, detail) => {},
-    handle_swap: (swapStyle, target, fragment, swapSpec) => {},
-});
-```
-
-Key differences:
-
-- Event-based hooks instead of method callbacks
-- Underscores in hook names (not colons)
-- Extensions load by including the script (config whitelist is optional)
-- Access to full request context via `detail.ctx`
-- Internal API provided via `init` hook
+For migrating extensions written for htmx 2.x, see [Migration → Migrating Your Own Extensions](/docs/get-started/migration#migrating-your-own-extensions).
