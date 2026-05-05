@@ -1690,6 +1690,7 @@ var htmx = (() => {
                         if (typeof e !== 'symbol') console.error(e);
                     }
                 };
+                // mod object passes capture, passive, and once to event listener
                 target.addEventListener(evtName, handler, mod);
                 this.__htmxProp(node).listeners.push({fromElt: target, eventName: evtName, handler});
             }
