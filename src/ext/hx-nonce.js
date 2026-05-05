@@ -38,8 +38,7 @@
     function checkNonce(elt) {
         if (!pageNonce) return false;
         let eltNonce = getNonce(elt);
-        if (eltNonce === pageNonce) return;
-        if (stripHxAttributes(elt, eltNonce)) return false;
+        if (eltNonce !== pageNonce && stripHxAttributes(elt, eltNonce)) return false;
     }
 
     // Anchors to script-src/default-src to avoid matching nonces in other directives
@@ -59,13 +58,14 @@
         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    // Rewrites responseNonce → pageNonce in raw HTML before DOM parsing,
+    // Rewrites responseNonce → replacement in raw HTML before DOM parsing,
     // covering hx-nonce and script nonce attributes in one pass.
-    function rewriteNoncesInText(text, responseNonce) {
+    // Pass replacement='' to strip nonce attributes entirely (stolen-nonce scrub).
+    function rewriteNoncesInText(text, responseNonce, replacement = pageNonce) {
         let escaped = escapeRegex(responseNonce);
         return text.replace(
             new RegExp(`(nonce=)(["'])${escaped}\\2`, 'gi'),
-            (_, attr, quote) => `${attr}${quote}${pageNonce}${quote}`
+            (_, attr, quote) => replacement ? `${attr}${quote}${replacement}${quote}` : ''
         );
     }
 
@@ -162,6 +162,9 @@
                 try { if (new URL(responseURL).origin !== location.origin) return; }
                 catch (_) { return; }
             }
+            // Scrub any pre-existing pageNonce from response — server can't know it,
+            // so its presence indicates injection using a stolen nonce.
+            ctx.text = rewriteNoncesInText(ctx.text, pageNonce, '');
             let responseNonce = extractNonceFromCSP(ctx?.response?.headers?.get('Content-Security-Policy'))
                              ?? extractNonceFromMetaTag(ctx?.text);
             if (responseNonce && responseNonce !== pageNonce) {
