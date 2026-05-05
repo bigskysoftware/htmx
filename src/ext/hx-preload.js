@@ -3,7 +3,7 @@
 
     function initializePreload(elt) {
         let preloadSpec = api.attributeValue(elt, "hx-preload");
-        if (!preloadSpec && !elt._htmx?.boosted) return;
+        if (preloadSpec == undefined && !elt._htmx?.boosted) return;
 
         let preloadEvents = []
         let timeout = 5000;
@@ -17,14 +17,15 @@
                 }
             }
         } else {
-            //only boosted links are supported
-            if (elt.tagName === "A") {
-                if(htmx.config?.preload?.boostTimeout) {
-                    timeout = htmx.parseInterval(htmx.config.preload.boostTimeout)
-                }
-                preloadEvents.push(htmx.config?.preload?.boostEvent || "mousedown");
-                preloadEvents.push("touchstart");
+            let isBoostedAnchor = elt._htmx?.boosted && elt.tagName === "A";
+            let isHxGet = api.attributeValue(elt, "hx-get") != null;
+            if (!isBoostedAnchor && !isHxGet) return;
+            if (isBoostedAnchor && htmx.config?.preload?.autoBoost === false) return;
+            if (htmx.config?.preload?.boostTimeout) {
+                timeout = htmx.parseInterval(htmx.config.preload.boostTimeout)
             }
+            preloadEvents.push(htmx.config?.preload?.boostEvent || "mousedown");
+            preloadEvents.push("touchstart");
         }
 
         let preloadListener = async (evt) => {
@@ -42,7 +43,6 @@
             if (valsResult) await valsResult;
 
             let action = ctx.request.action.replace?.(/#.*$/, '');
-
 
             let params = new URLSearchParams(body);
             if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
