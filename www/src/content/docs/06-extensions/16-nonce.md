@@ -99,7 +99,7 @@ The extension rewrites the response nonce to the page nonce so swapped-in elemen
 
 The server cannot know the page nonce - it only knows its own per-response nonce. So if the page nonce appears in a response, it was put there by an attacker, not the server. Scrubbing it first means the rewrite pass cannot accidentally promote attacker-controlled elements to trusted status.
 
-The risk: unlike `<script nonce>`, `hx-nonce` attributes are not blanked by browsers after parse, so they are a possible additional nonce exposure surface. The scrub step is a defence-in-depth measure to ensure a stolen nonce cannot be pre-stamped into injected content to pass nonce checks.
+The risk: unlike `<script nonce>`, `hx-nonce` attributes are not blanked by browsers after parse, so they are a possible additional nonce exposure surface. The scrub step is a defense-in-depth measure to ensure a stolen nonce cannot be pre-stamped into injected content to pass nonce checks.
 
 ## Inline Scripts in Swapped Content
 
