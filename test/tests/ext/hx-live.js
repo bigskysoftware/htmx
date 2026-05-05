@@ -366,6 +366,37 @@ describe('hx-live extension', function () {
         tabs[2].classList.contains('selected').should.equal(true);
     });
 
+    it('htmx.take() moves a class between elements (selectors)', function() {
+        playground().innerHTML = `
+            <button class="tab selected">a</button>
+            <button class="tab">b</button>
+            <button class="tab" id="t3">c</button>
+        `;
+        htmx.take('selected', '#t3', '.tab');
+
+        let tabs = playground().querySelectorAll('.tab');
+        tabs[0].classList.contains('selected').should.equal(false);
+        tabs[1].classList.contains('selected').should.equal(false);
+        tabs[2].classList.contains('selected').should.equal(true);
+    });
+
+    it('take() is available at top-level in hx-on expressions', function() {
+        playground().innerHTML = `
+            <div class="tabs">
+                <button class="tab selected">a</button>
+                <button class="tab">b</button>
+                <button class="tab" hx-on:click="take('selected', '.tab')">c</button>
+            </div>
+        `;
+        htmx.process(playground());
+
+        let tabs = playground().querySelectorAll('.tab');
+        tabs[2].click();
+        tabs[0].classList.contains('selected').should.equal(false);
+        tabs[1].classList.contains('selected').should.equal(false);
+        tabs[2].classList.contains('selected').should.equal(true);
+    });
+
     it('directional: closest', function() {
         playground().innerHTML = '<section><div id="inner"></div></section>';
         let inner = playground().querySelector('#inner');

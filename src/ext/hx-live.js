@@ -57,6 +57,18 @@
         });
     }
 
+    function toElts(x) {
+        if (!x) return [];
+        if (typeof x === 'string') return [...document.querySelectorAll(x)];
+        if (x.nodeType) return [x];
+        return [...x];
+    }
+
+    function take(cls, target, source) {
+        for (let e of toElts(source)) e.classList.remove(cls);
+        for (let e of toElts(target)) e.classList.add(cls);
+    }
+
     function makeDebounce() {
         let last = 0, reject;
         return ms => new Promise((res, rej) => {
@@ -147,13 +159,7 @@
                 if (p === 'trigger') return (t, d, b) => elts.forEach(e => htmx.trigger(e, t, d, b));
                 if (p === 'insert') return (pos, s) =>
                     elts.forEach(e => e.insertAdjacentHTML(positions[pos], s));
-                if (p === 'take') return (cls, from) => {
-                    let sources = typeof from === 'string'
-                        ? document.querySelectorAll(from)
-                        : (from || []);
-                    for (let e of sources) e.classList.remove(cls);
-                    for (let e of elts) e.classList.add(cls);
-                };
+                if (p === 'take') return (cls, from) => take(cls, elts, from);
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));
@@ -197,6 +203,7 @@
     }
 
     htmx.q = s => makeQ(document.documentElement)(s);
+    htmx.take = take;
 
     htmx.registerExtension('hx-live', {
         init: (internalAPI) => {
@@ -216,7 +223,8 @@
                 q: makeQ(elt),
                 wait: makeWait(elt),
                 trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
-                debounce: makeDebounce()
+                debounce: makeDebounce(),
+                take: (cls, source) => take(cls, elt, source)
             });
         }
     });
