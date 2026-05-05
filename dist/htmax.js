@@ -77,9 +77,7 @@ var htmx = (() => {
             this.#initHtmxConfig();
             this.#initRequestIndicatorCss();
             this.#actionSelector = this.#prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]');
-            let onPreds = this.#prefixes("hx-on").map(p => `starts-with(name(), "${p}")`);
-            let livePreds = this.#prefixes("hx-live").map(p => `name()="${p}"`);
-            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${[...onPreds, ...livePreds].join(' or ')}]]`);
+            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.#prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
             this.#internalAPI = {
                 attributeValue: this.#attributeValue.bind(this),
                 parseTriggerSpecs: this.#parseTriggerSpecs.bind(this),
@@ -456,7 +454,6 @@ var htmx = (() => {
             let body = this.#collectFormData(elt, form, evt.submitter, ctx.request.validate)
             if (!body) return  // Validation failed
             let valsResult = this.#getAttributeObject(elt, "hx-vals", obj => {
-                ctx.vals = obj;
                 for (let key in obj) body.set(key, obj[key]);
             });
             if (valsResult) await valsResult; // Only await if it returned a promise
@@ -611,11 +608,11 @@ var htmx = (() => {
             }
             if (ctx.hx.refresh === 'true') { // HX-Refresh
                 location.reload();
-                return true // TODO - necessary?  wouldn't it abort the current js?
+                return true
             }
             if (ctx.hx.redirect) { // HX-Redirect
                 location.href = ctx.hx.redirect;
-                return true // TODO - same, necessary?
+                return true
             }
             if (ctx.hx.location) { // HX-Location
                 let path = ctx.hx.location, opts = {};
@@ -626,7 +623,7 @@ var htmx = (() => {
                 }
                 opts.push ??= 'true';
                 this.ajax('GET', path, opts);
-                return true // TODO this seems legit
+                return true
             }
         }
 
@@ -719,12 +716,8 @@ var htmx = (() => {
 
                 if (eventName === 'intersect' || eventName === "revealed") {
                     let observerOptions = {}
-                    if (spec.opts?.root) {
-                        observerOptions.root = this.#findOrWarn(elt, spec.opts.root)
-                    }
-                    if (spec.opts?.threshold) {
-                        observerOptions.threshold = parseFloat(spec.opts.threshold)
-                    }
+                    if (spec.root) observerOptions.root = this.#findOrWarn(elt, spec.root)
+                    if (spec.threshold) observerOptions.threshold = parseFloat(spec.threshold)
                     let isRevealed = eventName === "revealed"
                     spec.observer = new IntersectionObserver((entries) => {
                         for (let i = 0; i < entries.length; i++) {
@@ -1465,7 +1458,7 @@ var htmx = (() => {
         }
 
         forEvent(event, timeout, on = document) {
-            return new Promise((resolve, reject) => {
+            return new Promise(resolve => {
                 let handler = (evt) => {
                     clearTimeout(timeoutId);
                     resolve(evt);
@@ -1476,7 +1469,7 @@ var htmx = (() => {
                     resolve(null);
                 }, timeout);
 
-                on.addEventListener(event, handler, { once: true });
+                on.addEventListener(event, handler, {once: true});
             })
         }
 
@@ -1535,7 +1528,6 @@ var htmx = (() => {
             let result = !detail.cancelled && target.dispatchEvent(evt);
             return result
         }
-        // TODO - make async
         ajax(verb, path, context) {
             // Normalize context to object
             if (!context || context instanceof Element || typeof context === 'string') {
@@ -3770,13 +3762,29 @@ var htmx = (() => {
     }
 
     function makeWait(ctx) {
-        return x => new Promise(r => {
-            if (typeof x === 'number') setTimeout(r, x);
-            else ctx.addEventListener(x, r, { once: true });
+        return (...args) => new Promise(r => {
+            if (!args.length) return r();
+            let done, cleanups = [];
+            let resolve = v => {
+                if (done) return;
+                done = true;
+                for (let c of cleanups) c();
+                r(v);
+            };
+            for (let a of args) {
+                if (typeof a === 'number') {
+                    let id = setTimeout(() => resolve(a), a);
+                    cleanups.push(() => clearTimeout(id));
+                } else {
+                    let h = e => resolve(e);
+                    ctx.addEventListener(a, h, { once: true });
+                    cleanups.push(() => ctx.removeEventListener(a, h));
+                }
+            }
         });
     }
 
-    function makeQ(ctx) {
+    function makeQ(ctx, defaultRoot = document) {
         return selectorOrElt => {
             if (typeof selectorOrElt !== 'string') {
                 return qProxy(
@@ -3785,7 +3793,7 @@ var htmx = (() => {
             }
             let sel = selectorOrElt;
             let inMatch = sel.match(/^(.+)\s+in\s+(.+)$/);
-            let root = document;
+            let root = defaultRoot;
             if (inMatch) {
                 sel = inMatch[1];
                 root = inMatch[2] === 'this' ? ctx : document.querySelector(inMatch[2]);
@@ -3825,6 +3833,11 @@ var htmx = (() => {
                 if (p === 'count') return elts.length;
                 if (p === 'arr') return () => elts.slice();
                 if (p === Symbol.iterator) return () => elts.values();
+                if (p === 'q') return s => {
+                    let out = new Set();
+                    for (let e of elts) for (let r of makeQ(e, e)(s).arr()) out.add(r);
+                    return qProxy([...out]);
+                };
                 if (p === 'trigger') return (t, d, b) => elts.forEach(e => htmx.trigger(e, t, d, b));
                 if (p === 'insert') return (pos, s) =>
                     elts.forEach(e => e.insertAdjacentHTML(positions[pos], s));

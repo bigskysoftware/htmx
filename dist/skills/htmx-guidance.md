@@ -526,6 +526,14 @@ the element with the id `result`.
 The `htmx-indicator` class hides the element by default (opacity: 0). When a request is in flight, `htmx-request` class
 is added, making indicators visible.
 
+To avoid flashing the spinner on fast requests, add a `transition-delay` (the second time value) to the indicator's CSS:
+
+```css
+.htmx-request .htmx-indicator { transition: opacity 200ms ease-in 200ms; }
+```
+
+If the request finishes before the delay elapses, the spinner never appears
+
 ### Disabling Elements During Request
 
 ```html

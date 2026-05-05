@@ -77,9 +77,7 @@ var htmx = (() => {
             this.#initHtmxConfig();
             this.#initRequestIndicatorCss();
             this.#actionSelector = this.#prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]');
-            let onPreds = this.#prefixes("hx-on").map(p => `starts-with(name(), "${p}")`);
-            let livePreds = this.#prefixes("hx-live").map(p => `name()="${p}"`);
-            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${[...onPreds, ...livePreds].join(' or ')}]]`);
+            this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.#prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
             this.#internalAPI = {
                 attributeValue: this.#attributeValue.bind(this),
                 parseTriggerSpecs: this.#parseTriggerSpecs.bind(this),
@@ -456,7 +454,6 @@ var htmx = (() => {
             let body = this.#collectFormData(elt, form, evt.submitter, ctx.request.validate)
             if (!body) return  // Validation failed
             let valsResult = this.#getAttributeObject(elt, "hx-vals", obj => {
-                ctx.vals = obj;
                 for (let key in obj) body.set(key, obj[key]);
             });
             if (valsResult) await valsResult; // Only await if it returned a promise
@@ -611,11 +608,11 @@ var htmx = (() => {
             }
             if (ctx.hx.refresh === 'true') { // HX-Refresh
                 location.reload();
-                return true // TODO - necessary?  wouldn't it abort the current js?
+                return true
             }
             if (ctx.hx.redirect) { // HX-Redirect
                 location.href = ctx.hx.redirect;
-                return true // TODO - same, necessary?
+                return true
             }
             if (ctx.hx.location) { // HX-Location
                 let path = ctx.hx.location, opts = {};
@@ -626,7 +623,7 @@ var htmx = (() => {
                 }
                 opts.push ??= 'true';
                 this.ajax('GET', path, opts);
-                return true // TODO this seems legit
+                return true
             }
         }
 
@@ -719,12 +716,8 @@ var htmx = (() => {
 
                 if (eventName === 'intersect' || eventName === "revealed") {
                     let observerOptions = {}
-                    if (spec.opts?.root) {
-                        observerOptions.root = this.#findOrWarn(elt, spec.opts.root)
-                    }
-                    if (spec.opts?.threshold) {
-                        observerOptions.threshold = parseFloat(spec.opts.threshold)
-                    }
+                    if (spec.root) observerOptions.root = this.#findOrWarn(elt, spec.root)
+                    if (spec.threshold) observerOptions.threshold = parseFloat(spec.threshold)
                     let isRevealed = eventName === "revealed"
                     spec.observer = new IntersectionObserver((entries) => {
                         for (let i = 0; i < entries.length; i++) {
@@ -1465,7 +1458,7 @@ var htmx = (() => {
         }
 
         forEvent(event, timeout, on = document) {
-            return new Promise((resolve, reject) => {
+            return new Promise(resolve => {
                 let handler = (evt) => {
                     clearTimeout(timeoutId);
                     resolve(evt);
@@ -1476,7 +1469,7 @@ var htmx = (() => {
                     resolve(null);
                 }, timeout);
 
-                on.addEventListener(event, handler, { once: true });
+                on.addEventListener(event, handler, {once: true});
             })
         }
 
@@ -1535,7 +1528,6 @@ var htmx = (() => {
             let result = !detail.cancelled && target.dispatchEvent(evt);
             return result
         }
-        // TODO - make async
         ajax(verb, path, context) {
             // Normalize context to object
             if (!context || context instanceof Element || typeof context === 'string') {
