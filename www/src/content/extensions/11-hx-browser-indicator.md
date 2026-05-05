@@ -1,6 +1,8 @@
 ---
-title: "Browser Indicator"
-description: "Show the browser's native loading indicator during htmx requests"
+title: "hx-browser-indicator"
+description: "Show the browser's native loading indicator"
+category: "UX"
+icon: "icon-[mdi--tab-search]"
 keywords: ["browser", "indicator", "loading", "spinner", "tab"]
 ---
 

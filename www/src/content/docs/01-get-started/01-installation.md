@@ -75,14 +75,14 @@ import htmx from 'htmx.org';
 
 The `htmax.js` file bundles htmx with the most popular extensions in a single file:
 
-* [SSE](/docs/extensions/sse)
-* [WebSockets](/docs/extensions/ws)
-* [preload](/docs/extensions/preload)
-* [browser-indicator](/docs/extensions/browser-indicator)
-* [download](/docs/extensions/download)
-* [optimistic](/docs/extensions/optimistic)
-* [targets](/docs/extensions/targets)
-* [live](/docs/extensions/live).
+* [SSE](/extensions/hx-sse)
+* [WebSockets](/extensions/hx-ws)
+* [preload](/extensions/hx-preload)
+* [browser-indicator](/extensions/hx-browser-indicator)
+* [download](/extensions/hx-download)
+* [optimistic](/extensions/hx-optimistic)
+* [targets](/extensions/hx-targets)
+* [live](/extensions/hx-live).
 
 The extensions are automatically available, you can just use their attributes directly (e.g. `hx-sse:connect`, `hx-ws:connect`).
 

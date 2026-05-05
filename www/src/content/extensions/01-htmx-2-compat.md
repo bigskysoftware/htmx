@@ -1,6 +1,8 @@
 ---
-title: "htmx 2.x Compatibility"
-description: "Compatibility layer for running htmx 2.x code on htmx 4"
+title: "htmx-2-compat"
+description: "Restore htmx 2.x defaults and event names on htmx 4"
+category: "Compatibility"
+icon: "icon-[mdi--backup-restore]"
 keywords: ["compatibility", "migration", "htmx 2", "legacy"]
 ---
 

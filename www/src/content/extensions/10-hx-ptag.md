@@ -1,6 +1,8 @@
 ---
-title: "PTag"
-description: "Per-element polling tags that let the server skip swaps when content hasn't changed."
+title: "hx-ptag"
+description: "Skip swaps when polled content hasn't changed"
+category: "Performance"
+icon: "icon-[mdi--tag-outline]"
 keywords: ["ptag", "polling", "etag", "conditional", "caching"]
 ---
 

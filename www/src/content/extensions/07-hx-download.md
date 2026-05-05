@@ -1,6 +1,8 @@
 ---
-title: "Download"
-description: "Save responses as file downloads with streaming progress."
+title: "hx-download"
+description: "Save responses as file downloads with progress events"
+category: "UX"
+icon: "icon-[mdi--download-outline]"
 keywords: ["download", "file", "save", "progress", "streaming"]
 ---
 

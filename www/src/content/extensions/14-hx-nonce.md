@@ -1,6 +1,8 @@
 ---
-title: "Nonce Security"
-description: "CSP nonce enforcement and Trusted Types support for htmx"
+title: "hx-nonce"
+description: "Gate attribute processing behind CSP nonces for XSS protection"
+category: "Security"
+icon: "icon-[mdi--shield-lock-outline]"
 keywords: ["nonce", "csp", "security", "trusted types", "xss"]
 ---
 

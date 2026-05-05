@@ -1,6 +1,8 @@
 ---
-title: "Upsert"
-description: "Update-or-insert swap strategy for dynamic lists"
+title: "hx-upsert"
+description: "Update or insert elements by ID for dynamic lists"
+category: "Swap behaviors"
+icon: "icon-[mdi--update]"
 keywords: ["upsert", "swap", "list", "update", "insert"]
 ---
 

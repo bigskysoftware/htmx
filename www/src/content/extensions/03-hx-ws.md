@@ -1,6 +1,8 @@
 ---
-title: "WebSockets"
-description: "Enable bidirectional real-time communication via WebSockets"
+title: "hx-ws"
+description: "Enable bidirectional connections over WebSockets (WS)"
+category: "Networking"
+icon: "icon-[mdi--swap-horizontal]"
 keywords: ["websockets", "ws", "real-time", "bidirectional", "socket"]
 ---
 

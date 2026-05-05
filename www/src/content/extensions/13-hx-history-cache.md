@@ -1,6 +1,8 @@
 ---
-title: "History Cache"
-description: "Client-side history cache in sessionStorage — restores pages instantly on back/forward navigation without a network request"
+title: "hx-history-cache"
+description: "Cache pages in sessionStorage for instant back/forward"
+category: "Performance"
+icon: "icon-[mdi--history]"
 keywords: ["history", "cache", "sessionStorage", "back", "forward", "navigation"]
 ---
 
@@ -89,7 +91,7 @@ document.addEventListener('htmx:history:cache:hit', (evt) => {
 
 ## Head Restoration
 
-By default the extension saves the `<head>` snapshot but does not restore it. Including the [`head-support`](/docs/extensions/head-support) extension enables full `<head>` restoration on cache hits — styles, scripts, and meta tags are merged back in alongside the body content.
+By default the extension saves the `<head>` snapshot but does not restore it. Including the [`head-support`](/extensions/hx-head) extension enables full `<head>` restoration on cache hits — styles, scripts, and meta tags are merged back in alongside the body content.
 
 ```html
 <script src="/path/to/ext/hx-history-cache.js"></script>
