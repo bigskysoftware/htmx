@@ -394,7 +394,7 @@ var htmx = (() => {
         }
 
         __buildIdentifier(elt) {
-            return `${elt.tagName.toLowerCase()}${elt.id ? '#' + elt.id : ''}`;
+            return `${elt.tagName.toLowerCase()}${elt.id ? '#' + encodeURI(elt.id) : ''}`;
         }
 
         __createCoreHeaders(elt) {
@@ -572,6 +572,7 @@ var htmx = (() => {
 
             } catch (error) {
                 ctx.status = "error: " + error;
+                console.warn(`htmx: request error for ${ctx.request.method} ${ctx.request.action}`, error, ctx)
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
                 clearTimeout(ctx.requestTimeout);
