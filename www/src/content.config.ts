@@ -84,7 +84,7 @@ const extensions = defineCollection({
         description: z.string().optional(),
         keywords: z.array(z.string()).optional(),
         thumbnail: z.string().optional(),
-        category: z.enum(['Networking', 'Performance', 'UX', 'Swap behaviors', 'Compatibility']).optional(),
+        category: z.enum(['Networking', 'Performance', 'UX', 'Swap behaviors', 'Compatibility', 'Security']).optional(),
         icon: z.string().optional(),
     }).strict(),
 });
