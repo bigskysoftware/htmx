@@ -389,6 +389,7 @@ var htmx = (() => {
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
                 this.__mergeConfig(configAttr, ctx.request);
+                ctx.request.mode = this.config.mode;  // mode is security-sensitive, never allow per-element override
             }
             return ctx;
         }
