@@ -183,7 +183,7 @@
 
     function qProxy(elts) {
         let positions = { before: 'beforebegin', after: 'afterend', start: 'afterbegin', end: 'beforeend' };
-        return new Proxy({}, {
+        let proxy = new Proxy({}, {
             get: (_, p) => {
                 if (p === 'count') return elts.length;
                 if (p === 'arr') return () => elts.slice();
@@ -193,10 +193,9 @@
                     for (let e of elts) for (let r of makeQ(e, e)(s).arr()) out.add(r);
                     return qProxy([...out]);
                 };
-                if (p === 'trigger') return (t, d, b) => elts.forEach(e => htmx.trigger(e, t, d, b));
-                if (p === 'insert') return (pos, s) =>
-                    elts.forEach(e => e.insertAdjacentHTML(positions[pos], s));
-                if (p === 'take') return (cls, from) => take(cls, elts, from);
+                if (p === 'trigger') return (t, d, b) => { elts.forEach(e => htmx.trigger(e, t, d, b)); return proxy; };
+                if (p === 'insert') return (pos, s) => { elts.forEach(e => e.insertAdjacentHTML(positions[pos], s)); return proxy; };
+                if (p === 'take') return (cls, from) => { take(cls, elts, from); return proxy; };
                 if (arrayMethods.has(p)) return elts[p].bind(elts);
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
@@ -209,6 +208,7 @@
                 return true;
             }
         });
+        return proxy;
     }
 
     function processLive(root) {

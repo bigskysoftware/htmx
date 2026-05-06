@@ -543,6 +543,16 @@ describe('hx-live extension', function () {
         htmx.q('last .foo in .bar').textContent.should.equal('b');
     });
 
+    it('proxy.trigger/insert/take return the proxy for chaining', function() {
+        playground().innerHTML = '<div class="src">a</div><div class="dst"></div><div class="dst"></div>';
+        let dst = htmx.q('.dst');
+        let r = dst.take('active', '.src').trigger('refresh').insert('end', '<span>x</span>');
+        r.count.should.equal(2);
+        playground().querySelectorAll('.dst.active').length.should.equal(2);
+        playground().querySelectorAll('.src.active').length.should.equal(0);
+        playground().querySelectorAll('.dst > span').length.should.equal(2);
+    });
+
     it('proxy exposes array methods (map, filter, reduce, forEach)', function() {
         playground().innerHTML = '<div class="x">a</div><div class="x">b</div><div class="x">c</div>';
         let proxy = htmx.q('.x');
