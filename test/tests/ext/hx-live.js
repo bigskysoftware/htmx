@@ -430,6 +430,24 @@ describe('hx-live extension', function () {
         proxy.count.should.equal(0);
     });
 
+    it('"sel in .multi" unions matches across all root elements in document order', function() {
+        playground().innerHTML =
+            '<section class="bar"><span class="foo">a</span></section>' +
+            '<section><span class="foo">skip</span></section>' +
+            '<section class="bar"><span class="foo">b</span><span class="foo">c</span></section>';
+        let proxy = htmx.q('.foo in .bar');
+        proxy.count.should.equal(3);
+        proxy.arr().map(e => e.textContent).should.deep.equal(['a', 'b', 'c']);
+    });
+
+    it('"first sel in .multi" picks the first match across all roots', function() {
+        playground().innerHTML =
+            '<section class="bar"><span class="foo">a</span></section>' +
+            '<section class="bar"><span class="foo">b</span></section>';
+        htmx.q('first .foo in .bar').textContent.should.equal('a');
+        htmx.q('last .foo in .bar').textContent.should.equal('b');
+    });
+
     it('q is exposed on the htmx public API', function() {
         assert.isFunction(htmx.q);
     });

@@ -111,12 +111,20 @@
             }
             let sel = selectorOrElt;
             let inMatch = sel.match(/^(.+)\s+in\s+(.+)$/);
-            let root = defaultRoot;
+            let roots = [defaultRoot];
             if (inMatch) {
                 sel = inMatch[1];
-                root = inMatch[2] === 'this' ? ctx : document.querySelector(inMatch[2]);
+                roots = inMatch[2] === 'this' ? [ctx] : [...document.querySelectorAll(inMatch[2])];
             }
-            if (!root) return qProxy([]);
+            if (!roots.length) return qProxy([]);
+            let qsa = s => {
+                if (roots.length === 1) return [...roots[0].querySelectorAll(s)];
+                let out = [], seen = new Set();
+                for (let r of roots) for (let e of r.querySelectorAll(s)) {
+                    if (!seen.has(e)) { seen.add(e); out.push(e); }
+                }
+                return out.sort((a, b) => a.compareDocumentPosition(b) & 4 ? -1 : 1);
+            };
             let dirMatch = sel.match(/^(next|prev|closest|first|last)\s+(.+)$/);
             let elts;
             if (dirMatch) {
@@ -126,7 +134,7 @@
                     let c = ctx.closest?.(s);
                     elts = c ? [c] : [];
                 } else {
-                    let all = [...root.querySelectorAll(s)];
+                    let all = qsa(s);
                     if (dir === 'first') elts = all.slice(0, 1);
                     else if (dir === 'last') elts = all.slice(-1);
                     else if (dir === 'next') {
@@ -138,7 +146,7 @@
                     }
                 }
             } else {
-                elts = [...root.querySelectorAll(sel)];
+                elts = qsa(sel);
             }
             return qProxy(elts);
         };
