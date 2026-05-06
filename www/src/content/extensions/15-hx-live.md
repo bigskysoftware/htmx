@@ -139,7 +139,7 @@ q('.tab.selected').take('selected', '.tab')  // move a class from peers to self
 
 ## Scope Helpers
 
-Inside `hx-live` (and [`hx-on`](/reference/attributes/hx-on)) expressions, three additional helpers are injected, all bound to the current element:
+Inside `hx-live` (and [`hx-on`](/reference/attributes/hx-on)) expressions, four additional helpers are injected, all bound to the current element:
 
 ```js
 wait(250)                       // resolves after 250ms with 250 (the ms value)
@@ -153,7 +153,12 @@ trigger('myEvent', { x: 1 })    // dispatches a CustomEvent from this element
 
 debounce(200)                   // resolves in 200ms; if called again before then,
                                 // the previous call rejects
+
+take('selected', '.tab')        // this element takes 'selected' from every .tab;
+                                // shorthand for q(this).take('selected', '.tab')
 ```
+
+`take(class, from)` is the same operation as the proxy method, with the current element as the implicit target — the natural form for `hx-on:click` handlers. Outside an expression scope, the global `htmx.take(class, target, from)` takes the explicit three-argument form, where `target` and `from` may each be a selector string, an element, or a NodeList/array.
 
 `hx-live` bodies are evaluated as the body of an `async` function, so you can use `await` at the top level — no need to wrap in `(async () => { ... })()`:
 
@@ -203,9 +208,9 @@ debounce(200)                   // resolves in 200ms; if called again before the
 
 ```html
 <nav>
-    <button hx-on:click="q(this).take('selected', 'button in closest nav')">A</button>
-    <button hx-on:click="q(this).take('selected', 'button in closest nav')">B</button>
-    <button hx-on:click="q(this).take('selected', 'button in closest nav')">C</button>
+    <button hx-on:click="take('selected', 'button in closest nav')">A</button>
+    <button hx-on:click="take('selected', 'button in closest nav')">B</button>
+    <button hx-on:click="take('selected', 'button in closest nav')">C</button>
 </nav>
 ```
 
