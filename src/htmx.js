@@ -1478,11 +1478,20 @@ var htmx = (() => {
             })
         }
 
-        takeClass(element, className, container = element.parentElement) {
-            for (let elt of this.__findAllExt(this.__normalizeElement(container), "." + className)) {
-                this.__removeClass(elt, className);
-            }
-            this.__addClass(element, className);
+        // Adds className to every element in `target`; strips it from every element in `source`.
+        // target/source accept: an element, a selector string (resolved via findAll),
+        // or any iterable of elements (NodeList, Array, q() proxy, etc.).
+        // If source is a single element, it expands to the element + its descendants matching .className —
+        // so `takeClass(button, 'active')` (default source = button.parentElement) drains 'active' from the
+        // surrounding subtree, then adds it to button.
+        takeClass(target, className, source) {
+            let targets = this.__toEltList(target);
+            if (source === undefined) source = targets[0]?.parentElement;
+            let sources = (source && source.nodeType && source.querySelectorAll)
+                ? [source, ...source.querySelectorAll('.' + className)]
+                : this.__toEltList(source);
+            for (let elt of sources) this.__removeClass(elt, className);
+            for (let elt of targets) this.__addClass(elt, className);
         }
 
         on(eventOrElt, eventOrCallback, callback) {
@@ -2255,6 +2264,14 @@ var htmx = (() => {
                 }
             }
             return restoreTasks;
+        }
+
+        __toEltList(x) {
+            if (x == null) return [];
+            if (typeof x === 'string') return [...this.findAll(x)];
+            if (x.nodeType) return [x];
+            if (Symbol.iterator in Object(x)) return [...x];
+            return [];
         }
 
         __addClass(elt, cls) {

@@ -420,7 +420,7 @@ htmx.config.metaCharacter = "-";
 ### JavaScript methods
 
 - `htmx.forEvent(eventName, timeout)`: returns a promise that resolves when an event fires
-- `htmx.takeClass(element, className, container)`: removes class from siblings, adds to element
+- `htmx.takeClass(target, className, source)`: strips `className` from elements in `source`, then adds it to elements in `target`. `target` and `source` each accept an element, a selector string, or any iterable of elements (NodeList, Array, q() proxy). When `source` is a single element it expands to that element plus its descendants matching `.className`. When `source` is omitted it defaults to `target`'s parent — so `htmx.takeClass(button, 'active')` strips `active` from the surrounding subtree and adds it to button.
 - `htmx.timeout(time)`: returns a promise that resolves after a delay
 
 ### Request context

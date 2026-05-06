@@ -57,18 +57,6 @@
         });
     }
 
-    function toElts(x) {
-        if (!x) return [];
-        if (typeof x === 'string') return [...document.querySelectorAll(x)];
-        if (x.nodeType) return [x];
-        return [...x];
-    }
-
-    function take(cls, target, source) {
-        for (let e of toElts(source)) e.classList.remove(cls);
-        for (let e of toElts(target)) e.classList.add(cls);
-    }
-
     // toggle('.foo')              — class toggle
     // toggle('@disabled')         — attribute presence toggle
     // toggle('@x=v')              — attribute presence-with-value (add v ↔ remove)
@@ -239,7 +227,7 @@
                 };
                 if (p === 'trigger') return (t, d, b) => { elts.forEach(e => htmx.trigger(e, t, d, b)); return proxy; };
                 if (p === 'insert') return (pos, s) => { elts.forEach(e => e.insertAdjacentHTML(positions[pos], s)); return proxy; };
-                if (p === 'take') return (cls, from) => { take(cls, elts, from); return proxy; };
+                if (p === 'take') return (cls, from) => { htmx.takeClass(elts, cls, from); return proxy; };
                 if (p === 'toggle') return (...specs) => { elts.forEach(e => specs.forEach(s => applyToggle(s, e))); return proxy; };
                 if (arrayMethods.has(p)) return elts[p].bind(elts);
                 let v = elts[0]?.[p];
@@ -285,8 +273,11 @@
         }
     }
 
-    htmx.q = s => makeQ(document.documentElement)(s);
-    htmx.take = take;
+    htmx.live = {
+        q: s => makeQ(document.documentElement)(s),
+        wait: makeWait(document),
+        debounce: makeDebounce()
+    };
 
     htmx.registerExtension('hx-live', {
         init: (internalAPI) => {
@@ -307,7 +298,7 @@
                 wait: makeWait(elt),
                 trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
                 debounce: getDebounce(elt),
-                take: (cls, source) => take(cls, elt, source)
+                take: (cls, source) => htmx.takeClass(elt, cls, source)
             });
         }
     });

@@ -64,7 +64,7 @@ When an `hx-live` element is removed from the document, its expression is droppe
 
 ## The `q()` Helper
 
-`q()` returns a thin proxy over a set of elements. It is exposed both as a global (`htmx.q`) and inside the scope of `hx-live` and [`hx-on`](/reference/attributes/hx-on) expressions.
+`q()` returns a thin proxy over a set of elements. It is exposed both as a global (`htmx.live.q`) and inside the scope of `hx-live` and [`hx-on`](/reference/attributes/hx-on) expressions.
 
 ### Selecting
 
@@ -89,7 +89,7 @@ q('.foo in #scope')   // restrict to a specific root
 q('.foo in this')     // restrict to the current element
 ```
 
-`next`, `prev`, and `closest` are relative to the element that owns the expression — i.e. `this` in `hx-live`/`hx-on`. They are only meaningful from inside an element-scoped expression; using them from the global `htmx.q` is undefined (there is no anchor element to resolve from).
+`next`, `prev`, and `closest` are relative to the element that owns the expression — i.e. `this` in `hx-live`/`hx-on`. They are only meaningful from inside an element-scoped expression; using them from the global `htmx.live.q` is undefined (there is no anchor element to resolve from).
 
 ### Reading and writing
 
@@ -158,7 +158,7 @@ take('selected', '.tab')        // this element takes 'selected' from every .tab
                                 // shorthand for q(this).take('selected', '.tab')
 ```
 
-`take(class, from)` is the same operation as the proxy method, with the current element as the implicit target — the natural form for `hx-on:click` handlers. Outside an expression scope, the global `htmx.take(class, target, from)` takes the explicit three-argument form, where `target` and `from` may each be a selector string, an element, or a NodeList/array.
+`take(class, from)` is the same operation as the proxy method, with the current element as the implicit target — the natural form for `hx-on:click` handlers. Outside an expression scope, use `htmx.live.q(target).take(class, from)`.
 
 `hx-live` bodies are evaluated as the body of an `async` function, so you can use `await` at the top level — no need to wrap in `(async () => { ... })()`:
 
@@ -229,13 +229,13 @@ take('selected', '.tab')        // this element takes 'selected' from every .tab
 
 ## Public API
 
-`htmx.q` is exposed for use outside of `hx-live`/`hx-on`:
+`htmx.live.q` is exposed for use outside of `hx-live`/`hx-on`:
 
 ```js
-htmx.q('.row').classList.add('loaded');
+htmx.live.q('.row').classList.add('loaded');
 ```
 
-The selector directionals (`next`, `prev`, `closest`) need an anchor element to resolve from, so they are only meaningful inside `hx-live`/`hx-on` expressions, not from the global `htmx.q`.
+The selector directionals (`next`, `prev`, `closest`) need an anchor element to resolve from, so they are only meaningful inside `hx-live`/`hx-on` expressions, not from the global `htmx.live.q`.
 
 ## Notes
 

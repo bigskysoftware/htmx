@@ -288,7 +288,7 @@ describe('hx-live extension', function () {
     });
 
     it('debounce(ms, fn) does not return a promise', function() {
-        // Use the htmx.q-adjacent debounce factory by running a live expression and capturing the return.
+        // Use the htmx.live.q-adjacent debounce factory by running a live expression and capturing the return.
         window.__debounceReturn = 'sentinel';
         playground().innerHTML = `
             <output hx-live="window.__debounceReturn = debounce(5, () => {});"></output>
@@ -357,32 +357,32 @@ describe('hx-live extension', function () {
 
     it('q(string) selects elements', function() {
         playground().innerHTML = '<div class="x">a</div><div class="x">b</div>';
-        let proxy = htmx.q('.x');
+        let proxy = htmx.live.q('.x');
         proxy.count.should.equal(2);
     });
 
     it('q returns 0-count proxy when no match', function() {
-        let proxy = htmx.q('.does-not-exist-anywhere');
+        let proxy = htmx.live.q('.does-not-exist-anywhere');
         proxy.count.should.equal(0);
     });
 
     it('q(element) wraps a single element', function() {
         playground().innerHTML = '<div id="x"></div>';
         let elt = playground().querySelector('#x');
-        let proxy = htmx.q(elt);
+        let proxy = htmx.live.q(elt);
         proxy.count.should.equal(1);
     });
 
     it('q(iterable) wraps multiple elements', function() {
         playground().innerHTML = '<div class="x"></div><div class="x"></div>';
         let nodes = playground().querySelectorAll('.x');
-        let proxy = htmx.q(nodes);
+        let proxy = htmx.live.q(nodes);
         proxy.count.should.equal(2);
     });
 
     it('arr() returns a real array', function() {
         playground().innerHTML = '<div class="x"></div><div class="x"></div>';
-        let arr = htmx.q('.x').arr();
+        let arr = htmx.live.q('.x').arr();
         assert.isArray(arr);
         arr.length.should.equal(2);
     });
@@ -390,18 +390,18 @@ describe('hx-live extension', function () {
     it('iterable via for..of', function() {
         playground().innerHTML = '<div class="x" data-i="0"></div><div class="x" data-i="1"></div>';
         let collected = [];
-        for (let e of htmx.q('.x')) collected.push(e.dataset.i);
+        for (let e of htmx.live.q('.x')) collected.push(e.dataset.i);
         collected.should.deep.equal(['0', '1']);
     });
 
     it('property read returns first element value', function() {
         playground().innerHTML = '<input class="x" value="first"><input class="x" value="second">';
-        htmx.q('.x').value.should.equal('first');
+        htmx.live.q('.x').value.should.equal('first');
     });
 
     it('property set propagates to all elements', function() {
         playground().innerHTML = '<input class="x" value="a"><input class="x" value="b">';
-        htmx.q('.x').value = 'changed';
+        htmx.live.q('.x').value = 'changed';
         let inputs = playground().querySelectorAll('.x');
         inputs[0].value.should.equal('changed');
         inputs[1].value.should.equal('changed');
@@ -409,13 +409,13 @@ describe('hx-live extension', function () {
 
     it('chained property access returns proxy of subproperties', function() {
         playground().innerHTML = '<div class="x" data-foo="a"></div><div class="x" data-foo="b"></div>';
-        let proxy = htmx.q('.x').dataset;
+        let proxy = htmx.live.q('.x').dataset;
         proxy.foo.should.equal('a');
     });
 
     it('method invocation calls each element, returns first result', function() {
         playground().innerHTML = '<div class="x"><span>first</span></div><div class="x"><span>second</span></div>';
-        let result = htmx.q('.x').querySelector('span');
+        let result = htmx.live.q('.x').querySelector('span');
         result.textContent.should.equal('first');
     });
 
@@ -425,13 +425,13 @@ describe('hx-live extension', function () {
         for (let e of playground().querySelectorAll('.x')) {
             e.addEventListener('zap', () => fires++);
         }
-        htmx.q('.x').trigger('zap');
+        htmx.live.q('.x').trigger('zap');
         fires.should.equal(2);
     });
 
     it('q().insert() inserts HTML at the given position', function() {
         playground().innerHTML = '<div class="x"><p>orig</p></div>';
-        htmx.q('.x').insert('end', '<span class="added">new</span>');
+        htmx.live.q('.x').insert('end', '<span class="added">new</span>');
         playground().querySelectorAll('.added').length.should.equal(1);
     });
 
@@ -442,7 +442,7 @@ describe('hx-live extension', function () {
             <button class="tab">c</button>
         `;
         let target = playground().querySelectorAll('.tab')[2];
-        htmx.q(target).take('selected', '.tab');
+        htmx.live.q(target).take('selected', '.tab');
 
         let tabs = playground().querySelectorAll('.tab');
         tabs[0].classList.contains('selected').should.equal(false);
@@ -450,13 +450,13 @@ describe('hx-live extension', function () {
         tabs[2].classList.contains('selected').should.equal(true);
     });
 
-    it('htmx.take() moves a class between elements (selectors)', function() {
+    it('htmx.live.q(target).take() moves a class between elements (selectors)', function() {
         playground().innerHTML = `
             <button class="tab selected">a</button>
             <button class="tab">b</button>
             <button class="tab" id="t3">c</button>
         `;
-        htmx.take('selected', '#t3', '.tab');
+        htmx.live.q('#t3').take('selected', '.tab');
 
         let tabs = playground().querySelectorAll('.tab');
         tabs[0].classList.contains('selected').should.equal(false);
@@ -484,33 +484,33 @@ describe('hx-live extension', function () {
     it('directional: closest', function() {
         playground().innerHTML = '<section><div id="inner"></div></section>';
         let inner = playground().querySelector('#inner');
-        let proxy = htmx.q(inner);
+        let proxy = htmx.live.q(inner);
         proxy.count.should.equal(1);
     });
 
     it('directional: first picks the first match', function() {
         playground().innerHTML = '<i class="z">a</i><i class="z">b</i><i class="z">c</i>';
-        let proxy = htmx.q('first .z');
+        let proxy = htmx.live.q('first .z');
         proxy.count.should.equal(1);
         proxy.textContent.should.equal('a');
     });
 
     it('directional: last picks the last match', function() {
         playground().innerHTML = '<i class="z">a</i><i class="z">b</i><i class="z">c</i>';
-        let proxy = htmx.q('last .z');
+        let proxy = htmx.live.q('last .z');
         proxy.count.should.equal(1);
         proxy.textContent.should.equal('c');
     });
 
     it('"sel in #scope" scopes to a different root', function() {
         playground().innerHTML = '<div class="z">outside</div><section id="scope"><div class="z">inside</div></section>';
-        let proxy = htmx.q('.z in #scope');
+        let proxy = htmx.live.q('.z in #scope');
         proxy.count.should.equal(1);
         proxy.textContent.should.equal('inside');
     });
 
     it('"sel in #unknown" returns empty proxy when scope is missing', function() {
-        let proxy = htmx.q('.z in #does-not-exist');
+        let proxy = htmx.live.q('.z in #does-not-exist');
         proxy.count.should.equal(0);
     });
 
@@ -519,7 +519,7 @@ describe('hx-live extension', function () {
             '<section class="bar"><span class="foo">a</span></section>' +
             '<section><span class="foo">skip</span></section>' +
             '<section class="bar"><span class="foo">b</span><span class="foo">c</span></section>';
-        let proxy = htmx.q('.foo in .bar');
+        let proxy = htmx.live.q('.foo in .bar');
         proxy.count.should.equal(3);
         proxy.arr().map(e => e.textContent).should.deep.equal(['a', 'b', 'c']);
     });
@@ -559,13 +559,13 @@ describe('hx-live extension', function () {
         playground().innerHTML =
             '<section class="bar"><span class="foo">a</span></section>' +
             '<section class="bar"><span class="foo">b</span></section>';
-        htmx.q('first .foo in .bar').textContent.should.equal('a');
-        htmx.q('last .foo in .bar').textContent.should.equal('b');
+        htmx.live.q('first .foo in .bar').textContent.should.equal('a');
+        htmx.live.q('last .foo in .bar').textContent.should.equal('b');
     });
 
     it('toggle(".foo") toggles a class', function() {
         playground().innerHTML = '<div class="x"></div><div class="x active"></div>';
-        let p = htmx.q('.x');
+        let p = htmx.live.q('.x');
         p.toggle('.active');
         playground().querySelectorAll('.x.active').length.should.equal(1);
         playground().querySelectorAll('.x:not(.active)').length.should.equal(1);
@@ -573,7 +573,7 @@ describe('hx-live extension', function () {
 
     it('toggle("@name") toggles attribute presence', function() {
         playground().innerHTML = '<input class="x"><input class="x" disabled>';
-        htmx.q('.x').toggle('@disabled');
+        htmx.live.q('.x').toggle('@disabled');
         let inputs = playground().querySelectorAll('.x');
         inputs[0].hasAttribute('disabled').should.equal(true);
         inputs[1].hasAttribute('disabled').should.equal(false);
@@ -581,7 +581,7 @@ describe('hx-live extension', function () {
 
     it('toggle("@name=v") presence-toggles attribute with value', function() {
         playground().innerHTML = '<button id="a"></button><button id="b" aria-pressed="false"></button>';
-        let p = htmx.q('button');
+        let p = htmx.live.q('button');
         p.toggle('@aria-pressed=true');
         playground().querySelector('#a').getAttribute('aria-pressed').should.equal('true');
         playground().querySelector('#b').hasAttribute('aria-pressed').should.equal(false);
@@ -590,7 +590,7 @@ describe('hx-live extension', function () {
     it('toggle("@name=a|b") cycles attribute through values strictly', function() {
         playground().innerHTML = '<button></button>';
         let btn = playground().querySelector('button');
-        let p = htmx.q('button');
+        let p = htmx.live.q('button');
         p.toggle('@aria-pressed=true|false');
         btn.getAttribute('aria-pressed').should.equal('true');
         p.toggle('@aria-pressed=true|false');
@@ -602,7 +602,7 @@ describe('hx-live extension', function () {
     it('toggle("@name=v|") cycles attribute between value and absent', function() {
         playground().innerHTML = '<div></div>';
         let div = playground().querySelector('div');
-        let p = htmx.q('div');
+        let p = htmx.live.q('div');
         p.toggle('@data-state=on|');
         div.getAttribute('data-state').should.equal('on');
         p.toggle('@data-state=on|');
@@ -614,13 +614,13 @@ describe('hx-live extension', function () {
     it('toggle cycle snaps to first value when current is out-of-list', function() {
         playground().innerHTML = '<div data-mode="weird"></div>';
         let div = playground().querySelector('div');
-        htmx.q('div').toggle('@data-mode=light|dark|auto');
+        htmx.live.q('div').toggle('@data-mode=light|dark|auto');
         div.getAttribute('data-mode').should.equal('light');
     });
 
     it('toggle("*prop=v") presence-toggles a style', function() {
         playground().innerHTML = '<div id="a"></div><div id="b" style="display: none"></div>';
-        let p = htmx.q('div');
+        let p = htmx.live.q('div');
         p.toggle('*display=none');
         playground().querySelector('#a').style.display.should.equal('none');
         playground().querySelector('#b').style.display.should.equal('');
@@ -629,7 +629,7 @@ describe('hx-live extension', function () {
     it('toggle("*prop=a|b") cycles a style through values', function() {
         playground().innerHTML = '<div></div>';
         let div = playground().querySelector('div');
-        let p = htmx.q('div');
+        let p = htmx.live.q('div');
         p.toggle('*display=block|none|flex');
         div.style.display.should.equal('block');
         p.toggle('*display=block|none|flex');
@@ -643,7 +643,7 @@ describe('hx-live extension', function () {
     it('toggle accepts multiple specs and is chainable', function() {
         playground().innerHTML = '<button></button>';
         let btn = playground().querySelector('button');
-        let r = htmx.q('button').toggle('.active', '@aria-pressed=true', '*display=block').trigger('changed');
+        let r = htmx.live.q('button').toggle('.active', '@aria-pressed=true', '*display=block').trigger('changed');
         r.count.should.equal(1);
         btn.classList.contains('active').should.equal(true);
         btn.getAttribute('aria-pressed').should.equal('true');
@@ -652,7 +652,7 @@ describe('hx-live extension', function () {
 
     it('proxy.trigger/insert/take return the proxy for chaining', function() {
         playground().innerHTML = '<div class="src">a</div><div class="dst"></div><div class="dst"></div>';
-        let dst = htmx.q('.dst');
+        let dst = htmx.live.q('.dst');
         let r = dst.take('active', '.src').trigger('refresh').insert('end', '<span>x</span>');
         r.count.should.equal(2);
         playground().querySelectorAll('.dst.active').length.should.equal(2);
@@ -662,7 +662,7 @@ describe('hx-live extension', function () {
 
     it('proxy exposes array methods (map, filter, reduce, forEach)', function() {
         playground().innerHTML = '<div class="x">a</div><div class="x">b</div><div class="x">c</div>';
-        let proxy = htmx.q('.x');
+        let proxy = htmx.live.q('.x');
         proxy.map(e => e.textContent).should.deep.equal(['a', 'b', 'c']);
         proxy.filter(e => e.textContent !== 'b').length.should.equal(2);
         proxy.reduce((acc, e) => acc + e.textContent, '').should.equal('abc');
@@ -676,7 +676,14 @@ describe('hx-live extension', function () {
     });
 
     it('q is exposed on the htmx public API', function() {
-        assert.isFunction(htmx.q);
+        assert.isFunction(htmx.live.q);
+    });
+
+    it('htmx.live namespace exposes q, wait, and debounce', function() {
+        assert.isObject(htmx.live);
+        assert.isFunction(htmx.live.q);
+        assert.isFunction(htmx.live.wait);
+        assert.isFunction(htmx.live.debounce);
     });
 
     it('q in hx-live scope resolves directionals relative to the element', async function() {
@@ -701,7 +708,7 @@ describe('hx-live extension', function () {
             <div class="field"><input class="x"></div>
             <div class="field"><input class="x invalid"></div>
         `;
-        let proxy = htmx.q('.invalid').q('closest .field');
+        let proxy = htmx.live.q('.invalid').q('closest .field');
         proxy.count.should.equal(2);
     });
 
@@ -710,7 +717,7 @@ describe('hx-live extension', function () {
             <section><span class="i">a</span><span class="i">b</span></section>
             <section><span class="i">c</span><span class="i">d</span></section>
         `;
-        let proxy = htmx.q('section').q('first .i');
+        let proxy = htmx.live.q('section').q('first .i');
         proxy.count.should.equal(2);
         proxy.arr().map(e => e.textContent).should.deep.equal(['a', 'c']);
     });
@@ -721,7 +728,7 @@ describe('hx-live extension', function () {
             <article><p class="t">b</p></article>
             <p class="t">outside</p>
         `;
-        let proxy = htmx.q('article').q('.t');
+        let proxy = htmx.live.q('article').q('.t');
         proxy.count.should.equal(2);
     });
 
@@ -729,7 +736,7 @@ describe('hx-live extension', function () {
         playground().innerHTML = `
             <div class="parent"><div class="parent"><span class="x"></span></div></div>
         `;
-        let proxy = htmx.q('.parent').q('.x');
+        let proxy = htmx.live.q('.parent').q('.x');
         proxy.count.should.equal(1);
     });
 
