@@ -453,6 +453,7 @@ var htmx = (() => {
             let body = this.__collectFormData(elt, form, evt.submitter, ctx.request.validate)
             if (!body) return  // Validation failed
             let valsResult = this.__getAttributeObject(elt, "hx-vals", obj => {
+                ctx.vals = obj; // make available for json extensions
                 for (let key in obj) body.set(key, obj[key]);
             });
             if (valsResult) await valsResult; // Only await if it returned a promise
@@ -1697,25 +1698,22 @@ var htmx = (() => {
         // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
         // Modifiers (dot-separated): .prevent .stop .halt .once .self .outside .capture .passive .cc
         __handleHxOnAttributes(node) {
-            let searchStrings = this.__prefixes("hx-on:").map(p => this.__maybeAdjustMetaCharacter(p));
-            let mc = this.config.metaCharacter || ':';
+            let mc = this.__maybeAdjustMetaCharacter(':');
+            let searchStrings = this.__prefixes(`hx-on${mc}`);
             for (let attr of node.getAttributeNames()) {
                 let searchString = searchStrings.find(s => attr.startsWith(s));
                 if (!searchString) continue;
-                let [evtName, ...mods] = attr.substring(searchString.length).split('.');
-                let has = m => mods.includes(m);
+                let [evtName, ...modList] = attr.substring(searchString.length).split('.');
+                let mod = Object.fromEntries(modList.map(m => [m, true]));
                 if (evtName.startsWith(mc)) evtName = 'htmx' + evtName;
-                if (has('cc')) evtName = evtName.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+                if (mod.cc) evtName = evtName.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
                 let code = node.getAttribute(attr);
-                let target = has('outside') ? document : node;
-                let opts = { capture: has('capture'), passive: has('passive') };
-                let halt = has('halt');
+                let target = mod.outside ? document : node;
                 let handler = async (evt) => {
-                    if (has('self') && evt.target !== node) return;
-                    if (has('outside') && node.contains(evt.target)) return;
-                    if (halt || has('prevent')) evt.preventDefault();
-                    if (halt || has('stop')) evt.stopPropagation();
-                    if (has('once')) target.removeEventListener(evtName, handler, opts);
+                    if (mod.self && evt.target !== node) return;
+                    if (mod.outside && node.contains(evt.target)) return;
+                    if (mod.halt || mod.prevent) evt.preventDefault();
+                    if (mod.halt || mod.stop) evt.stopPropagation();
                     try {
                         await this.__executeJavaScript(node, { event: evt },
                             `with(event?.detail||{}){${code}}`, false);
@@ -1723,7 +1721,8 @@ var htmx = (() => {
                         if (typeof e !== 'symbol') console.error(e);
                     }
                 };
-                target.addEventListener(evtName, handler, opts);
+                // mod object passes capture, passive, and once to event listener
+                target.addEventListener(evtName, handler, mod);
                 this.__htmxProp(node).listeners.push({fromElt: target, eventName: evtName, handler});
             }
         }
