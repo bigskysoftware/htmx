@@ -197,4 +197,39 @@ describe('hx-on attribute modifiers', function() {
         window.fooCount.should.equal(1);
         delete window.fooCount;
     });
+
+    it('.self.once only counts toward "once" when self condition matches', function() {
+        // A bubbled event from a child should NOT consume the .once budget.
+        window.fooCount = 0;
+        playground().innerHTML = '<div hx-on:click.self.once="window.fooCount++"><span>child</span></div>';
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        let span = playground().querySelector('span');
+        span.click(); // bubbles, target=span → skipped, listener should remain
+        span.click(); // same, listener still there
+        window.fooCount.should.equal(0);
+        div.click(); // target=div → fires; THIS is the once
+        window.fooCount.should.equal(1);
+        div.click(); // listener now removed
+        window.fooCount.should.equal(1);
+        delete window.fooCount;
+    });
+
+    it('.outside.once only counts toward "once" when outside condition matches', function() {
+        window.outsideCount = 0;
+        playground().innerHTML = '<button hx-on:click.outside.once="window.outsideCount++">x</button><div id="other"></div>';
+        htmx.process(playground());
+        let btn = playground().querySelector('button');
+        let other = playground().querySelector('#other');
+        btn.click(); // inside → skipped, listener should remain
+        btn.click(); // same
+        window.outsideCount.should.equal(0);
+        other.click(); // outside → fires; consumes once
+        window.outsideCount.should.equal(1);
+        other.click(); // listener now removed
+        window.outsideCount.should.equal(1);
+        // Clean up document-level listener if any remain
+        for (let l of (btn._htmx?.listeners || [])) l.fromElt.removeEventListener(l.eventName, l.handler);
+        delete window.outsideCount;
+    });
 })
