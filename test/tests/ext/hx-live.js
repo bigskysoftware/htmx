@@ -563,6 +563,93 @@ describe('hx-live extension', function () {
         htmx.q('last .foo in .bar').textContent.should.equal('b');
     });
 
+    it('toggle(".foo") toggles a class', function() {
+        playground().innerHTML = '<div class="x"></div><div class="x active"></div>';
+        let p = htmx.q('.x');
+        p.toggle('.active');
+        playground().querySelectorAll('.x.active').length.should.equal(1);
+        playground().querySelectorAll('.x:not(.active)').length.should.equal(1);
+    });
+
+    it('toggle("@name") toggles attribute presence', function() {
+        playground().innerHTML = '<input class="x"><input class="x" disabled>';
+        htmx.q('.x').toggle('@disabled');
+        let inputs = playground().querySelectorAll('.x');
+        inputs[0].hasAttribute('disabled').should.equal(true);
+        inputs[1].hasAttribute('disabled').should.equal(false);
+    });
+
+    it('toggle("@name=v") presence-toggles attribute with value', function() {
+        playground().innerHTML = '<button id="a"></button><button id="b" aria-pressed="false"></button>';
+        let p = htmx.q('button');
+        p.toggle('@aria-pressed=true');
+        playground().querySelector('#a').getAttribute('aria-pressed').should.equal('true');
+        playground().querySelector('#b').hasAttribute('aria-pressed').should.equal(false);
+    });
+
+    it('toggle("@name=a|b") cycles attribute through values strictly', function() {
+        playground().innerHTML = '<button></button>';
+        let btn = playground().querySelector('button');
+        let p = htmx.q('button');
+        p.toggle('@aria-pressed=true|false');
+        btn.getAttribute('aria-pressed').should.equal('true');
+        p.toggle('@aria-pressed=true|false');
+        btn.getAttribute('aria-pressed').should.equal('false');
+        p.toggle('@aria-pressed=true|false');
+        btn.getAttribute('aria-pressed').should.equal('true');
+    });
+
+    it('toggle("@name=v|") cycles attribute between value and absent', function() {
+        playground().innerHTML = '<div></div>';
+        let div = playground().querySelector('div');
+        let p = htmx.q('div');
+        p.toggle('@data-state=on|');
+        div.getAttribute('data-state').should.equal('on');
+        p.toggle('@data-state=on|');
+        div.hasAttribute('data-state').should.equal(false);
+        p.toggle('@data-state=on|');
+        div.getAttribute('data-state').should.equal('on');
+    });
+
+    it('toggle cycle snaps to first value when current is out-of-list', function() {
+        playground().innerHTML = '<div data-mode="weird"></div>';
+        let div = playground().querySelector('div');
+        htmx.q('div').toggle('@data-mode=light|dark|auto');
+        div.getAttribute('data-mode').should.equal('light');
+    });
+
+    it('toggle("*prop=v") presence-toggles a style', function() {
+        playground().innerHTML = '<div id="a"></div><div id="b" style="display: none"></div>';
+        let p = htmx.q('div');
+        p.toggle('*display=none');
+        playground().querySelector('#a').style.display.should.equal('none');
+        playground().querySelector('#b').style.display.should.equal('');
+    });
+
+    it('toggle("*prop=a|b") cycles a style through values', function() {
+        playground().innerHTML = '<div></div>';
+        let div = playground().querySelector('div');
+        let p = htmx.q('div');
+        p.toggle('*display=block|none|flex');
+        div.style.display.should.equal('block');
+        p.toggle('*display=block|none|flex');
+        div.style.display.should.equal('none');
+        p.toggle('*display=block|none|flex');
+        div.style.display.should.equal('flex');
+        p.toggle('*display=block|none|flex');
+        div.style.display.should.equal('block');
+    });
+
+    it('toggle accepts multiple specs and is chainable', function() {
+        playground().innerHTML = '<button></button>';
+        let btn = playground().querySelector('button');
+        let r = htmx.q('button').toggle('.active', '@aria-pressed=true', '*display=block').trigger('changed');
+        r.count.should.equal(1);
+        btn.classList.contains('active').should.equal(true);
+        btn.getAttribute('aria-pressed').should.equal('true');
+        btn.style.display.should.equal('block');
+    });
+
     it('proxy.trigger/insert/take return the proxy for chaining', function() {
         playground().innerHTML = '<div class="src">a</div><div class="dst"></div><div class="dst"></div>';
         let dst = htmx.q('.dst');

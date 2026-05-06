@@ -69,6 +69,47 @@
         for (let e of toElts(target)) e.classList.add(cls);
     }
 
+    // toggle('.foo')              — class toggle
+    // toggle('@disabled')         — attribute presence toggle
+    // toggle('@x=v')              — attribute presence-with-value (add v ↔ remove)
+    // toggle('@x=a|b|c')          — strict cycle through values (always present)
+    // toggle('@x=on|')            — cycle 'on' ↔ absent (trailing empty = absent slot)
+    // toggle('*display=none')     — style presence-with-value (set ↔ clear)
+    // toggle('*display=a|b')      — style cycle through values
+    let toggleRe = /^([.@*])([^=]+)(?:=(.*))?$/;
+    function applyToggle(spec, e) {
+        let m = spec.trim().match(toggleRe);
+        if (!m) return;
+        let [, kind, name, vals] = m;
+        name = name.trim();
+        let values = vals === undefined ? null : vals.split('|').map(v => v.trim());
+        if (kind === '.') {
+            e.classList.toggle(name);
+        } else if (kind === '@') {
+            if (!values) {
+                e.toggleAttribute(name);
+            } else if (values.length === 1) {
+                if (e.hasAttribute(name)) e.removeAttribute(name);
+                else e.setAttribute(name, values[0]);
+            } else {
+                let cur = e.getAttribute(name);
+                let idx = values.indexOf(cur === null ? '' : cur);
+                let next = values[(idx + 1) % values.length];
+                if (next === '') e.removeAttribute(name);
+                else e.setAttribute(name, next);
+            }
+        } else { // '*'
+            if (!values) return;
+            if (values.length === 1) {
+                if (e.style[name]) e.style[name] = '';
+                else e.style[name] = values[0];
+            } else {
+                let idx = values.indexOf(e.style[name] || '');
+                e.style[name] = values[(idx + 1) % values.length];
+            }
+        }
+    }
+
     function makeDebounce() {
         // Channels keyed by fn.toString() for the closure form; null for the promise form.
         // Promise-form cancellation works by rejecting the awaiting async — no callsite key needed.
@@ -199,6 +240,7 @@
                 if (p === 'trigger') return (t, d, b) => { elts.forEach(e => htmx.trigger(e, t, d, b)); return proxy; };
                 if (p === 'insert') return (pos, s) => { elts.forEach(e => e.insertAdjacentHTML(positions[pos], s)); return proxy; };
                 if (p === 'take') return (cls, from) => { take(cls, elts, from); return proxy; };
+                if (p === 'toggle') return (...specs) => { elts.forEach(e => specs.forEach(s => applyToggle(s, e))); return proxy; };
                 if (arrayMethods.has(p)) return elts[p].bind(elts);
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
