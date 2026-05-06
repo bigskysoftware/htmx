@@ -240,6 +240,13 @@ htmx.live.q('.row').classList.add('loaded');
 
 The selector directionals (`next`, `prev`, `closest`) need an anchor element to resolve from, so they are only meaningful inside `hx-live`/`hx-on` expressions, not from the global `htmx.live.q`.
 
+`htmx.live.refresh()` triggers a recompute of every live expression on the page. Use this when an expression reads from a source the system cannot observe (a JavaScript variable, a getter, an external store) and you've just mutated that source — there's no DOM event to drive the recompute, so you nudge it manually.
+
+```js
+window.appState = 'loading';
+htmx.live.refresh();   // pushes the new value out to any expression reading appState
+```
+
 ## Notes
 
 * Live expressions run on **any** DOM mutation — the system intentionally does not do per-variable dependency tracking. The microtask coalescing keeps this cheap, but expensive expressions should opt into `debounce` or guard themselves.
