@@ -672,10 +672,31 @@ describe('hx-live extension', function () {
         assert.isFunction(htmx.live.q);
     });
 
-    it('htmx.live namespace exposes q and debounce', function() {
+    it('htmx.live namespace exposes q, debounce, and refresh', function() {
         assert.isObject(htmx.live);
         assert.isFunction(htmx.live.q);
         assert.isFunction(htmx.live.debounce);
+        assert.isFunction(htmx.live.refresh);
+    });
+
+    it('htmx.live.refresh() recomputes live expressions even when no DOM event triggered', async function() {
+        // Using a non-reactive external value: the expression reads window.__refreshSrc.
+        // Mutating that value will not trigger any DOM input/change/mutation listener,
+        // so without an explicit refresh() the expression won't recompute.
+        window.__refreshSrc = 'first';
+        let elt = createProcessedHTML(
+            '<output hx-live="this.dataset.v = window.__refreshSrc"></output>'
+        );
+        elt.dataset.v.should.equal('first');
+
+        window.__refreshSrc = 'second';
+        // No DOM mutation happened; the expression should still hold the old value.
+        elt.dataset.v.should.equal('first');
+
+        htmx.live.refresh();
+        await htmx.timeout(5);
+        elt.dataset.v.should.equal('second');
+        delete window.__refreshSrc;
     });
 
     it('q in hx-live scope resolves directionals relative to the element', async function() {

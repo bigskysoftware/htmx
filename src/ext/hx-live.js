@@ -249,7 +249,8 @@
 
     htmx.live = {
         q: s => makeQ(document.documentElement)(s),
-        debounce: makeDebounce()
+        debounce: makeDebounce(),
+        refresh: () => schedule()
     };
 
     htmx.registerExtension('hx-live', {
