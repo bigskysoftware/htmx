@@ -37,7 +37,7 @@ They are listed below:
 
 </div>
 
-You can set most options directly in JavaScript, or you can use a `meta` tag:
+You can set most options directly in JavaScript, or you can use a `meta` tag (accepts [HCON](/docs/core-concepts/hcon#meta-name-htmx-config) or JSON):
 
 > **Note:** Some options are read only once during initialisation and must be set via the `meta` tag to take effect. These include `prefix`, `extensions`, and `metaCharacter`.
 
