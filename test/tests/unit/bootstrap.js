@@ -193,6 +193,8 @@ describe('bootstrap unit tests', function() {
             'find',
             'findAll',
             'forEvent',
+            'logAll',
+            'logNone',
             'nextFrame',
             'on',
             'onLoad',
