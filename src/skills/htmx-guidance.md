@@ -606,13 +606,12 @@ Most error events (`htmx:sendError`, `htmx:swapError`, `htmx:targetError`, `htmx
 | htmx 2                                        | htmx 4                      | Notes                            |
 |-----------------------------------------------|-----------------------------|----------------------------------|
 | `htmx.defineExtension()`                      | `htmx.registerExtension()`  | Renamed                          |
-| `htmx.logAll()`                               | `htmx.config.logAll = true` | Now a config flag                |
 | `htmx.addClass()`, `htmx.removeClass()`, etc. | Native DOM methods          | Removed; use `element.classList` |
 | `htmx.off()`                                  | `removeEventListener()`     | Removed; use native              |
 | `htmx.remove()`                               | `element.remove()`          | Removed; use native              |
 | `htmx.swap(target, content, spec)`            | `htmx.swap(ctx)`            | Signature changed                |
 
-htmx 4 adds: `htmx.forEvent()`, `htmx.timeout()`.
+htmx 4 adds: `htmx.forEvent()`, `htmx.timeout()`, `htmx.nextFrame()`, `htmx.logger` (pluggable).
 
 ### Swap Styles
 

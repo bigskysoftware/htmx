@@ -243,8 +243,6 @@ Still supported: `HX-Trigger`, `HX-Push-Url`, `HX-Replace-Url`, `HX-Redirect`, `
 | htmx 2                       | htmx 4                             |
 |------------------------------|------------------------------------|
 | `htmx.defineExtension(...)`  | `htmx.registerExtension(...)`      |
-| `htmx.logAll()`              | `htmx.config.logAll = true`        |
-| `htmx.logNone()`             | `htmx.config.logAll = false`       |
 | `htmx.addClass(elt, cls)`    | `elt.classList.add(cls)`           |
 | `htmx.removeClass(elt, cls)` | `elt.classList.remove(cls)`        |
 | `htmx.toggleClass(elt, cls)` | `elt.classList.toggle(cls)`        |

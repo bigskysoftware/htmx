@@ -12,11 +12,26 @@ Figuring out why something *isn't* happening, for example, can be difficult if y
 
 Here are some tips:
 
-The first debugging tool you can use is to set `htmx.config.logAll` to `true`. This will log every event that htmx
-triggers and will allow you to see exactly what the library is doing.
+Errors and warnings flow to the console by default. To also see every event htmx dispatches, call `htmx.logAll()`
+or set `htmx.config.logAll = true`:
 
 ```javascript
-htmx.config.logAll = true;
+htmx.logAll();
+```
+
+To silence everything (including errors and warnings):
+
+```javascript
+htmx.logNone();
+```
+
+To route logs to a custom sink (Sentry, your own UI, etc.), replace the logger:
+
+```javascript
+htmx.logger = (level, message, context) => {
+    // level: 'event' | 'warn' | 'error'
+    mySink(level, message, context);
+};
 ```
 
 Of course, that won't tell you why htmx *isn't* doing something. You might also not know *what* events a DOM

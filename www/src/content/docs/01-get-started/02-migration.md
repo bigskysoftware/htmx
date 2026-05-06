@@ -306,13 +306,12 @@ Unchanged: [`HX-Trigger`](/reference/headers/HX-Trigger), [`HX-Location`](/refer
 | `htmx.remove()`      | `element.remove()`                                                     |
 | `htmx.off()`         | `removeEventListener()` (`htmx.on()` returns the callback)             |
 | `htmx.location()`    | `htmx.ajax()`                                                          |
-| `htmx.logAll()`      | [`htmx.config.logAll`](/reference/config/htmx-config-logAll) `= true`  |
-| `htmx.logNone()`     | [`htmx.config.logAll`](/reference/config/htmx-config-logAll) `= false` |
 
 **Renamed:** `htmx.defineExtension()` is now `htmx.registerExtension()`.
 
-**Still available:** `htmx.ajax()`, `htmx.config`, `htmx.find()`, `htmx.findAll()`, `htmx.on()`, `htmx.onLoad()`,
-`htmx.parseInterval()`, `htmx.process()`, `htmx.swap()`, `htmx.trigger()`.
+**Still available:** `htmx.ajax()`, `htmx.config`, `htmx.find()`, `htmx.findAll()`, `htmx.logAll()`,
+`htmx.logNone()`, `htmx.on()`, `htmx.onLoad()`, `htmx.parseInterval()`, `htmx.process()`, `htmx.swap()`,
+`htmx.trigger()`.
 
 Note: `htmx.onLoad()` now listens on [`htmx:after:process`](/reference/events/htmx-after-process), not [
 `htmx:after:init`](/reference/events/htmx-after-init).
@@ -420,9 +419,21 @@ htmx.config.metaCharacter = "-";
 ### JavaScript methods
 
 - `htmx.forEvent(...args)`: returns a promise that resolves when any of the supplied events fires or any of the supplied timeouts elapses, whichever happens first. Args are variadic and order-independent: an element is the listener target (last wins, defaults to `document`); a number or interval string (`'500ms'`, `'1s'`) is a timeout; any other string is an event name. Resolves to the event object (event won) or to the original timeout arg (timeout won), so callers can discriminate which input won the race.
+- `htmx.logger`: pluggable logging function with signature `(level, message, context?) => void` where `level` is `'event'`, `'warn'`, or `'error'`. The default routes to `console.log`/`warn`/`error` with an `htmx:` prefix; events are silenced unless `htmx.config.logAll` is true, while warnings and errors flow by default. Replace it to ship logs elsewhere: `htmx.logger = (level, msg, ctx) => mySink(level, msg, ctx)`. See **Auto-logged events** below for the convention that drives most output.
+- `htmx.logAll()` / `htmx.logNone()`: shortcuts. `logAll()` sets `htmx.config.logAll = true` so event-level output appears. `logNone()` replaces the active logger with a no-op, suppressing everything (including warnings and errors). Useful for tests or production sinks that have their own observability.
 - `htmx.nextFrame()`: returns a promise that resolves on the next animation frame
-- `htmx.takeClass(target, className, source)`: strips `className` from elements in `source`, then adds it to elements in `target`. `target` and `source` each accept an element, a selector string, or any iterable of elements (NodeList, Array, q() proxy). When `source` is a single element it expands to that element plus its descendants matching `.className`. When `source` is omitted it defaults to `target`'s parent — so `htmx.takeClass(button, 'active')` strips `active` from the surrounding subtree and adds it to button.
+- `htmx.takeClass(target, className, source)`: strips `className` from elements in `source`, then adds it to elements in `target`. `target` and `source` each accept an element, a selector string, or any iterable of elements (NodeList, Array, q() proxy). When `source` is a single element it expands to that element plus its descendants matching `.className`. When `source` is omitted it defaults to `target`'s parent, so `htmx.takeClass(button, 'active')` strips `active` from the surrounding subtree and adds it to button.
 - `htmx.timeout(time)`: returns a promise that resolves after a delay (number ms, or interval string `'500ms'`/`'1s'`/`'5m'`)
+
+### Auto-logged events
+
+Internally-dispatched events route through `htmx.logger` as follows:
+
+- If `detail.error` is set on the event, the logger is called at `'error'` level. This covers request failures, hx-on handler exceptions, and other thrown paths. Apps that listen for `htmx:error` get the same data via the event.
+- If `detail.warn` is set, the logger is called at `'warn'` level.
+- Otherwise, the event is logged at `'event'` level (silent by default; set `htmx.config.logAll = true` to surface).
+
+This restores the htmx 2.x convention: if you want an internal failure path to show up in the console, fire an event with `detail.error` (or `detail.warn`); no per-site `console.error` needed.
 
 ### Request context
 
