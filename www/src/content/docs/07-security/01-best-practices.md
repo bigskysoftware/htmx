@@ -77,6 +77,29 @@ A full discussion of CSPs is beyond the scope of this document, but
 the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provides a good jumping-off point
 for exploring this topic.
 
+### Controlling Cross-Origin Requests
+
+htmx defaults [`htmx.config.mode`](/reference/config/htmx-config-mode) to `"same-origin"`, which causes the
+browser to reject any cross-origin fetch — even if an attacker injects an `hx-get` pointing elsewhere.
+
+This setting is enforced globally: any `mode` value in a per-element `hx-config` attribute is ignored and
+reset to the global config value. This means injected markup like
+`hx-config='{"mode":"cors"}'` cannot widen request scope.
+
+If your application legitimately needs CORS (e.g. an API on a different subdomain):
+
+1. Set the mode globally:
+   ```javascript
+   htmx.config.mode = "cors";
+   ```
+2. Lock down reachable origins with `connect-src`:
+   ```html
+   <meta http-equiv="Content-Security-Policy"
+         content="connect-src 'self' https://api.example.com">
+   ```
+
+With both in place, htmx can reach your API but injected target URLs to other origins are blocked by CSP.
+
 ### hx-nonce Extension
 
 For sites using CSP script nonces, the [`hx-nonce` extension](/docs/extensions/nonce) provides deep integration:
