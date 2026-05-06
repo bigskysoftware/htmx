@@ -117,7 +117,7 @@ Messages without an `event:` field are swapped into the DOM as HTML content.
 
 ## Configuration
 
-Configure SSE behavior globally via `htmx.config.sse` or per-element via [`hx-config`](/reference/attributes/hx-config):
+Configure SSE behavior globally via `htmx.config.sse` or per-element via [`hx-config`](/reference/attributes/hx-config) ([HCON](/docs/core-concepts/hcon#hx-config) or JSON):
 
 ```javascript
 htmx.config.sse = {
