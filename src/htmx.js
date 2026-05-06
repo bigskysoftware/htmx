@@ -342,7 +342,7 @@ var htmx = (() => {
                     let ctx = this.__createRequestContext(elt, evt);
                     await this.__handleTriggerEvent(ctx);
                 } catch (e) {
-                    console.error(e)
+                    this.__trigger(elt, 'htmx:error', { error: e });
                 }
             };
         }
@@ -574,7 +574,6 @@ var htmx = (() => {
 
             } catch (error) {
                 ctx.status = "error: " + error;
-                console.warn(`htmx: request error for ${ctx.request.method} ${ctx.request.action}`, error, ctx)
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
                 clearTimeout(ctx.requestTimeout);
@@ -1751,7 +1750,7 @@ var htmx = (() => {
                         await this.__executeJavaScript(node, { event: evt },
                             `with(event?.detail||{}){${code}}`, false);
                     } catch (e) {
-                        if (typeof e !== 'symbol') console.error(e);
+                        if (typeof e !== 'symbol') this.__trigger(node, 'htmx:error', { error: e });
                     }
                 };
                 target.addEventListener(evtName, handler, opts);
@@ -1979,7 +1978,8 @@ var htmx = (() => {
         __findOrWarn(elt, selector, thisAttr) {
             let result = this.__findAllExt(elt, selector, thisAttr)[0]
             if (!result) {
-                console.warn(`htmx: '${selector}' on ${thisAttr} did not match any element`)
+                this.logger('warn', `'${selector}' on ${thisAttr} did not match any element`,
+                    { elt, selector, attr: thisAttr });
             }
             return result
         }

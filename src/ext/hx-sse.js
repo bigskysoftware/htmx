@@ -318,7 +318,7 @@
 
     function checkLegacyAttributes(element) {
         if (element.hasAttribute('sse-connect')) {
-            console.warn('HTMX SSE: Legacy attribute sse-connect is deprecated. Use hx-sse:connect instead.');
+            htmx.logger('warn', '[hx-sse] legacy attribute sse-connect is deprecated; use hx-sse:connect instead');
 
             let url = element.getAttribute('sse-connect');
             let attr = (htmx.config.prefix || 'hx-') + 'sse' + (htmx.config.metaCharacter || ':') + 'connect';
@@ -327,7 +327,7 @@
             }
         }
         if (element.hasAttribute('sse-swap')) {
-            console.warn('HTMX SSE: sse-swap is removed in htmx 4. Unnamed SSE messages are swapped automatically. Named events are dispatched as DOM events.');
+            htmx.logger('warn', '[hx-sse] sse-swap is removed in htmx 4. Unnamed SSE messages are swapped automatically. Named events are dispatched as DOM events.');
         }
     }
 

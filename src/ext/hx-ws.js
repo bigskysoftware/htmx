@@ -446,7 +446,7 @@
                 html = detail.message.json.payload; // backwards compat
                 // Warn once per connection (not on every message)
                 if (!connection._payloadWarnFired) {
-                    console.warn('[htmx-ws] json.payload is deprecated, use json.content instead');
+                    htmx.logger('warn', '[hx-ws] json.payload is deprecated; use json.content instead');
                     connection._payloadWarnFired = true;
                 }
             }
@@ -535,7 +535,7 @@
     
     function checkLegacyAttributes(element) {
         if (element.hasAttribute('ws-connect') || element.hasAttribute('ws-send')) {
-            console.warn('HTMX WebSocket: Legacy attributes ws-connect and ws-send are deprecated. Use hx-ws:connect and hx-ws:send instead.');
+            htmx.logger('warn', '[hx-ws] legacy attributes ws-connect and ws-send are deprecated; use hx-ws:connect and hx-ws:send instead');
 
             if (element.hasAttribute('ws-connect')) {
                 let url = element.getAttribute('ws-connect');
