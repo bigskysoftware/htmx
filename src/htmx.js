@@ -1,4 +1,3 @@
-// noinspection ES6ConvertVarToLetConst
 var htmx = (() => {
 
     class ReqQ {
