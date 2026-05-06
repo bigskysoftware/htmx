@@ -214,6 +214,70 @@ describe('hx-live extension', function () {
         delete window.__debounceCount;
     });
 
+    it('debounce(ms, fn) runs the closure after the delay', async function() {
+        window.__debounceFnCount = 0;
+        playground().innerHTML = `
+            <input id="in" value="1">
+            <output hx-live="debounce(20, () => { window.__debounceFnCount++; }); q('#in').value;"></output>
+        `;
+        htmx.process(playground());
+        let inp = playground().querySelector('#in');
+        for (let i = 0; i < 5; i++) {
+            inp.value = String(i);
+            inp.dispatchEvent(new Event('input', { bubbles: true }));
+            await htmx.timeout(2);
+        }
+        await htmx.timeout(60);
+        assert.isAtMost(window.__debounceFnCount, 2, 'debounce(fn) should have superseded most calls');
+        assert.isAtLeast(window.__debounceFnCount, 1, 'debounce(fn) should have run at least once');
+        delete window.__debounceFnCount;
+    });
+
+    it('debounce(ms, fn) supersedes across separate hx-on events on the same element', async function() {
+        window.__hxOnDebounceCount = 0;
+        playground().innerHTML = `
+            <button hx-on:click="debounce(30, () => { window.__hxOnDebounceCount++; })">go</button>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('button');
+        for (let i = 0; i < 5; i++) {
+            btn.click();
+            await htmx.timeout(5);
+        }
+        await htmx.timeout(60);
+        window.__hxOnDebounceCount.should.equal(1);
+        delete window.__hxOnDebounceCount;
+    });
+
+    it('debounce(ms, fn) keeps distinct closures on independent channels', async function() {
+        window.__chA = 0;
+        window.__chB = 0;
+        playground().innerHTML = `
+            <button id="a" hx-on:click="debounce(30, () => { window.__chA++; })">A</button>
+            <button id="b" hx-on:click="debounce(30, () => { window.__chB++; })">B</button>
+        `;
+        htmx.process(playground());
+        // Different elements ⇒ different htmxProp ⇒ different debounce instances. Both should fire.
+        playground().querySelector('#a').click();
+        playground().querySelector('#b').click();
+        await htmx.timeout(60);
+        window.__chA.should.equal(1);
+        window.__chB.should.equal(1);
+        delete window.__chA;
+        delete window.__chB;
+    });
+
+    it('debounce(ms, fn) does not return a promise', function() {
+        // Use the htmx.q-adjacent debounce factory by running a live expression and capturing the return.
+        window.__debounceReturn = 'sentinel';
+        playground().innerHTML = `
+            <output hx-live="window.__debounceReturn = debounce(5, () => {});"></output>
+        `;
+        htmx.process(playground());
+        assert.isUndefined(window.__debounceReturn);
+        delete window.__debounceReturn;
+    });
+
     it('processes hx-live added dynamically via htmx.process', function() {
         playground().innerHTML = '';
         let div = document.createElement('div');
@@ -438,6 +502,37 @@ describe('hx-live extension', function () {
         let proxy = htmx.q('.foo in .bar');
         proxy.count.should.equal(3);
         proxy.arr().map(e => e.textContent).should.deep.equal(['a', 'b', 'c']);
+    });
+
+    it('"sel in me" scopes to the current hx-live element (alias of "this")', async function() {
+        playground().innerHTML = `
+            <div hx-live="this.dataset.v = q('span in me').count">
+                <span>a</span>
+                <span>b</span>
+            </div>
+            <span>outside</span>
+        `;
+        htmx.process(playground());
+        await htmx.timeout(5);
+        playground().querySelector('div').dataset.v.should.equal('2');
+    });
+
+    it('"sel in me" and "sel in this" return the same elements', async function() {
+        playground().innerHTML = `
+            <div id="me-vs-this" hx-live="
+                this.dataset.me = q('span in me').count;
+                this.dataset.this = q('span in this').count;
+            ">
+                <span>a</span>
+                <span>b</span>
+                <span>c</span>
+            </div>
+        `;
+        htmx.process(playground());
+        await htmx.timeout(5);
+        let div = playground().querySelector('#me-vs-this');
+        div.dataset.me.should.equal('3');
+        div.dataset.this.should.equal('3');
     });
 
     it('"first sel in .multi" picks the first match across all roots', function() {

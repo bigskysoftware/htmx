@@ -70,13 +70,34 @@
     }
 
     function makeDebounce() {
-        let last = 0, reject;
-        return ms => new Promise((res, rej) => {
-            reject?.(dbSym);
-            reject = rej;
-            let id = ++last;
-            setTimeout(() => id === last && (reject = null, res()), ms);
-        });
+        // Channels keyed by fn.toString() for the closure form; null for the promise form.
+        // Promise-form cancellation works by rejecting the awaiting async — no callsite key needed.
+        // Closure form needs a key because closures lack an enclosing async context to abort.
+        let channels = new Map();
+        let chan = key => channels.get(key) || (channels.set(key, { last: 0, reject: null }), channels.get(key));
+        return (ms, fn) => {
+            let ch = chan(fn ? fn.toString() : null);
+            ch.reject?.(dbSym);
+            ch.reject = null;
+            let id = ++ch.last;
+            if (fn) {
+                setTimeout(() => id === ch.last && fn(), ms);
+                return;
+            }
+            return new Promise((res, rej) => {
+                ch.reject = rej;
+                setTimeout(() => {
+                    if (id !== ch.last) return;
+                    ch.reject = null;
+                    res();
+                }, ms);
+            });
+        };
+    }
+
+    function getDebounce(elt) {
+        let prop = api.htmxProp(elt);
+        return prop.debounce || (prop.debounce = makeDebounce());
     }
 
     function makeWait(ctx) {
@@ -114,7 +135,11 @@
             let roots = [defaultRoot];
             if (inMatch) {
                 sel = inMatch[1];
-                roots = inMatch[2] === 'this' ? [ctx] : [...document.querySelectorAll(inMatch[2])];
+                if (inMatch[2] === 'this' || inMatch[2] === 'me') {
+                    roots = [ctx];
+                } else {
+                    roots = [...document.querySelectorAll(inMatch[2])];
+                }
             }
             if (!roots.length) return qProxy([]);
             let qsa = s => {
@@ -198,7 +223,7 @@
             prop.liveRegistered = true;
             ensureActive();
             let code = elt.getAttribute(attrName);
-            let debounce = makeDebounce();
+            let debounce = getDebounce(elt);
             let run = async () => {
                 if (!elt.isConnected) {
                     fns.delete(run);
@@ -236,7 +261,7 @@
                 q: makeQ(elt),
                 wait: makeWait(elt),
                 trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
-                debounce: makeDebounce(),
+                debounce: getDebounce(elt),
                 take: (cls, source) => take(cls, elt, source)
             });
         }
