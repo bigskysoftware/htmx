@@ -129,32 +129,6 @@
         return prop.debounce || (prop.debounce = makeDebounce());
     }
 
-    function makeWait(ctx) {
-        return (...args) => new Promise(r => {
-            if (!args.length) return r();
-            let done, cleanups = [];
-            let resolve = v => {
-                if (done) return;
-                done = true;
-                for (let c of cleanups) c();
-                r(v);
-            };
-            for (let a of args) {
-                if (typeof a === 'number') {
-                    let id = setTimeout(() => resolve(a), a);
-                    cleanups.push(() => clearTimeout(id));
-                } else if (a === 'frame') {
-                    let id = requestAnimationFrame(() => resolve(a));
-                    cleanups.push(() => cancelAnimationFrame(id));
-                } else {
-                    let h = e => resolve(e);
-                    ctx.addEventListener(a, h, { once: true });
-                    cleanups.push(() => ctx.removeEventListener(a, h));
-                }
-            }
-        });
-    }
-
     function makeQ(ctx, defaultRoot = document) {
         return selectorOrElt => {
             if (typeof selectorOrElt !== 'string') {
@@ -275,7 +249,6 @@
 
     htmx.live = {
         q: s => makeQ(document.documentElement)(s),
-        wait: makeWait(document),
         debounce: makeDebounce()
     };
 
@@ -295,7 +268,9 @@
         htmx_scope: (elt, detail) => {
             Object.assign(detail.scope, {
                 q: makeQ(elt),
-                wait: makeWait(elt),
+                timeout: t => htmx.timeout(t),
+                forEvent: (...args) => htmx.forEvent(elt, ...args),
+                nextFrame: () => htmx.nextFrame(),
                 trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
                 debounce: getDebounce(elt),
                 take: (cls, source) => htmx.takeClass(elt, cls, source)

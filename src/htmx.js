@@ -1456,20 +1456,43 @@ var htmx = (() => {
             }
         }
 
-        forEvent(event, timeout, on = document) {
+        // Returns a Promise that resolves when any of the supplied events fires or any of the supplied
+        // timeouts elapses, whichever happens first. Args are variadic and order-independent:
+        //   - element                            → listener target (last wins; default document)
+        //   - number                             → timeout in ms
+        //   - string parseable as interval (e.g. '500ms', '1s', '5m')   → timeout
+        //   - other string                       → event name
+        // Resolves to the event object (for events) or to the original arg (for timeouts), so callers can
+        // discriminate which input won the race.
+        forEvent(...args) {
+            let target = document;
+            for (let a of args) if (a?.nodeType) target = a;
             return new Promise(resolve => {
-                let handler = (evt) => {
-                    clearTimeout(timeoutId);
-                    resolve(evt);
+                let cleanups = [], done = false;
+                let fire = v => {
+                    if (done) return;
+                    done = true;
+                    for (let c of cleanups) c();
+                    resolve(v);
                 };
+                for (let a of args) {
+                    if (a == null || a?.nodeType) continue;
+                    let ms = typeof a === 'number' ? a
+                        : (typeof a === 'string' ? this.parseInterval(a) : undefined);
+                    if (ms !== undefined && ms > 0) {
+                        let id = setTimeout(() => fire(a), ms);
+                        cleanups.push(() => clearTimeout(id));
+                    } else if (typeof a === 'string') {
+                        let h = evt => fire(evt);
+                        target.addEventListener(a, h, { once: true });
+                        cleanups.push(() => target.removeEventListener(a, h));
+                    }
+                }
+            });
+        }
 
-                let timeoutId = timeout && setTimeout(() => {
-                    on.removeEventListener(event, handler);
-                    resolve(null);
-                }, timeout);
-
-                on.addEventListener(event, handler, {once: true});
-            })
+        nextFrame() {
+            return new Promise(resolve => requestAnimationFrame(resolve));
         }
 
         onLoad(callback) {

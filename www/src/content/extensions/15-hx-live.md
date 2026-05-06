@@ -139,15 +139,18 @@ q('.tab.selected').take('selected', '.tab')  // move a class from peers to self
 
 ## Scope Helpers
 
-Inside `hx-live` (and [`hx-on`](/reference/attributes/hx-on)) expressions, four additional helpers are injected, all bound to the current element:
+Inside `hx-live` (and [`hx-on`](/reference/attributes/hx-on)) expressions, several helpers are injected, bound to the current element where context applies. Each delegates to its `htmx.*` equivalent, so the same primitives are usable from regular JavaScript.
 
 ```js
-wait(250)                       // resolves after 250ms with 250 (the ms value)
-wait('click')                   // resolves on the next 'click' on this element
-                                // with the Event object
-wait(1000, 'click')             // whichever happens first — timeout or event;
-                                // typeof result === 'number' tells you which
-wait('a', 'b', 5000)            // any number of args; mix events and timeouts
+timeout(250)                    // resolves after 250ms (htmx.timeout)
+timeout('500ms')                // string interval also accepted
+
+forEvent('click')               // resolves on next 'click' on this element with the Event
+forEvent('click', 1000)         // whichever happens first — event or timeout;
+                                // result is the Event (event won) or 1000 (timeout won)
+forEvent('a', 'b', '5s')        // any number of events and timeouts; first to fire wins
+
+nextFrame()                     // resolves on the next animation frame
 
 trigger('myEvent', { x: 1 })    // dispatches a CustomEvent from this element
 

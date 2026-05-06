@@ -126,82 +126,75 @@ describe('hx-live extension', function () {
         playground().querySelector('#c').dataset.v.should.equal('3');
     });
 
-    it('wait(ms) is available in scope', async function() {
-        let elt = createProcessedHTML('<output hx-live="(async () => { await wait(1); this.dataset.v = \'done\'; })()"></output>');
+    it('timeout(ms) is available in scope', async function() {
+        let elt = createProcessedHTML('<output hx-live="(async () => { await timeout(1); this.dataset.v = \'done\'; })()"></output>');
         await htmx.timeout(20);
         elt.dataset.v.should.equal('done');
     });
 
     it('hx-live body supports top-level await directly', async function() {
         let elt = createProcessedHTML(
-            `<output hx-live="!this.dataset.s && (this.dataset.s='1', this.dataset.v = 'pending', await wait(5), this.dataset.v = 'done')"></output>`
+            `<output hx-live="!this.dataset.s && (this.dataset.s='1', this.dataset.v = 'pending', await timeout(5), this.dataset.v = 'done')"></output>`
         );
         elt.dataset.v.should.equal('pending');
         await htmx.timeout(30);
         elt.dataset.v.should.equal('done');
     });
 
-    it('wait(ms, event) resolves on event before timeout', async function() {
-        let elt = createProcessedHTML('<output hx-live="(async () => { await wait(1000, \'go\'); this.dataset.v = \'fired\'; })()"></output>');
+    it('forEvent(event, ms) resolves on event before timeout', async function() {
+        let elt = createProcessedHTML('<output hx-live="(async () => { await forEvent(\'go\', 1000); this.dataset.v = \'fired\'; })()"></output>');
         await htmx.timeout(5);
         elt.dispatchEvent(new CustomEvent('go'));
         await htmx.timeout(5);
         elt.dataset.v.should.equal('fired');
     });
 
-    it('wait(ms, event) resolves on timeout when event never fires', async function() {
-        let elt = createProcessedHTML('<output hx-live="(async () => { await wait(10, \'never\'); this.dataset.v = \'timed-out\'; })()"></output>');
+    it('forEvent(event, ms) resolves on timeout when event never fires', async function() {
+        let elt = createProcessedHTML('<output hx-live="(async () => { await forEvent(\'never\', 10); this.dataset.v = \'timed-out\'; })()"></output>');
         await htmx.timeout(40);
         elt.dataset.v.should.equal('timed-out');
     });
 
-    it('wait resolves a timeout with the ms value (discriminator)', async function() {
+    it('forEvent resolves a timeout with the original arg (discriminator)', async function() {
         window.__waitResult = null;
         let elt = createProcessedHTML(
-            `<output hx-live="!this.dataset.s && (this.dataset.s='1', (async()=>{ window.__waitResult = await wait(5, 'never') })())"></output>`
+            `<output hx-live="!this.dataset.s && (this.dataset.s='1', (async()=>{ window.__waitResult = await forEvent('never', 5) })())"></output>`
         );
         await htmx.timeout(30);
         window.__waitResult.should.equal(5);
         delete window.__waitResult;
     });
 
-    it('wait races multiple events and timeouts', async function() {
-        let elt = createProcessedHTML('<output hx-live="(async () => { await wait(\'a\', \'b\', 1000); this.dataset.v = \'fired\'; })()"></output>');
+    it('forEvent races multiple events and timeouts', async function() {
+        let elt = createProcessedHTML('<output hx-live="(async () => { await forEvent(\'a\', \'b\', 1000); this.dataset.v = \'fired\'; })()"></output>');
         await htmx.timeout(5);
         elt.dispatchEvent(new CustomEvent('b'));
         await htmx.timeout(5);
         elt.dataset.v.should.equal('fired');
     });
 
-    it('wait("frame") resolves on the next animation frame', async function() {
+    it('nextFrame() resolves on the next animation frame', async function() {
         window.__frameDone = false;
         playground().innerHTML = `
-            <output hx-live="(async () => { await wait('frame'); window.__frameDone = true; })()"></output>
+            <output hx-live="(async () => { await nextFrame(); window.__frameDone = true; })()"></output>
         `;
         htmx.process(playground());
-        // Synchronously after process, wait('frame') hasn't resolved yet.
+        // Synchronously after process, nextFrame() hasn't resolved yet.
         window.__frameDone.should.equal(false);
         await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
         window.__frameDone.should.equal(true);
         delete window.__frameDone;
     });
 
-    it('wait("frame", ms) races animation frame against timeout', async function() {
-        // 'frame' should win since rAF fires well before 1000ms.
-        let elt = createProcessedHTML('<output hx-live="(async () => { this.dataset.v = await wait(\'frame\', 1000); })()"></output>');
-        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-        elt.dataset.v.should.equal('frame');
-    });
-
-    it('wait cleans up listeners after timeout wins', async function() {
+    it('forEvent cleans up listeners after timeout wins', async function() {
         let count = 0;
         let elt = createProcessedHTML(
-            `<output hx-live="!this.dataset.started && (this.dataset.started='1', (async()=>{ await wait(5, 'cleanup-evt'); this.dataset.done='1' })())"></output>`
+            `<output hx-live="!this.dataset.started && (this.dataset.started='1', (async()=>{ await forEvent('cleanup-evt', 5); this.dataset.done='1' })())"></output>`
         );
         elt.addEventListener('cleanup-evt', () => count++);
         await htmx.timeout(30);
         elt.dataset.done.should.equal('1');
-        // wait timed out; its internal listener should be removed.
+        // forEvent timed out; its internal listener should be removed.
         elt.dispatchEvent(new CustomEvent('cleanup-evt'));
         count.should.equal(1);
     });
@@ -679,10 +672,9 @@ describe('hx-live extension', function () {
         assert.isFunction(htmx.live.q);
     });
 
-    it('htmx.live namespace exposes q, wait, and debounce', function() {
+    it('htmx.live namespace exposes q and debounce', function() {
         assert.isObject(htmx.live);
         assert.isFunction(htmx.live.q);
-        assert.isFunction(htmx.live.wait);
         assert.isFunction(htmx.live.debounce);
     });
 

@@ -419,9 +419,10 @@ htmx.config.metaCharacter = "-";
 
 ### JavaScript methods
 
-- `htmx.forEvent(eventName, timeout)`: returns a promise that resolves when an event fires
+- `htmx.forEvent(...args)`: returns a promise that resolves when any of the supplied events fires or any of the supplied timeouts elapses, whichever happens first. Args are variadic and order-independent: an element is the listener target (last wins, defaults to `document`); a number or interval string (`'500ms'`, `'1s'`) is a timeout; any other string is an event name. Resolves to the event object (event won) or to the original timeout arg (timeout won), so callers can discriminate which input won the race.
+- `htmx.nextFrame()`: returns a promise that resolves on the next animation frame
 - `htmx.takeClass(target, className, source)`: strips `className` from elements in `source`, then adds it to elements in `target`. `target` and `source` each accept an element, a selector string, or any iterable of elements (NodeList, Array, q() proxy). When `source` is a single element it expands to that element plus its descendants matching `.className`. When `source` is omitted it defaults to `target`'s parent — so `htmx.takeClass(button, 'active')` strips `active` from the surrounding subtree and adds it to button.
-- `htmx.timeout(time)`: returns a promise that resolves after a delay
+- `htmx.timeout(time)`: returns a promise that resolves after a delay (number ms, or interval string `'500ms'`/`'1s'`/`'5m'`)
 
 ### Request context
 

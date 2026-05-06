@@ -193,6 +193,7 @@ describe('bootstrap unit tests', function() {
             'find',
             'findAll',
             'forEvent',
+            'nextFrame',
             'on',
             'onLoad',
             'parseInterval',
