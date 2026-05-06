@@ -448,6 +448,21 @@ describe('hx-live extension', function () {
         htmx.q('last .foo in .bar').textContent.should.equal('b');
     });
 
+    it('proxy exposes array methods (map, filter, reduce, forEach)', function() {
+        playground().innerHTML = '<div class="x">a</div><div class="x">b</div><div class="x">c</div>';
+        let proxy = htmx.q('.x');
+        proxy.map(e => e.textContent).should.deep.equal(['a', 'b', 'c']);
+        proxy.filter(e => e.textContent !== 'b').length.should.equal(2);
+        proxy.reduce((acc, e) => acc + e.textContent, '').should.equal('abc');
+        let collected = [];
+        proxy.forEach(e => collected.push(e.textContent));
+        collected.should.deep.equal(['a', 'b', 'c']);
+        proxy.some(e => e.textContent === 'b').should.equal(true);
+        proxy.every(e => e.textContent.length === 1).should.equal(true);
+        proxy.find(e => e.textContent === 'b').textContent.should.equal('b');
+        proxy.at(-1).textContent.should.equal('c');
+    });
+
     it('q is exposed on the htmx public API', function() {
         assert.isFunction(htmx.q);
     });

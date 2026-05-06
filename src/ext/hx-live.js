@@ -152,6 +152,10 @@
         };
     }
 
+    let arrayMethods = new Set(['map', 'filter', 'reduce', 'reduceRight', 'forEach', 'some', 'every',
+        'find', 'findIndex', 'findLast', 'findLastIndex', 'flatMap', 'flat',
+        'slice', 'indexOf', 'lastIndexOf', 'includes', 'join', 'at']);
+
     function qProxy(elts) {
         let positions = { before: 'beforebegin', after: 'afterend', start: 'afterbegin', end: 'beforeend' };
         return new Proxy({}, {
@@ -168,6 +172,7 @@
                 if (p === 'insert') return (pos, s) =>
                     elts.forEach(e => e.insertAdjacentHTML(positions[pos], s));
                 if (p === 'take') return (cls, from) => take(cls, elts, from);
+                if (arrayMethods.has(p)) return elts[p].bind(elts);
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));
