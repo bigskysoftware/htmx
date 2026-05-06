@@ -44,7 +44,7 @@
             i = 0;
         }
         if (++i > 50) {
-            console.warn('htmx: hx-live recompute exceeded 50/sec, deactivating. Likely a self-mutating expression.');
+            htmx.logger('warn', 'hx-live recompute exceeded 50/sec, deactivating. Likely a self-mutating expression.');
             deactivate();
             fns.clear();
             return;
@@ -57,49 +57,76 @@
         });
     }
 
-    function toElts(x) {
-        if (!x) return [];
-        if (typeof x === 'string') return [...document.querySelectorAll(x)];
-        if (x.nodeType) return [x];
-        return [...x];
-    }
-
-    function take(cls, target, source) {
-        for (let e of toElts(source)) e.classList.remove(cls);
-        for (let e of toElts(target)) e.classList.add(cls);
+    // toggle('.foo')              — class toggle
+    // toggle('@disabled')         — attribute presence toggle
+    // toggle('@x=v')              — attribute presence-with-value (add v ↔ remove)
+    // toggle('@x=a|b|c')          — strict cycle through values (always present)
+    // toggle('@x=on|')            — cycle 'on' ↔ absent (trailing empty = absent slot)
+    // toggle('*display=none')     — style presence-with-value (set ↔ clear)
+    // toggle('*display=a|b')      — style cycle through values
+    let toggleRe = /^([.@*])([^=]+)(?:=(.*))?$/;
+    function applyToggle(spec, e) {
+        let m = spec.trim().match(toggleRe);
+        if (!m) return;
+        let [, kind, name, vals] = m;
+        name = name.trim();
+        let values = vals === undefined ? null : vals.split('|').map(v => v.trim());
+        if (kind === '.') {
+            e.classList.toggle(name);
+        } else if (kind === '@') {
+            if (!values) {
+                e.toggleAttribute(name);
+            } else if (values.length === 1) {
+                if (e.hasAttribute(name)) e.removeAttribute(name);
+                else e.setAttribute(name, values[0]);
+            } else {
+                let cur = e.getAttribute(name);
+                let idx = values.indexOf(cur === null ? '' : cur);
+                let next = values[(idx + 1) % values.length];
+                if (next === '') e.removeAttribute(name);
+                else e.setAttribute(name, next);
+            }
+        } else { // '*'
+            if (!values) return;
+            if (values.length === 1) {
+                if (e.style[name]) e.style[name] = '';
+                else e.style[name] = values[0];
+            } else {
+                let idx = values.indexOf(e.style[name] || '');
+                e.style[name] = values[(idx + 1) % values.length];
+            }
+        }
     }
 
     function makeDebounce() {
-        let last = 0, reject;
-        return ms => new Promise((res, rej) => {
-            reject?.(dbSym);
-            reject = rej;
-            let id = ++last;
-            setTimeout(() => id === last && (reject = null, res()), ms);
-        });
+        // Channels keyed by fn.toString() for the closure form; null for the promise form.
+        // Promise-form cancellation works by rejecting the awaiting async — no callsite key needed.
+        // Closure form needs a key because closures lack an enclosing async context to abort.
+        let channels = new Map();
+        let chan = key => channels.get(key) || (channels.set(key, { last: 0, reject: null }), channels.get(key));
+        return (ms, fn) => {
+            let ch = chan(fn ? fn.toString() : null);
+            ch.reject?.(dbSym);
+            ch.reject = null;
+            let id = ++ch.last;
+            if (fn) {
+                setTimeout(() => id === ch.last && fn(), ms);
+                return;
+            }
+            return new Promise((res, rej) => {
+                ch.reject = rej;
+                setTimeout(() => {
+                    if (id !== ch.last) return;
+                    ch.reject = null;
+                    res();
+                }, ms);
+            });
+        };
     }
 
-    function makeWait(ctx) {
-        return (...args) => new Promise(r => {
-            if (!args.length) return r();
-            let done, cleanups = [];
-            let resolve = v => {
-                if (done) return;
-                done = true;
-                for (let c of cleanups) c();
-                r(v);
-            };
-            for (let a of args) {
-                if (typeof a === 'number') {
-                    let id = setTimeout(() => resolve(a), a);
-                    cleanups.push(() => clearTimeout(id));
-                } else {
-                    let h = e => resolve(e);
-                    ctx.addEventListener(a, h, { once: true });
-                    cleanups.push(() => ctx.removeEventListener(a, h));
-                }
-            }
-        });
+    function getDebounce(elt) {
+        let prop = api.htmxProp(elt);
+        return prop.debounce || (prop.debounce = makeDebounce());
     }
 
     function makeQ(ctx, defaultRoot = document) {
@@ -111,12 +138,24 @@
             }
             let sel = selectorOrElt;
             let inMatch = sel.match(/^(.+)\s+in\s+(.+)$/);
-            let root = defaultRoot;
+            let roots = [defaultRoot];
             if (inMatch) {
                 sel = inMatch[1];
-                root = inMatch[2] === 'this' ? ctx : document.querySelector(inMatch[2]);
+                if (inMatch[2] === 'this' || inMatch[2] === 'me') {
+                    roots = [ctx];
+                } else {
+                    roots = [...document.querySelectorAll(inMatch[2])];
+                }
             }
-            if (!root) return qProxy([]);
+            if (!roots.length) return qProxy([]);
+            let qsa = s => {
+                if (roots.length === 1) return [...roots[0].querySelectorAll(s)];
+                let out = [], seen = new Set();
+                for (let r of roots) for (let e of r.querySelectorAll(s)) {
+                    if (!seen.has(e)) { seen.add(e); out.push(e); }
+                }
+                return out.sort((a, b) => a.compareDocumentPosition(b) & 4 ? -1 : 1);
+            };
             let dirMatch = sel.match(/^(next|prev|closest|first|last)\s+(.+)$/);
             let elts;
             if (dirMatch) {
@@ -126,7 +165,7 @@
                     let c = ctx.closest?.(s);
                     elts = c ? [c] : [];
                 } else {
-                    let all = [...root.querySelectorAll(s)];
+                    let all = qsa(s);
                     if (dir === 'first') elts = all.slice(0, 1);
                     else if (dir === 'last') elts = all.slice(-1);
                     else if (dir === 'next') {
@@ -138,15 +177,19 @@
                     }
                 }
             } else {
-                elts = [...root.querySelectorAll(sel)];
+                elts = qsa(sel);
             }
             return qProxy(elts);
         };
     }
 
+    let arrayMethods = new Set(['map', 'filter', 'reduce', 'reduceRight', 'forEach', 'some', 'every',
+        'find', 'findIndex', 'findLast', 'findLastIndex', 'flatMap', 'flat',
+        'slice', 'indexOf', 'lastIndexOf', 'includes', 'join', 'at']);
+
     function qProxy(elts) {
         let positions = { before: 'beforebegin', after: 'afterend', start: 'afterbegin', end: 'beforeend' };
-        return new Proxy({}, {
+        let proxy = new Proxy({}, {
             get: (_, p) => {
                 if (p === 'count') return elts.length;
                 if (p === 'arr') return () => elts.slice();
@@ -156,10 +199,11 @@
                     for (let e of elts) for (let r of makeQ(e, e)(s).arr()) out.add(r);
                     return qProxy([...out]);
                 };
-                if (p === 'trigger') return (t, d, b) => elts.forEach(e => htmx.trigger(e, t, d, b));
-                if (p === 'insert') return (pos, s) =>
-                    elts.forEach(e => e.insertAdjacentHTML(positions[pos], s));
-                if (p === 'take') return (cls, from) => take(cls, elts, from);
+                if (p === 'trigger') return (t, d, b) => { elts.forEach(e => htmx.trigger(e, t, d, b)); return proxy; };
+                if (p === 'insert') return (pos, s) => { elts.forEach(e => e.insertAdjacentHTML(positions[pos], s)); return proxy; };
+                if (p === 'take') return (cls, from) => { htmx.takeClass(elts, cls, from); return proxy; };
+                if (p === 'toggle') return (...specs) => { elts.forEach(e => specs.forEach(s => applyToggle(s, e))); return proxy; };
+                if (arrayMethods.has(p)) return elts[p].bind(elts);
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));
@@ -171,6 +215,7 @@
                 return true;
             }
         });
+        return proxy;
     }
 
     function processLive(root) {
@@ -185,7 +230,7 @@
             prop.liveRegistered = true;
             ensureActive();
             let code = elt.getAttribute(attrName);
-            let debounce = makeDebounce();
+            let debounce = getDebounce(elt);
             let run = async () => {
                 if (!elt.isConnected) {
                     fns.delete(run);
@@ -194,7 +239,7 @@
                 try {
                     await api.executeJavaScript(elt, { debounce }, code, false);
                 } catch (e) {
-                    if (e !== dbSym) console.error(e);
+                    if (e !== dbSym) htmx.logger('error', 'hx-live expression threw', { elt, error: e });
                 }
             };
             fns.add(run);
@@ -202,8 +247,11 @@
         }
     }
 
-    htmx.q = s => makeQ(document.documentElement)(s);
-    htmx.take = take;
+    htmx.live = {
+        q: s => makeQ(document.documentElement)(s),
+        debounce: makeDebounce(),
+        refresh: () => schedule()
+    };
 
     htmx.registerExtension('hx-live', {
         init: (internalAPI) => {
@@ -221,10 +269,12 @@
         htmx_scope: (elt, detail) => {
             Object.assign(detail.scope, {
                 q: makeQ(elt),
-                wait: makeWait(elt),
+                timeout: t => htmx.timeout(t),
+                forEvent: (...args) => htmx.forEvent(elt, ...args),
+                nextFrame: () => htmx.nextFrame(),
                 trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
-                debounce: makeDebounce(),
-                take: (cls, source) => take(cls, elt, source)
+                debounce: getDebounce(elt),
+                take: (cls, source) => htmx.takeClass(elt, cls, source)
             });
         }
     });

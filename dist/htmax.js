@@ -1,4 +1,3 @@
-// noinspection ES6ConvertVarToLetConst
 var htmx = (() => {
 
     class ReqQ {
@@ -75,6 +74,7 @@ var htmx = (() => {
 
         constructor() {
             this.#initHtmxConfig();
+            this.logger = this.#defaultLogger.bind(this);
             this.#initRequestIndicatorCss();
             this.#actionSelector = this.#prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]');
             this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.#prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
@@ -342,7 +342,7 @@ var htmx = (() => {
                     let ctx = this.#createRequestContext(elt, evt);
                     await this.#handleTriggerEvent(ctx);
                 } catch (e) {
-                    console.error(e)
+                    this.#trigger(elt, 'htmx:error', { error: e });
                 }
             };
         }
@@ -389,12 +389,13 @@ var htmx = (() => {
             let configAttr = this.#attributeValue(sourceElement, "hx-config");
             if (configAttr) {
                 this.#mergeConfig(configAttr, ctx.request);
+                ctx.request.mode = this.config.mode;  // mode is security-sensitive, never allow per-element override
             }
             return ctx;
         }
 
         #buildIdentifier(elt) {
-            return `${elt.tagName.toLowerCase()}${elt.id ? '#' + elt.id : ''}`;
+            return `${elt.tagName.toLowerCase()}${elt.id ? '#' + encodeURI(elt.id) : ''}`;
         }
 
         #createCoreHeaders(elt) {
@@ -454,6 +455,7 @@ var htmx = (() => {
             let body = this.#collectFormData(elt, form, evt.submitter, ctx.request.validate)
             if (!body) return  // Validation failed
             let valsResult = this.#getAttributeObject(elt, "hx-vals", obj => {
+                ctx.vals = obj; // make available for json extensions
                 for (let key in obj) body.set(key, obj[key]);
             });
             if (valsResult) await valsResult; // Only await if it returned a promise
@@ -1428,8 +1430,15 @@ var htmx = (() => {
         }
 
         #trigger(on, eventName, detail = {}, bubbles = true) {
-            if (this.config.logAll) {
-                console.log(eventName, detail, on)
+            // Convention: events with detail.error log at error level, detail.warn at warn level,
+            // otherwise at event level (gated by config.logAll). One emit per event.
+            if (detail.error) {
+                this.logger('error', `${eventName}: ${detail.error.message ?? detail.error}`,
+                    { elt: on, error: detail.error, detail });
+            } else if (detail.warn) {
+                this.logger('warn', `${eventName}: ${detail.warn}`, { elt: on, detail });
+            } else {
+                this.logger('event', eventName, { elt: on, detail });
             }
             on = this.#normalizeElement(on)
             this.#triggerExtensions(on, eventName, detail);
@@ -1457,20 +1466,43 @@ var htmx = (() => {
             }
         }
 
-        forEvent(event, timeout, on = document) {
+        // Returns a Promise that resolves when any of the supplied events fires or any of the supplied
+        // timeouts elapses, whichever happens first. Args are variadic and order-independent:
+        //   - element                            → listener target (last wins; default document)
+        //   - number                             → timeout in ms
+        //   - string parseable as interval (e.g. '500ms', '1s', '5m')   → timeout
+        //   - other string                       → event name
+        // Resolves to the event object (for events) or to the original arg (for timeouts), so callers can
+        // discriminate which input won the race.
+        forEvent(...args) {
+            let target = document;
+            for (let a of args) if (a?.nodeType) target = a;
             return new Promise(resolve => {
-                let handler = (evt) => {
-                    clearTimeout(timeoutId);
-                    resolve(evt);
+                let cleanups = [], done = false;
+                let fire = v => {
+                    if (done) return;
+                    done = true;
+                    for (let c of cleanups) c();
+                    resolve(v);
                 };
+                for (let a of args) {
+                    if (a == null || a?.nodeType) continue;
+                    let ms = typeof a === 'number' ? a
+                        : (typeof a === 'string' ? this.parseInterval(a) : undefined);
+                    if (ms !== undefined && ms > 0) {
+                        let id = setTimeout(() => fire(a), ms);
+                        cleanups.push(() => clearTimeout(id));
+                    } else if (typeof a === 'string') {
+                        let h = evt => fire(evt);
+                        target.addEventListener(a, h, { once: true });
+                        cleanups.push(() => target.removeEventListener(a, h));
+                    }
+                }
+            });
+        }
 
-                let timeoutId = timeout && setTimeout(() => {
-                    on.removeEventListener(event, handler);
-                    resolve(null);
-                }, timeout);
-
-                on.addEventListener(event, handler, {once: true});
-            })
+        nextFrame() {
+            return new Promise(resolve => requestAnimationFrame(resolve));
         }
 
         onLoad(callback) {
@@ -1479,11 +1511,40 @@ var htmx = (() => {
             })
         }
 
-        takeClass(element, className, container = element.parentElement) {
-            for (let elt of this.#findAllExt(this.#normalizeElement(container), "." + className)) {
-                this.#removeClass(elt, className);
-            }
-            this.#addClass(element, className);
+        // Enable event-level logging (errors and warnings flow regardless).
+        logAll() { this.config.logAll = true; }
+
+        // Replace the active logger with a no-op. Use to silence everything.
+        logNone() { this.logger = () => {}; }
+
+        // Default logger. Routes by level to the matching console target.
+        // Replace via `htmx.logger = (level, message, context) => { ... }` to ship logs elsewhere.
+        // `htmx.logNone()` installs a no-op logger; `htmx.logAll()` enables event-level output.
+        #defaultLogger(level, message, context) {
+            if (level === 'event' && !this.config.logAll) return;
+            let target = level === 'error' ? console.error
+                       : level === 'warn'  ? console.warn
+                       :                     console.log;
+            let prefix = `htmx: ${message}`;
+            if (context?.error instanceof Error) target(prefix, context.error, context);
+            else if (context !== undefined)      target(prefix, context);
+            else                                  target(prefix);
+        }
+
+        // Adds className to every element in `target`; strips it from every element in `source`.
+        // target/source accept: an element, a selector string (resolved via findAll),
+        // or any iterable of elements (NodeList, Array, q() proxy, etc.).
+        // If source is a single element, it expands to the element + its descendants matching .className —
+        // so `takeClass(button, 'active')` (default source = button.parentElement) drains 'active' from the
+        // surrounding subtree, then adds it to button.
+        takeClass(target, className, source) {
+            let targets = this.#toEltList(target);
+            if (source === undefined) source = targets[0]?.parentElement;
+            let sources = (source && source.nodeType && source.querySelectorAll)
+                ? [source, ...source.querySelectorAll('.' + className)]
+                : this.#toEltList(source);
+            for (let elt of sources) this.#removeClass(elt, className);
+            for (let elt of targets) this.#addClass(elt, className);
         }
 
         on(eventOrElt, eventOrCallback, callback) {
@@ -1689,7 +1750,7 @@ var htmx = (() => {
                         await this.#executeJavaScript(node, { event: evt },
                             `with(event?.detail||{}){${code}}`, false);
                     } catch (e) {
-                        if (typeof e !== 'symbol') console.error(e);
+                        if (typeof e !== 'symbol') this.#trigger(node, 'htmx:error', { error: e });
                     }
                 };
                 target.addEventListener(evtName, handler, opts);
@@ -1917,7 +1978,8 @@ var htmx = (() => {
         #findOrWarn(elt, selector, thisAttr) {
             let result = this.#findAllExt(elt, selector, thisAttr)[0]
             if (!result) {
-                console.warn(`htmx: '${selector}' on ${thisAttr} did not match any element`)
+                this.logger('warn', `'${selector}' on ${thisAttr} did not match any element`,
+                    { elt, selector, attr: thisAttr });
             }
             return result
         }
@@ -2256,6 +2318,14 @@ var htmx = (() => {
                 }
             }
             return restoreTasks;
+        }
+
+        #toEltList(x) {
+            if (x == null) return [];
+            if (typeof x === 'string') return [...this.findAll(x)];
+            if (x.nodeType) return [x];
+            if (Symbol.iterator in Object(x)) return [...x];
+            return [];
         }
 
         #addClass(elt, cls) {
@@ -2609,7 +2679,7 @@ var htmx = (() => {
 
     function checkLegacyAttributes(element) {
         if (element.hasAttribute('sse-connect')) {
-            console.warn('HTMX SSE: Legacy attribute sse-connect is deprecated. Use hx-sse:connect instead.');
+            htmx.logger('warn', '[hx-sse] legacy attribute sse-connect is deprecated; use hx-sse:connect instead');
 
             let url = element.getAttribute('sse-connect');
             let attr = (htmx.config.prefix || 'hx-') + 'sse' + (htmx.config.metaCharacter || ':') + 'connect';
@@ -2618,7 +2688,7 @@ var htmx = (() => {
             }
         }
         if (element.hasAttribute('sse-swap')) {
-            console.warn('HTMX SSE: sse-swap is removed in htmx 4. Unnamed SSE messages are swapped automatically. Named events are dispatched as DOM events.');
+            htmx.logger('warn', '[hx-sse] sse-swap is removed in htmx 4. Unnamed SSE messages are swapped automatically. Named events are dispatched as DOM events.');
         }
     }
 
@@ -3115,7 +3185,7 @@ var htmx = (() => {
                 html = detail.message.json.payload; // backwards compat
                 // Warn once per connection (not on every message)
                 if (!connection._payloadWarnFired) {
-                    console.warn('[htmx-ws] json.payload is deprecated, use json.content instead');
+                    htmx.logger('warn', '[hx-ws] json.payload is deprecated; use json.content instead');
                     connection._payloadWarnFired = true;
                 }
             }
@@ -3204,7 +3274,7 @@ var htmx = (() => {
     
     function checkLegacyAttributes(element) {
         if (element.hasAttribute('ws-connect') || element.hasAttribute('ws-send')) {
-            console.warn('HTMX WebSocket: Legacy attributes ws-connect and ws-send are deprecated. Use hx-ws:connect and hx-ws:send instead.');
+            htmx.logger('warn', '[hx-ws] legacy attributes ws-connect and ws-send are deprecated; use hx-ws:connect and hx-ws:send instead');
 
             if (element.hasAttribute('ws-connect')) {
                 let url = element.getAttribute('ws-connect');
@@ -3309,7 +3379,7 @@ var htmx = (() => {
 
     function initializePreload(elt) {
         let preloadSpec = api.attributeValue(elt, "hx-preload");
-        if (!preloadSpec && !elt._htmx?.boosted) return;
+        if (preloadSpec == undefined && !elt._htmx?.boosted) return;
 
         let preloadEvents = []
         let timeout = 5000;
@@ -3323,14 +3393,15 @@ var htmx = (() => {
                 }
             }
         } else {
-            //only boosted links are supported
-            if (elt.tagName === "A") {
-                if(htmx.config?.preload?.boostTimeout) {
-                    timeout = htmx.parseInterval(htmx.config.preload.boostTimeout)
-                }
-                preloadEvents.push(htmx.config?.preload?.boostEvent || "mousedown");
-                preloadEvents.push("touchstart");
+            let isBoostedAnchor = elt._htmx?.boosted && elt.tagName === "A";
+            let isHxGet = api.attributeValue(elt, "hx-get") != null;
+            if (!isBoostedAnchor && !isHxGet) return;
+            if (isBoostedAnchor && htmx.config?.preload?.autoBoost === false) return;
+            if (htmx.config?.preload?.boostTimeout) {
+                timeout = htmx.parseInterval(htmx.config.preload.boostTimeout)
             }
+            preloadEvents.push(htmx.config?.preload?.boostEvent || "mousedown");
+            preloadEvents.push("touchstart");
         }
 
         let preloadListener = async (evt) => {
@@ -3348,7 +3419,6 @@ var htmx = (() => {
             if (valsResult) await valsResult;
 
             let action = ctx.request.action.replace?.(/#.*$/, '');
-
 
             let params = new URLSearchParams(body);
             if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
@@ -3402,7 +3472,8 @@ var htmx = (() => {
             }
         }
     });
-})()(() => {
+})()
+(() => {
 
     if (typeof navigation === 'undefined') return;
 
@@ -3674,7 +3745,7 @@ var htmx = (() => {
 
             let targets = htmx.findAll(ctx.sourceElement, selector);
             if (!targets.length) {
-                console.warn(`htmx: '${selector}' on hx-targets did not match any elements`);
+                htmx.logger('warn', `'${selector}' on hx-targets did not match any elements`, { selector });
                 return;
             }
 
@@ -3738,7 +3809,7 @@ var htmx = (() => {
             i = 0;
         }
         if (++i > 50) {
-            console.warn('htmx: hx-live recompute exceeded 50/sec, deactivating. Likely a self-mutating expression.');
+            htmx.logger('warn', 'hx-live recompute exceeded 50/sec, deactivating. Likely a self-mutating expression.');
             deactivate();
             fns.clear();
             return;
@@ -3751,37 +3822,76 @@ var htmx = (() => {
         });
     }
 
-    function makeDebounce() {
-        let last = 0, reject;
-        return ms => new Promise((res, rej) => {
-            reject?.(dbSym);
-            reject = rej;
-            let id = ++last;
-            setTimeout(() => id === last && (reject = null, res()), ms);
-        });
+    // toggle('.foo')              — class toggle
+    // toggle('@disabled')         — attribute presence toggle
+    // toggle('@x=v')              — attribute presence-with-value (add v ↔ remove)
+    // toggle('@x=a|b|c')          — strict cycle through values (always present)
+    // toggle('@x=on|')            — cycle 'on' ↔ absent (trailing empty = absent slot)
+    // toggle('*display=none')     — style presence-with-value (set ↔ clear)
+    // toggle('*display=a|b')      — style cycle through values
+    let toggleRe = /^([.@*])([^=]+)(?:=(.*))?$/;
+    function applyToggle(spec, e) {
+        let m = spec.trim().match(toggleRe);
+        if (!m) return;
+        let [, kind, name, vals] = m;
+        name = name.trim();
+        let values = vals === undefined ? null : vals.split('|').map(v => v.trim());
+        if (kind === '.') {
+            e.classList.toggle(name);
+        } else if (kind === '@') {
+            if (!values) {
+                e.toggleAttribute(name);
+            } else if (values.length === 1) {
+                if (e.hasAttribute(name)) e.removeAttribute(name);
+                else e.setAttribute(name, values[0]);
+            } else {
+                let cur = e.getAttribute(name);
+                let idx = values.indexOf(cur === null ? '' : cur);
+                let next = values[(idx + 1) % values.length];
+                if (next === '') e.removeAttribute(name);
+                else e.setAttribute(name, next);
+            }
+        } else { // '*'
+            if (!values) return;
+            if (values.length === 1) {
+                if (e.style[name]) e.style[name] = '';
+                else e.style[name] = values[0];
+            } else {
+                let idx = values.indexOf(e.style[name] || '');
+                e.style[name] = values[(idx + 1) % values.length];
+            }
+        }
     }
 
-    function makeWait(ctx) {
-        return (...args) => new Promise(r => {
-            if (!args.length) return r();
-            let done, cleanups = [];
-            let resolve = v => {
-                if (done) return;
-                done = true;
-                for (let c of cleanups) c();
-                r(v);
-            };
-            for (let a of args) {
-                if (typeof a === 'number') {
-                    let id = setTimeout(() => resolve(a), a);
-                    cleanups.push(() => clearTimeout(id));
-                } else {
-                    let h = e => resolve(e);
-                    ctx.addEventListener(a, h, { once: true });
-                    cleanups.push(() => ctx.removeEventListener(a, h));
-                }
+    function makeDebounce() {
+        // Channels keyed by fn.toString() for the closure form; null for the promise form.
+        // Promise-form cancellation works by rejecting the awaiting async — no callsite key needed.
+        // Closure form needs a key because closures lack an enclosing async context to abort.
+        let channels = new Map();
+        let chan = key => channels.get(key) || (channels.set(key, { last: 0, reject: null }), channels.get(key));
+        return (ms, fn) => {
+            let ch = chan(fn ? fn.toString() : null);
+            ch.reject?.(dbSym);
+            ch.reject = null;
+            let id = ++ch.last;
+            if (fn) {
+                setTimeout(() => id === ch.last && fn(), ms);
+                return;
             }
-        });
+            return new Promise((res, rej) => {
+                ch.reject = rej;
+                setTimeout(() => {
+                    if (id !== ch.last) return;
+                    ch.reject = null;
+                    res();
+                }, ms);
+            });
+        };
+    }
+
+    function getDebounce(elt) {
+        let prop = api.htmxProp(elt);
+        return prop.debounce || (prop.debounce = makeDebounce());
     }
 
     function makeQ(ctx, defaultRoot = document) {
@@ -3793,12 +3903,24 @@ var htmx = (() => {
             }
             let sel = selectorOrElt;
             let inMatch = sel.match(/^(.+)\s+in\s+(.+)$/);
-            let root = defaultRoot;
+            let roots = [defaultRoot];
             if (inMatch) {
                 sel = inMatch[1];
-                root = inMatch[2] === 'this' ? ctx : document.querySelector(inMatch[2]);
+                if (inMatch[2] === 'this' || inMatch[2] === 'me') {
+                    roots = [ctx];
+                } else {
+                    roots = [...document.querySelectorAll(inMatch[2])];
+                }
             }
-            if (!root) return qProxy([]);
+            if (!roots.length) return qProxy([]);
+            let qsa = s => {
+                if (roots.length === 1) return [...roots[0].querySelectorAll(s)];
+                let out = [], seen = new Set();
+                for (let r of roots) for (let e of r.querySelectorAll(s)) {
+                    if (!seen.has(e)) { seen.add(e); out.push(e); }
+                }
+                return out.sort((a, b) => a.compareDocumentPosition(b) & 4 ? -1 : 1);
+            };
             let dirMatch = sel.match(/^(next|prev|closest|first|last)\s+(.+)$/);
             let elts;
             if (dirMatch) {
@@ -3808,7 +3930,7 @@ var htmx = (() => {
                     let c = ctx.closest?.(s);
                     elts = c ? [c] : [];
                 } else {
-                    let all = [...root.querySelectorAll(s)];
+                    let all = qsa(s);
                     if (dir === 'first') elts = all.slice(0, 1);
                     else if (dir === 'last') elts = all.slice(-1);
                     else if (dir === 'next') {
@@ -3820,15 +3942,19 @@ var htmx = (() => {
                     }
                 }
             } else {
-                elts = [...root.querySelectorAll(sel)];
+                elts = qsa(sel);
             }
             return qProxy(elts);
         };
     }
 
+    let arrayMethods = new Set(['map', 'filter', 'reduce', 'reduceRight', 'forEach', 'some', 'every',
+        'find', 'findIndex', 'findLast', 'findLastIndex', 'flatMap', 'flat',
+        'slice', 'indexOf', 'lastIndexOf', 'includes', 'join', 'at']);
+
     function qProxy(elts) {
         let positions = { before: 'beforebegin', after: 'afterend', start: 'afterbegin', end: 'beforeend' };
-        return new Proxy({}, {
+        let proxy = new Proxy({}, {
             get: (_, p) => {
                 if (p === 'count') return elts.length;
                 if (p === 'arr') return () => elts.slice();
@@ -3838,16 +3964,11 @@ var htmx = (() => {
                     for (let e of elts) for (let r of makeQ(e, e)(s).arr()) out.add(r);
                     return qProxy([...out]);
                 };
-                if (p === 'trigger') return (t, d, b) => elts.forEach(e => htmx.trigger(e, t, d, b));
-                if (p === 'insert') return (pos, s) =>
-                    elts.forEach(e => e.insertAdjacentHTML(positions[pos], s));
-                if (p === 'take') return (cls, from) => {
-                    let sources = typeof from === 'string'
-                        ? document.querySelectorAll(from)
-                        : (from || []);
-                    for (let e of sources) e.classList.remove(cls);
-                    for (let e of elts) e.classList.add(cls);
-                };
+                if (p === 'trigger') return (t, d, b) => { elts.forEach(e => htmx.trigger(e, t, d, b)); return proxy; };
+                if (p === 'insert') return (pos, s) => { elts.forEach(e => e.insertAdjacentHTML(positions[pos], s)); return proxy; };
+                if (p === 'take') return (cls, from) => { htmx.takeClass(elts, cls, from); return proxy; };
+                if (p === 'toggle') return (...specs) => { elts.forEach(e => specs.forEach(s => applyToggle(s, e))); return proxy; };
+                if (arrayMethods.has(p)) return elts[p].bind(elts);
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));
@@ -3859,6 +3980,7 @@ var htmx = (() => {
                 return true;
             }
         });
+        return proxy;
     }
 
     function processLive(root) {
@@ -3873,7 +3995,7 @@ var htmx = (() => {
             prop.liveRegistered = true;
             ensureActive();
             let code = elt.getAttribute(attrName);
-            let debounce = makeDebounce();
+            let debounce = getDebounce(elt);
             let run = async () => {
                 if (!elt.isConnected) {
                     fns.delete(run);
@@ -3882,7 +4004,7 @@ var htmx = (() => {
                 try {
                     await api.executeJavaScript(elt, { debounce }, code, false);
                 } catch (e) {
-                    if (e !== dbSym) console.error(e);
+                    if (e !== dbSym) htmx.logger('error', 'hx-live expression threw', { elt, error: e });
                 }
             };
             fns.add(run);
@@ -3890,7 +4012,11 @@ var htmx = (() => {
         }
     }
 
-    htmx.q = s => makeQ(document.documentElement)(s);
+    htmx.live = {
+        q: s => makeQ(document.documentElement)(s),
+        debounce: makeDebounce(),
+        refresh: () => schedule()
+    };
 
     htmx.registerExtension('hx-live', {
         init: (internalAPI) => {
@@ -3908,9 +4034,12 @@ var htmx = (() => {
         htmx_scope: (elt, detail) => {
             Object.assign(detail.scope, {
                 q: makeQ(elt),
-                wait: makeWait(elt),
+                timeout: t => htmx.timeout(t),
+                forEvent: (...args) => htmx.forEvent(elt, ...args),
+                nextFrame: () => htmx.nextFrame(),
                 trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
-                debounce: makeDebounce()
+                debounce: getDebounce(elt),
+                take: (cls, source) => htmx.takeClass(elt, cls, source)
             });
         }
     });
