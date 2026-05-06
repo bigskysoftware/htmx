@@ -173,6 +173,26 @@ describe('hx-live extension', function () {
         elt.dataset.v.should.equal('fired');
     });
 
+    it('wait("frame") resolves on the next animation frame', async function() {
+        window.__frameDone = false;
+        playground().innerHTML = `
+            <output hx-live="(async () => { await wait('frame'); window.__frameDone = true; })()"></output>
+        `;
+        htmx.process(playground());
+        // Synchronously after process, wait('frame') hasn't resolved yet.
+        window.__frameDone.should.equal(false);
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        window.__frameDone.should.equal(true);
+        delete window.__frameDone;
+    });
+
+    it('wait("frame", ms) races animation frame against timeout', async function() {
+        // 'frame' should win since rAF fires well before 1000ms.
+        let elt = createProcessedHTML('<output hx-live="(async () => { this.dataset.v = await wait(\'frame\', 1000); })()"></output>');
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        elt.dataset.v.should.equal('frame');
+    });
+
     it('wait cleans up listeners after timeout wins', async function() {
         let count = 0;
         let elt = createProcessedHTML(

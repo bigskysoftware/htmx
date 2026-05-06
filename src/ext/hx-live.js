@@ -114,6 +114,9 @@
                 if (typeof a === 'number') {
                     let id = setTimeout(() => resolve(a), a);
                     cleanups.push(() => clearTimeout(id));
+                } else if (a === 'frame') {
+                    let id = requestAnimationFrame(() => resolve(a));
+                    cleanups.push(() => cancelAnimationFrame(id));
                 } else {
                     let h = e => resolve(e);
                     ctx.addEventListener(a, h, { once: true });
