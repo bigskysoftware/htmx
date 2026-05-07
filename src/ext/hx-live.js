@@ -274,7 +274,8 @@
                 nextFrame: () => htmx.nextFrame(),
                 trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
                 debounce: getDebounce(elt),
-                take: (cls, source) => htmx.takeClass(elt, cls, source)
+                take: (cls, source) => htmx.takeClass(elt, cls, source),
+                toggle: (...specs) => specs.forEach(s => applyToggle(s, elt))
             });
         }
     });

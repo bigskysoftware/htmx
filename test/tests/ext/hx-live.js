@@ -474,6 +474,29 @@ describe('hx-live extension', function () {
         tabs[2].classList.contains('selected').should.equal(true);
     });
 
+    it('toggle() is available at top-level in hx-on expressions and applies to current element', function() {
+        playground().innerHTML = `
+            <button hx-on:click="toggle('.active', '@aria-pressed=true|false')">x</button>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('button');
+        btn.click();
+        btn.classList.contains('active').should.equal(true);
+        btn.getAttribute('aria-pressed').should.equal('true');
+        btn.click();
+        btn.classList.contains('active').should.equal(false);
+        btn.getAttribute('aria-pressed').should.equal('false');
+    });
+
+    it('toggle() in hx-live applies to the current element on each recompute', async function() {
+        // Use a one-shot recompute to flip a class once and confirm targeting.
+        let elt = createProcessedHTML(
+            `<output hx-live="!this.dataset.s && (this.dataset.s='1', toggle('.flipped'))"></output>`
+        );
+        await htmx.timeout(5);
+        elt.classList.contains('flipped').should.equal(true);
+    });
+
     it('directional: closest', function() {
         playground().innerHTML = '<section><div id="inner"></div></section>';
         let inner = playground().querySelector('#inner');
