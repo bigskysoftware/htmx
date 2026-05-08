@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0-beta3] - 2026-05-XX
+## [4.0.0-beta3] - 2026-05-08
 
 * New `hx-live` extension: adds DOM-reactivity via the `hx-live` attribute and a richer JavaScript surface inside `hx-on`
   * `hx-live="..."` a JS expression that re-evaluates whenever any DOM input/change/mutation event fires on the page
