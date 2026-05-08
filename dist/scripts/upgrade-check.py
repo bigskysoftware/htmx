@@ -118,7 +118,8 @@ REMOVED_JS_API = {
     "htmx.off": "use removeEventListener() (htmx.on() returns the callback)",
     "htmx.location": "use htmx.ajax()",
     "htmx.logAll": "use htmx.config.logAll = true",
-    "htmx.logNone": "use htmx.config.logAll = false",
+    "htmx.logNone": "use htmx.config.logAll = false (errors/warnings flow to console.* directly)",
+    "htmx.logger": "removed; htmx logs to console.error / console.warn / console.log directly. Observability tools (Sentry, DataDog RUM, etc.) capture console.* automatically",
     "htmx.defineExtension": "use htmx.registerExtension()",
 }
 

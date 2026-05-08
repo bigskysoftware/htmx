@@ -82,7 +82,7 @@
         let tag = elt.tagName?.toLowerCase();
         let id = elt.id ? `#${elt.id}` : '';
         let reason = eltNonce == null ? 'missing-nonce' : 'nonce-mismatch';
-        htmx.logger('error', `[hx-nonce] blocked <${tag}${id}> — ${eltNonce == null ? 'no hx-nonce attribute' : 'nonce mismatch (possible injection)'}`, { elt, reason });
+        console.error(`htmx: [hx-nonce] blocked <${tag}${id}> — ${eltNonce == null ? 'no hx-nonce attribute' : 'nonce mismatch (possible injection)'}`, { elt, reason });
         htmx.trigger(elt, 'htmx:security:strip', { reason, stripped });
         return true;
     }
@@ -97,7 +97,7 @@
             pageNonce = document.querySelector('script[nonce]')?.nonce || null;
 
             if (!pageNonce) {
-                htmx.logger('error', '[hx-nonce] no page nonce found — blocking all htmx. Add a nonce to your script tags.');
+                console.error('htmx: [hx-nonce] no page nonce found — blocking all htmx. Add a nonce to your script tags.');
                 return;
             }
 
@@ -108,7 +108,7 @@
                     ? trustedTypes.createPolicy('htmx', { createHTML: s => s, createScript: s => s })
                     : { createHTML: s => s, createScript: s => s };
             } catch (e) {
-                htmx.logger('error', "[hx-nonce] TrustedTypes policy 'htmx' blocked — add 'htmx' to trusted-types CSP directive. Blocking all htmx.");
+                console.error("htmx: [hx-nonce] TrustedTypes policy 'htmx' blocked — add 'htmx' to trusted-types CSP directive. Blocking all htmx.");
                 pageNonce = null;
                 return;
             }
@@ -124,7 +124,7 @@
                                 if (getNonce(thisArg) !== pageNonce) {
                                     let tag = thisArg?.tagName?.toLowerCase();
                                     let id = thisArg?.id ? `#${thisArg.id}` : '';
-                                    htmx.logger('error', `[hx-nonce] blocked eval on <${tag}${id}> — nonce mismatch`, { elt: thisArg });
+                                    console.error(`htmx: [hx-nonce] blocked eval on <${tag}${id}> — nonce mismatch`, { elt: thisArg });
                                     htmx.trigger(thisArg, 'htmx:security:violation', { reason: 'nonce-mismatch-at-eval' });
                                     return;
                                 }
@@ -179,7 +179,7 @@
             if (!pageNonce) return false;
             let action = detail.ctx?.request?.action;
             if (action && /^(js|javascript):/i.test(action)) {
-                htmx.logger('error', `[hx-nonce] blocked js:/javascript: action URL on <${elt.tagName.toLowerCase()}${elt.id ? '#'+elt.id : ''}>`, { elt });
+                console.error(`htmx: [hx-nonce] blocked js:/javascript: action URL on <${elt.tagName.toLowerCase()}${elt.id ? '#'+elt.id : ''}>`, { elt });
                 htmx.trigger(elt, 'htmx:security:violation', { reason: 'javascript-url', action, ctx: detail.ctx });
                 detail.cancelled = true;
                 return false;
@@ -188,7 +188,7 @@
             if (!elt._htmx?.boosted || !submitter?.getAttribute('formaction')) return;
             if (getNonce(submitter) !== pageNonce) {
                 let id = submitter?.id ? `#${submitter.id}` : '';
-                htmx.logger('error', `[hx-nonce] blocked boosted form — unnnonced submitter${id} overrode formaction`);
+                console.error(`htmx: [hx-nonce] blocked boosted form — unnnonced submitter${id} overrode formaction`);
                 htmx.trigger(elt, 'htmx:security:violation', { reason: 'unnnonced-submitter', submitter, ctx: detail.ctx });
                 detail.cancelled = true;
                 return false;

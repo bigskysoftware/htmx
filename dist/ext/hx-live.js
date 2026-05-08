@@ -44,7 +44,7 @@
             i = 0;
         }
         if (++i > 50) {
-            htmx.logger('warn', 'hx-live recompute exceeded 50/sec, deactivating. Likely a self-mutating expression.');
+            console.warn('htmx: hx-live recompute exceeded 50/sec, deactivating. Likely a self-mutating expression.');
             deactivate();
             fns.clear();
             return;
@@ -239,7 +239,7 @@
                 try {
                     await api.executeJavaScript(elt, { debounce }, code, false);
                 } catch (e) {
-                    if (e !== dbSym) htmx.logger('error', 'hx-live expression threw', { elt, error: e });
+                    if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt });
                 }
             };
             fns.add(run);

@@ -611,7 +611,7 @@ Most error events (`htmx:sendError`, `htmx:swapError`, `htmx:targetError`, `htmx
 | `htmx.remove()`                               | `element.remove()`          | Removed; use native              |
 | `htmx.swap(target, content, spec)`            | `htmx.swap(ctx)`            | Signature changed                |
 
-htmx 4 adds: `htmx.forEvent()`, `htmx.timeout()`, `htmx.nextFrame()`, `htmx.logger` (pluggable).
+htmx 4 adds: `htmx.forEvent()`, `htmx.timeout()`, `htmx.nextFrame()`. Logging now goes directly to `console.error` / `console.warn` / `console.log` (gated by `config.logAll` for events).
 
 ### Swap Styles
 

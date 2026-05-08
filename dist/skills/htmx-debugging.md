@@ -22,7 +22,7 @@ Work through these in order -- most issues fall in the first few:
 
 ## Enable Debug Logging
 
-Errors and warnings flow to the console by default. To also surface every event htmx dispatches:
+Errors and warnings flow to `console.error` / `console.warn` by default. To also surface every event htmx dispatches:
 
 ```html
 <meta name="htmx-config" content='{"logAll": true}'>
@@ -31,24 +31,10 @@ Errors and warnings flow to the console by default. To also surface every event 
 or in the console:
 
 ```js
-htmx.logAll();           // shortcut for htmx.config.logAll = true
 htmx.config.logAll = true;
 ```
 
-To silence everything (including errors and warnings), useful for tests or apps with their own observability:
-
-```js
-htmx.logNone();          // replaces htmx.logger with a no-op
-```
-
-To route logs elsewhere (Sentry, custom UI, etc.), replace the logger:
-
-```js
-htmx.logger = (level, message, context) => {
-    // level: 'event' | 'warn' | 'error'
-    mySink(level, message, context);
-};
-```
+Observability tools (Sentry, DataDog RUM, LogRocket, etc.) capture `console.*` automatically, so htmx logs flow into your existing pipeline without any extra setup.
 
 ## Event Monitoring Snippet
 
@@ -205,9 +191,7 @@ Quick compatibility fixes:
 - Look for `htmx-swapping` / `htmx-settling` classes during swaps
 
 ### Console
-- `htmx.logAll()` -- log every event (errors and warnings already on by default)
-- `htmx.logNone()` -- silence everything
-- `htmx.logger = fn` -- route logs to a custom sink
+- `htmx.config.logAll = true` -- log every event (errors and warnings already on by default)
 - `htmx.find("#selector")` -- test extended CSS selectors
 - `htmx.trigger(elt, "eventName")` -- manually fire events
 
@@ -216,7 +200,7 @@ Quick compatibility fixes:
 When helping users debug htmx issues:
 
 1. **Ask about the htmx version first** -- htmx 2 vs 4 is the most common source of confusion
-2. **Suggest `htmx.logAll()`** as the first step and ask for console output (errors/warnings are visible without it)
+2. **Suggest `htmx.config.logAll = true`** as the first step and ask for console output (errors/warnings are visible without it)
 3. **Check for `:inherited` modifier** when inheritance problems are reported
 4. **Check the Network tab** -- verify the request is being made and inspect the response
 5. **Check the response body** -- it should be HTML, not JSON
