@@ -654,7 +654,7 @@ var htmx = (() => {
                     : (/^(drop|abort|replace|queue)/.test(syncValue) ? null : syncValue);
                 if (selector) syncElt = this.__findOrWarn(elt, selector, "hx-sync") || elt;
             }
-            return syncElt._htmxRequestQueue ||= new ReqQ()
+            return this.__htmxProp(syncElt).rq ||= new ReqQ()
         }
 
         __isModifierKeyClick(evt) {
@@ -1767,8 +1767,8 @@ var htmx = (() => {
                 indicatorElements = this.__findAllExt(elt, indicatorsSelector, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
-                indicator._htmxReqCount ||= 0
-                indicator._htmxReqCount++
+                let p = this.__htmxProp(indicator);
+                p.rc = (p.rc || 0) + 1;
                 this.__addClass(indicator, this.config.requestClass)
             }
             return indicatorElements
@@ -1776,12 +1776,10 @@ var htmx = (() => {
 
         __hideIndicators(indicatorElements) {
             for (let indicator of indicatorElements) {
-                if (indicator._htmxReqCount) {
-                    indicator._htmxReqCount--;
-                    if (indicator._htmxReqCount <= 0) {
-                        this.__removeClass(indicator, this.config.requestClass);
-                        delete indicator._htmxReqCount
-                    }
+                let p = this.__htmxProp(indicator);
+                if (p.rc && --p.rc <= 0) {
+                    this.__removeClass(indicator, this.config.requestClass);
+                    delete p.rc;
                 }
             }
         }
@@ -1792,8 +1790,8 @@ var htmx = (() => {
             if (disabledSelector) {
                 disabledElements = this.__findAllExt(elt, disabledSelector, "hx-disable");
                 for (let indicator of disabledElements) {
-                    indicator._htmxDisableCount ||= 0
-                    indicator._htmxDisableCount++
+                    let p = this.__htmxProp(indicator);
+                    p.dc = (p.dc || 0) + 1;
                     indicator.disabled = true
                 }
             }
@@ -1802,12 +1800,10 @@ var htmx = (() => {
 
         __enableElements(disabledElements) {
             for (const indicator of disabledElements) {
-                if (indicator._htmxDisableCount) {
-                    indicator._htmxDisableCount--
-                    if (indicator._htmxDisableCount <= 0) {
-                        indicator.disabled = false
-                        delete indicator._htmxDisableCount
-                    }
+                let p = this.__htmxProp(indicator);
+                if (p.dc && --p.dc <= 0) {
+                    indicator.disabled = false
+                    delete p.dc;
                 }
             }
         }
