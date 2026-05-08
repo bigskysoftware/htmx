@@ -110,7 +110,7 @@ describe('hx-optimistic attribute', function() {
         fetchMock.mockResponse('POST', '/submit', () => Promise.reject(new Error('Network error')));
         createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         find('button').click()
-        await htmx.forEvent('htmx:error', 2000);
+        await waitForEvent('htmx:error', 2000);
         assert.isNull(document.querySelector('[data-hx-optimistic]'));
     })
 
@@ -126,7 +126,7 @@ describe('hx-optimistic attribute', function() {
         fetchMock.mockResponse('POST', '/submit', () => Promise.reject(new Error('Network error')));
         createProcessedHTML('<div id="result"><span>Original</span></div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         find('button').click()
-        await htmx.forEvent('htmx:error', 2000);
+        await waitForEvent('htmx:error', 2000);
         assert.isNull(document.querySelector('[data-hx-oh]'));
     })
 

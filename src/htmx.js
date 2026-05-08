@@ -1466,65 +1466,10 @@ var htmx = (() => {
             }
         }
 
-        // Returns a Promise that resolves when any of the supplied events fires or any of the supplied
-        // timeouts elapses, whichever happens first. Args are variadic and order-independent:
-        //   - element                            → listener target (last wins; default document)
-        //   - number                             → timeout in ms
-        //   - string parseable as interval (e.g. '500ms', '1s', '5m')   → timeout
-        //   - other string                       → event name
-        // Resolves to the event object (for events) or to the original arg (for timeouts), so callers can
-        // discriminate which input won the race.
-        forEvent(...args) {
-            let target = document;
-            for (let a of args) if (a?.nodeType) target = a;
-            return new Promise(resolve => {
-                let cleanups = [], done = false;
-                let fire = v => {
-                    if (done) return;
-                    done = true;
-                    for (let c of cleanups) c();
-                    resolve(v);
-                };
-                for (let a of args) {
-                    if (a == null || a?.nodeType) continue;
-                    let ms = typeof a === 'number' ? a
-                        : (typeof a === 'string' ? this.parseInterval(a) : undefined);
-                    if (ms !== undefined && ms > 0) {
-                        let id = setTimeout(() => fire(a), ms);
-                        cleanups.push(() => clearTimeout(id));
-                    } else if (typeof a === 'string') {
-                        let h = evt => fire(evt);
-                        target.addEventListener(a, h, { once: true });
-                        cleanups.push(() => target.removeEventListener(a, h));
-                    }
-                }
-            });
-        }
-
-        nextFrame() {
-            return new Promise(resolve => requestAnimationFrame(resolve));
-        }
-
         onLoad(callback) {
             this.on(this.__maybeAdjustMetaCharacter("htmx:after:process"), (evt) => {
                 callback(evt.target)
             })
-        }
-
-// Adds className to every element in `target`; strips it from every element in `source`.
-        // target/source accept: an element, a selector string (resolved via findAll),
-        // or any iterable of elements (NodeList, Array, q() proxy, etc.).
-        // If source is a single element, it expands to the element + its descendants matching .className —
-        // so `takeClass(button, 'active')` (default source = button.parentElement) drains 'active' from the
-        // surrounding subtree, then adds it to button.
-        takeClass(target, className, source) {
-            let targets = this.__toEltList(target);
-            if (source === undefined) source = targets[0]?.parentElement;
-            let sources = (source && source.nodeType && source.querySelectorAll)
-                ? [source, ...source.querySelectorAll('.' + className)]
-                : this.__toEltList(source);
-            for (let elt of sources) this.__removeClass(elt, className);
-            for (let elt of targets) this.__addClass(elt, className);
         }
 
         on(eventOrElt, eventOrCallback, callback) {
@@ -2294,14 +2239,6 @@ var htmx = (() => {
                 }
             }
             return restoreTasks;
-        }
-
-        __toEltList(x) {
-            if (x == null) return [];
-            if (typeof x === 'string') return [...this.findAll(x)];
-            if (x.nodeType) return [x];
-            if (Symbol.iterator in Object(x)) return [...x];
-            return [];
         }
 
         __addClass(elt, cls) {

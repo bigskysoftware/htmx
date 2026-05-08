@@ -421,10 +421,20 @@ htmx.config.metaCharacter = "-";
 
 ### JavaScript methods
 
-- `htmx.forEvent(...args)`: returns a promise that resolves when any of the supplied events fires or any of the supplied timeouts elapses, whichever happens first. Args are variadic and order-independent: an element is the listener target (last wins, defaults to `document`); a number or interval string (`'500ms'`, `'1s'`) is a timeout; any other string is an event name. Resolves to the event object (event won) or to the original timeout arg (timeout won), so callers can discriminate which input won the race.
-- `htmx.nextFrame()`: returns a promise that resolves on the next animation frame
-- `htmx.takeClass(target, className, source)`: strips `className` from elements in `source`, then adds it to elements in `target`. `target` and `source` each accept an element, a selector string, or any iterable of elements (NodeList, Array, q() proxy). When `source` is a single element it expands to that element plus its descendants matching `.className`. When `source` is omitted it defaults to `target`'s parent, so `htmx.takeClass(button, 'active')` strips `active` from the surrounding subtree and adds it to button.
 - `htmx.timeout(time)`: returns a promise that resolves after a delay (number ms, or interval string `'500ms'`/`'1s'`/`'5m'`)
+
+`htmx.takeClass` is **removed** from core. Equivalent functionality is exposed by the `hx-live` extension on the `htmx.live` namespace:
+
+```js
+htmx.live.take(target, className, source)   // strip class from `source`, add to `target`
+htmx.live.forEvent(...args)                 // race events/timeouts
+htmx.live.nextFrame()                       // promise that resolves on next animation frame
+htmx.live.q(selector)                       // jQuery-like proxy rooted at documentElement
+htmx.live.debounce(ms[, fn])                // global debounce
+htmx.live.refresh()                         // recompute every live expression
+```
+
+Inside `hx-live`/`hx-on` expression scope these are available unprefixed (`take`, `forEvent`, `nextFrame`, `q`, `debounce`, `toggle`) with the current element used as the implicit context — see the [`hx-live` extension docs](/extensions/hx-live).
 
 ### Auto-logged events
 
