@@ -8,5 +8,6 @@ test/scratch/scratch.html
 /coverage
 /tmp
 .syncthing.*
+__pycache__/
 # Override global gitignore: lib/ directories are part of this project
 !**/lib/
