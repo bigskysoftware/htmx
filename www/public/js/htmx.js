@@ -74,7 +74,6 @@ var htmx = (() => {
 
         constructor() {
             this.#initHtmxConfig();
-            this.logger = this.#defaultLogger.bind(this);
             this.#initRequestIndicatorCss();
             this.#actionSelector = this.#prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]');
             this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.#prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
@@ -111,7 +110,7 @@ var htmx = (() => {
         }
 
         #initHtmxConfig() {
-            this.version = '4.0.0-beta2'
+            this.version = '4.0.0-beta3'
             this.config = {
                 logAll: false,
                 prefix: "data-hx-",
@@ -654,7 +653,7 @@ var htmx = (() => {
                     : (/^(drop|abort|replace|queue)/.test(syncValue) ? null : syncValue);
                 if (selector) syncElt = this.#findOrWarn(elt, selector, "hx-sync") || elt;
             }
-            return syncElt._htmxRequestQueue ||= new ReqQ()
+            return this.#htmxProp(syncElt).rq ||= new ReqQ()
         }
 
         #isModifierKeyClick(evt) {
@@ -1433,12 +1432,13 @@ var htmx = (() => {
             // Convention: events with detail.error log at error level, detail.warn at warn level,
             // otherwise at event level (gated by config.logAll). One emit per event.
             if (detail.error) {
-                this.logger('error', `${eventName}: ${detail.error.message ?? detail.error}`,
-                    { elt: on, error: detail.error, detail });
+                let prefix = `htmx: ${eventName}: ${detail.error.message ?? detail.error}`;
+                if (detail.error instanceof Error) console.error(prefix, detail.error, { elt: on, detail });
+                else console.error(prefix, { elt: on, detail });
             } else if (detail.warn) {
-                this.logger('warn', `${eventName}: ${detail.warn}`, { elt: on, detail });
-            } else {
-                this.logger('event', eventName, { elt: on, detail });
+                console.warn(`htmx: ${eventName}: ${detail.warn}`, { elt: on, detail });
+            } else if (this.config.logAll) {
+                console.log(`htmx: ${eventName}`, { elt: on, detail });
             }
             on = this.#normalizeElement(on)
             this.#triggerExtensions(on, eventName, detail);
@@ -1466,85 +1466,10 @@ var htmx = (() => {
             }
         }
 
-        // Returns a Promise that resolves when any of the supplied events fires or any of the supplied
-        // timeouts elapses, whichever happens first. Args are variadic and order-independent:
-        //   - element                            → listener target (last wins; default document)
-        //   - number                             → timeout in ms
-        //   - string parseable as interval (e.g. '500ms', '1s', '5m')   → timeout
-        //   - other string                       → event name
-        // Resolves to the event object (for events) or to the original arg (for timeouts), so callers can
-        // discriminate which input won the race.
-        forEvent(...args) {
-            let target = document;
-            for (let a of args) if (a?.nodeType) target = a;
-            return new Promise(resolve => {
-                let cleanups = [], done = false;
-                let fire = v => {
-                    if (done) return;
-                    done = true;
-                    for (let c of cleanups) c();
-                    resolve(v);
-                };
-                for (let a of args) {
-                    if (a == null || a?.nodeType) continue;
-                    let ms = typeof a === 'number' ? a
-                        : (typeof a === 'string' ? this.parseInterval(a) : undefined);
-                    if (ms !== undefined && ms > 0) {
-                        let id = setTimeout(() => fire(a), ms);
-                        cleanups.push(() => clearTimeout(id));
-                    } else if (typeof a === 'string') {
-                        let h = evt => fire(evt);
-                        target.addEventListener(a, h, { once: true });
-                        cleanups.push(() => target.removeEventListener(a, h));
-                    }
-                }
-            });
-        }
-
-        nextFrame() {
-            return new Promise(resolve => requestAnimationFrame(resolve));
-        }
-
         onLoad(callback) {
             this.on(this.#maybeAdjustMetaCharacter("htmx:after:process"), (evt) => {
                 callback(evt.target)
             })
-        }
-
-        // Enable event-level logging (errors and warnings flow regardless).
-        logAll() { this.config.logAll = true; }
-
-        // Replace the active logger with a no-op. Use to silence everything.
-        logNone() { this.logger = () => {}; }
-
-        // Default logger. Routes by level to the matching console target.
-        // Replace via `htmx.logger = (level, message, context) => { ... }` to ship logs elsewhere.
-        // `htmx.logNone()` installs a no-op logger; `htmx.logAll()` enables event-level output.
-        #defaultLogger(level, message, context) {
-            if (level === 'event' && !this.config.logAll) return;
-            let target = level === 'error' ? console.error
-                       : level === 'warn'  ? console.warn
-                       :                     console.log;
-            let prefix = `htmx: ${message}`;
-            if (context?.error instanceof Error) target(prefix, context.error, context);
-            else if (context !== undefined)      target(prefix, context);
-            else                                  target(prefix);
-        }
-
-        // Adds className to every element in `target`; strips it from every element in `source`.
-        // target/source accept: an element, a selector string (resolved via findAll),
-        // or any iterable of elements (NodeList, Array, q() proxy, etc.).
-        // If source is a single element, it expands to the element + its descendants matching .className —
-        // so `takeClass(button, 'active')` (default source = button.parentElement) drains 'active' from the
-        // surrounding subtree, then adds it to button.
-        takeClass(target, className, source) {
-            let targets = this.#toEltList(target);
-            if (source === undefined) source = targets[0]?.parentElement;
-            let sources = (source && source.nodeType && source.querySelectorAll)
-                ? [source, ...source.querySelectorAll('.' + className)]
-                : this.#toEltList(source);
-            for (let elt of sources) this.#removeClass(elt, className);
-            for (let elt of targets) this.#addClass(elt, className);
         }
 
         on(eventOrElt, eventOrCallback, callback) {
@@ -1767,8 +1692,8 @@ var htmx = (() => {
                 indicatorElements = this.#findAllExt(elt, indicatorsSelector, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
-                indicator._htmxReqCount ||= 0
-                indicator._htmxReqCount++
+                let p = this.#htmxProp(indicator);
+                p.rc = (p.rc || 0) + 1;
                 this.#addClass(indicator, this.config.requestClass)
             }
             return indicatorElements
@@ -1776,12 +1701,10 @@ var htmx = (() => {
 
         #hideIndicators(indicatorElements) {
             for (let indicator of indicatorElements) {
-                if (indicator._htmxReqCount) {
-                    indicator._htmxReqCount--;
-                    if (indicator._htmxReqCount <= 0) {
-                        this.#removeClass(indicator, this.config.requestClass);
-                        delete indicator._htmxReqCount
-                    }
+                let p = this.#htmxProp(indicator);
+                if (p.rc && --p.rc <= 0) {
+                    this.#removeClass(indicator, this.config.requestClass);
+                    delete p.rc;
                 }
             }
         }
@@ -1792,8 +1715,8 @@ var htmx = (() => {
             if (disabledSelector) {
                 disabledElements = this.#findAllExt(elt, disabledSelector, "hx-disable");
                 for (let indicator of disabledElements) {
-                    indicator._htmxDisableCount ||= 0
-                    indicator._htmxDisableCount++
+                    let p = this.#htmxProp(indicator);
+                    p.dc = (p.dc || 0) + 1;
                     indicator.disabled = true
                 }
             }
@@ -1802,12 +1725,10 @@ var htmx = (() => {
 
         #enableElements(disabledElements) {
             for (const indicator of disabledElements) {
-                if (indicator._htmxDisableCount) {
-                    indicator._htmxDisableCount--
-                    if (indicator._htmxDisableCount <= 0) {
-                        indicator.disabled = false
-                        delete indicator._htmxDisableCount
-                    }
+                let p = this.#htmxProp(indicator);
+                if (p.dc && --p.dc <= 0) {
+                    indicator.disabled = false
+                    delete p.dc;
                 }
             }
         }
@@ -1978,7 +1899,7 @@ var htmx = (() => {
         #findOrWarn(elt, selector, thisAttr) {
             let result = this.#findAllExt(elt, selector, thisAttr)[0]
             if (!result) {
-                this.logger('warn', `'${selector}' on ${thisAttr} did not match any element`,
+                console.warn(`htmx: '${selector}' on ${thisAttr} did not match any element`,
                     { elt, selector, attr: thisAttr });
             }
             return result
@@ -2318,14 +2239,6 @@ var htmx = (() => {
                 }
             }
             return restoreTasks;
-        }
-
-        #toEltList(x) {
-            if (x == null) return [];
-            if (typeof x === 'string') return [...this.findAll(x)];
-            if (x.nodeType) return [x];
-            if (Symbol.iterator in Object(x)) return [...x];
-            return [];
         }
 
         #addClass(elt, cls) {
