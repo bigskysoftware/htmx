@@ -25,7 +25,7 @@ Add these two config lines to restore htmx 2.x behavior:
 [`implicitInheritance`](/reference/config/htmx-config-implicitInheritance) restores htmx 2's implicit attribute
 inheritance. [`noSwap`](/reference/config/htmx-config-noSwap) prevents swapping error responses.
 
-Or load the [`htmx-2-compat`](/docs/extensions/htmx-2-compat) extension, which restores implicit inheritance, old event
+Or load the [`htmx-2-compat`](/extensions/htmx-2-compat) extension, which restores implicit inheritance, old event
 names, and previous error-swapping defaults:
 
 ```html
@@ -113,7 +113,8 @@ Fix: add [`hx-include`](/reference/attributes/hx-include)`="closest form"` where
 ### No history cache
 
 History no longer caches pages in [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
-When navigating back, htmx re-fetches the page and swaps it into `<body>`.
+When navigating back, htmx re-fetches the page and swaps it into `<body>`, or into the `[hx-history-elt]` element if
+one is present — the same behavior as htmx 2.
 
 Use [`htmx.config.history`](/reference/config/htmx-config-history) `= "reload"` for a full page reload instead. Use
 `htmx.config.history = false` to disable.
@@ -153,7 +154,7 @@ Restrict which extensions can load:
 
 Extension authors use `htmx.registerExtension(name, methodMap)` to register.
 
-See [Extensions documentation](/docs/extensions/using-extensions) for details.
+See [Extensions documentation](/docs/features/extensions) for details.
 
 ## Renames and Removals
 
@@ -177,18 +178,17 @@ Rename in this order to avoid conflicts:
 | `hx-vars`        | [`hx-vals`](/reference/attributes/hx-vals) with `js:` prefix                                      |
 | `hx-params`      | [`htmx:config:request`](/reference/events/htmx-config-request) event                              |
 | `hx-prompt`      | [`hx-confirm`](/reference/attributes/hx-confirm) with `js:` prefix                                |
-| `hx-ext`         | [Include extension script directly](/docs/extensions/using-extensions)                            |
+| `hx-ext`         | [Include extension script directly](/docs/features/extensions)                            |
 | `hx-disinherit`  | Not needed (inheritance is explicit)                                                              |
 | `hx-inherit`     | Not needed (inheritance is explicit)                                                              |
 | `hx-request`     | [`hx-config`](/reference/attributes/hx-config)                                                    |
 | `hx-history`     | Removed (no [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)) |
-| `hx-history-elt` | Removed                                                                                           |
 
 ### Renamed events
 
 All events follow a new pattern: `htmx:phase:action[:sub-action]`
 
-All error events are consolidated to [`htmx:error`](/reference/events/htmx-error).
+Most error events are consolidated to [`htmx:error`](/reference/events/htmx-error). HTTP error responses have a dedicated [`htmx:response:error`](/reference/events/htmx-response-error) event.
 
 | htmx 2.x                    | htmx 4.x                                                                          |
 |-----------------------------|-----------------------------------------------------------------------------------|
@@ -211,7 +211,7 @@ All error events are consolidated to [`htmx:error`](/reference/events/htmx-error
 | `htmx:oobBeforeSwap`        | [`htmx:before:swap`](/reference/events/htmx-before-swap)                          |
 | `htmx:pushedIntoHistory`    | [`htmx:after:history:push`](/reference/events/htmx-after-push-into-history)       |
 | `htmx:replacedInHistory`    | [`htmx:after:history:replace`](/reference/events/htmx-after-replace-into-history) |
-| `htmx:responseError`        | [`htmx:error`](/reference/events/htmx-error)                                      |
+| `htmx:responseError`        | [`htmx:response:error`](/reference/events/htmx-response-error)                    |
 | `htmx:sendError`            | [`htmx:error`](/reference/events/htmx-error)                                      |
 | `htmx:swapError`            | [`htmx:error`](/reference/events/htmx-error)                                      |
 | `htmx:targetError`          | [`htmx:error`](/reference/events/htmx-error)                                      |
@@ -258,6 +258,7 @@ XHR events are removed (htmx uses `fetch()` now):
 `addedClass`, `allowEval`, `allowNestedOobSwaps`, `allowScriptTags`, `attributesToSettle`, `defaultSwapDelay`,
 `disableSelector` (use [`hx-ignore`](/reference/attributes/hx-ignore)), `getCacheBusterParam`, `historyCacheSize`,
 `ignoreTitle` (still works per-swap via [`hx-swap`](/reference/attributes/hx-swap)`="... ignoreTitle:true"`),
+`inlineStyleNonce` (removed — indicator CSS now uses [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) and does not require a nonce),
 `methodsThatUseUrlParams`, `refreshOnHistoryMiss`, `responseHandling` (use [
 `hx-status`](/reference/attributes/hx-status) and [`noSwap`](/reference/config/htmx-config-noSwap)), `scrollBehavior`,
 `scrollIntoViewOnBoost`, `selfRequestsOnly` (use [`htmx.config.mode`](/reference/config/htmx-config-mode)),
@@ -305,13 +306,15 @@ Unchanged: [`HX-Trigger`](/reference/headers/HX-Trigger), [`HX-Location`](/refer
 | `htmx.remove()`      | `element.remove()`                                                     |
 | `htmx.off()`         | `removeEventListener()` (`htmx.on()` returns the callback)             |
 | `htmx.location()`    | `htmx.ajax()`                                                          |
-| `htmx.logAll()`      | [`htmx.config.logAll`](/reference/config/htmx-config-logAll) `= true`  |
-| `htmx.logNone()`     | [`htmx.config.logAll`](/reference/config/htmx-config-logAll) `= false` |
 
 **Renamed:** `htmx.defineExtension()` is now `htmx.registerExtension()`.
 
-**Still available:** `htmx.ajax()`, `htmx.config`, `htmx.find()`, `htmx.findAll()`, `htmx.on()`, `htmx.onLoad()`,
-`htmx.parseInterval()`, `htmx.process()`, `htmx.swap()`, `htmx.trigger()`.
+**Still available:** `htmx.ajax()`, `htmx.config`, `htmx.find()`, `htmx.findAll()`, `htmx.on()`,
+`htmx.onLoad()`, `htmx.parseInterval()`, `htmx.process()`, `htmx.swap()`, `htmx.trigger()`.
+
+**Removed:** `htmx.logAll()`, `htmx.logNone()`, and the pluggable `htmx.logger`. htmx now logs directly via
+`console.error` / `console.warn` / `console.log`. Set `htmx.config.logAll = true` to surface event-level
+output. Observability tools (Sentry, DataDog RUM, LogRocket, etc.) capture `console.*` automatically.
 
 Note: `htmx.onLoad()` now listens on [`htmx:after:process`](/reference/events/htmx-after-process), not [
 `htmx:after:init`](/reference/events/htmx-after-init).
@@ -418,9 +421,30 @@ htmx.config.metaCharacter = "-";
 
 ### JavaScript methods
 
-- `htmx.forEvent(eventName, timeout)`: returns a promise that resolves when an event fires
-- `htmx.takeClass(element, className, container)`: removes class from siblings, adds to element
-- `htmx.timeout(time)`: returns a promise that resolves after a delay
+- `htmx.timeout(time)`: returns a promise that resolves after a delay (number ms, or interval string `'500ms'`/`'1s'`/`'5m'`)
+
+`htmx.takeClass` is **removed** from core. Equivalent functionality is exposed by the `hx-live` extension on the `htmx.live` namespace:
+
+```js
+htmx.live.take(target, className, source)   // strip class from `source`, add to `target`
+htmx.live.forEvent(...args)                 // race events/timeouts
+htmx.live.nextFrame()                       // promise that resolves on next animation frame
+htmx.live.q(selector)                       // jQuery-like proxy rooted at documentElement
+htmx.live.debounce(ms[, fn])                // global debounce
+htmx.live.refresh()                         // recompute every live expression
+```
+
+Inside `hx-live`/`hx-on` expression scope these are available unprefixed (`take`, `forEvent`, `nextFrame`, `q`, `debounce`, `toggle`) with the current element used as the implicit context — see the [`hx-live` extension docs](/extensions/hx-live).
+
+### Auto-logged events
+
+Internally-dispatched events route to the console as follows:
+
+- If `detail.error` is set on the event, output goes to `console.error` (the Error instance is inlined first when applicable, so DevTools renders the stack). This covers request failures, hx-on handler exceptions, and other thrown paths. Apps that listen for `htmx:error` get the same data via the event.
+- If `detail.warn` is set, output goes to `console.warn`.
+- Otherwise, the event is logged at `console.log` (silent by default; set `htmx.config.logAll = true` to surface).
+
+This restores the htmx 2.x convention: if you want an internal failure path to show up in the console, fire an event with `detail.error` (or `detail.warn`); no per-site `console.error` needed.
 
 ### Request context
 
@@ -447,7 +471,6 @@ All events provide a consistent `ctx` object with request/response information.
 | [`extensions`](/reference/config/htmx-config-extensions)               | `''`            | Comma-separated list of allowed extension names               |
 | [`mode`](/reference/config/htmx-config-mode)                           | `'same-origin'` | Fetch mode (replaces `selfRequestsOnly`)                      |
 | [`inlineScriptNonce`](/reference/config/htmx-config-inlineScriptNonce) | `''`            | Nonce for inline scripts                                      |
-| [`inlineStyleNonce`](/reference/config/htmx-config-inlineStyleNonce)   | `''`            | Nonce for inline styles                                       |
 | [`metaCharacter`](/reference/config/htmx-config-metaCharacter)         | `':'`           | Separator character in attribute/event names                  |
 | [`morphIgnore`](/reference/config/htmx-config-morphIgnore)             | `''`            | CSS selector for elements to ignore during morph              |
 | [`morphScanLimit`](/reference/config/htmx-config-morphScanLimit)       |                 | Max elements to scan during morph matching                    |
@@ -460,19 +483,19 @@ htmx 4 ships with 9 core extensions. The SSE and WebSocket extensions have been 
 
 | Extension                                                 | Description                                                                          |
 |-----------------------------------------------------------|--------------------------------------------------------------------------------------|
-| [`alpine-compat`](/docs/extensions/alpine-compat)         | Alpine.js compatibility: initializes Alpine on fragments before swap                 |
-| [`browser-indicator`](/docs/extensions/browser-indicator) | Shows the browser's native loading indicator during requests                         |
-| [`head-support`](/docs/extensions/head-support)           | Merges head tag information (styles, etc.) in htmx requests                          |
-| [`htmx-2-compat`](/docs/extensions/htmx-2-compat)         | Restores implicit inheritance, old event names, and previous error-swapping defaults |
-| [`optimistic`](/docs/extensions/optimistic)               | Shows expected content from a template before the server responds                    |
-| [`preload`](/docs/extensions/preload)                     | Triggers requests early (on mouseover/mousedown) for near-instant page loads ([upgrade guide](/docs/extensions/preload#upgrading-from-htmx-2x)) |
-| [`sse`](/docs/extensions/sse)                             | Server-Sent Events streaming support ([upgrade guide](/docs/extensions/sse#upgrading-from-htmx-2x)) |
-| [`upsert`](/docs/extensions/upsert)                       | Updates existing elements by ID and inserts new ones, preserving unmatched elements  |
-| [`ws`](/docs/extensions/ws)                               | Bi-directional WebSocket communication ([upgrade guide](/docs/extensions/ws#upgrading-from-htmx-2x)) |
+| [`alpine-compat`](/extensions/hx-alpine-compat)         | Alpine.js compatibility: initializes Alpine on fragments before swap                 |
+| [`browser-indicator`](/extensions/hx-browser-indicator) | Shows the browser's native loading indicator during requests                         |
+| [`head-support`](/extensions/hx-head)           | Merges head tag information (styles, etc.) in htmx requests                          |
+| [`htmx-2-compat`](/extensions/htmx-2-compat)         | Restores implicit inheritance, old event names, and previous error-swapping defaults |
+| [`optimistic`](/extensions/hx-optimistic)               | Shows expected content from a template before the server responds                    |
+| [`preload`](/extensions/hx-preload)                     | Triggers requests early (on mouseover/mousedown) for near-instant page loads ([upgrade guide](/extensions/hx-preload#upgrading-from-htmx-2x)) |
+| [`sse`](/extensions/hx-sse)                             | Server-Sent Events streaming support ([upgrade guide](/extensions/hx-sse#upgrading-from-htmx-2x)) |
+| [`upsert`](/extensions/hx-upsert)                       | Updates existing elements by ID and inserts new ones, preserving unmatched elements  |
+| [`ws`](/extensions/hx-ws)                               | Bi-directional WebSocket communication ([upgrade guide](/extensions/hx-ws#upgrading-from-htmx-2x)) |
 
 ## Checklist
 
-1. Optionally, add config options or load [`htmx-2-compat`](/docs/extensions/htmx-2-compat) for backward compatibility
+1. Optionally, add config options or load [`htmx-2-compat`](/extensions/htmx-2-compat) for backward compatibility
 2. Run the [upgrade checker](#upgrade-checker) to get a full list of issues
 3. Rename `hx-disable` to [`hx-ignore`](/reference/attributes/hx-ignore), then `hx-disabled-elt` to [
    `hx-disable`](/reference/attributes/hx-disable)
@@ -501,3 +524,279 @@ Look for these:
 - [GitHub Discussions](https://github.com/bigskysoftware/htmx/discussions)
 - [Discord](https://htmx.org/discord)
 - [Patterns](/patterns)
+
+
+## Migrating Your Own Extensions
+
+<!-- Audience shifts here from htmx consumers to extension authors. -->
+
+If you maintain a custom extension written for htmx 2.x, the extension API has changed substantially. The catalog of bundled extensions ([/extensions](/extensions)) has already been ported. This section is for porting your own.
+
+### Quick Start
+
+htmx 4 replaces the callback-based extension API with event-based hooks. Extensions register handlers for lifecycle events instead of implementing callback methods.
+
+The simplest migration: rename `defineExtension` to `registerExtension` and map your callbacks to hooks.
+
+```javascript
+// htmx 2.x
+htmx.defineExtension('my-ext', {
+    onEvent: function(name, evt) {
+        if (name === 'htmx:beforeRequest') { /* ... */ }
+    }
+});
+
+// htmx 4
+htmx.registerExtension('my-ext', {
+    htmx_before_request: (elt, detail) => { /* ... */ }
+});
+```
+
+### What Changed
+
+#### No `hx-ext` attribute
+
+Extensions load by including the script. No attribute needed:
+
+```html
+<script src="/path/to/htmx.js"></script>
+<script src="/path/to/ext/my-extension.js"></script>
+```
+
+Restrict which extensions can load:
+
+```html
+<meta name="htmx-config" content='{"extensions": "sse, ws"}'>
+```
+
+#### Event hooks replace callbacks
+
+Instead of a single `onEvent` callback that switches on event names, each event gets its own hook method. Hook names use underscores where events use colons:
+
+| htmx 2.x event | htmx 4 hook |
+|---|---|
+| `htmx:configRequest` | `htmx_config_request` |
+| `htmx:beforeRequest` | `htmx_before_request` |
+| `htmx:afterRequest` | `htmx_after_request` |
+| `htmx:beforeSwap` | `htmx_before_swap` |
+| `htmx:afterSwap` | `htmx_after_swap` |
+
+All hooks receive `(elt, detail)`. Return `false` to cancel.
+
+#### `handle_swap` is special
+
+Unlike other hooks, `handle_swap` is called directly with positional parameters (no `htmx_` prefix, no detail object):
+
+```javascript
+handle_swap: (swapStyle, target, fragment, swapSpec) => {
+    if (swapStyle === 'my-swap') {
+        target.appendChild(fragment);
+        return true;
+    }
+    return false;
+}
+```
+
+#### Detail object replaces event properties
+
+All hooks receive `detail.ctx` with full request/response context:
+
+- `detail.ctx.request.body` (FormData in `htmx_config_request`)
+- `detail.ctx.request.headers`
+- `detail.ctx.response.status`
+- `detail.ctx.text` (response body, modifiable in `htmx_after_request`)
+- `detail.ctx.target`
+
+#### OOB swap stripping
+
+OOB swaps automatically strip the wrapper element for non-outer swap styles. Name custom swap styles starting with "outer" (e.g., `outerMorph`) to preserve the wrapper.
+
+### Callback Migration Map
+
+#### `init`
+
+```javascript
+// htmx 2.x
+init: function(api) {
+    return null;
+}
+
+// htmx 4
+init: (internalAPI) => {
+    api = internalAPI;
+}
+```
+
+Store the `internalAPI` reference for use in other hooks. No return value needed.
+
+#### `getSelectors`
+
+Removed. Use `htmx_after_init` to check for attributes:
+
+```javascript
+// htmx 2.x
+getSelectors: function() {
+    return ['[my-custom-attr]'];
+},
+onEvent: function(name, evt) {
+    if (name === 'htmx:afterProcessNode') {
+        initializeCustomBehavior(evt.target);
+    }
+}
+
+// htmx 4
+htmx_after_init: (elt) => {
+    if (api.attributeValue(elt, 'my-custom-attr')) {
+        initializeCustomBehavior(elt);
+    }
+}
+```
+
+#### `onEvent`
+
+Replace with individual hooks:
+
+```javascript
+// htmx 2.x
+onEvent: function(name, evt) {
+    if (name === 'htmx:beforeSwap' && evt.detail.xhr.status !== 200) {
+        var target = getRespCodeTarget(evt.detail.requestConfig.elt, evt.detail.xhr.status);
+        if (target) {
+            evt.detail.shouldSwap = true;
+            evt.detail.target = target;
+        }
+    }
+}
+
+// htmx 4
+htmx_before_swap: (elt, detail) => {
+    if (detail.ctx.response.status !== 200) {
+        var target = getRespCodeTarget(elt, detail.ctx.response.status);
+        if (target) {
+            detail.ctx.target = target;
+        }
+    }
+}
+```
+
+#### `transformResponse`
+
+Removed. Modify `detail.ctx.text` in `htmx_after_request`:
+
+```javascript
+// htmx 2.x
+transformResponse: function(text, xhr, elt) {
+    var tpl = htmx.closest(elt, '[mustache-template]');
+    if (tpl) {
+        var data = JSON.parse(text);
+        var template = htmx.find('#' + tpl.getAttribute('mustache-template'));
+        return Mustache.render(template.innerHTML, data);
+    }
+    return text;
+}
+
+// htmx 4
+htmx_after_request: (elt, detail) => {
+    var tpl = elt.closest('[mustache-template]');
+    if (tpl) {
+        var data = JSON.parse(detail.ctx.text);
+        var template = document.querySelector('#' + tpl.getAttribute('mustache-template'));
+        detail.ctx.text = Mustache.render(template.innerHTML, data);
+    }
+}
+```
+
+Event flow: response received, `ctx.text` set, `htmx:after:request` fires, `ctx.text` consumed into fragment, `htmx:before:swap`.
+
+#### `encodeParameters`
+
+Removed. Modify `detail.ctx.request.body` in `htmx_config_request`:
+
+```javascript
+// htmx 2.x
+onEvent: function(name, evt) {
+    if (name === 'htmx:configRequest') {
+        evt.detail.headers['Content-Type'] = 'application/json';
+    }
+},
+encodeParameters: function(xhr, parameters, elt) {
+    var object = {};
+    parameters.forEach(function(value, key) {
+        if (Object.hasOwn(object, key)) {
+            if (!Array.isArray(object[key])) object[key] = [object[key]];
+            object[key].push(value);
+        } else {
+            object[key] = value;
+        }
+    });
+    return JSON.stringify(object);
+}
+
+// htmx 4
+htmx_config_request: (elt, detail) => {
+    detail.ctx.request.headers['Content-Type'] = 'application/json';
+    var object = {};
+    detail.ctx.request.body.forEach(function(value, key) {
+        if (Object.hasOwn(object, key)) {
+            if (!Array.isArray(object[key])) object[key] = [object[key]];
+            object[key].push(value);
+        } else {
+            object[key] = value;
+        }
+    });
+    detail.ctx.request.body = JSON.stringify(object);
+}
+```
+
+`ctx.request.body` is FormData in `htmx_config_request`. It can be replaced with any value (string, JSON, URLSearchParams). For GET/DELETE, body becomes query parameters. For POST/PUT/PATCH, body becomes URLSearchParams (unless multipart).
+
+#### `isInlineSwap` and `handleSwap`
+
+Both replaced by `handle_swap`:
+
+```javascript
+// htmx 2.x
+isInlineSwap: function(swapStyle) {
+    return swapStyle === 'morphdom';
+},
+handleSwap: function(swapStyle, target, fragment) {
+    if (swapStyle === 'morphdom') {
+        morphdom(target, fragment.firstElementChild || fragment.firstChild);
+        return [target];
+    }
+}
+
+// htmx 4
+handle_swap: (swapStyle, target, fragment) => {
+    if (swapStyle === 'morphdom') {
+        morphdom(target, fragment.firstElementChild || fragment.firstChild);
+        return true;
+    }
+    return false;
+}
+```
+
+Return truthy if handled, falsy otherwise. Can return an array of elements for settle tracking.
+
+### Removed Callbacks
+
+| htmx 2.x callback | htmx 4 replacement |
+|---|---|
+| `getSelectors()` | `htmx_after_init` hook |
+| `onEvent(name, evt)` | Individual `htmx_*` hooks |
+| `transformResponse(text, xhr, elt)` | `htmx_after_request` hook (modify `detail.ctx.text`) |
+| `encodeParameters(xhr, params, elt)` | `htmx_config_request` hook (modify `detail.ctx.request.body`) |
+| `isInlineSwap(swapStyle)` | `handle_swap` or name swap style with "outer" prefix |
+| `handleSwap(style, target, frag, info)` | `handle_swap(style, target, frag, spec)` |
+
+### Checklist
+
+1. Rename `defineExtension` to `registerExtension`
+2. Replace `onEvent` with individual `htmx_*` hooks
+3. Replace `transformResponse` with `htmx_after_request`
+4. Replace `encodeParameters` with `htmx_config_request`
+5. Merge `isInlineSwap` and `handleSwap` into `handle_swap`
+6. Replace `getSelectors` with `htmx_after_init`
+7. Remove `hx-ext` attributes from HTML
+8. Update event names (colons to underscores in hook names)
+9. Test custom swap styles with OOB swaps

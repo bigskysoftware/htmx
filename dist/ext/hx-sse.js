@@ -318,7 +318,7 @@
 
     function checkLegacyAttributes(element) {
         if (element.hasAttribute('sse-connect')) {
-            console.warn('HTMX SSE: Legacy attribute sse-connect is deprecated. Use hx-sse:connect instead.');
+            console.warn('htmx: [hx-sse] legacy attribute sse-connect is deprecated; use hx-sse:connect instead');
 
             let url = element.getAttribute('sse-connect');
             let attr = (htmx.config.prefix || 'hx-') + 'sse' + (htmx.config.metaCharacter || ':') + 'connect';
@@ -327,7 +327,7 @@
             }
         }
         if (element.hasAttribute('sse-swap')) {
-            console.warn('HTMX SSE: sse-swap is removed in htmx 4. Unnamed SSE messages are swapped automatically. Named events are dispatched as DOM events.');
+            console.warn('htmx: [hx-sse] sse-swap is removed in htmx 4. Unnamed SSE messages are swapped automatically. Named events are dispatched as DOM events.');
         }
     }
 
@@ -362,8 +362,10 @@
             checkLegacyAttributes(element);
             processElement(element);
             let mc = htmx.config.metaCharacter || ':';
-            let attr = CSS.escape((htmx.config.prefix || 'hx-') + 'sse' + mc + 'connect');
-            element.querySelectorAll(`[${attr}],[sse-connect]`).forEach((el) => {
+            let sseAttr = CSS.escape('hx-sse' + mc + 'connect');
+            let sseSelector = `[${sseAttr}]`;
+            if (htmx.config.prefix) sseSelector += `,[${CSS.escape(htmx.config.prefix + 'sse' + mc + 'connect')}]`;
+            element.querySelectorAll(`${sseSelector},[sse-connect]`).forEach((el) => {
                 checkLegacyAttributes(el);
                 processElement(el);
             });

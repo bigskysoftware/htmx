@@ -89,6 +89,25 @@ call it out with the `hx-indicator` attribute:
 </button>
 ```
 
+## Delaying the Indicator
+
+For fast requests, briefly flashing a spinner can look jittery.  
+
+You can control this by adding a delay to the CSS transition for showing the indicator:
+
+```css
+.htmx-indicator {
+    opacity: 0;
+    visibility: hidden;
+}
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 200ms ease-in 200ms;  /* fade duration, then delay */
+}
+```
+
 ## Demo
 
 This simulates what a spinner might look like in that situation:
@@ -105,19 +124,12 @@ This simulates what a spinner might look like in that situation:
 * In the absence of an explicit indicator, the `htmx-request` class will be added to the element triggering the
   request
 * If you want to use your own CSS but still use `htmx-indicator` as class name, then you need to disable
-  `includeIndicatorStyles`. See [Configuring htmx](/docs/troubleshoot/configuration). The easiest way is to add this to the
+  `includeIndicatorCSS`. See [Configuring htmx](/docs/troubleshoot/configuration). The easiest way is to add this to the
   `<head>` of your HTML:
 
 ```html
-<meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
+<meta name="htmx-config" content='{"includeIndicatorCSS": false}'>
 ```
 
-* the `htmx-indicator` CSS added when this config is not disabled uses an inline style tag which may need you to set
-  `inlineStyleNonce` config if you have a strict nonce based CSP policy for `style-src`
-
-```html
-<meta name="htmx-config" content='{"inlineStyleNonce": "random-nonce"}'>
-```
-
-* If your CSP needs to block all inline style tags then disable `includeIndicatorStyles` and host your own CSS file with
-  a copy of your preferred `htmx-indicator` style from above
+* If you want to use your own CSS and disable the built-in indicator styles entirely, set `includeIndicatorCSS` to
+  `false` and host your own CSS file with a copy of your preferred `htmx-indicator` style from above

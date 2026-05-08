@@ -446,7 +446,7 @@ describe('Morph Swap Styles Tests', function() {
             
             mockResponse('GET', '/click', 'Clicked!');
             btn.click();
-            await htmx.forEvent('htmx:after:swap', 100);
+            await waitForEvent('htmx:after:swap', 100);
             
             assert.equal(div.querySelector('#result').textContent, 'Clicked!', 'New htmx functionality should work');
         });
@@ -462,7 +462,7 @@ describe('Morph Swap Styles Tests', function() {
             
             mockResponse('GET', '/click', 'Clicked!');
             btn.click();
-            await htmx.forEvent('htmx:after:swap', 100);
+            await waitForEvent('htmx:after:swap', 100);
             
             assert.equal(container.querySelector('#result').textContent, 'Clicked!', 'New htmx functionality should work');
         });
@@ -502,7 +502,7 @@ describe('Morph Swap Styles Tests', function() {
 
             mockResponse('GET', '/click', 'Clicked!');
             newDiv.click();
-            await htmx.forEvent('htmx:after:swap', 100);
+            await waitForEvent('htmx:after:swap', 100);
 
             assert.equal(container.querySelector('#result').textContent, 'Clicked!', 'htmx actions on new div should work');
         });
@@ -551,7 +551,7 @@ describe('Morph Swap Styles Tests', function() {
             await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
             
             btn.click();
-            await htmx.forEvent('htmx:after:swap', 100);
+            await waitForEvent('htmx:after:swap', 100);
             
             assert.equal(result.textContent, 'Clicked!', 'htmx functionality should still work');
         });

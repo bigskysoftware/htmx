@@ -34,7 +34,7 @@ describe('__disableElements / __enableElements unit tests', function() {
         htmx.__disableElements(container)
         htmx.__disableElements(container)
 
-        assert.equal(button._htmxDisableCount, 2)
+        assert.equal(htmx.__htmxProp(button).dc, 2)
         assert.isTrue(button.disabled)
     })
 
@@ -46,7 +46,7 @@ describe('__disableElements / __enableElements unit tests', function() {
         let elements2 = htmx.__disableElements(container)
         htmx.__enableElements(elements1)
 
-        assert.equal(button._htmxDisableCount, 1)
+        assert.equal(htmx.__htmxProp(button).dc, 1)
         assert.isTrue(button.disabled)
     })
 
@@ -60,7 +60,7 @@ describe('__disableElements / __enableElements unit tests', function() {
         htmx.__enableElements(elements2)
 
         assert.isFalse(button.disabled)
-        assert.isUndefined(button._htmxDisableCount)
+        assert.isUndefined(htmx.__htmxProp(button).dc)
     })
 
     it('handles multiple elements', function () {
@@ -98,7 +98,7 @@ describe('__disableElements / __enableElements unit tests', function() {
         htmx.__enableElements([button])
 
         assert.isFalse(button.disabled)
-        assert.isUndefined(button._htmxDisableCount)
+        assert.isUndefined(htmx.__htmxProp(button).dc)
     })
 
     it('works with nested elements', function () {
@@ -126,8 +126,8 @@ describe('__disableElements / __enableElements unit tests', function() {
         button.parentElement.setAttribute('hx-disable', 'button.disable-me')
         htmx.__disableElements(button.parentElement)
 
-        assert.equal(button._htmxDisableCount, 2)
-        assert.equal(input._htmxDisableCount, 1)
+        assert.equal(htmx.__htmxProp(button).dc, 2)
+        assert.equal(htmx.__htmxProp(input).dc, 1)
     })
 
     it('resolves this selector for disable', function () {

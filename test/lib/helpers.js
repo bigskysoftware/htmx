@@ -191,7 +191,15 @@ function lastFetch() {
 //======================================================================
 
 function waitForEvent(eventName, timeout = 200) {
-  return htmx.forEvent(eventName, testDebugging ? 0 : timeout);
+  let ms = testDebugging ? 0 : timeout;
+  return new Promise(resolve => {
+    let h = evt => { clearTimeout(id); resolve(evt); };
+    let id = ms && setTimeout(() => {
+      document.removeEventListener(eventName, h);
+      resolve(null);
+    }, ms);
+    document.addEventListener(eventName, h, { once: true });
+  });
 }
 
 function forRequest(timeout = 200) {

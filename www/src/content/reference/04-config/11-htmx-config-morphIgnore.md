@@ -17,4 +17,7 @@ htmx.config.morphIgnore = ["data-htmx-powered", "data-analytics"];
 <meta name="htmx-config" content='{"morphIgnore":["data-htmx-powered","data-analytics"]}'>
 ```
 
-Elements with these attributes won't be updated during morph operations.
+These attributes will be skipped during morph and settle operations.
+
+If you use a strict `style-src` CSP, add `"style"` to this list to prevent CSP violations from inline style
+attribute copying. See [Security Best Practices](/docs/security/best-practices#csp--inline-styles) for details.

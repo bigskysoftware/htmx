@@ -128,7 +128,7 @@ happen once, you can use the `once` modifier for the trigger:
 </div>
 ```
 
-Other modifiers you can use for triggers are:
+Other modifiers you can use for triggers are (parsed as [HCON](/docs/core-concepts/hcon#hx-trigger-modifiers)):
 
 * `changed` - only issue a request if the value of the element has changed
 * `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
@@ -412,7 +412,7 @@ behavior off by setting the `ignoreTitle` modifier to true:
 <button hx-post="/like" hx-swap="outerHTML ignoreTitle:true">Like</button>
 ```
 
-The modifiers available on `hx-swap` are:
+The modifiers available on `hx-swap` are (parsed as [HCON](/docs/core-concepts/hcon#hx-swap-modifiers)):
 
 | Option       | Description                                                                                          |
 |--------------|------------------------------------------------------------------------------------------------------|

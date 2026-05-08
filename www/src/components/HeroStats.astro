@@ -1,9 +1,8 @@
 ---
 import fs from 'node:fs';
-import path from 'node:path';
 
-// Auto-calculate bundle size from actual dist file
-const distPath = path.resolve(import.meta.dirname, '../../../dist/htmx.min.js.br');
+// cwd is www/ — public/js/ is synced from ../dist/ by the prebuild/predev script
+const distPath = 'public/js/htmx.min.js.br';
 const stats = fs.statSync(distPath);
 const bundleSize = `~${Math.round(stats.size / 1024)}k`;
 

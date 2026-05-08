@@ -65,27 +65,77 @@ Browsers also provide tools for further securing your web application. The most 
 [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP). Using a CSP you can tell the
 browser to, for example, not issue requests to non-origin hosts, to not evaluate inline script tags, etc.
 
-Here is an example CSP in a `meta` tag:
+CSP can be set via an HTTP header or a `<meta>` tag. HTTP headers are preferred — `<meta>` tags
+do not enforce all directives and scripts that appear before the `<meta>` tag in the document are
+not covered by it:
 
-```html
-<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
+```http
+Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-<nonce>'
 ```
 
 A full discussion of CSPs is beyond the scope of this document, but
 the [MDN Article](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP) provides a good jumping-off point
 for exploring this topic.
 
+### Controlling Cross-Origin Requests
+
+htmx defaults [`htmx.config.mode`](/reference/config/htmx-config-mode) to `"same-origin"`, which causes the
+browser to reject any cross-origin fetch — even if an attacker injects an `hx-get` pointing elsewhere.
+
+This setting is enforced globally: any `mode` value in a per-element `hx-config` attribute is ignored and
+reset to the global config value. This means injected markup like
+`hx-config='{"mode":"cors"}'` cannot widen request scope.
+
+If your application legitimately needs CORS (e.g. an API on a different subdomain):
+
+1. Set the mode globally:
+   ```javascript
+   htmx.config.mode = "cors";
+   ```
+2. Lock down reachable origins with `connect-src`:
+   ```html
+   <meta http-equiv="Content-Security-Policy"
+         content="connect-src 'self' https://api.example.com">
+   ```
+
+With both in place, htmx can reach your API but injected target URLs to other origins are blocked by CSP.
+
+### hx-nonce Extension
+
+For sites using CSP script nonces, the [`hx-nonce` extension](/docs/extensions/nonce) provides deep integration:
+
+- Gates all htmx attribute processing behind a per-request nonce, blocking injected htmx attributes
+- Automatically creates a `'htmx'` [Trusted Types](https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API) policy so only htmx can write HTML into DOM sinks
+- Replaces `new Function()` eval with nonce-based script injection when `safeEval:true` is set, removing the need for `unsafe-eval`
+
+See the [hx-nonce extension docs](/docs/extensions/nonce) for full setup instructions.
+
 ### htmx & Eval
 
-htmx uses eval for some functionality:
+htmx uses `new Function()` for some optional features:
 
 * Event filters
 * The [`hx-on`](/reference/attributes/hx-on) attribute
-* Handling most attribute values that starts with `js:` or `javascript:`
+* Attribute values starting with `js:` or `javascript:`
 
-All of these features can be replaced with standard event listeners and thus are not crucial to using htmx.
+All of these are optional. If you don't use them you can omit `unsafe-eval` from your CSP entirely.
 
-Thus you can disable `eval()` via a CSP and continue to use htmx.
+If you do use these features, the [`hx-nonce` extension](/docs/extensions/nonce) with `safeEval:true` replaces
+`new Function()` with nonce-based script injection, enabling them without `unsafe-eval`.
+
+### CSP & Inline Styles
+
+htmx injects its indicator CSS using [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) (`document.adoptedStyleSheets`), which are not subject to `style-src` CSP restrictions.
+
+The one area to be aware of is morph swaps when used alongside JS frameworks like Alpine that set `style` attributes via JavaScript. During morph, htmx's `__copyAttributes` reads all attributes from the new element and copies them to the old one — including any `style` attributes set by the framework. Under a strict `style-src` policy without `'unsafe-inline'`, this `setAttribute("style", ...)` call will produce a CSP violation.
+
+Add `"style"` to [`morphIgnore`](/reference/config/htmx-config-morphIgnore) to skip it:
+
+```html
+<meta name="htmx-config" content='{"morphIgnore":["data-htmx-powered","style"]}'>
+```
+
+Class-based CSS transitions continue to work normally.
 
 ## CSRF Prevention
 

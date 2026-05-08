@@ -1,7 +1,44 @@
 import {defineCollection, z} from "astro:content";
+import type {Loader} from "astro/loaders";
 import {glob, file} from "astro/loaders";
 import {slugify} from "./lib/utils.ts";
+import {aggregateCollectionMarkdown} from "./lib/content.ts";
 import yaml from "js-yaml";
+
+/**
+ * Wraps a glob() loader so that the collection's `full` entry (if present)
+ * has its body replaced with the concatenated markdown of every other file
+ * in the collection — turning `<collection>/full` into a real single-page
+ * view. The synthesised markdown is pre-rendered to HTML via the loader's
+ * own markdown renderer (which applies the site-wide rehype/shiki config),
+ * so Astro's `render(entry)` / `<Content />` just serves the result.
+ */
+function withAggregateFull(collection: string, base: Loader): Loader {
+    return {
+        name: `${base.name}-with-aggregate`,
+        load: async (ctx) => {
+            await base.load(ctx);
+            const id = `${collection}/full`;
+            const stub = ctx.store.get(id);
+            if (!stub) return;
+            const data = await ctx.parseData({ id, data: stub.data });
+            const body = await aggregateCollectionMarkdown(collection);
+            const rendered = await ctx.renderMarkdown(body);
+            // Replace the glob-loaded entry with a rendered-only entry.
+            // Keeping the entry's filePath would make Astro re-render from
+            // disk (which only contains the frontmatter stub).
+            ctx.store.delete(id);
+            ctx.store.set({
+                id,
+                data,
+                body,
+                rendered,
+                digest: ctx.generateDigest(body),
+            });
+        },
+        schema: base.schema,
+    };
+}
 
 const home = defineCollection({
     loader: glob({base: "./src/content", pattern: "index.mdx"}),
@@ -20,11 +57,11 @@ const about = defineCollection({
 });
 
 const docs = defineCollection({
-    loader: glob({base: "./src/content", pattern: "docs{.md,.mdx,/**/*.md,/**/*.mdx}"}),
+    loader: withAggregateFull('docs', glob({base: "./src/content", pattern: "docs{.md,.mdx,/**/*.md,/**/*.mdx}"})),
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
-                thumbnail: z.string().optional(),
+        thumbnail: z.string().optional(),
         keywords: z.array(z.string()).optional(),
     }).strict(),
 });
@@ -37,6 +74,18 @@ const reference = defineCollection({
         keywords: z.array(z.string()).optional(),
         thumbnail: z.string().optional(),
         hidden: z.boolean().optional(),
+    }).strict(),
+});
+
+const extensions = defineCollection({
+    loader: glob({base: "./src/content/extensions", pattern: "{*.md,*.mdx,**/*.md,**/*.mdx}"}),
+    schema: z.object({
+        title: z.string(),
+        description: z.string().optional(),
+        keywords: z.array(z.string()).optional(),
+        thumbnail: z.string().optional(),
+        category: z.enum(['Networking', 'Performance', 'UX', 'Swap behaviors', 'Compatibility', 'Security']).optional(),
+        icon: z.string().optional(),
     }).strict(),
 });
 
@@ -137,6 +186,7 @@ export const collections = {
     about,
     docs,
     reference,
+    extensions,
     patterns,
     essays,
     interviews,

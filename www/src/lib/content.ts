@@ -14,12 +14,21 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import yaml from 'js-yaml';
+import { shiftHeadings } from './utils';
 
 // Case-preserving filesystem paths (strings only — no modules loaded, no circular dependency)
 const allPaths = Object.keys(import.meta.glob('/src/content/**/*.{md,mdx}'));
 
 // Lazy module loaders — called inside async functions, not at module init
 const lazyModules: Record<string, () => Promise<any>> = import.meta.glob('/src/content/**/*.{md,mdx}');
+
+// Raw authored sources, eagerly loaded. Used by aggregateCollectionMarkdown
+// to build single-document views of a collection without re-reading from disk.
+const rawSources = import.meta.glob('/src/content/**/*.{md,mdx}', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+}) as Record<string, string>;
 
 
 // Cache for loaded modules to avoid re-importing
@@ -32,6 +41,44 @@ async function loadModule(fullPath: string): Promise<any> {
     const mod = await loader();
     moduleCache.set(fullPath, mod);
     return mod;
+}
+
+/**
+ * Convention: a file with slug `full` in a collection is the aggregate view
+ * of that collection. It's excluded from sidebar lists and prev/next nav,
+ * and its body is synthesised at content-load time by
+ * aggregateCollectionMarkdown().
+ */
+export function isAggregate(file: { slug: string }): boolean {
+    return file.slug === 'full';
+}
+
+function rawBody(fullPath: string): string {
+    const raw = rawSources[fullPath] ?? '';
+    return raw
+        .replace(/^---[\s\S]*?---\n*/, '')
+        .replace(/<script>[\s\S]*?server\.start[\s\S]*?<\/script>\s*/g, '')
+        .trim();
+}
+
+function rawTitle(fullPath: string): string {
+    const raw = rawSources[fullPath] ?? '';
+    const fmMatch = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+    const titleMatch = fmMatch?.[1].match(/^title:\s*(.+)$/m);
+    return titleMatch?.[1].replace(/^["']|["']$/g, '').trim() || '';
+}
+
+/**
+ * Return a content file's authored markdown as a standalone document:
+ * `# <title>` prepended, frontmatter and inline demo-server scripts
+ * stripped. Consumed by the `.md` companion endpoint for every prose page.
+ */
+export function fileAsMarkdown(path: string): string {
+    const fullPath = `/src/content/${path}`;
+    const body = rawBody(fullPath);
+    if (!body) return '';
+    const title = rawTitle(fullPath);
+    return title ? `# ${title}\n\n${body}` : body;
 }
 
 function isDataFile(path: string): boolean {
@@ -96,7 +143,7 @@ function sortContentFiles(a: ContentFile, b: ContentFile): number {
 
 // --- Constants ---
 
-export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'] as const;
+export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'extensions', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'] as const;
 
 export const TAG_ORDER = [
     {tag: 'foundations', label: 'Foundations'},
@@ -110,8 +157,20 @@ export const TAG_ORDER = [
 
 /**
  * Render a content file or folder. Separate from data — this is I/O.
+ *
+ * Aggregate pages (`slug === 'full'`) are rendered via astro:content so we
+ * pick up the synthesised `rendered.html` written by the content loader.
+ * All other entries load their MDX module directly.
  */
 export async function render(item: ContentFile | ContentFolder): Promise<{ Content: any; headings: any[] }> {
+    if ('slug' in item && item.slug === 'full' && item.folder) {
+        const { getEntry, render: astroRender } = await import('astro:content');
+        const entry = await getEntry(item.folder as any, `${item.folder}/full`) ?? await getEntry(item.folder as any, 'full');
+        if (entry) {
+            const { Content, headings } = await astroRender(entry);
+            return { Content, headings };
+        }
+    }
     const mod = await loadModule(`/src/content/${item.path}`);
     if (!mod) return {Content: null, headings: []};
     return {
@@ -245,15 +304,12 @@ export async function getFolder(path: string): Promise<ContentFolder> {
                     slug,
                     url: `/${folder}/${slug}`,
                     frontmatter: mod.frontmatter || {},
-                    breadcrumbs: [
-                        ...breadcrumbsWithHref,
-                        {label: mod.frontmatter?.title}
-                    ]
+                    breadcrumbs: [...breadcrumbsWithHref, {label: mod.frontmatter?.title}]
                 };
             })
         );
 
-        // allFiles includes hidden (for routing); files excludes hidden
+        // allFiles includes hidden/aggregates (for routing); files (sidebar) excludes both.
         const allFilesFlat = [...files.sort(sortContentFiles), ...childFolders.flatMap(f => f.allFiles)];
 
         return {
@@ -263,7 +319,7 @@ export async function getFolder(path: string): Promise<ContentFolder> {
             url: folderUrl,
             frontmatter: indexFrontmatter || {},
             breadcrumbs: folderBreadcrumbs,
-            files: files.filter(f => !f.frontmatter?.hidden).sort(sortContentFiles),
+            files: files.filter(f => !f.frontmatter?.hidden && !isAggregate(f)).sort(sortContentFiles),
             folders: childFolders,
             allFiles: allFilesFlat
         };
@@ -276,8 +332,8 @@ export async function getFolder(path: string): Promise<ContentFolder> {
         throw new Error(`No index.md found for folder: ${path}`);
     }
 
-    // Add prev/next links — hidden and soon files are excluded from the nav sequence
-    const navFiles = folder.allFiles.filter(f => !f.frontmatter?.hidden && !f.frontmatter?.soon);
+    // Add prev/next links — hidden, soon, and aggregate files are excluded from the nav sequence
+    const navFiles = folder.allFiles.filter(f => !f.frontmatter?.hidden && !f.frontmatter?.soon && !isAggregate(f));
     for (let i = 0; i < navFiles.length; i++) {
         if (i > 0) navFiles[i].prev = navFiles[i - 1];
         if (i < navFiles.length - 1) navFiles[i].next = navFiles[i + 1];
@@ -361,4 +417,47 @@ export async function getFile(path: string): Promise<ContentFile | null> {
         prev,
         next
     };
+}
+
+/**
+ * Build a single-document markdown view of an entire collection.
+ *
+ * Used by the `full` aggregate page of each collection: the content loader
+ * calls this to synthesise the body of that page, and the `.md` /
+ * `llms-full.txt` endpoints call it to serve the raw form.
+ *
+ * Shape:
+ *   ## <section-title>           (one H2 per subfolder, if any)
+ *   ### [<page-title>](<url>)    (one H3 per file, linking to the canonical URL)
+ *   <page-body with headings shifted +2>
+ *
+ * If the collection has no subfolders, files become H2s directly (shift +1
+ * on their bodies). Files with slug `full` are skipped to avoid recursion.
+ */
+export async function aggregateCollectionMarkdown(collection: string): Promise<string> {
+    const folder = await getFolder(collection);
+    const parts: string[] = [];
+
+    const sections = folder.folders.slice().sort((a, b) => a.path.localeCompare(b.path));
+
+    if (sections.length > 0) {
+        for (const section of sections) {
+            parts.push(`## ${section.frontmatter?.title ?? section.slug}\n`);
+            for (const file of section.files) {
+                if (isAggregate(file)) continue;
+                const title = file.frontmatter?.title ?? file.slug;
+                parts.push(`### [${title}](${file.url})\n`);
+                parts.push(shiftHeadings(rawBody(`/src/content/${file.path}`), 2) + '\n');
+            }
+        }
+    } else {
+        for (const file of folder.files) {
+            if (isAggregate(file)) continue;
+            const title = file.frontmatter?.title ?? file.slug;
+            parts.push(`## [${title}](${file.url})\n`);
+            parts.push(shiftHeadings(rawBody(`/src/content/${file.path}`), 1) + '\n');
+        }
+    }
+
+    return parts.join('\n');
 }

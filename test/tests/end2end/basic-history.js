@@ -162,3 +162,150 @@ describe('hx-push-url and hx-replace-url attributes', function() {
         }
     });
 });
+
+
+describe('outerSync swap into document.body', function() {
+    let savedAttrs;
+    let savedChildren;
+
+    beforeEach(() => {
+        setupTest(this.currentTest);
+        savedAttrs = [...document.body.attributes].map(a => ({ name: a.name, value: a.value }));
+        savedChildren = [...document.body.childNodes];
+    });
+
+    afterEach(() => {
+        for (let a of [...document.body.attributes]) document.body.removeAttribute(a.name);
+        for (let a of savedAttrs) document.body.setAttribute(a.name, a.value);
+        document.body.replaceChildren(...savedChildren);
+        cleanupTest();
+    });
+
+    it('syncs body attributes from response and replaces children', async function() {
+        document.body.setAttribute('data-original', 'yes');
+        await htmx.swap({
+            target: document.body,
+            swap: 'outerSync',
+            text: '<html><body class="injected" data-test-x="1"><div id="bodyswap-marker"></div></body></html>',
+            sourceElement: document.body
+        });
+        document.body.classList.contains('injected').should.equal(true);
+        document.body.getAttribute('data-test-x').should.equal('1');
+        (document.body.getAttribute('data-original') === null).should.equal(true);
+        document.getElementById('bodyswap-marker').should.not.equal(null);
+    });
+
+    it('outerHTML on body auto-upgrades to outerSync and syncs attributes', async function() {
+        document.body.setAttribute('data-original', 'yes');
+        await htmx.swap({
+            target: document.body,
+            swap: 'outerHTML',
+            text: '<html><body class="injected" data-test-x="1"><div id="bodyswap-marker"></div></body></html>',
+            sourceElement: document.body
+        });
+        document.body.classList.contains('injected').should.equal(true);
+        document.body.getAttribute('data-test-x').should.equal('1');
+        (document.body.getAttribute('data-original') === null).should.equal(true);
+        document.getElementById('bodyswap-marker').should.not.equal(null);
+    });
+});
+
+describe('full-page response strip auto-upgrade', function() {
+
+    beforeEach(() => { setupTest(this.currentTest); });
+    afterEach(() => { cleanupTest(); });
+
+    it('innerHTML on full-page response strips body wrapper', async function() {
+        playground().innerHTML = '<div id="target">old</div>';
+        await htmx.swap({
+            target: '#target',
+            swap: 'innerHTML',
+            text: '<html><body><span id="new-child">new</span></body></html>',
+            sourceElement: playground()
+        });
+        let target = playground().querySelector('#target');
+        target.should.not.equal(null);
+        (target.querySelector('body') === null).should.equal(true);
+        target.querySelector('#new-child').should.not.equal(null);
+        target.querySelector('#new-child').textContent.should.equal('new');
+    });
+
+    it('innerMorph on full-page response strips body wrapper', async function() {
+        playground().innerHTML = '<div id="target"><span id="orig">old</span></div>';
+        await htmx.swap({
+            target: '#target',
+            swap: 'innerMorph',
+            text: '<html><body><span id="new-child">new</span></body></html>',
+            sourceElement: playground()
+        });
+        let target = playground().querySelector('#target');
+        target.should.not.equal(null);
+        (target.querySelector('body') === null).should.equal(true);
+        target.querySelector('#new-child').should.not.equal(null);
+    });
+
+    it('beforeend on full-page response strips body wrapper', async function() {
+        playground().innerHTML = '<div id="target"><span id="orig">old</span></div>';
+        await htmx.swap({
+            target: '#target',
+            swap: 'beforeend',
+            text: '<html><body><span id="appended">added</span></body></html>',
+            sourceElement: playground()
+        });
+        let target = playground().querySelector('#target');
+        (target.querySelector('body') === null).should.equal(true);
+        target.querySelector('#orig').should.not.equal(null);
+        target.querySelector('#appended').should.not.equal(null);
+    });
+
+    it('partial response is unaffected by strip auto-upgrade', async function() {
+        playground().innerHTML = '<div id="target">old</div>';
+        await htmx.swap({
+            target: '#target',
+            swap: 'innerHTML',
+            text: '<span id="partial-child">partial</span>',
+            sourceElement: playground()
+        });
+        let target = playground().querySelector('#target');
+        target.querySelector('#partial-child').should.not.equal(null);
+        target.querySelector('#partial-child').textContent.should.equal('partial');
+    });
+});
+
+describe('hx-history-elt scopes history restore', function() {
+
+    beforeEach(() => { setupTest(this.currentTest); });
+    afterEach(() => { cleanupTest(); });
+
+    it('restoring history with hx-history-elt swaps only that element and leaves siblings intact', async function() {
+        playground().innerHTML = `
+            <div id="sentinel">untouched</div>
+            <main hx-history-elt><p id="orig">old</p></main>
+            <div id="sentinel-after">also untouched</div>
+        `;
+        htmx.process(playground());
+
+        let response = `<html><head><title>x</title></head><body>
+            <header>HEADER LEAK</header>
+            <main hx-history-elt><p id="new">new</p></main>
+            <footer>FOOTER LEAK</footer>
+        </body></html>`;
+        mockResponse('GET', '/restore-test', response);
+
+        htmx.__restoreHistory('/restore-test');
+        await forRequest();
+
+        document.getElementById('sentinel').should.not.equal(null);
+        document.getElementById('sentinel').textContent.should.equal('untouched');
+        document.getElementById('sentinel-after').should.not.equal(null);
+        document.getElementById('sentinel-after').textContent.should.equal('also untouched');
+
+        let elt = playground().querySelector('[hx-history-elt]');
+        elt.should.not.equal(null);
+        elt.querySelector('#new').should.not.equal(null);
+        (elt.querySelector('#orig') === null).should.equal(true);
+
+        document.body.textContent.should.not.include('HEADER LEAK');
+        document.body.textContent.should.not.include('FOOTER LEAK');
+    });
+});

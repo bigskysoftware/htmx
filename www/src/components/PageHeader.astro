@@ -19,7 +19,6 @@ interface Props {
 const { title, description, file, collection } = Astro.props;
 
 const isEssay = !!file && collection === 'essays';
-const showCopyButton = !!file;
 
 // Essay byline data
 let byline: {
@@ -67,9 +66,11 @@ const primaryAuthor = byline?.authors[0];
 ---
 
 <div class="not-prose mb-6 mt-4 sm:mb-8 sm:mt-6 lg:mb-8 lg:mt-6 space-y-3.5 sm:space-y-4">
-    <div class="flex items-center justify-between gap-1 sm:gap-1.5 lg:gap-2">
-        <h1 class="flex-1 font-chicago text-2xl sm:text-[2em]/12 font-bold text-neutral-900 dark:text-neutral-100" set:html={title} />
-        {showCopyButton && <CopyPageButton file={file!} />}
+    <div class="flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
+        <h1 class="flex-1 min-w-0 font-chicago text-2xl sm:text-[2em]/12 font-bold text-neutral-900 dark:text-neutral-100" set:html={title} />
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {file && <CopyPageButton file={file} />}
+        </div>
     </div>
 
     {byline ? (

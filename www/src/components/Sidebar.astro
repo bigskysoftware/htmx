@@ -31,10 +31,30 @@ const isPatterns = folder.folder === 'patterns';
 
         <div class="h-7 shrink-0"></div>
 
-        {/* Collection header (static, non-interactive) */}
-        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 px-0.5 mb-6">
-            {folder.frontmatter.title}
-        </h2>
+        {/* Collection header + expand/collapse-all controls */}
+        <div class="flex items-center justify-between gap-2 px-0.5 mb-6">
+            <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400">
+                {folder.frontmatter.title}
+            </h2>
+            {folder.folders.length > 1 && (
+                <div class="flex items-center gap-0.5 text-neutral-400 dark:text-neutral-500">
+                    <button type="button"
+                            title="Expand all sections"
+                            aria-label="Expand all sections"
+                            class="p-1 rounded interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-neutral-700 dark:interact:text-neutral-200 transition cursor-pointer"
+                            _="on click for d in <#sidebar-nav details/> set d.open to true">
+                        <i class="icon-[mdi--unfold-more-horizontal] size-4 block" aria-hidden="true"></i>
+                    </button>
+                    <button type="button"
+                            title="Collapse all sections"
+                            aria-label="Collapse all sections"
+                            class="p-1 rounded interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-neutral-700 dark:interact:text-neutral-200 transition cursor-pointer"
+                            _="on click for d in <#sidebar-nav details/> set d.open to false">
+                        <i class="icon-[mdi--unfold-less-horizontal] size-4 block" aria-hidden="true"></i>
+                    </button>
+                </div>
+            )}
+        </div>
 
         {/* Overview link */}
         <a href={folder.url}
@@ -54,8 +74,7 @@ const isPatterns = folder.folder === 'patterns';
 
             return (
                     <details class="group/section w-full not-first-of-type:mt-2 no-morph"
-                             open={containsCurrentPage}
-                             name={subFolder.folder}>
+                             open={containsCurrentPage}>
                         <summary class="sticky top-0 z-40 py-2 rounded-md
                                        bg-neutral-25 dark:bg-neutral-920
                                        list-none select-none
@@ -86,6 +105,7 @@ const isPatterns = folder.folder === 'patterns';
                                                        title={file.frontmatter.description}
                                                        aria-current={isActive ? 'page' : undefined}
                                                        aria-disabled={isSoon ? 'true' : undefined}
+                                                       hx-boost={isSoon && 'false'}
                                                        class:list={[
                                                            "flex items-center gap-2.5 px-3 py-2 text-sm rounded-md transition",
                                                            isReference && "font-mono",
@@ -96,11 +116,11 @@ const isPatterns = folder.folder === 'patterns';
                                                                    : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
                                                        ]}>
                                                         {isPatterns && file.frontmatter.icon && (
-                                                            <i class:list={[file.frontmatter.icon, "size-4 shrink-0"]}></i>
+                                                                <i class:list={[file.frontmatter.icon, "size-4 shrink-0"]}></i>
                                                         )}
                                                         <span class="truncate" set:html={file.frontmatter.title}/>
                                                         {isSoon && (
-                                                            <span class="text-[9px] px-1.5 py-0.5 shrink-0 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide ml-auto">Soon</span>
+                                                                <span class="text-[9px] px-1.5 py-0.5 shrink-0 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide ml-auto">Soon</span>
                                                         )}
                                                     </a>
                                                 </li>
@@ -116,17 +136,17 @@ const isPatterns = folder.folder === 'patterns';
         {folder.files.map((f: ContentFile) => {
             const isActive = currentUrl === f.url;
             return (
-                <a href={f.url}
-                   title={f.frontmatter.description}
-                   aria-current={isActive ? 'page' : undefined}
-                   class:list={[
-                       "block px-3 py-2 text-sm rounded-md transition truncate",
-                       isActive
-                           ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
-                           : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
-                   ]}>
-                    <span set:html={f.frontmatter.title}/>
-                </a>
+                    <a href={f.url}
+                       title={f.frontmatter.description}
+                       aria-current={isActive ? 'page' : undefined}
+                       class:list={[
+                           "block px-3 py-2 text-sm rounded-md transition truncate",
+                           isActive
+                               ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
+                               : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
+                       ]}>
+                        <span set:html={f.frontmatter.title}/>
+                    </a>
             );
         })}
     </nav>

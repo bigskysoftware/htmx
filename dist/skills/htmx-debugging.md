@@ -22,7 +22,7 @@ Work through these in order -- most issues fall in the first few:
 
 ## Enable Debug Logging
 
-The single most useful debugging step:
+Errors and warnings flow to `console.error` / `console.warn` by default. To also surface every event htmx dispatches:
 
 ```html
 <meta name="htmx-config" content='{"logAll": true}'>
@@ -34,7 +34,7 @@ or in the console:
 htmx.config.logAll = true;
 ```
 
-This logs every htmx event to the console.
+Observability tools (Sentry, DataDog RUM, LogRocket, etc.) capture `console.*` automatically, so htmx logs flow into your existing pipeline without any extra setup.
 
 ## Event Monitoring Snippet
 
@@ -191,7 +191,7 @@ Quick compatibility fixes:
 - Look for `htmx-swapping` / `htmx-settling` classes during swaps
 
 ### Console
-- `htmx.config.logAll = true` -- log everything
+- `htmx.config.logAll = true` -- log every event (errors and warnings already on by default)
 - `htmx.find("#selector")` -- test extended CSS selectors
 - `htmx.trigger(elt, "eventName")` -- manually fire events
 
@@ -200,7 +200,7 @@ Quick compatibility fixes:
 When helping users debug htmx issues:
 
 1. **Ask about the htmx version first** -- htmx 2 vs 4 is the most common source of confusion
-2. **Suggest `logAll = true`** as the first step and ask for console output
+2. **Suggest `htmx.config.logAll = true`** as the first step and ask for console output (errors/warnings are visible without it)
 3. **Check for `:inherited` modifier** when inheritance problems are reported
 4. **Check the Network tab** -- verify the request is being made and inspect the response
 5. **Check the response body** -- it should be HTML, not JSON

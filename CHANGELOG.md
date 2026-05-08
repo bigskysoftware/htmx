@@ -1,5 +1,29 @@
 # Changelog
 
+## [4.0.0-beta3] - 2026-05-08
+
+* New `hx-live` extension: adds DOM-reactivity via the `hx-live` attribute and a richer JavaScript surface inside `hx-on`
+  * `hx-live="..."` a JS expression that re-evaluates whenever any DOM input/change/mutation event fires on the page
+  * `q(selector)` proxy: jQuery-like proxy over a set of elements. Supports `next`/`prev`/`closest`/`first`/`last` selectors, `'.foo in .bar'` scoping, set-property forwarding (`q('.x').value = 'y'` writes to all), array methods (`map`/`filter`/`reduce`/...), and chainable mutators (`.trigger`, `.insert`, `.take`, `.toggle`).
+  * Sigil-syntax `toggle(...specs)` — `toggle('.class')`, `toggle('@attr')`, `toggle('@x=on|off')` (cycle), `toggle('*display=none|block')` (style cycle).
+  * Per-element `debounce(ms[, fn])` — closure form (channel-keyed by `fn.toString()`) and promise form (cancellation via async rejection).
+  * `htmx.live` namespace exposes the same primitives outside expression scope: `htmx.live.q`, `htmx.live.take(target, className, source)`, etc.
+  * **Breaking**: `htmx.takeClass` and `htmx.forEvent` moved out of htmx core
+* New `hx-nonce` extension: CSP nonce-based protection for inline scripts and `eval`-style code paths. Blocks elements without a matching `hx-nonce`, integrates with TrustedTypes, and defends against `js:`/`javascript:` action URLs and unnonced boosted-form submitters.
+* `htmx.config.prefix` now defaults to `"data-hx-"`, so both `hx-*` and `data-hx-*` attributes work out of the box matching htmx 2 behavior. Set to `""` to disable. ([#3744](https://github.com/bigskysoftware/htmx/pull/3744))
+* Added `htmx:response:error` event for HTTP 4xx/5xx responses, restoring the convenience of htmx 2's `htmx:responseError` ([#3755](https://github.com/bigskysoftware/htmx/issues/3755))
+* Added `outerSync` swap style: copies attributes onto the existing target and replaces children, useful for clean `<body>` swaps in history replacement. ([#3778](https://github.com/bigskysoftware/htmx/pull/3778))
+* Restored `hx-history-elt` from htmx 2 and improved the `hx-history-cache` extension. ([#3773](https://github.com/bigskysoftware/htmx/pull/3773))
+* `hx-download` extension now auto-detects downloads via `Content-Disposition` header, no need for `hx-download` attribute on individual elements. ([#3756](https://github.com/bigskysoftware/htmx/pull/3756))
+* `hx-preload` extension gained boost-related config knobs (`boostEvent`, `boostTimeout`, `autoBoost`).
+* Switched runtime indicator CSS to a constructable stylesheet to avoid CSP `unsafe-inline` violations. ([#3766](https://github.com/bigskysoftware/htmx/pull/3766))
+* `hx-config` no longer accepts request `mode` overrides, fixes privilege-escalation surface where a swap could downgrade origin enforcement. ([#3788](https://github.com/bigskysoftware/htmx/pull/3788))
+* Added Unicode-id encoding fix for selector handling. ([#3784](https://github.com/bigskysoftware/htmx/pull/3784))
+* Fixed CSP violation from inline style write on internal pantry element. ([#3753](https://github.com/bigskysoftware/htmx/issues/3753))
+* Fixed Alpine history restoration so it replays without errors. ([#3774](https://github.com/bigskysoftware/htmx/pull/3774))
+* Many smaller fixes
+* This is release candidate 1
+
 ## [4.0.0-beta2] - 2026-04-14
 
 * Added `upgrade-check` CLI tool for migrating htmx 2.x projects to 4.x (`npx htmx.org@next upgrade-check`)

@@ -428,9 +428,10 @@ htmx.find("closest .container")                  // Extended CSS selector query
 htmx.findAll(".items")                           // Find all matching
 htmx.trigger(elt, "myEvent", {detail: ...})      // Fire custom event
 htmx.swap(ctx)                                   // Manual swap
-htmx.forEvent("myEvent", 5000)                   // Promise that resolves on event
 htmx.timeout(1000)                               // Promise that resolves after delay
-htmx.takeClass(elt, "active")                    // Take class from siblings
+htmx.live.take(elt, "active", ".tab")            // Take class — provided by hx-live
+htmx.live.forEvent(elt, "click", 5000)           // Race events/timeouts — provided by hx-live
+htmx.live.nextFrame()                            // requestAnimationFrame promise — provided by hx-live
 ```
 
 ## Common Patterns
@@ -526,6 +527,14 @@ the element with the id `result`.
 The `htmx-indicator` class hides the element by default (opacity: 0). When a request is in flight, `htmx-request` class
 is added, making indicators visible.
 
+To avoid flashing the spinner on fast requests, add a `transition-delay` (the second time value) to the indicator's CSS:
+
+```css
+.htmx-request .htmx-indicator { transition: opacity 200ms ease-in 200ms; }
+```
+
+If the request finishes before the delay elapses, the spinner never appears
+
 ### Disabling Elements During Request
 
 ```html
@@ -577,8 +586,8 @@ htmx 2 uses camelCase: `htmx:afterSwap`, `htmx:beforeRequest`, `htmx:configReque
 
 htmx 4 uses colons: `htmx:after:swap`, `htmx:before:request`, `htmx:config:request`.
 
-All error events (`htmx:responseError`, `htmx:sendError`, `htmx:swapError`, `htmx:targetError`, `htmx:timeout`) are
-consolidated into `htmx:error` in htmx 4.
+Most error events (`htmx:sendError`, `htmx:swapError`, `htmx:targetError`, `htmx:timeout`) are consolidated into
+`htmx:error` in htmx 4. HTTP error responses fire `htmx:response:error` (replacing `htmx:responseError`).
 
 ### Configuration
 
@@ -598,13 +607,12 @@ consolidated into `htmx:error` in htmx 4.
 | htmx 2                                        | htmx 4                      | Notes                            |
 |-----------------------------------------------|-----------------------------|----------------------------------|
 | `htmx.defineExtension()`                      | `htmx.registerExtension()`  | Renamed                          |
-| `htmx.logAll()`                               | `htmx.config.logAll = true` | Now a config flag                |
 | `htmx.addClass()`, `htmx.removeClass()`, etc. | Native DOM methods          | Removed; use `element.classList` |
 | `htmx.off()`                                  | `removeEventListener()`     | Removed; use native              |
 | `htmx.remove()`                               | `element.remove()`          | Removed; use native              |
 | `htmx.swap(target, content, spec)`            | `htmx.swap(ctx)`            | Signature changed                |
 
-htmx 4 adds: `htmx.forEvent()`, `htmx.timeout()`.
+htmx 4 adds: `htmx.timeout()`. Logging now goes directly to `console.error` / `console.warn` / `console.log` (gated by `config.logAll` for events). `htmx.takeClass()` is **removed**; use `htmx.live.take()` (provided by the `hx-live` extension) or the unprefixed `take` helper inside expression scope. The `hx-live` extension also exposes `htmx.live.forEvent()`, `htmx.live.nextFrame()`, `htmx.live.q()`, `htmx.live.debounce()`, `htmx.live.refresh()`.
 
 ### Swap Styles
 

@@ -119,6 +119,12 @@ describe('Request Headers', function() {
             htmx.__buildIdentifier(document.body).should.equal('body');
         });
 
+        it('encodes unicode characters in id for safe header usage', function() {
+            let div = document.createElement('div');
+            div.id = '🚀';
+            htmx.__buildIdentifier(div).should.equal('div#%F0%9F%9A%80');
+        });
+
     });
 
 });

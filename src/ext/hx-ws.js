@@ -3,8 +3,10 @@
     
     // Build a CSS selector for querySelectorAll, respecting prefix + metaCharacter
     function wsSelector(suffix) {
-        let attr = (htmx.config.prefix || 'hx-') + 'ws' + (htmx.config.metaCharacter || ':') + suffix;
-        return `[${CSS.escape(attr)}]`;
+        let mc = htmx.config.metaCharacter || ':';
+        let sel = `[${CSS.escape('hx-ws' + mc + suffix)}]`;
+        if (htmx.config.prefix) sel += `,[${CSS.escape(htmx.config.prefix + 'ws' + mc + suffix)}]`;
+        return sel;
     }
 
 
@@ -444,7 +446,7 @@
                 html = detail.message.json.payload; // backwards compat
                 // Warn once per connection (not on every message)
                 if (!connection._payloadWarnFired) {
-                    console.warn('[htmx-ws] json.payload is deprecated, use json.content instead');
+                    console.warn('htmx: [hx-ws] json.payload is deprecated; use json.content instead');
                     connection._payloadWarnFired = true;
                 }
             }
@@ -533,18 +535,20 @@
     
     function checkLegacyAttributes(element) {
         if (element.hasAttribute('ws-connect') || element.hasAttribute('ws-send')) {
-            console.warn('HTMX WebSocket: Legacy attributes ws-connect and ws-send are deprecated. Use hx-ws:connect and hx-ws:send instead.');
+            console.warn('htmx: [hx-ws] legacy attributes ws-connect and ws-send are deprecated; use hx-ws:connect and hx-ws:send instead');
 
             if (element.hasAttribute('ws-connect')) {
                 let url = element.getAttribute('ws-connect');
-                let attr = (htmx.config.prefix || 'hx-') + 'ws' + (htmx.config.metaCharacter || ':') + 'connect';
+                let mc = htmx.config.metaCharacter || ':';
+                let attr = (htmx.config.prefix || 'hx-') + 'ws' + mc + 'connect';
                 if (!element.hasAttribute(attr)) {
                     element.setAttribute(attr, url);
                 }
             }
 
             if (element.hasAttribute('ws-send')) {
-                let attr = (htmx.config.prefix || 'hx-') + 'ws' + (htmx.config.metaCharacter || ':') + 'send';
+                let mc = htmx.config.metaCharacter || ':';
+                let attr = (htmx.config.prefix || 'hx-') + 'ws' + mc + 'send';
                 if (!element.hasAttribute(attr)) {
                     element.setAttribute(attr, '');
                 }

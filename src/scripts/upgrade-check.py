@@ -69,7 +69,7 @@ EVENT_RENAMES = {
     "htmx:oobBeforeSwap": "htmx:before:swap",
     "htmx:pushedIntoHistory": "htmx:after:history:push",
     "htmx:replacedInHistory": "htmx:after:history:replace",
-    "htmx:responseError": "htmx:error",
+    "htmx:responseError": "htmx:response:error",
     "htmx:sendError": "htmx:error",
     "htmx:swapError": "htmx:error",
     "htmx:targetError": "htmx:error",
@@ -117,8 +117,19 @@ REMOVED_JS_API = {
     "htmx.remove": "use element.remove()",
     "htmx.off": "use removeEventListener() (htmx.on() returns the callback)",
     "htmx.location": "use htmx.ajax()",
+    "htmx.takeClass": (
+        "removed from core. To restore the htmx 2 behavior verbatim, paste:\n"
+        "    htmx.takeClass = (elt, cls) => {\n"
+        "        elt = typeof elt === 'string' ? document.querySelector(elt) : elt;\n"
+        "        for (let c of elt.parentElement.children) c.classList.remove(cls);\n"
+        "        elt.classList.add(cls);\n"
+        "    };\n"
+        "  For a fully featured replacement (polymorphic targets/sources, selector strings, "
+        "iterable inputs, q-proxy chaining), load the hx-live extension and use htmx.live.take()."
+    ),
     "htmx.logAll": "use htmx.config.logAll = true",
-    "htmx.logNone": "use htmx.config.logAll = false",
+    "htmx.logNone": "use htmx.config.logAll = false (errors/warnings flow to console.* directly)",
+    "htmx.logger": "removed; htmx logs to console.error / console.warn / console.log directly. Observability tools (Sentry, DataDog RUM, etc.) capture console.* automatically",
     "htmx.defineExtension": "use htmx.registerExtension()",
 }
 
