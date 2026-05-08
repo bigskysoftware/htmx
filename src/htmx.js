@@ -74,7 +74,6 @@ var htmx = (() => {
 
         constructor() {
             this.__initHtmxConfig();
-            this.logger = this.__defaultLogger.bind(this);
             this.__initRequestIndicatorCss();
             this.#actionSelector = this.__prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]');
             this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.__prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
@@ -1433,12 +1432,13 @@ var htmx = (() => {
             // Convention: events with detail.error log at error level, detail.warn at warn level,
             // otherwise at event level (gated by config.logAll). One emit per event.
             if (detail.error) {
-                this.logger('error', `${eventName}: ${detail.error.message ?? detail.error}`,
-                    { elt: on, error: detail.error, detail });
+                let prefix = `htmx: ${eventName}: ${detail.error.message ?? detail.error}`;
+                if (detail.error instanceof Error) console.error(prefix, detail.error, { elt: on, detail });
+                else console.error(prefix, { elt: on, detail });
             } else if (detail.warn) {
-                this.logger('warn', `${eventName}: ${detail.warn}`, { elt: on, detail });
-            } else {
-                this.logger('event', eventName, { elt: on, detail });
+                console.warn(`htmx: ${eventName}: ${detail.warn}`, { elt: on, detail });
+            } else if (this.config.logAll) {
+                console.log(`htmx: ${eventName}`, { elt: on, detail });
             }
             on = this.__normalizeElement(on)
             this.__triggerExtensions(on, eventName, detail);
@@ -1511,27 +1511,7 @@ var htmx = (() => {
             })
         }
 
-        // Enable event-level logging (errors and warnings flow regardless).
-        logAll() { this.config.logAll = true; }
-
-        // Replace the active logger with a no-op. Use to silence everything.
-        logNone() { this.logger = () => {}; }
-
-        // Default logger. Routes by level to the matching console target.
-        // Replace via `htmx.logger = (level, message, context) => { ... }` to ship logs elsewhere.
-        // `htmx.logNone()` installs a no-op logger; `htmx.logAll()` enables event-level output.
-        __defaultLogger(level, message, context) {
-            if (level === 'event' && !this.config.logAll) return;
-            let target = level === 'error' ? console.error
-                       : level === 'warn'  ? console.warn
-                       :                     console.log;
-            let prefix = `htmx: ${message}`;
-            if (context?.error instanceof Error) target(prefix, context.error, context);
-            else if (context !== undefined)      target(prefix, context);
-            else                                  target(prefix);
-        }
-
-        // Adds className to every element in `target`; strips it from every element in `source`.
+// Adds className to every element in `target`; strips it from every element in `source`.
         // target/source accept: an element, a selector string (resolved via findAll),
         // or any iterable of elements (NodeList, Array, q() proxy, etc.).
         // If source is a single element, it expands to the element + its descendants matching .className —
@@ -1974,7 +1954,7 @@ var htmx = (() => {
         __findOrWarn(elt, selector, thisAttr) {
             let result = this.__findAllExt(elt, selector, thisAttr)[0]
             if (!result) {
-                this.logger('warn', `'${selector}' on ${thisAttr} did not match any element`,
+                console.warn(`htmx: '${selector}' on ${thisAttr} did not match any element`,
                     { elt, selector, attr: thisAttr });
             }
             return result

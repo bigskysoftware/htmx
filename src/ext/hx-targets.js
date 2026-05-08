@@ -24,7 +24,7 @@
 
             let targets = htmx.findAll(ctx.sourceElement, selector);
             if (!targets.length) {
-                htmx.logger('warn', `'${selector}' on hx-targets did not match any elements`, { selector });
+                console.warn(`htmx: '${selector}' on hx-targets did not match any elements`, { selector });
                 return;
             }
 

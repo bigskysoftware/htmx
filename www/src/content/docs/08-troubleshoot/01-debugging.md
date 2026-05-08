@@ -12,27 +12,13 @@ Figuring out why something *isn't* happening, for example, can be difficult if y
 
 Here are some tips:
 
-Errors and warnings flow to the console by default. To also see every event htmx dispatches, call `htmx.logAll()`
-or set `htmx.config.logAll = true`:
+Errors and warnings flow to `console.error` / `console.warn` by default. To also see every event htmx dispatches, set `htmx.config.logAll = true`:
 
 ```javascript
-htmx.logAll();
+htmx.config.logAll = true;
 ```
 
-To silence everything (including errors and warnings):
-
-```javascript
-htmx.logNone();
-```
-
-To route logs to a custom sink (Sentry, your own UI, etc.), replace the logger:
-
-```javascript
-htmx.logger = (level, message, context) => {
-    // level: 'event' | 'warn' | 'error'
-    mySink(level, message, context);
-};
-```
+Observability tools (Sentry, DataDog RUM, LogRocket, etc.) capture `console.*` automatically, so htmx logs flow into your existing pipeline without any extra setup.
 
 Of course, that won't tell you why htmx *isn't* doing something. You might also not know *what* events a DOM
 element is firing to use as a trigger. To address this, you can use the
