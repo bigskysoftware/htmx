@@ -428,9 +428,10 @@ htmx.find("closest .container")                  // Extended CSS selector query
 htmx.findAll(".items")                           // Find all matching
 htmx.trigger(elt, "myEvent", {detail: ...})      // Fire custom event
 htmx.swap(ctx)                                   // Manual swap
-htmx.forEvent("myEvent", 5000)                   // Promise that resolves on event
 htmx.timeout(1000)                               // Promise that resolves after delay
-htmx.takeClass(elt, "active")                    // Take class from siblings
+htmx.live.take(elt, "active", ".tab")            // Take class — provided by hx-live
+htmx.live.forEvent(elt, "click", 5000)           // Race events/timeouts — provided by hx-live
+htmx.live.nextFrame()                            // requestAnimationFrame promise — provided by hx-live
 ```
 
 ## Common Patterns
@@ -611,7 +612,7 @@ Most error events (`htmx:sendError`, `htmx:swapError`, `htmx:targetError`, `htmx
 | `htmx.remove()`                               | `element.remove()`          | Removed; use native              |
 | `htmx.swap(target, content, spec)`            | `htmx.swap(ctx)`            | Signature changed                |
 
-htmx 4 adds: `htmx.forEvent()`, `htmx.timeout()`, `htmx.nextFrame()`. Logging now goes directly to `console.error` / `console.warn` / `console.log` (gated by `config.logAll` for events).
+htmx 4 adds: `htmx.timeout()`. Logging now goes directly to `console.error` / `console.warn` / `console.log` (gated by `config.logAll` for events). `htmx.takeClass()` is **removed**; use `htmx.live.take()` (provided by the `hx-live` extension) or the unprefixed `take` helper inside expression scope. The `hx-live` extension also exposes `htmx.live.forEvent()`, `htmx.live.nextFrame()`, `htmx.live.q()`, `htmx.live.debounce()`, `htmx.live.refresh()`.
 
 ### Swap Styles
 

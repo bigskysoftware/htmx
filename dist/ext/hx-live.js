@@ -57,6 +57,51 @@
         });
     }
 
+    // Add cls to every element in `targets`; remove from `source` (or, if undefined, from
+     // `targets[0].parentElement.children`). source accepts an Element (expanded to itself
+     // + descendants matching .cls), a selector string, or any iterable of elements.
+    function applyTake(targets, cls, source) {
+        if (source === undefined) source = targets[0]?.parentElement;
+        let sources;
+        if (source && source.nodeType && source.querySelectorAll) {
+            sources = [source, ...source.querySelectorAll('.' + cls)];
+        } else if (typeof source === 'string') {
+            sources = document.querySelectorAll(source);
+        } else if (source) {
+            sources = source;
+        } else {
+            sources = [];
+        }
+        for (let s of sources) {
+            s.classList?.remove(cls);
+            if (s.classList?.length === 0) s.removeAttribute('class');
+        }
+        for (let t of targets) t.classList?.add(cls);
+    }
+
+    // forEvent: race events/timeouts. See hx-live docs.
+    function forEvent(elt, ...args) {
+        let target = elt || document;
+        for (let a of args) if (a?.nodeType) target = a;
+        return new Promise(resolve => {
+            let cleanups = [], done = false;
+            let fire = v => { if (done) return; done = true; for (let c of cleanups) c(); resolve(v); };
+            for (let a of args) {
+                if (a == null || a?.nodeType) continue;
+                let ms = typeof a === 'number' ? a
+                    : (typeof a === 'string' ? htmx.parseInterval(a) : undefined);
+                if (ms !== undefined && ms > 0) {
+                    let id = setTimeout(() => fire(a), ms);
+                    cleanups.push(() => clearTimeout(id));
+                } else if (typeof a === 'string') {
+                    let h = evt => fire(evt);
+                    target.addEventListener(a, h, { once: true });
+                    cleanups.push(() => target.removeEventListener(a, h));
+                }
+            }
+        });
+    }
+
     // toggle('.foo')              — class toggle
     // toggle('@disabled')         — attribute presence toggle
     // toggle('@x=v')              — attribute presence-with-value (add v ↔ remove)
@@ -201,7 +246,7 @@
                 };
                 if (p === 'trigger') return (t, d, b) => { elts.forEach(e => htmx.trigger(e, t, d, b)); return proxy; };
                 if (p === 'insert') return (pos, s) => { elts.forEach(e => e.insertAdjacentHTML(positions[pos], s)); return proxy; };
-                if (p === 'take') return (cls, from) => { htmx.takeClass(elts, cls, from); return proxy; };
+                if (p === 'take') return (cls, from) => { applyTake(elts, cls, from); return proxy; };
                 if (p === 'toggle') return (...specs) => { elts.forEach(e => specs.forEach(s => applyToggle(s, e))); return proxy; };
                 if (arrayMethods.has(p)) return elts[p].bind(elts);
                 let v = elts[0]?.[p];
@@ -247,10 +292,18 @@
         }
     }
 
+    let asTargets = t => t == null ? []
+        : typeof t === 'string' ? document.querySelectorAll(t)
+        : t.nodeType ? [t]
+        : t;
+
     htmx.live = {
         q: s => makeQ(document.documentElement)(s),
         debounce: makeDebounce(),
-        refresh: () => schedule()
+        refresh: () => schedule(),
+        take: (target, cls, source) => applyTake([...asTargets(target)], cls, source),
+        forEvent: (...args) => forEvent(null, ...args),
+        nextFrame: () => new Promise(r => requestAnimationFrame(r))
     };
 
     htmx.registerExtension('hx-live', {
@@ -269,12 +322,11 @@
         htmx_scope: (elt, detail) => {
             Object.assign(detail.scope, {
                 q: makeQ(elt),
-                timeout: t => htmx.timeout(t),
-                forEvent: (...args) => htmx.forEvent(elt, ...args),
-                nextFrame: () => htmx.nextFrame(),
+                forEvent: (...args) => forEvent(elt, ...args),
+                nextFrame: () => new Promise(r => requestAnimationFrame(r)),
                 trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
                 debounce: getDebounce(elt),
-                take: (cls, source) => htmx.takeClass(elt, cls, source),
+                take: (cls, source) => applyTake([elt], cls, source),
                 toggle: (...specs) => specs.forEach(s => applyToggle(s, elt))
             });
         }
