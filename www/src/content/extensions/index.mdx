@@ -8,7 +8,7 @@ import { getFolder } from '../../lib/content';
 import FinderLink from '../../components/FinderLink.astro';
 
 export const folder = await getFolder('extensions');
-export const CATEGORY_ORDER = ['Networking', 'Performance', 'UX', 'Swap behaviors', 'Compatibility'];
+export const CATEGORY_ORDER = ['Networking', 'Performance', 'UX', 'Swap behaviors', 'Compatibility', 'Security'];
 export const grouped = CATEGORY_ORDER.map(category => ({
     category,
     items: folder.files.filter(f => f.frontmatter.category === category).map(f => ({
