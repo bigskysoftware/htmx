@@ -72,6 +72,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/AussieGuy0/java-htmx-todo/>
 - <https://github.com/erwindrsno/simple-to-do-list>
 
+### Jooby
+
+- <https://github.com/jooby-project/htmx-demo>
+
 ### Spring Boot
 
 - <https://github.com/wiverson/htmx-demo>
