@@ -3697,9 +3697,9 @@ var htmx = (function() {
     /** @type HtmxHeaderSpecification */
     const headers = {
       'HX-Request': 'true',
-      'HX-Trigger': getRawAttribute(elt, 'id'),
+      'HX-Trigger': getRawAttribute(elt, 'id') ? encodeURI(getRawAttribute(elt, 'id')) : null,
       'HX-Trigger-Name': getRawAttribute(elt, 'name'),
-      'HX-Target': getAttributeValue(target, 'id'),
+      'HX-Target': getAttributeValue(target, 'id') ? encodeURI(getAttributeValue(target, 'id')) : null,
       'HX-Current-URL': location.href
     }
     getValuesForElement(elt, 'hx-headers', false, headers)
