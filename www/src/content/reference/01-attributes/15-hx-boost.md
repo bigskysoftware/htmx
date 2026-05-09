@@ -53,15 +53,24 @@ on the `hx-boost` attribute. Use `hx-boost:inherited` to pass that config down t
     <a href="/page1">Go To Page 1</a>
     <a href="/page2">Go To Page 2</a>
 
-    <!-- "innerHTML strip": replace only the inner content of #sidebar,
-         stripping the outer #sidebar wrapper from the response -->
-    <a href="/sidebar" hx-boost="swap:'innerHTML strip' target:#sidebar">Sidebar</a>
+    <!-- Nested override: descendants of this div use a different boost config -->
+    <div hx-boost:inherited="swap:'innerHTML strip' target:#sidebar">
+      <a href="/sidebar">Sidebar</a>
 
-    <!-- Disable boost for this link -->
-    <a href="/external" hx-boost="false">External</a>
+      <!-- Per-element override: this link uses its own config, ignoring all inherited -->
+      <a href="/modal" hx-boost="swap:beforeend target:#modals">Open Modal</a>
+
+      <!-- Disable boost for this link -->
+      <a href="/external" hx-boost="false">External</a>
+    </div>
   </nav>
+
+  <!-- Non-boosted htmx elements are unaffected by hx-boost:inherited -->
+  <div hx-get="/data" hx-trigger="load">Loading...</div>
+
   <div id="main"></div>
   <div id="sidebar"></div>
+  <div id="modals"></div>
 </body>
 ```
 
