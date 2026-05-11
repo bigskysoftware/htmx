@@ -43,6 +43,15 @@ describe('htmx.config.metaCharacter functionality', function() {
         assert.equal(result, '"a":1,"b":2,"c":3');
     });
 
+    it('normalizes attribute names using custom meta character', function() {
+        const div = createDisconnectedHTML(
+            '<div hx-ws-connect="/ws" hx-ws-send></div>'
+        );
+
+        assert.equal(htmx.__attributeValue(div, 'hx-ws:connect'), '/ws');
+        assert.equal(htmx.__attributeValue(div, 'hx-ws:send'), '');
+    });
+
     it('onLoad works with custom meta character', function() {
         let fired = false;
         htmx.onLoad(() => fired = true);

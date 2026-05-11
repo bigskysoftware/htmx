@@ -209,6 +209,7 @@ var htmx = (() => {
         }
 
         __attributeValue(elt, name, defaultVal, eltCollector) {
+            name = this.__maybeAdjustMetaCharacter(name);
             let inherited = this.__maybeAdjustMetaCharacter(":inherited");
             let append = this.__maybeAdjustMetaCharacter(":append");
 
