@@ -1,13 +1,12 @@
 ---
 /**
- * Copy-to-clipboard button for content pages.
- *
- * Fetches the page's `.md` companion (served by pages/[...slug].md.ts) on
- * click and writes it to the clipboard. This keeps the button fully generic
- * — the `.md` endpoint handles per-collection conventions (including
- * aggregate pages at `<collection>/full`), and no raw markdown is embedded
- * in the rendered HTML.
- */
+    * Split button for content pages: "Copy page" primary action,
+    * with a chevron dropdown for secondary actions.
+    *
+    * The copy side fetches the page's `.md` companion (served by
+    * pages/[...slug].md.ts) and writes it to the clipboard.
+    * The dropdown uses the native Popover API for toggle + light-dismiss.
+    */
 import type {ContentFile} from '../lib/content';
 
 interface Props {
@@ -16,23 +15,139 @@ interface Props {
 
 const {file} = Astro.props;
 const mdUrl = `${file.url}.md`;
+const popoverId = `page-actions-${file.slug}`;
+
+const pageItems = [
+    {
+        href: mdUrl,
+        icon: 'icon-[ph--file-md-fill]',
+        label: 'View as Markdown',
+        description: 'Open this page as Markdown',
+    },
+];
+
+const siteItems = [
+    {
+        href: '/llms.txt',
+        icon: 'icon-[ph--file-txt-fill]',
+        label: 'llms.txt',
+        description: 'htmx overview for LLMs',
+    },
+    {
+        href: '/llms-full.txt',
+        icon: 'icon-[ph--file-txt-fill]',
+        label: 'llms-full.txt',
+        description: 'Complete htmx docs for LLMs',
+    },
+];
 ---
 
-<button
-    class="copy-page-btn relative flex items-center justify-center size-8 rounded shrink-0 select-none border border-transparent text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-200 dark:interact:border-neutral-800 interact:text-neutral-900 dark:interact:text-white outline-hidden focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400 cursor-pointer transition before:content-['Copied!'] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:mr-2 before:px-2 before:py-1 before:text-xs before:font-semibold before:text-white before:bg-neutral-900 dark:before:bg-neutral-100 dark:before:text-neutral-900 before:rounded before:whitespace-nowrap before:opacity-0 before:pointer-events-none data-copied:before:opacity-100 before:transition"
-    title="Copy page content"
-    data-md-url={mdUrl}
-    _={`on click
-            fetch @data-md-url as text then
-            writeText(result) into navigator.clipboard
-            add .icon-\\[radix-icons--check\\] to first <i/> in me
-            remove .icon-\\[radix-icons--copy\\] from first <i/> in me
-            set @title of me to 'Copied!'
-            add @data-copied
-            wait 2s
-            add .icon-\\[radix-icons--copy\\] to first <i/> in me
-            remove .icon-\\[radix-icons--check\\] from first <i/> in me
-            set @title of me to 'Copy page content'
-            remove @data-copied`}>
-    <i class="size-4 icon-[radix-icons--copy]"></i>
-</button>
+<div class="group/pop relative flex items-center">
+    <!-- Primary: Copy page -->
+    <button
+            class="group/copy flex items-center gap-2
+               px-3 py-1.5
+               rounded-l-lg border border-r-0
+               border-neutral-200 dark:border-neutral-800
+               text-neutral-600 dark:text-neutral-400
+               interact:bg-neutral-75 dark:interact:bg-neutral-875
+               interact:text-neutral-900 dark:interact:text-white
+               outline-hidden cursor-pointer select-none"
+            title="Copy page content as Markdown"
+            _={`on click
+                fetch ${mdUrl} as text then
+                writeText(result) into navigator.clipboard
+                add .icon-\\[radix-icons--check\\] to first <i/> in me
+                remove .icon-\\[radix-icons--copy\\] from first <i/> in me
+                put 'Copied!' into the first <span.label/> in me
+                set @title of me to 'Copied!'
+                add @data-copied to closest parent <div/>
+                wait 2s
+                add .icon-\\[radix-icons--copy\\] to first <i/> in me
+                remove .icon-\\[radix-icons--check\\] from first <i/> in me
+                put 'Copy page' into the first <span.label/> in me
+                set @title of me to 'Copy page content'
+                remove @data-copied from closest parent <div/>`}>
+        <i class="size-3.5 icon-[radix-icons--copy]" aria-hidden="true"></i>
+        <span class="label font-sans font-medium text-xs">Copy page</span>
+    </button>
+
+    <!-- Chevron: toggle popover -->
+    <button
+            class="group/chevron flex items-center justify-center
+               w-7 self-stretch
+               rounded-r-lg border
+               border-neutral-200 dark:border-neutral-800
+               text-neutral-500
+               interact:bg-neutral-100 dark:interact:bg-neutral-875
+               interact:text-neutral-900 dark:interact:text-white
+               outline-hidden cursor-pointer"
+            aria-label="More actions"
+            popovertarget={popoverId}
+            style="anchor-name: --page-actions">
+        <i class="size-3 icon-[mdi--chevron-down] transition group-has-[:popover-open]/pop:rotate-180"
+           aria-hidden="true"></i>
+    </button>
+
+    <!-- Dropdown menu (native popover) -->
+    <div id={popoverId}
+         popover="auto"
+         style="position-anchor: --page-actions; top: anchor(bottom); right: anchor(right); left: auto; bottom: auto;"
+         class="min-w-64 mt-1 p-1
+                rounded-xl border
+                border-neutral-200 dark:border-neutral-800
+                bg-white dark:bg-neutral-930
+                shadow-xl shadow-neutral-900/5 dark:shadow-none">
+
+        <!-- This page -->
+        {pageItems.map(item => (
+                <a href={item.href}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="group/item flex items-center gap-3 p-2 rounded-lg
+                      interact:bg-neutral-100 dark:interact:bg-neutral-850
+                      interact:text-neutral-700 dark:interact:text-neutral-300
+                      cursor-pointer select-none">
+                    <div class="border border-neutral-300 dark:border-neutral-800 group-hover/item:border-neutral-750 rounded-lg p-2">
+                        <i class={`size-5 ${item.icon} block`} aria-hidden="true"></i>
+                    </div>
+                    <div class="flex flex-col gap-0.5 flex-1 min-w-0">
+                        <span class="text-sm text-neutral-800 dark:text-neutral-300 flex items-center gap-1">
+                            {item.label}
+                            <i class="size-3 icon-[mdi--arrow-top-right] opacity-50 shrink-0" aria-hidden="true"></i>
+                        </span>
+                        <span class="text-xs font-light text-neutral-600 dark:text-neutral-400">{item.description}</span>
+                    </div>
+                </a>
+        ))}
+
+        <!-- Separator + site-wide section -->
+        <div class="border-t border-neutral-200 dark:border-neutral-800 mt-1 pt-1">
+            <span class="block px-2 pt-2 pb-1.5 text-[0.625rem] font-medium uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                For LLMs
+            </span>
+            {siteItems.map(item => (
+                    <a href={item.href}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="group/item flex items-center gap-3 p-2 rounded-lg
+                          interact:bg-neutral-100 dark:interact:bg-neutral-850
+                          interact:text-neutral-700 dark:interact:text-neutral-300
+                          cursor-pointer select-none">
+                        <div class="border border-neutral-300 dark:border-neutral-800 group-hover/item:border-neutral-750 rounded-lg p-2">
+                            <i class={`size-5 ${item.icon} block`} aria-hidden="true"></i>
+                        </div>
+                        <div class="flex flex-col gap-0.5 flex-1 min-w-0">
+                            <span class="text-sm text-neutral-800 dark:text-neutral-300 flex items-center gap-1">
+                                {item.label}
+                                <i class="size-3 icon-[mdi--arrow-top-right] opacity-50 shrink-0"
+                                   aria-hidden="true"></i>
+                            </span>
+                            <span class="text-xs font-light text-neutral-600 dark:text-neutral-400">{item.description}</span>
+                        </div>
+                    </a>
+            ))}
+        </div>
+    </div>
+</div>
+
