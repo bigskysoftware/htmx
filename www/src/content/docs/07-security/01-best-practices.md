@@ -100,15 +100,15 @@ If your application legitimately needs CORS (e.g. an API on a different subdomai
 
 With both in place, htmx can reach your API but injected target URLs to other origins are blocked by CSP.
 
-### hx-nonce Extension
+### hx-csp Extension
 
-For sites using CSP script nonces, the [`hx-nonce` extension](/docs/extensions/nonce) provides deep integration:
+For sites using CSP script nonces, the [`hx-csp` extension](/extensions/hx-csp) provides deep integration:
 
 - Gates all htmx attribute processing behind a per-request nonce, blocking injected htmx attributes
 - Automatically creates a `'htmx'` [Trusted Types](https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API) policy so only htmx can write HTML into DOM sinks
 - Replaces `new Function()` eval with nonce-based script injection when `safeEval:true` is set, removing the need for `unsafe-eval`
 
-See the [hx-nonce extension docs](/docs/extensions/nonce) for full setup instructions.
+See the [hx-csp extension docs](/extensions/hx-csp) for full setup instructions.
 
 ### htmx & Eval
 
@@ -120,7 +120,7 @@ htmx uses `new Function()` for some optional features:
 
 All of these are optional. If you don't use them you can omit `unsafe-eval` from your CSP entirely.
 
-If you do use these features, the [`hx-nonce` extension](/docs/extensions/nonce) with `safeEval:true` replaces
+If you do use these features, the [`hx-csp` extension](/extensions/hx-csp) with `safeEval:true` replaces
 `new Function()` with nonce-based script injection, enabling them without `unsafe-eval`.
 
 ### CSP & Inline Styles

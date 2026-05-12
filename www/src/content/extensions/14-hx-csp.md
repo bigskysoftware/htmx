@@ -1,18 +1,18 @@
 ---
-title: "hx-nonce"
-description: "Gate attribute processing behind CSP nonces for XSS protection"
+title: "hx-csp"
+description: "Content Security Policy enforcement for htmx — nonce gating, Trusted Types, and safe eval"
 category: "Security"
 icon: "icon-[mdi--shield-lock-outline]"
-keywords: ["nonce", "csp", "security", "trusted types", "xss"]
+keywords: ["nonce", "csp", "security", "trusted types", "xss", "content security policy"]
 ---
 
-The `hx-nonce` extension gates htmx attribute processing behind CSP nonces, protecting against HTML injection attacks on sites that already use script nonces.
+The `hx-csp` extension provides Content Security Policy enforcement for htmx across three layers: nonce gating to prevent HTML injection, Trusted Types integration to restrict DOM writes, and safe eval to eliminate `unsafe-eval` from your CSP.
 
 ## Installing
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-nonce.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-csp.js"></script>
 ```
 
 ## The hx-nonce Attribute
@@ -46,6 +46,22 @@ All major templating engines escape HTML entities (`"`, `'`, `<`, `>`, `&`) by d
 
 URL-valued attributes (`hx-get`, `hx-post`, etc.) are also blocked by the extension if the value is a `js:` or `javascript:` URI — these schemes survive entity encoding and are not valid action URLs.
 
+**Never put user-controlled data in JS-evaluated attributes.** `hx-on:*`, `hx-vals js:`, `hx-confirm js:`, and trigger filters are evaluated as JavaScript. HTML escaping does not protect you here — the browser decodes HTML entities *before* passing the string to the JS engine, so an attacker can break out of a string literal even if your template engine has escaped the value.
+
+There is no standard JavaScript string escaping filter in most templating language. Even frameworks that provide one (Django's `escapejs`, Rails' `escape_javascript`) require you to apply it correctly every time, and they may not protect against every injection vector in a JS context.
+
+The only safe pattern is to keep user data out of the attribute entirely and pass it via `data-*`:
+
+```html
+<!-- UNSAFE — HTML escaping does not protect JS string literals -->
+<button hx-on:click="doThing('{{ user.name }}')" hx-nonce="...">
+
+<!-- SAFE — user data never appears in JS source -->
+<button data-name="{{ user.name }}"
+        hx-on:click="doThing(this.dataset.name)"
+        hx-nonce="...">
+```
+
 Set a `Content-Security-Policy` header with a per-request nonce and stamp `hx-nonce` on every htmx element:
 
 ```http
@@ -54,7 +70,7 @@ Content-Security-Policy: script-src 'self' 'nonce-<nonce>'
 
 ```html
 <script nonce="<nonce>" src="/htmx.js"></script>
-<script nonce="<nonce>" src="/hx-nonce.js"></script>
+<script nonce="<nonce>" src="/hx-csp.js"></script>
 
 <button hx-post="/save" hx-nonce="<nonce>">Save</button>
 ```
@@ -63,7 +79,7 @@ The extension reads the page nonce from the first `script[nonce]` element and bl
 
 ## Trusted Types
 
-Loading `hx-nonce` automatically creates a `'htmx'` Trusted Types policy. Add it to your CSP to enforce that only htmx can write HTML into DOM sinks:
+Loading `hx-csp` automatically creates a `'htmx'` Trusted Types policy. Add it to your CSP to enforce that only htmx can write HTML into DOM sinks:
 
 ```http
 Content-Security-Policy: script-src 'self' 'nonce-<nonce>';
@@ -84,7 +100,7 @@ Content-Security-Policy: script-src 'self' 'nonce-<nonce>'
 ```
 
 ```html
-<meta name="htmx-config" content='extensions:"hx-nonce",safeEval:true'>
+<meta name="htmx-config" content='extensions:"hx-csp",safeEval:true'>
 ```
 
 ## Partial Responses
@@ -105,7 +121,7 @@ The risk: unlike `<script nonce>`, `hx-nonce` attributes are not blanked by brow
 
 ## Inline Scripts in Swapped Content
 
-When htmx swaps in HTML containing `<script>` tags, it re-creates them to trigger execution. The `hx-nonce` extension ensures the response nonce is rewritten to the page nonce before parsing, so script nonces are correctly promoted and execute under a strict `script-src 'nonce-<nonce>'` policy.
+When htmx swaps in HTML containing `<script>` tags, it re-creates them to trigger execution. The `hx-csp` extension ensures the response nonce is rewritten to the page nonce before parsing, so script nonces are correctly promoted and execute under a strict `script-src 'nonce-<nonce>'` policy.
 
 This is the ideal replacement for `htmx.config.inlineScriptNonce`. Do not use `inlineScriptNonce` when using this extension — it applies a single static nonce to all swapped scripts regardless of origin, which undermines the per-response nonce model this extension provides.
 
