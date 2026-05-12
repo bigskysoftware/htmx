@@ -2181,7 +2181,7 @@ var htmx = (() => {
                     ctx.swap = "none";
                     return
                 }
-                let statusValue = this.__attributeValue(ctx.sourceElement, this.__maybeAdjustMetaCharacter("hx-status:") + pattern);
+                let statusValue = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
                 if (statusValue) {
                     this.__mergeConfig(statusValue, ctx);
                     return;
