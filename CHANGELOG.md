@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.0.0-beta4] - ????-??-??
+
+* The `hx-nonce` extension was renamed to `hx-csp`
+
 ## [4.0.0-beta3] - 2026-05-08
 
 * New `hx-live` extension: adds DOM-reactivity via the `hx-live` attribute and a richer JavaScript surface inside `hx-on`
