@@ -34,7 +34,8 @@ const isCurrent = (url?: string) => {
             <a href="/" aria-label="HTMX Homepage"
                class="group/logo text-xl sm:text-[1.375rem] lg:text-2xl whitespace-nowrap font-mono tracking-tight font-extrabold inline-flex items-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 shrink-0 sm:transition rounded-sm outline-hidden">
                 <span aria-hidden="true">&lt;</span>
-                <b class="relative text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition" aria-hidden="true">
+                <b class="relative text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition"
+                   aria-hidden="true">
                     <span class="group-interact/logo:opacity-0 sm:transition">/</span>
                     <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 sm:transition">-</span>
                 </b>
@@ -44,10 +45,12 @@ const isCurrent = (url?: string) => {
                 </span>
                 <span class="font-chicago ms-2 inline-block relative">
                     <span class="group-interact/logo:opacity-0 sm:transition">
-                        htm<b class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition">x</b>
+                        htm<b
+                            class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition">x</b>
                     </span>
                     <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 group-interact/logo:underline sm:transition">
-                        hom<b class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition">e</b>
+                        hom<b
+                            class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition">e</b>
                     </span>
                 </span>
             </a>
@@ -91,7 +94,7 @@ const isCurrent = (url?: string) => {
                 <div class="flex-1">
                     <button type="button"
                             class="relative group flex items-center min-h-[44px] min-w-[200px] w-full bg-white dark:bg-neutral-910
-    border border-neutral-200 dark:border-neutral-800 rounded-md py-2 px-3 text-base font-sans text-neutral-400
+    border border-neutral-200 dark:border-neutral-800 rounded-lg py-2 px-3 text-base font-sans text-neutral-400
     interact:bg-neutral-100 dark:interact:bg-neutral-800/50
     interact:border-neutral-400 dark:interact:border-neutral-600
     outline-hidden sm:transition cursor-pointer"
@@ -105,7 +108,8 @@ const isCurrent = (url?: string) => {
                                end">
                         <i class="icon-[ic--baseline-search] size-5 text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition"
                            aria-hidden="true"></i>
-                        <span class="text-sm mx-2 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition">Open Search</span>
+                        <span class="text-sm mx-2 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition">Open
+                            Search</span>
                         <kbd
                                 id="search-shortcut-hint"
                                 aria-hidden="true"
@@ -171,25 +175,25 @@ const isCurrent = (url?: string) => {
      class="lg:hidden z-50 opacity-0 top-(--header-height) fixed inset-0 h-screen bg-neutral-10 dark:bg-neutral-920 pointer-events-none select-none [html:has(#mobile-navigation-toggle:checked)_&]:opacity-100 [html:has(#mobile-navigation-toggle:checked)_&]:pointer-events-auto sm:transition duration-100 overflow-y-auto overscroll-contain">
     <div class="p-4 space-y-2">
         {navigationItems.map((item) => (
-            <FinderLink
-                href={item.url}
-                title={item.description}
-                aria-current={isCurrent(item.url) ? 'page' : undefined}
-                class="!mx-0 font-chicago text-base tracking-tight gap-2 aria-[current=page]:bg-blue-700 aria-[current=page]:text-white dark:aria-[current=page]:bg-blue-350 dark:aria-[current=page]:text-black aria-[current=page]:font-bold"
-                _="on click set #mobile-navigation-toggle.checked to false"
-            >
-                {item.name}
-            </FinderLink>
+                <FinderLink
+                        href={item.url}
+                        title={item.description}
+                        aria-current={isCurrent(item.url) ? 'page' : undefined}
+                        class="!mx-0 font-chicago text-base tracking-tight gap-2 aria-[current=page]:bg-blue-700 aria-[current=page]:text-white dark:aria-[current=page]:bg-blue-350 dark:aria-[current=page]:text-black aria-[current=page]:font-bold"
+                        _="on click set #mobile-navigation-toggle.checked to false"
+                >
+                    {item.name}
+                </FinderLink>
         ))}
 
         <div class="h-px bg-neutral-200 dark:bg-neutral-800 my-4" role="separator"></div>
 
         <!-- Mobile (Drawer): Discord Button -->
         <FinderLink
-            href="/discord"
-            title="Join the Discord community"
-            class="!mx-0 font-chicago text-base tracking-tight gap-3"
-            _="on click set #mobile-navigation-toggle.checked to false"
+                href="/discord"
+                title="Join the Discord community"
+                class="!mx-0 font-chicago text-base tracking-tight gap-3"
+                _="on click set #mobile-navigation-toggle.checked to false"
         >
             <i class="icon-[ic--baseline-discord] text-xl" aria-hidden="true"></i>
             Discord
@@ -197,12 +201,12 @@ const isCurrent = (url?: string) => {
 
         <!-- Mobile (Drawer): Github Button -->
         <FinderLink
-            href="https://github.com/bigskysoftware/htmx"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="View source code on GitHub"
-            class="!mx-0 font-chicago text-base tracking-tight gap-3"
-            _="on click set #mobile-navigation-toggle.checked to false"
+                href="https://github.com/bigskysoftware/htmx"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="View source code on GitHub"
+                class="!mx-0 font-chicago text-base tracking-tight gap-3"
+                _="on click set #mobile-navigation-toggle.checked to false"
         >
             <i class="icon-[mdi--github] text-xl" aria-hidden="true"></i>
             GitHub
