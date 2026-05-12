@@ -1,7 +1,7 @@
 ---
 // 1. Configuration
-const VERSION = '4.0.0-alpha3';
-const CDN_BASE = `https://cdn.jsdelivr.net/npm/htmx.org@${VERSION}/dist`;
+import pkg from '../../../package.json';
+const CDN_BASE = `https://cdn.jsdelivr.net/npm/htmx.org@${pkg.version}/dist`;
 
 const EXTENSION_LIST = [
     {name: 'websockets', comingSoon: true},
