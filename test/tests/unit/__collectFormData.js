@@ -104,6 +104,65 @@ describe('__collectFormData unit tests', function() {
         assert.equal(formData.get('foo'), 'bar')
     })
 
+    it('excludes unchecked checkbox trigger with no form', function () {
+        let input = createProcessedHTML('<input type="checkbox" name="expires">')
+        let formData = htmx.__collectFormData(input, null, null)
+        assert.equal(formData.get('expires'), null)
+    })
+
+    it('includes checked checkbox trigger with no form', function () {
+        let input = createProcessedHTML('<input type="checkbox" name="expires" checked>')
+        let formData = htmx.__collectFormData(input, null, null)
+        assert.equal(formData.get('expires'), 'on')
+    })
+
+    it('excludes unchecked radio trigger with no form', function () {
+        let input = createProcessedHTML('<input type="radio" name="size" value="large">')
+        let formData = htmx.__collectFormData(input, null, null)
+        assert.equal(formData.get('size'), null)
+    })
+
+    it('includes checked radio trigger with no form', function () {
+        let input = createProcessedHTML('<input type="radio" name="size" value="large" checked>')
+        let formData = htmx.__collectFormData(input, null, null)
+        assert.equal(formData.get('size'), 'large')
+    })
+
+    it('collects all selected options from select-multiple trigger with no form', function () {
+        let container = createProcessedHTML('<div><select name="color" multiple><option value="red">Red</option><option value="blue">Blue</option><option value="green">Green</option></select></div>')
+        let select = container.querySelector('select')
+        select.options[1].selected = true
+        select.options[2].selected = true
+        let formData = htmx.__collectFormData(select, null, null)
+        assert.deepEqual(formData.getAll('color'), ['blue', 'green'])
+    })
+
+    it('collects button trigger value with no form', function () {
+        let container = createProcessedHTML('<div><button name="intent" value="preview"></button></div>')
+        let btn = container.querySelector('button')
+        let formData = htmx.__collectFormData(btn, null, null)
+        assert.equal(formData.get('intent'), 'preview')
+    })
+
+    it('excludes disabled trigger element with no form', function () {
+        let container = createProcessedHTML('<div><input name="skip" value="nope" disabled></div>')
+        let input = container.querySelector('input')
+        let formData = htmx.__collectFormData(input, null, null)
+        assert.equal(formData.get('skip'), null)
+    })
+
+    it('excludes fieldset-disabled input via hx-include', function () {
+        let container = createProcessedHTML('<div><fieldset disabled><input id="blocked" name="blocked" value="nope"></fieldset><input id="active" name="active" value="yes"></div>')
+        let blocked = container.querySelector('#blocked')
+        let active = container.querySelector('#active')
+        let included = new Set()
+        let formData = new FormData()
+        htmx.__addInputValues(blocked, included, formData)
+        htmx.__addInputValues(active, included, formData)
+        assert.equal(formData.get('blocked'), null)
+        assert.equal(formData.get('active'), 'yes')
+    })
+
     it('collects submitter value', function () {
         let form = createProcessedHTML('<form><input name="a" value="1"><button name="submit" value="go">Go</button></form>')
         let submitter = form.querySelector('button')
