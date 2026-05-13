@@ -3,65 +3,105 @@ title: "hx-trigger"
 description: "Control when an element issues a request"
 ---
 
-The `hx-trigger` attribute specifies what triggers an AJAX request.
+The `hx-trigger` attribute controls which event(s) trigger an element's AJAX request (set via [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc.).
 
-## Examples
+Defaults to:
+- [`change`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event) → `<input>` / `<textarea>` / `<select>`
+- [`submit`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) → `<form>`
+- [`click`](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) → `<input type=button>`, `<input type=submit>`, and everything else
+
+## Syntax
 
 ```html
-<!-- Trigger on click -->
-<div hx-trigger="click" hx-get="...">Click Me</div>
+<!-- hx-trigger="<event>[<filter>] <modifiers> [, ...]" -->
 
-<!-- Search with debounce -->
-<input hx-trigger="input changed delay:1s" hx-get="...">
+<!-- Basic (click is the default) -->
+<button hx-get="...">
 
-<!-- Lazy load on scroll -->
-<div hx-trigger="revealed" hx-get="...">Loading...</div>
+<!-- With from: modifier — listen on a different element -->
+<button hx-trigger="click from:outside" hx-get="...">
 
-<!-- Poll every 2 seconds -->
-<div hx-trigger="every 2s" hx-get="...">Waiting...</div>
+<!-- With a filter -->
+<button hx-trigger="click[shiftKey]" hx-get="...">
+
+<!-- Multiple triggers -->
+<button hx-trigger="click, keyup[key=='Enter']" hx-get="...">
 ```
-
-A trigger value can be:
-
-* A [standard event](#standard-events): `click`, `input`, `keyup`
-* A [synthetic event](#synthetic-events): `load`, `revealed`, `intersect`
-* A [polling](#polling) expression: `every 1s`
-* [Multiple triggers](#multiple-triggers) (comma-separated)
-
-Events can be refined with [filters](#event-filters) and [modifiers](#event-modifiers) (e.g. `input changed delay:1s`).
-
-## Defaults
-
-When `hx-trigger` is omitted, htmx uses a sensible default based on the element:
-
-| Element | Default trigger |
-|---|---|
-| `<input>`, `<textarea>`, `<select>` | `change` |
-| `<form>` | `submit` |
-| Everything else | `click` |
 
 ## Standard Events
 
-`hx-trigger` accepts any [DOM event](https://developer.mozilla.org/en-US/docs/Web/API/Element#events): [`click`](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event), [`input`](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event), [`keyup`](https://developer.mozilla.org/en-US/docs/Web/API/Element/keyup_event), [`submit`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event), etc.
+`hx-trigger` accepts any DOM event: `click`, `input`, `keyup`, `submit`, etc.
 
 ```html
-<button hx-trigger="click" hx-post="...">Submit</button>
+<button hx-trigger="click" hx-post="...">
 <input hx-trigger="input" hx-get="...">
 <form hx-trigger="submit" hx-post="...">
 <div hx-trigger="mouseenter" hx-get="...">
 ```
 
-[Custom events](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) work too. You can trigger them from JavaScript or from the server via the [`HX-Trigger`](/reference/headers/HX-Trigger) response header.
+## Custom Events
+
+Custom events work too. Dispatch them from JavaScript with [`htmx.trigger()`](/reference/methods/htmx-trigger), or from the server via the [`HX-Trigger`](/reference/headers/HX-Trigger) response header.
+
+Events from `HX-Trigger` are dispatched on the `body`, so use [`from:body`](#from) to listen for them:
 
 ```html
-<div hx-trigger="my-custom-event" hx-get="...">...</div>
+<div hx-trigger="productsUpdated from:body" hx-get="...">...</div>
+```
+
+## Synthetic Events
+
+htmx provides synthetic events beyond standard DOM events:
+
+### `load`
+
+Fires when the element is loaded into the DOM. Useful for [lazy-loading](/patterns/loading/lazy-load) content.
+
+```html
+<div hx-trigger="load" hx-get="...">Loading...</div>
+```
+
+### `revealed`
+
+Fires when the element is scrolled into the viewport. Useful for [infinite scroll](/patterns/loading/infinite-scroll).
+
+```html
+<div hx-trigger="revealed" hx-get="...">Loading...</div>
+```
+
+_Note: `revealed` always observes the browser viewport. For scrollable containers with `overflow`, use [`intersect`](#intersect) with `root` instead._
+
+### `intersect`
+
+Fires when an element becomes visible in the viewport. 
+
+Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) and supports [`root`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root) and [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds) as modifiers.
+
+```html
+<div hx-trigger="intersect once" hx-get="...">...</div>
+<div hx-trigger="intersect root:#scroll-container" hx-get="...">...</div>
+<div hx-trigger="intersect threshold:0.5" hx-get="...">...</div>
+```
+
+### `every <time>`
+
+Fires repeatedly on an interval.
+
+```html
+<div hx-trigger="every 1s" hx-get="/updates">...</div>
+```
+
+To add a filter to polling, add it after the interval:
+
+```html
+<div hx-trigger="every 1s [someConditional]" hx-get="/updates">...</div>
 ```
 
 ## Event Modifiers
 
 ### `[filter]`
 
-Only fires when the `[expression]` after the event name is `true`.
+A JavaScript expression in brackets after the event name. Only fires when it evaluates to `true`.
 
 ```html
 <input hx-trigger="keyup[key == 'Enter']" hx-get="/search">
@@ -92,7 +132,7 @@ Only fires if the element's `value` changed since last time.
 
 Note: [`change`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event) is a DOM event. `changed` is an htmx modifier. Different things.
 
-### `delay`
+### `delay:<time>`
 
 Waits before firing. If the event fires again, the delay resets (debounce).
 
@@ -100,7 +140,7 @@ Waits before firing. If the event fires again, the delay resets (debounce).
 <input hx-trigger="input delay:1s" hx-get="...">
 ```
 
-### `throttle`
+### `throttle:<time>`
 
 Fires, then ignores further events for the given interval.
 
@@ -108,17 +148,19 @@ Fires, then ignores further events for the given interval.
 <div hx-trigger="scroll throttle:500ms" hx-get="...">...</div>
 ```
 
-### `from`
+### `from:<selector>`
 
-Listens on a different element. Takes a CSS selector or an [extended selector](/docs/features/extended-selectors).
+Listens on a different element. Takes a CSS selector or an [extended selector](/docs/features/extended-selectors). Two special values: `self` (only the element itself, not children) and `outside` (anything outside the element).
 
 ```html
 <div hx-trigger="keyup[key=='Enter'] from:body" hx-get="...">...</div>
 <div hx-trigger="my-event from:document" hx-get="...">...</div>
 <div hx-trigger="submit from:closest form" hx-get="...">...</div>
+<div hx-trigger="click from:self" hx-get="...">...</div>
+<div hx-trigger="click from:outside" hx-get="...">...</div>
 ```
 
-### `target`
+### `target:<selector>`
 
 Only fires if `event.target` matches the given CSS selector.
 
@@ -126,28 +168,53 @@ Only fires if `event.target` matches the given CSS selector.
 <div hx-trigger="click target:.child-button" hx-get="...">...</div>
 ```
 
+### `prevent`
+
+Calls `event.preventDefault()`.
+
+```html
+<form hx-trigger="submit prevent" hx-post="...">...</form>
+```
+
+### `stop`
+
+Calls `event.stopPropagation()`. The event still reaches other listeners on the same element.
+
+```html
+<button hx-trigger="click stop" hx-get="...">...</button>
+```
+
+### `halt`
+
+Shorthand for `prevent stop`.
+
+```html
+<a hx-trigger="click halt" hx-get="...">...</a>
+```
+
 ### `consume`
 
-Calls `event.stopPropagation()` *and* stops other listeners on the same element.
+Calls `event.stopPropagation()` *and* stops other listeners on the same element. Stricter than `stop`.
 
 ```html
 <button hx-trigger="click consume" hx-get="...">...</button>
 ```
 
-### `queue`
+### `capture`
 
-Queues events while a request is already in flight.
+Listens during the capture phase (top-down) instead of the bubble phase (bottom-up).
 
 ```html
-<div hx-trigger="click queue:all" hx-get="...">...</div>
+<div hx-trigger="click capture" hx-get="...">...</div>
 ```
 
-Options:
+### `passive`
 
-* `first` - queue the first event
-* `last` - queue the last event (default)
-* `all` - queue all events (issue a request for each)
-* `none` - do not queue new events
+Tells the browser the handler won't call `preventDefault()`, so the browser can scroll without waiting for your code to finish.
+
+```html
+<div hx-trigger="scroll passive" hx-get="...">...</div>
+```
 
 ### Example
 
@@ -160,106 +227,15 @@ A search box that searches on `input`, but only if the value has [`changed`](#ch
        hx-target="#search-results"/>
 ```
 
-## Synthetic Events
-
-htmx provides some synthetic events beyond the standard web API events:
-
-### `load`
-
-Fires when the element is loaded into the DOM. Useful for [lazy-loading](/patterns/loading/lazy-load) content.
-
-```html
-<div hx-trigger="load" hx-get="...">Loading...</div>
-```
-
-### `revealed`
-
-Fires when the element is scrolled into the viewport. Also useful for lazy-loading.
-
-```html
-<div hx-trigger="revealed" hx-get="...">Loading...</div>
-```
-
-If you are using `overflow` in CSS (e.g. `overflow-y: scroll`), use [`intersect`](#intersect) [`once`](#once) instead.
-
-### `intersect`
-
-Fires once when an element first intersects the viewport.
-
-```html
-<tr hx-trigger="intersect once"
-    hx-get="..."
-    hx-swap="outerHTML">
-  <td>Loading more...</td>
-</tr>
-```
-
-#### `root`
-
-A CSS selector of the root element for intersection.
-
-```html
-<div hx-trigger="intersect root:#scroll-container" hx-get="...">...</div>
-```
-
-#### `threshold`
-
-A float between 0.0 and 1.0 indicating what amount of intersection to fire the event on.
-
-```html
-<div hx-trigger="intersect threshold:0.5" hx-get="...">...</div>
-```
-
-## HX-Trigger Header
-
-To fire an event from the `HX-Trigger` response header, you will likely want to use the [`from:body`](#from) modifier. For example, if you send `HX-Trigger: my-custom-event` with a response:
-
-```html
-<div hx-trigger="my-custom-event from:body" hx-get="...">
-  Triggered by HX-Trigger header...
-</div>
-```
-
-This is because the header triggers the event in a different DOM hierarchy than the element you want to trigger. For a similar reason, you will often listen for hot keys [`from`](#from) the body.
-
-## Polling
-
-Using `every <timing declaration>` you can have an element poll periodically:
-
-```html
-<div hx-trigger="every 1s" hx-get="/updates">
-  Nothing Yet!
-</div>
-```
-
-To add a filter to polling, add it after the poll declaration:
-
-```html
-<div hx-trigger="every 1s [someConditional]" hx-get="/updates">
-  Nothing Yet!
-</div>
-```
-
-## Multiple Triggers
-
-Multiple triggers can be provided, separated by commas. Each trigger gets its own options.
-
-```html
-<div hx-trigger="load, click delay:1s" hx-get="/news"></div>
-```
-
-This loads `/news` immediately on page load, and then again with a 1 second delay after each click.
-
-## Via JavaScript
-
-The AJAX request can be triggered via JavaScript using [`htmx.trigger()`](/reference/methods/htmx-trigger).
-
 ## Notes
 
-* `hx-trigger` can be used without an AJAX request, in which case it will only fire the `htmx:trigger` event.
-* To pass a CSS selector that contains whitespace (e.g. `form input`) to the [`from`](#from) or [`target`](#target) modifier, surround the selector in parentheses or curly brackets (e.g. `from:(form input)` or `from:closest (form input)`).
-* A `reset` event in `hx-trigger` (e.g. `hx-trigger="change, reset"`) might not work as intended, since htmx builds its values and sends a request before the browser resets the form. As a workaround, add a delay: `hx-trigger="change, reset delay:0.01s"`.
+* Selectors with whitespace in [`from`](#from) or [`target`](#target) need parentheses: `from:(form input)`.
+* `hx-trigger="change, reset"` may fire before the browser resets the form. As a workaround, add a short delay: `hx-trigger="change, reset delay:0.01s"`.
 
 ## See Also
 
-- [`hx-on`](/reference/attributes/hx-on) — run inline JavaScript when an event fires, using the same event modifiers, filters, and synthetic events
+- [`hx-on`](/reference/attributes/hx-on) (attribute)
+- [Extended Selectors](/docs/features/extended-selectors) (reference)
+- [Lazy Load](/patterns/loading/lazy-load) (pattern)
+- [Infinite Scroll](/patterns/loading/infinite-scroll) (pattern)
+- [Progress Bar](/patterns/loading/progress-bar) (pattern)

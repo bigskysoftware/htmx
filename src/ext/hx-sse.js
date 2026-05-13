@@ -288,7 +288,7 @@
         if (element._htmx?.sse) return; // already set up
 
         let specString = api.attributeValue(element, 'hx-trigger') || 'load';
-        api.onTrigger(element, specString, () => {
+        api.onEvent(element, specString, () => {
             if (element._htmx?.sse) return; // prevent duplicate connections
             htmx.ajax('GET', connectUrl, {source: element});
         });
