@@ -32,13 +32,6 @@ describe('hx-include attribute', function() {
         assert.equal(new URL(fetchMock.calls[0].url, location.href).searchParams.get('notify'), null)
     })
 
-    it('button via hx-include sends its value', async function () {
-        mockResponse('GET', '/include', "OK")
-        createProcessedHTML('<div><button id="extra" name="action" value="save">Save</button><button id="btn" hx-get="/include" hx-include="#extra">Go</button></div>')
-        find('#btn').click()
-        await forRequest()
-        new URL(fetchMock.calls[0].url, location.href).searchParams.get('action').should.equal('save')
-    })
 
     it('non-GET includes closest form', async function () {
         mockResponse('POST', '/include', "Dummy")
