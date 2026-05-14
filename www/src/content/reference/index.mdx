@@ -7,7 +7,15 @@ import FinderLink from '../../components/FinderLink.astro';
 
 export const folder = await getFolder('reference');
 
-export const CORE_ATTRIBUTES = ['hx-get', 'hx-post', 'hx-put', 'hx-patch', 'hx-delete', 'hx-swap', 'hx-target', 'hx-trigger', 'hx-select', 'hx-on', 'hx-vals'];
+export const ATTRIBUTE_GROUPS = [
+    { label: 'Requests', titles: ['hx-get', 'hx-post', 'hx-put', 'hx-patch', 'hx-delete'] },
+    { label: 'Request Control', titles: ['hx-trigger', 'hx-swap', 'hx-target', 'hx-select', 'hx-swap-oob', 'hx-select-oob', 'hx-confirm'] },
+    { label: 'Scripting', titles: ['hx-on'] },
+    { label: 'Data', titles: ['hx-vals', 'hx-include', 'hx-headers', 'hx-encoding'] },
+    { label: 'History', titles: ['hx-push-url', 'hx-replace-url', 'hx-history-elt'] },
+    { label: 'Enhancements', titles: ['hx-boost', 'hx-preload', 'hx-optimistic'] },
+    { label: 'Advanced', titles: ['hx-indicator', 'hx-status', 'hx-sync', 'hx-validate', 'hx-disable', 'hx-ignore', 'hx-preserve', 'hx-action', 'hx-method', 'hx-config'] },
+];
 export const REQUEST_HEADERS = ['HX-Request', 'HX-Request-Type', 'HX-Current-URL', 'HX-Source', 'HX-Target', 'HX-Boosted', 'HX-History-Restore-Request', 'Accept', 'Last-Event-ID'];
 
 export const groups = folder.folders.map(sub => {
@@ -18,12 +26,11 @@ export const groups = folder.folders.map(sub => {
     }));
 
     if (sub.slug === 'attributes') {
-        const core = items.filter(i => CORE_ATTRIBUTES.includes(i.title));
-        const additional = items.filter(i => !CORE_ATTRIBUTES.includes(i.title));
-        return { slug: sub.slug, label: sub.frontmatter.title, subgroups: [
-            { label: 'Core', items: core },
-            { label: 'Additional', items: additional },
-        ]};
+        const subgroups = ATTRIBUTE_GROUPS.map(g => ({
+            label: g.label,
+            items: g.titles.map(t => items.find(i => i.title === t)).filter(Boolean),
+        }));
+        return { slug: sub.slug, label: sub.frontmatter.title, subgroups };
     }
     if (sub.slug === 'headers') {
         const request = items.filter(i => REQUEST_HEADERS.includes(i.title));

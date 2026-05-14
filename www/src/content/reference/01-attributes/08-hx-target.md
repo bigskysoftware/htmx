@@ -1,6 +1,6 @@
 ---
 title: "hx-target"
-description: "Specify target element for swap"
+description: "Control where the response is inserted"
 ---
 
 The `hx-target` attribute specifies where to insert the response content.
