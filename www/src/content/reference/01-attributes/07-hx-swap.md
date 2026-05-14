@@ -1,6 +1,6 @@
 ---
 title: "hx-swap"
-description: "Control how the response is inserted"
+description: "Controls how the response is inserted"
 ---
 
 The `hx-swap` attribute controls where the response content goes.

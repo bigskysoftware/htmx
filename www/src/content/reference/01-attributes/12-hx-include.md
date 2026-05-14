@@ -1,6 +1,6 @@
 ---
 title: "hx-include"
-description: "Include additional element values in request"
+description: "Includes additional element values in the request"
 ---
 
 The `hx-include` attribute allows you to include additional element values in an AJAX request.

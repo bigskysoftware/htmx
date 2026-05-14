@@ -1,6 +1,6 @@
 ---
 title: "hx-select-oob"
-description: "Pick response elements to swap into the page by ID"
+description: "Picks response elements to swap into the page by ID"
 ---
 
 The `hx-select-oob` attribute allows you to select content from a response to be swapped in via an out-of-band (OOB)

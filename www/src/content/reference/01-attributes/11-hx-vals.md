@@ -1,6 +1,6 @@
 ---
 title: "hx-vals"
-description: "Add values to request parameters"
+description: "Adds values to request parameters"
 ---
 
 The `hx-vals` attribute adds values to the parameters that will be submitted with the request.

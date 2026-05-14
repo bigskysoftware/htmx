@@ -1,6 +1,6 @@
 ---
 title: "hx-preserve"
-description: "Preserve element during swaps"
+description: "Preserves the element during swaps"
 ---
 
 The `hx-preserve` attribute allows you to keep an element unchanged during HTML replacement.

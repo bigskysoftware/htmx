@@ -1,6 +1,6 @@
 ---
 title: "hx-delete"
-description: "Issue DELETE request to specified URL"
+description: "Issues a DELETE request to the specified URL"
 ---
 
 The `hx-delete` attribute will cause an element to issue a `DELETE` to the specified URL and swap

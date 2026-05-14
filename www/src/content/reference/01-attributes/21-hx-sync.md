@@ -1,6 +1,6 @@
 ---
 title: "hx-sync"
-description: "Synchronize requests between elements"
+description: "Synchronizes requests between elements"
 ---
 
 The `hx-sync` attribute allows you to synchronize AJAX requests between multiple elements.

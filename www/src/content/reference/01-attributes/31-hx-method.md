@@ -1,6 +1,6 @@
 ---
 title: "hx-method"
-description: "Specify HTTP method for request"
+description: "Specifies the HTTP method for the request"
 ---
 
 The `hx-method` attribute specifies the HTTP method (verb) to use for the request.

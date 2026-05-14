@@ -1,6 +1,6 @@
 ---
 title: "hx-encoding"
-description: "Set request encoding type"
+description: "Sets the request encoding type"
 ---
 
 The `hx-encoding` attribute allows you to switch the request encoding from the usual `application/x-www-form-urlencoded`

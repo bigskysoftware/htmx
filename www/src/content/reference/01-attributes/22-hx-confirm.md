@@ -1,6 +1,6 @@
 ---
 title: "hx-confirm"
-description: "Show confirmation dialog before request"
+description: "Shows a confirmation dialog before the request"
 ---
 
 The `hx-confirm` attribute allows you to confirm an action before issuing a request. This can be useful

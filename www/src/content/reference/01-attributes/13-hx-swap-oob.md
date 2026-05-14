@@ -1,6 +1,6 @@
 ---
 title: "hx-swap-oob"
-description: "Mark response elements to swap into the page by ID"
+description: "Marks response elements to swap into the page by ID"
 ---
 
 The `hx-swap-oob` attribute allows you to specify that some content in a response should be

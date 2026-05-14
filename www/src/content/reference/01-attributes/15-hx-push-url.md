@@ -1,6 +1,6 @@
 ---
 title: "hx-push-url"
-description: "Push URL into browser history"
+description: "Pushes the URL into browser history"
 ---
 
 The `hx-push-url` attribute allows you to push a URL into the

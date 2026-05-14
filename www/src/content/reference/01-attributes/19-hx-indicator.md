@@ -1,6 +1,6 @@
 ---
 title: "hx-indicator"
-description: "Specify loading indicator element"
+description: "Specifies the loading indicator element"
 ---
 
 The `hx-indicator` attribute allows you to specify the element that will have the `htmx-request` class

@@ -1,6 +1,6 @@
 ---
 title: "hx-headers"
-description: "Add custom headers to request"
+description: "Adds custom headers to the request"
 ---
 
 The `hx-headers` attribute allows you to add to the headers that will be submitted with an AJAX request.

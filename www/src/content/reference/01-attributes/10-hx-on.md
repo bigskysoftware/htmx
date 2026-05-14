@@ -1,6 +1,6 @@
 ---
 title: "hx-on"
-description: "Run inline JavaScript when an event fires"
+description: "Runs inline JavaScript when an event fires"
 ---
 
 The `hx-on*` attributes allow you to embed scripts inline to respond to events directly on an element; similar to the

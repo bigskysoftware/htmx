@@ -1,6 +1,6 @@
 ---
 title: "hx-trigger"
-description: "Control when an element issues a request"
+description: "Controls when the element issues a request"
 ---
 
 The `hx-trigger` attribute specifies what triggers an AJAX request.

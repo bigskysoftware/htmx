@@ -1,6 +1,6 @@
 ---
 title: "hx-status"
-description: "Handle responses differently by status code"
+description: "Handles responses differently by status code"
 ---
 
 The `hx-status` attribute overrides swap behavior based on the HTTP response status code.

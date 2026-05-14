@@ -1,6 +1,6 @@
 ---
 title: "hx-preload"
-description: "Preload content before user triggers request"
+description: "Preloads content before the user triggers a request"
 ---
 
 The `hx-preload` attribute triggers resource prefetching on hover or focus.

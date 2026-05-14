@@ -1,6 +1,6 @@
 ---
 title: "hx-select"
-description: "Control which part of the response to insert"
+description: "Controls which part of the response to insert"
 ---
 
 The `hx-select` attribute allows you to select the content you want swapped from a response. The value of

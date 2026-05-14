@@ -1,6 +1,6 @@
 ---
 title: "hx-patch"
-description: "Issue PATCH request to specified URL"
+description: "Issues a PATCH request to the specified URL"
 ---
 
 The `hx-patch` attribute will cause an element to issue a `PATCH` to the specified URL and swap

@@ -1,6 +1,6 @@
 ---
 title: "hx-target"
-description: "Control where the response is inserted"
+description: "Controls where the response is inserted"
 ---
 
 The `hx-target` attribute specifies where to insert the response content.

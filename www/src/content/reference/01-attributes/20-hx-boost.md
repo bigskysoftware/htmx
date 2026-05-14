@@ -1,6 +1,6 @@
 ---
 title: "hx-boost"
-description: "Convert links and forms to AJAX"
+description: "Converts links and forms to AJAX"
 ---
 
 The `hx-boost` attribute allows you to "boost" normal anchors and form tags to use AJAX instead. This
