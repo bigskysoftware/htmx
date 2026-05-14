@@ -452,7 +452,7 @@ var htmx = (() => {
                 : (elt.form || elt.closest("form"))
 
             // Build request body
-            let body = this.__collectFormData(elt, form, evt.submitter, ctx.request.validate)
+            let body = this.__collectFormData(elt, form, evt.submitter, ctx.request.validate, usesQueryParams)
             if (!body) return  // Validation failed
             let valsResult = this.__getAttributeObject(elt, "hx-vals", obj => {
                 ctx.vals = obj; // make available for json extensions
@@ -1734,15 +1734,14 @@ var htmx = (() => {
             }
         }
 
-        __collectFormData(elt, form, submitter, validate) {
+        __collectFormData(elt, form, submitter, validate, isGet) {
             if (validate && form && !form.reportValidity()) return
             
             let formData = form ? new FormData(form) : new FormData()
             let included = form ? new Set(form.elements) : new Set()
-            if (!form && elt.name) {
+            if (!form) {
                 if (validate && elt.reportValidity && !elt.reportValidity()) return
-                formData.append(elt.name, elt.value)
-                included.add(elt);
+                this.__addInputValues(elt, included, formData, isGet);
             }
             if (submitter && submitter.name) {
                 formData.append(submitter.name, submitter.value)
@@ -1758,11 +1757,18 @@ var htmx = (() => {
             return formData
         }
 
-        __addInputValues(elt, included, formData) {
-            let inputs = this.__queryEltAndDescendants(elt, 'input:not([disabled]), select:not([disabled]), textarea:not([disabled])');
+        __addInputValues(elt, included, formData, isGet) {
+            let tag = elt.tagName;
+            let inputs = [];
+            if (tag === 'BUTTON') {
+                inputs = [elt]; // buttons only send own value, never collect children
+            } else if (['INPUT', 'SELECT', 'TEXTAREA', 'FIELDSET'].includes(tag) || !isGet) {
+                inputs = this.__queryEltAndDescendants(elt, 'input, select, textarea');
+            }
+            // GET on non-form-control containers (div, etc.) sends nothing — use hx-include for explicit inclusion
 
             for (let input of inputs) {
-                if (!input.name || included.has(input)) continue;
+                if (!input.name || input.matches(':disabled') || included.has(input)) continue;
                 included.add(input);
 
                 let type = input.type;
@@ -1781,8 +1787,7 @@ var htmx = (() => {
                     for (let option of input.selectedOptions) {
                         formData.append(input.name, option.value);
                     }
-                } else if (input.matches('select, textarea, input')) {
-                    // Regular inputs, single selects, textareas
+                } else {
                     formData.append(input.name, input.value);
                 }
             }
