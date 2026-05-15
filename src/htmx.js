@@ -1682,11 +1682,11 @@ var htmx = (() => {
                 }
             };
             for (let attr of node.getAttributeNames()) {
-                // hx-on="click once => doA(); blur => doB()"
+                // hx-on="click once -> doA(); blur -> doB()"
                 if (hxOnNames.includes(attr)) {
                     let value = node.getAttribute(attr);
                     // Split on ";" at depth 0 so braces protect multi-statement JS:
-                    //   "click => { a(); b() }; blur => c()"  →  ["click => { a(); b() }", " blur => c()"]
+                    //   "click -> { a(); b() }; blur -> c()"  →  ["click -> { a(); b() }", " blur -> c()"]
                     let parts = [], current = '', depth = 0;
                     for (let char of value) {
                         if (char === '{' || char === '(') depth++;
@@ -1695,8 +1695,8 @@ var htmx = (() => {
                         else current += char;
                     }
                     parts.push(current);
-                    for (let part of parts) { // e.g. "click once => doA()"
-                        let arrowIdx = part.indexOf('=>');
+                    for (let part of parts) { // e.g. "click once -> doA()"
+                        let arrowIdx = part.indexOf('->');
                         if (arrowIdx === -1) continue;
                         this.__onEvent(node,
                             part.substring(0, arrowIdx).trim(),  // "click once"

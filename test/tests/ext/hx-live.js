@@ -785,23 +785,23 @@ describe('hx-live extension', function () {
     });
 
     // -------------------------------------------------------------------------
-    // hx-live helpers inside hx-on="event => code" syntax
+    // hx-live helpers inside hx-on="event -> code" syntax
     // -------------------------------------------------------------------------
 
-    it('q() works inside hx-on="event => code"', function() {
-        playground().innerHTML = '<button hx-on="click => window.foo = q(\'next #target\').textContent">x</button><div id="target">tgt</div>';
+    it('q() works inside hx-on="event -> code"', function() {
+        playground().innerHTML = '<button hx-on="click -> window.foo = q(\'next #target\').textContent">x</button><div id="target">tgt</div>';
         htmx.process(playground());
         playground().querySelector('button').click();
         window.foo.should.equal('tgt');
         delete window.foo;
     });
 
-    it('take() works inside hx-on="event => code"', function() {
+    it('take() works inside hx-on="event -> code"', function() {
         playground().innerHTML = `
             <div class="tabs">
                 <button class="tab selected">a</button>
                 <button class="tab">b</button>
-                <button class="tab" hx-on="click => take('selected', '.tab')">c</button>
+                <button class="tab" hx-on="click -> take('selected', '.tab')">c</button>
             </div>
         `;
         htmx.process(playground());
@@ -812,8 +812,8 @@ describe('hx-live extension', function () {
         tabs[2].classList.contains('selected').should.equal(true);
     });
 
-    it('toggle() works inside hx-on="event => code"', function() {
-        playground().innerHTML = '<button hx-on="click => toggle(\'.active\', \'@aria-pressed=true|false\')">x</button>';
+    it('toggle() works inside hx-on="event -> code"', function() {
+        playground().innerHTML = '<button hx-on="click -> toggle(\'.active\', \'@aria-pressed=true|false\')">x</button>';
         htmx.process(playground());
         let btn = playground().querySelector('button');
         btn.click();
@@ -824,9 +824,9 @@ describe('hx-live extension', function () {
         btn.getAttribute('aria-pressed').should.equal('false');
     });
 
-    it('debounce() works inside hx-on="event => code"', async function() {
+    it('debounce() works inside hx-on="event -> code"', async function() {
         window.__dbCount = 0;
-        playground().innerHTML = '<button hx-on="click => debounce(30, () => { window.__dbCount++ })">x</button>';
+        playground().innerHTML = '<button hx-on="click -> debounce(30, () => { window.__dbCount++ })">x</button>';
         htmx.process(playground());
         let btn = playground().querySelector('button');
         btn.click();
@@ -837,9 +837,9 @@ describe('hx-live extension', function () {
         delete window.__dbCount;
     });
 
-    it('trigger() works inside hx-on="event => code"', function() {
+    it('trigger() works inside hx-on="event -> code"', function() {
         let fired = null;
-        playground().innerHTML = '<button hx-on="click => trigger(\'zap\', { x: 1 })">x</button>';
+        playground().innerHTML = '<button hx-on="click -> trigger(\'zap\', { x: 1 })">x</button>';
         htmx.process(playground());
         let btn = playground().querySelector('button');
         btn.addEventListener('zap', e => fired = e);
@@ -850,7 +850,7 @@ describe('hx-live extension', function () {
 
     it('hx-live helpers work with hx-on modifiers', async function() {
         window.__dbCount = 0;
-        playground().innerHTML = '<input hx-on="input changed delay:30ms => debounce(20, () => { window.__dbCount++ })">';
+        playground().innerHTML = '<input hx-on="input changed delay:30ms -> debounce(20, () => { window.__dbCount++ })">';
         htmx.process(playground());
         let inp = playground().querySelector('input');
         inp.value = 'a';
