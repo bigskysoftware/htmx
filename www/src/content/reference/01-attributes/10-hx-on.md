@@ -21,33 +21,33 @@ One event, one expression:
 
 **Extended form**
 
-Builds on [`hx-trigger`](/reference/attributes/hx-trigger)'s grammar, adding `=>` to wire events to JavaScript:
+Builds on [`hx-trigger`](/reference/attributes/hx-trigger)'s grammar, adding `->` to wire events to JavaScript:
 
 ```html
-<!-- hx-on="<event>[<filter>] <modifiers> [, ...] => <js> | { <js>; ... } [; ...]" -->
+<!-- hx-on="<event>[<filter>] <modifiers> [, ...] -> <js> | { <js>; ... } [; ...]" -->
 
 <!-- Open dialog on page load / swap -->
-<dialog hx-on="load => this.showModal()">
+<dialog hx-on="load -> this.showModal()">
 
 <!-- Unfocus input on Escape -->
-<input hx-on="keydown[key=='Escape'] => this.blur()">
+<input hx-on="keydown[key=='Escape'] -> this.blur()">
     
 <!-- Close dialog on custom event (e.g. HX-Trigger: closeDialog) -->
-<dialog hx-on="closeDialog from:body => this.close()">
+<dialog hx-on="closeDialog from:body -> this.close()">
     
 <!-- Close on backdrop click OR custom event -->
-<dialog hx-on="click from:self, closeDialog from:body => this.close()">
+<dialog hx-on="click from:self, closeDialog from:body -> this.close()">
 
 <!-- Run multiple statements -->
-<dialog hx-on="close => { this.remove(); log('dialog removed') }">
+<dialog hx-on="close -> { this.remove(); log('dialog removed') }">
         
 <!-- Different code for different events -->
-<dialog hx-on="load => this.showModal();
-               click from:self, closeDialog from:body => this.close();
-               close => { this.remove(); log('removed') }">
+<dialog hx-on="load -> this.showModal();
+               click from:self, closeDialog from:body -> this.close();
+               close -> { this.remove(); log('removed') }">
 ```
 
-- `=>` event(s) on the left, JavaScript code on the right
+- `->` event(s) on the left, JavaScript code on the right
 - `,` multiple events, same code
 - `;` separate event -> code pairs
 - `{ }` multi-statement JavaScript
@@ -70,14 +70,14 @@ Custom events work too. Dispatch them from JavaScript with [`htmx.trigger()`](/r
 Events from `HX-Trigger` are dispatched on the `body`, so use [`from:body`](#from) to listen for them:
 
 ```html
-<div hx-on="productsUpdated from:body => log('Products updated!')">
+<div hx-on="productsUpdated from:body -> log('Products updated!')">
 ```
 
 ## Synthetic Events
 
 htmx provides synthetic events beyond standard DOM events.
 
-These work with both the simple form (`hx-on:load`) and the extended form (`hx-on="load => ..."`).
+These work with both the simple form (`hx-on:load`) and the extended form (`hx-on="load -> ..."`).
 
 ### `load`
 
@@ -104,7 +104,7 @@ Fires when an element becomes visible in the viewport.
 Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) and supports [`root`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root) and [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds) as modifiers.
 
 ```html
-<div hx-on="intersect once => this.classList.add('in-view')">
+<div hx-on="intersect once -> this.classList.add('in-view')">
 ```
 
 ### `every <time>`
@@ -112,7 +112,7 @@ Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web
 Fires repeatedly on an interval. Only available in the extended form.
 
 ```html
-<div hx-on="every 1s => this.textContent = new Date().toLocaleTimeString()">
+<div hx-on="every 1s -> this.textContent = new Date().toLocaleTimeString()">
 ```
 
 ## Event Modifiers
@@ -122,7 +122,7 @@ Fires repeatedly on an interval. Only available in the extended form.
 A JavaScript expression in brackets after the event name. Only fires when it evaluates to `true`.
 
 ```html
-<button hx-on="click[ctrlKey] => navigator.clipboard.writeText(this.textContent)">
+<button hx-on="click[ctrlKey] -> navigator.clipboard.writeText(this.textContent)">
 ```
 
 Inside the brackets, all properties of the event are available as bare names:
@@ -137,7 +137,7 @@ Global functions work too: `click[hasUnsavedChanges()]`.
 Fires once, then stops listening.
 
 ```html
-<button hx-on="click once => this.textContent = 'Done!'">Click me</button>
+<button hx-on="click once -> this.textContent = 'Done!'">Click me</button>
 ```
 
 ### `changed`
@@ -145,7 +145,7 @@ Fires once, then stops listening.
 Only fires if the element's `value` changed since last time.
 
 ```html
-<input hx-on="input changed => console.log(this.value)">
+<input hx-on="input changed -> console.log(this.value)">
 ```
 
 Note: [`change`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event) is a DOM event. `changed` is an htmx modifier. Different things.
@@ -155,7 +155,7 @@ Note: [`change`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/ch
 Waits before firing. If the event fires again, the delay resets (debounce).
 
 ```html
-<input hx-on="input delay:500ms => console.log(this.value)">
+<input hx-on="input delay:500ms -> console.log(this.value)">
 ```
 
 ### `throttle:<time>`
@@ -163,7 +163,7 @@ Waits before firing. If the event fires again, the delay resets (debounce).
 Fires, then ignores further events for the given interval.
 
 ```html
-<div hx-on="scroll throttle:100ms => this.dataset.scrollY = window.scrollY"></div>
+<div hx-on="scroll throttle:100ms -> this.dataset.scrollY = window.scrollY"></div>
 ```
 
 ### `from:<selector>`
@@ -171,8 +171,8 @@ Fires, then ignores further events for the given interval.
 Listens on a different element. Takes a CSS selector or an [extended selector](/docs/features/extended-selectors). Two special values: `self` (only the element itself, not children) and `outside` (anything outside the element).
 
 ```html
-<div hx-on="keydown[key=='Escape'] from:body => this.hidden = true">
-<div hx-on="click from:outside => this.hidden = true">
+<div hx-on="keydown[key=='Escape'] from:body -> this.hidden = true">
+<div hx-on="click from:outside -> this.hidden = true">
 ```
 
 ### `target:<selector>`
@@ -180,7 +180,7 @@ Listens on a different element. Takes a CSS selector or an [extended selector](/
 Only fires if `event.target` matches the given CSS selector.
 
 ```html
-<ul hx-on="click target:li => event.target.classList.toggle('selected')"></ul>
+<ul hx-on="click target:li -> event.target.classList.toggle('selected')"></ul>
 ```
 
 ### `prevent`
@@ -188,7 +188,7 @@ Only fires if `event.target` matches the given CSS selector.
 Calls `event.preventDefault()`.
 
 ```html
-<form hx-on="submit prevent => console.log(new FormData(this))"></form>
+<form hx-on="submit prevent -> console.log(new FormData(this))"></form>
 ```
 
 ### `stop`
@@ -196,7 +196,7 @@ Calls `event.preventDefault()`.
 Calls `event.stopPropagation()`. The event still reaches other listeners on the same element.
 
 ```html
-<button hx-on="click stop => this.textContent = 'clicked'"></button>
+<button hx-on="click stop -> this.textContent = 'clicked'"></button>
 ```
 
 ### `halt`
@@ -204,7 +204,7 @@ Calls `event.stopPropagation()`. The event still reaches other listeners on the 
 Shorthand for `prevent stop`.
 
 ```html
-<a hx-on="click halt => console.log(this.href)"></a>
+<a hx-on="click halt -> console.log(this.href)"></a>
 ```
 
 ### `consume`
@@ -212,7 +212,7 @@ Shorthand for `prevent stop`.
 Calls `event.stopPropagation()` *and* stops other listeners on the same element. Stricter than `stop`.
 
 ```html
-<button hx-on="click consume => this.textContent = 'consumed'"></button>
+<button hx-on="click consume -> this.textContent = 'consumed'"></button>
 ```
 
 ### `capture`
@@ -220,7 +220,7 @@ Calls `event.stopPropagation()` *and* stops other listeners on the same element.
 Listens during the capture phase (top-down) instead of the bubble phase (bottom-up).
 
 ```html
-<div hx-on="click capture => console.log('capture:', event.target.tagName)"></div>
+<div hx-on="click capture -> console.log('capture:', event.target.tagName)"></div>
 ```
 
 ### `passive`
@@ -228,7 +228,7 @@ Listens during the capture phase (top-down) instead of the bubble phase (bottom-
 Tells the browser the handler won't call `preventDefault()`, so the browser can scroll without waiting for your code to finish.
 
 ```html
-<div hx-on="scroll passive => this.dataset.scrollY = window.scrollY"></div>
+<div hx-on="scroll passive -> this.dataset.scrollY = window.scrollY"></div>
 ```
 
 ## Symbols
@@ -251,7 +251,7 @@ Any properties on `event.detail` are unpacked into scope, so you can write `mess
 
 ```html
 <!-- dispatched with detail: { message: 'hello' } -->
-<div hx-on="my-event => alert(message)">
+<div hx-on="my-event -> alert(message)">
 <!-- equivalent to: alert(event.detail.message) -->
 </div>
 ```
@@ -271,7 +271,7 @@ In the simple form (`hx-on:<event>`), `hx-on::` is shorthand for `hx-on:htmx:`
 * Works with any event, including [htmx events](/reference#events).
 * `hx-on` is _not_ inherited, but events on children still [bubble up](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#event_bubbling_and_capture) and trigger it.
 * Both forms (`hx-on:event` and `hx-on="..."`) can coexist on the same element.
-* Browsers lowercase attribute names, so `hx-on:myEvent` won't match a `myEvent` dispatch. Use the extended form: `hx-on="myEvent => ..."`.
+* Browsers lowercase attribute names, so `hx-on:myEvent` won't match a `myEvent` dispatch. Use the extended form: `hx-on="myEvent -> ..."`.
 
 ## See Also
 

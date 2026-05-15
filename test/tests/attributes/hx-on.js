@@ -140,7 +140,7 @@ describe('hx-on attribute', function() {
 
 })
 
-describe('hx-on="eventSpec => code" syntax', function() {
+describe('hx-on="eventSpec -> code" syntax', function() {
 
     beforeEach(() => { setupTest(this.currentTest); });
     afterEach(() => { cleanupTest(); });
@@ -148,28 +148,28 @@ describe('hx-on="eventSpec => code" syntax', function() {
     // --- basic ---
 
     it('basic: fires handler on event', function() {
-        let btn = createProcessedHTML('<button hx-on="click => window.foo = true">x</button>');
+        let btn = createProcessedHTML('<button hx-on="click -> window.foo = true">x</button>');
         btn.click();
         window.foo.should.equal(true);
         delete window.foo;
     });
 
     it('this refers to the element', function() {
-        let btn = createProcessedHTML('<button hx-on="click => window.foo = this">x</button>');
+        let btn = createProcessedHTML('<button hx-on="click -> window.foo = this">x</button>');
         btn.click();
         window.foo.should.equal(btn);
         delete window.foo;
     });
 
     it('event is available in handler', function() {
-        let btn = createProcessedHTML('<button hx-on="click => window.foo = event.type">x</button>');
+        let btn = createProcessedHTML('<button hx-on="click -> window.foo = event.type">x</button>');
         btn.click();
         window.foo.should.equal('click');
         delete window.foo;
     });
 
     it('event.detail keys are exposed as bare names', function() {
-        let btn = createProcessedHTML('<button hx-on="zap => window.foo = path">x</button>');
+        let btn = createProcessedHTML('<button hx-on="zap -> window.foo = path">x</button>');
         btn.dispatchEvent(new CustomEvent('zap', { detail: { path: 'hello' } }));
         window.foo.should.equal('hello');
         delete window.foo;
@@ -179,7 +179,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('once: removes listener after first fire', function() {
         window.fooCount = 0;
-        let btn = createProcessedHTML('<button hx-on="click once => window.fooCount++">x</button>');
+        let btn = createProcessedHTML('<button hx-on="click once -> window.fooCount++">x</button>');
         btn.click();
         btn.click();
         btn.click();
@@ -190,7 +190,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
     // --- prevent ---
 
     it('prevent: calls preventDefault before handler', function() {
-        let form = createProcessedHTML('<form hx-on="submit prevent => window.foo = event.defaultPrevented"><button type="submit">go</button></form>');
+        let form = createProcessedHTML('<form hx-on="submit prevent -> window.foo = event.defaultPrevented"><button type="submit">go</button></form>');
         let evt = new SubmitEvent('submit', { cancelable: true, bubbles: true });
         form.dispatchEvent(evt);
         evt.defaultPrevented.should.equal(true);
@@ -201,7 +201,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
     // --- stop ---
 
     it('stop: calls stopPropagation before handler', function() {
-        playground().innerHTML = '<div id="outer"><button hx-on="click stop => window.foo = \'inner\'">x</button></div>';
+        playground().innerHTML = '<div id="outer"><button hx-on="click stop -> window.foo = \'inner\'">x</button></div>';
         htmx.process(playground());
         let outerFired = false;
         playground().querySelector('#outer').addEventListener('click', () => outerFired = true);
@@ -214,7 +214,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
     // --- halt (shorthand for prevent + stop) ---
 
     it('halt: preventDefault and stopPropagation', function() {
-        playground().innerHTML = '<div id="outer"><button hx-on="click halt => window.foo = 1">x</button></div>';
+        playground().innerHTML = '<div id="outer"><button hx-on="click halt -> window.foo = 1">x</button></div>';
         htmx.process(playground());
         let outerFired = false;
         playground().querySelector('#outer').addEventListener('click', () => outerFired = true);
@@ -229,7 +229,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
     // --- prevent + stop ---
 
     it('prevent stop: equivalent to halt', function() {
-        playground().innerHTML = '<div id="outer"><button hx-on="click prevent stop => window.foo = 1">x</button></div>';
+        playground().innerHTML = '<div id="outer"><button hx-on="click prevent stop -> window.foo = 1">x</button></div>';
         htmx.process(playground());
         let outerFired = false;
         playground().querySelector('#outer').addEventListener('click', () => outerFired = true);
@@ -245,7 +245,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('delay: debounces handler', async function() {
         window.fooCount = 0;
-        playground().innerHTML = '<button hx-on="click delay:30ms => window.fooCount++">x</button>';
+        playground().innerHTML = '<button hx-on="click delay:30ms -> window.fooCount++">x</button>';
         htmx.process(playground());
         let btn = playground().querySelector('button');
         btn.click();
@@ -261,7 +261,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('throttle: throttles handler with trailing edge', async function() {
         window.fooCount = 0;
-        playground().innerHTML = '<button hx-on="click throttle:30ms => window.fooCount++">x</button>';
+        playground().innerHTML = '<button hx-on="click throttle:30ms -> window.fooCount++">x</button>';
         htmx.process(playground());
         let btn = playground().querySelector('button');
         btn.click(); // fires immediately (first)
@@ -277,7 +277,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('changed: only fires when value changes', function() {
         window.fooCount = 0;
-        playground().innerHTML = '<input value="a" hx-on="input changed => window.fooCount++">';
+        playground().innerHTML = '<input value="a" hx-on="input changed -> window.fooCount++">';
         htmx.process(playground());
         let inp = playground().querySelector('input');
         // First fire: value is "a", no previous — should fire
@@ -297,7 +297,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('from:document: listens on document', function() {
         window.foo = false;
-        let btn = createProcessedHTML('<button hx-on="custom-evt from:document => window.foo = true">x</button>');
+        let btn = createProcessedHTML('<button hx-on="custom-evt from:document -> window.foo = true">x</button>');
         document.dispatchEvent(new CustomEvent('custom-evt'));
         window.foo.should.equal(true);
         // Clean up document-level listener
@@ -309,7 +309,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('from:self: only fires when event.target is the element', function() {
         window.fooCount = 0;
-        playground().innerHTML = '<div hx-on="click from:self => window.fooCount++"><span>child</span></div>';
+        playground().innerHTML = '<div hx-on="click from:self -> window.fooCount++"><span>child</span></div>';
         htmx.process(playground());
         let div = playground().querySelector('div');
         playground().querySelector('span').click(); // bubbles, target=span → skip
@@ -323,7 +323,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('from:outside: fires only when event is outside the element', function() {
         window.outsideCount = 0;
-        playground().innerHTML = '<button hx-on="click from:outside => window.outsideCount++">x</button><div id="other"></div>';
+        playground().innerHTML = '<button hx-on="click from:outside -> window.outsideCount++">x</button><div id="other"></div>';
         htmx.process(playground());
         let btn = playground().querySelector('button');
         btn.click(); // inside → skip
@@ -339,7 +339,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('capture: fires during capture phase', function() {
         let order = [];
-        playground().innerHTML = '<div id="outer"><button hx-on="click capture => window.captureOrder.push(\'capture\')">x</button></div>';
+        playground().innerHTML = '<div id="outer"><button hx-on="click capture -> window.captureOrder.push(\'capture\')">x</button></div>';
         window.captureOrder = order;
         htmx.process(playground());
         // Add a bubbling listener on the same button for comparison
@@ -357,7 +357,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
         // passive handlers cannot call preventDefault without a browser warning,
         // so we just verify the handler fires (option is passed internally)
         window.foo = false;
-        let btn = createProcessedHTML('<button hx-on="click passive => window.foo = true">x</button>');
+        let btn = createProcessedHTML('<button hx-on="click passive -> window.foo = true">x</button>');
         btn.click();
         window.foo.should.equal(true);
         delete window.foo;
@@ -367,7 +367,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('[filter]: only fires when filter expression is truthy', function() {
         window.fooCount = 0;
-        let btn = createProcessedHTML('<button hx-on="keydown[key==\'Enter\'] => window.fooCount++">x</button>');
+        let btn = createProcessedHTML('<button hx-on="keydown[key==\'Enter\'] -> window.fooCount++">x</button>');
         btn.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
         window.fooCount.should.equal(0);
         btn.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
@@ -379,7 +379,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('changed + delay: debounced changed-only handler', async function() {
         window.fooCount = 0;
-        playground().innerHTML = '<input value="a" hx-on="input changed delay:30ms => window.fooCount++">';
+        playground().innerHTML = '<input value="a" hx-on="input changed delay:30ms -> window.fooCount++">';
         htmx.process(playground());
         let inp = playground().querySelector('input');
         // Rapid changes — should debounce
@@ -397,7 +397,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('once + from:self: only counts toward once when self matches', function() {
         window.fooCount = 0;
-        playground().innerHTML = '<div hx-on="click once from:self => window.fooCount++"><span>child</span></div>';
+        playground().innerHTML = '<div hx-on="click once from:self -> window.fooCount++"><span>child</span></div>';
         htmx.process(playground());
         let div = playground().querySelector('div');
         let span = playground().querySelector('span');
@@ -413,7 +413,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('once + from:outside: only counts toward once when outside matches', function() {
         window.outsideCount = 0;
-        playground().innerHTML = '<button hx-on="click once from:outside => window.outsideCount++">x</button><div id="other"></div>';
+        playground().innerHTML = '<button hx-on="click once from:outside -> window.outsideCount++">x</button><div id="other"></div>';
         htmx.process(playground());
         let btn = playground().querySelector('button');
         let other = playground().querySelector('#other');
@@ -433,7 +433,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
     it('multiple events: separated by semicolons', function() {
         window.focusFired = false;
         window.blurFired = false;
-        playground().innerHTML = '<input hx-on="focus => window.focusFired = true; blur => window.blurFired = true">';
+        playground().innerHTML = '<input hx-on="focus -> window.focusFired = true; blur -> window.blurFired = true">';
         htmx.process(playground());
         let inp = playground().querySelector('input');
         inp.dispatchEvent(new Event('focus'));
@@ -448,7 +448,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('multi-statement JS works with braces', function() {
         window.foo = 0;
-        let btn = createProcessedHTML('<button hx-on="click => { window.foo++; window.foo++ }">x</button>');
+        let btn = createProcessedHTML('<button hx-on="click -> { window.foo++; window.foo++ }">x</button>');
         btn.click();
         window.foo.should.equal(2);
         delete window.foo;
@@ -456,7 +456,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('semicolons inside nested braces are preserved', function() {
         window.foo = 0;
-        let btn = createProcessedHTML('<button hx-on="click => { if (true) { window.foo++; window.foo++ } }">x</button>');
+        let btn = createProcessedHTML('<button hx-on="click -> { if (true) { window.foo++; window.foo++ } }">x</button>');
         btn.click();
         window.foo.should.equal(2);
         delete window.foo;
@@ -464,7 +464,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('semicolons inside parens are preserved', function() {
         window.foo = 0;
-        let btn = createProcessedHTML('<button hx-on="click => (window.foo++, window.foo++)">x</button>');
+        let btn = createProcessedHTML('<button hx-on="click -> (window.foo++, window.foo++)">x</button>');
         btn.click();
         window.foo.should.equal(2);
         delete window.foo;
@@ -474,7 +474,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('comma: multiple events fire the same handler', function() {
         window.fooCount = 0;
-        let btn = createProcessedHTML('<button hx-on="click, customevt => window.fooCount++">x</button>');
+        let btn = createProcessedHTML('<button hx-on="click, customevt -> window.fooCount++">x</button>');
         btn.click();
         btn.dispatchEvent(new CustomEvent('customevt'));
         window.fooCount.should.equal(2);
@@ -484,7 +484,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
     // --- arrow functions in JS code ---
 
     it('arrow functions in JS code do not break parsing', function() {
-        let btn = createProcessedHTML('<button hx-on="click => window.foo = [1,2,3].filter(x => x > 1)">x</button>');
+        let btn = createProcessedHTML('<button hx-on="click -> window.foo = [1,2,3].filter(x => x > 1)">x</button>');
         btn.click();
         window.foo.should.deep.equal([2, 3]);
         delete window.foo;
@@ -495,7 +495,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
     it('multi-statement and multi-event combined', function() {
         window.clickCount = 0;
         window.blurFired = false;
-        playground().innerHTML = '<button hx-on="click => { window.clickCount++; window.clickCount++ }; blur => window.blurFired = true">x</button>';
+        playground().innerHTML = '<button hx-on="click -> { window.clickCount++; window.clickCount++ }; blur -> window.blurFired = true">x</button>';
         htmx.process(playground());
         let btn = playground().querySelector('button');
         btn.click();
@@ -510,7 +510,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('from:.selector: listens on matching elements', function() {
         window.foo = false;
-        playground().innerHTML = '<div id="source"></div><button hx-on="customevt from:#source => window.foo = true">x</button>';
+        playground().innerHTML = '<div id="source"></div><button hx-on="customevt from:#source -> window.foo = true">x</button>';
         htmx.process(playground());
         playground().querySelector('#source').dispatchEvent(new CustomEvent('customevt'));
         window.foo.should.equal(true);
@@ -522,7 +522,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
     it('hx-on: and hx-on= coexist on the same element', function() {
         window.colonFired = false;
         window.arrowFired = false;
-        let btn = createProcessedHTML('<button hx-on:click="window.colonFired = true" hx-on="customevt => window.arrowFired = true">x</button>');
+        let btn = createProcessedHTML('<button hx-on:click="window.colonFired = true" hx-on="customevt -> window.arrowFired = true">x</button>');
         btn.click();
         window.colonFired.should.equal(true);
         btn.dispatchEvent(new CustomEvent('customevt'));
@@ -535,20 +535,20 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('load: fires immediately when element is processed', function() {
         window.foo = false;
-        createProcessedHTML('<div hx-on="load => window.foo = true">x</div>');
+        createProcessedHTML('<div hx-on="load -> window.foo = true">x</div>');
         window.foo.should.equal(true);
         delete window.foo;
     });
 
     it('load: works with modifiers', function() {
         window.foo = false;
-        createProcessedHTML('<div hx-on="load once => window.foo = true">x</div>');
+        createProcessedHTML('<div hx-on="load once -> window.foo = true">x</div>');
         window.foo.should.equal(true);
         delete window.foo;
     });
 
     it('load: provides this and event', function() {
-        let div = createProcessedHTML('<div hx-on="load => { window.fooThis = this; window.fooType = event.type }">x</div>');
+        let div = createProcessedHTML('<div hx-on="load -> { window.fooThis = this; window.fooType = event.type }">x</div>');
         window.fooThis.should.equal(div);
         window.fooType.should.equal('load');
         delete window.fooThis;
@@ -557,7 +557,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
 
     it('every: fires repeatedly on interval', async function() {
         window.fooCount = 0;
-        playground().innerHTML = '<div hx-on="every 50ms => window.fooCount++">x</div>';
+        playground().innerHTML = '<div hx-on="every 50ms -> window.fooCount++">x</div>';
         htmx.process(playground());
         window.fooCount.should.equal(0);
         await htmx.timeout(130);
@@ -581,7 +581,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
             observerCallback = cb;
             return { observe: function() {}, disconnect: function() {} };
         };
-        let div = createProcessedHTML('<div hx-on="revealed => this.classList.add(\'visible\')">x</div>');
+        let div = createProcessedHTML('<div hx-on="revealed -> this.classList.add(\'visible\')">x</div>');
         div.classList.contains('visible').should.equal(false);
         observerCallback([{ isIntersecting: true }]);
         div.classList.contains('visible').should.equal(true);
@@ -595,7 +595,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
             observerCallback = cb;
             return { observe: function() {}, disconnect: function() { disconnected = true; } };
         };
-        let div = createProcessedHTML('<div hx-on="intersect once => this.classList.add(\'in-view\')">x</div>');
+        let div = createProcessedHTML('<div hx-on="intersect once -> this.classList.add(\'in-view\')">x</div>');
         div.classList.contains('in-view').should.equal(false);
         observerCallback([{ isIntersecting: true }]);
         div.classList.contains('in-view').should.equal(true);
@@ -603,7 +603,7 @@ describe('hx-on="eventSpec => code" syntax', function() {
     });
 
     it('every: updates text content on interval', async function() {
-        let div = createProcessedHTML('<div hx-on="every 50ms => this.textContent = \'updated\'">original</div>');
+        let div = createProcessedHTML('<div hx-on="every 50ms -> this.textContent = \'updated\'">original</div>');
         div.textContent.should.equal('original');
         await htmx.timeout(80);
         div.textContent.should.equal('updated');
