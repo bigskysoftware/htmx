@@ -79,7 +79,7 @@ var htmx = (() => {
             this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.__prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
             this.#internalAPI = {
                 attributeValue: this.__attributeValue.bind(this),
-                parseTriggerSpecs: this.__parseTriggerSpecs.bind(this),
+                parseEventSpecs: this.__parseEventSpecs.bind(this),
                 determineMethodAndAction: this.__determineMethodAndAction.bind(this),
                 createRequestContext: this.__createRequestContext.bind(this),
                 collectFormData: this.__collectFormData.bind(this),
@@ -92,7 +92,7 @@ var htmx = (() => {
                     if (syncFn) this.#Function = syncFn;
                     if (asyncFn) this.#AsyncFunction = asyncFn;
                 },
-                onTrigger: this.__onTrigger.bind(this),
+                onEvent: this.__onEvent.bind(this),
                 htmxProp: this.__htmxProp.bind(this),
                 triggerHtmxEvent: this.__trigger.bind(this),
                 executeJavaScript: this.__executeJavaScript.bind(this)
@@ -276,7 +276,7 @@ var htmx = (() => {
             return target;
         }
 
-        __parseTriggerSpecs(spec) {
+        __parseEventSpecs(spec) {
             // Split on commas that are NOT inside [...] — handles filters like click[myFunc(a,b)]
             return spec.split(/,(?![^\[]*\])/).flatMap(s => {
                 let [,name,rest] = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/) ?? [];
@@ -319,7 +319,7 @@ var htmx = (() => {
 
         __htmxProp(elt) {
             if (!elt._htmx) {
-                elt._htmx = { listeners: [], triggerSpecs: [] };
+                elt._htmx = { listeners: [], eventSpecs: [] };
                 elt.setAttribute('data-htmx-powered', 'true');
             }
             return elt._htmx;
@@ -690,13 +690,14 @@ var htmx = (() => {
                     elt.matches("input:not([type=button]):not([type=submit]),select,textarea") ? "change" :
                         "click";
             }
-            this.__onTrigger(elt, specString, initialHandler)
+            this.__onEvent(elt, specString, initialHandler)
         }
 
-        // Wire up trigger listeners with full modifier support (delay, throttle, once, etc.)
-        __onTrigger(elt, specString, handler) {
-            let specs = this.__parseTriggerSpecs(specString)
-            this.__htmxProp(elt).triggerSpecs.push(...specs)
+        // Wire up event listeners with full modifier support (once, prevent, stop,
+        // delay, throttle, changed, capture, passive, from, filter, etc.)
+        __onEvent(elt, specString, handler) {
+            let specs = this.__parseEventSpecs(specString)
+            this.__htmxProp(elt).eventSpecs.push(...specs)
 
             for (let spec of specs) {
                 spec.handler = handler
@@ -705,14 +706,29 @@ var htmx = (() => {
 
                 let [eventName, filter] = this.__extractFilter(spec.name);
 
-                // should be first so logic is called only when all other filters pass
                 if (spec.once) {
                     let original = spec.handler
                     spec.handler = (evt) => {
                         original(evt)
-                        for (let listenerInfo of spec.listeners) {
-                            listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler)
+                        for (let info of spec.listeners) {
+                            info.fromElt.removeEventListener(info.eventName, info.handler, info)
                         }
+                    }
+                }
+
+                if (spec.halt || spec.prevent) {
+                    let original = spec.handler
+                    spec.handler = (evt) => {
+                        evt.preventDefault()
+                        original(evt)
+                    }
+                }
+
+                if (spec.halt || spec.stop || spec.consume) {
+                    let original = spec.handler
+                    spec.handler = (evt) => {
+                        evt.stopPropagation()
+                        original(evt)
                     }
                 }
 
@@ -757,7 +773,6 @@ var htmx = (() => {
                             spec.throttleTimeout = setTimeout(() => {
                                 spec.throttled = false
                                 if (spec.throttledEvent) {
-                                    // implement trailing-edge throttling
                                     let throttledEvent = spec.throttledEvent;
                                     spec.throttledEvent = null
                                     spec.handler(throttledEvent);
@@ -787,14 +802,6 @@ var htmx = (() => {
                     }, this.parseInterval(interval));
                 }
 
-                if (spec.consume) {
-                    let original = spec.handler
-                    spec.handler = (evt) => {
-                        evt.stopPropagation()
-                        original(evt)
-                    }
-                }
-
                 if (filter) {
                     let original = spec.handler
                     spec.handler = (evt) => {
@@ -807,7 +814,18 @@ var htmx = (() => {
                 }
 
                 let fromElts = [elt];
-                if (spec.from) {
+                if (spec.from === 'self') {
+                    let original = spec.handler
+                    spec.handler = (evt) => {
+                        if (evt.target === elt) original(evt)
+                    }
+                } else if (spec.from === 'outside') {
+                    fromElts = [document];
+                    let original = spec.handler
+                    spec.handler = (evt) => {
+                        if (!elt.contains(evt.target)) original(evt)
+                    }
+                } else if (spec.from) {
                     fromElts = this.__findAllExt(elt, spec.from)
                 }
 
@@ -834,10 +852,11 @@ var htmx = (() => {
                 }
 
                 for (let fromElt of fromElts) {
-                    let listenerInfo = {fromElt, eventName, handler: spec.handler};
+                    let listenerInfo = {fromElt, eventName, handler: spec.handler,
+                        capture: !!spec.capture, passive: !!spec.passive};
                     elt._htmx.listeners.push(listenerInfo)
                     spec.listeners.push(listenerInfo)
-                    fromElt.addEventListener(eventName, spec.handler);
+                    fromElt.addEventListener(eventName, spec.handler, listenerInfo);
                 }
             }
         }
@@ -969,14 +988,14 @@ var htmx = (() => {
         __cleanup(elt) {
             if (elt._htmx) {
                 this.__trigger(elt, "htmx:before:cleanup")
-                for (let spec of elt._htmx.triggerSpecs || []) {
+                for (let spec of elt._htmx.eventSpecs || []) {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
                     if (spec.throttleTimeout) clearTimeout(spec.throttleTimeout);
                     spec.observer?.disconnect()
                 }
                 for (let listenerInfo of elt._htmx.listeners || []) {
-                    listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler);
+                    listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler, listenerInfo);
                 }
                 this.__trigger(elt, "htmx:after:cleanup")
             }
@@ -1651,36 +1670,49 @@ var htmx = (() => {
 
         // hx-on:<event> binds to <event> directly
         // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
-        // Modifiers (dot-separated): .prevent .stop .halt .once .self .outside .capture .passive .cc
         __handleHxOnAttributes(node) {
-            let searchStrings = this.__prefixes("hx-on:").map(p => this.__maybeAdjustMetaCharacter(p));
-            let mc = this.config.metaCharacter || ':';
+            let prefixes = this.__prefixes("hx-on:").map(p => this.__maybeAdjustMetaCharacter(p)); // e.g. ["hx-on:"]
+            let hxOnNames = this.__prefixes("hx-on"); // e.g. ["hx-on"]
+            let handler = (code) => async (evt) => {
+                try {
+                    await this.__executeJavaScript(node, { event: evt },
+                        `with(event?.detail||{}){${code}}`, false);
+                } catch (e) {
+                    if (typeof e !== 'symbol') this.__trigger(node, 'htmx:error', { error: e });
+                }
+            };
             for (let attr of node.getAttributeNames()) {
-                let searchString = searchStrings.find(s => attr.startsWith(s));
-                if (!searchString) continue;
-                let [evtName, ...mods] = attr.substring(searchString.length).split('.');
-                let has = m => mods.includes(m);
-                if (evtName.startsWith(mc)) evtName = 'htmx' + evtName;
-                if (has('cc')) evtName = evtName.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-                let code = node.getAttribute(attr);
-                let target = has('outside') ? document : node;
-                let opts = { capture: has('capture'), passive: has('passive') };
-                let halt = has('halt');
-                let handler = async (evt) => {
-                    if (has('self') && evt.target !== node) return;
-                    if (has('outside') && node.contains(evt.target)) return;
-                    if (halt || has('prevent')) evt.preventDefault();
-                    if (halt || has('stop')) evt.stopPropagation();
-                    if (has('once')) target.removeEventListener(evtName, handler, opts);
-                    try {
-                        await this.__executeJavaScript(node, { event: evt },
-                            `with(event?.detail||{}){${code}}`, false);
-                    } catch (e) {
-                        if (typeof e !== 'symbol') this.__trigger(node, 'htmx:error', { error: e });
+                // hx-on="click once -> doA(); blur -> doB()"
+                if (hxOnNames.includes(attr)) {
+                    let value = node.getAttribute(attr);
+                    // Split on ";" at depth 0 so braces protect multi-statement JS:
+                    //   "click -> { a(); b() }; blur -> c()"  →  ["click -> { a(); b() }", " blur -> c()"]
+                    let parts = [], current = '', depth = 0;
+                    for (let char of value) {
+                        if (char === '{' || char === '(') depth++;
+                        else if (char === '}' || char === ')') depth--;
+                        if (char === ';' && depth === 0) { parts.push(current); current = '' }
+                        else current += char;
                     }
-                };
-                target.addEventListener(evtName, handler, opts);
-                this.__htmxProp(node).listeners.push({fromElt: target, eventName: evtName, handler});
+                    parts.push(current);
+                    for (let part of parts) { // e.g. "click once -> doA()"
+                        let arrowIdx = part.indexOf('->');
+                        if (arrowIdx === -1) continue;
+                        this.__onEvent(node,
+                            part.substring(0, arrowIdx).trim(),  // "click once"
+                            handler(part.substring(arrowIdx + 2).trim())); // "doA()"
+                    }
+                    continue;
+                }
+                // hx-on:click="code" (simple, no modifiers)
+                let prefix = prefixes.find(p => attr.startsWith(p));
+                if (!prefix) continue;
+                let eventName = attr.substring(prefix.length);
+                // hx-on::before:request → eventName starts as ":before:request"
+                // expand the :: shorthand to "htmx:before:request"
+                let metaChar = this.config.metaCharacter || ':';
+                if (eventName.startsWith(metaChar)) eventName = 'htmx' + eventName;
+                this.__onEvent(node, eventName, handler(node.getAttribute(attr)));
             }
         }
 

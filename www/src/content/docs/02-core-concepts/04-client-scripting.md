@@ -184,3 +184,9 @@ htmx.onLoad((content) => {
 ```
 
 This will ensure that as new content is added to the DOM by htmx, sortable elements are properly initialized.
+
+## See Also
+
+- [`hx-on`](/reference/attributes/hx-on) (attribute)
+- [Hypermedia-Friendly Scripting](/essays/hypermedia-friendly-scripting) (essay)
+- [Locality of Behaviour](/essays/locality-of-behaviour) (essay)
