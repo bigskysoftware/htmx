@@ -131,9 +131,8 @@ const jsonLd = type === 'article' ? {
     <script is:inline src="/js/htmx.js"></script>
     <script is:inline src="/js/ext/hx-preload.js"></script>
 
-    <!-- _hyperscript (core + render/template plugin bundled to guarantee the render
-         command is registered before browserInit's processNode fires) -->
-    <script is:inline defer src="/js/_hyperscript_bundle.min.js"></script>
+    <!-- _hyperscript 0.9.91 (render/template built in) -->
+    <script is:inline defer src="/js/_hyperscript.min.js"></script>
 
     <!-- Re-execute inline scripts after morph navigation (hyperscript + pattern demos) -->
     <script is:inline defer src="/js/morph-afterswap.js"></script>

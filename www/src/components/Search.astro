@@ -2,6 +2,7 @@
     import '../assets/js/search-index.js';
 </script>
 
+
 <search-index id="global-search" hx-preserve="true"
               src="/search-index.json"
               highlight="<mark class='bg-blue-700 dark:bg-blue-300 text-white dark:text-neutral-900 font-bold px-0.5 box-decoration-clone'>$1</mark>"
@@ -15,22 +16,24 @@
             aria-modal="true"
             aria-label="Search documentation"
             _="on click
-                  if target is me then close() me end
+                  if target is me then close me end
                end
                on close
-                   reset() the #search-form
+                   reset #search-form
                    put '' into #search-results
-                   blur() the document.activeElement"
+                   blur document.activeElement"
     >
         <form id="search-form"
               role="search"
+              hx-boost="false"
               onsubmit="return false"
               class="not-has-placeholder-shown:absolute inset-0 mx-auto w-full max-w-3xl overflow-hidden rounded-xl bg-white dark:bg-neutral-920 border border-neutral-200 dark:border-neutral-850 flex flex-col min-h-0 shadow"
               _="on submit
                      halt the event
-                     get the first <.result:checked/>
+                     get the first <.result[aria-selected='true']/>
                      if it exists
-                         set window.location.href to it.value
+                         close #search-modal
+                         set window.location.href to it.href
                      end
                  end">
 
@@ -72,18 +75,18 @@
                                     });
                                 end
                                 set flatResults to it
-                                render #search-template with (results: flatResults, query: value)
+                                render #search-template with results: flatResults, query: value
                                 put it into #search-results
                                 add .has-results to #search-container
                                 wait 10ms
                                 if <.result/> exists
-                                    add @checked to the first <.result/>
+                                    take @aria-selected='true' from .result for the first .result
                                 end
                             end
                         end
                         on keydown[(key is 'ArrowDown' or key is 'ArrowUp') and .result exists]
                             halt the event
-                            get the first <.result:checked/> in #search-results
+                            get the first <.result[aria-selected='true']/> in #search-results
                             if it exists and it.isConnected
                                 if event.key is 'ArrowDown'
                                     set target to next .result from it
@@ -100,8 +103,8 @@
                                 end
                             end
                             if target exists
-                                set target.checked to true
-                                call target.setAttribute('checked', '')
+                                take @aria-selected='true' from .result for target
+                                add @data-keyboard-mode to #search-container
                                 call target.scrollIntoView({block: 'nearest'})
                             end
                         end"
@@ -113,7 +116,9 @@
             </header>
 
             <main id="search-container"
-                  class="peer h-[400px] sm:h-[500px] scroll-pt-10 overflow-y-auto flex-1 bg-neutral-25 dark:bg-neutral-920">
+                  class="peer h-[400px] sm:h-[500px] scroll-pt-10 overflow-y-auto flex-1 bg-neutral-25 dark:bg-neutral-920
+                         data-[keyboard-mode]:*:pointer-events-none"
+                  _="on mousemove remove @data-keyboard-mode">
 
                 <div class="hidden group-not-has-placeholder-shown/search:group-data-searched/search:group-data-empty/search:flex flex-col items-center justify-center h-full px-4 sm:px-6"
                      role="status" aria-live="polite">
@@ -125,40 +130,42 @@
                         term</p>
                 </div>
 
-                <template id="search-template" is:raw>
+                <script type="text/hyperscript-template" id="search-template" is:raw>
                     <ul class="space-y-2 p-3" role="listbox" aria-label="Search results">
-                        @repeat for item in results
-                        @if not item.parent
+                        #repeat for item in results
+                        #if not item.parent
                         <li class="relative group/result">
-                            <input type="radio"
-                                   name="search_result"
-                                   value="${item.url}"
+                            <a href="${item.url}"
                                    role="option"
                                    class="result peer absolute inset-0 z-10 w-full h-full opacity-0 cursor-pointer touch-manipulation"
-                                   _="on click set window.location.href to my.value end
-                                      on mousemove set my.checked to true then call me.setAttribute('checked', '') end">
+                                   _="on mousemove
+                                          take @aria-selected='true' from .result for me
+                                      end
+                                      on click
+                                          close #search-modal
+                                      end"></a>
 
                             <article
                                     class="flex items-center gap-4 px-3 py-3 rounded-lg border transition-all duration-100
                                            /* Default */
                                            border-transparent bg-transparent
 
-                                           /* Active / Checked State */
-                                           peer-checked:bg-neutral-50 dark:peer-checked:bg-neutral-800/50
+                                           /* Active / Selected State */
+                                           peer-aria-selected:bg-neutral-50 dark:peer-aria-selected:bg-neutral-800/50
 
-                                           peer-checked:border-neutral-300 dark:peer-checked:border-neutral-600
-                                           peer-checked:text-neutral-900 dark:peer-checked:text-neutral-100"
+                                           peer-aria-selected:border-neutral-300 dark:peer-aria-selected:border-neutral-600
+                                           peer-aria-selected:text-neutral-900 dark:peer-aria-selected:text-neutral-100"
                                     aria-hidden="true">
 
                                 <div class="flex flex-col flex-1 min-w-0">
                                     <nav class="flex items-center gap-2 mb-1 text-xs
                                                 text-neutral-500 dark:text-neutral-450
-                                                group-has-checked/result:text-neutral-600 dark:group-has-checked/result:text-neutral-400 transition-colors">
+                                                group-has-aria-selected/result:text-neutral-600 dark:group-has-aria-selected/result:text-neutral-400 transition-colors">
                                         <span>${item.collection}</span>
-                                        @if item.subcategory
+                                        #if item.subcategory
                                         <span class="text-neutral-300 dark:text-neutral-700 select-none">/</span>
                                         <span>${item.subcategory}</span>
-                                        @end
+                                        #end
                                     </nav>
 
                                     <div class="${item.titleFont} truncate leading-tight">
@@ -166,13 +173,13 @@
                                     </div>
                                 </div>
 
-                                <i class="icon-[uil--enter] text-xs text-neutral-400 opacity-0 -translate-x-2 transition-all duration-200 group-has-checked/result:opacity-100 group-has-checked/result:translate-x-0"></i>
+                                <i class="icon-[uil--enter] text-xs text-neutral-400 opacity-0 -translate-x-2 transition-all duration-200 group-has-aria-selected/result:opacity-100 group-has-aria-selected/result:translate-x-0"></i>
                             </article>
                         </li>
-                        @end
-                        @end
+                        #end
+                        #end
                     </ul>
-                </template>
+                </script>
 
                 <output id="search-results" role="region" aria-live="polite" aria-atomic="true"></output>
             </main>

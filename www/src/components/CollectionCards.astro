@@ -33,14 +33,14 @@ const getThumbnail = (path: string | undefined): string | null => {
 
             return (
                 <Card variant="lg" class:list={[
-                    "group relative isolate flex flex-col overflow-hidden transition",
+                    "group relative isolate flex flex-col overflow-hidden",
                     allSoon
                         ? "opacity-60 pointer-events-none"
                         : ["interact:border-neutral-300 dark:interact:border-neutral-600",
                            "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2",
                            "has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400"]
                 ]}>
-                    <div class="relative h-40 lg:h-44 w-full flex items-center justify-center transition">
+                    <div class="relative h-40 lg:h-44 w-full flex items-center justify-center">
                         {thumbnail ? (
                             <ThumbnailSvg svg={thumbnail} fitWidth={collection === 'reference'}/>
                         ) : (
@@ -49,11 +49,11 @@ const getThumbnail = (path: string | undefined): string | null => {
                     </div>
 
                     <div class:list={[
-                        "flex flex-col p-5 bg-white/50 dark:bg-neutral-920/50 border-t border-neutral-150 dark:border-neutral-900 transition",
+                        "flex flex-col p-5 bg-white/50 dark:bg-neutral-920/50 border-t border-neutral-150 dark:border-neutral-900",
                         !allSoon && "group-interact:bg-neutral-100 dark:group-interact:bg-neutral-875",
                         !allSoon && "group-interact:border-neutral-300 dark:group-interact:border-neutral-600"
                     ]}>
-                        <h2 class="font-bold text-lg text-neutral-800 dark:text-neutral-200 group-interact:text-black dark:group-interact:text-white transition mb-2">
+                        <h2 class="font-bold text-lg text-neutral-800 dark:text-neutral-200 group-interact:text-black dark:group-interact:text-white mb-2">
                             <a href={allSoon ? undefined : (item.allFiles[0]?.url ?? item.url)} class="outline-hidden">
                                 {item.frontmatter.title}
                                 {allSoon && (
@@ -63,7 +63,7 @@ const getThumbnail = (path: string | undefined): string | null => {
                             </a>
                         </h2>
                         {item.frontmatter.description && (
-                            <p class="text-sm text-neutral-800 dark:text-neutral-200 group-interact:text-neutral-950 dark:group-interact:text-neutral-50 leading-relaxed transition">
+                            <p class="text-sm text-neutral-800 dark:text-neutral-200 group-interact:text-neutral-950 dark:group-interact:text-neutral-50 leading-relaxed">
                                 {item.frontmatter.description}
                             </p>
                         )}

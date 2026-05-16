@@ -32,25 +32,25 @@ const isCurrent = (url?: string) => {
 
             <!-- Logo -->
             <a href="/" aria-label="HTMX Homepage"
-               class="group/logo text-xl sm:text-[1.375rem] lg:text-2xl whitespace-nowrap font-mono tracking-tight font-extrabold inline-flex items-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 shrink-0 sm:transition rounded-sm outline-hidden">
+               class="group/logo text-xl sm:text-[1.375rem] lg:text-2xl whitespace-nowrap font-mono tracking-tight font-extrabold inline-flex items-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 shrink-0 rounded-sm outline-hidden">
                 <span aria-hidden="true">&lt;</span>
-                <b class="relative text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition"
+                <b class="relative text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300"
                    aria-hidden="true">
-                    <span class="group-interact/logo:opacity-0 sm:transition">/</span>
-                    <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 sm:transition">-</span>
+                    <span class="group-interact/logo:opacity-0">/</span>
+                    <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100">-</span>
                 </b>
                 <span aria-hidden="true" class="relative">
-                    <span class="group-interact/logo:opacity-0 sm:transition">&gt;</span>
-                    <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 sm:transition">-</span>
+                    <span class="group-interact/logo:opacity-0">&gt;</span>
+                    <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100">-</span>
                 </span>
                 <span class="font-chicago ms-2 inline-block relative">
-                    <span class="group-interact/logo:opacity-0 sm:transition">
+                    <span class="group-interact/logo:opacity-0">
                         htm<b
-                            class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition">x</b>
+                            class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300">x</b>
                     </span>
-                    <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 group-interact/logo:underline sm:transition">
+                    <span class="absolute inset-0 opacity-0 group-interact/logo:opacity-100 group-interact/logo:underline">
                         hom<b
-                            class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300 sm:transition">e</b>
+                            class="text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300">e</b>
                     </span>
                 </span>
             </a>
@@ -59,14 +59,14 @@ const isCurrent = (url?: string) => {
             <div class="inline-flex items-center relative group/version">
                 <select
                         aria-label="Select htmx version"
-                        class="appearance-none bg-transparent pl-2 pr-5 py-1 text-xs font-chicago rounded-sm text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white cursor-pointer outline-hidden sm:transition border border-transparent interact:border-neutral-200 dark:interact:border-neutral-800 translate-y-0.5"
+                        class="appearance-none bg-transparent pl-2 pr-5 py-1 text-xs font-chicago rounded-sm text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white cursor-pointer outline-hidden border border-transparent interact:border-neutral-200 dark:interact:border-neutral-800 translate-y-0.5"
                         onchange="window.location.href = this.value"
                 >
                     <option value="/" selected>v4</option>
                     <option value="https://htmx.org">v2</option>
                     <option value="https://v1.htmx.org">v1</option>
                 </select>
-                <i class="icon-[mdi--chevron-down] absolute right-1 top-1/2 -translate-y-1/2 text-xs text-neutral-400 dark:text-neutral-500 group-hover/version:text-neutral-600 dark:group-hover/version:text-neutral-400 pointer-events-none sm:transition"
+                <i class="icon-[mdi--chevron-down] absolute right-1 top-1/2 -translate-y-1/2 text-xs text-neutral-400 dark:text-neutral-500 group-hover/version:text-neutral-600 dark:group-hover/version:text-neutral-400 pointer-events-none"
                    aria-hidden="true"></i>
             </div>
         </div>
@@ -81,7 +81,7 @@ const isCurrent = (url?: string) => {
                             <li>
                                 <a href={item.url} {...(item.description && { title: item.description })}
                                    aria-current={isCurrent(item.url) ? 'page' : undefined}
-                                   class="px-3 py-1 sm:transition interact:underline text-neutral-500 dark:text-neutral-450 interact:text-blue-700 dark:interact:text-blue-300 aria-[current=page]:text-neutral-800 dark:aria-[current=page]:text-neutral-200 aria-[current=page]:font-bold outline-hidden">
+                                   class="px-3 py-1 interact:underline text-neutral-500 dark:text-neutral-450 interact:text-blue-700 dark:interact:text-blue-300 aria-[current=page]:text-neutral-800 dark:aria-[current=page]:text-neutral-200 aria-[current=page]:font-bold outline-hidden">
                                     {item.name}
                                 </a>
                             </li>
@@ -97,7 +97,7 @@ const isCurrent = (url?: string) => {
     border border-neutral-200 dark:border-neutral-800 rounded-lg py-2 px-3 text-base font-sans text-neutral-400
     interact:bg-neutral-100 dark:interact:bg-neutral-800/50
     interact:border-neutral-400 dark:interact:border-neutral-600
-    outline-hidden sm:transition cursor-pointer"
+    outline-hidden cursor-pointer"
                             aria-label="Open Search"
                             _="on click
                                  showModal() from the first of <search-index > dialog/>
@@ -106,14 +106,14 @@ const isCurrent = (url?: string) => {
                                  halt the event
                                  trigger click
                                end">
-                        <i class="icon-[ic--baseline-search] size-5 text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition"
+                        <i class="icon-[ic--baseline-search] size-5 text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200"
                            aria-hidden="true"></i>
-                        <span class="text-sm mx-2 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition">Open
+                        <span class="text-sm mx-2 group-interact:text-neutral-600 dark:group-interact:text-neutral-200">Open
                             Search</span>
                         <kbd
                                 id="search-shortcut-hint"
                                 aria-hidden="true"
-                                class="ms-auto pe-1 font-chicago text-xs group-interact:text-neutral-600 dark:group-interact:text-neutral-200 sm:transition"
+                                class="ms-auto pe-1 font-chicago text-xs group-interact:text-neutral-600 dark:group-interact:text-neutral-200"
                                 _="init if navigator.platform.toLowerCase() contains 'mac' put '⌘ K' into me"
                         >Ctrl K</kbd>
                     </button>
@@ -126,8 +126,8 @@ const isCurrent = (url?: string) => {
                    title="Join the Discord community"
                    target="_blank"
                    rel="noopener noreferrer"
-                   class="flex px-3 py-2 group sm:transition">
-                    <i class="icon-[ic--baseline-discord] size-5.5 scale-[1.1] text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white sm:transition"
+                   class="flex px-3 py-2 group">
+                    <i class="icon-[ic--baseline-discord] size-5.5 scale-[1.1] text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white"
                        aria-hidden="true"></i>
                 </a>
                 <!-- Desktop: Github -->
@@ -136,8 +136,8 @@ const isCurrent = (url?: string) => {
                    title="View source code on GitHub"
                    target="_blank"
                    rel="noopener noreferrer"
-                   class="flex ml-3 px-3 py-2 group sm:transition">
-                    <i class="icon-[mdi--github] size-5.5 text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white sm:transition"
+                   class="flex ml-3 px-3 py-2 group">
+                    <i class="icon-[mdi--github] size-5.5 text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white"
                        aria-hidden="true"></i>
                 </a>
             </div>
@@ -172,7 +172,7 @@ const isCurrent = (url?: string) => {
 <!-- Mobile: Navigation -->
 <nav id="mobile-navigation"
      aria-label="Mobile Navigation"
-     class="lg:hidden z-50 opacity-0 top-(--header-height) fixed inset-0 h-screen bg-neutral-10 dark:bg-neutral-920 pointer-events-none select-none [html:has(#mobile-navigation-toggle:checked)_&]:opacity-100 [html:has(#mobile-navigation-toggle:checked)_&]:pointer-events-auto sm:transition duration-100 overflow-y-auto overscroll-contain">
+     class="lg:hidden z-50 opacity-0 top-(--header-height) fixed inset-0 h-screen bg-neutral-10 dark:bg-neutral-920 pointer-events-none select-none [html:has(#mobile-navigation-toggle:checked)_&]:opacity-100 [html:has(#mobile-navigation-toggle:checked)_&]:pointer-events-auto overflow-y-auto overscroll-contain">
     <div class="p-4 space-y-2">
         {navigationItems.map((item) => (
                 <FinderLink

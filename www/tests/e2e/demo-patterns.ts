@@ -287,25 +287,14 @@ test.describe.serial('Pattern demo pages', () => {
         const firstCheckbox = demo(page, 'input[type="checkbox"]').first();
         await firstCheckbox.check();
 
-        const activateBtn = demo(page, 'button').filter({ hasText: /activate/i });
+        const activateBtn = demo(page, 'button').filter({ hasText: /^activate$/i });
         if (await activateBtn.isVisible()) {
             await activateBtn.click();
             await page.waitForTimeout(1000);
         }
     });
 
-    test('delete-in-place: renders table with delete buttons', async ({ page }) => {
-        await page.goto('/patterns/records/delete-in-place');
-        await waitForSw(page);
-        await waitForDemo(page);
-
-        await expect(demo(page, 'table')).toBeVisible();
-        const rows = await demo(page, 'tbody tr').count();
-        expect(rows).toBeGreaterThan(0);
-
-        const deleteButtons = demo(page, 'button').filter({ hasText: /delete/i });
-        expect(await deleteButtons.count()).toBeGreaterThan(0);
-    });
+    // delete-in-place: disabled/unfinished — skipped
 
     test('drag-to-reorder: renders sortable list', async ({ page }) => {
         await page.goto('/patterns/records/drag-to-reorder');

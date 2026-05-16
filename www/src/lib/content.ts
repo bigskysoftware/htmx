@@ -199,15 +199,20 @@ export async function getFolder(path: string): Promise<ContentFolder> {
     );
 
     if (rootFullPath && !hasFolder) {
-        const rootMod = await loadModule(rootFullPath);
         const rootRelPath = rootFullPath.replace('/src/content/', '');
         const isHome = path === 'home';
+        let rootFrontmatter: Record<string, any> = {};
+        try {
+            const raw = readFileSync(join(process.cwd(), 'src', 'content', rootRelPath), 'utf-8');
+            const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+            if (match) rootFrontmatter = yaml.load(match[1]) as Record<string, any> ?? {};
+        } catch {}
         return {
             path: rootRelPath,
             folder: path,
             slug: '',
             url: isHome ? '/' : `/${path}`,
-            frontmatter: rootMod.frontmatter || {},
+            frontmatter: rootFrontmatter,
             files: [],
             folders: [],
             allFiles: [],
@@ -291,23 +296,29 @@ export async function getFolder(path: string): Promise<ContentFolder> {
             if (child) childFolders.push(child);
         }
 
-        // Load files
-        const files: ContentFile[] = await Promise.all(
-            directFilePaths.map(async (fullPath) => {
-                const mod = await loadModule(fullPath);
-                const relPath = fullPath.replace('/src/content/', '');
-                const folder = getFolderName(relPath);
-                const slug = cleanPath(relPath.replace(`${folder}/`, ''));
-                return {
-                    path: relPath,
-                    folder,
-                    slug,
-                    url: `/${folder}/${slug}`,
-                    frontmatter: mod.frontmatter || {},
-                    breadcrumbs: [...breadcrumbsWithHref, {label: mod.frontmatter?.title}]
-                };
-            })
-        );
+        // Load files — read frontmatter from disk to avoid triggering the Vite
+        // module runner during content sync (it closes before lazy imports resolve)
+        const files: ContentFile[] = directFilePaths.map((fullPath) => {
+            const relPath = fullPath.replace('/src/content/', '');
+            const folder = getFolderName(relPath);
+            const slug = cleanPath(relPath.replace(`${folder}/`, ''));
+
+            let frontmatter: Record<string, any> = {};
+            try {
+                const raw = readFileSync(join(process.cwd(), 'src', 'content', relPath), 'utf-8');
+                const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+                if (match) frontmatter = yaml.load(match[1]) as Record<string, any> ?? {};
+            } catch {}
+
+            return {
+                path: relPath,
+                folder,
+                slug,
+                url: `/${folder}/${slug}`,
+                frontmatter,
+                breadcrumbs: [...breadcrumbsWithHref, {label: frontmatter?.title}]
+            };
+        });
 
         // allFiles includes hidden/aggregates (for routing); files (sidebar) excludes both.
         const allFilesFlat = [...files.sort(sortContentFiles), ...childFolders.flatMap(f => f.allFiles)];
@@ -369,14 +380,18 @@ export async function getFile(path: string): Promise<ContentFile | null> {
         }
     }
 
-    // MD/MDX content files — load via lazy glob
+    // MD/MDX content files — read frontmatter from disk (avoids Vite module runner)
     const fullPath = `/src/content/${path}`;
     if (!allPaths.includes(fullPath)) return null;
 
-    const mod = await loadModule(fullPath);
-    if (!mod) return null;
-
-    const frontmatter = mod.frontmatter || {};
+    let frontmatter: Record<string, any> = {};
+    try {
+        const raw = readFileSync(join(process.cwd(), 'src', 'content', path), 'utf-8');
+        const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+        if (match) frontmatter = yaml.load(match[1]) as Record<string, any> ?? {};
+    } catch {
+        return null;
+    }
     const folder = getFolderName(path);
     const slug = cleanPath(path.replace(`${folder}/`, ''));
     const fileUrl = `/${folder}/${slug}`;

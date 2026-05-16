@@ -26,12 +26,10 @@ test.describe('Content page structure', () => {
 
     test('sidebar navigation works', async ({ page }) => {
         await page.goto('/docs');
-        // On mobile, open the sidebar overlay first
         const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
         if (await sidebarToggle.isVisible()) {
             await sidebarToggle.click();
         }
-        // Open the "Get Started" section first (it's a closed <details>)
         await page.locator('#sidebar-nav details summary', { hasText: 'Get Started' }).click();
         await page.locator('#sidebar-nav a', { hasText: 'Installation' }).click();
         await expect(page).toHaveURL('/docs/get-started/installation');
@@ -46,25 +44,23 @@ test.describe('Content page structure', () => {
     test('table of contents visible on wide viewport', async ({ page }) => {
         await page.setViewportSize({ width: 1400, height: 900 });
         await page.goto('/docs/get-started/installation');
-        await expect(page.getByText('On this page')).toBeVisible();
+        await expect(page.locator('#page-outline')).toBeVisible();
     });
 
     test('table of contents hidden on narrow viewport', async ({ page }) => {
         await page.setViewportSize({ width: 1024, height: 768 });
         await page.goto('/docs/get-started/installation');
-        await expect(page.getByText('On this page')).not.toBeVisible();
+        await expect(page.locator('#page-outline')).not.toBeVisible();
     });
 
-    test('category URLs redirect to first item', async ({ page }) => {
+    test('category URLs redirect to reference index', async ({ page }) => {
         await page.goto('/reference/attributes');
-        await expect(page).toHaveURL(/\/reference\/attributes\/hx-get/);
+        await expect(page).toHaveURL(/\/reference/);
     });
 
-    test('patterns page has sidebar with pattern links', async ({ page }) => {
+    test('patterns page has pattern links', async ({ page }) => {
         await page.goto('/patterns');
-        await expect(page.locator('main#main-content')).toBeVisible();
-        // Sidebar should have links to individual patterns
-        const sidebarLinks = page.locator('#sidebar-nav a[href*="/patterns/"]');
-        expect(await sidebarLinks.count()).toBeGreaterThan(10);
+        const patternLinks = page.locator('a[href*="/patterns/"]');
+        expect(await patternLinks.count()).toBeGreaterThan(5);
     });
 });

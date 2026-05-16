@@ -14,7 +14,7 @@ test.describe('Smoke tests', () => {
             page.on('pageerror', (err) => errors.push(err.message));
 
             await page.goto(path);
-            await expect(page.locator('main#main-content')).toBeVisible();
+            await expect(page.locator('main#content-main-content')).toBeVisible();
             expect(filterKnownErrors(errors)).toEqual([]);
         });
     }
@@ -24,7 +24,7 @@ test.describe('Smoke tests', () => {
             const errors: string[] = [];
             page.on('pageerror', (err) => errors.push(err.message));
 
-            await page.goto(path);
+            await page.goto(path, { waitUntil: 'domcontentloaded' });
             // Standalone pages don't use ContentLayout — just check page loaded
             await expect(page.locator('body')).toBeVisible();
             expect(filterKnownErrors(errors)).toEqual([]);
@@ -48,7 +48,7 @@ test.describe('Smoke tests', () => {
             page.on('pageerror', (err) => errors.push(err.message));
 
             await page.goto(path);
-            await expect(page.locator('main#main-content')).toBeVisible();
+            await expect(page.locator('main#content-main-content')).toBeVisible();
             await expect(page.locator('.prose')).toBeVisible();
             expect(filterKnownErrors(errors)).toEqual([]);
         });
