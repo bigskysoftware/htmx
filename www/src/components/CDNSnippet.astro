@@ -2,8 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const pkg = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../../package.json'), 'utf-8'));
-const CDN_URL = `https://cdn.jsdelivr.net/npm/htmx.org@${pkg.version}/dist/htmx.min.js`;
+const CDN_URL = `https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta3/dist/htmx.min.js`;
 ---
 
 <!-- CDN one-liner: click anywhere to copy full <script> tag -->
