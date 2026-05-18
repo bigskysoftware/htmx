@@ -4039,11 +4039,11 @@ var htmx = (function() {
 
   /**
    * @param {XMLHttpRequest} xhr
-   * @param {RegExp} regexp
+   * @param {string} name
    * @return {boolean}
    */
-  function hasHeader(xhr, regexp) {
-    return regexp.test(xhr.getAllResponseHeaders())
+  function hasHeader(xhr, name) {
+    return xhr.getResponseHeader(name) !== null
   }
 
   /**
@@ -4668,13 +4668,13 @@ var htmx = (function() {
     //= ==========================================
     let pathFromHeaders = null
     let typeFromHeaders = null
-    if (hasHeader(xhr, /HX-Push:/i)) {
+    if (hasHeader(xhr, 'HX-Push')) {
       pathFromHeaders = xhr.getResponseHeader('HX-Push')
       typeFromHeaders = 'push'
-    } else if (hasHeader(xhr, /HX-Push-Url:/i)) {
+    } else if (hasHeader(xhr, 'HX-Push-Url')) {
       pathFromHeaders = xhr.getResponseHeader('HX-Push-Url')
       typeFromHeaders = 'push'
-    } else if (hasHeader(xhr, /HX-Replace-Url:/i)) {
+    } else if (hasHeader(xhr, 'HX-Replace-Url')) {
       pathFromHeaders = xhr.getResponseHeader('HX-Replace-Url')
       typeFromHeaders = 'replace'
     }
@@ -4809,11 +4809,11 @@ var htmx = (function() {
 
     if (!triggerEvent(elt, 'htmx:beforeOnLoad', responseInfo)) return
 
-    if (hasHeader(xhr, /HX-Trigger:/i)) {
+    if (hasHeader(xhr, 'HX-Trigger')) {
       handleTriggerHeader(xhr, 'HX-Trigger', elt)
     }
 
-    if (hasHeader(xhr, /HX-Location:/i)) {
+    if (hasHeader(xhr, 'HX-Location')) {
       let redirectPath = xhr.getResponseHeader('HX-Location')
       /** @type {HtmxAjaxHelperContext&{path?:string}} */
       var redirectSwapSpec = {}
@@ -4828,9 +4828,9 @@ var htmx = (function() {
       return
     }
 
-    const shouldRefresh = hasHeader(xhr, /HX-Refresh:/i) && xhr.getResponseHeader('HX-Refresh') === 'true'
+    const shouldRefresh = hasHeader(xhr, 'HX-Refresh') && xhr.getResponseHeader('HX-Refresh') === 'true'
 
-    if (hasHeader(xhr, /HX-Redirect:/i)) {
+    if (hasHeader(xhr, 'HX-Redirect')) {
       responseInfo.keepIndicators = true
       htmx.location.href = xhr.getResponseHeader('HX-Redirect')
       shouldRefresh && htmx.location.reload()
@@ -4859,11 +4859,11 @@ var htmx = (function() {
     }
 
     // response headers override response handling config
-    if (hasHeader(xhr, /HX-Retarget:/i)) {
+    if (hasHeader(xhr, 'HX-Retarget')) {
       responseInfo.target = resolveRetarget(elt, xhr.getResponseHeader('HX-Retarget'))
     }
 
-    if (hasHeader(xhr, /HX-Reswap:/i)) {
+    if (hasHeader(xhr, 'HX-Reswap')) {
       swapOverride = xhr.getResponseHeader('HX-Reswap')
     }
 
@@ -4919,7 +4919,7 @@ var htmx = (function() {
         selectOverride = responseInfoSelect
       }
 
-      if (hasHeader(xhr, /HX-Reselect:/i)) {
+      if (hasHeader(xhr, 'HX-Reselect')) {
         selectOverride = xhr.getResponseHeader('HX-Reselect')
       }
 
@@ -4933,7 +4933,7 @@ var htmx = (function() {
         anchor: responseInfo.pathInfo.anchor,
         contextElement: elt,
         afterSwapCallback: function() {
-          if (hasHeader(xhr, /HX-Trigger-After-Swap:/i)) {
+          if (hasHeader(xhr, 'HX-Trigger-After-Swap')) {
             let finalElt = elt
             if (!bodyContains(elt)) {
               finalElt = getDocument().body
@@ -4942,7 +4942,7 @@ var htmx = (function() {
           }
         },
         afterSettleCallback: function() {
-          if (hasHeader(xhr, /HX-Trigger-After-Settle:/i)) {
+          if (hasHeader(xhr, 'HX-Trigger-After-Settle')) {
             let finalElt = elt
             if (!bodyContains(elt)) {
               finalElt = getDocument().body
