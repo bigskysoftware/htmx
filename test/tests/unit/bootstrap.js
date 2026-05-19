@@ -77,23 +77,23 @@ describe('bootstrap unit tests', function() {
         assert.equal(result, 'default');
     })
 
-    it("__parseEventSpecs parses simple event", function() {
-        const result = htmx.__parseEventSpecs('click');
+    it("__parseTriggerSpecs parses simple event", function() {
+        const result = htmx.__parseTriggerSpecs('click');
 
         assert.equal(result.length, 1);
         assert.equal(result[0].name, 'click');
     })
 
-    it("__parseEventSpecs parses event with option", function() {
-        const result = htmx.__parseEventSpecs('click delay:500');
+    it("__parseTriggerSpecs parses event with option", function() {
+        const result = htmx.__parseTriggerSpecs('click delay:500');
 
         assert.equal(result.length, 1);
         assert.equal(result[0].name, 'click');
         assert.equal(result[0].delay, '500');
     })
 
-    it("__parseEventSpecs parses event with multiple options", function() {
-        const result = htmx.__parseEventSpecs('click delay:500 throttle:100');
+    it("__parseTriggerSpecs parses event with multiple options", function() {
+        const result = htmx.__parseTriggerSpecs('click delay:500 throttle:100');
 
         assert.equal(result.length, 1);
         assert.equal(result[0].name, 'click');
@@ -101,8 +101,8 @@ describe('bootstrap unit tests', function() {
         assert.equal(result[0].throttle, '100');
     })
 
-    it("__parseEventSpecs parses event with boolean opts", function() {
-        const result = htmx.__parseEventSpecs('click once changed');
+    it("__parseTriggerSpecs parses event with boolean opts", function() {
+        const result = htmx.__parseTriggerSpecs('click once changed');
 
         assert.equal(result.length, 1);
         assert.equal(result[0].name, 'click');
@@ -110,8 +110,8 @@ describe('bootstrap unit tests', function() {
         assert.equal(result[0].changed, true);
     })
 
-    it("__parseEventSpecs parses event with options and boolean opts", function() {
-        const result = htmx.__parseEventSpecs('click delay:1s once changed');
+    it("__parseTriggerSpecs parses event with options and boolean opts", function() {
+        const result = htmx.__parseTriggerSpecs('click delay:1s once changed');
 
         assert.equal(result.length, 1);
         assert.equal(result[0].name, 'click');
@@ -120,16 +120,16 @@ describe('bootstrap unit tests', function() {
         assert.equal(result[0].changed, true);
     })
 
-    it("__parseEventSpecs parses multiple events", function() {
-        const result = htmx.__parseEventSpecs('click, submit');
+    it("__parseTriggerSpecs parses multiple events", function() {
+        const result = htmx.__parseTriggerSpecs('click, submit');
 
         assert.equal(result.length, 2);
         assert.equal(result[0].name, 'click');
         assert.equal(result[1].name, 'submit');
     })
 
-    it("__parseEventSpecs parses multiple events with options", function() {
-        const result = htmx.__parseEventSpecs('click delay:500, keyup changed');
+    it("__parseTriggerSpecs parses multiple events with options", function() {
+        const result = htmx.__parseTriggerSpecs('click delay:500, keyup changed');
 
         assert.equal(result.length, 2);
         assert.equal(result[0].name, 'click');
@@ -138,36 +138,36 @@ describe('bootstrap unit tests', function() {
         assert.equal(result[1].changed, true);
     })
 
-    it("__parseEventSpecs parses event filter", function() {
-        const result = htmx.__parseEventSpecs('click[ctrlKey]');
+    it("__parseTriggerSpecs parses event filter", function() {
+        const result = htmx.__parseTriggerSpecs('click[ctrlKey]');
 
         assert.equal(result.length, 1);
         assert.equal(result[0].name, 'click[ctrlKey]');
     })
 
-    it("__parseEventSpecs parses event filter with spaces", function() {
-        const result = htmx.__parseEventSpecs('click[target.value == "test"]');
+    it("__parseTriggerSpecs parses event filter with spaces", function() {
+        const result = htmx.__parseTriggerSpecs('click[target.value == "test"]');
 
         assert.equal(result.length, 1);
         assert.equal(result[0].name, 'click[target.value == "test"]');
     })
 
-    it("__parseEventSpecs parses event with from option", function() {
-        const result = htmx.__parseEventSpecs('click from:body');
+    it("__parseTriggerSpecs parses event with from option", function() {
+        const result = htmx.__parseTriggerSpecs('click from:body');
 
         assert.equal(result.length, 1);
         assert.equal(result[0].name, 'click');
         assert.equal(result[0].from, 'body');
     })
 
-    it("__parseEventSpecs throws on unterminated filter", function() {
+    it("__parseTriggerSpecs throws on unterminated filter", function() {
         assert.throws(() => {
-            htmx.__parseEventSpecs('click[ctrlKey');
+            htmx.__parseTriggerSpecs('click[ctrlKey');
         }, /unterminated/);
     })
 
-    it("__parseEventSpecs handles complex real-world spec", function() {
-        const result = htmx.__parseEventSpecs('keyup[target.value.length > 3] changed delay:500ms from:input');
+    it("__parseTriggerSpecs handles complex real-world spec", function() {
+        const result = htmx.__parseTriggerSpecs('keyup[target.value.length > 3] changed delay:500ms from:input');
 
         assert.equal(result.length, 1);
         assert.equal(result[0].name, 'keyup[target.value.length > 3]');
@@ -176,8 +176,8 @@ describe('bootstrap unit tests', function() {
         assert.equal(result[0].from, 'input');
     })
 
-    it("__parseEventSpecs handles complex real-world spec w string and preserves spaces in string", function() {
-        const result = htmx.__parseEventSpecs('keyup[target.value == "hello world"] changed delay:500ms from:input');
+    it("__parseTriggerSpecs handles complex real-world spec w string and preserves spaces in string", function() {
+        const result = htmx.__parseTriggerSpecs('keyup[target.value == "hello world"] changed delay:500ms from:input');
 
         assert.equal(result.length, 1);
         assert.equal(result[0].name, 'keyup[target.value == "hello world"]');

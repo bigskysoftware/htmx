@@ -79,7 +79,7 @@ var htmx = (() => {
             this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.__prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
             this.#internalAPI = {
                 attributeValue: this.__attributeValue.bind(this),
-                parseEventSpecs: this.__parseEventSpecs.bind(this),
+                parseTriggerSpecs: this.__parseTriggerSpecs.bind(this),
                 determineMethodAndAction: this.__determineMethodAndAction.bind(this),
                 createRequestContext: this.__createRequestContext.bind(this),
                 collectFormData: this.__collectFormData.bind(this),
@@ -92,7 +92,7 @@ var htmx = (() => {
                     if (syncFn) this.#Function = syncFn;
                     if (asyncFn) this.#AsyncFunction = asyncFn;
                 },
-                onEvent: this.__onEvent.bind(this),
+                onTrigger: this.__onTrigger.bind(this),
                 htmxProp: this.__htmxProp.bind(this),
                 triggerHtmxEvent: this.__trigger.bind(this),
                 executeJavaScript: this.__executeJavaScript.bind(this)
@@ -276,7 +276,7 @@ var htmx = (() => {
             return target;
         }
 
-        __parseEventSpecs(spec) {
+        __parseTriggerSpecs(spec) {
             // Split on commas that are NOT inside [...] — handles filters like click[myFunc(a,b)]
             return spec.split(/,(?![^\[]*\])/).flatMap(s => {
                 let [,name,rest] = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/) ?? [];
@@ -319,7 +319,7 @@ var htmx = (() => {
 
         __htmxProp(elt) {
             if (!elt._htmx) {
-                elt._htmx = { listeners: [], eventSpecs: [] };
+                elt._htmx = { listeners: [], triggerSpecs: [] };
                 elt.setAttribute('data-htmx-powered', 'true');
             }
             return elt._htmx;
@@ -690,172 +690,125 @@ var htmx = (() => {
                     elt.matches("input:not([type=button]):not([type=submit]),select,textarea") ? "change" :
                         "click";
             }
-            this.__onEvent(elt, specString, initialHandler)
+            this.__onTrigger(elt, specString, initialHandler)
         }
 
         // Wire up event listeners with full modifier support (once, prevent, stop,
         // delay, throttle, changed, capture, passive, from, filter, etc.)
-        __onEvent(elt, specString, handler) {
-            let specs = this.__parseEventSpecs(specString)
-            this.__htmxProp(elt).eventSpecs.push(...specs)
+        __onTrigger(elt, specString, handler) {
+            let specs = this.__parseTriggerSpecs(specString)
+            this.__htmxProp(elt).triggerSpecs.push(...specs)
 
             for (let spec of specs) {
-                spec.handler = handler
                 spec.listeners = []
-                spec.values = new WeakMap()
 
                 let [eventName, filter] = this.__extractFilter(spec.name);
 
-                if (spec.once) {
-                    let original = spec.handler
-                    spec.handler = (evt) => {
-                        original(evt)
-                        for (let info of spec.listeners) {
-                            info.fromElt.removeEventListener(info.eventName, info.handler, info)
+                // Resolve from: elements (self listens on elt but filters by event.target in guard)
+                let fromElts = [elt];
+                if (spec.from === 'outside') fromElts = [document];
+                else if (spec.from && spec.from !== 'self') fromElts = this.__findAllExt(elt, spec.from);
+
+                // Inner: runs after delay/throttle resolves
+                let inner = (evt) => {
+                    if (spec.halt || spec.prevent) evt.preventDefault();
+                    if (spec.halt || spec.stop || spec.consume) evt.stopPropagation();
+                    if (spec.once) {
+                        for (let info of spec.listeners) info.fromElt.removeEventListener(info.eventName, info.handler, info);
+                    }
+                    handler(evt);
+                };
+
+                // Wrap inner with delay/throttle if needed
+                let timed = inner;
+                if (spec.delay) {
+                    timed = evt => {
+                        clearTimeout(spec.timeout);
+                        spec.timeout = setTimeout(() => inner(evt), this.parseInterval(spec.delay));
+                    };
+                } else if (spec.throttle) {
+                    timed = evt => {
+                        if (spec.throttled) {
+                            spec.throttledEvent = evt;
+                        } else {
+                            spec.throttled = true;
+                            inner(evt);
+                            spec.throttleTimeout = setTimeout(() => {
+                                spec.throttled = false;
+                                if (spec.throttledEvent) {
+                                    let e = spec.throttledEvent;
+                                    spec.throttledEvent = null;
+                                    timed(e);
+                                }
+                            }, this.parseInterval(spec.throttle));
                         }
-                    }
+                    };
                 }
 
-                if (spec.halt || spec.prevent) {
-                    let original = spec.handler
-                    spec.handler = (evt) => {
-                        evt.preventDefault()
-                        original(evt)
+                // Guarded: pre-timing checks that determine if event should proceed
+                spec.handler = (evt) => {
+                    if (spec.from === 'self' && evt.target !== elt) return;
+                    if (spec.from === 'outside' && elt.contains(evt.target)) return;
+                    if (spec.target && !evt.target?.matches?.(spec.target)) return;
+                    if (spec.changed) {
+                        let values = spec.values ??= new WeakMap();
+                        let changed = false;
+                        for (let fromElt of fromElts) {
+                            if (values.get(fromElt) !== fromElt.value) {
+                                changed = true;
+                                values.set(fromElt, fromElt.value);
+                            }
+                        }
+                        if (!changed) return;
                     }
-                }
-
-                if (spec.halt || spec.stop || spec.consume) {
-                    let original = spec.handler
-                    spec.handler = (evt) => {
-                        evt.stopPropagation()
-                        original(evt)
+                    if (filter) {
+                        if (this.__shouldCancel(evt)) evt.preventDefault();
+                        let evtArgs = {}; for (let k in evt) evtArgs[k] = evt[k];
+                        if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)) return;
                     }
-                }
+                    timed(evt);
+                };
 
-                if (eventName === 'intersect' || eventName === "revealed") {
-                    let observerOptions = {}
-                    if (spec.root) observerOptions.root = this.__findOrWarn(elt, spec.root)
-                    if (spec.threshold) observerOptions.threshold = parseFloat(spec.threshold)
-                    let isRevealed = eventName === "revealed"
+                // Intersect/revealed: set up observer
+                if (eventName === 'intersect' || eventName === 'revealed') {
+                    let observerOptions = {rootMargin: spec.rootMargin};
+                    if (spec.root) observerOptions.root = this.__findOrWarn(elt, spec.root);
+                    if (spec.threshold) observerOptions.threshold = parseFloat(spec.threshold);
+                    let isRevealed = eventName === 'revealed';
                     spec.observer = new IntersectionObserver((entries) => {
                         for (let i = 0; i < entries.length; i++) {
-                            let entry = entries[i]
-                            if (entry.isIntersecting) {
-                                this.trigger(elt, 'intersect', {}, false)
-                                if (isRevealed) {
-                                    spec.observer.disconnect()
-                                }
+                            if (entries[i].isIntersecting) {
+                                this.trigger(elt, 'intersect', {}, false);
+                                if (isRevealed) spec.observer.disconnect();
                                 break;
                             }
                         }
-                    }, observerOptions)
-                    eventName = "intersect"
-                    spec.observer.observe(elt)
+                    }, observerOptions);
+                    eventName = 'intersect';
+                    spec.observer.observe(elt);
                 }
 
-                if (spec.delay) {
-                    let original = spec.handler
-                    spec.handler = evt => {
-                        clearTimeout(spec.timeout)
-                        spec.timeout = setTimeout(() => original(evt),
-                            this.parseInterval(spec.delay));
-                    }
-                }
-
-                if (spec.throttle) {
-                    let original = spec.handler
-                    spec.handler = evt => {
-                        if (spec.throttled) {
-                            spec.throttledEvent = evt
-                        } else {
-                            spec.throttled = true
-                            original(evt);
-                            spec.throttleTimeout = setTimeout(() => {
-                                spec.throttled = false
-                                if (spec.throttledEvent) {
-                                    let throttledEvent = spec.throttledEvent;
-                                    spec.throttledEvent = null
-                                    spec.handler(throttledEvent);
-                                }
-                            }, this.parseInterval(spec.throttle))
-                        }
-                    }
-                }
-
-                if (spec.target) {
-                    let original = spec.handler
-                    spec.handler = evt => {
-                        if (evt.target?.matches?.(spec.target)) {
-                            original(evt)
-                        }
-                    }
-                }
-
+                // Every: set up interval
                 if (eventName === "every") {
                     let interval = Object.keys(spec).find(k => k !== 'name');
                     spec.interval = setInterval(() => {
-                        if (elt.isConnected) {
-                            this.__trigger(elt, 'every', {}, false);
-                        } else {
-                            clearInterval(spec.interval)
-                        }
+                        if (elt.isConnected) this.__trigger(elt, 'every', {}, false);
+                        else clearInterval(spec.interval);
                     }, this.parseInterval(interval));
                 }
 
-                if (filter) {
-                    let original = spec.handler
-                    spec.handler = (evt) => {
-                        if (this.__shouldCancel(evt)) evt.preventDefault()
-                        let evtArgs = {}; for (let k in evt) evtArgs[k] = evt[k];
-                        if (this.__executeJavaScript(elt, evtArgs, filter, true, false)) {
-                            original(evt)
-                        }
-                    }
-                }
-
-                let fromElts = [elt];
-                if (spec.from === 'self') {
-                    let original = spec.handler
-                    spec.handler = (evt) => {
-                        if (evt.target === elt) original(evt)
-                    }
-                } else if (spec.from === 'outside') {
-                    fromElts = [document];
-                    let original = spec.handler
-                    spec.handler = (evt) => {
-                        if (!elt.contains(evt.target)) original(evt)
-                    }
-                } else if (spec.from) {
-                    fromElts = this.__findAllExt(elt, spec.from)
-                }
-
-                if (spec.changed) {
-                    let original = spec.handler
-                    spec.handler = (evt) => {
-                        let trigger = false
-                        for (let fromElt of fromElts) {
-                            if (spec.values.get(fromElt) !== fromElt.value) {
-                                trigger = true
-                                spec.values.set(fromElt, fromElt.value);
-                            }
-                        }
-                        if (trigger) {
-                            original(evt)
-                        }
-                    }
-                }
-
-                // load: fire handler directly (no listener needed)
+                // Load: fire immediately, no listener needed
                 if (eventName === 'load') {
-                    spec.handler(new CustomEvent('load'))
-                    continue
+                    spec.handler(new CustomEvent('load'));
+                    continue;
                 }
 
+                // Register listeners
                 for (let fromElt of fromElts) {
                     let listenerInfo = {fromElt, eventName, handler: spec.handler,
                         capture: !!spec.capture, passive: !!spec.passive};
-                    elt._htmx.listeners.push(listenerInfo)
-                    spec.listeners.push(listenerInfo)
+                    elt._htmx.listeners.push(listenerInfo);
+                    spec.listeners.push(listenerInfo);
                     fromElt.addEventListener(eventName, spec.handler, listenerInfo);
                 }
             }
@@ -988,7 +941,7 @@ var htmx = (() => {
         __cleanup(elt) {
             if (elt._htmx) {
                 this.__trigger(elt, "htmx:before:cleanup")
-                for (let spec of elt._htmx.eventSpecs || []) {
+                for (let spec of elt._htmx.triggerSpecs || []) {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
                     if (spec.throttleTimeout) clearTimeout(spec.throttleTimeout);
@@ -1671,8 +1624,8 @@ var htmx = (() => {
         // hx-on:<event> binds to <event> directly
         // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
         __handleHxOnAttributes(node) {
-            let prefixes = this.__prefixes("hx-on:").map(p => this.__maybeAdjustMetaCharacter(p)); // e.g. ["hx-on:"]
-            let hxOnNames = this.__prefixes("hx-on"); // e.g. ["hx-on"]
+            let hxOnNames = this.__prefixes("hx-on");
+            let mc = this.config.metaCharacter || ':';
             let handler = (code) => async (evt) => {
                 try {
                     await this.__executeJavaScript(node, { event: evt },
@@ -1682,37 +1635,23 @@ var htmx = (() => {
                 }
             };
             for (let attr of node.getAttributeNames()) {
+                let prefix = hxOnNames.find(p => attr.startsWith(p));
+                if (!prefix) continue;
+                let rest = attr.substring(prefix.length);
+                let value = node.getAttribute(attr);
                 // hx-on="click once -> doA(); blur -> doB()"
-                if (hxOnNames.includes(attr)) {
-                    let value = node.getAttribute(attr);
-                    // Split on ";" at depth 0 so braces protect multi-statement JS:
-                    //   "click -> { a(); b() }; blur -> c()"  →  ["click -> { a(); b() }", " blur -> c()"]
-                    let parts = [], current = '', depth = 0;
-                    for (let char of value) {
-                        if (char === '{' || char === '(') depth++;
-                        else if (char === '}' || char === ')') depth--;
-                        if (char === ';' && depth === 0) { parts.push(current); current = '' }
-                        else current += char;
-                    }
-                    parts.push(current);
-                    for (let part of parts) { // e.g. "click once -> doA()"
-                        let arrowIdx = part.indexOf('->');
-                        if (arrowIdx === -1) continue;
-                        this.__onEvent(node,
-                            part.substring(0, arrowIdx).trim(),  // "click once"
-                            handler(part.substring(arrowIdx + 2).trim())); // "doA()"
+                if (!rest) {
+                    for (let part of value.split(/;(?=[^;]*->)/)) {
+                        let idx = part.indexOf('->');
+                        if (idx !== -1) this.__onTrigger(node, part.substring(0, idx).trim(), handler(part.substring(idx + 2).trim()));
                     }
                     continue;
                 }
-                // hx-on:click="code" (simple, no modifiers)
-                let prefix = prefixes.find(p => attr.startsWith(p));
-                if (!prefix) continue;
-                let eventName = attr.substring(prefix.length);
-                // hx-on::before:request → eventName starts as ":before:request"
-                // expand the :: shorthand to "htmx:before:request"
-                let metaChar = this.config.metaCharacter || ':';
-                if (eventName.startsWith(metaChar)) eventName = 'htmx' + eventName;
-                this.__onEvent(node, eventName, handler(node.getAttribute(attr)));
+                // hx-on:click="code" or hx-on::before:request="code"
+                if (rest[0] !== mc) continue;
+                let eventName = rest.substring(1);
+                if (eventName.startsWith(mc)) eventName = 'htmx' + mc + eventName.substring(1);
+                this.__onTrigger(node, eventName, handler(value));
             }
         }
 
