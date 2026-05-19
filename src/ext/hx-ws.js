@@ -482,7 +482,7 @@
         if (!connectUrl) return;
 
         let specString = api.attributeValue(element, 'hx-trigger') || 'load';
-        api.onEvent(element, specString, () => {
+        api.onTrigger(element, specString, () => {
             if (element._htmx?.ws?.url) return;
             let connection = getOrCreateConnection(connectUrl, element);
             if (connection) {
@@ -505,7 +505,7 @@
                          'click';
         }
 
-        api.onEvent(element, specString, async (evt) => {
+        api.onTrigger(element, specString, async (evt) => {
             if (element.matches('form') && evt.type === 'submit') {
                 evt.preventDefault();
             }

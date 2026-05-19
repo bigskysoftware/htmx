@@ -75,11 +75,12 @@ _Note: `revealed` always observes the browser viewport. For scrollable container
 
 Fires when an element becomes visible in the viewport. 
 
-Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) and supports [`root`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root) and [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds) as modifiers.
+Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) and supports [`root`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root), [`rootMargin`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin), and [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds) as modifiers.
 
 ```html
 <div hx-trigger="intersect once" hx-get="...">...</div>
 <div hx-trigger="intersect root:#scroll-container" hx-get="...">...</div>
+<div hx-trigger="intersect rootMargin:100px" hx-get="...">...</div>
 <div hx-trigger="intersect threshold:0.5" hx-get="...">...</div>
 ```
 
@@ -176,9 +177,9 @@ Calls `event.preventDefault()`.
 <form hx-trigger="submit prevent" hx-post="...">...</form>
 ```
 
-### `stop`
+### `stop` / `consume`
 
-Calls `event.stopPropagation()`. The event still reaches other listeners on the same element.
+Calls `event.stopPropagation()`.
 
 ```html
 <button hx-trigger="click stop" hx-get="...">...</button>
@@ -190,14 +191,6 @@ Shorthand for `prevent stop`.
 
 ```html
 <a hx-trigger="click halt" hx-get="...">...</a>
-```
-
-### `consume`
-
-Calls `event.stopPropagation()` *and* stops other listeners on the same element. Stricter than `stop`.
-
-```html
-<button hx-trigger="click consume" hx-get="...">...</button>
 ```
 
 ### `capture`

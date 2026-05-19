@@ -8,7 +8,7 @@
         let preloadEvents = []
         let timeout = 5000;
         if (preloadSpec) {
-            let specs = api.parseEventSpecs(preloadSpec);
+            let specs = api.parseTriggerSpecs(preloadSpec);
             if (specs.length === 0) return;
             for (const spec of specs) {
                 preloadEvents.push(spec.name)

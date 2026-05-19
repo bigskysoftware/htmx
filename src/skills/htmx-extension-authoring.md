@@ -151,7 +151,7 @@ init: (internalAPI) => { api = internalAPI; },
 | Method | Description |
 |--------|-------------|
 | `api.attributeValue(elt, name, defaultVal, returnElt)` | Get attribute value with inheritance support |
-| `api.parseEventSpecs(spec)` | Parse event spec string into array of spec objects |
+| `api.parseTriggerSpecs(spec)` | Parse trigger spec string into array of spec objects |
 | `api.determineMethodAndAction(elt, evt)` | Get `{method, action}` for an element |
 | `api.createRequestContext(elt, evt)` | Create a full request context object |
 | `api.collectFormData(elt, form, submitter)` | Collect form data as FormData |
@@ -237,7 +237,7 @@ From `src/ext/hx-preload.js` -- prefetches requests on trigger events:
             let preloadSpec = api.attributeValue(elt, "hx-preload");
             if (!preloadSpec) return;
 
-            let specs = api.parseEventSpecs(preloadSpec);
+            let specs = api.parseTriggerSpecs(preloadSpec);
             let preloadListener = async (evt) => {
                 let {method} = api.determineMethodAndAction(elt, evt);
                 if (method !== 'GET') return;

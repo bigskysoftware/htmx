@@ -19,6 +19,14 @@ One event, one expression:
 <dialog hx-on:load="this.showModal()">
 ```
 
+For htmx events, use `::` as shorthand for `htmx:`:
+
+```html
+<!-- hx-on::before:request is shorthand for hx-on:htmx:before:request -->
+<button hx-get="/api" hx-on::before:request="showSpinner()">
+<button hx-get="/api" hx-on::after:request="hideSpinner()">
+```
+
 **Extended form**
 
 Builds on [`hx-trigger`](/reference/attributes/hx-trigger)'s grammar, adding `->` to wire events to JavaScript:
@@ -39,18 +47,17 @@ Builds on [`hx-trigger`](/reference/attributes/hx-trigger)'s grammar, adding `->
 <dialog hx-on="click from:self, closeDialog from:body -> this.close()">
 
 <!-- Run multiple statements -->
-<dialog hx-on="close -> { this.remove(); log('dialog removed') }">
+<dialog hx-on="close -> this.remove(); log('dialog removed')">
         
 <!-- Different code for different events -->
 <dialog hx-on="load -> this.showModal();
                click from:self, closeDialog from:body -> this.close();
-               close -> { this.remove(); log('removed') }">
+               close -> this.remove(); log('removed')">
 ```
 
 - `->` event(s) on the left, JavaScript code on the right
 - `,` multiple events, same code
-- `;` separate event -> code pairs
-- `{ }` multi-statement JavaScript
+- `;` separate event -> code pairs (only splits on the `;` immediately before a `->`, so semicolons in your JS are safe)
 
 ## Standard Events
 
@@ -101,10 +108,11 @@ _Note: `revealed` always observes the browser viewport. For scrollable container
 
 Fires when an element becomes visible in the viewport.
 
-Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) and supports [`root`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root) and [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds) as modifiers.
+Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) and supports [`root`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root), [`rootMargin`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin), and [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds) as modifiers.
 
 ```html
 <div hx-on="intersect once -> this.classList.add('in-view')">
+<div hx-on="intersect rootMargin:100px -> this.classList.add('near')">
 ```
 
 ### `every <time>`
@@ -191,9 +199,9 @@ Calls `event.preventDefault()`.
 <form hx-on="submit prevent -> console.log(new FormData(this))"></form>
 ```
 
-### `stop`
+### `stop` / `consume`
 
-Calls `event.stopPropagation()`. The event still reaches other listeners on the same element.
+Calls `event.stopPropagation()`.
 
 ```html
 <button hx-on="click stop -> this.textContent = 'clicked'"></button>
@@ -205,14 +213,6 @@ Shorthand for `prevent stop`.
 
 ```html
 <a hx-on="click halt -> console.log(this.href)"></a>
-```
-
-### `consume`
-
-Calls `event.stopPropagation()` *and* stops other listeners on the same element. Stricter than `stop`.
-
-```html
-<button hx-on="click consume -> this.textContent = 'consumed'"></button>
 ```
 
 ### `capture`
@@ -256,23 +256,12 @@ Any properties on `event.detail` are unpacked into scope, so you can write `mess
 </div>
 ```
 
-## `::` shorthand
-
-In the simple form (`hx-on:<event>`), `hx-on::` is shorthand for `hx-on:htmx:`
-
-```html
-<!-- These are equivalent -->
-<button hx-on:htmx:after:request="hideSpinner()">
-<button hx-on::after:request="hideSpinner()">
-```
-
 ## Notes
 
 * Works with any event, including [htmx events](/reference#events).
 * `hx-on` is _not_ inherited, but events on children still [bubble up](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#event_bubbling_and_capture) and trigger it.
 * Both forms (`hx-on:event` and `hx-on="..."`) can coexist on the same element.
 * Browsers lowercase attribute names, so `hx-on:myEvent` won't match a `myEvent` dispatch. Use the extended form: `hx-on="myEvent -> ..."`.
-
 ## See Also
 
 - [`hx-trigger`](/reference/attributes/hx-trigger) (attribute)
