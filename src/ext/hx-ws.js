@@ -340,6 +340,16 @@
 
         let normalizedUrl = normalizeWebSocketUrl(url);
         let connection = connections.get(normalizedUrl);
+
+        // Wait for socket to open if still connecting
+        if (connection && connection.socket && connection.socket.readyState === WebSocket.CONNECTING) {
+            await new Promise(resolve => {
+                connection.socket.addEventListener('open', resolve, { once: true });
+                connection.socket.addEventListener('close', resolve, { once: true });
+                connection.socket.addEventListener('error', resolve, { once: true });
+            });
+        }
+
         if (!connection || !connection.socket || connection.socket.readyState !== WebSocket.OPEN) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error: 'Connection not open' });
             return;
