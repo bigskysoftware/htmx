@@ -2,12 +2,12 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>hx-nonce + Alpine CSP test</title>
-  <meta name="htmx-config" content='extensions:"hx-nonce,hx-alpine-compat",safeEval:true'>
+  <title>hx-csp + Alpine CSP test</title>
+  <meta name="htmx-config" content='extensions:"hx-csp,hx-alpine-compat",safeEval:true'>
   <!-- Alpine CSP build — no unsafe-eval required -->
   <script defer nonce="__NONCE__" src="https://cdn.jsdelivr.net/npm/@alpinejs/csp@3.x.x/dist/cdn.min.js"></script>
   <script nonce="__NONCE__" src="/htmx.js"></script>
-  <script nonce="__NONCE__" src="/ext/hx-nonce.js"></script>
+  <script nonce="__NONCE__" src="/ext/hx-csp.js"></script>
   <script nonce="__NONCE__" src="/ext/hx-alpine-compat.js"></script>
   <style nonce="__NONCE__">
     body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; }
@@ -22,7 +22,7 @@
 </head>
 <body>
 
-<h1>hx-nonce + Alpine CSP build test</h1>
+<h1>hx-csp + Alpine CSP build test</h1>
 
 <div class="modes">
   <a href="/alpine?csp=alpine-csp">alpine-csp</a>

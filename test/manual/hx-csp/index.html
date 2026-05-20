@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>hx-nonce CSP test</title>
-  <meta name="htmx-config" content='extensions:"hx-nonce",safeEval:true'>
+  <title>hx-csp CSP test</title>
+  <meta name="htmx-config" content='extensions:"hx-csp",safeEval:true'>
   <script nonce="__NONCE__" src="/htmx.js"></script>
-  <script nonce="__NONCE__" src="/ext/hx-nonce.js"></script>
+  <script nonce="__NONCE__" src="/ext/hx-csp.js"></script>
   <style nonce="__NONCE__">
     body { font-family: sans-serif; max-width: 700px; margin: 2rem auto; }
     .modes { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
@@ -19,7 +19,7 @@
 </head>
 <body>
 
-<h1>hx-nonce + Trusted Types CSP test</h1>
+<h1>hx-csp + Trusted Types CSP test</h1>
 
 <div class="modes">
   <a href="/?csp=permissive">permissive</a>
@@ -81,7 +81,7 @@
   <h2>3. Script tag execution in swapped responses</h2>
   <p>Tests whether scripts in partial responses execute based on their nonce.</p>
 
-  <p><strong>With nonce</strong> — script carries the response nonce, rewritten to page nonce by hx-nonce. Should execute under all modes.</p>
+  <p><strong>With nonce</strong> — script carries the response nonce, rewritten to page nonce by hx-csp. Should execute under all modes.</p>
   <button hx-get="/script-with-nonce" hx-target="#script-result">Swap in nonced script</button>
 
   <p><strong>Without nonce</strong> — script has no nonce. Should execute in permissive, blocked by CSP in all nonce modes.</p>
@@ -93,7 +93,7 @@
 <!-- 4. Blocked elements (should never fire a request) -->
 <section>
   <h2>4. Blocked elements (should never fire a request)</h2>
-  <p>Both buttons should be stripped by hx-nonce and fire htmx:security:strip.</p>
+  <p>Both buttons should be stripped by hx-csp and fire htmx:security:strip.</p>
   <button hx-get="/partial" hx-target="#unnonced-result" hx-nonce="INVALID">
     Wrong nonce (mismatch)
   </button>

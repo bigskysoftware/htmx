@@ -160,18 +160,21 @@
         htmx_before_on_init: checkNonce,
 
         // Rewrites response nonces to pageNonce in raw HTML before fragment parsing.
-        // Same-origin only — promoting a cross-origin nonce would trust untrusted content.
+        // Always scrubs stolen pageNonce. Only promotes response nonce for verified same-origin.
         htmx_after_request: (elt, detail) => {
             if (!pageNonce) return false;
             let ctx = detail.ctx;
-            let responseURL = ctx?.response?.raw?.url;
-            if (responseURL) {
-                try { if (new URL(responseURL).origin !== location.origin) return; }
-                catch (_) { return; }
-            }
-            // Scrub any pre-existing pageNonce from response — the server cannot know the
-            // page nonce, so its presence in a response indicates a stolen-nonce injection attempt.
+
+            // Always scrub stolen pageNonce from any response — the server cannot know the
+            // page nonce, so its presence indicates a stolen-nonce injection attempt.
             ctx.text = rewriteNoncesInText(ctx.text, pageNonce, '');
+
+            // Only promote response nonce for verified same-origin responses
+            let responseURL = ctx?.response?.raw?.url;
+            if (!responseURL) return;  // can't verify origin — scrub only, no promotion
+            try { if (new URL(responseURL).origin !== location.origin) return; }
+            catch (_) { return; }
+
             let responseNonce = extractNonceFromCSP(ctx?.response?.headers?.get('Content-Security-Policy'))
                              ?? extractNonceFromMetaTag(ctx?.text);
             if (responseNonce && responseNonce !== pageNonce) {

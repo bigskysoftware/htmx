@@ -1,8 +1,8 @@
 /**
- * hx-nonce + Trusted Types CSP test server
+ * hx-csp + Trusted Types CSP test server
  *
  * Usage:
- *   node test/manual/hx-nonce/nonce-server.js
+ *   node test/manual/hx-csp/csp-server.js
  *
  * Modes (?csp= query param or csp-mode cookie):
  *
@@ -25,7 +25,7 @@ const crypto = require('crypto');
 
 const ROOT = __dirname;
 const HTMX_SRC       = path.join(__dirname, '..', '..', '..', 'src', 'htmx.js');
-const HX_NONCE_SRC   = path.join(__dirname, '..', '..', '..', 'src', 'ext', 'hx-nonce.js');
+const HX_CSP_SRC     = path.join(__dirname, '..', '..', '..', 'src', 'ext', 'hx-csp.js');
 const HX_ALPINE_SRC  = path.join(__dirname, '..', '..', '..', 'src', 'ext', 'hx-alpine-compat.js');
 
 function makeNonce() {
@@ -90,9 +90,9 @@ http.createServer((req, res) => {
         res.end(content);
         return;
     }
-    if (pathname === '/ext/hx-nonce.js') {
-        const content = readFile(HX_NONCE_SRC);
-        if (!content) { res.writeHead(404); res.end('hx-nonce.js not found'); return; }
+    if (pathname === '/ext/hx-csp.js') {
+        const content = readFile(HX_CSP_SRC);
+        if (!content) { res.writeHead(404); res.end('hx-csp.js not found'); return; }
         res.writeHead(200, { 'Content-Type': 'application/javascript' });
         res.end(content);
         return;
@@ -171,7 +171,7 @@ http.createServer((req, res) => {
         if (!template) { res.writeHead(404); res.end('index.html not found'); return; }
         let html = stampNonce(template, nonce);
         if (mode === 'nonce-no-eval-no-safeeval') {
-            html = html.replace('extensions:"hx-nonce",safeEval:true', 'extensions:"hx-nonce"');
+            html = html.replace('extensions:"hx-csp",safeEval:true', 'extensions:"hx-csp"');
         }
         res.writeHead(200, pageHeaders);
         res.end(html);
@@ -182,7 +182,7 @@ http.createServer((req, res) => {
     res.end('Not found');
 
 }).listen(3002, () => {
-    console.log('hx-nonce CSP test server: http://localhost:3002\n');
+    console.log('hx-csp CSP test server: http://localhost:3002\n');
     console.log('  permissive                 http://localhost:3002/?csp=permissive');
     console.log('  nonce                      http://localhost:3002/?csp=nonce');
     console.log('  nonce-no-eval              http://localhost:3002/?csp=nonce-no-eval');
