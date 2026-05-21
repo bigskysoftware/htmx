@@ -5,7 +5,7 @@ import path from 'node:path';
 // Auto-calculate bundle size from actual dist file
 const distPath = path.resolve(import.meta.dirname, '../../../dist/htmx.min.js.br');
 const stats = fs.statSync(distPath);
-const bundleSize = `~${Math.round(stats.size / 1024)}k`;
+const bundleSize = `~${Math.floor(stats.size / 1024)}k`;
 
 // Auto-calculate extension count
 const extensionDocs = import.meta.glob('../content/docs/06-extensions/*.md', { eager: true }) as Record<string, any>;
