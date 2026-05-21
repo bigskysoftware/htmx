@@ -1323,11 +1323,10 @@ var htmx = (() => {
                     }
                 } else if (swapStyle === 'outerSync') {
                     this.__copyAttributes(target, fragment.firstElementChild);
-                    for (const child of target.children) {
-                        this.__cleanup(child)
-                    }
+                    this.__cleanup(target);
+                    delete target._htmx;
                     target.replaceChildren(...fragment.firstElementChild.childNodes);
-                    newContent = [...target.childNodes];
+                    newContent = [target];
                 } else if (swapStyle === 'innerMorph') {
                     this.__morph(target, fragment, true);
                     newContent = [...target.childNodes];
