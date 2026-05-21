@@ -272,6 +272,50 @@ describe('full-page response strip auto-upgrade', function() {
     });
 });
 
+describe('outerSync processes inserted nodes correctly', function() {
+
+    beforeEach(() => { setupTest(this.currentTest); });
+    afterEach(() => { cleanupTest(); });
+
+    it('processes hx-trigger="load" elements after outerSync swap (issue #3807)', async function() {
+        // Simulate the history restore scenario: outerSync into a target with a full-page response
+        // containing an element with hx-trigger="load". The load trigger must fire on the
+        // live DOM node, not on the detached <body> fragment.
+        mockResponse('GET', '/load-target', 'loaded by hx-trigger="load"');
+
+        let target = createProcessedHTML('<div id="sync-target"><p>old content</p></div>');
+
+        await htmx.swap({
+            target: '#sync-target',
+            swap: 'outerSync',
+            text: '<html><body><div id="sync-target"><span id="load-elt" hx-get="/load-target" hx-trigger="load" hx-swap="innerHTML">loading...</span></div></body></html>',
+            sourceElement: target
+        });
+
+        // The load trigger should have fired and issued a request
+        await forRequest();
+
+        let elt = document.getElementById('load-elt');
+        elt.should.not.equal(null);
+        elt.textContent.should.equal('loaded by hx-trigger="load"');
+    });
+
+    it('initializes htmx attributes on nodes inserted via outerSync', async function() {
+        let target = createProcessedHTML('<div id="sync-target"><p>old</p></div>');
+
+        await htmx.swap({
+            target: '#sync-target',
+            swap: 'outerSync',
+            text: '<html><body><div id="sync-target"><button id="btn" hx-get="/test" hx-swap="innerHTML">click</button></div></body></html>',
+            sourceElement: target
+        });
+
+        let btn = document.getElementById('btn');
+        btn.should.not.equal(null);
+        assert.isNotNull(btn._htmx, 'button should be initialized by htmx');
+    });
+});
+
 describe('hx-history-elt scopes history restore', function() {
 
     beforeEach(() => { setupTest(this.currentTest); });
