@@ -1355,6 +1355,7 @@ var htmx = (() => {
                         this.__cleanup(child)
                     }
                     target.replaceChildren(...fragment.firstElementChild.childNodes);
+                    newContent = [...target.childNodes];
                 } else if (swapStyle === 'innerMorph') {
                     this.__morph(target, fragment, true);
                     newContent = [...target.childNodes];
