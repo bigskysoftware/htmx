@@ -1,6 +1,13 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
 import pkg from '../../../package.json';
+
 const CDN_URL = `https://cdn.jsdelivr.net/npm/htmx.org@${pkg.version}/dist/htmx.min.js`;
+
+const distPath = path.resolve(import.meta.dirname, '../../../dist/htmx.min.js');
+const INTEGRITY = 'sha384-' + crypto.createHash('sha384').update(fs.readFileSync(distPath)).digest('base64');
 ---
 
 <!-- CDN one-liner: click anywhere to copy full <script> tag -->
@@ -16,9 +23,12 @@ const CDN_URL = `https://cdn.jsdelivr.net/npm/htmx.org@${pkg.version}/dist/htmx.
            before:hidden"
     title="Copy CDN script tag"
     data-cdn-url={CDN_URL}
+    data-integrity={INTEGRITY}
     _={`on click
          set url to my @data-cdn-url
-         writeText('<script src="' + url + '"></script>') on navigator.clipboard
+         set integrity to my @data-integrity
+         set tag to '<script src="' + url + '" integrity="' + integrity + '" crossorigin="anonymous"></script>'
+         writeText(tag) on navigator.clipboard
          add .icon-\\[radix-icons--check\\] to first <i/> in me
          remove .icon-\\[radix-icons--copy\\] from first <i/> in me
          set @title of me to 'Copied!'
@@ -32,7 +42,9 @@ const CDN_URL = `https://cdn.jsdelivr.net/npm/htmx.org@${pkg.version}/dist/htmx.
      on copy(event)
          halt the event
          set url to my @data-cdn-url
-         call event.clipboardData.setData('text/plain', '<script src="' + url + '"></script>')`}
+         set integrity to my @data-integrity
+         set tag to '<script src="' + url + '" integrity="' + integrity + '" crossorigin="anonymous"></script>'
+         call event.clipboardData.setData('text/plain', tag)`}
 >
     <!-- Script tag with truncated URL display -->
     <code class="font-mono text-[0.625rem] sm:text-xs leading-5 whitespace-nowrap"
