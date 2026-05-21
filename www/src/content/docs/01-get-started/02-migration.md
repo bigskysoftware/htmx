@@ -129,6 +129,19 @@ In htmx 4, the main content swaps first. OOB and [`<hx-partial>`](/docs/core-con
 This matters if an OOB swap creates or modifies DOM that the main swap depends on. If your app relies on that ordering,
 restructure so each swap is independent.
 
+### `hx-trigger` `queue` modifier removed
+
+The `queue` modifier on [`hx-trigger`](/reference/attributes/hx-trigger) (e.g. `hx-trigger="click queue:all"`) no longer
+works. Request queuing is now controlled exclusively by [`hx-sync`](/reference/attributes/hx-sync).
+
+```html
+<!-- htmx 2 -->
+<div hx-trigger="click queue:all" hx-get="/test">...</div>
+
+<!-- htmx 4: use hx-sync instead -->
+<div hx-trigger="click" hx-get="/test" hx-sync="this:queue all">...</div>
+```
+
 ### 60-second timeout
 
 htmx 2 had no timeout (`0`). htmx 4 sets [`defaultTimeout`](/reference/config/htmx-config-defaultTimeout) to `60000`.
