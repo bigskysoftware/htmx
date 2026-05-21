@@ -12,25 +12,25 @@ htmx is a single JavaScript file with no dependencies. No build step is required
 Add this in your `<head>` tag:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4" integrity="sha384-bq4nTap5u8w4XlVP8JHkDioQVZBI5wUx5PxNwlbCq27H5QJ+q0CSeJcTYU+PLdCp" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4" integrity="sha384-QSU8eEPO3hB2t20eEzufWO6ScLxBF2S8u7QHNNLRL4IET5zcvx444MHG6+fDzzTT" crossorigin="anonymous"></script>
 ```
 
 ### Unminified
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.js" integrity="sha384-Vnl21sHZ3FMn5TK6RULLbuXxCg4dsI8fUC5hZBVIj4uZWI7+pGZg5svM+Dt17DAV" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.js" integrity="sha384-G5PQhA8wo5Dkem9VtU3izHNsalIpaptQKXnc/cj8QRc9XeJX2KTO3Pr2KS2A6Eif" crossorigin="anonymous"></script>
 ```
 
 ### ES Module
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.esm.min.js" integrity="sha384-vyZja/GJMJ0ApzUoUvZ4zRkSIFTxnnQ7tBFQZRH4wKV8lVQk1l1hpzNMQK62sOeb" crossorigin="anonymous"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.esm.min.js" integrity="sha384-E+JDpCUAgcyKFT22Xh4zlu3I5xV0JfjDHlB3jqwPIAemJxXq2Ovlsw8x3DbQ3tc1" crossorigin="anonymous"></script>
 ```
 
 ### ES Module (unminified)
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.esm.js" integrity="sha384-X/TaewiqShi/ztjAUmWNAFs+E7vl5V1CBtA+nTap/2HzeMxuI2e68oX63ebr5E6X" crossorigin="anonymous"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.esm.js" integrity="sha384-b3Sl18uCZMYg5GnkP+EDF3gyiYazT9PHLZ0JV75UnL+LP1WGIIxUqTXL7MqM67Ed" crossorigin="anonymous"></script>
 ```
 
 ## Download
