@@ -103,7 +103,7 @@ export const groups = folder.folders.map(sub => {
                                 <FinderLink href={item.url} class="filter-item col-span-2 grid grid-cols-subgrid gap-5 items-center" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()}>
                                     <span class="font-mono text-sm font-medium">{item.title}</span>
                                     {item.description ? (
-                                        <span class="text-sm text-neutral-650 dark:text-neutral-350 group-interact/link:text-white dark:group-interact/link:text-black transition">{item.description}</span>
+                                        <span class="text-sm text-neutral-650 dark:text-neutral-350 group-interact/link:text-white dark:group-interact/link:text-black">{item.description}</span>
                                     ) : <span />}
                                 </FinderLink>
                             ))}

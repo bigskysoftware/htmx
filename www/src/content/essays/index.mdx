@@ -118,11 +118,11 @@ export const activeTags = tagDefs.filter(t => t.id === 'all' || usedTags.has(t.i
                     <span class="flex-1 min-w-0 flex items-center gap-2">
                         <span class="text-[13px] sm:text-sm leading-snug truncate">{essay.title}</span>
                         {essay.external && (
-                            <i class="icon-[mdi--open-in-new] size-3 shrink-0 text-neutral-400 group-interact/link:text-blue-200 dark:group-interact/link:text-black transition" aria-label="External link"></i>
+                            <i class="icon-[mdi--open-in-new] size-3 shrink-0 text-neutral-400 group-interact/link:text-blue-200 dark:group-interact/link:text-black" aria-label="External link"></i>
                         )}
                     </span>
                     {(essay.author || essay.date) && (
-                        <span class="shrink-0 flex items-center gap-1.5 sm:gap-3 text-[11px] font-mono tabular-nums text-neutral-500 dark:text-neutral-450 group-interact/link:text-blue-200 dark:group-interact/link:text-black transition">
+                        <span class="shrink-0 flex items-center gap-1.5 sm:gap-3 text-[11px] font-mono tabular-nums text-neutral-500 dark:text-neutral-450 group-interact/link:text-blue-200 dark:group-interact/link:text-black">
                             {essay.author && <span>{essay.author}</span>}
                             {essay.author && essay.date && <span aria-hidden="true">&middot;</span>}
                             {essay.date && <span class="sm:w-[12ch] sm:text-right">{essay.date}</span>}

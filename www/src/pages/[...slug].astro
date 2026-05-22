@@ -114,7 +114,7 @@ const includeTableOfContents = headings.length > 0;
         <main id="content-main-content" class="flex-1" data-home-page={isHomePage ? '' : undefined}>
             <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 flex justify-center max-w-360">
 
-                <div class:list={["pt-6 sm:pt-8 lg:pt-12 flex-1 w-full relative starting:opacity-0 delay-150 transition", useWideLayout ? 'max-w-4xl' : 'max-w-prose']}>
+                <div class:list={["pt-6 sm:pt-8 lg:pt-12 flex-1 w-full relative starting:opacity-0 transition", useWideLayout ? 'max-w-4xl' : 'max-w-prose']}>
                     <Breadcrumbs breadcrumbs={page.breadcrumbs} />
 
                     {readingModeToggle && (
@@ -138,7 +138,7 @@ const includeTableOfContents = headings.length > 0;
                                     <span class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4">
                                         <span class:list={["text-[13px] sm:text-sm leading-snug truncate", isReference && "font-mono"]} set:html={f.frontmatter.title} />
                                         {f.frontmatter.description && (
-                                            <span class="text-[11px] text-neutral-500 dark:text-neutral-450 group-interact/link:text-blue-200 dark:group-interact/link:text-black transition truncate">
+                                            <span class="text-[11px] text-neutral-500 dark:text-neutral-450 group-interact/link:text-blue-200 dark:group-interact/link:text-black truncate">
                                                 {f.frontmatter.description}
                                             </span>
                                         )}

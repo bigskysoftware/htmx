@@ -41,6 +41,11 @@ export default defineConfig({
 
     vite: {
         plugins: [tailwindcss()],
+        // Force dep re-optimization on every dev start. Avoids the recurring
+        // "504 Outdated Optimize Dep" errors that show up after `bun add` /
+        // `bun remove` when Vite's hash check misses a lockfile change. Cold
+        // start cost ~1-2s; production builds are unaffected.
+        optimizeDeps: { force: true },
     },
 
     markdown: {

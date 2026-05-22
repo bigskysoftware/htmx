@@ -4,7 +4,7 @@ test.describe('Accessibility', () => {
     test('page has proper landmark structure', async ({ page }) => {
         await page.goto('/');
         await expect(page.locator('header[role="banner"]')).toBeVisible();
-        await expect(page.locator('main#main-content')).toBeVisible();
+        await expect(page.locator('main#content-main-content')).toBeVisible();
     });
 
     test('navigation has aria-label', async ({ page }) => {
