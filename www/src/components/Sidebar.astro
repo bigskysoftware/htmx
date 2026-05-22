@@ -37,29 +37,29 @@ const isPatterns = folder.folder === 'patterns';
                 {folder.frontmatter.title}
             </h2>
             {folder.folders.length > 1 && (
-                <div class="flex items-center gap-0.5 text-neutral-400 dark:text-neutral-500">
-                    <button type="button"
-                            title="Expand all sections"
-                            aria-label="Expand all sections"
-                            class="p-1 rounded interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-neutral-700 dark:interact:text-neutral-200 transition cursor-pointer"
-                            _="on click for d in <#sidebar-nav details/> set d.open to true">
-                        <i class="icon-[mdi--unfold-more-horizontal] size-4 block" aria-hidden="true"></i>
-                    </button>
-                    <button type="button"
-                            title="Collapse all sections"
-                            aria-label="Collapse all sections"
-                            class="p-1 rounded interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-neutral-700 dark:interact:text-neutral-200 transition cursor-pointer"
-                            _="on click for d in <#sidebar-nav details/> set d.open to false">
-                        <i class="icon-[mdi--unfold-less-horizontal] size-4 block" aria-hidden="true"></i>
-                    </button>
-                </div>
+                    <div class="flex items-center gap-0.5 text-neutral-400 dark:text-neutral-500">
+                        <button type="button"
+                                title="Expand all sections"
+                                aria-label="Expand all sections"
+                                class="p-1 rounded interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-neutral-700 dark:interact:text-neutral-200 cursor-pointer"
+                                _="on click for d in <#sidebar-nav details/> set d.open to true">
+                            <i class="icon-[mdi--unfold-more-horizontal] size-4 block" aria-hidden="true"></i>
+                        </button>
+                        <button type="button"
+                                title="Collapse all sections"
+                                aria-label="Collapse all sections"
+                                class="p-1 rounded interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-neutral-700 dark:interact:text-neutral-200 cursor-pointer"
+                                _="on click for d in <#sidebar-nav details/> set d.open to false">
+                            <i class="icon-[mdi--unfold-less-horizontal] size-4 block" aria-hidden="true"></i>
+                        </button>
+                    </div>
             )}
         </div>
 
         {/* Overview link */}
         <a href={folder.url}
            class:list={[
-               "block px-3 py-2 mb-2 text-sm rounded-md transition truncate",
+               "block px-3 py-2 mb-2 text-sm rounded-lg truncate",
                currentUrl === folder.url
                    ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
                    : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
@@ -75,17 +75,17 @@ const isPatterns = folder.folder === 'patterns';
             return (
                     <details class="group/section w-full not-first-of-type:mt-2 no-morph"
                              open={containsCurrentPage}>
-                        <summary class="sticky top-0 z-40 py-2 rounded-md
+                        <summary class="sticky top-0 z-40 py-2 rounded-lg
                                        bg-neutral-25 dark:bg-neutral-920
                                        list-none select-none
                                        flex items-center justify-between gap-2
                                        [&::-webkit-details-marker]:hidden
-                                       transition cursor-pointer
+                                       cursor-pointer
                                        text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200
                                        px-3">
 
                             <h3 class:list={[
-                                "font-sans text-sm truncate tracking-wide transition min-w-0",
+                                "font-sans text-sm truncate tracking-wide min-w-0",
                                 containsCurrentPage
                                     ? "font-semibold text-neutral-900 dark:text-neutral-100"
                                     : "text-neutral-600 dark:text-neutral-400 group-hover/section:text-neutral-800 dark:group-hover/section:text-neutral-200"
@@ -107,7 +107,7 @@ const isPatterns = folder.folder === 'patterns';
                                                        aria-disabled={isSoon ? 'true' : undefined}
                                                        hx-boost={isSoon && 'false'}
                                                        class:list={[
-                                                           "flex items-center gap-2.5 px-3 py-2 text-sm rounded-md transition",
+                                                           "flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg",
                                                            isReference && "font-mono",
                                                            isSoon
                                                                ? "opacity-50 cursor-not-allowed"
@@ -140,7 +140,7 @@ const isPatterns = folder.folder === 'patterns';
                        title={f.frontmatter.description}
                        aria-current={isActive ? 'page' : undefined}
                        class:list={[
-                           "block px-3 py-2 text-sm rounded-md transition truncate",
+                           "block px-3 py-2 text-sm rounded-lg truncate",
                            isActive
                                ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
                                : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"

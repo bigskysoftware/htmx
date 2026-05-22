@@ -1,10 +1,11 @@
 ---
 import fs from 'node:fs';
+import path from 'node:path';
 
-// cwd is www/ — public/js/ is synced from ../dist/ by the prebuild/predev script
-const distPath = 'public/js/htmx.min.js.br';
+// Auto-calculate bundle size from actual dist file
+const distPath = path.resolve(import.meta.dirname, '../../../dist/htmx.min.js.br');
 const stats = fs.statSync(distPath);
-const bundleSize = `~${Math.round(stats.size / 1024)}k`;
+const bundleSize = `~${Math.floor(stats.size / 1024)}k`;
 
 // Auto-calculate extension count
 const extensionDocs = import.meta.glob('../content/docs/06-extensions/*.md', { eager: true }) as Record<string, any>;
@@ -15,12 +16,12 @@ const extensionCount = Object.keys(extensionDocs).filter(file => {
 ---
 
 <p class="flex items-center gap-3 sm:gap-4 text-xs font-mono font-light text-neutral-650 dark:text-neutral-350">
-    <a href="/docs/get-started/installation" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
+    <a href="/docs/get-started/installation" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline">
         <b class="font-chicago group-interact:text-blue-600 dark:group-interact:text-blue-300">{bundleSize}</b> min.br'd</a>
     <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
-    <a href="https://github.com/bigskysoftware/htmx/blob/master/package.json" target="_blank" rel="noopener noreferrer" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
+    <a href="https://github.com/bigskysoftware/htmx/blob/master/package.json" target="_blank" rel="noopener noreferrer" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline">
         <b class="font-chicago group-interact:text-blue-600 dark:group-interact:text-blue-300">0</b> dep<span class="max-sm:hidden">endencie</span>s</a>
     <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
-    <a href="/docs/extensions" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline transition">
+    <a href="/docs/extensions" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline">
         <b class="font-chicago group-interact:text-blue-600 dark:group-interact:text-blue-300">{extensionCount}</b> extension<span class="max-sm:hidden">s</span></a>
 </p>

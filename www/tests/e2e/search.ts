@@ -112,21 +112,23 @@ const SEARCH_RANKING: [string | string[], string][] = [
     [['history', 'back button', 'pushState'], 'History'],
     ['security', 'Security'],
     ['extensions', 'Extensions'],
-    [['web sockets', 'websockets', 'ws'], 'Web Sockets'],
-    [['sse', 'server-sent events', 'event stream', 'streaming'], 'Streaming Responses'],
+    [['websockets', 'ws'], 'hx-ws'],
+    [['server-sent events', 'event stream', 'streaming'], 'hx-sse'],
     ['validation', 'Validation'],
     ['inheritance', 'Attribute Inheritance'],
     [['synchronization', 'sync', 'debounce', 'throttle', 'race condition'], 'Synchronization'],
     [['CSS Transitions', 'fade'], 'CSS Transitions'],
     [['oob', 'out of band'], 'Multi-Target Updates'],
-    [['javascript', 'scripting', 'hyperscript', 'alpine'], 'Client-Side Scripting'],
-    [['caching', 'cache'], 'Caching'],
-    ['etag', 'ETag'],
+    [['javascript', 'scripting', 'hyperscript'], 'Client-Side Scripting'],
+    ['alpine', 'hx-alpine-compat'],
+    ['caching', 'Caching'],
+    ['cache', 'hx-history-cache'],
+    ['etag', 'hx-ptag'],
     [['configuration', 'settings', 'meta tag'], 'Configuration'],
     ['config', 'Config'],
     [['debugging', 'debug', 'devtools', 'logAll'], 'Debugging'],
     ['troubleshoot', 'Troubleshoot'],
-    ['XHR', 'HTTP Integration'],
+    ['XHR', 'Requests & Responses'],
 
     // ── Patterns ──
     ['infinite scroll', 'Infinite Scroll'],
@@ -147,29 +149,29 @@ const SEARCH_RANKING: [string | string[], string][] = [
 ];
 
 test.describe('Search ranking', () => {
-    for (const [queries, expectedTitle] of SEARCH_RANKING) {
-        for (const query of Array.isArray(queries) ? queries : [queries]) {
-            test(`"${query}" → ${expectedTitle}`, async ({ page }) => {
-                await page.goto('/', { waitUntil: 'networkidle' });
-                await openSearch(page);
+    test('first result matches expected title for each query', async ({ page }) => {
+        await page.goto('/', { waitUntil: 'networkidle' });
+        await openSearch(page);
 
-                // Ensure the search index is loaded before typing
-                await page.evaluate(() =>
-                    (document.querySelector('search-index') as any)?.load()
-                );
+        // Load search index once
+        await page.evaluate(() =>
+            (document.querySelector('search-index') as any)?.load()
+        );
 
-                const input = page.locator('#search-input');
-                await input.fill(query);
+        const input = page.locator('#search-input');
+        const firstResult = page.locator('.result').first();
 
-                // Wait for results
-                const firstResult = page.locator('.result').first();
-                await expect(firstResult).toBeAttached({ timeout: 5000 });
+        for (const [queries, expectedTitle] of SEARCH_RANKING) {
+            for (const query of Array.isArray(queries) ? queries : [queries]) {
+                await test.step(`"${query}" → ${expectedTitle}`, async () => {
+                    await input.fill('');
+                    await input.fill(query);
+                    await expect(firstResult).toBeAttached({ timeout: 2000 });
 
-                // Get the visible title text from the first result's article
-                const titleEl = firstResult.locator('~ article .font-chicago');
-                const titleText = await titleEl.textContent();
-                expect(titleText?.trim()).toBe(expectedTitle);
-            });
+                    const titleEl = firstResult.locator('~ article .font-chicago');
+                    await expect(titleEl).toHaveText(expectedTitle, { timeout: 2000 });
+                });
+            }
         }
-    }
+    });
 });

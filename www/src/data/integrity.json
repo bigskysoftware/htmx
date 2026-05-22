@@ -1,0 +1,6 @@
+{
+    "min": "sha384-aWZK1NtOs/aWb/+YZdTM8q2JkWEshlMc9mgZ189numT9bwFhyAyYEoO4nO/2dTXt",
+    "full": "sha384-OFLRIZpuqI2wwFozxvDGcuF3TQ36ySMgp44WEthOiR4wFzRkhZbK72HFaBo2C3cx",
+    "esmMin": "sha384-md54RSbheZ0Mpr9oo11vo7Cvrz9acwqg8tSLEoFeo1R6FsZmD3jFVKokISxCeT6Q",
+    "esm": "sha384-S5fILq7gG/U3b/j34NWMf77PgT3ojxi6CQxRFhqRLklkKJ+3KujL7RaZOgV2cmkz"
+}

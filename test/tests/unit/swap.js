@@ -564,6 +564,83 @@ describe('swap() unit tests', function() {
         find('#d1').innerText.should.equal('New')
     })
 
+    it('outerSync adds hx-get to root element and initializes it', async function () {
+        createProcessedHTML("<div id='target'><p>static</p></div>")
+        mockResponse('GET', '/dynamic', 'fetched')
+
+        await htmx.swap({
+            target: '#target',
+            swap: 'outerSync',
+            text: '<div id="target" hx-get="/dynamic" hx-trigger="click" hx-swap="innerHTML"><p>now interactive</p></div>',
+            sourceElement: find('#target')
+        })
+
+        let target = find('#target')
+        target.getAttribute('hx-get').should.equal('/dynamic')
+        assert.isNotNull(target._htmx?.initialized, 'target root should be initialized with htmx')
+        target.click()
+        await forRequest()
+        target.textContent.should.equal('fetched')
+    })
+
+    it('outerSync removes hx-get from root element and old handler no longer fires', async function () {
+        mockResponse('GET', '/should-not-fire', 'bad')
+        createProcessedHTML("<div id='target' hx-get='/should-not-fire' hx-trigger='click' hx-swap='innerHTML'>interactive</div>")
+        let target = find('#target')
+        assert.isNotNull(target._htmx?.initialized, 'target should start initialized')
+
+        // outerSync removes hx-get from the root
+        await htmx.swap({
+            target: '#target',
+            swap: 'outerSync',
+            text: '<div id="target">no longer interactive</div>',
+            sourceElement: target
+        })
+
+        target = find('#target')
+        target.textContent.should.equal('no longer interactive')
+        assert.isNull(target.getAttribute('hx-get'), 'hx-get should be removed')
+
+        // clicking should NOT issue a request — track via event
+        let requestFired = false
+        let handler = () => { requestFired = true }
+        document.addEventListener('htmx:before:request', handler)
+        target.click()
+        await htmx.timeout(50)
+        document.removeEventListener('htmx:before:request', handler)
+        assert.isFalse(requestFired, 'no request should fire after hx-get removed')
+    })
+
+    it('outerSync changes hx-trigger on root element and new trigger fires', async function () {
+        mockResponse('GET', '/endpoint', 'response')
+        createProcessedHTML("<div id='target' hx-get='/endpoint' hx-trigger='click' hx-swap='innerHTML'>original</div>")
+
+        // Change trigger from click to mousedown
+        await htmx.swap({
+            target: '#target',
+            swap: 'outerSync',
+            text: '<div id="target" hx-get="/endpoint" hx-trigger="mousedown" hx-swap="innerHTML">updated</div>',
+            sourceElement: find('#target')
+        })
+
+        let target = find('#target')
+        target.getAttribute('hx-trigger').should.equal('mousedown')
+
+        // click should no longer trigger a request
+        let requestFired = false
+        let handler = () => { requestFired = true }
+        document.addEventListener('htmx:before:request', handler)
+        target.click()
+        await htmx.timeout(50)
+        document.removeEventListener('htmx:before:request', handler)
+        assert.isFalse(requestFired, 'click should not trigger after hx-trigger changed to mousedown')
+
+        // mousedown should trigger the request
+        target.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}))
+        await forRequest()
+        target.textContent.should.equal('response')
+    })
+
     it('swaps partial to all elements matching a class selector', async function () {
         createProcessedHTML("<div class='target'>A</div><div class='target'>B</div>")
         await htmx.swap({"target":"#test-playground", "text":"<hx-partial hx-target='.target' hx-swap='innerHTML'>Updated</hx-partial>"})

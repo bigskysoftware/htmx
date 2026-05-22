@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.0.0-beta4] - 2026-05-22
+
+* Unified `hx-on` and `hx-trigger` modifier grammar ([#3805](https://github.com/bigskysoftware/htmx/pull/3805))
+  * New `hx-on="event mods -> code"` syntax with full trigger-modifier support
+  * Added `prevent`, `stop`, `halt`, `capture`, `passive`, `from:self`, `from:outside` modifiers
+  * Removed dot-modifiers from `hx-on:event` (`.prevent` `.stop` `.halt` `.once` `.self` `.outside` `.capture` `.passive` `.cc`)
+  * Added `rootMargin` support on `intersect`
+  * Removed `queue` modifier from `hx-trigger` (use `hx-sync`)
+* The `hx-nonce` extension was renamed to `hx-csp`
+* Improved non-form input and checkbox handling ([#3797](https://github.com/bigskysoftware/htmx/pull/3797))
+* Fix: `outerSync` reprocesses the correct body element on history restore ([#3808](https://github.com/bigskysoftware/htmx/pull/3808))
+* Fix: `hx-ws:send` with `hx-trigger="load"` waits for socket open instead of erroring ([#3806](https://github.com/bigskysoftware/htmx/pull/3806))
+* Fix: attribute-value reading with custom `metaCharacter` ([#3795](https://github.com/bigskysoftware/htmx/pull/3795))
+
 ## [4.0.0-beta3] - 2026-05-08
 
 * New `hx-live` extension: adds DOM-reactivity via the `hx-live` attribute and a richer JavaScript surface inside `hx-on`

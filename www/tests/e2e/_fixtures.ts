@@ -3,10 +3,10 @@ import { test as base, expect } from '@playwright/test';
 export const test = base;
 export { expect };
 
-/** Pages that use the content layout with main#main-content */
+/** Pages that use the content layout with main#content-main-content */
 export const TOP_LEVEL_PAGES = ['/', '/docs', '/reference', '/patterns', '/essays'];
 
-/** Standalone pages without main#main-content */
+/** Standalone pages without main#content-main-content */
 export const STANDALONE_PAGES = ['/about', '/webring'];
 
 /** Navigation items in header */

@@ -16,7 +16,7 @@ const parent = allCrumbs.slice(0, -1).reverse().find(c => c.href) || null;
         {/* Mobile: show parent link only */}
         {parent && (
             <a href={parent.href}
-               class="lg:hidden inline-flex items-center gap-0.5 -ml-0.5 py-1 pr-2 text-xs text-neutral-600 dark:text-neutral-400 transition interact:text-blue-700 dark:interact:text-blue-300 rounded-sm">
+               class="lg:hidden inline-flex items-center gap-0.5 -ml-0.5 py-1 pr-2 text-xs text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 rounded-sm">
                 <i class="icon-[mdi--chevron-left] text-base shrink-0" aria-hidden="true"></i>
                 <span class="truncate max-w-[30ch]" set:html={parent.label} />
             </a>
@@ -35,7 +35,7 @@ const parent = allCrumbs.slice(0, -1).reverse().find(c => c.href) || null;
                               set:html={crumb.label} />
                     ) : crumb.href ? (
                         <a href={crumb.href}
-                           class="transition interact:underline interact:text-blue-700 dark:interact:text-blue-300"
+                           class="interact:underline interact:text-blue-700 dark:interact:text-blue-300"
                            set:html={crumb.label} />
                     ) : (
                         <span set:html={crumb.label} />

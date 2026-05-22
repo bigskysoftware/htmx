@@ -1,6 +1,6 @@
 ---
 title: "hx-history-elt"
-description: "Mark the element to swap on history restore"
+description: "Marks the element to swap on history restore"
 ---
 
 The `hx-history-elt` attribute marks the element that htmx should swap when restoring a page from

@@ -19,7 +19,7 @@ import { absolutizeRelativeLinks } from '../lib/utils';
  * collection, not the raw MDX stub that renders the HTML page.
  */
 
-const MD_COLLECTIONS = ['docs', 'reference', 'patterns', 'essays', 'interviews'] as const;
+const MD_COLLECTIONS = ['docs', 'reference', 'patterns', 'essays', 'interviews', 'extensions'] as const;
 
 interface PathProps {
     filePath: string;

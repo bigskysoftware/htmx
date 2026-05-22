@@ -248,6 +248,10 @@ Useful if you're using hyperscript alongside htmx.
 </div>
 ```
 
+## Notes
+
+* Selectors are evaluated once when htmx processes the element. They are not re-evaluated when the page changes.
+
 ## Tips
 
 Start with simple CSS selectors.

@@ -1,6 +1,6 @@
 ---
 title: "hx-post"
-description: "Issue POST request to specified URL"
+description: "Issues a POST request to the specified URL"
 ---
 
 The `hx-post` attribute will cause an element to issue a `POST` to the specified URL and swap

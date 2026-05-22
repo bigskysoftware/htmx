@@ -267,7 +267,7 @@
         @apply relative border border-neutral-200 dark:border-neutral-850 rounded-lg bg-white dark:bg-neutral-950 overflow-y-hidden;
 
         code {
-            @apply block overflow-x-auto text-xs leading-5 whitespace-pre p-4 pr-12 mask-l-from-97% mask-r-from-95%;
+            @apply block overflow-x-auto text-sm font-medium leading-6 whitespace-pre p-4 pr-12 mask-l-from-97% mask-r-from-95%;
         }
     }
 

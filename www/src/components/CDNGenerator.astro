@@ -1,7 +1,7 @@
 ---
 // 1. Configuration
-const VERSION = '4.0.0-alpha3';
-const CDN_BASE = `https://cdn.jsdelivr.net/npm/htmx.org@${VERSION}/dist`;
+import pkg from '../../../package.json';
+const CDN_BASE = `https://cdn.jsdelivr.net/npm/htmx.org@${pkg.version}/dist`;
 
 const EXTENSION_LIST = [
     {name: 'websockets', comingSoon: true},
@@ -96,7 +96,7 @@ const extensions = await Promise.all(EXTENSION_LIST.map(async (ext) => {
                 <pre class="flex-1 overflow-x-auto text-xs leading-5 p-0! border-transparent! bg-transparent! text-neutral-900 dark:text-white"><code
                         id="code" class="whitespace-pre block"></code></pre>
 
-                <button class="relative text-neutral-400 interact:text-neutral-900 dark:interact:text-white transition active:scale-95 cursor-pointer"
+                <button class="relative text-neutral-400 interact:text-neutral-900 dark:interact:text-white active:scale-95 cursor-pointer"
                         _={`on click
                         writeText(#code.innerText) on navigator.clipboard
                         add .hidden to .icon-\[radix-icons--copy\] in me
@@ -114,7 +114,7 @@ const extensions = await Promise.all(EXTENSION_LIST.map(async (ext) => {
             <div class="flex items-center gap-5">
 
                 <div class="relative" _="on click from elsewhere add .hidden to #dropdown">
-                    <button class="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white transition cursor-pointer"
+                    <button class="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white cursor-pointer"
                             _="on click toggle .hidden on #dropdown">
                         <i class="icon-[radix-icons--plus]"></i>
                         <span class="font-chicago text-[0.625rem]" id="count-lbl">add extensions</span>
@@ -124,7 +124,7 @@ const extensions = await Promise.all(EXTENSION_LIST.map(async (ext) => {
                          class="hidden absolute top-full left-0 mt-1 min-w-[200px] bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 divide-y divide-neutral-75 dark:divide-neutral-800 font-chicago rounded-[4px] shadow-xs p-3 z-20 flex flex-col">
                         {extensions.map((e, i) => (
                                 <label class={`
-                                group flex items-center justify-between p-1.5 first:pt-0 last:pb-0 rounded-[2px] transition select-none
+                                group flex items-center justify-between p-1.5 first:pt-0 last:pb-0 rounded-[2px] select-none
                                 ${e.comingSoon
                                     ? 'opacity-60 cursor-not-allowed'
                                     : 'cursor-pointer interact:bg-blue-700 interact:text-white text-neutral-600 dark:text-neutral-400'
@@ -160,8 +160,8 @@ const extensions = await Promise.all(EXTENSION_LIST.map(async (ext) => {
                     </div>
                 </div>
 
-                <label class="flex items-center gap-2 cursor-pointer group text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white transition">
-                    <div class="relative size-3.5 border border-neutral-300 dark:border-neutral-700 rounded-[3px] group-interact:border-neutral-400 bg-white dark:bg-neutral-950 transition">
+                <label class="flex items-center gap-2 cursor-pointer group text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white">
+                    <div class="relative size-3.5 border border-neutral-300 dark:border-neutral-700 rounded-[3px] group-interact:border-neutral-400 bg-white dark:bg-neutral-950">
 
                         <input type="checkbox" id="min" checked
                                class="peer appearance-none absolute inset-0 cursor-pointer"
