@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "predev": "rsync -a ../dist/ public/js/",
-    "dev": "NODE_ENV=development astro dev",
-    "start": "NODE_ENV=development astro dev",
+    "dev": "NODE_ENV=development astro dev --force",
+    "start": "NODE_ENV=development astro dev --force",
     "prebuild": "rsync -a ../dist/ public/js/",
     "build": "astro build",
     "preview": "astro preview",
