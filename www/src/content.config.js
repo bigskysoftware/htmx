@@ -1,8 +1,7 @@
 import {defineCollection, z} from "astro:content";
-import type {Loader} from "astro/loaders";
 import {glob, file} from "astro/loaders";
-import {slugify} from "./lib/utils.ts";
-import {aggregateCollectionMarkdown} from "./lib/content.ts";
+import {slugify} from "./lib/utils";
+import {aggregateCollectionMarkdown} from "./lib/content";
 import yaml from "js-yaml";
 
 /**
@@ -12,8 +11,12 @@ import yaml from "js-yaml";
  * view. The synthesised markdown is pre-rendered to HTML via the loader's
  * own markdown renderer (which applies the site-wide rehype/shiki config),
  * so Astro's `render(entry)` / `<Content />` just serves the result.
+ *
+ * @param {string} collection
+ * @param {import('astro/loaders').Loader} base
+ * @returns {import('astro/loaders').Loader}
  */
-function withAggregateFull(collection: string, base: Loader): Loader {
+function withAggregateFull(collection, base) {
     return {
         name: `${base.name}-with-aggregate`,
         load: async (ctx) => {
@@ -128,7 +131,7 @@ const interviews = defineCollection({
 
 const sponsors = defineCollection({
     loader: file('src/content/sponsors.yaml', {
-        parser: (fileContent) => (yaml.load(fileContent) as any[]).map((sponsor) => (
+        parser: (fileContent) => /** @type {any[]} */ (yaml.load(fileContent)).map((sponsor) => (
             {
                 ...sponsor,
                 id: slugify(sponsor.name),
@@ -150,7 +153,7 @@ const sponsors = defineCollection({
 
 const community = defineCollection({
     loader: file('src/content/community.yaml', {
-        parser: (fileContent) => (yaml.load(fileContent) as any[]).map((item) => ({...item, id: slugify(item.name)}))
+        parser: (fileContent) => /** @type {any[]} */ (yaml.load(fileContent)).map((item) => ({...item, id: slugify(item.name)}))
     }),
     schema: z.object({
         id: z.string(), // generated from `name`
@@ -164,7 +167,7 @@ const community = defineCollection({
 
 const team = defineCollection({
     loader: file('src/content/team.yaml', {
-        parser: (fileContent) => (yaml.load(fileContent) as any[]).map((member) => ({
+        parser: (fileContent) => /** @type {any[]} */ (yaml.load(fileContent)).map((member) => ({
             ...member,
             id: slugify(member.name)
         }))
@@ -194,4 +197,3 @@ export const collections = {
     community,
     team,
 };
-

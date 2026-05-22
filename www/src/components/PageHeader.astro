@@ -7,6 +7,7 @@
 import { Image } from 'astro:assets';
 import CopyPageButton from './CopyPageButton.astro';
 import { getFile } from '../lib/content';
+import { formatDate } from '../lib/utils';
 import type { ContentFile } from '../lib/content';
 
 interface Props {
@@ -55,9 +56,6 @@ if (isEssay) {
 
     byline = { authors, created, modified, readingMinutes };
 }
-
-const formatDate = (date: Date) =>
-    date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 const showModified = byline?.modified && byline?.created &&
     byline.modified.toDateString() !== byline.created.toDateString();
@@ -119,11 +117,11 @@ const primaryAuthor = byline?.authors[0];
                             <span>{byline.readingMinutes} min read<span class="mx-1">·</span></span>
                         )}
                         <time datetime={byline.created.toISOString().slice(0, 10)}>
-                            {formatDate(byline.created)}
+                            {formatDate(byline.created, 'long')}
                         </time>
                         {showModified && (
                             <span>
-                                {" "}· updated <time datetime={byline.modified!.toISOString().slice(0, 10)}>{formatDate(byline.modified!)}</time>
+                                {" "}· updated <time datetime={byline.modified!.toISOString().slice(0, 10)}>{formatDate(byline.modified!, 'long')}</time>
                             </span>
                         )}
                     </span>

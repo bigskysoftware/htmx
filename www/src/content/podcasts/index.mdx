@@ -4,6 +4,7 @@ description: "Talks, interviews, and appearances about htmx."
 ---
 
 import FinderLink from '../../components/FinderLink.astro';
+import { formatDate } from '../../lib/utils';
 
 export const podcasts = [
     {name: "ThePrimeTime - So I Talked With Creator HTMX", url: "https://www.youtube.com/watch?v=r8icH07gWBw", date: "2024-06-06"},
@@ -38,11 +39,6 @@ export const podcasts = [
     {name: "Software Breakthroughs for the 21st Century", url: "https://www.youtube.com/watch?v=O4ZFIx1ckSg", date: "2021-05-24"},
     {name: "devMode.fm - Dynamic HTML with htmx", url: "https://devmode.fm/episodes/dynamic-html-with-htmx", date: "2020-09-07"},
 ];
-
-export const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
-};
 
 export const grouped = (() => {
     const sorted = [...podcasts].sort((a, b) => new Date(b.date) - new Date(a.date));

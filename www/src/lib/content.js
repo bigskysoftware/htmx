@@ -1,5 +1,5 @@
 /**
- * lib/content.ts
+ * lib/content.js
  *
  * Filesystem-first content tree builder.
  *
@@ -16,25 +16,58 @@ import { join } from 'node:path';
 import yaml from 'js-yaml';
 import { shiftHeadings } from './utils';
 
+/**
+ * @typedef {Object} Breadcrumb
+ * @property {string} label
+ * @property {string} [href]
+ */
+
+/**
+ * @typedef {Object} ContentFile
+ * @property {string} path
+ * @property {string} folder
+ * @property {string} slug
+ * @property {string} url
+ * @property {Record<string, any>} frontmatter
+ * @property {Breadcrumb[]} breadcrumbs
+ * @property {ContentFile} [prev]
+ * @property {ContentFile} [next]
+ */
+
+/**
+ * @typedef {Object} ContentFolder
+ * @property {string} path
+ * @property {string} folder
+ * @property {string} slug
+ * @property {string} url
+ * @property {Record<string, any>} frontmatter
+ * @property {Breadcrumb[]} breadcrumbs
+ * @property {ContentFile[]} files
+ * @property {ContentFolder[]} folders
+ * @property {ContentFile[]} allFiles
+ */
+
 // Case-preserving filesystem paths (strings only — no modules loaded, no circular dependency)
 const allPaths = Object.keys(import.meta.glob('/src/content/**/*.{md,mdx}'));
 
 // Lazy module loaders — called inside async functions, not at module init
-const lazyModules: Record<string, () => Promise<any>> = import.meta.glob('/src/content/**/*.{md,mdx}');
+/** @type {Record<string, () => Promise<any>>} */
+const lazyModules = import.meta.glob('/src/content/**/*.{md,mdx}');
 
 // Raw authored sources, eagerly loaded. Used by aggregateCollectionMarkdown
 // to build single-document views of a collection without re-reading from disk.
+/** @type {Record<string, string>} */
 const rawSources = import.meta.glob('/src/content/**/*.{md,mdx}', {
     query: '?raw',
     import: 'default',
     eager: true,
-}) as Record<string, string>;
+});
 
 
 // Cache for loaded modules to avoid re-importing
-const moduleCache = new Map<string, any>();
+const moduleCache = new Map();
 
-async function loadModule(fullPath: string): Promise<any> {
+async function loadModule(fullPath) {
     if (moduleCache.has(fullPath)) return moduleCache.get(fullPath);
     const loader = lazyModules[fullPath];
     if (!loader) return null;
@@ -48,12 +81,13 @@ async function loadModule(fullPath: string): Promise<any> {
  * of that collection. It's excluded from sidebar lists and prev/next nav,
  * and its body is synthesised at content-load time by
  * aggregateCollectionMarkdown().
+ * @param {{ slug: string }} file
  */
-export function isAggregate(file: { slug: string }): boolean {
+export function isAggregate(file) {
     return file.slug === 'full';
 }
 
-function rawBody(fullPath: string): string {
+function rawBody(fullPath) {
     const raw = rawSources[fullPath] ?? '';
     return raw
         .replace(/^---[\s\S]*?---\n*/, '')
@@ -61,7 +95,7 @@ function rawBody(fullPath: string): string {
         .trim();
 }
 
-function rawTitle(fullPath: string): string {
+function rawTitle(fullPath) {
     const raw = rawSources[fullPath] ?? '';
     const fmMatch = raw.match(/^---\s*\n([\s\S]*?)\n---/);
     const titleMatch = fmMatch?.[1].match(/^title:\s*(.+)$/m);
@@ -72,8 +106,10 @@ function rawTitle(fullPath: string): string {
  * Return a content file's authored markdown as a standalone document:
  * `# <title>` prepended, frontmatter and inline demo-server scripts
  * stripped. Consumed by the `.md` companion endpoint for every prose page.
+ * @param {string} path
+ * @returns {string}
  */
-export function fileAsMarkdown(path: string): string {
+export function fileAsMarkdown(path) {
     const fullPath = `/src/content/${path}`;
     const body = rawBody(fullPath);
     if (!body) return '';
@@ -81,56 +117,29 @@ export function fileAsMarkdown(path: string): string {
     return title ? `# ${title}\n\n${body}` : body;
 }
 
-function isDataFile(path: string): boolean {
+function isDataFile(path) {
     return /\.(yaml|yml|json)$/.test(path);
 }
 
 
-
-// --- Types ---
-
-export interface Breadcrumb {
-    label: string;
-    href?: string;
-}
-
-export interface ContentFile {
-    path: string;
-    folder: string;
-    slug: string;
-    url: string;
-    frontmatter: Record<string, any>;
-    breadcrumbs: Breadcrumb[];
-    prev?: ContentFile;
-    next?: ContentFile;
-}
-
-export interface ContentFolder {
-    path: string;
-    folder: string;
-    slug: string;
-    url: string;
-    frontmatter: Record<string, any>;
-    breadcrumbs: Breadcrumb[];
-    files: ContentFile[];
-    folders: ContentFolder[];
-    allFiles: ContentFile[];
-}
-
 // --- Helpers ---
 
-function getFolderName(path: string): string {
+function getFolderName(path) {
     return path.split('/')[0];
 }
 
-function cleanPath(path: string): string {
+function cleanPath(path) {
     return path
         .split('/')
         .map(segment => segment.replace(/^\d+-/, '').replace(/\.(md|mdx)$/, ''))
         .join('/');
 }
 
-function sortContentFiles(a: ContentFile, b: ContentFile): number {
+/**
+ * @param {ContentFile} a
+ * @param {ContentFile} b
+ */
+function sortContentFiles(a, b) {
     const aCreated = a.frontmatter?.created;
     const bCreated = b.frontmatter?.created;
     if (aCreated && bCreated) {
@@ -140,10 +149,9 @@ function sortContentFiles(a: ContentFile, b: ContentFile): number {
 }
 
 
-
 // --- Constants ---
 
-export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'extensions', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'] as const;
+export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'extensions', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'];
 
 export const TAG_ORDER = [
     {tag: 'foundations', label: 'Foundations'},
@@ -151,7 +159,7 @@ export const TAG_ORDER = [
     {tag: 'case-studies', label: 'Case Studies'},
     {tag: 'guides', label: 'Guides'},
     {tag: 'simplicity', label: 'Simplicity'},
-] as const;
+];
 
 // --- Actions ---
 
@@ -161,11 +169,14 @@ export const TAG_ORDER = [
  * Aggregate pages (`slug === 'full'`) are rendered via astro:content so we
  * pick up the synthesised `rendered.html` written by the content loader.
  * All other entries load their MDX module directly.
+ *
+ * @param {ContentFile | ContentFolder} item
+ * @returns {Promise<{ Content: any; headings: any[] }>}
  */
-export async function render(item: ContentFile | ContentFolder): Promise<{ Content: any; headings: any[] }> {
+export async function render(item) {
     if ('slug' in item && item.slug === 'full' && item.folder) {
         const { getEntry, render: astroRender } = await import('astro:content');
-        const entry = await getEntry(item.folder as any, `${item.folder}/full`) ?? await getEntry(item.folder as any, 'full');
+        const entry = await getEntry(item.folder, `${item.folder}/full`) ?? await getEntry(item.folder, 'full');
         if (entry) {
             const { Content, headings } = await astroRender(entry);
             return { Content, headings };
@@ -184,12 +195,13 @@ export async function render(item: ContentFile | ContentFolder): Promise<{ Conte
 /**
  * Get content folder tree.
  *
- * @param path - Folder path (e.g., 'docs', 'reference')
- * @returns ContentFolder representing the folder with nested structure
+ * @param {string} path - Folder path (e.g., 'docs', 'reference')
+ * @returns {Promise<ContentFolder>} ContentFolder representing the folder with nested structure
  */
-export async function getFolder(path: string): Promise<ContentFolder> {
+export async function getFolder(path) {
     // Handle root-level files (e.g. 'home' → index.mdx, 'about' → about.mdx)
-    const rootFileMap: Record<string, string> = {home: 'index'};
+    /** @type {Record<string, string>} */
+    const rootFileMap = {home: 'index'};
     const rootFileName = rootFileMap[path] ?? path;
     const rootFullPath = allPaths.find(p =>
         p === `/src/content/${rootFileName}.mdx` || p === `/src/content/${rootFileName}.md`
@@ -201,11 +213,12 @@ export async function getFolder(path: string): Promise<ContentFolder> {
     if (rootFullPath && !hasFolder) {
         const rootRelPath = rootFullPath.replace('/src/content/', '');
         const isHome = path === 'home';
-        let rootFrontmatter: Record<string, any> = {};
+        /** @type {Record<string, any>} */
+        let rootFrontmatter = {};
         try {
             const raw = readFileSync(join(process.cwd(), 'src', 'content', rootRelPath), 'utf-8');
             const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
-            if (match) rootFrontmatter = yaml.load(match[1]) as Record<string, any> ?? {};
+            if (match) rootFrontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
         } catch {}
         return {
             path: rootRelPath,
@@ -226,8 +239,12 @@ export async function getFolder(path: string): Promise<ContentFolder> {
     // All paths under this folder
     const folderPaths = allPaths.filter(p => p.startsWith(prefix));
 
-    // Build the folder structure recursively
-    const buildFolder = async (basePath: string, parentBreadcrumbs: Breadcrumb[] = []): Promise<ContentFolder | null> => {
+    /**
+     * @param {string} basePath
+     * @param {Breadcrumb[]} parentBreadcrumbs
+     * @returns {Promise<ContentFolder | null>}
+     */
+    const buildFolder = async (basePath, parentBreadcrumbs = []) => {
         const indexPath = basePath ? `${basePath}/index` : `${folderName}/index`;
 
         // Find the index file
@@ -242,11 +259,12 @@ export async function getFolder(path: string): Promise<ContentFolder> {
         // Read frontmatter from disk to avoid executing MDX module bodies.
         // Index .mdx files may call getFolder() themselves — loading them
         // as modules here would create a circular call.
-        let indexFrontmatter: Record<string, any> = {};
+        /** @type {Record<string, any>} */
+        let indexFrontmatter = {};
         try {
             const raw = readFileSync(join(process.cwd(), 'src', 'content', indexRelPath), 'utf-8');
             const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
-            if (match) indexFrontmatter = yaml.load(match[1]) as Record<string, any> ?? {};
+            if (match) indexFrontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
         } catch {}
 
         // Compute slug and URL
@@ -256,7 +274,8 @@ export async function getFolder(path: string): Promise<ContentFolder> {
         const folderUrl = slug ? `/${folderName}/${slug}` : `/${folderName}`;
 
         // Breadcrumbs
-        const thisFolderBreadcrumb: Breadcrumb = {
+        /** @type {Breadcrumb} */
+        const thisFolderBreadcrumb = {
             label: indexFrontmatter.title,
             href: folderUrl
         };
@@ -277,7 +296,7 @@ export async function getFolder(path: string): Promise<ContentFolder> {
             .sort();
 
         // Direct child folders
-        const childFolderPaths = new Set<string>();
+        const childFolderPaths = new Set();
         for (const p of folderPaths) {
             const rel = p.replace('/src/content/', '');
             if (!basePath || rel.startsWith(basePath + '/')) {
@@ -290,24 +309,27 @@ export async function getFolder(path: string): Promise<ContentFolder> {
             }
         }
 
-        const childFolders: ContentFolder[] = [];
+        /** @type {ContentFolder[]} */
+        const childFolders = [];
         for (const childPath of Array.from(childFolderPaths).sort()) {
-            const child = await buildFolder(childPath, breadcrumbsWithHref);
+            const child = await buildFolder(/** @type {string} */ (childPath), breadcrumbsWithHref);
             if (child) childFolders.push(child);
         }
 
         // Load files — read frontmatter from disk to avoid triggering the Vite
         // module runner during content sync (it closes before lazy imports resolve)
-        const files: ContentFile[] = directFilePaths.map((fullPath) => {
+        /** @type {ContentFile[]} */
+        const files = directFilePaths.map((fullPath) => {
             const relPath = fullPath.replace('/src/content/', '');
             const folder = getFolderName(relPath);
             const slug = cleanPath(relPath.replace(`${folder}/`, ''));
 
-            let frontmatter: Record<string, any> = {};
+            /** @type {Record<string, any>} */
+            let frontmatter = {};
             try {
                 const raw = readFileSync(join(process.cwd(), 'src', 'content', relPath), 'utf-8');
                 const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
-                if (match) frontmatter = yaml.load(match[1]) as Record<string, any> ?? {};
+                if (match) frontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
             } catch {}
 
             return {
@@ -356,11 +378,11 @@ export async function getFolder(path: string): Promise<ContentFolder> {
 /**
  * Get a single content file.
  *
- * @param path - File path with extension, relative to src/content/
+ * @param {string} path - File path with extension, relative to src/content/
  *               e.g., 'reference/01-attributes/01-hx-get.md' or 'team.yaml'
- * @returns ContentFile or null if not found
+ * @returns {Promise<ContentFile | null>} ContentFile or null if not found
  */
-export async function getFile(path: string): Promise<ContentFile | null> {
+export async function getFile(path) {
     // YAML/JSON data files — read from disk, parse, resolve images
     if (isDataFile(path)) {
         try {
@@ -372,7 +394,7 @@ export async function getFile(path: string): Promise<ContentFile | null> {
                 folder: '',
                 slug: '',
                 url: '',
-                frontmatter: data,
+                frontmatter: /** @type {Record<string, any>} */ (data),
                 breadcrumbs: []
             };
         } catch {
@@ -384,11 +406,12 @@ export async function getFile(path: string): Promise<ContentFile | null> {
     const fullPath = `/src/content/${path}`;
     if (!allPaths.includes(fullPath)) return null;
 
-    let frontmatter: Record<string, any> = {};
+    /** @type {Record<string, any>} */
+    let frontmatter = {};
     try {
         const raw = readFileSync(join(process.cwd(), 'src', 'content', path), 'utf-8');
         const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
-        if (match) frontmatter = yaml.load(match[1]) as Record<string, any> ?? {};
+        if (match) frontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
     } catch {
         return null;
     }
@@ -398,7 +421,8 @@ export async function getFile(path: string): Promise<ContentFile | null> {
 
     // Build breadcrumbs and prev/next from folder tree
     const rootFolder = await getFolder(folder);
-    const breadcrumbs: Breadcrumb[] = [
+    /** @type {Breadcrumb[]} */
+    const breadcrumbs = [
         {label: rootFolder.frontmatter.title, href: rootFolder.url}
     ];
 
@@ -448,10 +472,14 @@ export async function getFile(path: string): Promise<ContentFile | null> {
  *
  * If the collection has no subfolders, files become H2s directly (shift +1
  * on their bodies). Files with slug `full` are skipped to avoid recursion.
+ *
+ * @param {string} collection
+ * @returns {Promise<string>}
  */
-export async function aggregateCollectionMarkdown(collection: string): Promise<string> {
+export async function aggregateCollectionMarkdown(collection) {
     const folder = await getFolder(collection);
-    const parts: string[] = [];
+    /** @type {string[]} */
+    const parts = [];
 
     const sections = folder.folders.slice().sort((a, b) => a.path.localeCompare(b.path));
 

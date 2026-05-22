@@ -1,13 +1,14 @@
-import type {APIRoute} from 'astro';
-import {readFile} from 'node:fs/promises';
-import {join} from 'node:path';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
-import {getFolder, COLLECTIONS} from '../lib/content';
+import { getFolder, COLLECTIONS } from '../lib/content';
 
 /**
  * Strip markdown/HTML to plain text for search indexing
+ * @param {string} markdown
+ * @returns {string}
  */
-function toPlainText(markdown: string): string {
+function toPlainText(markdown) {
     return markdown
         .replace(/```[\s\S]*?```/g, '')           // Remove code blocks
         .replace(/`([^`]+)`/g, '$1')              // Keep inline code content
@@ -19,13 +20,16 @@ function toPlainText(markdown: string): string {
 }
 
 /**
- * Extract H2/H3 sections from markdown for deep linking
+ * Extract H2/H3 sections from markdown for deep linking.
+ * @param {string} markdown
+ * @returns {Array<{title: string, anchor: string, content: string}>}
  */
-function extractSections(markdown: string): Array<{title: string, anchor: string, content: string}> {
+function extractSections(markdown) {
     const withoutFrontmatter = markdown.replace(/^---\n[\s\S]*?\n---\n/, '');
     const headingRegex = /^(#{2,3})\s+(.+)$/gm;
     const matches = [...withoutFrontmatter.matchAll(headingRegex)];
-    const sections: Array<{title: string, anchor: string, content: string}> = [];
+    /** @type {Array<{title: string, anchor: string, content: string}>} */
+    const sections = [];
 
     for (let i = 0; i < matches.length; i++) {
         const match = matches[i];
@@ -34,11 +38,11 @@ function extractSections(markdown: string): Array<{title: string, anchor: string
         const anchor = title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
 
         // Get content until next heading of same or higher level
-        const startPos = match.index! + match[0].length;
+        const startPos = (match.index ?? 0) + match[0].length;
         let endPos = withoutFrontmatter.length;
         for (let j = i + 1; j < matches.length; j++) {
             if (matches[j][1].length <= level) {
-                endPos = matches[j].index!;
+                endPos = matches[j].index ?? withoutFrontmatter.length;
                 break;
             }
         }
@@ -53,9 +57,10 @@ function extractSections(markdown: string): Array<{title: string, anchor: string
 }
 
 
-
-export const GET: APIRoute = async () => {
-    const results: any[] = [];
+/** @type {import('astro').APIRoute} */
+export const GET = async () => {
+    /** @type {any[]} */
+    const results = [];
 
     await Promise.all(
         COLLECTIONS.map(async (collectionId) => {
@@ -77,7 +82,8 @@ export const GET: APIRoute = async () => {
                 });
 
                 // Add subfolder entries (e.g., Reference > Headers, Docs > Getting Started)
-                const addSubfolders = (parentFolder: typeof folder) => {
+                /** @param {typeof folder} parentFolder */
+                const addSubfolders = (parentFolder) => {
                     for (const subfolder of parentFolder.folders) {
                         const breadcrumb = subfolder.breadcrumbs
                             .slice(1, -1)
@@ -100,7 +106,8 @@ export const GET: APIRoute = async () => {
                 addSubfolders(folder);
 
                 for (const file of files) {
-                    let sections: Array<{title: string, anchor: string, content: string}> = [];
+                    /** @type {Array<{title: string, anchor: string, content: string}>} */
+                    let sections = [];
                     const fileId = file.path.startsWith(`${collectionId}/`)
                         ? file.path.replace(`${collectionId}/`, '')
                         : file.path;

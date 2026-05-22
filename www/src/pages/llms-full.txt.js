@@ -1,4 +1,3 @@
-import type { APIRoute } from 'astro';
 import { aggregateCollectionMarkdown } from '../lib/content';
 import { absolutizeRelativeLinks } from '../lib/utils';
 
@@ -7,9 +6,10 @@ import { absolutizeRelativeLinks } from '../lib/utils';
  * LLM-aware clients that prefer a single fetch over walking individual
  * page URLs. Identical output to /docs/full.md, served under the
  * llms.txt-adjacent conventional path.
+ *
+ * @type {import('astro').APIRoute}
  */
-
-export const GET: APIRoute = async ({ site }) => {
+export const GET = async ({ site }) => {
     const origin = site?.origin || 'https://htmx.org';
     const content = absolutizeRelativeLinks(await aggregateCollectionMarkdown('docs'), origin);
     return new Response(content, {

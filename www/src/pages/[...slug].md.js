@@ -1,4 +1,3 @@
-import type { APIRoute } from 'astro';
 import { getFolder, aggregateCollectionMarkdown, fileAsMarkdown } from '../lib/content';
 import { absolutizeRelativeLinks } from '../lib/utils';
 
@@ -19,15 +18,17 @@ import { absolutizeRelativeLinks } from '../lib/utils';
  * collection, not the raw MDX stub that renders the HTML page.
  */
 
-const MD_COLLECTIONS = ['docs', 'reference', 'patterns', 'essays', 'interviews', 'extensions'] as const;
+const MD_COLLECTIONS = ['docs', 'reference', 'patterns', 'essays', 'interviews', 'extensions'];
 
-interface PathProps {
-    filePath: string;
-    collection: string | null;
-}
+/**
+ * @typedef {Object} PathProps
+ * @property {string} filePath
+ * @property {string | null} collection
+ */
 
 export async function getStaticPaths() {
-    const paths: Array<{ params: { slug: string }; props: PathProps }> = [];
+    /** @type {Array<{ params: { slug: string }; props: PathProps }>} */
+    const paths = [];
 
     // Standalone single-page prose: /about
     const about = await getFolder('about');
@@ -49,14 +50,15 @@ export async function getStaticPaths() {
     return paths;
 }
 
-export const GET: APIRoute = async ({ params, props, site }) => {
-    const { filePath, collection } = props as PathProps;
+/** @type {import('astro').APIRoute} */
+export const GET = async ({ params, props, site }) => {
+    const { filePath, collection } = /** @type {PathProps} */ (props);
     const origin = site?.origin || 'https://htmx.org';
 
     // Any page whose slug is `<collection>/full` gets the aggregated view.
     const isFullPage = !!collection && params.slug === `${collection}/full`;
     const markdown = isFullPage
-        ? await aggregateCollectionMarkdown(collection!)
+        ? await aggregateCollectionMarkdown(/** @type {string} */ (collection))
         : fileAsMarkdown(filePath);
     const content = absolutizeRelativeLinks(markdown, origin);
 

@@ -1,4 +1,3 @@
-import type { APIRoute } from 'astro';
 import { getFolder } from '../lib/content';
 
 /**
@@ -7,7 +6,7 @@ import { getFolder } from '../lib/content';
  *
  * Emits a short site blurb followed by a sectioned list of markdown-form
  * pages. Each listed URL resolves to the `.md` endpoint served by
- * pages/[...slug].md.ts.
+ * pages/[...slug].md.js.
  */
 
 const SECTIONS = [
@@ -16,11 +15,13 @@ const SECTIONS = [
     { collection: 'patterns', heading: 'Patterns' },
     { collection: 'essays', heading: 'Essays' },
     { collection: 'interviews', heading: 'Interviews' },
-] as const;
+];
 
-export const GET: APIRoute = async ({ site }) => {
+/** @type {import('astro').APIRoute} */
+export const GET = async ({ site }) => {
     const origin = site?.origin || 'https://htmx.org';
-    const lines: string[] = [];
+    /** @type {string[]} */
+    const lines = [];
 
     lines.push('# htmx');
     lines.push('');
