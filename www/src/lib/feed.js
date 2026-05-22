@@ -62,6 +62,9 @@ function remarkStripMdxNodes() {
  * @param {string} origin - Site origin, no trailing slash.
  */
 function rehypeAbsoluteUrls(origin) {
+    // Rewrite root-relative URLs inside raw HTML strings (preserved by
+    // `allowDangerousHtml`). Handles single- and double-quoted attributes.
+    const rawRe = /\b(href|src)=("|')(\/[^/][^"']*?)\2/g;
     /** @param {any} tree */
     return (tree) => {
         /** @param {any} node */
@@ -73,6 +76,8 @@ function rehypeAbsoluteUrls(origin) {
                         node.properties[attr] = origin + v;
                     }
                 }
+            } else if (node.type === 'raw' && typeof node.value === 'string') {
+                node.value = node.value.replace(rawRe, (_m, attr, q, path) => `${attr}=${q}${origin}${path}${q}`);
             }
             if (Array.isArray(node.children)) node.children.forEach(walk);
         };
