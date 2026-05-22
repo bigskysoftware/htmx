@@ -8,7 +8,8 @@ import EasterEggs from "../components/EasterEggs.astro";
 import Sponsors from "../components/Sponsors.astro";
 import Hero from "../components/Hero.astro";
 import { Image } from 'astro:assets';
-import hypermediaSystems from '../assets/img/hypermedia-systems.png';
+import bookCoverHard from '../assets/img/cover.png';
+import bookCoverSoft from '../assets/img/cover2.png';
 export const sponsorsFile = await getFile('sponsors.yaml');
 export const sponsors = (sponsorsFile?.frontmatter || []).map(s => ({
     ...s,
@@ -52,7 +53,10 @@ When clicked, [`hx-post`](/reference/attributes/hx-post) sends a `POST` to `/cli
 [Hypermedia Systems](https://hypermedia.systems) covers building [Hypermedia-Driven Applications](/essays/hypermedia-driven-applications) with htmx. Free online.
 
 <a href="https://hypermedia.systems" target="_blank" rel="noopener noreferrer" class="group block not-prose w-fit mx-auto font-chicago text-sm text-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 interact:underline transition">
-    <Image src={hypermediaSystems} alt="Hypermedia Systems" width={240} class="mb-3 rounded-sm group-interact:-translate-y-1 transition" />
+    <div class="flex gap-8 justify-center mb-3">
+        <Image src={bookCoverHard} alt="Hypermedia Systems (hardcover)" width={240} class="rounded-sm border border-neutral-200 dark:border-neutral-800 group-interact:-translate-y-1 transition" />
+        <Image src={bookCoverSoft} alt="Hypermedia Systems (softcover)" width={240} class="rounded-sm border border-neutral-200 dark:border-neutral-800 group-interact:-translate-y-1 transition" />
+    </div>
     Hypermedia Systems
 </a>
 
