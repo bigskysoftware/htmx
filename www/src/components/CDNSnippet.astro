@@ -1,13 +1,9 @@
 ---
-import fs from 'node:fs';
-import path from 'node:path';
-import crypto from 'node:crypto';
 import pkg from '../../../package.json';
+import integrity from '../data/integrity.json';
 
 const CDN_URL = `https://cdn.jsdelivr.net/npm/htmx.org@${pkg.version}/dist/htmx.min.js`;
-
-const distPath = path.resolve(import.meta.dirname, '../../../dist/htmx.min.js');
-const INTEGRITY = 'sha384-' + crypto.createHash('sha384').update(fs.readFileSync(distPath)).digest('base64');
+const INTEGRITY = integrity.min;
 ---
 
 <!-- CDN one-liner: click anywhere to copy full <script> tag -->
