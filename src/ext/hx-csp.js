@@ -9,7 +9,8 @@
 //    nonces to prevent HTML injection attacks. Every htmx element
 //    must carry an hx-nonce attribute matching the page nonce or
 //    its htmx attributes are stripped. Fail closed if no page
-//    nonce is found.
+//    nonce is found. Also re-checks nonce presence before internal eval
+//    to also cover extension eval use like hx-live.
 //    Nonce source: script[nonce].nonce property on page load.
 //
 // 2. Trusted Types — creates an 'htmx' TT policy (passthrough —
@@ -118,23 +119,23 @@
                 return;
             }
 
-            let syncFn, asyncFn;
-            if (htmx.config.safeEval) {
-                // Replaces htmx's new Function() eval with nonce-based script injection,
-                // enabling hx-on:/hx-vals js:/hx-confirm js: without unsafe-eval in CSP.
-                let counter = 0;
-                function makeNoncedConstructor(isAsync) {
-                    return function(...keys) {
-                        let body = keys.pop();
-                        return {
-                            call: (thisArg, ...values) => {
-                                if (getNonce(thisArg) !== pageNonce) {
-                                    let tag = thisArg?.tagName?.toLowerCase();
-                                    let id = thisArg?.id ? `#${thisArg.id}` : '';
-                                    console.error(`htmx: [hx-csp] blocked eval on <${tag}${id}> — nonce mismatch`, { elt: thisArg });
-                                    htmx.trigger(thisArg, 'htmx:security:violation', { reason: 'nonce-mismatch-at-eval' });
-                                    return;
-                                }
+            let counter = 0;
+            let NativeFunction = Function;
+            let NativeAsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
+            function makeGatedConstructor(isAsync) {
+                return function(...keys) {
+                    let body = keys.pop();
+                    return {
+                        call: (thisArg, ...values) => {
+                            if (getNonce(thisArg) !== pageNonce) {
+                                let tag = thisArg?.tagName?.toLowerCase();
+                                let id = thisArg?.id ? `#${thisArg.id}` : '';
+                                console.error(`htmx: [hx-csp] blocked eval on <${tag}${id}> — nonce mismatch`, { elt: thisArg });
+                                htmx.trigger(thisArg, 'htmx:security:violation', { reason: 'nonce-mismatch-at-eval' });
+                                return;
+                            }
+                            if (htmx.config.safeEval) {
                                 let fn = `__htmx_eval_${++counter}`;
                                 let script = document.createElement('script');
                                 script.nonce = pageNonce;
@@ -145,14 +146,14 @@
                                 delete window[fn];
                                 return r;
                             }
-                        };
+                            let Ctor = isAsync ? NativeAsyncFunction : NativeFunction;
+                            return new Ctor(...keys, body).call(thisArg, ...values);
+                        }
                     };
-                }
-                syncFn = makeNoncedConstructor(false);
-                asyncFn = makeNoncedConstructor(true);
+                };
             }
 
-            api.initSecurity(ttPolicy, syncFn, asyncFn);
+            api.initSecurity(ttPolicy, makeGatedConstructor(false), makeGatedConstructor(true));
         },
 
         htmx_before_init: checkNonce,
