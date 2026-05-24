@@ -342,7 +342,7 @@ describe('hx-live extension', function () {
         } finally {
             console.warn = originalWarn;
         }
-        // add delay to allow runnaway protection to reset before other tests run
+        // add delay to allow runaway protection to reset before other tests run
         await htmx.timeout(1000);
     });
 
