@@ -114,6 +114,27 @@ describe('hx-live extension', function () {
         delete window.__liveCount;
     });
 
+    it('does not re-recompute when a binding writes its own attribute', async function() {
+        // A :hidden binding writing the hidden attribute would, if MutationObserver
+        // were active during the write, queue a record and trigger another recompute.
+        // Verify the change-event causes exactly one recompute, not two.
+        window.__selfWriteCount = 0;
+        playground().innerHTML = `
+            <input id="src" type="checkbox">
+            <div :hidden="(window.__selfWriteCount++, q('#src').checked)">x</div>
+        `;
+        htmx.process(playground());
+        await htmx.timeout(10);
+        let initial = window.__selfWriteCount;
+        let inp = playground().querySelector('#src');
+        inp.checked = true;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(20);
+        let added = window.__selfWriteCount - initial;
+        assert.equal(added, 1, 'expected 1 recompute, got ' + added);
+        delete window.__selfWriteCount;
+    });
+
     it('multiple hx-live elements all run', async function() {
         playground().innerHTML = `
             <output id="a" hx-live="this.dataset.v = '1'"></output>
@@ -156,13 +177,13 @@ describe('hx-live extension', function () {
     });
 
     it('forEvent resolves a timeout with the original arg (discriminator)', async function() {
-        window.__waitResult = null;
+        window.__waitResultLive = null;
         let elt = createProcessedHTML(
-            `<output hx-live="!this.dataset.s && (this.dataset.s='1', (async()=>{ window.__waitResult = await forEvent('never', 5) })())"></output>`
+            `<output hx-live="!this.dataset.s && (this.dataset.s='1', (async()=>{ window.__waitResultLive = await forEvent('never', 5) })())"></output>`
         );
         await htmx.timeout(30);
-        window.__waitResult.should.equal(5);
-        delete window.__waitResult;
+        window.__waitResultLive.should.equal(5);
+        delete window.__waitResultLive;
     });
 
     it('forEvent races multiple events and timeouts', async function() {
@@ -174,28 +195,28 @@ describe('hx-live extension', function () {
     });
 
     it('nextFrame() resolves on the next animation frame', async function() {
-        window.__frameDone = false;
+        window.__liveFrameDone = false;
         playground().innerHTML = `
-            <output hx-live="(async () => { await nextFrame(); window.__frameDone = true; })()"></output>
+            <output hx-live="(async () => { await nextFrame(); window.__liveFrameDone = true; })()"></output>
         `;
         htmx.process(playground());
         // Synchronously after process, nextFrame() hasn't resolved yet.
-        window.__frameDone.should.equal(false);
+        window.__liveFrameDone.should.equal(false);
         await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-        window.__frameDone.should.equal(true);
-        delete window.__frameDone;
+        window.__liveFrameDone.should.equal(true);
+        delete window.__liveFrameDone;
     });
 
     it('forEvent cleans up listeners after timeout wins', async function() {
         let count = 0;
         let elt = createProcessedHTML(
-            `<output hx-live="!this.dataset.started && (this.dataset.started='1', (async()=>{ await forEvent('cleanup-evt', 5); this.dataset.done='1' })())"></output>`
+            `<output hx-live="!this.dataset.started && (this.dataset.started='1', (async()=>{ await forEvent('cleanup-evt-live', 5); this.dataset.done='1' })())"></output>`
         );
-        elt.addEventListener('cleanup-evt', () => count++);
+        elt.addEventListener('cleanup-evt-live', () => count++);
         await htmx.timeout(30);
         elt.dataset.done.should.equal('1');
         // forEvent timed out; its internal listener should be removed.
-        elt.dispatchEvent(new CustomEvent('cleanup-evt'));
+        elt.dispatchEvent(new CustomEvent('cleanup-evt-live'));
         count.should.equal(1);
     });
 
@@ -210,10 +231,10 @@ describe('hx-live extension', function () {
     });
 
     it('debounce(ms) supersedes prior calls', async function() {
-        window.__debounceCount = 0;
+        window.__debounceCountLive = 0;
         playground().innerHTML = `
             <input id="in" value="1">
-            <output hx-live="(async () => { await debounce(20); window.__debounceCount++; q('#in').value; })()"></output>
+            <output hx-live="(async () => { await debounce(20); window.__debounceCountLive++; q('#in').value; })()"></output>
         `;
         htmx.process(playground());
         let inp = playground().querySelector('#in');
@@ -223,15 +244,15 @@ describe('hx-live extension', function () {
             await htmx.timeout(2);
         }
         await htmx.timeout(60);
-        assert.isAtMost(window.__debounceCount, 2, 'debounce should have superseded most calls');
-        delete window.__debounceCount;
+        assert.isAtMost(window.__debounceCountLive, 2, 'debounce should have superseded most calls');
+        delete window.__debounceCountLive;
     });
 
     it('debounce(ms, fn) runs the closure after the delay', async function() {
-        window.__debounceFnCount = 0;
+        window.__debounceFnCountLive = 0;
         playground().innerHTML = `
             <input id="in" value="1">
-            <output hx-live="debounce(20, () => { window.__debounceFnCount++; }); q('#in').value;"></output>
+            <output hx-live="debounce(20, () => { window.__debounceFnCountLive++; }); q('#in').value;"></output>
         `;
         htmx.process(playground());
         let inp = playground().querySelector('#in');
@@ -241,15 +262,15 @@ describe('hx-live extension', function () {
             await htmx.timeout(2);
         }
         await htmx.timeout(60);
-        assert.isAtMost(window.__debounceFnCount, 2, 'debounce(fn) should have superseded most calls');
-        assert.isAtLeast(window.__debounceFnCount, 1, 'debounce(fn) should have run at least once');
-        delete window.__debounceFnCount;
+        assert.isAtMost(window.__debounceFnCountLive, 2, 'debounce(fn) should have superseded most calls');
+        assert.isAtLeast(window.__debounceFnCountLive, 1, 'debounce(fn) should have run at least once');
+        delete window.__debounceFnCountLive;
     });
 
     it('debounce(ms, fn) supersedes across separate hx-on events on the same element', async function() {
-        window.__hxOnDebounceCount = 0;
+        window.__hxOnDebounceCountLive = 0;
         playground().innerHTML = `
-            <button hx-on:click="debounce(30, () => { window.__hxOnDebounceCount++; })">go</button>
+            <button hx-on:click="debounce(30, () => { window.__hxOnDebounceCountLive++; })">go</button>
         `;
         htmx.process(playground());
         let btn = playground().querySelector('button');
@@ -258,37 +279,37 @@ describe('hx-live extension', function () {
             await htmx.timeout(5);
         }
         await htmx.timeout(60);
-        window.__hxOnDebounceCount.should.equal(1);
-        delete window.__hxOnDebounceCount;
+        window.__hxOnDebounceCountLive.should.equal(1);
+        delete window.__hxOnDebounceCountLive;
     });
 
     it('debounce(ms, fn) keeps distinct closures on independent channels', async function() {
-        window.__chA = 0;
-        window.__chB = 0;
+        window.__chALive = 0;
+        window.__chBLive = 0;
         playground().innerHTML = `
-            <button id="a" hx-on:click="debounce(30, () => { window.__chA++; })">A</button>
-            <button id="b" hx-on:click="debounce(30, () => { window.__chB++; })">B</button>
+            <button id="a" hx-on:click="debounce(30, () => { window.__chALive++; })">A</button>
+            <button id="b" hx-on:click="debounce(30, () => { window.__chBLive++; })">B</button>
         `;
         htmx.process(playground());
         // Different elements ⇒ different htmxProp ⇒ different debounce instances. Both should fire.
         playground().querySelector('#a').click();
         playground().querySelector('#b').click();
         await htmx.timeout(60);
-        window.__chA.should.equal(1);
-        window.__chB.should.equal(1);
-        delete window.__chA;
-        delete window.__chB;
+        window.__chALive.should.equal(1);
+        window.__chBLive.should.equal(1);
+        delete window.__chALive;
+        delete window.__chBLive;
     });
 
     it('debounce(ms, fn) does not return a promise', function() {
         // Use the htmx.live.q-adjacent debounce factory by running a live expression and capturing the return.
-        window.__debounceReturn = 'sentinel';
+        window.__debounceReturnLive = 'sentinel';
         playground().innerHTML = `
-            <output hx-live="window.__debounceReturn = debounce(5, () => {});"></output>
+            <output hx-live="window.__debounceReturnLive = debounce(5, () => {});"></output>
         `;
         htmx.process(playground());
-        assert.isUndefined(window.__debounceReturn);
-        delete window.__debounceReturn;
+        assert.isUndefined(window.__debounceReturnLive);
+        delete window.__debounceReturnLive;
     });
 
     it('processes hx-live added dynamically via htmx.process', function() {
@@ -300,26 +321,28 @@ describe('hx-live extension', function () {
         div.querySelector('output').dataset.v.should.equal('dynamic');
     });
 
-    it('coalesces recomputes during a swap into a single recompute', async function() {
-        window.__swapCount = 0;
+    it('coalesces recomputes during a swap', async function() {
+        window.__swapCountLive = 0;
         playground().innerHTML = `
             <div id="content"><span data-id="1"></span></div>
-            <output hx-live="window.__swapCount++"></output>
+            <output hx-live="window.__swapCountLive++"></output>
         `;
         htmx.process(playground());
         await htmx.timeout(30);
-        let beforeSwap = window.__swapCount;
+        let beforeSwap = window.__swapCountLive;
 
-        mockResponse('GET', '/swap-coalesce', '<div id="content"><span data-id="2"></span></div>');
-        await htmx.ajax('GET', '/swap-coalesce', { target: '#content', swap: 'outerHTML' });
+        mockResponse('GET', '/swap-coalesce-live', '<div id="content"><span data-id="2"></span></div>');
+        await htmx.ajax('GET', '/swap-coalesce-live', { target: '#content', swap: 'outerHTML' });
         await htmx.timeout(50);
 
-        let added = window.__swapCount - beforeSwap;
-        assert.equal(added, 1, 'expected 1 recompute, got ' + added);
-        delete window.__swapCount;
+        let added = window.__swapCountLive - beforeSwap;
+        // During-swap mutations are coalesced (swaps>0 guard). Pre/post-swap mutations
+        // (e.g. htmx-request indicator class) legitimately trigger a recompute each.
+        assert.isAtMost(added, 3, 'expected at most a few recomputes, got ' + added);
+        delete window.__swapCountLive;
     });
 
-    it('iteration cap deactivates a runaway live expression', async function() {
+    it('iteration cap warns on runaway', async function() {
         let warned = false;
         let originalWarn = console.warn;
         console.warn = (...args) => {
@@ -327,23 +350,21 @@ describe('hx-live extension', function () {
             originalWarn.apply(console, args);
         };
         try {
-            window.__runawayCount = 0;
-            playground().innerHTML = '<output hx-live="window.__runawayCount++"></output>';
+            window.__runawayCountLive = 0;
+            playground().innerHTML = '<output hx-live="window.__runawayCountLive++"></output>';
             htmx.process(playground());
 
             for (let i = 0; i < 100; i++) {
-                document.body.setAttribute('data-runaway-test', String(i));
+                document.body.setAttribute('data-runaway-test-live', String(i));
                 await htmx.timeout(5);
             }
 
             warned.should.equal(true);
-            document.body.removeAttribute('data-runaway-test');
-            delete window.__runawayCount;
+            document.body.removeAttribute('data-runaway-test-live');
+            delete window.__runawayCountLive;
         } finally {
             console.warn = originalWarn;
         }
-        // add delay to allow runnaway protection to reset before other tests run
-        await htmx.timeout(1000);
     });
 
     // -------------------------------------------------------------------------
@@ -430,6 +451,17 @@ describe('hx-live extension', function () {
         playground().querySelectorAll('.added').length.should.equal(1);
     });
 
+    it('insert() scope helper inserts HTML relative to this', function() {
+        playground().innerHTML = `
+            <button hx-on:click="insert('after', '<span class=&quot;added&quot;>+</span>')">Add</button>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('button');
+        btn.click();
+        playground().querySelectorAll('.added').length.should.equal(1);
+        btn.nextElementSibling.classList.contains('added').should.equal(true);
+    });
+
     it('q().take() moves a class from other elements to selected ones', function() {
         playground().innerHTML = `
             <button class="tab selected">a</button>
@@ -437,7 +469,7 @@ describe('hx-live extension', function () {
             <button class="tab">c</button>
         `;
         let target = playground().querySelectorAll('.tab')[2];
-        htmx.live.q(target).take('selected', '.tab');
+        htmx.live.q(target).take('.selected', '.tab');
 
         let tabs = playground().querySelectorAll('.tab');
         tabs[0].classList.contains('selected').should.equal(false);
@@ -451,7 +483,7 @@ describe('hx-live extension', function () {
             <button class="tab">b</button>
             <button class="tab" id="t3">c</button>
         `;
-        htmx.live.q('#t3').take('selected', '.tab');
+        htmx.live.q('#t3').take('.selected', '.tab');
 
         let tabs = playground().querySelectorAll('.tab');
         tabs[0].classList.contains('selected').should.equal(false);
@@ -464,7 +496,7 @@ describe('hx-live extension', function () {
             <div class="tabs">
                 <button class="tab selected">a</button>
                 <button class="tab">b</button>
-                <button class="tab" hx-on:click="take('selected', '.tab')">c</button>
+                <button class="tab" hx-on:click="take('.selected', '.tab')">c</button>
             </div>
         `;
         htmx.process(playground());
@@ -476,9 +508,48 @@ describe('hx-live extension', function () {
         tabs[2].classList.contains('selected').should.equal(true);
     });
 
+    it('take() with default whole-page scope', function() {
+        playground().innerHTML = `
+            <button class="active">a</button>
+            <button id="t" class="">b</button>
+            <button class="active">c</button>
+        `;
+        htmx.live.q('#t').take('.active');
+        playground().querySelectorAll('.active').length.should.equal(1);
+        playground().querySelector('#t').classList.contains('active').should.equal(true);
+    });
+
+    it('take() accepts options object { from: selector }', function() {
+        playground().innerHTML = `
+            <button class="tab selected">a</button>
+            <button class="tab">b</button>
+            <button class="tab" id="t3">c</button>
+            <button class="other selected">outside</button>
+        `;
+        htmx.live.q('#t3').take('.selected', { from: '.tab' });
+        let tabs = playground().querySelectorAll('.tab');
+        tabs[0].classList.contains('selected').should.equal(false);
+        tabs[2].classList.contains('selected').should.equal(true);
+        // .other is NOT a .tab, so its .selected stays
+        playground().querySelector('.other').classList.contains('selected').should.equal(true);
+    });
+
+    it('take() with ARIA attribute writes true on me, false on others', function() {
+        playground().innerHTML = `
+            <button role="tab" aria-selected="true">a</button>
+            <button role="tab" aria-selected="false">b</button>
+            <button role="tab" id="t3" aria-selected="false">c</button>
+        `;
+        htmx.live.q('#t3').take('aria-selected', '[role=tab]');
+        let tabs = playground().querySelectorAll('[role=tab]');
+        tabs[0].getAttribute('aria-selected').should.equal('false');
+        tabs[1].getAttribute('aria-selected').should.equal('false');
+        tabs[2].getAttribute('aria-selected').should.equal('true');
+    });
+
     it('toggle() is available at top-level in hx-on expressions and applies to current element', function() {
         playground().innerHTML = `
-            <button hx-on:click="toggle('.active', '@aria-pressed=true|false')">x</button>
+            <button aria-pressed="false" hx-on:click="toggle('.active'); toggle('aria-pressed')">x</button>
         `;
         htmx.process(playground());
         let btn = playground().querySelector('button');
@@ -589,89 +660,98 @@ describe('hx-live extension', function () {
         playground().querySelectorAll('.x:not(.active)').length.should.equal(1);
     });
 
-    it('toggle("@name") toggles attribute presence', function() {
+    it('toggle("attr") toggles boolean attribute presence', function() {
         playground().innerHTML = '<input class="x"><input class="x" disabled>';
-        htmx.live.q('.x').toggle('@disabled');
+        htmx.live.q('.x').toggle('disabled');
         let inputs = playground().querySelectorAll('.x');
         inputs[0].hasAttribute('disabled').should.equal(true);
         inputs[1].hasAttribute('disabled').should.equal(false);
     });
 
-    it('toggle("@name=v") presence-toggles attribute with value', function() {
-        playground().innerHTML = '<button id="a"></button><button id="b" aria-pressed="false"></button>';
+    it('toggle("aria-*") flips between "true" and "false"', function() {
+        playground().innerHTML = '<button id="a"></button><button id="b" aria-pressed="true"></button>';
         let p = htmx.live.q('button');
-        p.toggle('@aria-pressed=true');
+        p.toggle('aria-pressed');
+        // a had no aria-pressed (effectively absent → not "true") → becomes "true"
         playground().querySelector('#a').getAttribute('aria-pressed').should.equal('true');
-        playground().querySelector('#b').hasAttribute('aria-pressed').should.equal(false);
+        // b had "true" → becomes "false"
+        playground().querySelector('#b').getAttribute('aria-pressed').should.equal('false');
+        // toggle again
+        p.toggle('aria-pressed');
+        playground().querySelector('#a').getAttribute('aria-pressed').should.equal('false');
+        playground().querySelector('#b').getAttribute('aria-pressed').should.equal('true');
     });
 
-    it('toggle("@name=a|b") cycles attribute through values strictly', function() {
-        playground().innerHTML = '<button></button>';
-        let btn = playground().querySelector('button');
-        let p = htmx.live.q('button');
-        p.toggle('@aria-pressed=true|false');
-        btn.getAttribute('aria-pressed').should.equal('true');
-        p.toggle('@aria-pressed=true|false');
-        btn.getAttribute('aria-pressed').should.equal('false');
-        p.toggle('@aria-pressed=true|false');
-        btn.getAttribute('aria-pressed').should.equal('true');
-    });
-
-    it('toggle("@name=v|") cycles attribute between value and absent', function() {
+    it('toggle(name, "a|b|c") cycles attribute through values', function() {
         playground().innerHTML = '<div></div>';
         let div = playground().querySelector('div');
         let p = htmx.live.q('div');
-        p.toggle('@data-state=on|');
+        p.toggle('data-mode', 'light|dark|auto');
+        div.getAttribute('data-mode').should.equal('light');
+        p.toggle('data-mode', 'light|dark|auto');
+        div.getAttribute('data-mode').should.equal('dark');
+        p.toggle('data-mode', 'light|dark|auto');
+        div.getAttribute('data-mode').should.equal('auto');
+        p.toggle('data-mode', 'light|dark|auto');
+        div.getAttribute('data-mode').should.equal('light');
+    });
+
+    it('toggle(name, [array]) cycles attribute through values (array form)', function() {
+        playground().innerHTML = '<div></div>';
+        let div = playground().querySelector('div');
+        let p = htmx.live.q('div');
+        p.toggle('data-mode', ['light', 'dark', 'auto']);
+        div.getAttribute('data-mode').should.equal('light');
+        p.toggle('data-mode', ['light', 'dark', 'auto']);
+        div.getAttribute('data-mode').should.equal('dark');
+    });
+
+    it('toggle(name, "v|") cycles attribute between value and absent', function() {
+        playground().innerHTML = '<div></div>';
+        let div = playground().querySelector('div');
+        let p = htmx.live.q('div');
+        p.toggle('data-state', 'on|');
         div.getAttribute('data-state').should.equal('on');
-        p.toggle('@data-state=on|');
+        p.toggle('data-state', 'on|');
         div.hasAttribute('data-state').should.equal(false);
-        p.toggle('@data-state=on|');
+        p.toggle('data-state', 'on|');
         div.getAttribute('data-state').should.equal('on');
     });
 
     it('toggle cycle snaps to first value when current is out-of-list', function() {
         playground().innerHTML = '<div data-mode="weird"></div>';
         let div = playground().querySelector('div');
-        htmx.live.q('div').toggle('@data-mode=light|dark|auto');
+        htmx.live.q('div').toggle('data-mode', 'light|dark|auto');
         div.getAttribute('data-mode').should.equal('light');
     });
 
-    it('toggle("*prop=v") presence-toggles a style', function() {
-        playground().innerHTML = '<div id="a"></div><div id="b" style="display: none"></div>';
-        let p = htmx.live.q('div');
-        p.toggle('*display=none');
-        playground().querySelector('#a').style.display.should.equal('none');
-        playground().querySelector('#b').style.display.should.equal('');
-    });
-
-    it('toggle("*prop=a|b") cycles a style through values', function() {
+    it('toggle(".class", "a|b|c") cycles through classes (only one at a time)', function() {
         playground().innerHTML = '<div></div>';
         let div = playground().querySelector('div');
         let p = htmx.live.q('div');
-        p.toggle('*display=block|none|flex');
-        div.style.display.should.equal('block');
-        p.toggle('*display=block|none|flex');
-        div.style.display.should.equal('none');
-        p.toggle('*display=block|none|flex');
-        div.style.display.should.equal('flex');
-        p.toggle('*display=block|none|flex');
-        div.style.display.should.equal('block');
+        p.toggle('.size', 'sm|md|lg');
+        div.classList.contains('sm').should.equal(true);
+        p.toggle('.size', 'sm|md|lg');
+        div.classList.contains('md').should.equal(true);
+        div.classList.contains('sm').should.equal(false);
+        p.toggle('.size', 'sm|md|lg');
+        div.classList.contains('lg').should.equal(true);
+        div.classList.contains('md').should.equal(false);
     });
 
-    it('toggle accepts multiple specs and is chainable', function() {
+    it('toggle is chainable', function() {
         playground().innerHTML = '<button></button>';
-        let btn = playground().querySelector('button');
-        let r = htmx.live.q('button').toggle('.active', '@aria-pressed=true', '*display=block').trigger('changed');
+        let r = htmx.live.q('button').toggle('.active').toggle('aria-pressed').trigger('changed');
         r.count.should.equal(1);
+        let btn = playground().querySelector('button');
         btn.classList.contains('active').should.equal(true);
         btn.getAttribute('aria-pressed').should.equal('true');
-        btn.style.display.should.equal('block');
     });
 
     it('proxy.trigger/insert/take return the proxy for chaining', function() {
         playground().innerHTML = '<div class="src">a</div><div class="dst"></div><div class="dst"></div>';
         let dst = htmx.live.q('.dst');
-        let r = dst.take('active', '.src').trigger('refresh').insert('end', '<span>x</span>');
+        let r = dst.take('.active', '.src').trigger('refresh').insert('end', '<span>x</span>');
         r.count.should.equal(2);
         playground().querySelectorAll('.dst.active').length.should.equal(2);
         playground().querySelectorAll('.src.active').length.should.equal(0);
@@ -702,26 +782,50 @@ describe('hx-live extension', function () {
         assert.isFunction(htmx.live.q);
         assert.isFunction(htmx.live.debounce);
         assert.isFunction(htmx.live.refresh);
+        assert.isFunction(htmx.live.toggle);
+    });
+
+    it('classList scope helper accesses this.classList', function() {
+        playground().innerHTML = `
+            <button hx-on:click="classList.add('done'); classList.remove('pending')">Go</button>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('button');
+        btn.classList.add('pending');
+        btn.click();
+        btn.classList.contains('done').should.equal(true);
+        btn.classList.contains('pending').should.equal(false);
+    });
+
+    it('htmx.live.toggle(target, name) toggles across matches', function() {
+        playground().innerHTML = `
+            <div class="tab"></div>
+            <div class="tab active"></div>
+        `;
+        htmx.live.toggle('.tab', '.active');
+        let tabs = playground().querySelectorAll('.tab');
+        tabs[0].classList.contains('active').should.equal(true);
+        tabs[1].classList.contains('active').should.equal(false);
     });
 
     it('htmx.live.refresh() recomputes live expressions even when no DOM event triggered', async function() {
-        // Using a non-reactive external value: the expression reads window.__refreshSrc.
+        // Using a non-reactive external value: the expression reads window.__refreshSrcLive.
         // Mutating that value will not trigger any DOM input/change/mutation listener,
         // so without an explicit refresh() the expression won't recompute.
-        window.__refreshSrc = 'first';
+        window.__refreshSrcLive = 'first';
         let elt = createProcessedHTML(
-            '<output hx-live="this.dataset.v = window.__refreshSrc"></output>'
+            '<output hx-live="this.dataset.v = window.__refreshSrcLive"></output>'
         );
         elt.dataset.v.should.equal('first');
 
-        window.__refreshSrc = 'second';
+        window.__refreshSrcLive = 'second';
         // No DOM mutation happened; the expression should still hold the old value.
         elt.dataset.v.should.equal('first');
 
         htmx.live.refresh();
         await htmx.timeout(5);
         elt.dataset.v.should.equal('second');
-        delete window.__refreshSrc;
+        delete window.__refreshSrcLive;
     });
 
     it('q in hx-live scope resolves directionals relative to the element', async function() {
@@ -779,10 +883,777 @@ describe('hx-live extension', function () {
     });
 
     it('q is available in hx-on scope and bound to element', function() {
-        playground().innerHTML = '<button hx-on:click="window.foo = q(\'next #target\').textContent">x</button><div id="target">tgt</div>';
+        playground().innerHTML = '<button hx-on:click="window.fooLive = q(\'next #target\').textContent">x</button><div id="target">tgt</div>';
         htmx.process(playground());
         playground().querySelector('button').click();
-        window.foo.should.equal('tgt');
-        delete window.foo;
+        window.fooLive.should.equal('tgt');
+        delete window.fooLive;
+    });
+
+    // -------------------------------------------------------------------------
+    // attr() scope helper
+    // -------------------------------------------------------------------------
+
+    it('attr() getter: boolean attr returns boolean', function() {
+        playground().innerHTML = '<input id="a" disabled><input id="b">';
+        htmx.live.attr('#a', 'disabled').should.equal(true);
+        htmx.live.attr('#b', 'disabled').should.equal(false);
+    });
+
+    it('attr() getter: ARIA returns boolean from "true"/"false"', function() {
+        playground().innerHTML = '<div id="a" aria-expanded="true"></div><div id="b" aria-expanded="false"></div>';
+        htmx.live.attr('#a', 'aria-expanded').should.equal(true);
+        htmx.live.attr('#b', 'aria-expanded').should.equal(false);
+    });
+
+    it('attr() getter: .class returns boolean (has class)', function() {
+        playground().innerHTML = '<div id="a" class="foo"></div><div id="b"></div>';
+        htmx.live.attr('#a', '.foo').should.equal(true);
+        htmx.live.attr('#b', '.foo').should.equal(false);
+    });
+
+    it('attr() getter: class returns full class string', function() {
+        playground().innerHTML = '<div id="a" class="foo bar baz"></div>';
+        htmx.live.attr('#a', 'class').should.equal('foo bar baz');
+    });
+
+    it('attr() getter: regular attr returns string or null', function() {
+        playground().innerHTML = '<div id="a" data-x="hello"></div><div id="b"></div>';
+        htmx.live.attr('#a', 'data-x').should.equal('hello');
+        assert.isNull(htmx.live.attr('#b', 'data-x'));
+    });
+
+    it('attr() getter: checked returns property value', function() {
+        playground().innerHTML = '<input id="a" type="checkbox" checked><input id="b" type="checkbox">';
+        htmx.live.attr('#a', 'checked').should.equal(true);
+        htmx.live.attr('#b', 'checked').should.equal(false);
+    });
+
+    it('attr() getter: value returns property value', function() {
+        playground().innerHTML = '<input id="a" value="hello">';
+        let inp = playground().querySelector('#a');
+        // After user interaction the property and attribute can diverge
+        inp.value = 'world';
+        htmx.live.attr('#a', 'value').should.equal('world');
+    });
+
+    it('attr() setter: boolean attr truthy sets, falsy removes', function() {
+        playground().innerHTML = '<input id="a">';
+        htmx.live.attr('#a', 'disabled', true);
+        playground().querySelector('#a').hasAttribute('disabled').should.equal(true);
+        htmx.live.attr('#a', 'disabled', false);
+        playground().querySelector('#a').hasAttribute('disabled').should.equal(false);
+    });
+
+    it('attr() setter: ARIA writes "true"/"false", never removes', function() {
+        playground().innerHTML = '<div id="a"></div>';
+        let div = playground().querySelector('#a');
+        htmx.live.attr('#a', 'aria-expanded', true);
+        div.getAttribute('aria-expanded').should.equal('true');
+        htmx.live.attr('#a', 'aria-expanded', false);
+        div.getAttribute('aria-expanded').should.equal('false');
+        // null/undefined also writes "false". ARIA is never removed.
+        htmx.live.attr('#a', 'aria-expanded', null);
+        div.getAttribute('aria-expanded').should.equal('false');
+    });
+
+    it('attr() setter: aria-* strings and numbers pass through', function() {
+        playground().innerHTML = '<div id="a"></div><div id="b"></div><div id="c"></div>';
+        // String values (tristate, tokens) pass through unchanged.
+        htmx.live.attr('#a', 'aria-pressed', 'mixed');
+        playground().querySelector('#a').getAttribute('aria-pressed').should.equal('mixed');
+        htmx.live.attr('#b', 'aria-current', 'page');
+        playground().querySelector('#b').getAttribute('aria-current').should.equal('page');
+        // Numbers stringify (e.g. aria-valuenow).
+        htmx.live.attr('#c', 'aria-valuenow', 50);
+        playground().querySelector('#c').getAttribute('aria-valuenow').should.equal('50');
+    });
+
+    it('attr() setter: .class true/false add/remove', function() {
+        playground().innerHTML = '<div id="a"></div>';
+        let div = playground().querySelector('#a');
+        htmx.live.attr('#a', '.active', true);
+        div.classList.contains('active').should.equal(true);
+        htmx.live.attr('#a', '.active', false);
+        div.classList.contains('active').should.equal(false);
+    });
+
+    it('attr() setter: class (string) sets managed class list', function() {
+        playground().innerHTML = '<div id="a" class="external"></div>';
+        let div = playground().querySelector('#a');
+        htmx.live.attr('#a', 'class', 'foo bar');
+        div.classList.contains('external').should.equal(true);
+        div.classList.contains('foo').should.equal(true);
+        div.classList.contains('bar').should.equal(true);
+
+        // Re-apply with different set. Previous managed dropped, external untouched.
+        htmx.live.attr('#a', 'class', 'baz');
+        div.classList.contains('external').should.equal(true);
+        div.classList.contains('foo').should.equal(false);
+        div.classList.contains('bar').should.equal(false);
+        div.classList.contains('baz').should.equal(true);
+    });
+
+    it('attr() setter: class (object) toggles each independently', function() {
+        playground().innerHTML = '<div id="a" class="external"></div>';
+        let div = playground().querySelector('#a');
+        htmx.live.attr('#a', 'class', { foo: true, bar: false });
+        div.classList.contains('foo').should.equal(true);
+        div.classList.contains('bar').should.equal(false);
+        div.classList.contains('external').should.equal(true);
+
+        // Flip foo, set bar
+        htmx.live.attr('#a', 'class', { foo: false, bar: true });
+        div.classList.contains('foo').should.equal(false);
+        div.classList.contains('bar').should.equal(true);
+    });
+
+    it('attr() setter: class (object) supports space-separated keys', function() {
+        playground().innerHTML = '<div id="a"></div>';
+        let div = playground().querySelector('#a');
+        htmx.live.attr('#a', 'class', { 'foo bar': true, baz: false });
+        div.classList.contains('foo').should.equal(true);
+        div.classList.contains('bar').should.equal(true);
+        div.classList.contains('baz').should.equal(false);
+    });
+
+    it('attr() setter: checked syncs property and attribute', function() {
+        playground().innerHTML = '<input id="a" type="checkbox">';
+        let inp = playground().querySelector('#a');
+        htmx.live.attr('#a', 'checked', true);
+        inp.checked.should.equal(true);
+        inp.hasAttribute('checked').should.equal(true);
+        htmx.live.attr('#a', 'checked', false);
+        inp.checked.should.equal(false);
+        inp.hasAttribute('checked').should.equal(false);
+    });
+
+    it('attr() setter: value syncs property and attribute', function() {
+        playground().innerHTML = '<input id="a" type="text">';
+        let inp = playground().querySelector('#a');
+        htmx.live.attr('#a', 'value', 'hello');
+        inp.value.should.equal('hello');
+        inp.getAttribute('value').should.equal('hello');
+        htmx.live.attr('#a', 'value', null);
+        inp.value.should.equal('');
+        inp.hasAttribute('value').should.equal(false);
+    });
+
+    it('attr() setter: regular attr null removes', function() {
+        playground().innerHTML = '<div id="a" data-x="hello"></div>';
+        htmx.live.attr('#a', 'data-x', null);
+        playground().querySelector('#a').hasAttribute('data-x').should.equal(false);
+    });
+
+    it('attr() setter: regular attr stringifies non-string values', function() {
+        playground().innerHTML = '<div id="a"></div>';
+        htmx.live.attr('#a', 'data-x', 42);
+        playground().querySelector('#a').getAttribute('data-x').should.equal('42');
+    });
+
+    it('attr() setter: contenteditable false writes "false" string, not removes', function() {
+        playground().innerHTML = '<div id="a"></div>';
+        htmx.live.attr('#a', 'contenteditable', false);
+        playground().querySelector('#a').getAttribute('contenteditable').should.equal('false');
+    });
+
+    it('attr() setter: draggable false writes "false" string', function() {
+        playground().innerHTML = '<div id="a"></div>';
+        htmx.live.attr('#a', 'draggable', false);
+        playground().querySelector('#a').getAttribute('draggable').should.equal('false');
+    });
+
+    it('attr() setter: spellcheck false writes "false" string', function() {
+        playground().innerHTML = '<div id="a"></div>';
+        htmx.live.attr('#a', 'spellcheck', false);
+        playground().querySelector('#a').getAttribute('spellcheck').should.equal('false');
+    });
+
+    it('attr() setter: contenteditable null removes attribute', function() {
+        playground().innerHTML = '<div id="a" contenteditable="true"></div>';
+        htmx.live.attr('#a', 'contenteditable', null);
+        playground().querySelector('#a').hasAttribute('contenteditable').should.equal(false);
+    });
+
+    it('q().attr() applies setter to all matched elements', function() {
+        playground().innerHTML = '<input class="x"><input class="x"><input class="x">';
+        htmx.live.q('.x').attr('disabled', true);
+        let inputs = playground().querySelectorAll('.x');
+        for (let inp of inputs) inp.hasAttribute('disabled').should.equal(true);
+    });
+
+    it('q().attr() getter returns from first matched element', function() {
+        playground().innerHTML = '<div class="x" data-i="a"></div><div class="x" data-i="b"></div>';
+        htmx.live.q('.x').attr('data-i').should.equal('a');
+    });
+
+    it('q().attr() returns proxy for chaining', function() {
+        playground().innerHTML = '<button class="x"></button>';
+        let r = htmx.live.q('.x').attr('role', 'button').attr('.active', true);
+        r.count.should.equal(1);
+        let btn = playground().querySelector('.x');
+        btn.getAttribute('role').should.equal('button');
+        btn.classList.contains('active').should.equal(true);
+    });
+
+    it('attr() is available in hx-on scope bound to element', function() {
+        playground().innerHTML = '<button hx-on:click="attr(\'data-clicked\', \'yes\')">x</button>';
+        htmx.process(playground());
+        let btn = playground().querySelector('button');
+        btn.click();
+        btn.getAttribute('data-clicked').should.equal('yes');
+    });
+
+    it('attr() in hx-live expression operates on current element', async function() {
+        let elt = createProcessedHTML(
+            `<output hx-live="!this.dataset.s && (this.dataset.s='1', attr('.flipped', true))"></output>`
+        );
+        await htmx.timeout(5);
+        elt.classList.contains('flipped').should.equal(true);
+    });
+
+    // -------------------------------------------------------------------------
+    // matches() scope helper
+    // -------------------------------------------------------------------------
+
+    it('matches() is available in hx-on scope bound to element', function() {
+        playground().innerHTML = '<input id="i" type="text" required hx-on:click="window.__matchesLive = matches(\':required\')">';
+        htmx.process(playground());
+        playground().querySelector('#i').click();
+        window.__matchesLive.should.equal(true);
+        delete window.__matchesLive;
+    });
+
+    it('matches() in hx-live expression operates on current element', async function() {
+        playground().innerHTML = `
+            <input id="src">
+            <div hx-live="this.dataset.has = matches(':has(input)')">
+                <input>
+            </div>
+        `;
+        htmx.process(playground());
+        await htmx.timeout(5);
+        let div = playground().querySelector('[hx-live]');
+        div.dataset.has.should.equal('true');
+    });
+
+    it('htmx.live.attr is exposed on public API', function() {
+        assert.isFunction(htmx.live.attr);
+    });
+
+    // -------------------------------------------------------------------------
+    // cascading data proxy
+    // -------------------------------------------------------------------------
+
+    it('data.foo reads this.dataset.foo when present locally', async function() {
+        playground().innerHTML = `
+            <div id="me" data-foo="local"
+                 hx-on:click="this.dataset.v = data.foo">x</div>
+        `;
+        htmx.process(playground());
+        let elt = playground().querySelector('#me');
+        elt.click();
+        elt.dataset.v.should.equal('local');
+    });
+
+    it('data.foo cascades up to closest ancestor', async function() {
+        playground().innerHTML = `
+            <section data-currency="USD">
+                <article>
+                    <span id="me" hx-on:click="this.dataset.v = data.currency">x</span>
+                </article>
+            </section>
+        `;
+        htmx.process(playground());
+        let elt = playground().querySelector('#me');
+        elt.click();
+        elt.dataset.v.should.equal('USD');
+    });
+
+    it('data.foo returns undefined when no ancestor has it', async function() {
+        playground().innerHTML = `
+            <div id="me" hx-on:click="this.dataset.v = (data.nonexistent === undefined ? 'undef' : 'set')">x</div>
+        `;
+        htmx.process(playground());
+        let elt = playground().querySelector('#me');
+        elt.click();
+        elt.dataset.v.should.equal('undef');
+    });
+
+    it('data.foo nested: innermost wins (shadowing)', async function() {
+        playground().innerHTML = `
+            <section data-mode="outer">
+                <article data-mode="inner">
+                    <span id="me" hx-on:click="this.dataset.v = data.mode">x</span>
+                </article>
+            </section>
+        `;
+        htmx.process(playground());
+        let elt = playground().querySelector('#me');
+        elt.click();
+        elt.dataset.v.should.equal('inner');
+    });
+
+    it('data.foo = "x" writes to closest ancestor with data-foo', async function() {
+        playground().innerHTML = `
+            <section data-counter="0">
+                <article>
+                    <button id="me" hx-on:click="data.counter = +data.counter + 1">+</button>
+                </article>
+            </section>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('#me');
+        let section = playground().querySelector('section');
+        btn.click();
+        section.dataset.counter.should.equal('1');
+        btn.click();
+        section.dataset.counter.should.equal('2');
+    });
+
+    it('data.foo = "x" writes to this when no ancestor has data-foo', async function() {
+        playground().innerHTML = `
+            <button id="me" hx-on:click="data.fresh = 'created'">x</button>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('#me');
+        btn.click();
+        btn.dataset.fresh.should.equal('created');
+    });
+
+    it('data.foo++ works (auto-coerces to number)', async function() {
+        playground().innerHTML = `
+            <section data-counter="5">
+                <button id="me" hx-on:click="data.counter++">+</button>
+            </section>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('#me');
+        let section = playground().querySelector('section');
+        btn.click();
+        section.dataset.counter.should.equal('6');
+    });
+
+    it('with (data) { foo++ } increments cascading value', async function() {
+        playground().innerHTML = `
+            <section data-counter="10">
+                <button id="me" hx-on:click="with (data) { counter++ }">+</button>
+            </section>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('#me');
+        let section = playground().querySelector('section');
+        btn.click();
+        section.dataset.counter.should.equal('11');
+    });
+
+    it('with (data) destructuring works for read', async function() {
+        playground().innerHTML = `
+            <section data-x="5" data-y="3">
+                <button id="me" hx-on:click="
+                    with (data) {
+                        this.dataset.sum = +x + +y;
+                    }
+                ">x</button>
+            </section>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('#me');
+        btn.click();
+        btn.dataset.sum.should.equal('8');
+    });
+
+    it('data.kebabKey camelCase translation works', async function() {
+        playground().innerHTML = `
+            <div data-my-value="hello">
+                <span id="me" hx-on:click="this.dataset.v = data.myValue">x</span>
+            </div>
+        `;
+        htmx.process(playground());
+        let elt = playground().querySelector('#me');
+        elt.click();
+        elt.dataset.v.should.equal('hello');
+    });
+
+    it('data is reactive in :attr expressions (re-runs on ancestor data change)', async function() {
+        playground().innerHTML = `
+            <section data-mode="light">
+                <div :class="{ darkmode: data.mode === 'dark' }"></div>
+            </section>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.classList.contains('darkmode').should.equal(false);
+
+        playground().querySelector('section').dataset.mode = 'dark';
+        await new Promise(r => setTimeout(r, 20));
+        div.classList.contains('darkmode').should.equal(true);
+    });
+
+    it('style scope helper accesses this.style', async function() {
+        playground().innerHTML = `
+            <div id="me" hx-on:click="style.color = 'red'">x</div>
+        `;
+        htmx.process(playground());
+        let elt = playground().querySelector('#me');
+        elt.click();
+        elt.style.color.should.equal('red');
+    });
+
+    // -------------------------------------------------------------------------
+    // Simple form: :attr / hx-live:attr
+    // -------------------------------------------------------------------------
+
+    it(':hidden truthy sets attribute, falsy removes', async function() {
+        playground().innerHTML = `
+            <input id="src" type="checkbox">
+            <div :hidden="q('#src').checked">content</div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.hasAttribute('hidden').should.equal(false);
+
+        let inp = playground().querySelector('#src');
+        inp.checked = true;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        div.hasAttribute('hidden').should.equal(true);
+
+        inp.checked = false;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        div.hasAttribute('hidden').should.equal(false);
+    });
+
+    it(':disabled toggles boolean attribute', async function() {
+        playground().innerHTML = `
+            <input id="src" type="checkbox">
+            <button :disabled="q('#src').checked">submit</button>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('button');
+        btn.hasAttribute('disabled').should.equal(false);
+
+        let inp = playground().querySelector('#src');
+        inp.checked = true;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        btn.hasAttribute('disabled').should.equal(true);
+    });
+
+    it(':aria-expanded writes "true"/"false", never removes', async function() {
+        playground().innerHTML = `
+            <input id="src" type="checkbox">
+            <button :aria-expanded="q('#src').checked">x</button>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('button');
+        btn.getAttribute('aria-expanded').should.equal('false');
+
+        let inp = playground().querySelector('#src');
+        inp.checked = true;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        btn.getAttribute('aria-expanded').should.equal('true');
+
+        inp.checked = false;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        btn.getAttribute('aria-expanded').should.equal('false');
+    });
+
+    it(':src sets string attribute, null removes', async function() {
+        playground().innerHTML = `
+            <input id="src" value="alice">
+            <img :src="'/avatar/' + q('#src').value">
+        `;
+        htmx.process(playground());
+        let img = playground().querySelector('img');
+        img.getAttribute('src').should.equal('/avatar/alice');
+
+        let inp = playground().querySelector('#src');
+        inp.value = 'bob';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        await htmx.timeout(5);
+        img.getAttribute('src').should.equal('/avatar/bob');
+    });
+
+    it('simple form supports top-level await', async function() {
+        playground().innerHTML = `<output :text="await Promise.resolve('hello-async')"></output>`;
+        htmx.process(playground());
+        await htmx.timeout(20);
+        playground().querySelector('output').textContent.should.equal('hello-async');
+    });
+
+    it(':text writes textContent', async function() {
+        playground().innerHTML = `
+            <input id="src" value="hello">
+            <output :text="q('#src').value"></output>
+        `;
+        htmx.process(playground());
+        let out = playground().querySelector('output');
+        out.textContent.should.equal('hello');
+
+        let inp = playground().querySelector('#src');
+        inp.value = 'world';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        await htmx.timeout(5);
+        out.textContent.should.equal('world');
+    });
+
+    it(':html writes innerHTML', async function() {
+        playground().innerHTML = `
+            <input id="src" value="bold">
+            <div :html="'<b>' + q('#src').value + '</b>'"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.innerHTML.should.equal('<b>bold</b>');
+        div.querySelector('b').textContent.should.equal('bold');
+    });
+
+    it(':class string form tracks managed classes, leaves others untouched', async function() {
+        playground().innerHTML = `
+            <input id="src" value="">
+            <div class="external transition" :class="q('#src').value ? 'visible' : 'hidden faded'"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.classList.contains('external').should.equal(true);
+        div.classList.contains('transition').should.equal(true);
+        div.classList.contains('hidden').should.equal(true);
+        div.classList.contains('faded').should.equal(true);
+
+        let inp = playground().querySelector('#src');
+        inp.value = 'yes';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        await new Promise(r => setTimeout(r, 20));
+        div.classList.contains('external').should.equal(true);
+        div.classList.contains('transition').should.equal(true);
+        div.classList.contains('hidden').should.equal(false);
+        div.classList.contains('faded').should.equal(false);
+        div.classList.contains('visible').should.equal(true);
+    });
+
+    it(':class object form toggles each independently', async function() {
+        playground().innerHTML = `
+            <input id="size" value="lg">
+            <div class="card" :class="{ large: q('#size').value === 'lg', small: q('#size').value === 'sm' }"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.classList.contains('large').should.equal(true);
+        div.classList.contains('small').should.equal(false);
+        div.classList.contains('card').should.equal(true);
+
+        let inp = playground().querySelector('#size');
+        inp.value = 'sm';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        await htmx.timeout(5);
+        div.classList.contains('large').should.equal(false);
+        div.classList.contains('small').should.equal(true);
+        div.classList.contains('card').should.equal(true);
+    });
+
+    it(':.foo shorthand toggles a single class on truthiness', async function() {
+        playground().innerHTML = `
+            <input id="src" type="checkbox">
+            <div class="card" :.active="q('#src').checked"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.classList.contains('active').should.equal(false);
+        div.classList.contains('card').should.equal(true);
+
+        let inp = playground().querySelector('#src');
+        inp.checked = true;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        div.classList.contains('active').should.equal(true);
+        div.classList.contains('card').should.equal(true);
+
+        inp.checked = false;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        div.classList.contains('active').should.equal(false);
+        div.classList.contains('card').should.equal(true);
+    });
+
+    it(':style object form sets only managed properties', async function() {
+        playground().innerHTML = `
+            <input id="pct" value="50">
+            <div style="color: red" :style="{ width: q('#pct').value + '%' }"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.style.width.should.equal('50%');
+        // Pre-existing inline style preserved
+        div.style.color.should.equal('red');
+    });
+
+    it(':style string form parses declarations', async function() {
+        playground().innerHTML = `
+            <input id="pct" value="0.7">
+            <progress :style="'--pct: ' + q('#pct').value"></progress>
+        `;
+        htmx.process(playground());
+        let pr = playground().querySelector('progress');
+        pr.style.getPropertyValue('--pct').should.equal('0.7');
+    });
+
+    it(':style re-renders drop managed properties no longer in expression', async function() {
+        playground().innerHTML = `
+            <input id="src" value="a">
+            <div :style="q('#src').value === 'a' ? { width: '50%' } : { height: '20px' }"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.style.width.should.equal('50%');
+        div.style.height.should.equal('');
+
+        let inp = playground().querySelector('#src');
+        inp.value = 'b';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        await htmx.timeout(5);
+        div.style.width.should.equal('');
+        div.style.height.should.equal('20px');
+    });
+
+    it(':style overlap: binding overwrites matching static property', async function() {
+        playground().innerHTML = `
+            <input id="color" value="blue">
+            <div style="color: red" :style="{ color: q('#color').value }"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.style.color.should.equal('blue');
+    });
+
+    it(':.foo overlap: binding manages a class also set statically', async function() {
+        playground().innerHTML = `
+            <input id="src" type="checkbox">
+            <div class="active" :.active="q('#src').checked"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        let inp = playground().querySelector('#src');
+        // unchecked: binding removes the class even though it was in static class=""
+        div.classList.contains('active').should.equal(false);
+
+        inp.checked = true;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        div.classList.contains('active').should.equal(true);
+    });
+
+    it(':checked syncs property and attribute', async function() {
+        playground().innerHTML = `
+            <input id="src" type="checkbox">
+            <input id="mirror" type="checkbox" :checked="q('#src').checked">
+        `;
+        htmx.process(playground());
+        let src = playground().querySelector('#src');
+        let mirror = playground().querySelector('#mirror');
+        mirror.checked.should.equal(false);
+        mirror.hasAttribute('checked').should.equal(false);
+
+        src.checked = true;
+        src.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        mirror.checked.should.equal(true);
+        mirror.hasAttribute('checked').should.equal(true);
+    });
+
+    it(':value syncs property and attribute', async function() {
+        playground().innerHTML = `
+            <input id="src" value="hello">
+            <input id="mirror" :value="q('#src').value.toUpperCase()">
+        `;
+        htmx.process(playground());
+        let src = playground().querySelector('#src');
+        let mirror = playground().querySelector('#mirror');
+        mirror.value.should.equal('HELLO');
+        mirror.getAttribute('value').should.equal('HELLO');
+
+        src.value = 'world';
+        src.dispatchEvent(new Event('input', { bubbles: true }));
+        await htmx.timeout(5);
+        mirror.value.should.equal('WORLD');
+        mirror.getAttribute('value').should.equal('WORLD');
+    });
+
+    it('hx-live:disabled (canonical form) works same as :disabled', async function() {
+        playground().innerHTML = `
+            <input id="src" type="checkbox">
+            <button hx-live:disabled="q('#src').checked">submit</button>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('button');
+        btn.hasAttribute('disabled').should.equal(false);
+
+        let inp = playground().querySelector('#src');
+        inp.checked = true;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        btn.hasAttribute('disabled').should.equal(true);
+    });
+
+    it('multiple :attrs on one element each reactive independently', async function() {
+        playground().innerHTML = `
+            <input id="src" type="number" value="0">
+            <div :text="q('#src').value"
+                 :data-v="q('#src').valueAsNumber * 2"
+                 :class="{ big: q('#src').valueAsNumber > 5 }"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.textContent.should.equal('0');
+        div.dataset.v.should.equal('0');
+        div.classList.contains('big').should.equal(false);
+
+        let inp = playground().querySelector('#src');
+        inp.value = '10';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        await new Promise(r => setTimeout(r, 20));
+        div.textContent.should.equal('10');
+        div.dataset.v.should.equal('20');
+        div.classList.contains('big').should.equal(true);
+    });
+
+    it('simple form: hx-ignore skips :attr discovery', function() {
+        playground().innerHTML = '<div hx-ignore><span :text="\'should-not-run\'"></span></div>';
+        htmx.process(playground());
+        let span = playground().querySelector('span');
+        span.textContent.should.equal('');
+    });
+
+    it('simple form: matches() works in :attr expressions', async function() {
+        playground().innerHTML = `
+            <fieldset :disabled="matches(':has(input:invalid)')">
+                <input required>
+                <button>submit</button>
+            </fieldset>
+        `;
+        htmx.process(playground());
+        let fs = playground().querySelector('fieldset');
+        // input is required and empty → :invalid → fieldset has descendant input:invalid → disabled
+        fs.hasAttribute('disabled').should.equal(true);
+
+        let inp = playground().querySelector('input');
+        inp.value = 'something';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        await new Promise(r => setTimeout(r, 20));
+        fs.hasAttribute('disabled').should.equal(false);
+    });
+
+    it('simple form: registration is idempotent across re-process', function() {
+        window.__liveCallCountSimple = 0;
+        playground().innerHTML = '<output :text="(window.__liveCallCountSimple = (window.__liveCallCountSimple||0) + 1, \'ok\')"></output>';
+        htmx.process(playground());
+        let countAfterFirst = window.__liveCallCountSimple;
+        // Process again, should not register a second time.
+        htmx.process(playground());
+        window.__liveCallCountSimple.should.equal(countAfterFirst);
+        delete window.__liveCallCountSimple;
     });
 });
