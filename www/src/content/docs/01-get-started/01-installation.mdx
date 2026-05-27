@@ -6,6 +6,7 @@ keywords: [ "install", "setup", "cdn", "npm", "download", "getting started", "qu
 ---
 import { Code } from 'astro:components';
 import integrity from '../../../data/integrity.json';
+import { codeBlockTransformer } from '../../../lib/shiki-transformers.js';
 
 htmx is a single JavaScript file with no dependencies. No build step is required to use it.
 
@@ -13,19 +14,19 @@ htmx is a single JavaScript file with no dependencies. No build step is required
 
 Add this in your `<head>` tag:
 
-<Code lang="html" code={`<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4" integrity="${integrity.min}" crossorigin="anonymous"></script>`} />
+<Code lang="html" code={`<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4" integrity="${integrity.min}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
 
 ### Unminified
 
-<Code lang="html" code={`<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.js" integrity="${integrity.full}" crossorigin="anonymous"></script>`} />
+<Code lang="html" code={`<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.js" integrity="${integrity.full}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
 
 ### ES Module
 
-<Code lang="html" code={`<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.esm.min.js" integrity="${integrity.esmMin}" crossorigin="anonymous"></script>`} />
+<Code lang="html" code={`<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.esm.min.js" integrity="${integrity.esmMin}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
 
 ### ES Module (unminified)
 
-<Code lang="html" code={`<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.esm.js" integrity="${integrity.esm}" crossorigin="anonymous"></script>`} />
+<Code lang="html" code={`<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta4/dist/htmx.esm.js" integrity="${integrity.esm}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
 
 ## Download
 
