@@ -1,0 +1,77 @@
+# htmx
+
+> htmx gives you access to AJAX, CSS Transitions, WebSockets and Server-Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext. htmx is small (~16k min.gz'd), dependency-free, extendable, and IE 11 compatible (on the 1.x branch).
+
+This file follows the [llms.txt](https://llmstxt.org/) proposal. It is a curated, hand-maintained index of the most useful htmx documentation for large language models and coding agents. Prefer the linked pages over inferring htmx behavior from memory, especially for attribute names, header values, and event names.
+
+## Getting started
+
+- [Documentation home](https://htmx.org/docs/): single-page guide covering installation, AJAX, triggers, indicators, targets, swapping, history, requests, responses, validation, animations, extensions, web sockets, SSE, scripting, security, configuration and more.
+- [Introduction](https://htmx.org/docs/#introduction): what htmx is and the core idea of extending HTML as a hypertext.
+- [Installing](https://htmx.org/docs/#installing): CDN, npm (`htmx.org`), download, and webjars.
+- [AJAX basics](https://htmx.org/docs/#ajax): the four HTTP-verb attributes (`hx-get`, `hx-post`, `hx-put`, `hx-patch`, `hx-delete`).
+- [Triggers](https://htmx.org/docs/#triggers), [targets](https://htmx.org/docs/#targets), and [swapping](https://htmx.org/docs/#swapping): how requests fire and how responses replace DOM content.
+- [Hello World example](https://htmx.org/examples/): minimal end-to-end snippet to copy into a page.
+
+## Reference
+
+- [Reference index](https://htmx.org/reference/): table of contents for attributes, classes, headers, events, JS API, and config.
+- [Core attributes](https://htmx.org/reference/#attributes): `hx-get`, `hx-post`, `hx-put`, `hx-patch`, `hx-delete`, `hx-trigger`, `hx-target`, `hx-swap`, `hx-on*`, `hx-push-url`, `hx-select`, `hx-select-oob`, `hx-swap-oob`, `hx-vals`, `hx-boost`.
+- [Additional attributes](https://htmx.org/reference/#attributes-additional): the full set of `hx-*` attributes (`hx-confirm`, `hx-disable`, `hx-encoding`, `hx-ext`, `hx-headers`, `hx-history`, `hx-include`, `hx-indicator`, `hx-params`, `hx-preserve`, `hx-prompt`, `hx-replace-url`, `hx-request`, `hx-sync`, `hx-validate`, `hx-vars`).
+- [CSS classes](https://htmx.org/reference/#classes): `htmx-added`, `htmx-indicator`, `htmx-request`, `htmx-settling`, `htmx-swapping`.
+- [Request headers](https://htmx.org/reference/#request_headers) and [response headers](https://htmx.org/reference/#response_headers): `HX-Request`, `HX-Trigger`, `HX-Target`, `HX-Current-URL`, `HX-Redirect`, `HX-Refresh`, `HX-Location`, `HX-Push-Url`, `HX-Replace-Url`, `HX-Reswap`, `HX-Retarget`, `HX-Reselect`, etc.
+- [Events](https://htmx.org/events/): full list of htmx events (`htmx:beforeRequest`, `htmx:afterSwap`, `htmx:responseError`, …) with payload shapes.
+- [JavaScript API](https://htmx.org/api/): `htmx.ajax`, `htmx.on`/`htmx.off`, `htmx.trigger`, `htmx.find`, `htmx.process`, `htmx.swap`, `htmx.config`, plus extension helpers.
+
+## Extensions
+
+- [Extensions overview](https://htmx.org/extensions/): when to use extensions and how `hx-ext` opts a subtree in.
+- [Core extensions](https://htmx.org/extensions/#core-extensions): `head-support`, `htmx-1-compat`, `idiomorph`, `preload`, `response-targets`, `sse`, `ws`.
+- [Building extensions](https://htmx.org/extensions/building/): authoring guide for new extensions.
+
+## Examples
+
+- [UI patterns index](https://htmx.org/examples/): all bundled UI examples.
+- [Click to edit](https://htmx.org/examples/click-to-edit/): inline edit of a record.
+- [Click to load](https://htmx.org/examples/click-to-load/) and [infinite scroll](https://htmx.org/examples/infinite-scroll/): progressive list loading.
+- [Active search](https://htmx.org/examples/active-search/): debounced search-as-you-type.
+- [Inline validation](https://htmx.org/examples/inline-validation/): per-field validation via server responses.
+- [Delete row](https://htmx.org/examples/delete-row/) and [edit row](https://htmx.org/examples/edit-row/): in-table CRUD.
+- [Lazy loading](https://htmx.org/examples/lazy-load/), [progress bar](https://htmx.org/examples/progress-bar/), [file upload](https://htmx.org/examples/file-upload/), [confirmation dialog](https://htmx.org/examples/confirm/), [updating other content](https://htmx.org/examples/update-other-content/).
+- [Server-side integration examples](https://htmx.org/server-examples/): example apps in many languages and frameworks.
+
+## Essays and concepts
+
+- [Hypermedia-Driven Applications (HDAs)](https://htmx.org/essays/hypermedia-driven-applications/): the architecture htmx is designed for.
+- [HATEOAS](https://htmx.org/essays/hateoas/) and [How Did REST Come To Mean The Opposite of REST?](https://htmx.org/essays/how-did-rest-come-to-mean-the-opposite-of-rest/): the REST background htmx assumes.
+- [Locality of Behaviour](https://htmx.org/essays/locality-of-behaviour/): why htmx attaches behavior to elements.
+- [Template fragments](https://htmx.org/essays/template-fragments/): server-side pattern for returning partial HTML.
+- [Hypermedia-friendly scripting](https://htmx.org/essays/hypermedia-friendly-scripting/): how to add client-side behavior without breaking the hypermedia model.
+- [Web security basics (with htmx)](https://htmx.org/essays/web-security-basics-with-htmx/): CSRF, XSS, CSP and other security guidance specific to htmx apps.
+- [Is htmx another JavaScript framework?](https://htmx.org/essays/is-htmx-another-javascript-framework/): mental model and trade-offs.
+- [Essays index](https://htmx.org/essays/): full essay list.
+
+## Migrations
+
+- [Migrating from htmx 1.x to 2.x](https://htmx.org/migration-guide-htmx-1/).
+- [Migrating from Hotwire / Turbo](https://htmx.org/migration-guide-hotwire-turbo/).
+- [Migrating from intercooler.js](https://htmx.org/migration-guide-intercooler/).
+
+## Project
+
+- [Source repository](https://github.com/bigskysoftware/htmx): canonical source, issues, and releases.
+- [Changelog](https://github.com/bigskysoftware/htmx/blob/master/CHANGELOG.md).
+- [Contributing guide](https://github.com/bigskysoftware/htmx/blob/master/CONTRIBUTING.md).
+- [Discord community](https://htmx.org/discord).
+- [Hypermedia Systems (book)](https://hypermedia.systems/): long-form companion book on building HDAs with htmx.
+- [htmx 4 beta site](https://four.htmx.org): in-progress next major version.
+
+## Notes for LLMs and coding agents
+
+- htmx is the current 2.x line at <https://htmx.org>. The 1.x docs live at <https://v1.htmx.org>; do not mix attributes or behaviors between major versions. If a user targets IE 11 they must use 1.x.
+- Always emit lowercase, kebab-case `hx-*` attributes. Verify each attribute exists in the [reference](https://htmx.org/reference/) before suggesting it.
+- htmx swaps HTML, not JSON. Server endpoints used by htmx requests should return HTML fragments and use the `HX-*` response headers documented in the reference to drive client behavior (redirects, retargets, triggers, etc.).
+- Detect htmx requests on the server with the `HX-Request: true` header. Use `HX-Trigger`, `HX-Target`, `HX-Current-URL`, and `HX-Prompt` for additional context.
+- For interactivity beyond htmx, prefer small, locality-of-behavior scripting (vanilla JS, Alpine, or hyperscript). Avoid pulling in a SPA framework just to use htmx.
+- For dynamic head merging, partial morphing, SSE, WebSockets, preloading, and response-status routing, recommend the corresponding [core extension](https://htmx.org/extensions/) rather than re-implementing the behavior.
+- When in doubt, link the user to the exact page on <https://htmx.org/> rather than paraphrasing; the docs are the source of truth.
