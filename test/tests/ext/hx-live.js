@@ -508,15 +508,99 @@ describe('hx-live extension', function () {
         tabs[2].classList.contains('selected').should.equal(true);
     });
 
-    it('take() with default whole-page scope', function() {
+    it('take() with no scope defaults to parent (sibling scope)', function() {
         playground().innerHTML = `
-            <button class="active">a</button>
-            <button id="t" class="">b</button>
-            <button class="active">c</button>
+            <nav>
+                <button class="active">a</button>
+                <button id="t">b</button>
+                <button class="active">c</button>
+            </nav>
+            <div class="active">unrelated</div>
         `;
         htmx.live.q('#t').take('.active');
-        playground().querySelectorAll('.active').length.should.equal(1);
+        // Siblings lose .active
+        let nav = playground().querySelector('nav');
+        nav.querySelectorAll('.active').length.should.equal(1);
         playground().querySelector('#t').classList.contains('active').should.equal(true);
+        // Unrelated element outside parent is untouched
+        playground().querySelector('div').classList.contains('active').should.equal(true);
+    });
+
+    it('take() with element scope searches within that container', function() {
+        playground().innerHTML = `
+            <nav id="nav1">
+                <button class="active">a</button>
+                <button id="t">b</button>
+            </nav>
+            <nav id="nav2">
+                <button class="active">x</button>
+                <button>y</button>
+            </nav>
+        `;
+        let nav1 = playground().querySelector('#nav1');
+        htmx.live.q('#t').take('.active', nav1);
+        playground().querySelector('#t').classList.contains('active').should.equal(true);
+        playground().querySelector('#nav1 button').classList.contains('active').should.equal(false);
+        // nav2 is untouched
+        playground().querySelector('#nav2 .active').should.not.be.null;
+    });
+
+    it('take() in hx-on with this as scope (tabs pattern)', function() {
+        playground().innerHTML = `
+            <nav hx-on:click="
+                let btn = event.target.closest('button');
+                if (!btn) return;
+                q(btn).take('.active', this);
+            ">
+                <button class="active">Home</button>
+                <button>About</button>
+                <button id="click-me">Contact</button>
+            </nav>
+            <div class="active">unrelated</div>
+        `;
+        htmx.process(playground());
+        playground().querySelector('#click-me').click();
+        let buttons = playground().querySelectorAll('nav button');
+        buttons[0].classList.contains('active').should.equal(false);
+        buttons[1].classList.contains('active').should.equal(false);
+        buttons[2].classList.contains('active').should.equal(true);
+        // Unrelated element outside nav is untouched
+        playground().querySelector('div').classList.contains('active').should.equal(true);
+    });
+
+    it('take() canonical sibling form in hx-on', function() {
+        playground().innerHTML = `
+            <nav>
+                <button class="active" hx-on:click="take('.active')">A</button>
+                <button hx-on:click="take('.active')">B</button>
+                <button hx-on:click="take('.active')" id="click-me">C</button>
+            </nav>
+            <button class="active">unrelated</button>
+        `;
+        htmx.process(playground());
+        playground().querySelector('#click-me').click();
+        let navBtns = playground().querySelectorAll('nav button');
+        navBtns[0].classList.contains('active').should.equal(false);
+        navBtns[1].classList.contains('active').should.equal(false);
+        navBtns[2].classList.contains('active').should.equal(true);
+        // Unrelated button outside nav is untouched
+        playground().querySelector('nav + button').classList.contains('active').should.equal(true);
+    });
+
+    it('take() with ARIA and no scope defaults to parent', function() {
+        playground().innerHTML = `
+            <div role="tablist">
+                <button role="tab" aria-selected="true">a</button>
+                <button role="tab" aria-selected="false" id="t">b</button>
+            </div>
+            <button aria-selected="true">unrelated</button>
+        `;
+        htmx.live.q('#t').take('aria-selected');
+        let tabs = playground().querySelectorAll('[role=tab]');
+        tabs[0].getAttribute('aria-selected').should.equal('false');
+        tabs[1].getAttribute('aria-selected').should.equal('true');
+        // Unrelated element outside parent is untouched
+        playground().querySelector('div + button').getAttribute('aria-selected').should.equal('true');
     });
 
     it('take() accepts options object { from: selector }', function() {

@@ -237,12 +237,12 @@
         let isClass = name.startsWith('.');
         let key = isClass ? name.slice(1) : name;
         let isAria = name.startsWith('aria-');
-        // Default scope picks only matching sources, not the whole page.
-        let selector = scope == null
-            ? (isClass ? '.' + key : '[' + name + ']')
-            : typeof scope === 'string' ? scope
-            : scope.from || '*';
-        let sources = document.querySelectorAll(selector);
+        let auto = isClass ? '.' + key : '[' + name + ']';
+        let root = scope == null ? targets[0]?.parentElement
+            : scope.nodeType ? scope : null;
+        let sources = root
+            ? [root, ...root.querySelectorAll(auto)]
+            : document.querySelectorAll(typeof scope === 'string' ? scope : scope?.from || auto);
         let targetSet = new Set(targets);
         for (let s of sources) {
             if (targetSet.has(s)) continue;
