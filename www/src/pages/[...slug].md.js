@@ -1,4 +1,4 @@
-import { getFolder, aggregateCollectionMarkdown, fileAsMarkdown } from '../lib/content';
+import { getFolder, fileAsMarkdown } from '../lib/content';
 import { absolutizeRelativeLinks } from '../lib/utils';
 
 /**
@@ -11,38 +11,33 @@ import { absolutizeRelativeLinks } from '../lib/utils';
  * Scope: only prose collections. Excluded: the homepage, collection root
  * landing pages (which have no authored body of their own), subfolder
  * index pages, and data-driven routes.
- *
- * Generic "full" convention: any file whose slug is `full` (e.g.
- * /docs/full) is treated as a single-page aggregation of its collection.
- * Its `.md` endpoint returns the complete concatenated markdown for that
- * collection, not the raw MDX stub that renders the HTML page.
  */
 
-const MD_COLLECTIONS = ['docs', 'reference', 'patterns', 'essays', 'interviews', 'extensions'];
+const MD_COLLECTIONS = ['reference', 'patterns', 'essays', 'interviews', 'extensions'];
+const STANDALONE_PAGES = ['about', 'docs'];
 
 /**
  * @typedef {Object} PathProps
  * @property {string} filePath
- * @property {string | null} collection
  */
 
 export async function getStaticPaths() {
     /** @type {Array<{ params: { slug: string }; props: PathProps }>} */
     const paths = [];
 
-    // Standalone single-page prose: /about
-    const about = await getFolder('about');
-    if (about.path) {
-        paths.push({ params: { slug: 'about' }, props: { filePath: about.path, collection: null } });
+    for (const slug of STANDALONE_PAGES) {
+        const folder = await getFolder(slug);
+        if (folder.path) {
+            paths.push({ params: { slug }, props: { filePath: folder.path } });
+        }
     }
 
-    // Every content file across prose collections
     for (const collection of MD_COLLECTIONS) {
         const folder = await getFolder(collection);
         for (const file of folder.allFiles) {
             paths.push({
                 params: { slug: `${collection}/${file.slug}` },
-                props: { filePath: file.path, collection },
+                props: { filePath: file.path },
             });
         }
     }
@@ -51,16 +46,10 @@ export async function getStaticPaths() {
 }
 
 /** @type {import('astro').APIRoute} */
-export const GET = async ({ params, props, site }) => {
-    const { filePath, collection } = /** @type {PathProps} */ (props);
+export const GET = async ({ props, site }) => {
+    const { filePath } = /** @type {PathProps} */ (props);
     const origin = site?.origin || 'https://htmx.org';
-
-    // Any page whose slug is `<collection>/full` gets the aggregated view.
-    const isFullPage = !!collection && params.slug === `${collection}/full`;
-    const markdown = isFullPage
-        ? await aggregateCollectionMarkdown(/** @type {string} */ (collection))
-        : fileAsMarkdown(filePath);
-    const content = absolutizeRelativeLinks(markdown, origin);
+    const content = absolutizeRelativeLinks(fileAsMarkdown(filePath), origin);
 
     return new Response(content, {
         headers: {

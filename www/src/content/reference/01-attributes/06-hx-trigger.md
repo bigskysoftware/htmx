@@ -18,7 +18,7 @@ Defaults to:
 <!-- Basic (click is the default) -->
 <button hx-get="...">
 
-<!-- With from: modifier — listen on a different element -->
+<!-- With from: modifier, listen on a different element -->
 <button hx-trigger="click from:outside" hx-get="...">
 
 <!-- With a filter -->
@@ -151,7 +151,7 @@ Fires, then ignores further events for the given interval.
 
 ### `from:<selector>`
 
-Listens on a different element. Takes a CSS selector or an [extended selector](/docs/features/extended-selectors). Two special values: `self` (only the element itself, not children) and `outside` (anything outside the element).
+Listens on a different element. Takes a CSS selector or an [extended selector](/docs#extended-selectors-1). Two special values: `self` (only the element itself, not children) and `outside` (anything outside the element).
 
 ```html
 <div hx-trigger="keyup[key=='Enter'] from:body" hx-get="...">...</div>
@@ -228,7 +228,7 @@ A search box that searches on `input`, but only if the value has [`changed`](#ch
 ## See Also
 
 - [`hx-on`](/reference/attributes/hx-on) (attribute)
-- [Extended Selectors](/docs/features/extended-selectors) (reference)
+- [Extended Selectors](/docs#extended-selectors-1) (reference)
 - [Lazy Load](/patterns/loading/lazy-load) (pattern)
 - [Infinite Scroll](/patterns/loading/infinite-scroll) (pattern)
 - [Progress Bar](/patterns/loading/progress-bar) (pattern)

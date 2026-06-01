@@ -25,8 +25,8 @@ const SAMPLE_PAGES = [
     '/patterns',
     '/essays',
     '/about',
-    '/docs/get-started/installation',
     '/reference/attributes/hx-get',
+    '/reference/attributes/hx-post',
     '/patterns/loading/click-to-load',
 ];
 
@@ -56,21 +56,17 @@ test.describe('Console errors', () => {
     });
 
     test('no console errors after morph navigation', async ({ page }) => {
-        // Load initial page — ignore load-time errors
-        await page.goto('/docs/get-started/installation', { waitUntil: 'networkidle' });
+        await page.goto('/reference/attributes/hx-get', { waitUntil: 'networkidle' });
 
-        // Start collecting errors AFTER initial load
         const errors = collectErrors(page);
 
-        // Navigate via morph
         const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
         if (await sidebarToggle.isVisible()) {
             await sidebarToggle.click();
         }
-        await page.locator('#sidebar-nav details summary', { hasText: 'Core Concepts' }).click();
-        await page.locator('#sidebar-nav a', { hasText: 'Mental Model' }).click();
+        await page.locator('#sidebar-nav a[href="/reference/attributes/hx-post"]').click();
 
-        await expect(page).toHaveURL(/mental-model/);
+        await expect(page).toHaveURL(/hx-post/);
         await page.waitForTimeout(500);
 
         const realErrors = errors.filter(e => !isKnown(e));

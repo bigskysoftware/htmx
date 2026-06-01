@@ -176,7 +176,7 @@ Fires, then ignores further events for the given interval.
 
 ### `from:<selector>`
 
-Listens on a different element. Takes a CSS selector or an [extended selector](/docs/features/extended-selectors). Two special values: `self` (only the element itself, not children) and `outside` (anything outside the element).
+Listens on a different element. Takes a CSS selector or an [extended selector](/docs#extended-selectors-1). Two special values: `self` (only the element itself, not children) and `outside` (anything outside the element).
 
 ```html
 <div hx-on="keydown[key=='Escape'] from:body -> this.hidden = true">
@@ -265,6 +265,6 @@ Any properties on `event.detail` are unpacked into scope, so you can write `mess
 ## See Also
 
 - [`hx-trigger`](/reference/attributes/hx-trigger) (attribute)
-- [Client Scripting](/docs/core-concepts/client-scripting) (guide)
-- [Extended Selectors](/docs/features/extended-selectors) (reference)
+- [Client Scripting](/docs#client-side-scripting) (guide)
+- [Extended Selectors](/docs#extended-selectors-1) (reference)
 - [Locality of Behaviour](/essays/locality-of-behaviour) (essay)

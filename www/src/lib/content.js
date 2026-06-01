@@ -12,9 +12,8 @@
  */
 
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import yaml from 'js-yaml';
-import { shiftHeadings } from './utils';
 
 /**
  * @typedef {Object} Breadcrumb
@@ -47,15 +46,15 @@ import { shiftHeadings } from './utils';
  * @property {ContentFile[]} allFiles
  */
 
-// Case-preserving filesystem paths (strings only — no modules loaded, no circular dependency)
+// Case-preserving filesystem paths (strings only, no modules loaded, no circular dependency)
 const allPaths = Object.keys(import.meta.glob('/src/content/**/*.{md,mdx}'));
 
-// Lazy module loaders — called inside async functions, not at module init
+// Lazy module loaders, called inside async functions, not at module init
 /** @type {Record<string, () => Promise<any>>} */
 const lazyModules = import.meta.glob('/src/content/**/*.{md,mdx}');
 
-// Raw authored sources, eagerly loaded. Used by aggregateCollectionMarkdown
-// to build single-document views of a collection without re-reading from disk.
+// Raw authored sources, eagerly loaded. Used by fileAsMarkdown to serve the
+// `.md` companion endpoint for every prose page.
 /** @type {Record<string, string>} */
 const rawSources = import.meta.glob('/src/content/**/*.{md,mdx}', {
     query: '?raw',
@@ -76,17 +75,6 @@ async function loadModule(fullPath) {
     return mod;
 }
 
-/**
- * Convention: a file with slug `full` in a collection is the aggregate view
- * of that collection. It's excluded from sidebar lists and prev/next nav,
- * and its body is synthesised at content-load time by
- * aggregateCollectionMarkdown().
- * @param {{ slug: string }} file
- */
-export function isAggregate(file) {
-    return file.slug === 'full';
-}
-
 function rawBody(fullPath) {
     const raw = rawSources[fullPath] ?? '';
     return raw
@@ -103,18 +91,69 @@ function rawTitle(fullPath) {
 }
 
 /**
+ * Strip MDX-only constructs from a body so it reads as plain markdown:
+ * top-level `import` lines, `{/* ... *\/}` comments, `<Code lang="X"
+ * code={`Y`} ... />` components (unwrapped to fenced blocks), and
+ * `${data.field}` interpolations (resolved against any JSON imports).
+ *
+ * Fence-aware: never touches lines inside ``` / ~~~ code blocks.
+ */
+function stripMdxForMarkdown(body, sourcePath) {
+    const baseDir = dirname(join(process.cwd(), 'src', 'content', sourcePath));
+    /** @type {Record<string, any>} */
+    const data = {};
+    const out = [];
+    let inFence = false;
+
+    for (const line of body.split('\n')) {
+        if (/^(`{3,}|~{3,})/.test(line)) {
+            inFence = !inFence;
+            out.push(line);
+            continue;
+        }
+        if (inFence) { out.push(line); continue; }
+
+        const jsonImport = line.match(/^import\s+(\w+)\s+from\s+['"](.+\.json)['"];?\s*$/);
+        if (jsonImport) {
+            const [, name, path] = jsonImport;
+            try { data[name] = JSON.parse(readFileSync(resolve(baseDir, path), 'utf-8')); } catch {}
+            continue;
+        }
+        if (/^import\s+/.test(line)) continue;
+
+        out.push(line);
+    }
+
+    return out.join('\n')
+        .replace(/\{\/\*[\s\S]*?\*\/\}\s*/g, '')
+        .replace(
+            /<Code\s+lang=["']([^"']+)["']\s+code=\{`([\s\S]*?)`\}[^>]*\/>/g,
+            (_, lang, code) => `\`\`\`${lang}\n${code}\n\`\`\``
+        )
+        .replace(/\$\{(\w+)(?:\.(\w+))?\}/g, (match, name, field) => {
+            if (!(name in data)) return match;
+            const v = field !== undefined ? data[name][field] : data[name];
+            return v !== undefined && v !== null ? String(v) : match;
+        })
+        .trim();
+}
+
+/**
  * Return a content file's authored markdown as a standalone document:
- * `# <title>` prepended, frontmatter and inline demo-server scripts
- * stripped. Consumed by the `.md` companion endpoint for every prose page.
+ * `# <title>` prepended (unless the body already starts with an H1),
+ * frontmatter and inline demo-server scripts stripped, and MDX-only
+ * constructs reduced to plain markdown. Consumed by the `.md` companion
+ * endpoint for every prose page.
  * @param {string} path
  * @returns {string}
  */
 export function fileAsMarkdown(path) {
     const fullPath = `/src/content/${path}`;
-    const body = rawBody(fullPath);
+    let body = rawBody(fullPath);
     if (!body) return '';
+    if (path.endsWith('.mdx')) body = stripMdxForMarkdown(body, path);
     const title = rawTitle(fullPath);
-    return title ? `# ${title}\n\n${body}` : body;
+    return title && !/^#\s/.test(body) ? `# ${title}\n\n${body}` : body;
 }
 
 function isDataFile(path) {
@@ -164,24 +203,12 @@ export const TAG_ORDER = [
 // --- Actions ---
 
 /**
- * Render a content file or folder. Separate from data — this is I/O.
- *
- * Aggregate pages (`slug === 'full'`) are rendered via astro:content so we
- * pick up the synthesised `rendered.html` written by the content loader.
- * All other entries load their MDX module directly.
+ * Render a content file or folder. Separate from data, this is I/O.
  *
  * @param {ContentFile | ContentFolder} item
  * @returns {Promise<{ Content: any; headings: any[] }>}
  */
 export async function render(item) {
-    if ('slug' in item && item.slug === 'full' && item.folder) {
-        const { getEntry, render: astroRender } = await import('astro:content');
-        const entry = await getEntry(item.folder, `${item.folder}/full`) ?? await getEntry(item.folder, 'full');
-        if (entry) {
-            const { Content, headings } = await astroRender(entry);
-            return { Content, headings };
-        }
-    }
     const mod = await loadModule(`/src/content/${item.path}`);
     if (!mod) return {Content: null, headings: []};
     return {
@@ -257,7 +284,7 @@ export async function getFolder(path) {
         const indexRelPath = indexFullPath.replace('/src/content/', '');
 
         // Read frontmatter from disk to avoid executing MDX module bodies.
-        // Index .mdx files may call getFolder() themselves — loading them
+        // Index .mdx files may call getFolder() themselves, loading them
         // as modules here would create a circular call.
         /** @type {Record<string, any>} */
         let indexFrontmatter = {};
@@ -316,7 +343,7 @@ export async function getFolder(path) {
             if (child) childFolders.push(child);
         }
 
-        // Load files — read frontmatter from disk to avoid triggering the Vite
+        // Load files, read frontmatter from disk to avoid triggering the Vite
         // module runner during content sync (it closes before lazy imports resolve)
         /** @type {ContentFile[]} */
         const files = directFilePaths.map((fullPath) => {
@@ -342,7 +369,7 @@ export async function getFolder(path) {
             };
         });
 
-        // allFiles includes hidden/aggregates (for routing); files (sidebar) excludes both.
+        // allFiles includes hidden files (for routing); files (sidebar) excludes them.
         const allFilesFlat = [...files.sort(sortContentFiles), ...childFolders.flatMap(f => f.allFiles)];
 
         return {
@@ -352,7 +379,7 @@ export async function getFolder(path) {
             url: folderUrl,
             frontmatter: indexFrontmatter || {},
             breadcrumbs: folderBreadcrumbs,
-            files: files.filter(f => !f.frontmatter?.hidden && !isAggregate(f)).sort(sortContentFiles),
+            files: files.filter(f => !f.frontmatter?.hidden).sort(sortContentFiles),
             folders: childFolders,
             allFiles: allFilesFlat
         };
@@ -365,8 +392,8 @@ export async function getFolder(path) {
         throw new Error(`No index.md found for folder: ${path}`);
     }
 
-    // Add prev/next links — hidden, soon, and aggregate files are excluded from the nav sequence
-    const navFiles = folder.allFiles.filter(f => !f.frontmatter?.hidden && !f.frontmatter?.soon && !isAggregate(f));
+    // Add prev/next links, hidden and soon files are excluded from the nav sequence
+    const navFiles = folder.allFiles.filter(f => !f.frontmatter?.hidden && !f.frontmatter?.soon);
     for (let i = 0; i < navFiles.length; i++) {
         if (i > 0) navFiles[i].prev = navFiles[i - 1];
         if (i < navFiles.length - 1) navFiles[i].next = navFiles[i + 1];
@@ -383,7 +410,7 @@ export async function getFolder(path) {
  * @returns {Promise<ContentFile | null>} ContentFile or null if not found
  */
 export async function getFile(path) {
-    // YAML/JSON data files — read from disk, parse, resolve images
+    // YAML/JSON data files, read from disk, parse, resolve images
     if (isDataFile(path)) {
         try {
             const diskPath = join(process.cwd(), 'src', 'content', path);
@@ -402,7 +429,7 @@ export async function getFile(path) {
         }
     }
 
-    // MD/MDX content files — read frontmatter from disk (avoids Vite module runner)
+    // MD/MDX content files, read frontmatter from disk (avoids Vite module runner)
     const fullPath = `/src/content/${path}`;
     if (!allPaths.includes(fullPath)) return null;
 
@@ -458,49 +485,3 @@ export async function getFile(path) {
     };
 }
 
-/**
- * Build a single-document markdown view of an entire collection.
- *
- * Used by the `full` aggregate page of each collection: the content loader
- * calls this to synthesise the body of that page, and the `.md` /
- * `llms-full.txt` endpoints call it to serve the raw form.
- *
- * Shape:
- *   ## <section-title>           (one H2 per subfolder, if any)
- *   ### [<page-title>](<url>)    (one H3 per file, linking to the canonical URL)
- *   <page-body with headings shifted +2>
- *
- * If the collection has no subfolders, files become H2s directly (shift +1
- * on their bodies). Files with slug `full` are skipped to avoid recursion.
- *
- * @param {string} collection
- * @returns {Promise<string>}
- */
-export async function aggregateCollectionMarkdown(collection) {
-    const folder = await getFolder(collection);
-    /** @type {string[]} */
-    const parts = [];
-
-    const sections = folder.folders.slice().sort((a, b) => a.path.localeCompare(b.path));
-
-    if (sections.length > 0) {
-        for (const section of sections) {
-            parts.push(`## ${section.frontmatter?.title ?? section.slug}\n`);
-            for (const file of section.files) {
-                if (isAggregate(file)) continue;
-                const title = file.frontmatter?.title ?? file.slug;
-                parts.push(`### [${title}](${file.url})\n`);
-                parts.push(shiftHeadings(rawBody(`/src/content/${file.path}`), 2) + '\n');
-            }
-        }
-    } else {
-        for (const file of folder.files) {
-            if (isAggregate(file)) continue;
-            const title = file.frontmatter?.title ?? file.slug;
-            parts.push(`## [${title}](${file.url})\n`);
-            parts.push(shiftHeadings(rawBody(`/src/content/${file.path}`), 1) + '\n');
-        }
-    }
-
-    return parts.join('\n');
-}

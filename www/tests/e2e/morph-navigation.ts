@@ -1,26 +1,29 @@
 import { test, expect } from './_fixtures';
 
+const START = '/reference/attributes/hx-get';
+const TARGET_HREF = '/reference/attributes/hx-post';
+const TARGET_URL = /hx-post/;
+
+async function navigateToTarget(page: any) {
+    const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
+    if (await sidebarToggle.isVisible()) {
+        await sidebarToggle.click();
+    }
+    await page.locator(`#sidebar-nav a[href="${TARGET_HREF}"]`).click();
+}
+
 test.describe('Morph navigation', () => {
     test('sidebar link navigates without full reload', async ({ page }) => {
-        await page.goto('/docs/get-started/installation', { waitUntil: 'networkidle' });
+        await page.goto(START, { waitUntil: 'networkidle' });
 
-        // Tag the search-index element to detect full page reload
         await page.evaluate(() => {
             const el = document.querySelector('search-index');
             if (el) (el as any).__morphTest = true;
         });
 
-        // Open sidebar section and click a different page
-        const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
-        if (await sidebarToggle.isVisible()) {
-            await sidebarToggle.click();
-        }
-        await page.locator('#sidebar-nav details summary', { hasText: 'Core Concepts' }).click();
-        await page.locator('#sidebar-nav a', { hasText: 'Mental Model' }).click();
+        await navigateToTarget(page);
+        await expect(page).toHaveURL(TARGET_URL);
 
-        await expect(page).toHaveURL(/mental-model/);
-
-        // The tagged element should still exist (morph, not full reload)
         const survived = await page.evaluate(() => {
             const el = document.querySelector('search-index');
             return el && (el as any).__morphTest === true;
@@ -29,19 +32,12 @@ test.describe('Morph navigation', () => {
     });
 
     test('content updates after morph navigation', async ({ page }) => {
-        await page.goto('/docs/get-started/installation', { waitUntil: 'networkidle' });
+        await page.goto(START, { waitUntil: 'networkidle' });
 
         const initialContent = await page.locator('.prose').textContent();
 
-        // Navigate to a different page via sidebar
-        const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
-        if (await sidebarToggle.isVisible()) {
-            await sidebarToggle.click();
-        }
-        await page.locator('#sidebar-nav details summary', { hasText: 'Core Concepts' }).click();
-        await page.locator('#sidebar-nav a', { hasText: 'Mental Model' }).click();
-
-        await expect(page).toHaveURL(/mental-model/);
+        await navigateToTarget(page);
+        await expect(page).toHaveURL(TARGET_URL);
 
         const newContent = await page.locator('.prose').textContent();
         expect(newContent).not.toBe(initialContent);
@@ -54,18 +50,11 @@ test.describe('Morph navigation', () => {
             if (msg.type() === 'error') errors.push(msg.text());
         });
 
-        await page.goto('/docs/get-started/installation', { waitUntil: 'networkidle' });
+        await page.goto(START, { waitUntil: 'networkidle' });
 
-        // Navigate via sidebar
-        const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
-        if (await sidebarToggle.isVisible()) {
-            await sidebarToggle.click();
-        }
-        await page.locator('#sidebar-nav details summary', { hasText: 'Core Concepts' }).click();
-        await page.locator('#sidebar-nav a', { hasText: 'Mental Model' }).click();
-
-        await expect(page).toHaveURL(/mental-model/);
-        await page.waitForTimeout(500); // let async errors settle
+        await navigateToTarget(page);
+        await expect(page).toHaveURL(TARGET_URL);
+        await page.waitForTimeout(500);
 
         const realErrors = errors.filter(e =>
             !e.includes('init is not defined') &&
@@ -75,40 +64,24 @@ test.describe('Morph navigation', () => {
     });
 
     test('browser back works after morph navigation', async ({ page }) => {
-        await page.goto('/docs/get-started/installation', { waitUntil: 'networkidle' });
+        await page.goto(START, { waitUntil: 'networkidle' });
 
-        // Navigate forward via sidebar
-        const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
-        if (await sidebarToggle.isVisible()) {
-            await sidebarToggle.click();
-        }
-        await page.locator('#sidebar-nav details summary', { hasText: 'Core Concepts' }).click();
-        await page.locator('#sidebar-nav a', { hasText: 'Mental Model' }).click();
+        await navigateToTarget(page);
+        await expect(page).toHaveURL(TARGET_URL);
 
-        await expect(page).toHaveURL(/mental-model/);
-
-        // Go back
         await page.goBack();
-        await expect(page).toHaveURL(/installation/);
+        await expect(page).toHaveURL(/hx-get/);
     });
 
     test('morph navigation scrolls to top', async ({ page }) => {
-        await page.goto('/docs/get-started/installation', { waitUntil: 'networkidle' });
+        await page.goto(START, { waitUntil: 'networkidle' });
 
-        // Scroll to bottom
         await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
         const scrolledY = await page.evaluate(() => window.scrollY);
         expect(scrolledY).toBeGreaterThan(100);
 
-        // Navigate via sidebar
-        const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
-        if (await sidebarToggle.isVisible()) {
-            await sidebarToggle.click();
-        }
-        await page.locator('#sidebar-nav details summary', { hasText: 'Core Concepts' }).click();
-        await page.locator('#sidebar-nav a', { hasText: 'Mental Model' }).click();
-
-        await expect(page).toHaveURL(/mental-model/);
+        await navigateToTarget(page);
+        await expect(page).toHaveURL(TARGET_URL);
 
         const topY = await page.evaluate(() => window.scrollY);
         expect(topY).toBeLessThan(50);

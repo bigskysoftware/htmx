@@ -7,39 +7,71 @@ interface Heading {
 
 interface Props {
     headings: Heading[];
+    mode?: 'flat' | 'grouped';
 }
 
-const {headings} = Astro.props;
+const {headings, mode = 'flat'} = Astro.props;
 
-// Filter out h1 (page title) and only show h2-h4
-const tocHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 4);
+// Grouped: H3/H4 grouped by parent H2, only the active group is visible.
+// The first H2's group is marked active at SSR so the initial paint matches.
+type TocItem = Heading & { parent?: string };
+const items: TocItem[] = [];
+let firstH2: string | null = null;
+if (mode === 'grouped') {
+    let currentH2: string | null = null;
+    for (const h of headings) {
+        if (h.depth === 2) {
+            currentH2 = h.slug;
+            if (!firstH2) firstH2 = h.slug;
+        } else if ((h.depth === 3 || h.depth === 4) && currentH2) {
+            items.push({...h, parent: currentH2});
+        }
+    }
+} else {
+    for (const h of headings) {
+        if (h.depth >= 2 && h.depth <= 4) items.push(h);
+    }
+}
 
-// Calculate minimum depth to determine relative indentation
-const minDepth = tocHeadings.length > 0 ? Math.min(...tocHeadings.map(h => h.depth)) : 2;
+const minDepth = items.length > 0 ? Math.min(...items.map(h => h.depth)) : 2;
 ---
 
-{tocHeadings.length > 0 && (
+{items.length > 0 && (
 <nav
         id="page-outline"
         aria-label="Table of Contents"
+        class="w-full"
+        data-toc-mode={mode}
         _=`def setupTOC()
             wait 50ms
             set allHeadings to <main :is(h2,h3,h4)[id]/> as Array
             js(me, allHeadings)
                 if (me._tocObserver) me._tocObserver.disconnect();
+                const mode = me.dataset.tocMode;
+                const setActiveGroup = (h2Id) => {
+                    if (me.dataset.activeH2 === h2Id) return;
+                    me.dataset.activeH2 = h2Id;
+                    me.querySelectorAll('.toc-link[data-parent]').forEach(el => {
+                        el.classList.toggle('toc-group-active', el.dataset.parent === h2Id);
+                    });
+                };
                 const observer = new IntersectionObserver(
                     (entries) => entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const id = entry.target.getAttribute('id');
-                            const tocLink = document.querySelector('.toc-link[href="#' + id + '"]');
-                            if (tocLink) {
-                                _hyperscript.evaluate(
-                                    "take [@data-active] from .toc-link for first <.toc-link[href='#" + id + "']/>"
-                                );
-                                var pageY = window.scrollY;
-                                tocLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-                                window.scrollTo(0, pageY);
-                            }
+                        if (!entry.isIntersecting) return;
+                        const id = entry.target.getAttribute('id');
+                        const depth = parseInt(entry.target.tagName.slice(1));
+                        if (mode === 'grouped' && depth === 2) {
+                            setActiveGroup(id);
+                            return;
+                        }
+                        const tocLink = me.querySelector('.toc-link[href="#' + id + '"]');
+                        if (tocLink) {
+                            _hyperscript.evaluate(
+                                "take [@data-active] from .toc-link for first <.toc-link[href='#" + id + "']/>"
+                            );
+                            var pageY = window.scrollY;
+                            tocLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                            window.scrollTo(0, pageY);
                         }
                     }),
                     { rootMargin: '-100px 0px -66% 0px', threshold: 0 }
@@ -49,26 +81,26 @@ const minDepth = tocHeadings.length > 0 ? Math.min(...tocHeadings.map(h => h.dep
             end
             init call setupTOC() end
             on htmx:after:swap from document call setupTOC() end`>
-    <div class="border-l border-neutral-200 dark:border-neutral-800">
-        {tocHeadings.map((heading) => {
-            // Determine indentation class based on depth
-                // Depth 0 = pl-4, Depth 1 = pl-8, etc.
-
+    <div class="w-full border-l border-neutral-200 dark:border-neutral-800">
+        {items.map((heading) => {
             const depth = heading.depth - minDepth;
             const indentClass = depth === 0 ? 'pl-4' : depth === 1 ? 'pl-8' : 'pl-12';
+            const initiallyActive = mode === 'grouped' && heading.parent === firstH2;
 
             return (
                     <a href={`#${heading.slug}`}
                        data-depth={depth}
-                       class={`toc-link block py-2 pr-2 text-sm truncate -ml-px border-l-2
-                          ${indentClass}
-                          /* Default State (Inactive) */
-                          border-transparent text-neutral-600 interact:text-neutral-900 interact:border-neutral-300
-                          dark:text-neutral-400 dark:interact:text-neutral-200 dark:interact:border-neutral-700
-                          /* Active State (via Hyperscript) */
-                          data-active:border-neutral-900 data-active:text-neutral-900 data-active:font-semibold
-                          data-active:dark:border-neutral-100 data-active:dark:text-neutral-100
-                       `}>
+                       data-parent={heading.parent}
+                       class:list={[
+                           'toc-link block py-2 pr-2 text-sm truncate -ml-px border-l-2',
+                           indentClass,
+                           'border-transparent text-neutral-600 interact:text-neutral-900 interact:border-neutral-300',
+                           'dark:text-neutral-400 dark:interact:text-neutral-200 dark:interact:border-neutral-700',
+                           'data-active:border-neutral-900 data-active:text-neutral-900 data-active:font-semibold',
+                           'data-active:dark:border-neutral-100 data-active:dark:text-neutral-100',
+                           heading.parent && '[&:not(.toc-group-active)]:hidden',
+                           initiallyActive && 'toc-group-active',
+                       ]}>
                         {heading.text}
                     </a>
             );

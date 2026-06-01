@@ -6,13 +6,13 @@ import SidebarToggle from '../components/SidebarToggle.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PageHeader from '../components/PageHeader.astro';
-import ReadingModeToggle from '../components/ReadingModeToggle.astro';
 import Pagination from '../components/Pagination.astro';
 import CollectionCards from '../components/CollectionCards.astro';
 import FinderLink from '../components/FinderLink.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { getFolder, render, COLLECTIONS } from '../lib/content';
+import { buildDocsSidebar } from '../lib/docs-sidebar';
 
 export async function getStaticPaths() {
     const paths = [];
@@ -33,7 +33,7 @@ export async function getStaticPaths() {
             });
         });
 
-        // Reference subfolders are listed inline on /reference — no separate pages
+        // Reference subfolders are listed inline on /reference, no separate pages
         if (collection !== 'reference') {
             folder.folders.forEach((subfolder) => {
                 paths.push({
@@ -62,35 +62,26 @@ const isReference = collection === 'reference';
 const isReferenceIndex = isCollectionRootPage && isReference;
 const isPatternsIndex = isCollectionRootPage && collection === 'patterns';
 const isExtensionsIndex = isCollectionRootPage && collection === 'extensions';
-// Aggregate pages (slug `full`) skip the sidebar — the page IS the whole collection.
-const isAggregate = !!file && file.slug === 'full' && !!folder?.folders?.length;
+const isDocsRoot = isCollectionRootPage && collection === 'docs';
 // Extensions is flat (no subfolders), but sibling navigation is useful, so show sidebar on inner pages.
 const isFlatCollectionWithSidebar = collection === 'extensions';
-const includeSidebar = !!(folder?.folders?.length || (isFlatCollectionWithSidebar && folder?.files?.length))
-    && !isReferenceIndex && !isPatternsIndex && !isExtensionsIndex && !isAggregate;
-
-// Reading-mode toggle: when the collection has an aggregate `full` page,
-// surface a link between the split/index view and the single-page view on
-// both sides. Pure link, no persistence.
-const aggregateFile = folder?.allFiles?.find(f => f.slug === 'full');
-const readingModeToggle = aggregateFile && (isCollectionRootPage || isAggregate)
-    ? {
-        splitHref: folder!.url,
-        fullHref: aggregateFile.url,
-        active: (isAggregate ? 'full' : 'split') as 'full' | 'split',
-    }
-    : null;
+const includeSidebar = isDocsRoot
+    || (!!(folder?.folders?.length || (isFlatCollectionWithSidebar && folder?.files?.length))
+        && !isReferenceIndex && !isPatternsIndex && !isExtensionsIndex);
 const includeHeader = !isHomePage;
 const includeDemo = !isCollectionRootPage && !isSubfolderIndexPage && collection === 'patterns';
-const includeCollectionCards = (isCollectionRootPage && ['docs'].includes(collection)) || isSubfolderIndexPage;
+const includeCollectionCards = isSubfolderIndexPage;
 const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
-const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && ['about', 'docs'].includes(collection);
+const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && collection === 'about';
 
 let headings: any[] = [];
+let sidebarFolder = folder!;
 if (file) {
     headings = (await render(file)).headings;
 } else if (isReferenceIndex) {
     headings = folder!.folders.map(sub => ({ depth: 2, slug: sub.slug, text: sub.frontmatter.title }));
+} else if (isDocsRoot) {
+    ({headings, sidebar: sidebarFolder} = await buildDocsSidebar(folder));
 }
 const includeTableOfContents = headings.length > 0;
 ---
@@ -108,7 +99,7 @@ const includeTableOfContents = headings.length > 0;
         {includeSidebar && <SidebarToggle />}
     </Header>
 
-    {includeSidebar && <Sidebar folder={folder} file={file}/>}
+    {includeSidebar && <Sidebar folder={sidebarFolder} file={file} scrollspy={isDocsRoot} />}
 
     <div id="content-wrapper" class:list={[includeSidebar && "lg:pl-72"]}>
         <main id="content-main-content" class="flex-1" data-home-page={isHomePage ? '' : undefined}>
@@ -117,13 +108,7 @@ const includeTableOfContents = headings.length > 0;
                 <div class:list={["pt-6 sm:pt-8 lg:pt-12 flex-1 w-full relative starting:opacity-0 transition", useWideLayout ? 'max-w-4xl' : 'max-w-prose']}>
                     <Breadcrumbs breadcrumbs={page.breadcrumbs} />
 
-                    {readingModeToggle && (
-                        <div class="mt-3 flex justify-end">
-                            <ReadingModeToggle {...readingModeToggle} />
-                        </div>
-                    )}
-
-                    {includeHeader && <PageHeader {title} description={isReferenceIndex ? undefined : description} {file} {collection} />}
+                    {includeHeader && <PageHeader {title} description={isReferenceIndex ? undefined : description} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
 
                     <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
                         {includeDemo && <Demo />}
@@ -151,17 +136,17 @@ const includeTableOfContents = headings.length > 0;
 
                 {includeTableOfContents && (
                         <aside class:list={[
-                            "hidden xl:flex xl:flex-col xl:w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) h-[calc(100vh-var(--header-height))] pt-27 pb-8 pr-4",
+                            "hidden xl:flex xl:flex-col xl:w-60 xl:min-w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) h-[calc(100vh-var(--header-height))] pt-27 pb-8 pr-4",
                             includeSidebar ? "xl:-me-16" : "xl:-me-[19rem]",
                         ]}>
                             <div class="shrink-0 mb-2">
                                 <h2 class="text-[0.675rem] font-sans tracking-wide uppercase text-neutral-500">
-                                    On this page
+                                    {isDocsRoot ? 'In this section' : 'On this page'}
                                 </h2>
                             </div>
                             <div class="flex-1 min-h-0 overflow-hidden">
                                 <div class="h-full overflow-y-auto scrollbar-subtle">
-                                    <TableOfContents {headings}/>
+                                    <TableOfContents {headings} mode={isDocsRoot ? 'grouped' : 'flat'}/>
                                 </div>
                             </div>
                         </aside>

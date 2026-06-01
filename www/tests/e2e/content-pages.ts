@@ -10,29 +10,49 @@ test.describe('Content page structure', () => {
         expect(await sections.count()).toBeGreaterThanOrEqual(6);
     });
 
-    test('sidebar highlights current page', async ({ page }) => {
-        await page.goto('/docs/get-started/installation');
+    test('docs sidebar scrollspy highlights a page anchor', async ({ page }) => {
+        await page.goto('/docs', { waitUntil: 'networkidle' });
+        await page.waitForFunction(
+            () => !!(document.querySelector('#sidebar-nav .border-l') as any)?._sidebarObserver,
+            { timeout: 5000 }
+        );
+        // Scroll through the page; one of the H2s will land in the observer's band.
+        for (let y = 0; y <= 2000; y += 300) {
+            await page.evaluate((scrollY: number) => window.scrollTo(0, scrollY), y);
+            await page.waitForTimeout(150);
+            if (await page.locator('#sidebar-nav a.sidebar-link[data-active]').count() > 0) break;
+        }
+        const activeLink = page.locator('#sidebar-nav a.sidebar-link[data-active]');
+        await expect(activeLink).toHaveCount(1);
+        const href = await activeLink.getAttribute('href');
+        expect(href).toMatch(/^\/docs#/);
+    });
+
+    test('reference sidebar highlights current page', async ({ page }) => {
+        await page.goto('/reference/attributes/hx-get');
         const activeLink = page.locator('#sidebar-nav a[aria-current="page"]');
         await expect(activeLink).toHaveCount(1);
-        await expect(activeLink).toContainText('Installation');
+        await expect(activeLink).toContainText('hx-get');
     });
 
-    test('sidebar section auto-opens for current page', async ({ page }) => {
-        await page.goto('/docs/core-concepts/mental-model');
+    test('reference sidebar section auto-opens for current page', async ({ page }) => {
+        await page.goto('/reference/attributes/hx-get');
         const openSection = page.locator('#sidebar-nav details[open]');
-        await expect(openSection).toBeVisible();
-        await expect(openSection.locator('summary')).toContainText('Core Concepts');
+        await expect(openSection.first()).toBeVisible();
+        await expect(openSection.first().locator('summary')).toContainText('Attributes');
     });
 
-    test('sidebar navigation works', async ({ page }) => {
+    test('docs sidebar anchor navigates to in-page heading', async ({ page }) => {
         await page.goto('/docs');
         const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
         if (await sidebarToggle.isVisible()) {
             await sidebarToggle.click();
         }
-        await page.locator('#sidebar-nav details summary', { hasText: 'Get Started' }).click();
-        await page.locator('#sidebar-nav a', { hasText: 'Installation' }).click();
-        await expect(page).toHaveURL('/docs/get-started/installation');
+        const link = page.locator('#sidebar-nav a.sidebar-link', { hasText: 'Installation' }).first();
+        const href = await link.getAttribute('href');
+        expect(href).toBe('/docs#installation');
+        await link.click();
+        await expect(page).toHaveURL(href!);
     });
 
     test('reference sidebar uses monospace font', async ({ page }) => {
@@ -43,13 +63,13 @@ test.describe('Content page structure', () => {
 
     test('table of contents visible on wide viewport', async ({ page }) => {
         await page.setViewportSize({ width: 1400, height: 900 });
-        await page.goto('/docs/get-started/installation');
+        await page.goto('/docs');
         await expect(page.locator('#page-outline')).toBeVisible();
     });
 
     test('table of contents hidden on narrow viewport', async ({ page }) => {
         await page.setViewportSize({ width: 1024, height: 768 });
-        await page.goto('/docs/get-started/installation');
+        await page.goto('/docs');
         await expect(page.locator('#page-outline')).not.toBeVisible();
     });
 

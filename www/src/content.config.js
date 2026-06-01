@@ -1,47 +1,7 @@
 import {defineCollection, z} from "astro:content";
 import {glob, file} from "astro/loaders";
 import {slugify} from "./lib/utils";
-import {aggregateCollectionMarkdown} from "./lib/content";
 import yaml from "js-yaml";
-
-/**
- * Wraps a glob() loader so that the collection's `full` entry (if present)
- * has its body replaced with the concatenated markdown of every other file
- * in the collection — turning `<collection>/full` into a real single-page
- * view. The synthesised markdown is pre-rendered to HTML via the loader's
- * own markdown renderer (which applies the site-wide rehype/shiki config),
- * so Astro's `render(entry)` / `<Content />` just serves the result.
- *
- * @param {string} collection
- * @param {import('astro/loaders').Loader} base
- * @returns {import('astro/loaders').Loader}
- */
-function withAggregateFull(collection, base) {
-    return {
-        name: `${base.name}-with-aggregate`,
-        load: async (ctx) => {
-            await base.load(ctx);
-            const id = `${collection}/full`;
-            const stub = ctx.store.get(id);
-            if (!stub) return;
-            const data = await ctx.parseData({ id, data: stub.data });
-            const body = await aggregateCollectionMarkdown(collection);
-            const rendered = await ctx.renderMarkdown(body);
-            // Replace the glob-loaded entry with a rendered-only entry.
-            // Keeping the entry's filePath would make Astro re-render from
-            // disk (which only contains the frontmatter stub).
-            ctx.store.delete(id);
-            ctx.store.set({
-                id,
-                data,
-                body,
-                rendered,
-                digest: ctx.generateDigest(body),
-            });
-        },
-        schema: base.schema,
-    };
-}
 
 const home = defineCollection({
     loader: glob({base: "./src/content", pattern: "index.mdx"}),
@@ -60,7 +20,7 @@ const about = defineCollection({
 });
 
 const docs = defineCollection({
-    loader: withAggregateFull('docs', glob({base: "./src/content", pattern: "docs{.md,.mdx,/**/*.md,/**/*.mdx}"})),
+    loader: glob({base: "./src/content", pattern: "docs.mdx"}),
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),

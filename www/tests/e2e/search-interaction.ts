@@ -11,7 +11,8 @@ async function openSearch(page: any) {
 async function searchFor(page: any, query: string) {
     await openSearch(page);
 
-    // Ensure the search index is loaded before typing
+    // Wait for custom element upgrade, then load the index
+    await page.evaluate(() => customElements.whenDefined('search-index'));
     await page.evaluate(() =>
         (document.querySelector('search-index') as any)?.load()
     );
@@ -19,7 +20,6 @@ async function searchFor(page: any, query: string) {
     const input = page.locator('#search-input');
     await input.fill(query);
 
-    // Wait for results
     await expect(page.locator('.result').first()).toBeAttached({ timeout: 5000 });
 }
 

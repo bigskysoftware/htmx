@@ -11,10 +11,10 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
 // Build category redirects dynamically from folder structure.
-// Each category folder (e.g. docs/01-get-started/) redirects to its first file.
+// Each category folder (e.g. reference/attributes/) redirects to its first file.
 function buildCategoryRedirects() {
     const redirects = {};
-    for (const collection of ['docs', 'reference', 'patterns']) {
+    for (const collection of ['reference', 'patterns']) {
         const base = `./src/content/${collection}`;
         let subfolders;
         try { subfolders = readdirSync(base, {withFileTypes: true}).filter(d => d.isDirectory() && d.name !== 'index'); } catch { continue; }
@@ -77,6 +77,38 @@ export default defineConfig({
 
         // Category index redirects (computed from folder structure)
         ...buildCategoryRedirects(),
+
+        // /docs sub-page URLs (htmx 2.x/3.x layout) -> anchors on the new one-page /docs.
+        "/docs/get-started": "/docs#installation",
+        "/docs/get-started/installation": "/docs#installation",
+        "/docs/get-started/migration": "/docs#migration",
+        "/docs/core-concepts": "/docs#mental-model",
+        "/docs/core-concepts/mental-model": "/docs#mental-model",
+        "/docs/core-concepts/hypermedia-controls": "/docs#hypermedia-controls",
+        "/docs/core-concepts/requests-and-responses": "/docs#requests--responses",
+        "/docs/core-concepts/client-scripting": "/docs#client-side-scripting",
+        "/docs/core-concepts/multi-target-updates": "/docs#multi-target-updates",
+        "/docs/core-concepts/hcon": "/docs#hcon-htmx-configuration-object-notation",
+        "/docs/features": "/docs#css-transitions",
+        "/docs/features/css-transitions": "/docs#css-transitions",
+        "/docs/features/synchronization": "/docs#synchronization",
+        "/docs/features/confirmations": "/docs#confirmations",
+        "/docs/features/boosting": "/docs#boosting",
+        "/docs/features/history": "/docs#history",
+        "/docs/features/validation": "/docs#validation",
+        "/docs/features/web-components": "/docs#web-components",
+        "/docs/features/attribute-inheritance": "/docs#attribute-inheritance",
+        "/docs/features/extended-selectors": "/docs#extended-selectors-1",
+        "/docs/features/extensions": "/docs#extensions",
+        "/docs/security": "/docs#best-practices",
+        "/docs/security/best-practices": "/docs#best-practices",
+        "/docs/security/caching": "/docs#caching",
+        "/docs/troubleshoot": "/docs#debugging",
+        "/docs/troubleshoot/debugging": "/docs#debugging",
+        "/docs/troubleshoot/configuration": "/docs#configuration",
+        "/docs/editors": "/docs#vs-code",
+        "/docs/editors/vscode": "/docs#vs-code",
+        "/docs/full": "/docs",
 
         // Old site: migration guides
         // TODO: Create these migration guide pages (content exists on old site):
