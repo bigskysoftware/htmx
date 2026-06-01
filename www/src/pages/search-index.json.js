@@ -69,13 +69,13 @@ export const GET = async () => {
                 const files = folder.allFiles;
                 const collection = folder.frontmatter.title;
 
-                // Add the collection index page itself
+                // Slug as a keyword so "docs" -> "Documentation" etc.
                 results.push({
                     id: folder.url,
                     url: folder.url,
                     title: folder.frontmatter.title,
                     description: folder.frontmatter.description || '',
-                    keywords: folder.frontmatter.keywords?.join(', ') || '',
+                    keywords: [collectionId, ...(folder.frontmatter.keywords || [])].join(', '),
                     parent: null,
                     collection,
                     breadcrumb: []
