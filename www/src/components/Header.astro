@@ -110,12 +110,12 @@ const isCurrent = (url?: string) => {
                            aria-hidden="true"></i>
                         <span class="text-sm mx-2 group-interact:text-neutral-600 dark:group-interact:text-neutral-200">Open
                             Search</span>
-                        <kbd
-                                id="search-shortcut-hint"
-                                aria-hidden="true"
-                                class="ms-auto pe-1 font-chicago text-xs group-interact:text-neutral-600 dark:group-interact:text-neutral-200"
-                                _="init if navigator.platform.toLowerCase() contains 'mac' put '⌘ K' into me"
-                        >Ctrl K</kbd>
+                        <kbd id="search-shortcut-hint"
+                             aria-hidden="true"
+                             class="ms-auto pe-1 font-chicago text-xs group-interact:text-neutral-600 dark:group-interact:text-neutral-200">
+                            <span class="mac:hidden">Ctrl K</span>
+                            <span class="hidden mac:inline">⌘ K</span>
+                        </kbd>
                     </button>
                 </div>
                 <!-- Divider -->

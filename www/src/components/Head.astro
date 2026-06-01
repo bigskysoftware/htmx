@@ -67,6 +67,14 @@ const jsonLd = type === 'article' ? {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{title === 'htmx' ? title : `${title} ~ htmx`}</title>
 
+    <!-- Set [data-os="mac"] on <html> before paint so `mac:` Tailwind variants
+         resolve correctly without a flash of wrong-platform UI. -->
+    <script is:inline>
+        if (/Mac|iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            document.documentElement.dataset.os = 'mac';
+        }
+    </script>
+
     <!-- Performance -->
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 

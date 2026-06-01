@@ -3,6 +3,11 @@
 @plugin "@tailwindcss/typography";
 @plugin "@iconify/tailwind4";
 
+/* Use `mac:` to gate utilities on Apple platforms. Detection is a tiny
+   synchronous script in <head> that sets [data-os="mac"] on <html>
+   before paint, so platform-specific UI never flashes the wrong state. */
+@custom-variant mac ([data-os="mac"] &);
+
 /* Self-hosted variable fonts (Inter, JetBrains Mono). Replaces the Google
    Fonts CDN: no third-party request, no FOUT, subsets gated by unicode-range. */
 @import "@fontsource-variable/inter/opsz.css";
