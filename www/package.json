@@ -17,6 +17,8 @@
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/sitemap": "^3.7.1",
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "astro": "5.18.0",
     "feed": "^5.2.1",
     "flexsearch": "^0.8.212",

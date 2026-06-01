@@ -3,7 +3,13 @@
 @plugin "@tailwindcss/typography";
 @plugin "@iconify/tailwind4";
 
-/* Local font */
+/* Self-hosted variable fonts (Inter, JetBrains Mono). Replaces the Google
+   Fonts CDN: no third-party request, no FOUT, subsets gated by unicode-range. */
+@import "@fontsource-variable/inter/opsz.css";
+@import "@fontsource-variable/inter/opsz-italic.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght-italic.css";
+
 @font-face {
     font-family: 'ChicagoFLF';
     src: url('/fonts/ChicagoFLF.ttf') format('truetype');
@@ -11,11 +17,11 @@
 
 @theme {
     /* Body */
-    --font-sans: 'Inter', sans-serif;
+    --font-sans: 'Inter Variable', 'Inter', sans-serif;
     /* Headings & Buttons */
     --font-chicago: 'ChicagoFLF', sans-serif;
     /* Code */
-    --font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+    --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 
     /* Gray tones
 
