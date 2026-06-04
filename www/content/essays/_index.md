@@ -53,6 +53,7 @@ page_template = "essay.html"
 
 ### Complexity Very, Very Bad
 * [The Grug Brained Developer](https://grugbrain.dev)
+* [Code is Cheap(er)](@/essays/code-is-cheap.md)
 * [Codin' Dirty](@/essays/codin-dirty.md)
 * [Locality of Behavior (LoB)](@/essays/locality-of-behaviour.md)
 * [Complexity Budget](@/essays/complexity-budget.md)
