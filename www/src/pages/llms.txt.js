@@ -1,7 +1,7 @@
 import { getFolder } from '../lib/content';
 
 /**
- * llms.txt — standardized entrypoint for LLM-aware clients.
+ * llms.txt, standardized entrypoint for LLM-aware clients.
  * See https://llmstxt.org/ for the convention.
  *
  * Emits a short site blurb followed by a sectioned list of markdown-form
@@ -27,7 +27,7 @@ export const GET = async ({ site }) => {
     lines.push('');
     lines.push('> htmx gives you access to AJAX, CSS Transitions, WebSockets, and Server-Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypermedia.');
     lines.push('');
-    lines.push(`The full documentation concatenated into a single file is available at [${origin}/docs/full.md](${origin}/docs/full.md).`);
+    lines.push(`The full documentation in a single file is available at [${origin}/docs.md](${origin}/docs.md).`);
     lines.push('');
 
     for (const { collection, heading } of SECTIONS) {
@@ -35,15 +35,18 @@ export const GET = async ({ site }) => {
         if (!folder.allFiles.length) continue;
         lines.push(`## ${heading}`);
         lines.push('');
-        for (const file of folder.allFiles) {
-            // Skip the /docs/full aggregation from the index — it's surfaced
-            // separately above. Skip anything flagged hidden in frontmatter.
-            if (file.slug === 'full') continue;
-            if (file.frontmatter?.hidden) continue;
-            const title = file.frontmatter?.title ?? file.slug;
-            const desc = file.frontmatter?.description;
-            const url = `${origin}${file.url}.md`;
-            lines.push(desc ? `- [${title}](${url}): ${desc}` : `- [${title}](${url})`);
+        if (collection === 'docs') {
+            const desc = folder.frontmatter?.description;
+            const url = `${origin}/docs.md`;
+            lines.push(desc ? `- [Documentation](${url}): ${desc}` : `- [Documentation](${url})`);
+        } else {
+            for (const file of folder.allFiles) {
+                if (file.frontmatter?.hidden) continue;
+                const title = file.frontmatter?.title ?? file.slug;
+                const desc = file.frontmatter?.description;
+                const url = `${origin}${file.url}.md`;
+                lines.push(desc ? `- [${title}](${url}): ${desc}` : `- [${title}](${url})`);
+            }
         }
         lines.push('');
     }

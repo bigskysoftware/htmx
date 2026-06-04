@@ -61,41 +61,6 @@ export function slugify(str) {
 }
 
 /**
- * Shift the depth of every ATX heading in a markdown string by `shift` levels,
- * capped at H6. Fence-aware: does not touch `#` lines inside ```/~~~ code blocks.
- *
- * Used when composing a page out of several standalone documents — each
- * authored document keeps its own heading tree, and the composer nests that
- * tree under new parent headings.
- *
- * @param {string} markdown
- * @param {number} shift
- * @returns {string}
- */
-export function shiftHeadings(markdown, shift) {
-    if (shift <= 0) return markdown;
-    const lines = markdown.split('\n');
-    /** @type {string|null} */
-    let fence = null;
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const fenceMatch = line.match(/^(`{3,}|~{3,})/);
-        if (fenceMatch) {
-            if (fence === null) fence = fenceMatch[1][0];
-            else if (line.startsWith(fence)) fence = null;
-            continue;
-        }
-        if (fence) continue;
-        const h = line.match(/^(#{1,6})(\s)/);
-        if (h) {
-            const newDepth = Math.min(6, h[1].length + shift);
-            lines[i] = '#'.repeat(newDepth) + h[2] + line.slice(h[0].length);
-        }
-    }
-    return lines.join('\n');
-}
-
-/**
  * Rewrite root-relative markdown links `](/foo)` to absolute `](origin/foo)`.
  * Used when serving a markdown document from a context where relative links
  * won't resolve (llms.txt consumers, raw `.md` exports).

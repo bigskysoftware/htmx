@@ -8,12 +8,12 @@ import { Image } from 'astro:assets';
 import CopyPageButton from './CopyPageButton.astro';
 import { getFile } from '../lib/content';
 import { formatDate } from '../lib/utils';
-import type { ContentFile } from '../lib/content';
+import type { ContentFile, ContentFolder } from '../lib/content';
 
 interface Props {
     title: string;
     description?: string;
-    file?: ContentFile;
+    file?: ContentFile | ContentFolder;
     collection: string;
 }
 
@@ -32,7 +32,8 @@ let byline: {
 const teamImages = import.meta.glob<{default: ImageMetadata}>('/src/assets/img/team/*.{png,jpg,jpeg,webp}', {eager: true});
 
 if (isEssay) {
-    const fm = file!.frontmatter;
+    const essayFile = file as ContentFile;
+    const fm = essayFile.frontmatter;
     const teamFile = await getFile('team.yaml');
     const team = teamFile?.frontmatter || [];
 
@@ -45,10 +46,9 @@ if (isEssay) {
     const created = fm.created ? (fm.created instanceof Date ? fm.created : new Date(fm.created)) : undefined;
     const modified = fm.modified ? (fm.modified instanceof Date ? fm.modified : new Date(fm.modified)) : undefined;
 
-    // Reading time
     const essayRaw = import.meta.glob('/src/content/essays/*.{md,mdx}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
     let readingMinutes: number | undefined;
-    const raw = essayRaw[`/src/content/${file!.path}`];
+    const raw = essayRaw[`/src/content/${essayFile.path}`];
     if (raw) {
         const body = raw.replace(/^---[\s\S]*?---/, '');
         readingMinutes = Math.max(1, Math.round(body.trim().split(/\s+/).length / 250));

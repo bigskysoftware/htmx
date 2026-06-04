@@ -119,7 +119,7 @@ Messages without an `event:` field are swapped into the DOM as HTML content.
 
 ## Configuration
 
-Configure SSE behavior globally via `htmx.config.sse` or per-element via [`hx-config`](/reference/attributes/hx-config) ([HCON](/docs/core-concepts/hcon#hx-config) or JSON):
+Configure SSE behavior globally via `htmx.config.sse` or per-element via [`hx-config`](/reference/attributes/hx-config) ([HCON](/docs#hx-config) or JSON):
 
 ```javascript
 htmx.config.sse = {
@@ -312,7 +312,7 @@ The server streams tokens as SSE messages. Each message replaces the target cont
 
 ### Live Event Bus
 
-A persistent connection that pushes targeted updates anywhere on the page using [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial):
+A persistent connection that pushes targeted updates anywhere on the page using [`<hx-partial>`](/docs#partials-hx-partial):
 
 ```html
 <div hx-sse:connect="/events"></div>

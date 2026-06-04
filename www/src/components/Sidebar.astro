@@ -4,14 +4,14 @@ import type {ContentFolder, ContentFile} from '../lib/content';
 interface Props {
     folder: ContentFolder;
     file?: ContentFile;
+    /** /docs anchor mode: forces sections open, scrollspy lights up the link for the visible H2. */
+    scrollspy?: boolean;
 }
 
-const {folder, file} = Astro.props;
+const {folder, file, scrollspy = false} = Astro.props;
 const currentUrl = Astro.url.pathname;
 
-// Check if this is the reference collection for monospace styling
 const isReference = folder.folder === 'reference';
-const isDocumentation = folder.folder === 'docs';
 const isPatterns = folder.folder === 'patterns';
 ---
 
@@ -31,12 +31,11 @@ const isPatterns = folder.folder === 'patterns';
 
         <div class="h-7 shrink-0"></div>
 
-        {/* Collection header + expand/collapse-all controls */}
         <div class="flex items-center justify-between gap-2 px-0.5 mb-6">
             <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400">
                 {folder.frontmatter.title}
             </h2>
-            {folder.folders.length > 1 && (
+            {!scrollspy && folder.folders.length > 1 && (
                     <div class="flex items-center gap-0.5 text-neutral-400 dark:text-neutral-500">
                         <button type="button"
                                 title="Expand all sections"
@@ -56,99 +55,114 @@ const isPatterns = folder.folder === 'patterns';
             )}
         </div>
 
-        {/* Overview link */}
-        <a href={folder.url}
-           class:list={[
-               "block px-3 py-2 mb-2 text-sm rounded-lg truncate",
-               currentUrl === folder.url
-                   ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
-                   : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
-           ]}>
-            Overview
-        </a>
+        <div class="border-l border-neutral-200 dark:border-neutral-800"
+             _={scrollspy ? `def setupSidebarSpy()
+                    wait 50ms
+                    set allH2s to <main h2[id]/> as Array
+                    js(me, allH2s)
+                        if (me._sidebarObserver) me._sidebarObserver.disconnect();
+                        const observer = new IntersectionObserver(
+                            (entries) => entries.forEach(entry => {
+                                if (!entry.isIntersecting) return;
+                                const id = entry.target.getAttribute('id');
+                                const link = me.querySelector('.sidebar-link[href$="#' + id + '"]');
+                                if (link) {
+                                    _hyperscript.evaluate(
+                                        "take [@data-active] from .sidebar-link for first <.sidebar-link[href$='#" + id + "']/>"
+                                    );
+                                    var pageY = window.scrollY;
+                                    link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                                    window.scrollTo(0, pageY);
+                                }
+                            }),
+                            { rootMargin: '-100px 0px -66% 0px', threshold: 0 }
+                        );
+                        allH2s.forEach(h => observer.observe(h));
+                        me._sidebarObserver = observer;
+                    end
+                    init call setupSidebarSpy() end
+                    on htmx:after:swap from document call setupSidebarSpy() end` : undefined}>
 
-        {/* Grouped files (subfolders with their files) */}
-        {folder.folders.map((subFolder) => {
-            const files = subFolder.files;
-            const containsCurrentPage = files.some((f: ContentFile) => currentUrl === f.url);
+            {!scrollspy && (
+                    <a href={folder.url}
+                       data-active={currentUrl === folder.url ? '' : undefined}
+                       class="sidebar-link block py-2 pl-4 pr-3 text-sm truncate -ml-px border-l-2 border-transparent text-neutral-600 dark:text-neutral-400 interact:text-neutral-900 dark:interact:text-neutral-200 interact:border-neutral-300 dark:interact:border-neutral-700 data-active:border-neutral-900 dark:data-active:border-neutral-100 data-active:text-neutral-900 dark:data-active:text-neutral-100 data-active:font-semibold">
+                        Overview
+                    </a>
+            )}
 
-            return (
-                    <details class="group/section w-full not-first-of-type:mt-2 no-morph"
-                             open={containsCurrentPage}>
-                        <summary class="sticky top-0 z-40 py-2 rounded-lg
-                                       bg-neutral-25 dark:bg-neutral-920
-                                       list-none select-none
+            {folder.folders.map((subFolder) => {
+                const files = subFolder.files;
+                const containsCurrentPage = files.some((f: ContentFile) => currentUrl === f.url);
+
+                return (
+                        <details class="group/section w-full mt-3 no-morph"
+                                 open={scrollspy || containsCurrentPage}>
+                            <summary class="
+                                       list-none select-none cursor-pointer pl-4 pr-3 py-1
                                        flex items-center justify-between gap-2
                                        [&::-webkit-details-marker]:hidden
-                                       cursor-pointer
-                                       text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200
-                                       px-3">
+                                       text-neutral-500 dark:text-neutral-500
+                                       interact:text-neutral-700 dark:interact:text-neutral-300">
 
-                            <h3 class:list={[
-                                "font-sans text-sm truncate tracking-wide min-w-0",
-                                containsCurrentPage
-                                    ? "font-semibold text-neutral-900 dark:text-neutral-100"
-                                    : "text-neutral-600 dark:text-neutral-400 group-hover/section:text-neutral-800 dark:group-hover/section:text-neutral-200"
-                            ]}
-                                set:html={subFolder.frontmatter.title}/><i
-                                class="icon-[mdi--chevron-down] size-4.5 transition group-open/section:rotate-180 text-neutral-400 dark:text-neutral-500 shrink-0"></i>
-                        </summary>
+                                <h3 class:list={[
+                                    "font-sans text-xs font-medium uppercase tracking-wide truncate min-w-0",
+                                    containsCurrentPage && "text-neutral-700 dark:text-neutral-300"
+                                ]}
+                                    set:html={subFolder.frontmatter.title}/>
+                                {!scrollspy && (
+                                        <i class="icon-[mdi--chevron-down] size-4 transition group-open/section:rotate-180 text-neutral-400 dark:text-neutral-500 shrink-0"></i>
+                                )}
+                            </summary>
 
-                        {files.length > 0 && (
-                                <ul class="space-y-0.5 border-l border-neutral-150 dark:border-neutral-850 ml-3 pl-3 mt-1 mb-4">
-                                    {files.map((file: ContentFile) => {
-                                        const isActive = currentUrl === file.url;
-                                        const isSoon = file.frontmatter.soon;
-                                        return (
-                                                <li>
-                                                    <a href={isSoon ? undefined : file.url}
-                                                       title={file.frontmatter.description}
-                                                       aria-current={isActive ? 'page' : undefined}
-                                                       aria-disabled={isSoon ? 'true' : undefined}
-                                                       hx-boost={isSoon && 'false'}
-                                                       class:list={[
-                                                           "flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg",
-                                                           isReference && "font-mono",
-                                                           isSoon
-                                                               ? "opacity-50 cursor-not-allowed"
-                                                               : isActive
-                                                                   ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
-                                                                   : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
-                                                       ]}>
-                                                        {isPatterns && file.frontmatter.icon && (
-                                                                <i class:list={[file.frontmatter.icon, "size-4 shrink-0"]}></i>
-                                                        )}
-                                                        <span class="truncate" set:html={file.frontmatter.title}/>
-                                                        {isSoon && (
-                                                                <span class="text-[9px] px-1.5 py-0.5 shrink-0 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide ml-auto">Soon</span>
-                                                        )}
-                                                    </a>
-                                                </li>
-                                        );
-                                    })}
-                                </ul>
-                        )}
-                    </details>
-            );
-        })}
+                            {files.length > 0 && (
+                                    <ul class="mt-1 mb-2">
+                                        {files.map((file: ContentFile) => {
+                                            const isActive = currentUrl === file.url;
+                                            const isSoon = file.frontmatter.soon;
+                                            return (
+                                                    <li>
+                                                        <a href={isSoon ? undefined : file.url}
+                                                           title={file.frontmatter.description}
+                                                           aria-current={isActive ? 'page' : undefined}
+                                                           aria-disabled={isSoon ? 'true' : undefined}
+                                                           hx-boost={isSoon && 'false'}
+                                                           data-active={isActive ? '' : undefined}
+                                                           class:list={[
+                                                               'sidebar-link flex items-center gap-2.5 py-2 pl-4 pr-3 text-sm -ml-px border-l-2 border-transparent text-neutral-600 dark:text-neutral-400 interact:text-neutral-900 dark:interact:text-neutral-200 interact:border-neutral-300 dark:interact:border-neutral-700 data-active:border-neutral-900 dark:data-active:border-neutral-100 data-active:text-neutral-900 dark:data-active:text-neutral-100 data-active:font-semibold',
+                                                               isReference && 'font-mono',
+                                                               isSoon && 'opacity-50 cursor-not-allowed text-neutral-400 dark:text-neutral-400',
+                                                           ]}>
+                                                            {isPatterns && file.frontmatter.icon && (
+                                                                    <i class:list={[file.frontmatter.icon, "size-4 shrink-0"]}></i>
+                                                            )}
+                                                            <span class="truncate" set:html={file.frontmatter.title}/>
+                                                            {isSoon && (
+                                                                    <span class="text-[9px] px-1.5 py-0.5 shrink-0 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide ml-auto">Soon</span>
+                                                            )}
+                                                        </a>
+                                                    </li>
+                                            );
+                                        })}
+                                    </ul>
+                            )}
+                        </details>
+                );
+            })}
 
-        {/* Direct files (not nested in subfolders) */}
-        {folder.files.map((f: ContentFile) => {
-            const isActive = currentUrl === f.url;
-            return (
-                    <a href={f.url}
-                       title={f.frontmatter.description}
-                       aria-current={isActive ? 'page' : undefined}
-                       class:list={[
-                           "block px-3 py-2 text-sm rounded-lg truncate",
-                           isActive
-                               ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
-                               : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
-                       ]}>
-                        <span set:html={f.frontmatter.title}/>
-                    </a>
-            );
-        })}
+            {folder.files.map((f: ContentFile) => {
+                const isActive = currentUrl === f.url;
+                return (
+                        <a href={f.url}
+                           title={f.frontmatter.description}
+                           aria-current={isActive ? 'page' : undefined}
+                           data-active={isActive ? '' : undefined}
+                           class="sidebar-link block py-2 pl-4 pr-3 text-sm truncate -ml-px border-l-2 border-transparent text-neutral-600 dark:text-neutral-400 interact:text-neutral-900 dark:interact:text-neutral-200 interact:border-neutral-300 dark:interact:border-neutral-700 data-active:border-neutral-900 dark:data-active:border-neutral-100 data-active:text-neutral-900 dark:data-active:text-neutral-100 data-active:font-semibold">
+                            <span set:html={f.frontmatter.title}/>
+                        </a>
+                );
+            })}
+        </div>
     </nav>
 
     <input id="sidebar-toggle-mobile" type="checkbox" class="sr-only" _="on click from <a/> set my.checked to false">

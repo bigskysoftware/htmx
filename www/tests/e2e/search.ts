@@ -153,7 +153,7 @@ test.describe('Search ranking', () => {
         await page.goto('/', { waitUntil: 'networkidle' });
         await openSearch(page);
 
-        // Load search index once
+        await page.evaluate(() => customElements.whenDefined('search-index'));
         await page.evaluate(() =>
             (document.querySelector('search-index') as any)?.load()
         );

@@ -7,10 +7,10 @@
     * pages/[...slug].md.ts) and writes it to the clipboard.
     * The dropdown uses the native Popover API for toggle + light-dismiss.
     */
-import type {ContentFile} from '../lib/content';
+import type {ContentFile, ContentFolder} from '../lib/content';
 
 interface Props {
-    file: ContentFile;
+    file: ContentFile | ContentFolder;
 }
 
 const {file} = Astro.props;

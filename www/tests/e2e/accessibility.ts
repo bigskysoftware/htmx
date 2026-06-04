@@ -33,7 +33,7 @@ test.describe('Accessibility', () => {
     });
 
     test('no duplicate IDs on a content page', async ({ page }) => {
-        await page.goto('/docs/get-started/installation');
+        await page.goto('/reference/attributes/hx-get');
         const duplicates = await page.evaluate(() => {
             const ids = Array.from(document.querySelectorAll('[id]')).map(el => el.id);
             return ids.filter((id, i) => ids.indexOf(id) !== i);

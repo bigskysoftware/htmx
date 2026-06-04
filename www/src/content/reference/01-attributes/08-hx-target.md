@@ -23,7 +23,7 @@ The link updates itself when clicked.
 
 ### Extended Selectors
 
-Use any [extended selector](/docs/features/extended-selectors) to target elements:
+Use any [extended selector](/docs#extended-selectors-1) to target elements:
 
 * CSS selectors: `#results`, `.container`, `[data-target]`
 * `closest <selector>` - nearest ancestor (or the element itself) matching selector
@@ -34,7 +34,7 @@ Use any [extended selector](/docs/features/extended-selectors) to target element
 * `previous` - previous sibling element
 * `previous <selector>` - scan backward for selector
 
-See the full [extended selectors](/docs/features/extended-selectors) guide.
+See the full [extended selectors](/docs#extended-selectors-1) guide.
 
 ## Common Patterns
 

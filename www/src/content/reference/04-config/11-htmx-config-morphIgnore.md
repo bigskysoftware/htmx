@@ -20,4 +20,4 @@ htmx.config.morphIgnore = ["data-htmx-powered", "data-analytics"];
 These attributes will be skipped during morph and settle operations.
 
 If you use a strict `style-src` CSP, add `"style"` to this list to prevent CSP violations from inline style
-attribute copying. See [Security Best Practices](/docs/security/best-practices#csp--inline-styles) for details.
+attribute copying. See [Security Best Practices](/docs#csp--inline-styles) for details.

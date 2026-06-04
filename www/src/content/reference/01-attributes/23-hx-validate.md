@@ -4,7 +4,7 @@ description: "Validates before submitting the request"
 ---
 
 The `hx-validate` attribute will cause an element to validate itself by way of
-the [HTML5 Validation API](/docs/features/validation)
+the [HTML5 Validation API](/docs#validation)
 before it submits a request.
 
 ## Syntax

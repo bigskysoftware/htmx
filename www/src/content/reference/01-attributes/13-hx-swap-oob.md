@@ -145,4 +145,4 @@ elsewhere will be ignored and oob-swap-related attributes stripped.
 
 ## See Also
 
-- [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial) — an alternative for multi-target updates with explicit control over targeting and swap strategy
+- [`<hx-partial>`](/docs#partials-hx-partial), an alternative for multi-target updates with explicit control over targeting and swap strategy

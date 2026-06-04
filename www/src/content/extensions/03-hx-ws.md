@@ -107,7 +107,7 @@ If the server sends a plain string (not JSON), it's treated as raw HTML:
 <div class="alert">Server restarting in 5 minutes</div>
 ```
 
-If the connection element has an `hx-target`, the HTML is swapped into that target. Without an `hx-target`, `swap:none` is used - but [`<hx-partial>`](/docs/core-concepts/multi-target-updates#partials-hx-partial) elements in the message can still target their own destinations:
+If the connection element has an `hx-target`, the HTML is swapped into that target. Without an `hx-target`, `swap:none` is used - but [`<hx-partial>`](/docs#partials-hx-partial) elements in the message can still target their own destinations:
 
 ```
 <hx-partial hx-target="#alerts" hx-swap="beforeend"><div class="alert">New alert</div></hx-partial>
@@ -198,7 +198,7 @@ document.addEventListener('htmx:before:ws:request', (e) => {
 
 ## Configuration
 
-Configure the extension globally via `htmx.config.ws` or per-element via `hx-config` ([HCON](/docs/core-concepts/hcon#hx-config) or JSON):
+Configure the extension globally via `htmx.config.ws` or per-element via `hx-config` ([HCON](/docs#hx-config) or JSON):
 
 ```javascript
 htmx.config.ws = {

@@ -124,7 +124,7 @@ This simulates what a spinner might look like in that situation:
 * In the absence of an explicit indicator, the `htmx-request` class will be added to the element triggering the
   request
 * If you want to use your own CSS but still use `htmx-indicator` as class name, then you need to disable
-  `includeIndicatorCSS`. See [Configuring htmx](/docs/troubleshoot/configuration). The easiest way is to add this to the
+  `includeIndicatorCSS`. See [Configuring htmx](/docs#configuration). The easiest way is to add this to the
   `<head>` of your HTML:
 
 ```html
