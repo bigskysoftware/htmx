@@ -455,20 +455,45 @@
         return proxy;
     }
 
-    function processLive(root) {
-        let extName = htmx.config.prefix + 'live';
-        let elts = [...(root.querySelectorAll?.('*') ?? [])];
-        if (root.nodeType === 1) elts.unshift(root);
-        for (let elt of elts) {
-            if (elt.closest('[hx-ignore]')) continue;
-            let prop = api.htmxProp(elt);
+    let liveQuery, bindPrefixes, bodyAttrs;
 
-            // Extended form: bare hx-live="code".
-            if (!prop.liveRegistered && (elt.hasAttribute('hx-live') || elt.hasAttribute(extName))) {
-                let attrName = elt.hasAttribute('hx-live') ? 'hx-live' : extName;
+    function buildLiveQuery() {
+        let mc = htmx.config.metaCharacter || ':';
+        let p = htmx.config.prefix;
+        bindPrefixes = ['hx-live' + mc];
+        if (p) bindPrefixes.push(p + 'live' + mc);
+        let extra = htmx.config.live?.bindPrefix;
+        if (extra === undefined) {
+            if (window.Alpine) {
+                extra = '';
+                console.warn('hx-live: Alpine.js detected — ":" short-form bindings disabled. Set htmx.config.live.bindPrefix to configure.');
+            } else {
+                extra = ':';
+            }
+        }
+        if (extra) bindPrefixes.push(extra);
+        bodyAttrs = ['hx-live'];
+        if (p) bodyAttrs.push(p + 'live');
+        let bind = bindPrefixes.map(bp => `starts-with(name(), "${bp}")`).join(' or ');
+        let body = bodyAttrs.map(n => `@${n}`).join(' or ');
+        liveQuery = new XPathEvaluator().createExpression(`.//*[@*[${bind}] or ${body}]`);
+    }
+
+    function extractBindingName(attrName) {
+        for (let p of bindPrefixes) {
+            if (attrName.startsWith(p) && attrName.length > p.length) return attrName.slice(p.length);
+        }
+    }
+
+    function processElement(elt) {
+        if (elt.closest('[hx-ignore]')) return;
+        let prop = api.htmxProp(elt);
+        if (!prop.liveRegistered) {
+            let bodyAttr = bodyAttrs.find(n => elt.hasAttribute(n));
+            if (bodyAttr) {
                 prop.liveRegistered = true;
                 ensureActive();
-                let code = elt.getAttribute(attrName);
+                let code = elt.getAttribute(bodyAttr)
                 let debounce = getDebounce(elt);
                 let run = async () => {
                     if (!elt.isConnected) {
@@ -484,19 +509,22 @@
                 fns.add(run);
                 run();
             }
-
-            // Simple form: each hx-live:<attr> or :<attr> attribute.
-            for (let a of elt.attributes) {
-                let attrName;
-                if (a.name.startsWith('hx-live:') && a.name.length > 8) attrName = a.name.slice(8);
-                else if (a.name.length > 1 && a.name[0] === ':') attrName = a.name.slice(1);
-                else continue;
-                prop.liveAttrs = prop.liveAttrs || new Set();
-                if (prop.liveAttrs.has(attrName)) continue;
-                prop.liveAttrs.add(attrName);
-                registerSimpleLive(elt, attrName, a.value);
-            }
         }
+        prop.liveAttrs ||= new Set();
+        for (let a of elt.attributes) {
+            let name = extractBindingName(a.name);
+            if (!name || prop.liveAttrs.has(name)) continue;
+            prop.liveAttrs.add(name);
+            registerSimpleLive(elt, name, a.value);
+        }
+    }
+
+    function processLive(root) {
+        if (!liveQuery) buildLiveQuery();
+        if (root.nodeType === 1) processElement(root);
+        let iter = liveQuery.evaluate(root), node, nodes = [];
+        while (node = iter.iterateNext()) nodes.push(node);
+        for (node of nodes) processElement(node);
     }
 
     function registerSimpleLive(elt, attrName, code) {

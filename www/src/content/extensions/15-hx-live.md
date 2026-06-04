@@ -41,6 +41,8 @@ The same shape works for any attribute:
 <input :required="q('#mode').value === 'final'">
 ```
 
+> ⚠️ **Alpine.js conflict:** The `:` short form uses the same syntax as Alpine.js (`x-bind:`). If Alpine is detected on the page at initialization time, hx-live automatically disables the `:` short form and logs a console warning. You can override this behavior by explicitly setting [`config.live.bindPrefix`](#configlivebindprefix).
+
 How each attribute is written (booleans, ARIA, property-backed, generic) is described in [Attribute writing rules](#attribute-writing-rules).
 
 ### `hx-live:<attr>`
@@ -566,12 +568,68 @@ htmx.live.refresh();
 
 Selector directionals (`next`, `previous`, `closest`) need an anchor and only work inside `hx-live` / `hx-on`, not from `htmx.live.q`.
 
+## Configuration
+
+### `config.live.bindPrefix`
+
+Controls the short-form prefix for binding attributes. Defaults to `':'` (or disabled automatically if Alpine.js is detected).
+
+| Value | Effect | Example attribute |
+|-------|--------|-------------------|
+| undefined (default) | `:attr` enabled, unless Alpine detected | `:hidden`, `:text`, `:.active` |
+| `':'` | `:attr` short form forced on | `:hidden`, `:text`, `:.active` |
+| `''` or falsy | Short form disabled, only `hx-live:attr` works | `hx-live:hidden` |
+| `'hx:'` | Custom prefix | `hx:hidden`, `hx:text`, `hx:.active` |
+
+The long form `hx-live:<attr>` always works regardless of this setting.
+
+**Alpine.js auto-detection**
+
+If `window.Alpine` exists when hx-live initializes and no `bindPrefix` is configured, the `:` short form is automatically disabled and a console warning is logged. To resolve:
+
+- Use the long form `hx-live:<attr>` (always works)
+- Or explicitly set a non-conflicting prefix:
+
+```html
+<!-- Use hx: as short form instead -->
+<meta name="htmx-config" content='{"live":{"bindPrefix":"hx:"}}'>
+```
+
+- Or force `:` if you know what you're doing:
+
+```html
+<meta name="htmx-config" content='{"live":{"bindPrefix":":"}}'>
+```
+
+**Manually disabling the short form**
+
+If Alpine loads after hx-live (or you want to be explicit), disable it yourself:
+
+```html
+<meta name="htmx-config" content='{"live":{"bindPrefix":""}}'>
+```
+
+With `bindPrefix: ''`, use the canonical long form:
+
+```html
+<!-- Alpine handles :class, hx-live handles hx-live:text -->
+<p :class="alpineVar" hx-live:text="q('#name').value"></p>
+```
+
+With `bindPrefix: 'hx:'`:
+
+```html
+<!-- Alpine handles :class, hx-live handles hx:text -->
+<p :class="alpineVar" hx:text="q('#name').value"></p>
+```
+
 ## Notes
 
 - Expressions run on any DOM mutation. There is no per-variable tracking. The microtask coalescing keeps this cheap, but expensive expressions should `debounce` or guard themselves.
 - The DOM is the source of truth. To share state between expressions, use ARIA attributes, `data-*` attributes (the `data` proxy makes this ergonomic), or hidden inputs.
 - Expressions must be safe to run repeatedly. Avoid unconditional `fetch()` calls. Use `debounce` or guard on a value change.
 - If your build pipeline strips `:`-prefixed attributes, use the canonical `hx-live:<attr>` form instead. Behavior is identical.
+- If using Alpine.js on the same page, hx-live auto-detects it and disables the `:` short form. See [Configuration](#configuration) for details.
 
 ## See also
 
