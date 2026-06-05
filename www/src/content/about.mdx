@@ -5,7 +5,6 @@ description: "The project, the team, and the community."
 
 import { getFile } from '../lib/content';
 import { Image } from 'astro:assets';
-import Card from '../components/Card.astro';
 
 import hypermediaSystems from '../assets/img/hypermedia-systems.png';
 import serverDrivenWebApps from '../assets/img/server-driven-web-apps.png';
@@ -52,7 +51,7 @@ export const exploreItems = [
     <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">Team</h2>
 
     {creator && (
-        <Card variant="lg" class="flex flex-col sm:flex-row sm:items-center gap-6 p-4 sm:p-6 mb-6">
+        <div class="card lg flex flex-col sm:flex-row sm:items-center gap-6 p-4 sm:p-6 mb-6">
             <Image src={creator.image} alt={creator.name}
                    class="object-cover size-20 rounded-full" width={224} height={224} />
             <div class="flex-1 min-w-0">
@@ -69,12 +68,12 @@ export const exploreItems = [
                 <span class="inline-block font-mono text-[11px] uppercase tracking-wider text-neutral-600 dark:text-neutral-400">Creator of htmx / Head Grug (same thing)</span>
                 <p class="text-sm leading-relaxed mt-1.5" set:html={creator.content}></p>
             </div>
-        </Card>
+        </div>
     )}
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {contributors.map((member) => (
-            <Card variant="lg" class="flex items-center gap-4 p-4">
+            <div class="card lg flex items-center gap-4 p-4">
                 <div class="shrink-0 size-12 rounded-full overflow-hidden ring-1 ring-neutral-100 dark:ring-neutral-800">
                     <Image src={member.image} alt={member.name}
                            class="w-full h-full object-cover" width={96} height={96} />
@@ -92,7 +91,7 @@ export const exploreItems = [
                     </div>
                     <p class="text-xs leading-relaxed" set:html={member.content}></p>
                 </div>
-            </Card>
+            </div>
         ))}
     </div>
 </section>
@@ -120,7 +119,7 @@ export const exploreItems = [
         <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">{section.title}</h2>
         <div class={section.gridClass}>
             {section.items.map((item) => (
-                <Card variant="lg" class="group relative isolate p-5 overflow-hidden outline-hidden interact:border-neutral-300 dark:interact:border-neutral-600 interact:bg-neutral-50 dark:interact:bg-neutral-875 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400">
+                <div class="card lg group relative isolate p-5 overflow-hidden outline-hidden interact:border-neutral-300 dark:interact:border-neutral-600 interact:bg-neutral-50 dark:interact:bg-neutral-875 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400">
                     <div class:list={[
                         "flex items-center gap-4",
                         section.centered && "sm:flex-col sm:items-center sm:text-center"
@@ -142,7 +141,7 @@ export const exploreItems = [
                             </p>
                         </div>
                     </div>
-                </Card>
+                </div>
             ))}
         </div>
     </section>
