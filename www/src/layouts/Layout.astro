@@ -25,9 +25,9 @@ const {
 const links = (await getFile('links.yaml'))?.frontmatter;
 const navigationItems = links.header;
 const footerSections = [
-    { name: "Links",     items: links.header },
-    { name: "Community", items: links.social.map((s: any) => ({ name: s.name, url: s.url, iconClass: s.iconClass })) },
-    { name: "Resources", items: links.footer },
+    {name: "Links", items: links.header},
+    {name: "Community", items: links.social.map((s: any) => ({name: s.name, url: s.url, iconClass: s.iconClass}))},
+    {name: "Resources", items: links.footer},
 ];
 ---
 
@@ -39,9 +39,13 @@ const footerSections = [
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{title === 'htmx' ? title : `${title} ~ htmx`}</title>
 
+    <script is:inline>
+        if (/Mac|iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            document.documentElement.dataset.os = 'mac';
+        }
+    </script>
+
     <!-- Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
     <!-- SEO & Page Meta -->
@@ -94,10 +98,6 @@ const footerSections = [
     <meta name="twitter:title" content={title}>
     <meta name="twitter:description" content={description.trim()}>
     <meta name="twitter:image" content={new URL(image, Astro.url)}>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
-          rel="stylesheet">
 
     <!-- Favicon -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -239,9 +239,10 @@ const footerSections = [
                         <span class="text-sm mx-2 group-interact:text-neutral-600 dark:group-interact:text-neutral-200">Open
                             Search</span>
                         <kbd id="search-shortcut-hint" aria-hidden="true"
-                             class="ms-auto pe-1 font-chicago text-xs group-interact:text-neutral-600 dark:group-interact:text-neutral-200"
-                             _="init if navigator.platform.toLowerCase() contains 'mac' put '⌘ K' into me"
-                        >Ctrl K</kbd>
+                             class="ms-auto pe-1 font-chicago text-xs group-interact:text-neutral-600 dark:group-interact:text-neutral-200">
+                            <span class="mac:hidden">Ctrl K</span>
+                            <span class="hidden mac:inline">⌘ K</span>
+                        </kbd>
                     </button>
                 </div>
                 <div class="h-6 w-px bg-neutral-200 dark:bg-neutral-800 ml-7.5 mr-5.5" role="separator"></div>
