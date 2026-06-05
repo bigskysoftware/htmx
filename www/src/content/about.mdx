@@ -21,8 +21,8 @@ export const team = (teamFile?.frontmatter || []).map(m => ({
 }));
 export const creator = team.find(m => m.name === 'Carson Gross');
 export const contributors = team.filter(m => m.name !== 'Carson Gross');
-export const communityFile = await getFile('community.yaml');
-export const communityLinks = communityFile?.frontmatter || [];
+export const linksFile = await getFile('links.yaml');
+export const communityLinks = linksFile?.frontmatter?.social || [];
 
 export const books = [
     {href: "https://hypermedia.systems", img: hypermediaSystems, title: "Hypermedia Systems"},

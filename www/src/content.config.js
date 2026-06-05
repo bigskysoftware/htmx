@@ -111,16 +111,31 @@ const sponsors = defineCollection({
     }).strict(),
 });
 
-const community = defineCollection({
-    loader: file('src/content/community.yaml', {
-        parser: (fileContent) => /** @type {any[]} */ (yaml.load(fileContent)).map((item) => ({...item, id: slugify(item.name)}))
+const links = defineCollection({
+    loader: file('src/content/links.yaml', {
+        parser: (fileContent) => {
+            const data = /** @type {any} */ (yaml.load(fileContent));
+            return [{ id: 'links', ...data }];
+        }
     }),
     schema: z.object({
-        id: z.string(), // generated from `name`
-        name: z.string(),
-        description: z.string(),
-        iconClass: z.string(),
-        url: z.string(),
+        id: z.string(),
+        header: z.array(z.object({
+            name: z.string(),
+            url: z.string(),
+        })),
+        footer: z.array(z.object({
+            name: z.string(),
+            url: z.string(),
+            iconClass: z.string(),
+            boost: z.boolean().optional(),
+        })),
+        social: z.array(z.object({
+            name: z.string(),
+            description: z.string(),
+            iconClass: z.string(),
+            url: z.string(),
+        })),
     }).strict(),
 })
 
@@ -154,6 +169,6 @@ export const collections = {
     essays,
     interviews,
     sponsors,
-    community,
+    links,
     team,
 };
