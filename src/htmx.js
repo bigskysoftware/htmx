@@ -249,9 +249,7 @@ var htmx = (() => {
             return [...configString.matchAll(configPattern)].reduce((result, match) => {
                 let keyPath = (match[1] ?? match[2]).split('.');
                 let value = (match[3] ?? match[4] ?? match[5] ?? match[6] ?? 'true').trim();
-                if (value === 'true') value = true;
-                else if (value === 'false') value = false;
-                else if (/^\d+$/.test(value)) value = parseInt(value);
+                try { value = JSON.parse(value); } catch {}
                 if (keyPath.some(k => this.__internalField(k))) return result;
                 keyPath.slice(0, -1).reduce((obj, key) => obj[key] ??= {}, result)[keyPath.at(-1)] = value;
                 return result;
@@ -2091,7 +2089,7 @@ var htmx = (() => {
         __copyAttributes(destination, source) {
             let attributesToIgnore = this.config.morphIgnore || [];
             for (const attr of source.attributes) {
-                if (!attributesToIgnore.includes(attr.name) && destination.getAttribute(attr.name) !== attr.value) {
+                if (!attributesToIgnore.some(p => attr.name.startsWith(p)) && destination.getAttribute(attr.name) !== attr.value) {
                     destination.setAttribute(attr.name, attr.value);
                     if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
                         destination.value = attr.value;
@@ -2100,7 +2098,7 @@ var htmx = (() => {
             }
             for (let i = destination.attributes.length - 1; i >= 0; i--) {
                 let attr = destination.attributes[i];
-                if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.includes(attr.name)) {
+                if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.some(p => attr.name.startsWith(p))) {
                     destination.removeAttribute(attr.name);
                 }
             }

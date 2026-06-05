@@ -193,13 +193,15 @@
                 if (typeof prop !== 'string') return undefined;
                 let kebab = camelToKebab(prop);
                 let ancestor = elt.closest('[data-' + kebab + ']');
-                return ancestor ? ancestor.dataset[prop] : undefined;
+                if (!ancestor) return undefined;
+                let raw = ancestor.dataset[prop];
+                try { return JSON.parse(raw); } catch { return raw; }
             },
             set: (_, prop, val) => {
                 if (typeof prop !== 'string') return false;
                 let kebab = camelToKebab(prop);
                 let target = elt.closest('[data-' + kebab + ']') || elt;
-                target.dataset[prop] = val;
+                target.dataset[prop] = typeof val === 'string' ? val : JSON.stringify(val);
                 return true;
             },
             has: (_, prop) => {
@@ -440,6 +442,7 @@
                     applyAttr(elts, name, ...rest);
                     return proxy;
                 };
+                if (p === 'data') return elts[0] ? makeDataProxy(elts[0]) : undefined;
                 if (arrayMethods.has(p)) return elts[p].bind(elts);
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];

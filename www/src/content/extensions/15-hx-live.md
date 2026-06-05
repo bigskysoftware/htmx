@@ -285,7 +285,29 @@ Read or write `data-*` attributes on the closest ancestor that has them. Lets co
 
 `data.foo` reads from the closest `[data-foo]` ancestor. Writing assigns to that ancestor too. 
 
-For direct, this-only access, use `this.dataset` instead. For per-element writes across a set, use `q('.row').dataset.state = 'on'`.
+Values are automatically JSON-serialized on write and parsed on read. Booleans, numbers, arrays, and objects round-trip transparently:
+
+```html
+<div data-count="1" data-active="false" data-cart="[]">
+    <input id="sku" placeholder="Product code">
+    <button hx-on:click="data.cart = [...data.cart, {sku: q('#sku').value, qty: data.count}]">Add to cart</button>
+    <button hx-on:click="data.count++">+</button>
+    <button hx-on:click="data.count--">−</button>
+    <button hx-on:click="data.active = !data.active">Toggle details</button>
+    <p :text="`Qty: ${data.count} | ${data.cart.length} items in cart`"></p>
+</div>
+```
+
+Plain strings that aren't valid JSON are returned as-is.
+
+`data` is also available on `q()` proxies via `q(selector).data`. It cascades from the first matched element:
+
+```js
+q('#cart-panel').data.items              // read: JSON-parsed value from closest [data-items] ancestor
+q('#cart-panel').data.items = [{id: 1}]  // write: JSON-stringified to that ancestor
+```
+
+For direct, this-only access, use `this.dataset` instead (note: `this.dataset` is always strings). For per-element writes across a set, use `q('.row').dataset.state = 'on'`.
 
 Because `:<attr>` works on `data-*`, you can also store derived values in the DOM:
 
@@ -570,6 +592,7 @@ Selector directionals (`next`, `previous`, `closest`) need an anchor and only wo
 
 - Expressions run on any DOM mutation. There is no per-variable tracking. The microtask coalescing keeps this cheap, but expensive expressions should `debounce` or guard themselves.
 - The DOM is the source of truth. To share state between expressions, use ARIA attributes, `data-*` attributes (the `data` proxy makes this ergonomic), or hidden inputs.
+- When using morph swap styles (`innerMorph` / `outerMorph`), server responses will overwrite `data-*` attributes by default. To preserve client-side state during morphs, add a prefix to `morphIgnore` — e.g. `morphIgnore:["data-"]` will protect all `data-*` attributes from being overwritten. Non-morph swaps (`innerHTML`, `outerHTML`) replace the DOM entirely, so state should live on an ancestor element that isn't swapped.
 - Expressions must be safe to run repeatedly. Avoid unconditional `fetch()` calls. Use `debounce` or guard on a value change.
 - If your build pipeline strips `:`-prefixed attributes, use the canonical `hx-live:<attr>` form instead. Behavior is identical.
 

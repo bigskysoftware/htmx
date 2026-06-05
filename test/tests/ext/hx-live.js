@@ -1234,6 +1234,101 @@ describe('hx-live extension', function () {
         section.dataset.counter.should.equal('6');
     });
 
+    it('data proxy: boolean round-trips through JSON', async function() {
+        playground().innerHTML = `
+            <section data-active="false">
+                <button id="me" hx-on:click="data.active = !data.active">toggle</button>
+            </section>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('#me');
+        let section = playground().querySelector('section');
+        btn.click();
+        section.dataset.active.should.equal('true');
+        btn.click();
+        section.dataset.active.should.equal('false');
+    });
+
+    it('data proxy: number round-trips through JSON', async function() {
+        playground().innerHTML = `
+            <section data-count="0">
+                <button id="me" hx-on:click="data.count = data.count + 1">+</button>
+            </section>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('#me');
+        let section = playground().querySelector('section');
+        (typeof section.dataset.count).should.equal('string');
+        btn.click();
+        section.dataset.count.should.equal('1');
+        btn.click();
+        section.dataset.count.should.equal('2');
+    });
+
+    it('data proxy: object round-trips through JSON', async function() {
+        playground().innerHTML = `
+            <section data-user='{"name":"alice","age":30}'>
+                <button id="me" hx-on:click="data.user = {...data.user, age: data.user.age + 1}">bday</button>
+                <span id="out" hx-on:click="this.dataset.v = data.user.name + ':' + data.user.age">read</span>
+            </section>
+        `;
+        htmx.process(playground());
+        let btn = playground().querySelector('#me');
+        let out = playground().querySelector('#out');
+        let section = playground().querySelector('section');
+        out.click();
+        out.dataset.v.should.equal('alice:30');
+        btn.click();
+        JSON.parse(section.dataset.user).age.should.equal(31);
+        out.click();
+        out.dataset.v.should.equal('alice:31');
+    });
+
+    it('data proxy: array round-trips through JSON', async function() {
+        playground().innerHTML = `
+            <section data-items='[]'>
+                <button id="add" hx-on:click="data.items = [...data.items, data.items.length]">add</button>
+                <span id="out" hx-on:click="this.dataset.v = data.items.length">count</span>
+            </section>
+        `;
+        htmx.process(playground());
+        let add = playground().querySelector('#add');
+        let out = playground().querySelector('#out');
+        let section = playground().querySelector('section');
+        out.click();
+        out.dataset.v.should.equal('0');
+        add.click();
+        add.click();
+        add.click();
+        JSON.parse(section.dataset.items).should.deep.equal([0, 1, 2]);
+        out.click();
+        out.dataset.v.should.equal('3');
+    });
+
+    it('data proxy: plain string stays as string', async function() {
+        playground().innerHTML = `
+            <div data-label="hello">
+                <span id="me" hx-on:click="this.dataset.v = typeof data.label + ':' + data.label">x</span>
+            </div>
+        `;
+        htmx.process(playground());
+        let elt = playground().querySelector('#me');
+        elt.click();
+        elt.dataset.v.should.equal('string:hello');
+    });
+
+    it('data proxy: null round-trips through JSON', async function() {
+        playground().innerHTML = `
+            <section data-val="null">
+                <span id="me" hx-on:click="this.dataset.v = (data.val === null ? 'is-null' : 'not-null')">x</span>
+            </section>
+        `;
+        htmx.process(playground());
+        let elt = playground().querySelector('#me');
+        elt.click();
+        elt.dataset.v.should.equal('is-null');
+    });
+
     it('with (data) { foo++ } increments cascading value', async function() {
         playground().innerHTML = `
             <section data-counter="10">
