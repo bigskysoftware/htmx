@@ -27,7 +27,7 @@ A common set of phrases used by htmx enthusiasts when, for example, [@bunjavascr
 ## htmx CEO
 
 At one point there was a hostile takeover attempt of the htmx CEO position and, in a desperate poison pill, I declared
-everyone CEO of htmx.  
+[everyone CEO of htmx](https://x.com/htmx_org/status/1726986945430233323).
 
 [Turk](https://x.com/gitpush_gitpaid) created <https://htmx.ceo> if you want to register as a CEO.
 
