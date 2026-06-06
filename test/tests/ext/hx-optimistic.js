@@ -103,7 +103,7 @@ describe('hx-optimistic attribute', function() {
         createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         find('button').click()
         await forRequest()
-        assert.isNull(document.querySelector('[data-hx-optimistic]'));
+        assert.isNull(document.querySelector('.hx-optimistic'));
     })
 
     it('removes optimistic content on error', async function () {
@@ -111,7 +111,7 @@ describe('hx-optimistic attribute', function() {
         createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         find('button').click()
         await waitForEvent('htmx:error', 2000);
-        assert.isNull(document.querySelector('[data-hx-optimistic]'));
+        assert.isNull(document.querySelector('.hx-optimistic'));
     })
 
     it('unhides hidden elements after swap', async function () {
@@ -119,7 +119,7 @@ describe('hx-optimistic attribute', function() {
         createProcessedHTML('<div id="result"><span id="child">Original</span></div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         find('button').click()
         await forRequest()
-        assert.isNull(document.querySelector('[data-hx-oh]'));
+        assert.equal(find('#result').textContent.trim(), 'Final');
     })
 
     it('unhides hidden elements on error', async function () {
@@ -127,7 +127,7 @@ describe('hx-optimistic attribute', function() {
         createProcessedHTML('<div id="result"><span>Original</span></div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
         find('button').click()
         await waitForEvent('htmx:error', 2000);
-        assert.isNull(document.querySelector('[data-hx-oh]'));
+        assert.equal(find('#result span').style.display, '');
     })
 
     it('does nothing when optimistic selector not found', async function () {
@@ -151,7 +151,7 @@ describe('hx-optimistic attribute', function() {
         createProcessedHTML('<div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#nonexistent" hx-optimistic="#opt">Go</button>');
         find('button').click()
         await forRequest()
-        assert.isNull(document.querySelector('[data-hx-optimistic]'));
+        assert.isNull(document.querySelector('.hx-optimistic'));
     })
 
     it('works when target is resolved from CSS selector', async function () {
@@ -167,7 +167,7 @@ describe('hx-optimistic attribute', function() {
         let optDiv = null;
         document.addEventListener('htmx:before:request', function() {
             setTimeout(() => {
-                optDiv = document.querySelector('[data-hx-optimistic]');
+                optDiv = document.querySelector('.hx-optimistic');
             }, 0);
         }, {once: true});
         createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button>');
@@ -201,7 +201,7 @@ describe('hx-optimistic attribute', function() {
         await forRequest()
         find('#b2').click()
         await forRequest()
-        assert.isNull(document.querySelector('[data-hx-optimistic]'));
+        assert.isNull(document.querySelector('.hx-optimistic'));
     })
 
     it('works with hx-config override', async function () {
@@ -226,5 +226,72 @@ describe('hx-optimistic attribute', function() {
         find('button').click()
         await forRequest()
         assert.equal(find('#result').textContent.trim(), 'Final');
+    })
+
+    it('sets data-* attributes on optimistic div for each form param', async function () {
+        mockResponse('POST', '/submit', 'Final')
+        createProcessedHTML('<form hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt"><input name="color" value="blue"><input name="size" value="large"><button type="submit">Go</button></form><div id="result">Original</div><div id="opt" style="display:none">content</div>');
+        let dataColor, dataSize;
+        document.addEventListener('htmx:before:request', () => {
+            let el = document.querySelector('.hx-optimistic');
+            if (el) { dataColor = el.dataset.color; dataSize = el.dataset.size; }
+        }, {once: true});
+        find('button').click()
+        await forRequest()
+        assert.equal(dataColor, 'blue');
+        assert.equal(dataSize, 'large');
+    })
+
+    it('sets data-* from hx-vals', async function () {
+        mockResponse('POST', '/submit', 'Final')
+        createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">content</div><button hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt" hx-vals=\'{"count": "42"}\'>Go</button>');
+        let dataCount;
+        document.addEventListener('htmx:before:request', () => {
+            let el = document.querySelector('.hx-optimistic');
+            if (el) dataCount = el.dataset.count;
+        }, {once: true});
+        find('button').click()
+        await forRequest()
+        assert.equal(dataCount, '42');
+    })
+
+    it('data-* values are safe from XSS via dataset API', async function () {
+        mockResponse('POST', '/submit', 'Final')
+        createProcessedHTML('<form hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt"><input name="name" value="&quot;onclick=alert(1)"><button type="submit">Go</button></form><div id="result">Original</div><div id="opt" style="display:none">x</div>');
+        let dataName;
+        document.addEventListener('htmx:before:request', () => {
+            let el = document.querySelector('.hx-optimistic');
+            if (el) dataName = el.dataset.name;
+        }, {once: true});
+        find('button').click()
+        await forRequest()
+        assert.equal(dataName, '"onclick=alert(1)');
+    })
+
+    it('static template content renders without hx-live', async function () {
+        mockResponse('POST', '/submit', 'Final')
+        createProcessedHTML('<form hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt"><input name="x" value="y"><button type="submit">Go</button></form><div id="result">Original</div><div id="opt" style="display:none">Static optimistic</div>');
+        let optText;
+        document.addEventListener('htmx:before:request', () => {
+            let el = document.querySelector('.hx-optimistic');
+            if (el) optText = el.textContent;
+        }, {once: true});
+        find('button').click()
+        await forRequest()
+        assert.equal(optText, 'Static optimistic');
+    })
+
+    it('skips file inputs in data-* attributes', async function () {
+        mockResponse('POST', '/submit', 'Final')
+        createProcessedHTML('<form hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt"><input name="title" value="doc"><input name="file" type="file"><button type="submit">Go</button></form><div id="result">Original</div><div id="opt" style="display:none">uploading</div>');
+        let hasTitle, hasFile;
+        document.addEventListener('htmx:before:request', () => {
+            let el = document.querySelector('.hx-optimistic');
+            if (el) { hasTitle = 'title' in el.dataset; hasFile = 'file' in el.dataset; }
+        }, {once: true});
+        find('button').click()
+        await forRequest()
+        assert.isTrue(hasTitle);
+        assert.isFalse(hasFile);
     })
 })
