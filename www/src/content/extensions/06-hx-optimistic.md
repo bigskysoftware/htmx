@@ -44,7 +44,7 @@ When the form submits, the template content is immediately inserted into the tar
 
 ## Request Parameters as Data Attributes
 
-The extension captures all request parameters (form inputs, `hx-vals`, `hx-include`) and sets them as `data-*` attributes on the optimistic element. This makes the submitted values available to CSS and to the [hx-live](/extensions/hx-live) extension.
+The extension captures all string request parameters (form inputs, `hx-vals`, `hx-include`) and sets them as `data-*` attributes on the optimistic element. This makes the submitted values available to CSS and to the [hx-live](/extensions/hx-live) extension.
 
 For a form with `<input name="author" value="You">`, the optimistic div gets `data-author="You"`.
 

@@ -294,4 +294,18 @@ describe('hx-optimistic attribute', function() {
         assert.isTrue(hasTitle);
         assert.isFalse(hasFile);
     })
+
+    it('handles hyphenated form field names via setAttribute', async function () {
+        mockResponse('POST', '/submit', 'Final')
+        createProcessedHTML('<form hx-post="/submit" hx-target="#result" hx-swap="innerHTML" hx-optimistic="#opt"><input name="user-name" value="joe"><button type="submit">Go</button></form><div id="result">Original</div><div id="opt" style="display:none">content</div>');
+        let dataUserName;
+        document.addEventListener('htmx:before:request', () => {
+            let el = document.querySelector('.hx-optimistic');
+            if (el) dataUserName = el.dataset.userName;
+        }, {once: true});
+        find('button').click()
+        await forRequest()
+        assert.equal(dataUserName, 'joe');
+        assert.equal(find('#result').textContent.trim(), 'Final');
+    })
 })

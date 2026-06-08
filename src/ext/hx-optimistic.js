@@ -37,7 +37,14 @@
             for (let k of keys) {
                 let values = ctx.optimisticBody.getAll(k).filter(v => typeof v === 'string');
                 if (!values.length) continue;
-                optimisticDiv.dataset[k] = values.length === 1 ? values[0] : JSON.stringify(values);
+                let val = values.length === 1 ? values[0] : JSON.stringify(values);
+                try {
+                    optimisticDiv.dataset[k] = val;
+                } catch (e) {
+                    try {
+                        optimisticDiv.setAttribute('data-' + k, val);
+                    } catch (e2) { /* truly invalid name, skip */ }
+                }
             }
         }
 
