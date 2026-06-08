@@ -193,57 +193,79 @@ With all that tied together, we are ready to start using the View Transition API
 should work in Chrome 111+ (other browsers will work fine, but won't get the nice animation):
 
 <style>
-   @keyframes fade-in {
-     from { opacity: 0; }
-   }
-
-   @keyframes fade-out {
-     to { opacity: 0; }
-   }
-
    @keyframes slide-from-right {
-     from { transform: translateX(90px); }
+     from { transform: translateX(100%); }
    }
 
    @keyframes slide-to-left {
-     to { transform: translateX(-90px); }
+     to { transform: translateX(-100%); }
    }
 
-   /* define animations for the old and new content */
+   ::view-transition-group(slide-it) {
+     animation: none;
+     overflow: hidden;
+   }
+
    ::view-transition-old(slide-it) {
-     animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
-     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+     animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
    }
    ::view-transition-new(slide-it) {
-     animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
-     600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+     animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
    }
 
-   /* tie the view transition to a given CSS class */
+   /* Reverse direction on restore. */
+   :root.vt-reverse::view-transition-old(slide-it) {
+     animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both reverse slide-from-right;
+   }
+   :root.vt-reverse::view-transition-new(slide-it) {
+     animation: 300ms cubic-bezier(0.4, 0, 0.2, 1) both reverse slide-to-left;
+   }
+
    .sample-transition {
        view-transition-name: slide-it;
    }
-    
+
 </style>
 
 
-<div class="sample-transition" style="padding: 24px">
-   <h1>Initial Content</h1>
-   <button hx-get="/new-content" hx-swap="innerHTML transition:true" hx-target="closest div">
-     Swap It!
-   </button>
+<div class="not-prose demo-container flex items-center justify-center min-h-[180px]">
+  <div class="sample-transition w-full text-center">
+    <h1 class="font-chicago text-2xl tracking-tightest mb-4">Initial Content</h1>
+    <button class="cursor-pointer inline-flex items-center justify-center h-10 px-5 rounded-lg bg-linear-to-b from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 interact:from-blue-500 interact:to-blue-600 dark:interact:from-blue-400 dark:interact:to-blue-500 text-white font-chicago text-sm border border-blue-500 dark:border-blue-500 dark:interact:border-blue-400 transition" hx-get="/view-transition-demo/new-content" hx-swap="innerHTML transition:true" hx-target="closest .sample-transition">
+      Swap It!
+    </button>
+  </div>
 </div>
 
 <script>
-    var originalContent = htmx.find(".sample-transition").innerHTML;
+    (function () {
+      const primaryBtn = "cursor-pointer inline-flex items-center justify-center h-10 px-5 rounded-lg bg-linear-to-b from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 interact:from-blue-500 interact:to-blue-600 dark:interact:from-blue-400 dark:interact:to-blue-500 text-white font-chicago text-sm border border-blue-500 dark:border-blue-500 dark:interact:border-blue-400 transition";
+      const secondaryBtn = "cursor-pointer inline-flex items-center justify-center h-10 px-5 rounded-lg bg-neutral-100 dark:bg-neutral-850 text-neutral-900 dark:text-neutral-100 font-chicago text-sm border border-neutral-300 dark:border-neutral-700 interact:bg-neutral-200 dark:interact:bg-neutral-800 transition";
+      const heading = '<h1 class="font-chicago text-2xl tracking-tightest mb-4">';
 
-    this.server.respondWith("GET", "/new-content", function(xhr){
-        xhr.respond(200,  {}, "<h1>New Content</h1> <button hx-get='/original-content' hx-swap='innerHTML transition:true' hx-target='closest div'>Restore It! </button>")
-    });
+      const responses = {
+        "/view-transition-demo/new-content":
+          heading + "New Content</h1> <button class=\"" + secondaryBtn + "\" hx-get='/view-transition-demo/original-content' hx-swap='innerHTML transition:true' hx-target='closest .sample-transition'>Restore It!</button>",
+        "/view-transition-demo/original-content":
+          heading + "Initial Content</h1> <button class=\"" + primaryBtn + "\" hx-get='/view-transition-demo/new-content' hx-swap='innerHTML transition:true' hx-target='closest .sample-transition'>Swap It!</button>",
+      };
 
-    this.server.respondWith("GET", "/original-content", function(xhr){
-        xhr.respond(200,  {}, originalContent)
-    });
+      document.body.addEventListener("htmx:config:request", function (evt) {
+        const ctx = evt.detail.ctx;
+        const path = ctx.request.action;
+        if (path in responses && ctx.sourceElement?.closest?.(".sample-transition")) {
+          document.documentElement.classList.toggle(
+            "vt-reverse",
+            path === "/view-transition-demo/original-content"
+          );
+          ctx.fetch = async () =>
+            new Response(responses[path], {
+              status: 200,
+              headers: { "Content-Type": "text/html" },
+            });
+        }
+      });
+    })();
 </script>
 
 Assuming you are looking at this page in Chrome 111+, you should see the content above slide gracefully out to the
