@@ -36,7 +36,7 @@ var _dataStore = (() => {
 
 function renderList(message) {
   const contacts = _dataStore.all();
-  return `<form id="user-list" hx-target="#user-list" hx-swap="outerHTML">
+  return `<form hx-target:inherited="this" hx-swap="outerHTML">
   <div id="action-bar" class="hidden items-center gap-2 px-3 py-2.5 mb-3 rounded-md bg-neutral-50 dark:bg-neutral-900 border border-neutral-150 dark:border-neutral-800">
     <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 mr-1">With selected:</span>
     <button hx-post="/activate" class="px-2.5 py-1 text-xs font-medium rounded cursor-pointer border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-[0.98] transition">Activate</button>
@@ -50,7 +50,7 @@ function renderList(message) {
           <input type="checkbox" class="size-4 cursor-pointer accent-neutral-800 dark:accent-neutral-300"
                  _="on change set checked to my.checked then for cb in <input[name='selected']/> in closest <form/> set cb.checked to checked then send checkChange to closest <form/>">
         </th>
-        <tlh class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide border-b-2 border-neutral-100 dark:border-neutral-850">Name</th>
+        <th class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide border-b-2 border-neutral-100 dark:border-neutral-850">Name</th>
         <th class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide border-b-2 border-neutral-100 dark:border-neutral-850">Email</th>
         <th class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide border-b-2 border-neutral-100 dark:border-neutral-850">Status</th>
       </tr>
@@ -141,8 +141,9 @@ Wrap a table in a `<form>`. Each row has a checkbox, and an action bar appears w
 </form>
 ```
 
-- [`hx-target`](/reference/attributes/hx-target)=`"#user-list"` and [`hx-swap`](/reference/attributes/hx-swap)=`"outerHTML"` on the form mean every action replaces the entire form with the server's response.
+- [`hx-target`](/reference/attributes/hx-target)=`"this"` and [`hx-swap`](/reference/attributes/hx-swap)=`"outerHTML"` on the form mean every action replaces the entire form with the server's response.
 - Each action button uses [`hx-post`](/reference/attributes/hx-post) to a different endpoint. Only checked `name="selected"` values are submitted.
+- Use [`hx-target:inherited`](/docs#attribute-inheritance) to avoid repeating target declarations on each action button.
 
 ### Clickable rows
 
@@ -205,7 +206,7 @@ The server processes the selected emails, performs the bulk action, and re-rende
 
 ```html
 <!-- POST /activate with selected=joe@smith.org&selected=kim@yee.org -->
-<form id="user-list" hx-target="#user-list" hx-swap="outerHTML">
+<form hx-target:inherited="this" hx-swap="outerHTML">
     <!-- ...updated table rows... -->
     <output>Activated 1 user</output>
 </form>
