@@ -1622,6 +1622,7 @@ var htmx = (() => {
         // hx-on:<event> binds to <event> directly
         // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
         __handleHxOnAttributes(node) {
+            if (node._htmx?.onInitialized) return;
             let hxOnNames = this.__prefixes("hx-on");
             let mc = this.config.metaCharacter || ':';
             let handler = (code) => async (evt) => {
@@ -1635,6 +1636,7 @@ var htmx = (() => {
             for (let attr of node.getAttributeNames()) {
                 let prefix = hxOnNames.find(p => attr.startsWith(p));
                 if (!prefix) continue;
+                this.__htmxProp(node).onInitialized = true;
                 let rest = attr.substring(prefix.length);
                 let value = node.getAttribute(attr);
                 // hx-on="click once -> doA(); blur -> doB()"
