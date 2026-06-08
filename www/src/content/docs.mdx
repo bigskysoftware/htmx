@@ -277,7 +277,7 @@ Rename in this order to avoid conflicts:
 |------------------|---------------------------------------------------------------------------------------------------|
 | `hx-vars`        | [`hx-vals`](/reference/attributes/hx-vals) with `js:` prefix                                      |
 | `hx-params`      | [`htmx:config:request`](/reference/events/htmx-config-request) event                              |
-| `hx-prompt`      | [`hx-confirm`](/reference/attributes/hx-confirm) with `js:` prefix                                |
+| `hx-prompt`      | [`hx-prompt` extension](/extensions/hx-prompt), or a [one-liner with `hx-on`](/extensions/hx-prompt#without-the-extension) |
 | `hx-ext`         | [Include extension script directly](#extensions)                            |
 | `hx-disinherit`  | Not needed (inheritance is explicit)                                                              |
 | `hx-inherit`     | Not needed (inheritance is explicit)                                                              |
@@ -375,7 +375,7 @@ customize their names have been removed.
 | `HX-Trigger`      | [`HX-Source`](/reference/headers/HX-Source)             | Format changed to `tagName#id` (e.g. `button#submit`)                  |
 | `HX-Target`       | [`HX-Target`](/reference/headers/HX-Target)             | Format changed to `tagName#id`                                         |
 | `HX-Trigger-Name` | removed                                                 | Use [`HX-Source`](/reference/headers/HX-Source)                        |
-| `HX-Prompt`       | removed                                                 | Use [`hx-confirm`](/reference/attributes/hx-confirm) with `js:` prefix |
+| `HX-Prompt`       | restored via extension                                  | Load the [`hx-prompt`](/extensions/hx-prompt) extension                |
 | *(new)*           | [`HX-Request-Type`](/reference/headers/HX-Request-Type) | `"full"` or `"partial"`                                                |
 | *(new)*           | [`Accept`](/reference/headers/Accept)                   | Now explicitly `text/html`                                             |
 
