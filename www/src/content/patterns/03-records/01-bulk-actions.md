@@ -110,7 +110,7 @@ server.start("/demo");
 Wrap a table in a `<form>`. Each row has a checkbox, and an action bar appears when any are checked. Clicking a row toggles its checkbox.
 
 ```html
-<form id="user-list" hx-target="#user-list" hx-swap="outerHTML">
+<form hx-target:inherited="this" hx-swap="outerHTML">
 
     <div id="action-bar" class="hidden">
         <span>With selected:</span>
