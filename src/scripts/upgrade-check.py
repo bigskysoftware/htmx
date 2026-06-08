@@ -21,7 +21,7 @@ from html.parser import HTMLParser
 REMOVED_ATTRS = {
     "hx-vars": "use hx-vals with js: prefix",
     "hx-params": "use htmx:config:request event",
-    "hx-prompt": "use hx-confirm with js: prefix",
+    "hx-prompt": "load the hx-prompt extension to keep the same syntax",
     "hx-ext": "include extension scripts directly (no attribute needed in v4)",
     "hx-disinherit": "not needed (inheritance is explicit in v4)",
     "hx-inherit": "not needed (inheritance is explicit in v4)",

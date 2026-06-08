@@ -40,7 +40,7 @@ hx-disabled-elt  →  hx-disable    (htmx 2's "disable elements during request")
 |-----------------------|-------------------------------------------------------------|
 | `hx-vars='...'`       | `hx-vals='js:...'` (wrap value in `js:` prefix)             |
 | `hx-params="..."`     | Remove; use `htmx:config:request` event to filter params    |
-| `hx-prompt="..."`     | `hx-confirm="js:myAsyncPromptFn()"` (write a JS function)   |
+| `hx-prompt="..."`     | Load the `hx-prompt` extension (same syntax as htmx 2)      |
 | `hx-ext="..."`        | Remove (just including the extension script is enough)      |
 | `hx-disinherit="..."` | Remove (inheritance is explicit by default)                 |
 | `hx-inherit="..."`    | Remove (use `:inherited` modifier on individual attributes) |
@@ -224,7 +224,7 @@ Removed configs (no equivalent): `refreshOnHistoryMiss`, `historyCacheSize`, `de
 | `HX-Trigger`      | `HX-Source`   | Was element ID → now `tag#id` (e.g. `button#submit`) |
 | `HX-Trigger-Name` | Removed       | Use `HX-Source`                                      |
 | `HX-Target`       | `HX-Target`   | Was element ID → now `tag#id`                        |
-| `HX-Prompt`       | Removed       | Use `hx-confirm` with `js:` prefix                   |
+| `HX-Prompt`       | Via extension | Load the `hx-prompt` extension to restore the header |
 
 New request header: `HX-Request-Type` (`"full"` or `"partial"`).
 

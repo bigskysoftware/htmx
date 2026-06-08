@@ -572,7 +572,7 @@ modifier on attributes, or colon-separated event names like `htmx:after:swap`. T
 | `hx-disable` (stops htmx processing) | `hx-ignore`                                                   | Different purpose in each version                 |
 | `hx-ext="my-ext"`                    | Just include the script file                                  | No attribute needed; config whitelist is optional  |
 | `hx-request='{"timeout":5000}'`      | `hx-config='{"timeout":5000}'`                                | Renamed                                           |
-| `hx-prompt="Enter value"`            | `hx-confirm="js:myPromptFn()"`                                | hx-prompt removed; use hx-confirm with js: prefix |
+| `hx-prompt="Enter value"`            | [`hx-prompt` extension](/extensions/hx-prompt) (same syntax), or [`hx-on::config:request` one-liner](/extensions/hx-prompt#without-the-extension) | Restored via extension                            |
 | `hx-disinherit="*"`                  | Not needed                                                    | Inheritance is explicit by default in htmx 4      |
 | `hx-vars`                            | `hx-vals` with `js:` prefix                                   | hx-vars removed                                   |
 | Attributes inherit implicitly        | Must use `:inherited` modifier                                | `hx-target:inherited="#out"`                      |
