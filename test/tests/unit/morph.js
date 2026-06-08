@@ -686,5 +686,47 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(div.querySelector('.skip-children span').textContent, 'old', 'Skip elements should preserve children');
         });
     });
-    
+
+    describe('morphIgnore config', function() {
+        afterEach(function() {
+            htmx.config.morphIgnore = ['data-htmx-powered'];
+        });
+
+        it('preserves attributes whose name starts with an ignored prefix', async function() {
+            htmx.config.morphIgnore = ['data-keep'];
+            mockResponse('GET', '/test', '<div id="child" data-keep="new" data-keep-extra="new" data-other="new">content</div>');
+            const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old" data-keep-extra="old" data-other="old">content</div></div>');
+            const child = div.querySelector('#child');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            assert.equal(child.getAttribute('data-keep'), 'old', 'exact prefix match should be preserved');
+            assert.equal(child.getAttribute('data-keep-extra'), 'old', 'longer name sharing the prefix should be preserved');
+            assert.equal(child.getAttribute('data-other'), 'new', 'non-matching attribute should be morphed');
+        });
+
+        it('does not remove an ignored attribute that is absent from the new content', async function() {
+            htmx.config.morphIgnore = ['data-keep'];
+            mockResponse('GET', '/test', '<div id="child">content</div>');
+            const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old">content</div></div>');
+            const child = div.querySelector('#child');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            assert.equal(child.getAttribute('data-keep'), 'old', 'ignored attribute should not be removed');
+        });
+
+        it('matches an exact attribute name without affecting others', async function() {
+            htmx.config.morphIgnore = ['data-keep'];
+            mockResponse('GET', '/test', '<div id="child" data-keep="new" data-kee="new">content</div>');
+            const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old" data-kee="old">content</div></div>');
+            const child = div.querySelector('#child');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            assert.equal(child.getAttribute('data-keep'), 'old', 'exact name should be preserved');
+            assert.equal(child.getAttribute('data-kee'), 'new', 'shorter non-prefixed name should be morphed');
+        });
+    });
+
 });
