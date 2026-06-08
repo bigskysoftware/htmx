@@ -1,0 +1,40 @@
+header:
+  - {name: docs,       url: /docs}
+  - {name: reference,  url: /reference}
+  - {name: patterns,   url: /patterns}
+  - {name: extensions, url: /extensions}
+  - {name: essays,     url: /essays}
+  - {name: about,      url: /about}
+
+footer:
+  - {name: Interviews, url: /interviews,                iconClass: "icon-[mdi--account-voice]"}
+  - {name: Podcasts,   url: /podcasts,                  iconClass: "icon-[lucide--audio-lines]"}
+  - {name: Memes,      url: /memes,                     iconClass: "icon-[mdi--emoticon-cool-outline]"}
+  - {name: Book,       url: https://hypermedia.systems, iconClass: "icon-[mdi--book-open-page-variant]"}
+  - {name: RSS,        url: /rss.xml,                   iconClass: "icon-[mdi--rss]", boost: false}
+
+social:
+  - name: Discord
+    description: Join 1.4K+ developers discussing htmx
+    iconClass: "icon-[ic--baseline-discord]"
+    url: /discord
+
+  - name: GitHub
+    description: View source, report issues, and join discussions
+    iconClass: "icon-[mdi--github]"
+    url: https://github.com/bigskysoftware/htmx
+
+  - name: "@htmx_org"
+    description: Follow @htmx_org for updates
+    iconClass: "icon-[fa6-brands--x-twitter]"
+    url: https://x.com/htmx_org
+
+  - name: Reddit
+    description: Join r/htmx discussions
+    iconClass: "icon-[fa6-brands--reddit-alien]"
+    url: https://www.reddit.com/r/htmx/
+
+  - name: Stack Overflow
+    description: Get help from the community
+    iconClass: "icon-[simple-icons--stackoverflow]"
+    url: https://stackoverflow.com/questions/tagged/htmx

@@ -1,14 +1,11 @@
----
----
-
-<script is:inline>
-// Demo shim — provides the server.* API for pattern demos.
-// Inlined (not external src) so it executes synchronously during htmx morph navigation.
+// Mock server harness for in-page demos.
 //
-// Runs on every page load and morph re-execution. State arrays are cleared each time,
-// then the pattern's <script> re-registers routes and calls server.start().
+// Loaded inline (via ?raw import in [...slug].astro and set:html) so that the
+// whole IIFE re-executes on every htmx morph navigation. State arrays are
+// cleared each time, then the page's <script> re-registers routes and calls
+// server.start().
 {
-  const DEMO_PREFIX = '/_'; // no trailing slash — the registered path's leading / creates /_/
+  const DEMO_PREFIX = '/_'; // no trailing slash; the registered path's leading / creates /_/
   const routes = [];
   const sseHandlers = [];
   const wsHandlers = [];
@@ -125,18 +122,18 @@
 
     const wsPath = new URL(url).pathname;
     const log = (arrow, color, msg) => console.log('%c[demo-ws] %c' + arrow + ' ' + wsPath + msg, 'color:#8b5cf6;font-weight:bold', 'color:' + color);
-    const closeWs = (code = 1000, reason = '') => { log('\u2715 closed', '#f87171', ''); ws.readyState = 3; ws.dispatchEvent(new CloseEvent('close', { code, reason, wasClean: true })); };
+    const closeWs = (code = 1000, reason = '') => { log('✕ closed', '#f87171', ''); ws.readyState = 3; ws.dispatchEvent(new CloseEvent('close', { code, reason, wasClean: true })); };
 
     const serverSocket = {
       onmessage: null,
-      send(data) { log('\u2199 server \u2192', '#6ee7b7', ': ' + data); setTimeout(() => ws.dispatchEvent(new MessageEvent('message', { data })), 0); },
+      send(data) { log('↙ server →', '#6ee7b7', ': ' + data); setTimeout(() => ws.dispatchEvent(new MessageEvent('message', { data })), 0); },
       close: closeWs,
     };
 
-    ws.send = (data) => { log('\u2197 client \u2192', '#38bdf8', ': ' + data); if (serverSocket.onmessage) serverSocket.onmessage(data); };
+    ws.send = (data) => { log('↗ client →', '#38bdf8', ': ' + data); if (serverSocket.onmessage) serverSocket.onmessage(data); };
     ws.close = closeWs;
 
-    setTimeout(() => { ws.readyState = 1; log('\u26a1 connected', '#4ade80', ''); ws.dispatchEvent(new Event('open')); handler.handler(serverSocket); }, 0);
+    setTimeout(() => { ws.readyState = 1; log('⚡ connected', '#4ade80', ''); ws.dispatchEvent(new Event('open')); handler.handler(serverSocket); }, 0);
     return ws;
   }
   MockWebSocket.CONNECTING = 0; MockWebSocket.OPEN = 1; MockWebSocket.CLOSING = 2; MockWebSocket.CLOSED = 3;
@@ -202,4 +199,3 @@
   // Script re-execution after morph is handled globally in Head.astro
   // so it works even when navigating from non-pattern pages to pattern pages.
 }
-</script>

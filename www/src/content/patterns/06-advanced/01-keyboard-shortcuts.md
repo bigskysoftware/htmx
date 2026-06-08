@@ -1,4 +1,5 @@
 ---
+includeMockServer: true
 title: "Keyboard Shortcuts"
 description: Bind keyboard shortcuts to interactive elements
 icon: "icon-[mdi--keyboard]"

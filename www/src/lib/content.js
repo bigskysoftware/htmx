@@ -75,16 +75,34 @@ async function loadModule(fullPath) {
     return mod;
 }
 
+/**
+ * Convention: a file with slug `full` in a collection is the aggregate view
+ * of that collection. It's excluded from sidebar lists and prev/next nav,
+ * and its body is synthesised at content-load time by
+ * aggregateCollectionMarkdown().
+ * @param {{ slug: string }} file
+ */
+export function isAggregate(file) {
+    return file.slug === 'full';
+}
+
+function readRaw(fullPath) {
+    try {
+        return readFileSync(join(process.cwd(), fullPath.replace(/^\//, '')), 'utf-8');
+    } catch {
+        return '';
+    }
+}
+
 function rawBody(fullPath) {
-    const raw = rawSources[fullPath] ?? '';
-    return raw
+    return readRaw(fullPath)
         .replace(/^---[\s\S]*?---\n*/, '')
         .replace(/<script>[\s\S]*?server\.start[\s\S]*?<\/script>\s*/g, '')
         .trim();
 }
 
 function rawTitle(fullPath) {
-    const raw = rawSources[fullPath] ?? '';
+    const raw = readRaw(fullPath);
     const fmMatch = raw.match(/^---\s*\n([\s\S]*?)\n---/);
     const titleMatch = fmMatch?.[1].match(/^title:\s*(.+)$/m);
     return titleMatch?.[1].replace(/^["']|["']$/g, '').trim() || '';

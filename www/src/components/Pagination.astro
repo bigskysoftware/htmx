@@ -4,7 +4,6 @@
  * - variant="full": detailed cards at the bottom of articles
  * - variant="compact": small buttons in the TOC sidebar
  */
-import Card from './Card.astro';
 import type { ContentFile } from '../lib/content';
 
 interface Props {
@@ -23,28 +22,32 @@ const links = [
 
 {variant === 'compact' ? (
     <div class="flex gap-2">
-        {links.map(({ link, label, icon, reverse }) => (
-            <Card as={link ? 'a' : 'span'}
-                  href={link?.url}
-                  title={link?.frontmatter.title}
-                  class:list={[
-                      "flex-1 group flex items-center gap-2 p-2 text-xs font-medium transition select-none",
-                      reverse && "flex-row-reverse",
-                      link
-                          ? "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white outline-hidden focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400"
-                          : "border-transparent bg-neutral-50 dark:bg-neutral-930 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
-                  ]}>
-                <i class:list={[icon, "size-4", link ? "text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition" : "opacity-50"]}></i>
-                <span class="flex-1 inline-flex justify-center">{label}</span>
-            </Card>
-        ))}
+        {links.map(({ link, label, icon, reverse }) => {
+            const Tag = link ? 'a' : 'span';
+            return (
+                <Tag href={link?.url}
+                     title={link?.frontmatter.title}
+                     class:list={[
+                         "card",
+                         "flex-1 group flex items-center gap-2 p-2 text-xs font-medium transition select-none",
+                         reverse && "flex-row-reverse",
+                         link
+                             ? "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white outline-hidden focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400"
+                             : "border-transparent bg-neutral-50 dark:bg-neutral-930 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
+                     ]}>
+                    <i class:list={[icon, "size-4", link ? "text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition" : "opacity-50"]}></i>
+                    <span class="flex-1 inline-flex justify-center">{label}</span>
+                </Tag>
+            );
+        })}
     </div>
 ) : (
     <nav class="not-prose mt-16">
         <div class="grid grid-cols-2 gap-3 sm:gap-4">
             {links.map(({ link, label, icon, reverse }) =>
                 link ? (
-                    <Card variant="xl" class:list={[
+                    <div class:list={[
+                        "card xl",
                         "group relative isolate flex items-center gap-3 sm:gap-4 p-3 sm:p-4 transition",
                         "interact:bg-neutral-75 dark:interact:bg-neutral-875",
                         "interact:border-neutral-400 dark:interact:border-neutral-600",
@@ -65,10 +68,10 @@ const links = [
                                 <span class="sr-only">{label}: {link.frontmatter.title}</span>
                             </a>
                             {link.frontmatter.description &&
-                                <div class="hidden sm:block text-sm text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-1.5 sm:mt-2 line-clamp-2 leading-relaxed transition">{link.frontmatter.description}</div>}
+                                <div class="max-sm:hidden text-sm text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-1.5 sm:mt-2 line-clamp-2 leading-relaxed transition">{link.frontmatter.description}</div>}
                         </div>
                         {reverse && <i class:list={[icon, "text-2xl sm:text-3xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0"]}></i>}
-                    </Card>
+                    </div>
                 ) : (
                     <div></div>
                 )

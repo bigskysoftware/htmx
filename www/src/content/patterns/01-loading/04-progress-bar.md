@@ -1,4 +1,5 @@
 ---
+includeMockServer: true
 title: "Progress Bar"
 description: Show progress bar during background job
 icon: "icon-[vaadin--progressbar]"

@@ -1,7 +1,7 @@
 /**
  * @typedef {Object} ArticleMeta
- * @property {Date|string} [publishedTime]
- * @property {Date|string} [modifiedTime]
+ * @property {string} [publishedTime]  ISO 8601
+ * @property {string} [modifiedTime]   ISO 8601
  * @property {string[]} [authors]
  * @property {string[]} [tags]
  */
@@ -15,8 +15,6 @@
  * @property {string} siteUrl
  * @property {ArticleMeta} [article]
  */
-
-const toIso = (d) => d ? new Date(d).toISOString() : undefined;
 
 /**
  * Build the JSON-LD structured-data payload for a page.
@@ -35,9 +33,6 @@ export function buildJsonLd({ title, description, image, url, siteUrl, article }
         };
     }
 
-    const publishedIso = toIso(article.publishedTime);
-    const modifiedIso = toIso(article.modifiedTime);
-
     return {
         "@context": "https://schema.org",
         "@type": "Article",
@@ -45,8 +40,8 @@ export function buildJsonLd({ title, description, image, url, siteUrl, article }
         "description": desc,
         "url": url.href,
         "image": new URL(image, url).href,
-        ...(publishedIso && { "datePublished": publishedIso }),
-        ...(modifiedIso && { "dateModified": modifiedIso }),
+        ...(article.publishedTime && { "datePublished": article.publishedTime }),
+        ...(article.modifiedTime && { "dateModified": article.modifiedTime }),
         ...(article.authors?.length && {
             "author": article.authors.map(name => ({ "@type": "Person", name }))
         }),

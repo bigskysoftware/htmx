@@ -1,16 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Demo from '../components/Demo.astro';
+import mockServerScript from '../assets/js/mock-server.js?raw';
 import Sidebar from '../components/Sidebar.astro';
-import SidebarToggle from '../components/SidebarToggle.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Pagination from '../components/Pagination.astro';
 import CollectionCards from '../components/CollectionCards.astro';
 import FinderLink from '../components/FinderLink.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 import { getFolder, render, COLLECTIONS } from '../lib/content';
 import { buildDocsSidebar } from '../lib/docs-sidebar';
 
@@ -69,7 +66,7 @@ const includeSidebar = isDocsRoot
     || (!!(folder?.folders?.length || (isFlatCollectionWithSidebar && folder?.files?.length))
         && !isReferenceIndex && !isPatternsIndex && !isExtensionsIndex);
 const includeHeader = !isHomePage;
-const includeDemo = !isCollectionRootPage && !isSubfolderIndexPage && collection === 'patterns';
+const includeMockServer = file?.frontmatter?.includeMockServer === true;
 const includeCollectionCards = isSubfolderIndexPage;
 const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
 const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && collection === 'about';
@@ -89,15 +86,13 @@ const includeTableOfContents = headings.length > 0;
 <Layout title={title}
         description={description}
         keywords={keywords}
-        type={!isCollectionRootPage ? 'article' : undefined}
-        publishedTime={file?.frontmatter.created}
-        modifiedTime={file?.frontmatter.modified}
-        authors={file?.frontmatter.authors}
-        articleTags={file?.frontmatter.tags}>
-
-    <Header slot="header">
-        {includeSidebar && <SidebarToggle />}
-    </Header>
+        article={!isCollectionRootPage ? {
+            publishedTime: file?.frontmatter.created?.toISOString(),
+            modifiedTime: file?.frontmatter.modified?.toISOString(),
+            authors: file?.frontmatter.authors,
+            tags: file?.frontmatter.tags,
+        } : undefined}
+        hasSidebar={includeSidebar}>
 
     {includeSidebar && <Sidebar folder={sidebarFolder} file={file} scrollspy={isDocsRoot} />}
 
@@ -111,7 +106,7 @@ const includeTableOfContents = headings.length > 0;
                     {includeHeader && <PageHeader {title} description={isReferenceIndex ? undefined : description} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
 
                     <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
-                        {includeDemo && <Demo />}
+                        {includeMockServer && <script is:inline set:html={mockServerScript}></script>}
                         <Content/>
                         {includePagination && <Pagination prev={file!.prev} next={file!.next} />}
                     </article>
@@ -155,9 +150,4 @@ const includeTableOfContents = headings.length > 0;
         </main>
     </div>
 
-    <Footer slot="footer"
-            class:list={[includeSidebar && "lg:pl-72"]}
-            containerClass="px-4 sm:px-6 lg:px-12 xl:px-8"
-            contentClass="mx-auto max-w-4xl"
-    />
 </Layout>

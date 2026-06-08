@@ -2,7 +2,6 @@
 /**
  * Thumbnail card grid for collection index pages (docs, reference).
  */
-import Card from './Card.astro';
 import ThumbnailSvg from './ThumbnailSvg.astro';
 import type { ContentFolder } from '../lib/content';
 
@@ -32,7 +31,8 @@ const getThumbnail = (path: string | undefined): string | null => {
             const allSoon = item.files.length > 0 && item.files.every(f => f.frontmatter.soon);
 
             return (
-                <Card variant="lg" class:list={[
+                <div class:list={[
+                    "card lg",
                     "group relative isolate flex flex-col overflow-hidden",
                     allSoon
                         ? "opacity-60 pointer-events-none"
@@ -68,7 +68,7 @@ const getThumbnail = (path: string | undefined): string | null => {
                             </p>
                         )}
                     </div>
-                </Card>
+                </div>
             );
         })}
     </div>
