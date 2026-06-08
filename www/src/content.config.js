@@ -26,6 +26,7 @@ const docs = defineCollection({
         description: z.string().optional(),
         thumbnail: z.string().optional(),
         keywords: z.array(z.string()).optional(),
+        includeMockServer: z.boolean().optional(),
     }).strict(),
 });
 
@@ -37,6 +38,7 @@ const reference = defineCollection({
         keywords: z.array(z.string()).optional(),
         thumbnail: z.string().optional(),
         hidden: z.boolean().optional(),
+        includeMockServer: z.boolean().optional(),
     }).strict(),
 });
 
@@ -49,6 +51,7 @@ const extensions = defineCollection({
         thumbnail: z.string().optional(),
         category: z.enum(['Networking', 'Performance', 'UX', 'Swap behaviors', 'Compatibility', 'Security']).optional(),
         icon: z.string().optional(),
+        includeMockServer: z.boolean().optional(),
     }).strict(),
 });
 
@@ -61,6 +64,7 @@ const patterns = defineCollection({
         thumbnail: z.string().optional(),
         icon: z.string().optional(),
         soon: z.boolean().optional(),
+        includeMockServer: z.boolean().optional(),
     }).strict(),
 });
 
@@ -74,6 +78,7 @@ const essays = defineCollection({
         authors: z.array(z.string()).min(1),
         tags: z.array(z.enum(['foundations', 'the-case-for-hypermedia', 'case-studies', 'guides', 'simplicity', 'counterpoints'])).optional(),
         keywords: z.array(z.string()).optional(),
+        includeMockServer: z.boolean().optional(),
     }).strict(),
 });
 
@@ -86,6 +91,7 @@ const interviews = defineCollection({
         modified: z.date().optional(),
         authors: z.array(z.string()).optional(),
         keywords: z.array(z.string()).optional(),
+        includeMockServer: z.boolean().optional(),
     }).strict(),
 });
 

@@ -1,4 +1,5 @@
 ---
+includeMockServer: true
 title: Active Search
 description: Filter search results as you type
 icon: "icon-[mdi--magnify]"

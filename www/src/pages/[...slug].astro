@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Demo from '../components/Demo.astro';
+import mockServerScript from '../assets/js/mock-server.js?raw';
 import Sidebar from '../components/Sidebar.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
@@ -66,7 +66,7 @@ const includeSidebar = isDocsRoot
     || (!!(folder?.folders?.length || (isFlatCollectionWithSidebar && folder?.files?.length))
         && !isReferenceIndex && !isPatternsIndex && !isExtensionsIndex);
 const includeHeader = !isHomePage;
-const includeDemo = !isCollectionRootPage && !isSubfolderIndexPage && collection === 'patterns';
+const includeMockServer = file?.frontmatter?.includeMockServer === true;
 const includeCollectionCards = isSubfolderIndexPage;
 const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
 const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && collection === 'about';
@@ -106,7 +106,7 @@ const includeTableOfContents = headings.length > 0;
                     {includeHeader && <PageHeader {title} description={isReferenceIndex ? undefined : description} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
 
                     <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
-                        {includeDemo && <Demo />}
+                        {includeMockServer && <script is:inline set:html={mockServerScript}></script>}
                         <Content/>
                         {includePagination && <Pagination prev={file!.prev} next={file!.next} />}
                     </article>

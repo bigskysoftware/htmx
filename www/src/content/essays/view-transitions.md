@@ -4,6 +4,7 @@ description: "Carson Gross explores the evolution of web applications and the si
 created: 2023-04-11
 authors: [ "Carson Gross" ]
 tags: ["guides"]
+includeMockServer: true
 ---
 
 We have asserted, for a while now, that a major reason that many people have adopted the SPA architecture for web
@@ -228,45 +229,44 @@ should work in Chrome 111+ (other browsers will work fine, but won't get the nic
 </style>
 
 
+<script>
+    const primaryBtn = "cursor-pointer inline-flex items-center justify-center h-10 px-5 rounded-lg bg-linear-to-b from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 interact:from-blue-500 interact:to-blue-600 dark:interact:from-blue-400 dark:interact:to-blue-500 text-white font-chicago text-sm border border-blue-500 dark:border-blue-500 dark:interact:border-blue-400 transition";
+    const secondaryBtn = "cursor-pointer inline-flex items-center justify-center h-10 px-5 rounded-lg bg-neutral-100 dark:bg-neutral-850 text-neutral-900 dark:text-neutral-100 font-chicago text-sm border border-neutral-300 dark:border-neutral-700 interact:bg-neutral-200 dark:interact:bg-neutral-800 transition";
+    const heading = '<h1 class="font-chicago text-2xl tracking-tightest mb-4">';
+
+    server.get("/new-content", () =>
+      `${heading}New Content</h1>
+       <button class="${secondaryBtn}"
+               hx-get="/original-content"
+               hx-swap="innerHTML transition:true"
+               hx-target="closest .sample-transition"
+               hx-on::config:request="document.documentElement.classList.add('vt-reverse')">
+         Restore It!
+       </button>`);
+
+    server.get("/original-content", () =>
+      `${heading}Initial Content</h1>
+       <button class="${primaryBtn}"
+               hx-get="/new-content"
+               hx-swap="innerHTML transition:true"
+               hx-target="closest .sample-transition"
+               hx-on::config:request="document.documentElement.classList.remove('vt-reverse')">
+         Swap It!
+       </button>`);
+</script>
+
 <div class="not-prose demo-container flex items-center justify-center min-h-[180px]">
   <div class="sample-transition w-full text-center">
     <h1 class="font-chicago text-2xl tracking-tightest mb-4">Initial Content</h1>
-    <button class="cursor-pointer inline-flex items-center justify-center h-10 px-5 rounded-lg bg-linear-to-b from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 interact:from-blue-500 interact:to-blue-600 dark:interact:from-blue-400 dark:interact:to-blue-500 text-white font-chicago text-sm border border-blue-500 dark:border-blue-500 dark:interact:border-blue-400 transition" hx-get="/view-transition-demo/new-content" hx-swap="innerHTML transition:true" hx-target="closest .sample-transition">
+    <button class="cursor-pointer inline-flex items-center justify-center h-10 px-5 rounded-lg bg-linear-to-b from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 interact:from-blue-500 interact:to-blue-600 dark:interact:from-blue-400 dark:interact:to-blue-500 text-white font-chicago text-sm border border-blue-500 dark:border-blue-500 dark:interact:border-blue-400 transition"
+            hx-get="/new-content"
+            hx-swap="innerHTML transition:true"
+            hx-target="closest .sample-transition"
+            hx-on::config:request="document.documentElement.classList.remove('vt-reverse')">
       Swap It!
     </button>
   </div>
 </div>
-
-<script>
-    (function () {
-      const primaryBtn = "cursor-pointer inline-flex items-center justify-center h-10 px-5 rounded-lg bg-linear-to-b from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 interact:from-blue-500 interact:to-blue-600 dark:interact:from-blue-400 dark:interact:to-blue-500 text-white font-chicago text-sm border border-blue-500 dark:border-blue-500 dark:interact:border-blue-400 transition";
-      const secondaryBtn = "cursor-pointer inline-flex items-center justify-center h-10 px-5 rounded-lg bg-neutral-100 dark:bg-neutral-850 text-neutral-900 dark:text-neutral-100 font-chicago text-sm border border-neutral-300 dark:border-neutral-700 interact:bg-neutral-200 dark:interact:bg-neutral-800 transition";
-      const heading = '<h1 class="font-chicago text-2xl tracking-tightest mb-4">';
-
-      const responses = {
-        "/view-transition-demo/new-content":
-          heading + "New Content</h1> <button class=\"" + secondaryBtn + "\" hx-get='/view-transition-demo/original-content' hx-swap='innerHTML transition:true' hx-target='closest .sample-transition'>Restore It!</button>",
-        "/view-transition-demo/original-content":
-          heading + "Initial Content</h1> <button class=\"" + primaryBtn + "\" hx-get='/view-transition-demo/new-content' hx-swap='innerHTML transition:true' hx-target='closest .sample-transition'>Swap It!</button>",
-      };
-
-      document.body.addEventListener("htmx:config:request", function (evt) {
-        const ctx = evt.detail.ctx;
-        const path = ctx.request.action;
-        if (path in responses && ctx.sourceElement?.closest?.(".sample-transition")) {
-          document.documentElement.classList.toggle(
-            "vt-reverse",
-            path === "/view-transition-demo/original-content"
-          );
-          ctx.fetch = async () =>
-            new Response(responses[path], {
-              status: 200,
-              headers: { "Content-Type": "text/html" },
-            });
-        }
-      });
-    })();
-</script>
 
 Assuming you are looking at this page in Chrome 111+, you should see the content above slide gracefully out to the
 left and be replaced by new content sliding in from the right. Nice!
