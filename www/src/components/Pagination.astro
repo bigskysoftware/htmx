@@ -65,7 +65,7 @@ const links = [
                                 <span class="sr-only">{label}: {link.frontmatter.title}</span>
                             </a>
                             {link.frontmatter.description &&
-                                <div class="hidden sm:block text-sm text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-1.5 sm:mt-2 line-clamp-2 leading-relaxed transition">{link.frontmatter.description}</div>}
+                                <div class="max-sm:hidden text-sm text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-1.5 sm:mt-2 line-clamp-2 leading-relaxed transition">{link.frontmatter.description}</div>}
                         </div>
                         {reverse && <i class:list={[icon, "text-2xl sm:text-3xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0"]}></i>}
                     </Card>
