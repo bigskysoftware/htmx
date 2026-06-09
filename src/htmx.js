@@ -795,9 +795,12 @@ var htmx = (() => {
                     }, this.parseInterval(interval));
                 }
 
-                // Load: fire immediately, no listener needed
+                // Load: fire once per element, never on re-init
                 if (eventName === 'load') {
-                    spec.handler(new CustomEvent('load'));
+                    if (!elt._htmx.loadFired) {
+                        elt._htmx.loadFired = true;
+                        spec.handler(new CustomEvent('load'));
+                    }
                     continue;
                 }
 
@@ -881,16 +884,27 @@ var htmx = (() => {
             let iter = this.#hxOnQuery.evaluate(elt)
             let node = null
             while (node = iter.iterateNext()) hxOnNodes.push(node)
+            let actionNodes = this.__queryEltAndDescendants(elt, this.#actionSelector);
+            let boostNodes = this.__queryEltAndDescendants(elt, this.#boostSelector);
+            let candidates = new Set([...hxOnNodes, ...actionNodes, ...boostNodes]);
+            for (let candidate of candidates) {
+                if (candidate._htmx?.initHash != null && candidate._htmx.initHash !== this.__attributeHash(candidate)) {
+                    this.__cleanup(candidate);
+                }
+            }
             for (let hxOnNode of hxOnNodes) {
                 if (!this.__ignore(hxOnNode) && this.__trigger(hxOnNode, "htmx:before:on:init", {}, true)) {
                     this.__handleHxOnAttributes(hxOnNode);
                 }
             }
-            for (let child of this.__queryEltAndDescendants(elt, this.#actionSelector)) {
+            for (let child of actionNodes) {
                 this.__initializeElement(child);
             }
-            for (let child of this.__queryEltAndDescendants(elt, this.#boostSelector)) {
+            for (let child of boostNodes) {
                 this.__maybeBoost(child);
+            }
+            for (let candidate of candidates) {
+                if (candidate._htmx) candidate._htmx.initHash = this.__attributeHash(candidate);
             }
             this.__trigger(elt, "htmx:after:process");
         }
@@ -943,11 +957,14 @@ var htmx = (() => {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
                     if (spec.throttleTimeout) clearTimeout(spec.throttleTimeout);
-                    spec.observer?.disconnect()
+                    spec.observer?.disconnect();
                 }
-                for (let listenerInfo of elt._htmx.listeners || []) {
-                    listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler, listenerInfo);
-                }
+                for (let info of elt._htmx.listeners || []) info.fromElt.removeEventListener(info.eventName, info.handler, info);
+                elt._htmx.listeners.length = 0;
+                elt._htmx.triggerSpecs.length = 0;
+                delete elt._htmx.initialized;
+                delete elt._htmx.initHash;
+                delete elt._htmx.hxOnInitialized;
                 this.__trigger(elt, "htmx:after:cleanup")
             }
             if (elt.firstChild) {
@@ -955,6 +972,22 @@ var htmx = (() => {
                     this.__cleanup(child);
                 }
             }
+        }
+
+        __attributeHash(elt) {
+            let hash = 0;
+            let prefix = this.config.prefix;
+            for (let attr of elt.attributes) {
+                if (!attr.value) continue;
+                let n = attr.name;
+                if (!/^(data-)?hx-/.test(n) && !(prefix && n.startsWith(prefix))) continue;
+                for (let str of [n, attr.value]) {
+                    for (let i = 0; i < str.length; i++) {
+                        hash = (hash << 5) - hash + str.charCodeAt(i) | 0;
+                    }
+                }
+            }
+            return hash;
         }
 
         __handlePreservedElements(fragment) {
@@ -1621,27 +1654,30 @@ var htmx = (() => {
 
         // hx-on:<event> binds to <event> directly
         // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
-        __handleHxOnAttributes(node) {
+        __handleHxOnAttributes(elt) {
+            if (elt._htmx?.hxOnInitialized) return;
             let hxOnNames = this.__prefixes("hx-on");
             let mc = this.config.metaCharacter || ':';
             let handler = (code) => async (evt) => {
                 try {
-                    await this.__executeJavaScript(node, { event: evt },
+                    await this.__executeJavaScript(elt, { event: evt },
                         `with(event?.detail||{}){${code}}`, false);
                 } catch (e) {
-                    if (typeof e !== 'symbol') this.__trigger(node, 'htmx:error', { error: e });
+                    if (typeof e !== 'symbol') this.__trigger(elt, 'htmx:error', { error: e });
                 }
             };
-            for (let attr of node.getAttributeNames()) {
+            let matched = false;
+            for (let attr of elt.getAttributeNames()) {
                 let prefix = hxOnNames.find(p => attr.startsWith(p));
                 if (!prefix) continue;
+                matched = true;
                 let rest = attr.substring(prefix.length);
-                let value = node.getAttribute(attr);
+                let value = elt.getAttribute(attr);
                 // hx-on="click once -> doA(); blur -> doB()"
                 if (!rest) {
                     for (let part of value.split(/;(?=[^;]*->)/)) {
                         let idx = part.indexOf('->');
-                        if (idx !== -1) this.__onTrigger(node, part.substring(0, idx).trim(), handler(part.substring(idx + 2).trim()));
+                        if (idx !== -1) this.__onTrigger(elt, part.substring(0, idx).trim(), handler(part.substring(idx + 2).trim()));
                     }
                     continue;
                 }
@@ -1649,8 +1685,16 @@ var htmx = (() => {
                 if (rest[0] !== mc) continue;
                 let eventName = rest.substring(1);
                 if (eventName.startsWith(mc)) eventName = 'htmx' + mc + eventName.substring(1);
-                this.__onTrigger(node, eventName, handler(value));
+                if (eventName === 'load') {
+                    if (!elt._htmx?.hxOnLoadFired) {
+                        this.__htmxProp(elt).hxOnLoadFired = true;
+                        handler(value)(new CustomEvent('load'));
+                    }
+                    continue;
+                }
+                this.__onTrigger(elt, eventName, handler(value));
             }
+            if (matched) this.__htmxProp(elt).hxOnInitialized = true;
         }
 
         __showIndicators(elt) {

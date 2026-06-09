@@ -121,4 +121,14 @@ describe('htmx.config.prefix functionality', function() {
 
         htmx.config.prefix = "";
     });
+
+    it('__attributeHash detects changes in custom-prefix attributes', function() {
+        htmx.config.prefix = "x-";
+        let div = createDisconnectedHTML('<div x-get="/a"></div>');
+        let h1 = htmx.__attributeHash(div);
+        div.setAttribute('x-get', '/b');
+        let h2 = htmx.__attributeHash(div);
+        assert.notEqual(h1, h2, 'hash should change when custom-prefix attribute changes');
+        htmx.config.prefix = "";
+    });
 });
