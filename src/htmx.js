@@ -1321,8 +1321,6 @@ var htmx = (() => {
                     }
                 } else if (swapStyle === 'outerSync') {
                     this.__copyAttributes(target, fragment.firstElementChild);
-                    this.__cleanup(target);
-                    delete target._htmx;
                     target.replaceChildren(...fragment.firstElementChild.childNodes);
                     newContent = [target];
                 } else if (swapStyle === 'innerMorph') {
@@ -2088,8 +2086,11 @@ var htmx = (() => {
 
         __copyAttributes(destination, source) {
             let attributesToIgnore = this.config.morphIgnore || [];
+            let isHxAttr = name => this.__prefixes('hx-').some(p => name.startsWith(p));
+            let needsReinit = false;
             for (const attr of source.attributes) {
                 if (!attributesToIgnore.some(p => attr.name.startsWith(p)) && destination.getAttribute(attr.name) !== attr.value) {
+                    if (isHxAttr(attr.name)) needsReinit = true;
                     destination.setAttribute(attr.name, attr.value);
                     if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
                         destination.value = attr.value;
@@ -2099,8 +2100,13 @@ var htmx = (() => {
             for (let i = destination.attributes.length - 1; i >= 0; i--) {
                 let attr = destination.attributes[i];
                 if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.some(p => attr.name.startsWith(p))) {
+                    if (isHxAttr(attr.name)) needsReinit = true;
                     destination.removeAttribute(attr.name);
                 }
+            }
+            if (needsReinit) {
+                this.__cleanup(destination);
+                delete destination._htmx;
             }
         }
 

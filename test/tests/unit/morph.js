@@ -478,6 +478,59 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(newBtn.getAttribute('data-htmx-powered'), 'true', 'New inserted element should be processed');
         });
 
+        it('reinitializes element when hx-get is added during innerMorph', async function() {
+            mockResponse('GET', '/dynamic', 'fetched');
+            const div = createProcessedHTML('<div id="target"><div id="child"><p>static</p></div></div>');
+
+            await htmx.swap({target: '#target', text: '<div id="child" hx-get="/dynamic" hx-trigger="click" hx-swap="innerHTML"><p>now interactive</p></div>', swap: 'innerMorph', sourceElement: div});
+
+            const child = div.querySelector('#child');
+            assert.isNotNull(child._htmx?.initialized, 'child should be initialized');
+            child.click();
+            await forRequest();
+            assert.equal(child.textContent, 'fetched');
+        });
+
+        it('reinitializes element when hx-get is removed during innerMorph', async function() {
+            mockResponse('GET', '/should-not-fire', 'bad');
+            const div = createProcessedHTML('<div id="target"><div id="child" hx-get="/should-not-fire" hx-trigger="click" hx-swap="innerHTML">interactive</div></div>');
+            const child = div.querySelector('#child');
+            assert.isNotNull(child._htmx?.initialized, 'child should start initialized');
+
+            await htmx.swap({target: '#target', text: '<div id="child">no longer interactive</div>', swap: 'innerMorph', sourceElement: div});
+
+            assert.isNull(child.getAttribute('hx-get'), 'hx-get should be removed');
+            let requestFired = false;
+            let handler = () => { requestFired = true; };
+            document.addEventListener('htmx:before:request', handler);
+            child.click();
+            await htmx.timeout(50);
+            document.removeEventListener('htmx:before:request', handler);
+            assert.isFalse(requestFired, 'no request should fire after hx-get removed');
+        });
+
+        it('reinitializes element when hx-trigger changes during innerMorph', async function() {
+            mockResponse('GET', '/endpoint', 'response');
+            const div = createProcessedHTML('<div id="target"><div id="child" hx-get="/endpoint" hx-trigger="click" hx-swap="innerHTML">original</div></div>');
+
+            await htmx.swap({target: '#target', text: '<div id="child" hx-get="/endpoint" hx-trigger="mousedown" hx-swap="innerHTML">updated</div>', swap: 'innerMorph', sourceElement: div});
+
+            const child = div.querySelector('#child');
+            assert.equal(child.getAttribute('hx-trigger'), 'mousedown');
+
+            let requestFired = false;
+            let handler = () => { requestFired = true; };
+            document.addEventListener('htmx:before:request', handler);
+            child.click();
+            await htmx.timeout(50);
+            document.removeEventListener('htmx:before:request', handler);
+            assert.isFalse(requestFired, 'click should not trigger after hx-trigger changed to mousedown');
+
+            child.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}));
+            await forRequest();
+            assert.equal(child.textContent, 'response');
+        });
+
         it('processes new htmx attributes on inserted elements during outerMorph', async function() {
             mockResponse('GET', '/test', '<div id="target"><button id="existing">Existing</button><button id="new" hx-get="/new">New Button</button></div>');
             const container = createProcessedHTML('<div><div id="target"><button id="existing">Existing</button></div></div>');
