@@ -11,8 +11,7 @@ export interface HtmxConfig {
   requestClass: string;
   includeIndicatorCSS: boolean;
   defaultTimeout: number;
-  inlineScriptNonce: string;
-  inlineStyleNonce: string;
+  inlineScriptNonce?: string;
   extensions: string;
   morphIgnore: string[];
   morphScanLimit: number;
@@ -36,9 +35,39 @@ export interface HtmxSwapContext {
   anchor?: string;
 }
 
+export interface QProxy {
+  count: number;
+  arr(): Element[];
+  q(selector: string): QProxy;
+  attr(name: string): any;
+  attr(name: string, value: any): QProxy;
+  take(name: string, scope?: string | { from: string }): QProxy;
+  toggle(name: string, values?: string | string[]): QProxy;
+  trigger(type: string, detail?: any, bubbles?: boolean): QProxy;
+  insert(pos: 'before' | 'after' | 'start' | 'end', html: string): QProxy;
+  data?: Record<string, any>;
+  [Symbol.iterator](): IterableIterator<Element>;
+  [key: string]: any;
+}
+
+export interface HtmxLive {
+  q(selector: string): QProxy;
+  q(element: Element): QProxy;
+  q(elements: Iterable<Element>): QProxy;
+  debounce(ms: number, fn?: () => void): Promise<void> | void;
+  refresh(): void;
+  take(target: string | Element | NodeList, name: string, scope?: string | { from: string }): void;
+  toggle(target: string | Element | NodeList, name: string, values?: string | string[]): void;
+  attr(target: string | Element | NodeList, name: string): any;
+  attr(target: string | Element | NodeList, name: string, value: any): void;
+  forEvent(...args: (string | number | EventTarget | null)[]): Promise<Event | null>;
+  nextFrame(): Promise<void>;
+}
+
 export interface Htmx {
   version: string;
   config: HtmxConfig;
+  live?: HtmxLive;
   ajax(verb: string, path: string, context?: any): Promise<void>;
   find(selector: string): Element | null;
   find(elt: Element, selector: string): Element | null;
@@ -49,12 +78,10 @@ export interface Htmx {
   onLoad(callback: (elt: Element) => void): void;
   process(elt: Element): void;
   registerExtension(name: string, ext: any): void;
-  trigger(elt: Element | string, event: string, detail?: any): boolean;
+  trigger(elt: Element | string, event: string, detail?: any, bubbles?: boolean): boolean;
   timeout(ms: number): Promise<void>;
   parseInterval(str: string): number;
-  forEvent(event: string, timeout?: number, on?: EventTarget): Promise<Event | null>;
   swap(ctx: HtmxSwapContext): Promise<void>;
-  takeClass(elt: Element, className: string, container?: Element): void;
 }
 
 declare const htmx: Htmx;
