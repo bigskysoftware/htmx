@@ -2003,6 +2003,8 @@ var htmx = (() => {
         }
 
         __findBestMatch(ctx, node, startPoint, endPoint) {
+            // text nodes match positionally — patch in place via __morphNode, 3 = TEXT_NODE
+            if (node.nodeType === 3) return startPoint?.nodeType === 3 ? startPoint : null;
             if (!(node instanceof Element)) return null;
             let softMatch = null, displaceMatchCount = 0, scanLimit = this.config.morphScanLimit;
             let newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
@@ -2070,6 +2072,10 @@ var htmx = (() => {
         }
 
         __morphNode(oldNode, newNode, ctx) {
+            if (oldNode.nodeType === 3) { // text node
+                if (oldNode.nodeValue !== newNode.nodeValue) oldNode.nodeValue = newNode.nodeValue;
+                return;
+            }
             if (this.config.morphSkip && oldNode.matches?.(this.config.morphSkip)) return;
                 
             // Trigger extension hook - if returns false, skip morphing this node
