@@ -20,6 +20,8 @@ particular.
 
 _Note: I apologize that this is a longer essay. I have provided a Table of Contents to help you navigate it._
 
+<br/>
+
 # Table of Contents
 
 * [First: Is The University Still Relevant?](#first-is-the-university-still-relevant)
@@ -45,6 +47,9 @@ _Note: I apologize that this is a longer essay. I have provided a Table of Conte
         * [Network Isolated Computers](#network-isolated-computers)
         * [Interview-Based Grading](#interview-based-grading)
 * [Conclusion](#conclusion)
+
+<br/>
+<br/>
 
 # First: Is The University Still Relevant?
 
