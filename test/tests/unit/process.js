@@ -102,4 +102,29 @@ describe('process() unit tests', function() {
         assert.isFalse(div.hasAttribute('data-htmx-powered'))
     })
 
+    it('hx-trigger="load" does not re-fire on re-process', function () {
+        mockResponse('GET', '/loadtest', '<span/>')
+        let div = createProcessedHTML('<div hx-get="/loadtest" hx-trigger="load">x</div>')
+        let count = 0
+        div.addEventListener('htmx:before:request', () => count++)
+        div.setAttribute('hx-trigger', 'load delay:0')
+        htmx.process(div)
+        assert.equal(count, 0, 'load should not re-fire on re-process')
+    })
+
+    it('hx-on:load and hx-trigger="load" both fire on first init', async function () {
+        mockResponse('GET', '/dual', '<span/>')
+        let requestCount = 0
+        let onReq = () => requestCount++
+        document.addEventListener('htmx:before:request', onReq)
+        try {
+            let div = createProcessedHTML('<div hx-get="/dual" hx-trigger="load" hx-on:load="this.setAttribute(\'setup\', \'true\')">x</div>')
+            await waitForEvent('htmx:after:request', 100)
+            assert.equal(div.getAttribute('setup'), 'true', 'hx-on:load should fire')
+            assert.equal(requestCount, 1, 'hx-trigger="load" should fire')
+        } finally {
+            document.removeEventListener('htmx:before:request', onReq)
+        }
+    })
+
 });

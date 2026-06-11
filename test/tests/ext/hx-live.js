@@ -1835,4 +1835,147 @@ describe('hx-live extension', function () {
         window.__liveCallCountSimple.should.equal(countAfterFirst);
         delete window.__liveCallCountSimple;
     });
+
+    // -------------------------------------------------------------------------
+    // morph integration: cleanup + re-registration on attribute change
+    // -------------------------------------------------------------------------
+
+    describe('morph integration', function() {
+
+        it('hx-live body: morph changing expression adopts new code, does not duplicate', async function() {
+            window.__morphLiveCount = 0;
+            playground().innerHTML = '<div id="wrap"><output id="o" hx-live="window.__morphLiveCount++"></output></div>';
+            htmx.process(playground());
+            await htmx.timeout(5);
+            let before = window.__morphLiveCount;
+
+            // outerMorph the element with a changed hx-live expression — morph will
+            // detect the attribute change, cleanup the old registration, and re-process.
+            await htmx.swap({
+                target: '#wrap',
+                text: '<div id="wrap"><output id="o" hx-live="window.__morphLiveCount += 10"></output></div>',
+                swap: 'outerMorph',
+                sourceElement: playground()
+            });
+            await htmx.timeout(5);
+
+            // Should have incremented by 10 (new code), not 1 (old code).
+            let delta = window.__morphLiveCount - before;
+            assert.isAtLeast(delta, 10, 'new expression should run');
+            assert.equal(delta % 10, 0, 'old expression should not still be running');
+            delete window.__morphLiveCount;
+        });
+
+        it('hx-live body: morph removing hx-live stops the fn from running', async function() {
+            window.__morphRemovedCount = 0;
+            playground().innerHTML = '<div id="wrap"><output id="o" hx-live="window.__morphRemovedCount++"></output></div>';
+            htmx.process(playground());
+            await htmx.timeout(5);
+
+            // outerMorph to a version with hx-live removed — morph cleans up the old fn.
+            await htmx.swap({
+                target: '#wrap',
+                text: '<div id="wrap"><output id="o"></output></div>',
+                swap: 'outerMorph',
+                sourceElement: playground()
+            });
+
+            let countAfterMorph = window.__morphRemovedCount;
+            // Trigger a recompute cycle — the old fn should no longer be in fns.
+            document.body.setAttribute('data-morph-test-trigger', '1');
+            await htmx.timeout(5);
+            document.body.removeAttribute('data-morph-test-trigger');
+            await htmx.timeout(5);
+
+            window.__morphRemovedCount.should.equal(countAfterMorph);
+            delete window.__morphRemovedCount;
+        });
+
+        it('hx-live:attr binding: morph changing expression adopts new code, does not duplicate', async function() {
+            playground().innerHTML = '<div id="wrap"><output id="o" hx-live:text="\'original\'"></output></div>';
+            htmx.process(playground());
+            await htmx.timeout(5);
+            playground().querySelector('#o').textContent.should.equal('original');
+
+            await htmx.swap({
+                target: '#wrap',
+                text: '<div id="wrap"><output id="o" hx-live:text="\'updated\'"></output></div>',
+                swap: 'outerMorph',
+                sourceElement: playground()
+            });
+            await htmx.timeout(5);
+
+            playground().querySelector('#o').textContent.should.equal('updated');
+        });
+
+        it('hx-live:attr binding: morph adding a new binding registers it', async function() {
+            playground().innerHTML = '<div id="wrap"><output id="o" hx-live:text="\'hello\'"></output></div>';
+            htmx.process(playground());
+            await htmx.timeout(5);
+
+            await htmx.swap({
+                target: '#wrap',
+                text: '<div id="wrap"><output id="o" hx-live:text="\'hello\'" hx-live:data-extra="\'added\'"></output></div>',
+                swap: 'outerMorph',
+                sourceElement: playground()
+            });
+            await htmx.timeout(5);
+
+            playground().querySelector('#o').dataset.extra.should.equal('added');
+        });
+
+        it('hx-live:attr binding: morph removing a binding stops it running', async function() {
+            window.__morphAttrCount = 0;
+            playground().innerHTML = '<div id="wrap"><output id="o" hx-live:data-v="(window.__morphAttrCount++, \'x\')"></output></div>';
+            htmx.process(playground());
+            await htmx.timeout(5);
+
+            await htmx.swap({
+                target: '#wrap',
+                text: '<div id="wrap"><output id="o"></output></div>',
+                swap: 'outerMorph',
+                sourceElement: playground()
+            });
+
+            let countAfterMorph = window.__morphAttrCount;
+            document.body.setAttribute('data-morph-attr-trigger', '1');
+            await htmx.timeout(5);
+            document.body.removeAttribute('data-morph-attr-trigger');
+            await htmx.timeout(5);
+
+            window.__morphAttrCount.should.equal(countAfterMorph);
+            delete window.__morphAttrCount;
+        });
+
+        it('morph cycle does not accumulate duplicate fns across multiple morphs', async function() {
+            window.__morphMultiCount = 0;
+            playground().innerHTML = '<div id="wrap"><output id="o" hx-live:data-v="(window.__morphMultiCount++, \'x\')"></output></div>';
+            htmx.process(playground());
+            await htmx.timeout(5);
+
+            // 3 morph cycles with identical content — each should cleanup and re-register once.
+            for (let i = 0; i < 3; i++) {
+                await htmx.swap({
+                    target: '#wrap',
+                    text: '<div id="wrap"><output id="o" hx-live:data-v="(window.__morphMultiCount++, \'x\')"></output></div>',
+                    swap: 'outerMorph',
+                    sourceElement: playground()
+                });
+                await htmx.timeout(5);
+            }
+
+            let baseline = window.__morphMultiCount;
+            document.body.setAttribute('data-morph-multi-trigger', '1');
+            await htmx.timeout(5);
+            document.body.removeAttribute('data-morph-multi-trigger');
+            await htmx.timeout(5);
+
+            // Should only fire once per binding, not once per morph cycle.
+            let delta = window.__morphMultiCount - baseline;
+            assert.isAtMost(delta, 2, 'should not accumulate duplicate fns across morph cycles');
+            delete window.__morphMultiCount;
+        });
+
+    });
+
 });

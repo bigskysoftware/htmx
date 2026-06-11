@@ -560,6 +560,61 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(container.querySelector('#result').textContent, 'Clicked!', 'htmx actions on new div should work');
         });
 
+        it('does not stack hx-on:click handlers across innerMorph', async function() {
+            window._calls = 0;
+            mockResponse('GET', '/test', '<button id="btn" hx-on:click="window._calls++">v</button>');
+            createProcessedHTML('<div id="target"><button id="btn" hx-on:click="window._calls++">v</button></div>');
+            for (let i = 0; i < 3; i++) {
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            }
+            document.getElementById('btn').click();
+            assert.equal(window._calls, 1, 'click should fire handler exactly once');
+            delete window._calls;
+        });
+
+        it('does not stack hx-on:click handlers across outerMorph', async function() {
+            window._calls = 0;
+            mockResponse('GET', '/test', '<button id="btn" hx-on:click="window._calls++">v</button>');
+            createProcessedHTML('<button id="btn" hx-on:click="window._calls++">v</button>');
+            for (let i = 0; i < 3; i++) {
+                await htmx.ajax('GET', '/test', {target: '#btn', swap: 'outerMorph'});
+            }
+            document.getElementById('btn').click();
+            assert.equal(window._calls, 1, 'click should fire handler exactly once');
+            delete window._calls;
+        });
+
+        it('handles multiple hx-on attributes after morph', async function() {
+            window._log = [];
+            mockResponse('GET', '/test', '<button id="b" hx-on:click="window._log.push(\'c\')" hx-on:focus="window._log.push(\'f\')">b</button>');
+            createProcessedHTML('<div id="wrap"><button id="b" hx-on:click="window._log.push(\'c\')" hx-on:focus="window._log.push(\'f\')">b</button></div>');
+            await htmx.ajax('GET', '/test', {target: '#wrap', swap: 'innerMorph'});
+            const b = document.getElementById('b');
+            b.dispatchEvent(new Event('focus'));
+            b.click();
+            assert.deepEqual(window._log, ['f', 'c'], 'both handlers should fire exactly once');
+            delete window._log;
+        });
+
+        it('picks up hx-trigger value change across innerMorph', async function() {
+            mockResponse('GET', '/x', '<span/>');
+            mockResponse('GET', '/test', '<button id="b" hx-get="/x" hx-trigger="keyup">b</button>');
+            createProcessedHTML('<div id="wrap"><button id="b" hx-get="/x" hx-trigger="click">b</button></div>');
+
+            await htmx.ajax('GET', '/test', {target: '#wrap', swap: 'innerMorph'});
+
+            const b = document.getElementById('b');
+            let fired = 0;
+            b.addEventListener('htmx:before:request', () => fired++);
+
+            b.click();
+            await new Promise(r => setTimeout(r, 20));
+            assert.equal(fired, 0, 'click should no longer fire after morph');
+            b.dispatchEvent(new KeyboardEvent('keyup'));
+            await waitForEvent('htmx:after:request', 100);
+            assert.equal(fired, 1, 'keyup should fire after morph');
+        });
+
     });
 
     describe('htmx integration', function() {

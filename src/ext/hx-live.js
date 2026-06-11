@@ -510,6 +510,8 @@
                     }
                 };
                 fns.add(run);
+                prop.liveRuns = prop.liveRuns || new Set();
+                prop.liveRuns.add(run);
                 run();
             }
         }
@@ -559,6 +561,9 @@
             }
         };
         fns.add(run);
+        let prop = api.htmxProp(elt);
+        prop.liveRuns = prop.liveRuns || new Set();
+        prop.liveRuns.add(run);
         run();
     }
 
@@ -589,6 +594,14 @@
     htmx.registerExtension('hx-live', {
         init: (internalAPI) => {
             api = internalAPI;
+        },
+        htmx_before_cleanup: (elt) => {
+            let prop = elt._htmx;
+            if (!prop?.liveRuns) return;
+            for (let run of prop.liveRuns) fns.delete(run);
+            delete prop.liveRuns;
+            delete prop.liveRegistered;
+            delete prop.liveAttrs;
         },
         htmx_after_process: (elt) => {
             processLive(elt);
