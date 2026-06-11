@@ -2088,7 +2088,7 @@ var htmx = (() => {
 
         __copyAttributes(destination, source) {
             let attributesToIgnore = this.config.morphIgnore || [];
-            let isHxAttr = name => this.__prefixes('hx-').some(p => name.startsWith(p));
+            let isHxAttr = name => this.__prefixes('hx-').some(p => name.startsWith(p)) || name.startsWith(':');
             let needsReinit = false;
             for (const attr of source.attributes) {
                 if (!attributesToIgnore.some(p => attr.name.startsWith(p)) && destination.getAttribute(attr.name) !== attr.value) {

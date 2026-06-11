@@ -1891,15 +1891,15 @@ describe('hx-live extension', function () {
             delete window.__morphRemovedCount;
         });
 
-        it('hx-live:attr binding: morph changing expression adopts new code, does not duplicate', async function() {
-            playground().innerHTML = '<div id="wrap"><output id="o" hx-live:text="\'original\'"></output></div>';
+        it(':attr binding: morph changing expression adopts new code, does not duplicate', async function() {
+            playground().innerHTML = '<div id="wrap"><output id="o" :text="\'original\'"></output></div>';
             htmx.process(playground());
             await htmx.timeout(5);
             playground().querySelector('#o').textContent.should.equal('original');
 
             await htmx.swap({
                 target: '#wrap',
-                text: '<div id="wrap"><output id="o" hx-live:text="\'updated\'"></output></div>',
+                text: '<div id="wrap"><output id="o" :text="\'updated\'"></output></div>',
                 swap: 'outerMorph',
                 sourceElement: playground()
             });
@@ -1908,14 +1908,14 @@ describe('hx-live extension', function () {
             playground().querySelector('#o').textContent.should.equal('updated');
         });
 
-        it('hx-live:attr binding: morph adding a new binding registers it', async function() {
-            playground().innerHTML = '<div id="wrap"><output id="o" hx-live:text="\'hello\'"></output></div>';
+        it(':attr binding: morph adding a new binding registers it', async function() {
+            playground().innerHTML = '<div id="wrap"><output id="o" :text="\'hello\'"></output></div>';
             htmx.process(playground());
             await htmx.timeout(5);
 
             await htmx.swap({
                 target: '#wrap',
-                text: '<div id="wrap"><output id="o" hx-live:text="\'hello\'" hx-live:data-extra="\'added\'"></output></div>',
+                text: '<div id="wrap"><output id="o" :text="\'hello\'" :data-extra="\'added\'"></output></div>',
                 swap: 'outerMorph',
                 sourceElement: playground()
             });
@@ -1924,9 +1924,9 @@ describe('hx-live extension', function () {
             playground().querySelector('#o').dataset.extra.should.equal('added');
         });
 
-        it('hx-live:attr binding: morph removing a binding stops it running', async function() {
+        it(':attr binding: morph removing a binding stops it running', async function() {
             window.__morphAttrCount = 0;
-            playground().innerHTML = '<div id="wrap"><output id="o" hx-live:data-v="(window.__morphAttrCount++, \'x\')"></output></div>';
+            playground().innerHTML = '<div id="wrap"><output id="o" :data-v="(window.__morphAttrCount++, \'x\')"></output></div>';
             htmx.process(playground());
             await htmx.timeout(5);
 
@@ -1949,7 +1949,7 @@ describe('hx-live extension', function () {
 
         it('morph cycle does not accumulate duplicate fns across multiple morphs', async function() {
             window.__morphMultiCount = 0;
-            playground().innerHTML = '<div id="wrap"><output id="o" hx-live:data-v="(window.__morphMultiCount++, \'x\')"></output></div>';
+            playground().innerHTML = '<div id="wrap"><output id="o" :data-v="(window.__morphMultiCount++, \'x\')"></output></div>';
             htmx.process(playground());
             await htmx.timeout(5);
 
@@ -1957,7 +1957,7 @@ describe('hx-live extension', function () {
             for (let i = 0; i < 3; i++) {
                 await htmx.swap({
                     target: '#wrap',
-                    text: '<div id="wrap"><output id="o" hx-live:data-v="(window.__morphMultiCount++, \'x\')"></output></div>',
+                    text: '<div id="wrap"><output id="o" :data-v="(window.__morphMultiCount++, \'x\')"></output></div>',
                     swap: 'outerMorph',
                     sourceElement: playground()
                 });
