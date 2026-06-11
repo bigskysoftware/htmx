@@ -409,10 +409,10 @@ var htmx = (() => {
             return headers;
         }
 
-        __handleHxHeaders(elt, headers) {
+        __handleHxHeaders(elt, ctx) {
             return this.__getAttributeObject(elt, "hx-headers", obj => {
-                for (let key in obj) headers[key] = String(obj[key]);
-            });
+                for (let key in obj) ctx.request.headers[key] = String(obj[key]);
+            }, {ctx});
         }
 
         __resolveTarget(elt, selector) {
@@ -455,7 +455,7 @@ var htmx = (() => {
             let valsResult = this.__getAttributeObject(elt, "hx-vals", obj => {
                 ctx.vals = obj; // make available for json extensions
                 for (let key in obj) body.set(key, obj[key]);
-            });
+            }, {ctx});
             if (valsResult) await valsResult; // Only await if it returned a promise
             if (ctx.values) {
                 for (let k in ctx.values) {
@@ -465,7 +465,7 @@ var htmx = (() => {
             }
 
             // Handle dynamic headers
-            let headersResult = this.__handleHxHeaders(elt, ctx.request.headers)
+            let headersResult = this.__handleHxHeaders(elt, ctx)
             if (headersResult) await headersResult  // Only await if it returned a promise
 
             // Setup event-dependent request details
@@ -525,7 +525,7 @@ var htmx = (() => {
                         let detail = {ctx, issueRequest: () => resolve(true), dropRequest: () => resolve(false)};
                         if (this.__trigger(elt, "htmx:confirm", detail)) {
                             let js = this.__extractJavascriptContent(ctx.confirm);
-                            resolve(js ? this.__executeJavaScript(elt, {}, js, true) : window.confirm(ctx.confirm));
+                            resolve(js ? this.__executeJavaScript(elt, {ctx}, js, true) : window.confirm(ctx.confirm));
                         }
                     });
                     if (!confirmed) return;
@@ -1762,7 +1762,7 @@ var htmx = (() => {
             }
         }
 
-        __getAttributeObject(elt, attrName, callback) {
+        __getAttributeObject(elt, attrName, callback, scope = {}) {
             let attrValue = this.__attributeValue(elt, attrName);
             if (!attrValue) return null;
 
@@ -1773,7 +1773,7 @@ var htmx = (() => {
                     javascriptContent = '{' + javascriptContent + '}';
                 }
                 // Return promise for async evaluation
-                return this.__executeJavaScript(elt, {}, javascriptContent, true).then(obj => {
+                return this.__executeJavaScript(elt, scope, javascriptContent, true).then(obj => {
                     callback(obj);
                 });
             } else {
