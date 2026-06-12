@@ -44,7 +44,9 @@
 
     function startIndicator() {
         listenForNavigate();
+        const historyState = history.state;
         navigation.navigate(location.href, { history: 'replace' });
+        history.replaceState(historyState, '');
     }
 
     function stopIndicator() {
