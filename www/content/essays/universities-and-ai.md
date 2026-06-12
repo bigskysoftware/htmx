@@ -93,7 +93,7 @@ engineers write the code. By refocusing our curriculum on practical, code heavy 
 environment, free of the time pressures and demands of corporate work, to write the code.
 
 This experience can then put them in position to go into environments that use AI more heavily with the confidence that
-they know how to code and, because of that, are in a position to read and understand the code necessary for their
+they know how to code and, because of that, that they are in a position to read and understand the code necessary for their
 career.
 
 # Signaling Competence in an AI World
