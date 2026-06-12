@@ -132,34 +132,36 @@ with some more speculative changes that I believe would help increase the useful
 
 ## Current Changes
 
-So I believe that a computer science degree will, somewhat ironically, become *more* important in the post-AI world, but
-also that computer science departments will need to change in some fundamental ways to remain effective at communicating
-knowledge and properly evaluating students.
-
-Below are some changes that I have made to my courses over the last year to deal with this new reality.
+First, let's start with the changes that I have already made to my courses over the last year to deal with the new 
+AI reality.
 
 ### Homework Is No Longer A Strong Signal
 
-As with take home quizzes, due to the use of AI, homeworks & projects are no longer a strong signal of the understanding
-of material. Homeworks must become for the student's benefit rather than for evaluating their competency.
+As with take home quizzes, due to the use of AI, homeworks & projects are no longer a strong signal of a students
+understanding of material. 
+
+Homeworks must become for the student's benefit, opportunities for them to learn the art of writing code, rather than 
+for evaluating their competency.
 
 This is actually a good thing: homeworks can be more ambitious and the students that want to learn will have more
-opportunities to write the code. Yes, some (many?) will cheat on assignments, but the good students will have an
-opportunity to write code in a supportive environment.
+opportunities to write more advanced code. 
 
-To deal with this reality, I have reduced the weight of assignments in my classes from 60-80% (I have always had
-code-heavy classes) down to 50%, and expect most students will get A's on most assignments. I try to strike a balance on
-how challenging assignments are so that the students that are honestly trying have a sense of accomplishment when they
-are finished.
+Yes, some (many?) will cheat on assignments, but the good students will have an opportunity to write code in a supportive
+environment.
+
+To address this fact, I have reduced the weight of assignments in my classes from 60-80% (I have always had
+code-heavy classes) down to 50%, and I expect most students will get A's on most assignments. 
 
 ### Homework Can Be More Ambitious & Realistic
 
 Another homework related change that I have made is that my assignments are now more ambitious and realistic. I don't
-mean they are much harder, but I can, with the help of AI, present much larger software systems to my students with
+mean they are much harder.  
+
+Insead, what I mean is that I can, with the help of AI, present much larger software systems to my students with
 better sample data, as a basis for their projects.
 
-This allows students to see software systems that go beyond "Hello World" levels of complexity and develop the ability
-to read as well as write code in a larger, more complicated context.
+This allows students to see software systems that go beyond "Hello World" levels of complexity and to develop the ability
+to navigate, read and write code in a larger, more complicated and realistic context.
 
 ### AI is a Great TA
 
@@ -169,19 +171,21 @@ students to come in asking for help on projects.
 
 I think, unfortunately, this is most likely due to many students using AI to solve their programming problems.
 
-However, there is a more optimistic take here: the students are using AI to better understand the projects and therefore
+However, there is a more optimistic read here: the students are using AI to better understand the projects and therefore
 do not need as much one on one help.
 
 While I am ambivalent in many ways towards AI, this is an area where AI can significantly improve the university
-experience for students: with proper use, AI can be a fantastic TA. It is infinitely patient, has no other students
-waiting in line and is usually very competent at undergraduate level concepts in computer science.
+experience for students: with proper use, AI can be a _fantastic_ TA. It is infinitely patient, has no other students
+waiting in line or it's own classes to attend to and it is usually very competent at undergraduate level concepts in 
+computer science.
 
 The danger, of course, is that students simply use AI as a code generator to complete assignments and head off to the
 bars.
 
 To address this danger, I ship a [`CLAUDE.md/AGENTS.md`](https://gist.github.com/1cg/a6c6f2276a1fe5ee172282580a44a7ac)
-file in my class repos that directs AI agents to act like a good TA rather than a code generator. Of course students can
-modify or delete this file, but there is no system so perfect that no one needs to be good.
+file in my class repos that directs AI agents to act like a good TA rather than a code generator. 
+
+Of course students can modify or delete this file, but there is no system so perfect that no one needs to be good.
 
 Stanford University has recently [modified this file for one of their own
 classes](https://github.com/stanford-cs336/assignment1-basics/blob/main/CLAUDE.md), and I encourage other people and
@@ -197,7 +201,7 @@ significant amount of material, even if holidays are interspersed in those weeks
 compared to a traditional midterm/final setup.
 
 I also allow one page of handwritten notes. I do not allow printed notes. The idea here is to force the knowledge
-through the student's eye-brain-hand pathway multiple times to help reinforce it.
+through the student's eye-brain-hand pathway multiple times in order to help reinforce it.
 
 My students have grumbled about this process, but also admit that it works in helping them learn the material.
 
@@ -207,10 +211,12 @@ also makes it much harder to cheat.
 
 I have found that AI is very good at suggesting questions based on class material for quizzes. I will work with an AI
 agent based on my class slides (see below) to create appropriate quiz questions and then create a quiz review sheet to
-help students study for the quiz based on it. Students love the review sheet because it helps them focus their efforts.
+help students study for the quiz based on it. 
+
+Students love the review sheet because it helps them focus their studing efforts.
 
 I think that, from a learning perspective, the butt-in-chair quizzes have been the single most positive change I have
-made to my classes. I now make them 50% of a student's grade, and my class grading curve has returned to a reasonable
+made to my classes. I now make quizzes 50% of a student's grade, and my class grading curve has returned to a reasonable
 shape.
 
 ### Demos & Visualizations Are Cheap
@@ -227,24 +233,26 @@ Two summers ago we spent an entire summer building such a computer, called [The 
 Computer](https://mtmc.cs.montana.edu/) that provided strong visualizations of how low level computing works.
 
 Unfortunately, when I got into a class using it, I realized that the architecture I had picked was too exotic (mixing
-concepts from MIPS & the JVM) and that students would be better off learning an assembly closer to x86. This would be
+concepts from MIPS & the JVM) and that students would be better off learning an assembly closer to x86. x86 would be
 particularly useful later in our security classes.
 
 I was able to work with AI to produce a new MTMC that was much closer to x86 in only a few weeks. It was so successful
 that I switched to the new version of the MTMC mid-class in fall, and used it exclusively in spring.
 
 Another visualization that I have created with AI is a JVM emulator that shows how stack frames and the operand stack
-work together to do computation. It is a visualization that I always wanted, but was unable to create not due to lack of
-skill (I am a reasonably competent programmer) but just lack of time and energy (I am old.)
+work together to do computation. It is a visualization that I always wanted, but was unable to create.  This was not due 
+to lack of skill on my part (I am a reasonably competent programmer) but just lack of time and energy (I am old.)
 
-So I have had to reset my thinking on demos & visualizations: If you can think it and describe it, and if you are a
-reasonably good programmer, you can probably create it.
+So I have had to reset my thinking on demos & visualizations: If you can think of a demo and describe it, and if you are 
+a reasonably good programmer, you can probably create it.
 
 ### Class Content Should Be In Markdown
 
 I have moved all my class slides to Markdown, using a tool called [slidev](https://sli.dev/) and, generally, embraced
 [Markdown](https://www.markdownguide.org/) for all my class content: SYLLABUS.md, etc. (Previously I was using Google
-slides for my lectures.) All content is checked in to my class repository that students get.
+slides for my lectures.) 
+
+All Markdown content is checked in to my class repository that students get.
 
 Moving all my content to Markdown has been tremendously beneficial:
 
@@ -256,26 +264,29 @@ I have always liked Markdown and, with slidev, I have nice syntax highlighting a
 [Mermaid](https://mermaid.ai/open-source/intro/) for technical diagrams. Or I can use good ol' ASCII art, which is often
 very effective.
 
-Having everything locally in text/Markdown makes it much easier for AI tools to work effectively in my classes.
+Having everything locally in text/Markdown makes it much easier for AI tools to work effectively in my classes.  As I
+mentioned above, AI agents can easily look at my class slides and suggest quiz questions I might ask.
 
 ### Class Analysis & Improvements
 
-Another way I have used AI effectively is in reviewing my classes at a higher level:
+Another way I have used AI effectively, again enabled by moving everything to Markdown, is in reviewing my classes at a
+higher level:
 
 * I can compare my classes with courses offered at other universities to see if there are topics that I am missing
 * I can analyze my classes holistically and ensure that there are coherent threads between them (e.g. stack machines)
 
-While this hasn't revolutionized any of my classes it has been useful in improving them.
+While this hasn't revolutionized any of my classes I feel it has been useful in improving them.
 
 ### Automate *Everything*
 
 The final way that I have been using AI to improve my classes is in automating everything possible. I have always had a
 significant number of scripts that I use for the infrastructure in my classes: an autograder.py that runs the
-autograding for projects in CI, etc.
+autograding for project checkpoints in CI, etc.
 
-I have become much more aggressive in what I will automate and optimize now. For example, I am using
-[Tampermonkey](https://www.tampermonkey.net/) to make parts of [Canvas LMS](https://www.instructure.com/canvas) easier
-to work with for my work flows:
+I have become much more aggressive in what I will automate and optimize now. 
+
+For example, I am using [Tampermonkey](https://www.tampermonkey.net/) to make parts of 
+[Canvas LMS](https://www.instructure.com/canvas) easier to work with for my work flows:
 
 * I can paste in a youtube URL, and it will automatically create a link for me in Canvas
 * I can drag and drop files directly from my OS into Canvas
@@ -294,7 +305,7 @@ I plan on implementing the following changes in the upcoming semester.
 
 ### Stronger Pseudocode Standards
 
-With on-paper quizzes becoming the standard, it is clear that I need a strong pseudocode standard for students to use on
+With on-paper quizzes becoming a standard, it has become clear that I need a strong pseudocode standard for students to use on
 quizzes.
 
 We are working on an "executable" pseudocode, [Notch](https://notch.cs.montana.edu), to address this. It is english-like
@@ -323,8 +334,9 @@ in favor of build. This is made more compelling by people recognizing that depen
 liabilities](https://x.com/htmx_org/status/2057205905222246455), especially from a security perspective.
 
 Of course much of the AI model training set consists of open source work and many open source developers are
-[understandably upset about this](https://opensourceainews.com/ai-is-destroying-open-source-not-even-good-yet/). Chad
-Whitacre, an open source advocate who I respect tremendously, has decided to [step away from technology
+[understandably upset about this](https://opensourceainews.com/ai-is-destroying-open-source-not-even-good-yet/). 
+
+Chad Whitacre, an open source advocate who I respect tremendously, has decided to [step away from technology
 entirely](https://openpath.quest/2026/i-am-retiring-from-tech-to-live-offline/) due to the situation.
 
 I do not have any good answers of how to prevent AI models from using open source work for training, nor do I have a
@@ -425,11 +437,12 @@ oral exams, and it would provide a much better final analysis of students' achie
 # Conclusion
 
 So, yes, I think The University is still relevant in the post-AI era and, in fact, may become *more* relevant due to
-some structural advantages it has, particularly in signaling student's competence to the outside world.
+some structural advantages it has, particularly in signaling student competence to the outside world.
 
 I do think computer science departments will need to adjust to the new realities and consider some somewhat radical
 changes in order to maximize their value to their students.  Most importantly, I think universities should increase their
-focus on providing hand-coding opportunities to students.
+focus on providing hand-coding opportunities to students, since these opportunities are becoming less available after
+students leave school.
 
 I hope that this essay helps computer science educators improve their course offering so that we can continue to produce
 competent and confident computer scientists for the foreseeable future.
