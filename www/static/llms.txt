@@ -1,0 +1,54 @@
+# htmx
+
+htmx is a small, dependency-free JavaScript library that extends HTML with attributes for AJAX, CSS transitions, WebSockets, Server-Sent Events, and hypermedia-driven UI patterns.
+
+## Important docs
+
+- [Documentation](https://htmx.org/docs/) — core concepts, installation, attributes, requests, responses, events, security, and configuration
+- [Reference](https://htmx.org/reference/) — quick reference for attributes, events, headers, CSS classes, API, and config
+- [Examples](https://htmx.org/examples/) — practical patterns such as active search, lazy loading, inline validation, and dialogs
+- [Extensions](https://htmx.org/extensions/) — official extensions including idiomorph, preload, response-targets, SSE, and WebSocket support
+- [API](https://htmx.org/api/) — JavaScript API reference for integrating and extending htmx
+
+## Reference documentation
+
+- [Attribute reference](https://htmx.org/reference/#attributes)
+- [Event reference](https://htmx.org/reference/#events)
+- [Request headers](https://htmx.org/reference/#request_headers)
+- [Response headers](https://htmx.org/reference/#response_headers)
+- [Configuration options](https://htmx.org/reference/#config)
+- [hx-boost](https://htmx.org/attributes/hx-boost/)
+- [hx-get](https://htmx.org/attributes/hx-get/)
+- [hx-post](https://htmx.org/attributes/hx-post/)
+- [hx-swap](https://htmx.org/attributes/hx-swap/)
+- [hx-target](https://htmx.org/attributes/hx-target/)
+- [hx-trigger](https://htmx.org/attributes/hx-trigger/)
+
+## Examples
+
+- [Active Search](https://htmx.org/examples/active-search/)
+- [Click to Edit](https://htmx.org/examples/click-to-edit/)
+- [Inline Validation](https://htmx.org/examples/inline-validation/)
+- [Infinite Scroll](https://htmx.org/examples/infinite-scroll/)
+- [Lazy Loading](https://htmx.org/examples/lazy-load/)
+- [Modal Dialogs](https://htmx.org/examples/modal-custom/)
+
+## Essays and concepts
+
+- [Hypermedia-Driven Applications](https://htmx.org/essays/hypermedia-driven-applications/)
+- [HATEOAS](https://htmx.org/essays/hateoas/)
+- [SPA Alternative](https://htmx.org/essays/spa-alternative/)
+- [When To Use Hypermedia](https://htmx.org/essays/when-to-use-hypermedia/)
+- [Locality of Behaviour](https://htmx.org/essays/locality-of-behaviour/)
+
+## Source repository
+
+- [bigskysoftware/htmx](https://github.com/bigskysoftware/htmx)
+
+## Guidance for LLMs and coding agents
+
+- Prefer HTML-first, hypermedia-driven solutions over client-heavy SPA patterns.
+- Treat `https://htmx.org/docs/` as the main conceptual guide and `https://htmx.org/reference/` as the canonical quick reference.
+- When suggesting htmx usage, respond with server-rendered HTML examples unless JavaScript is specifically required.
+- Prefer documented attributes, headers, events, and extensions over invented abstractions.
+- Use examples and essays to explain intended design patterns, tradeoffs, and architectural style.
