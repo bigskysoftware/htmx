@@ -869,11 +869,16 @@ var htmx = (() => {
             return func.call(thisArg, ...values);
         }
 
-        process(elt) {
+        // when force is true: cleans up and resets _htmx before processing, use after manually mutating hx attributes
+        process(elt, force) {
             if (!elt) return;
             if (!(elt instanceof Element)) {
-                for (let child of elt.children || []) this.process(child);
+                for (let child of elt.children || []) this.process(child, force);
                 return;
+            }
+            if (force) {
+                this.__cleanup(elt);
+                delete elt._htmx;
             }
             if (this.__ignore(elt)) return;
             if (!this.__trigger(elt, "htmx:before:process")) return
