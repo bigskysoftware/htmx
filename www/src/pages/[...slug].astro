@@ -6,7 +6,6 @@ import TableOfContents from '../components/TableOfContents.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Pagination from '../components/Pagination.astro';
-import CollectionCards from '../components/CollectionCards.astro';
 import FinderLink from '../components/FinderLink.astro';
 import { getFolder, render, COLLECTIONS } from '../lib/content';
 import { buildDocsSidebar } from '../lib/docs-sidebar';
@@ -67,7 +66,6 @@ const includeSidebar = isDocsRoot
         && !isReferenceIndex && !isPatternsIndex && !isExtensionsIndex);
 const includeHeader = !isHomePage;
 const includeMockServer = file?.frontmatter?.includeMockServer === true;
-const includeCollectionCards = isSubfolderIndexPage;
 const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
 const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && collection === 'about';
 
@@ -105,12 +103,11 @@ const includeTableOfContents = headings.length > 0;
 
                     {includeHeader && <PageHeader {title} description={isReferenceIndex ? undefined : description} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
 
-                    <article class="prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none">
+                    <article class:list={["prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none", isDocsRoot && "sticky-headers"]}>
                         {includeMockServer && <script is:inline set:html={mockServerScript}></script>}
                         <Content/>
                         {includePagination && <Pagination prev={file!.prev} next={file!.next} />}
                     </article>
-                    {includeCollectionCards && !isSubfolderIndexPage && <CollectionCards folders={folder!.folders.sort((a, b) => a.path.localeCompare(b.path))} {collection} />}
                     {isSubfolderIndexPage && (
                         <nav class="not-prose mt-4 flex flex-col gap-1">
                             {subfolder!.files.map((f) => (

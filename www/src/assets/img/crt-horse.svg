@@ -1,6 +1,6 @@
+<!-- TODO: find a home for this (404 page? easter egg? about page?) -->
 <svg viewBox="0 0 128 128" overflow="visible" fill="none" xmlns="http://www.w3.org/2000/svg">
     <style>
-        /* 3D shading via CSS variables — uses Tailwind theme tokens */
         .crt {
             --f1: var(--color-neutral-150); --f2: var(--color-neutral-200);
             --f3: var(--color-neutral-300); --f4: var(--color-neutral-350);
