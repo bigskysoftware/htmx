@@ -1870,6 +1870,21 @@ Both methods work together. Use them in the same response if needed.
 
 **Use partial tags** for everything else.
 
+#### Responses Without Main Content
+
+When a response contains only [`hx-swap-oob`](/reference/attributes/hx-swap-oob) or [`<hx-partial>`](/reference/tags/hx-partial) elements (no main content),
+the main target is left untouched.
+
+```html
+<!-- Only updates #notifications, the main target is not modified -->
+<div id="notifications" hx-swap-oob="true">
+    3 new messages
+</div>
+```
+
+This is useful for SSE and WebSocket connections where every message targets specific
+elements and there is no main swap.
+
 ### Additional Features
 
 #### Select Specific Elements for OOB

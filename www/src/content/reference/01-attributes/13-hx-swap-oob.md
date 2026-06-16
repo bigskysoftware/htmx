@@ -143,6 +143,11 @@ This behavior can be changed by setting the config `htmx.config.allowNestedOobSw
 is `false`, OOB swaps are only processed when the element is *adjacent to* the main response element, OOB swaps
 elsewhere will be ignored and oob-swap-related attributes stripped.
 
+## Responses Without Main Content
+
+When a response contains only `hx-swap-oob` elements, the main target is not modified.
+See [Multi-Target Updates](/docs#choosing-between-them) for details.
+
 ## See Also
 
-- [`<hx-partial>`](/docs#partials-hx-partial), an alternative for multi-target updates with explicit control over targeting and swap strategy
+- [`<hx-partial>`](/reference/tags/hx-partial), an alternative for multi-target updates with explicit control over targeting and swap strategy
