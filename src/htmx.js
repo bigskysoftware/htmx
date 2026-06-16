@@ -948,6 +948,7 @@ var htmx = (() => {
                 for (let listenerInfo of elt._htmx.listeners || []) {
                     listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler, listenerInfo);
                 }
+                elt.removeAttribute('data-htmx-powered');
                 this.__trigger(elt, "htmx:after:cleanup")
             }
             if (elt.firstChild) {
@@ -2088,11 +2089,12 @@ var htmx = (() => {
 
         __copyAttributes(destination, source) {
             let attributesToIgnore = this.config.morphIgnore || [];
-            let isHxAttr = name => this.__prefixes('hx-').some(p => name.startsWith(p)) || name.startsWith(':');
             let needsReinit = false;
+            let isHxAttr = name => this.__prefixes('hx-').some(p => name.startsWith(p));
             for (const attr of source.attributes) {
                 if (!attributesToIgnore.some(p => attr.name.startsWith(p)) && destination.getAttribute(attr.name) !== attr.value) {
                     if (isHxAttr(attr.name)) needsReinit = true;
+                    if (!this.__triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: attr.value })) continue;
                     destination.setAttribute(attr.name, attr.value);
                     if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
                         destination.value = attr.value;
@@ -2103,6 +2105,7 @@ var htmx = (() => {
                 let attr = destination.attributes[i];
                 if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.some(p => attr.name.startsWith(p))) {
                     if (isHxAttr(attr.name)) needsReinit = true;
+                    if (!this.__triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: null })) continue;
                     destination.removeAttribute(attr.name);
                 }
             }

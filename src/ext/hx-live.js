@@ -488,6 +488,15 @@
         }
     }
 
+    function cleanupLive(elt) {
+        let prop = elt._htmx;
+        if (!prop?.liveRuns) return;
+        for (let run of prop.liveRuns) fns.delete(run);
+        delete prop.liveRuns;
+        delete prop.liveRegistered;
+        delete prop.liveAttrs;
+    }
+
     function processElement(elt) {
         if (elt.closest('[hx-ignore]')) return;
         let prop = api.htmxProp(elt);
@@ -596,12 +605,10 @@
             api = internalAPI;
         },
         htmx_before_cleanup: (elt) => {
-            let prop = elt._htmx;
-            if (!prop?.liveRuns) return;
-            for (let run of prop.liveRuns) fns.delete(run);
-            delete prop.liveRuns;
-            delete prop.liveRegistered;
-            delete prop.liveAttrs;
+            cleanupLive(elt);
+        },
+        htmx_before_morph_attr: (elt, detail) => {
+            if (bindPrefixes.some(p => detail.attrName.startsWith(p))) cleanupLive(elt);
         },
         htmx_after_process: (elt) => {
             processLive(elt);
