@@ -10,12 +10,36 @@ const { href, class: className, ...rest } = Astro.props;
 
 <a href={href}
    {...rest}
-   class:list={[
-       "link-list-item",
-       "group/link flex items-center gap-4 sm:gap-5 px-3 -mx-3 py-2.5 sm:py-2 no-underline rounded-md",
-       "text-neutral-800 dark:text-neutral-200",
-       "interact:bg-blue-700 interact:text-white dark:interact:bg-blue-350 dark:interact:text-black",
-       className,
-   ]}>
+   class:list={["finder-link", "group/link", className]}>
     <slot />
 </a>
+
+<style>
+    .finder-link {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.625rem 0.75rem;
+        margin-inline: -0.75rem;
+        text-decoration: none;
+        border-radius: 0.375rem;
+        color: light-dark(var(--color-neutral-800), var(--color-neutral-200));
+
+        @media (min-width: 640px) {
+            gap: 1.25rem;
+            padding-block: 0.5rem;
+        }
+
+        @media (hover: hover) {
+            &:hover {
+                background: light-dark(var(--color-blue-700), var(--color-blue-350));
+                color: light-dark(white, black);
+            }
+        }
+
+        &:is(:focus-visible, :active) {
+            background: light-dark(var(--color-blue-700), var(--color-blue-350));
+            color: light-dark(white, black);
+        }
+    }
+</style>

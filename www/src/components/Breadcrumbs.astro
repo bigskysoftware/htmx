@@ -1,47 +1,135 @@
 ---
-import type { Breadcrumb } from '../lib/content';
+import type {Breadcrumb} from '../lib/content';
 
 interface Props {
     breadcrumbs: Breadcrumb[];
 }
 
-const { breadcrumbs } = Astro.props;
+const {breadcrumbs} = Astro.props;
 const allCrumbs: Breadcrumb[] = [{label: 'Home', href: '/'}, ...breadcrumbs];
 const isLast = (i: number) => i === allCrumbs.length - 1;
 const parent = allCrumbs.slice(0, -1).reverse().find(c => c.href) || null;
 ---
 
 {allCrumbs.length > 1 && (
-    <nav aria-label="Breadcrumb">
-        {/* Mobile: show parent link only */}
-        {parent && (
-            <a href={parent.href}
-               class="lg:hidden inline-flex items-center gap-0.5 -ml-0.5 py-1 pr-2 text-xs text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 rounded-sm">
-                <i class="icon-[mdi--chevron-left] text-base shrink-0" aria-hidden="true"></i>
-                <span class="truncate max-w-[30ch]" set:html={parent.label} />
+<nav aria-label="Breadcrumb">
+    {/* Mobile: show parent link only */}
+    {parent && (
+            <a href={parent.href} class="back-link">
+                <i class="icon-[mdi--chevron-left]" aria-hidden="true"></i>
+                <span set:html={parent.label}/>
             </a>
-        )}
+    )}
 
-        {/* Desktop: full breadcrumb trail */}
-        <ol class="hidden lg:flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-600 dark:text-neutral-400">
-            {allCrumbs.map((crumb, i) => (
-                <li class="flex items-center gap-3">
+    {/* Desktop: full breadcrumb trail */}
+    <ol role="list">
+        {allCrumbs.map((crumb, i) => (
+                <li>
                     {i > 0 && (
-                        <span class="text-neutral-300 dark:text-neutral-700 select-none" aria-hidden="true">/</span>
+                            <span aria-hidden="true">/</span>
                     )}
                     {isLast(i) ? (
-                        <span class="font-semibold text-neutral-700 dark:text-neutral-300 truncate max-w-[40ch]"
-                              aria-current="page"
-                              set:html={crumb.label} />
+                            <span aria-current="page" set:html={crumb.label}/>
                     ) : crumb.href ? (
-                        <a href={crumb.href}
-                           class="interact:underline interact:text-blue-700 dark:interact:text-blue-300"
-                           set:html={crumb.label} />
+                            <a href={crumb.href} set:html={crumb.label}/>
                     ) : (
-                        <span set:html={crumb.label} />
+                            <span set:html={crumb.label}/>
                     )}
                 </li>
-            ))}
-        </ol>
-    </nav>
+        ))}
+    </ol>
+</nav>
 )}
+
+<style>
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.125rem;
+        margin-left: -0.125rem;
+        padding: 0.25rem 0.5rem 0.25rem 0;
+        font-size: 0.75rem;
+        color: light-dark(var(--color-neutral-600), var(--color-neutral-400));
+        border-radius: 0.125rem;
+        text-decoration: none;
+
+        @media (min-width: 1024px) {
+            display: none;
+        }
+
+        @media (hover: hover) {
+            &:hover {
+                color: light-dark(var(--color-blue-700), var(--color-blue-300));
+            }
+        }
+
+        &:is(:focus-visible, :active) {
+            color: light-dark(var(--color-blue-700), var(--color-blue-300));
+        }
+
+        i {
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 30ch;
+        }
+    }
+
+    [role="list"] {
+        display: none;
+        flex-wrap: wrap;
+        align-items: center;
+        column-gap: 0.75rem;
+        row-gap: 0.25rem;
+        font-size: 0.875rem;
+        color: light-dark(var(--color-neutral-600), var(--color-neutral-400));
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        @media (min-width: 1024px) {
+            display: flex;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        [aria-hidden] {
+            color: light-dark(var(--color-neutral-300), var(--color-neutral-700));
+            user-select: none;
+        }
+
+        [aria-current="page"] {
+            font-weight: 600;
+            color: light-dark(var(--color-neutral-700), var(--color-neutral-300));
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 40ch;
+        }
+
+        a {
+            text-decoration: none;
+
+            @media (hover: hover) {
+                &:hover {
+                    text-decoration: underline;
+                    color: light-dark(var(--color-blue-700), var(--color-blue-300));
+                }
+            }
+
+            &:is(:focus-visible, :active) {
+                text-decoration: underline;
+                color: light-dark(var(--color-blue-700), var(--color-blue-300));
+            }
+        }
+    }
+</style>

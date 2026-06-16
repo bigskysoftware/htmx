@@ -15,13 +15,53 @@ const extensionCount = Object.keys(extensionDocs).filter(file => {
 }).length;
 ---
 
-<p class="flex items-center gap-3 sm:gap-4 text-xs font-mono font-light text-neutral-650 dark:text-neutral-350">
-    <a href="/docs#installation" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline">
-        <b class="font-chicago group-interact:text-blue-600 dark:group-interact:text-blue-300">{bundleSize}</b> min.br'd</a>
-    <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
-    <a href="https://github.com/bigskysoftware/htmx/blob/master/package.json" target="_blank" rel="noopener noreferrer" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline">
-        <b class="font-chicago group-interact:text-blue-600 dark:group-interact:text-blue-300">0</b> dep<span class="max-sm:hidden">endencie</span>s</a>
-    <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">·</span>
-    <a href="/docs/extensions" class="group interact:text-blue-600 dark:interact:text-blue-300 interact:underline">
-        <b class="font-chicago group-interact:text-blue-600 dark:group-interact:text-blue-300">{extensionCount}</b> extension<span class="max-sm:hidden">s</span></a>
+<p class="hero-stats">
+    <a href="/docs#installation">
+        <b>{bundleSize}</b> min.br'd</a>
+    <span aria-hidden="true">·</span>
+    <a href="https://github.com/bigskysoftware/htmx/blob/master/package.json" target="_blank" rel="noopener noreferrer">
+        <b>0</b> dep<span class="full-word">endencie</span>s</a>
+    <span aria-hidden="true">·</span>
+    <a href="/docs/extensions">
+        <b>{extensionCount}</b> extension<span class="full-word">s</span></a>
 </p>
+
+<style>
+    .hero-stats {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.75rem;
+        font-family: var(--font-mono);
+        font-weight: 300;
+        color: light-dark(var(--color-neutral-650), var(--color-neutral-350));
+
+        @media (min-width: 640px) { gap: 1rem; }
+
+        a {
+            text-decoration: none;
+
+            b { font-family: var(--font-chicago); }
+
+            @media (hover: hover) {
+                &:hover, &:hover b {
+                    color: light-dark(var(--color-blue-600), var(--color-blue-300));
+                    text-decoration: underline;
+                }
+            }
+
+            &:is(:focus-visible, :active),
+            &:is(:focus-visible, :active) b {
+                color: light-dark(var(--color-blue-600), var(--color-blue-300));
+                text-decoration: underline;
+            }
+        }
+    }
+
+    [aria-hidden] { color: light-dark(var(--color-neutral-300), var(--color-neutral-700)); }
+
+    .full-word {
+        display: none;
+        @media (min-width: 640px) { display: inline; }
+    }
+</style>
