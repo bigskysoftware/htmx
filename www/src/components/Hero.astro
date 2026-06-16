@@ -1,41 +1,30 @@
 ---
 import CDNSnippet from "./CDNSnippet.astro";
 import HeroStats from "./HeroStats.astro";
-import HeroDemo from "./HeroDemo.astro";
 ---
 
-<!-- Hero -->
-<section id="hero" class="not-prose pt-8 sm:pt-24 pb-12 sm:pb-16 w-screen relative left-1/2 -ml-[50vw]"
+<section id="hero"
          _="on intersection(intersecting) having threshold 0.8
             if intersecting
                 remove .grid-dimmed from #background-grid
             else
                 add .grid-dimmed to #background-grid">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
-         style="transform: translateZ(0); isolation: isolate;">
+    <div class="hero-inner">
 
-        <h1 id="hero-logo" class="flex flex-col sm:gap-3 lg:gap-4 text-5xl sm:text-6xl lg:text-7xl font-bold font-chicago text-black dark:text-white"
-            style="transform: translateZ(0);">
+        <h1 id="hero-logo">
             <span>
                 HTML can do
-                <span class="text-blue-600 dark:text-blue-350 italic text-shadow-3d-blue-900 dark:text-shadow-3d-blue-700">
-                    that!?
-                </span>
+                <em>that!?</em>
             </span>
         </h1>
 
-        <p class="mt-7 sm:mt-15 font-light text-lg sm:text-[1.375rem] lg:text-2xl max-sm:max-w-[28ch] mx-auto">
-            build modern UIs with the simplicity of hypertext
-        </p>
+        <p>build modern UIs with the simplicity of hypertext</p>
 
-        <div class="mt-7 sm:mt-15">
-            <a href="/docs#installation"
-               class="inline-flex items-center justify-center h-9 sm:h-10 lg:h-11 px-4 sm:px-6 lg:px-8 bg-linear-to-b text-white font-chicago text-xs sm:text-sm lg:text-base shadow-3d-blue-900 dark:shadow-3d-blue-800 rounded-lg from-blue-600 to-blue-700 dark:from-blue-500 dark:to-blue-600 interact:from-blue-500 interact:to-blue-600 dark:interact:from-blue-400 dark:interact:to-blue-500 border border-blue-500 dark:border-blue-500 dark:interact:border-blue-400 active:translate-y-[0.375cqh] active:shadow-3d-depth-[2px] transition">
-                Start Here
-            </a>
+        <div class="cta">
+            <a href="/docs#installation">Start Here</a>
         </div>
 
-        <div class="mt-9 sm:mt-13 flex flex-col items-center gap-6 sm:gap-9">
+        <div class="sub">
             <CDNSnippet/>
             <HeroStats/>
         </div>
@@ -43,9 +32,133 @@ import HeroDemo from "./HeroDemo.astro";
     </div>
 </section>
 
-<!-- Demo -->
-<!-- <section class="not-prose pb-16 sm:pb-24 w-screen relative left-1/2 -ml-[50vw]">
-    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <HeroDemo />
-    </div>
-</section> -->
+<style>
+    section {
+        padding: 2rem 0 3rem;
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        margin-left: -50vw;
+
+        @media (min-width: 640px) { padding: 6rem 0 4rem; }
+    }
+
+    .hero-inner {
+        max-width: 80rem;
+        margin-inline: auto;
+        padding-inline: 1rem;
+        text-align: center;
+        transform: translateZ(0);
+        isolation: isolate;
+
+        @media (min-width: 640px) { padding-inline: 1.5rem; }
+        @media (min-width: 1024px) { padding-inline: 2rem; }
+    }
+
+    h1 {
+        display: flex;
+        flex-direction: column;
+        font-size: 3rem;
+        font-weight: 700;
+        font-family: var(--font-chicago);
+        color: light-dark(black, white);
+        transform: translateZ(0);
+
+        @media (min-width: 640px) { gap: 0.75rem; font-size: 3.75rem; }
+        @media (min-width: 1024px) { gap: 1rem; font-size: 4.5rem; }
+
+        em {
+            font-style: italic;
+            color: light-dark(var(--color-blue-600), var(--color-blue-350));
+            text-shadow:
+                0 2px 0 color-mix(in srgb, var(--color-blue-900) 95%, white),
+                0 4px 0 color-mix(in srgb, var(--color-blue-900) 95%, black);
+
+            @media (prefers-color-scheme: dark) {
+                text-shadow:
+                    0 2px 0 color-mix(in srgb, var(--color-blue-700) 95%, white),
+                    0 4px 0 color-mix(in srgb, var(--color-blue-700) 95%, black);
+            }
+        }
+    }
+
+    p {
+        margin-top: 1.75rem;
+        font-weight: 300;
+        font-size: 1.125rem;
+        margin-inline: auto;
+
+        @media (max-width: 639px) { max-width: 28ch; }
+        @media (min-width: 640px) { margin-top: 3.75rem; font-size: 1.375rem; }
+        @media (min-width: 1024px) { font-size: 1.5rem; }
+    }
+
+    .cta {
+        margin-top: 1.75rem;
+
+        @media (min-width: 640px) { margin-top: 3.75rem; }
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 2.25rem;
+            padding-inline: 1rem;
+            font-family: var(--font-chicago);
+            font-size: 0.75rem;
+            color: white;
+            background: linear-gradient(to bottom,
+                light-dark(var(--color-blue-600), var(--color-blue-500)),
+                light-dark(var(--color-blue-700), var(--color-blue-600)));
+            border: 1px solid light-dark(var(--color-blue-500), var(--color-blue-500));
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            box-shadow:
+                0 calc(0.375cqh / 2) 0 color-mix(in srgb, var(--color-blue-900) 95%, white),
+                0 0.375cqh 0 color-mix(in srgb, var(--color-blue-900) 95%, black);
+            transition: background 0.15s, border-color 0.15s;
+
+            @media (min-width: 640px) { height: 2.5rem; padding-inline: 1.5rem; font-size: 0.875rem; }
+            @media (min-width: 1024px) { height: 2.75rem; padding-inline: 2rem; font-size: 1rem; }
+
+            @media (prefers-color-scheme: dark) {
+                box-shadow:
+                    0 calc(0.375cqh / 2) 0 color-mix(in srgb, var(--color-blue-800) 95%, white),
+                    0 0.375cqh 0 color-mix(in srgb, var(--color-blue-800) 95%, black);
+            }
+
+            @media (hover: hover) {
+                &:hover {
+                    background: linear-gradient(to bottom,
+                        light-dark(var(--color-blue-500), var(--color-blue-400)),
+                        light-dark(var(--color-blue-600), var(--color-blue-500)));
+                    border-color: light-dark(var(--color-blue-500), var(--color-blue-400));
+                }
+            }
+
+            &:is(:focus-visible) {
+                background: linear-gradient(to bottom,
+                    light-dark(var(--color-blue-500), var(--color-blue-400)),
+                    light-dark(var(--color-blue-600), var(--color-blue-500)));
+                border-color: light-dark(var(--color-blue-500), var(--color-blue-400));
+            }
+
+            &:active {
+                translate: 0 0.375cqh;
+                box-shadow:
+                    0 calc(2px / 2) 0 color-mix(in srgb, var(--color-blue-900) 95%, white),
+                    0 2px 0 color-mix(in srgb, var(--color-blue-900) 95%, black);
+            }
+        }
+    }
+
+    .sub {
+        margin-top: 2.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+
+        @media (min-width: 640px) { margin-top: 3.25rem; gap: 2.25rem; }
+    }
+</style>

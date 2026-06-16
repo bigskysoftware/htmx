@@ -8,15 +8,7 @@ const INTEGRITY = integrity.min;
 
 <!-- CDN one-liner: click anywhere to copy full <script> tag -->
 <button
-    class="group/cdn flex items-center
-           border border-neutral-200 dark:border-neutral-800
-           rounded-lg bg-white dark:bg-neutral-950
-           pl-3 sm:pl-4 pr-1.5 sm:pr-2 py-1.5 sm:py-2
-           interact:border-neutral-400 dark:interact:border-neutral-600
-           interact:bg-neutral-50 dark:interact:bg-neutral-900
-           outline-hidden cursor-pointer transition
-           before:content-['Copied!'] before:absolute before:relative
-           before:hidden"
+    class="cdn-copy"
     title="Copy CDN script tag"
     data-cdn-url={CDN_URL}
     data-integrity={INTEGRITY}
@@ -43,27 +35,125 @@ const INTEGRITY = integrity.min;
          call event.clipboardData.setData('text/plain', tag)`}
 >
     <!-- Script tag with truncated URL display -->
-    <code class="font-mono text-[0.625rem] sm:text-xs leading-5 whitespace-nowrap"
-    ><span class="text-blue-600 dark:text-blue-400">&lt;script</span
-    ><span class="text-neutral-600 dark:text-neutral-400"> src=</span
-    ><span class="text-emerald-600 dark:text-emerald-400">"…/htmx.min.js"</span
-    ><span class="text-blue-600 dark:text-blue-400">&gt;&lt;/script&gt;</span
+    <code
+    ><span class="tag">&lt;script</span
+    ><span class="attr"> src=</span
+    ><span class="val">"…/htmx.min.js"</span
+    ><span class="tag">&gt;&lt;/script&gt;</span
     ></code>
 
     <!-- Copy icon -->
-    <span class="relative shrink-0 ml-1.5 sm:ml-2 size-6 sm:size-7 flex items-center justify-center rounded
-                 text-neutral-400 dark:text-neutral-600
-                 group-interact/cdn:text-black dark:group-interact/cdn:text-white
-                 transition
-                 before:content-['Copied!'] before:absolute
-                 before:bottom-full before:left-1/2 before:-translate-x-1/2 before:mb-1
-                 before:px-2 before:py-1 before:text-xs before:font-semibold
-                 before:text-white before:bg-neutral-900
-                 dark:before:bg-neutral-100 dark:before:text-black
-                 before:rounded before:whitespace-nowrap
-                 before:opacity-0 before:pointer-events-none
-                 group-data-copied/cdn:before:opacity-100 before:transition">
-        <i class="size-3.5 sm:size-4 icon-[radix-icons--copy]" aria-hidden="true"></i>
+    <span class="icon-wrap">
+        <i class="icon-[radix-icons--copy]" aria-hidden="true"></i>
     </span>
 
 </button>
+
+<style>
+    .cdn-copy {
+        display: flex;
+        align-items: center;
+        border: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-800));
+        border-radius: var(--radius-lg);
+        background: light-dark(var(--color-white), var(--color-neutral-950));
+        padding: 0.375rem 0.375rem 0.375rem 0.75rem;
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.15s, background 0.15s;
+
+        @media (min-width: 640px) {
+            padding: 0.5rem 0.5rem 0.5rem 1rem;
+        }
+
+        @media (hover: hover) {
+            &:hover {
+                border-color: light-dark(var(--color-neutral-400), var(--color-neutral-600));
+                background: light-dark(var(--color-neutral-50), var(--color-neutral-900));
+            }
+        }
+
+        &:is(:focus-visible, :active) {
+            border-color: light-dark(var(--color-neutral-400), var(--color-neutral-600));
+            background: light-dark(var(--color-neutral-50), var(--color-neutral-900));
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            line-height: 1.25rem;
+            white-space: nowrap;
+
+            @media (min-width: 640px) { font-size: 0.75rem; }
+        }
+
+        .tag { color: light-dark(var(--color-blue-600), var(--color-blue-400)); }
+        .attr { color: light-dark(var(--color-neutral-600), var(--color-neutral-400)); }
+        .val { color: light-dark(var(--color-emerald-600), var(--color-emerald-400)); }
+    }
+
+    .icon-wrap {
+        position: relative;
+        flex-shrink: 0;
+        margin-left: 0.375rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-sm);
+        color: light-dark(var(--color-neutral-400), var(--color-neutral-600));
+        transition: color 0.15s;
+
+        @media (min-width: 640px) {
+            margin-left: 0.5rem;
+            width: 1.75rem;
+            height: 1.75rem;
+        }
+
+        i {
+            width: 0.875rem;
+            height: 0.875rem;
+
+            @media (min-width: 640px) {
+                width: 1rem;
+                height: 1rem;
+            }
+        }
+
+        /* "Copied!" tooltip */
+        &::before {
+            content: 'Copied!';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: light-dark(white, black);
+            background: light-dark(var(--color-neutral-900), var(--color-neutral-100));
+            border-radius: var(--radius-sm);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+        }
+    }
+
+    /* Interact: icon color */
+    @media (hover: hover) {
+        .cdn-copy:hover .icon-wrap {
+            color: light-dark(black, white);
+        }
+    }
+
+    .cdn-copy:is(:focus-visible, :active) .icon-wrap {
+        color: light-dark(black, white);
+    }
+
+    /* Copied state: show tooltip */
+    .cdn-copy[data-copied] .icon-wrap::before {
+        opacity: 1;
+    }
+</style>
