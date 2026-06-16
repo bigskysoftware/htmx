@@ -8,16 +8,16 @@
     src: url('/fonts/ChicagoFLF.ttf') format('truetype');
 }
 
-/* ─── Tokens (copied verbatim from former input.css @theme block) ─────── */
+/* ─── Tokens ─────── */
 :root {
     color-scheme: light dark;
 
     /* Body */
-    --font-sans: 'Inter', sans-serif;
+    --font-sans: 'Inter Variable', 'Inter', sans-serif;
     /* Headings & Buttons */
     --font-chicago: 'ChicagoFLF', sans-serif;
     /* Code */
-    --font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+    --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 
     /* Gray tones
 
@@ -70,55 +70,57 @@
     --color-neutral-950: oklch(14.5% 0 0);
 
     /* Blue that matches htmx logo */
-    --color-blue-50:  oklch(0.9714 0.0108 256.69);
+    --color-blue-50: oklch(0.9714 0.0108 256.69);
     --color-blue-100: oklch(0.9375 0.0235 250.08);
-    --color-blue-200: oklch(0.8908 0.043  249.39);
+    --color-blue-200: oklch(0.8908 0.043 249.39);
     --color-blue-300: oklch(0.8196 0.0739 247.52);
     --color-blue-350: oklch(0.7729 0.0925 249.30);
-    --color-blue-400: oklch(0.7262 0.111  251.08);
+    --color-blue-400: oklch(0.7262 0.111 251.08);
     --color-blue-500: oklch(0.6393 0.1445 257.27);
     --color-blue-600: oklch(0.5693 0.1653 261.81); /* htmx brand blue */
-    --color-blue-700: oklch(0.505  0.1698 264.24);
+    --color-blue-700: oklch(0.505 0.1698 264.24);
     --color-blue-800: oklch(0.4421 0.1412 265.64);
     --color-blue-900: oklch(0.3934 0.1075 265.08);
-    --color-blue-950: oklch(0.2936 0.068  267.21);
+    --color-blue-950: oklch(0.2936 0.068 267.21);
 
-    --radius-xs:   0.125rem;
-    --radius-sm:   0.25rem;
-    --radius-md:   0.375rem;
-    --radius-lg:   0.625rem;  /* override of Tailwind default 0.5rem */
-    --radius-xl:   0.75rem;
+    --radius-xs: 0.125rem;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.625rem; /* override of Tailwind default 0.5rem */
+    --radius-xl: 0.75rem;
     --radius-full: 9999px;
 
     --tracking-tightest: -0.075em;
-    --tracking-tight:    -0.025em;
+    --tracking-tight: -0.025em;
 
     /* ─── Layout ─────────────────────────────────────────────────────── */
     --navigation-bar-height: 56px;
-    @media (width >= 64rem) { --navigation-bar-height: 76px; }
+    @media (width >= 64rem) {
+        --navigation-bar-height: 76px;
+    }
     --header-height: var(--navigation-bar-height);
     --construction-banner-height: 40px;
 
     /* ─── Shiki (was in input.css base layer; light-dark()-ified) ────── */
-    --astro-code-foreground:             light-dark(#1a1a1a, var(--color-neutral-350));
-    --astro-code-background:             light-dark(white,   var(--color-neutral-930));
-    --astro-code-token-string-expression:#bca26c; /* HTML tags (yellow) */
-    --astro-code-token-function:         light-dark(#5a5a5a, var(--color-neutral-350)); /* HTML attrs */
-    --astro-code-token-keyword:          #6aab73; /* attribute = */
-    --astro-code-token-string:           #6aab73; /* attribute values */
-    --astro-code-token-constant:         #ce8e6d; /* function, async, export */
-    --astro-code-token-parameter:        #57a8f5; /* functions/methods */
-    --astro-code-token-punctuation:      #c87dbb; /* properties */
-    --astro-code-token-comment:          #808080;
-    --astro-code-token-link:             #57a8f5;
+    --astro-code-foreground: light-dark(#1a1a1a, var(--color-neutral-350));
+    --astro-code-background: light-dark(white, var(--color-neutral-930));
+    --astro-code-token-string-expression: #bca26c; /* HTML tags (yellow) */
+    --astro-code-token-function: light-dark(#5a5a5a, var(--color-neutral-350)); /* HTML attrs */
+    --astro-code-token-keyword: #6aab73; /* attribute = */
+    --astro-code-token-string: #6aab73; /* attribute values */
+    --astro-code-token-constant: #ce8e6d; /* function, async, export */
+    --astro-code-token-parameter: #57a8f5; /* functions/methods */
+    --astro-code-token-punctuation: #c87dbb; /* properties */
+    --astro-code-token-comment: #808080;
+    --astro-code-token-link: #57a8f5;
 }
 
 /* ─── Base ─────────────────────────────────────────────────────────────── */
 @layer base {
     body {
         overflow-x: hidden;
-        color:            light-dark(var(--color-neutral-700), var(--color-neutral-300));
-        background-color: light-dark(var(--color-neutral-25),  var(--color-neutral-920));
+        color: light-dark(var(--color-neutral-700), var(--color-neutral-300));
+        background-color: light-dark(var(--color-neutral-25), var(--color-neutral-920));
     }
 
     button, a, [role="button"] {
@@ -128,7 +130,9 @@
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-chicago), serif;
         letter-spacing: var(--tracking-tightest);
-        @media (width >= 40rem) { letter-spacing: var(--tracking-tight); }
+        @media (width >= 40rem) {
+            letter-spacing: var(--tracking-tight);
+        }
     }
 
     a, a * {
@@ -142,14 +146,25 @@
     /* Card — neutral background, thin border, rounded corners.
        Variants tweak corner radius: .xs / .sm / .lg / .xl (default = md). */
     .card {
-        background:        light-dark(var(--color-neutral-25),  var(--color-neutral-910));
-        border: 1px solid  light-dark(var(--color-neutral-200), var(--color-neutral-800));
+        background: light-dark(var(--color-neutral-25), var(--color-neutral-910));
+        border: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-800));
         border-radius: var(--radius-md);
 
-        &.xs { border-radius: var(--radius-xs); }
-        &.sm { border-radius: var(--radius-sm); }
-        &.lg { border-radius: var(--radius-lg); }
-        &.xl { border-radius: var(--radius-xl); }
+        &.xs {
+            border-radius: var(--radius-xs);
+        }
+
+        &.sm {
+            border-radius: var(--radius-sm);
+        }
+
+        &.lg {
+            border-radius: var(--radius-lg);
+        }
+
+        &.xl {
+            border-radius: var(--radius-xl);
+        }
     }
 
     /* Demo window chrome — border, title bar with dots + label, content padding.
@@ -161,10 +176,11 @@
         padding-top: calc(2rem + 1.5rem); /* title bar + content gutter */
         border: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-850));
         border-radius: var(--radius-lg);
-        background:        light-dark(white, var(--color-neutral-930));
+        background: light-dark(white, var(--color-neutral-930));
         overflow: hidden;
 
         /* Title bar */
+
         &::before {
             content: 'DEMO';
             position: absolute;
@@ -177,15 +193,16 @@
             font-size: 0.675rem;
             font-weight: 500;
             letter-spacing: 0.1em;
-            color:         light-dark(
-                var(--color-neutral-500),
-                color-mix(in srgb, var(--color-neutral-500) 80%, transparent)
+            color: light-dark(
+                    var(--color-neutral-500),
+                    color-mix(in srgb, var(--color-neutral-500) 80%, transparent)
             );
-            background:    light-dark(var(--color-neutral-50), var(--color-neutral-920));
+            background: light-dark(var(--color-neutral-50), var(--color-neutral-920));
             border-bottom: 1px solid light-dark(var(--color-neutral-100), var(--color-neutral-900));
         }
 
         /* Traffic-light dots */
+
         &::after {
             content: '';
             position: absolute;
@@ -195,11 +212,29 @@
             height: 9px;
             border-radius: 9999px;
             background: light-dark(var(--color-neutral-200), var(--color-neutral-800));
-            box-shadow:
-                15px 0 0 light-dark(var(--color-neutral-200), var(--color-neutral-800)),
-                30px 0 0 light-dark(var(--color-neutral-200), var(--color-neutral-800));
+            box-shadow: 15px 0 0 light-dark(var(--color-neutral-200), var(--color-neutral-800)),
+            30px 0 0 light-dark(var(--color-neutral-200), var(--color-neutral-800));
         }
     }
+}
+
+/* ─── Docs full-page sticky section headers ───────────────────────────── */
+article.sticky-headers > h2 {
+    position: sticky;
+    top: var(--header-height);
+    z-index: 20;
+    background: light-dark(var(--color-neutral-25), var(--color-neutral-920));
+    padding-block: 1rem;
+    @media (width >= 40rem) {
+        padding-block: 1.25rem;
+    }
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    border-bottom: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-850));
+}
+
+html:has(#construction-banner) article.sticky-headers > h2 {
+    top: calc(var(--header-height) + var(--construction-banner-height));
 }
 
 /* ─── Utilities ────────────────────────────────────────────────────────── */
@@ -214,7 +249,6 @@
 
        No global helper class — replicating the Tailwind variant in vanilla CSS
        would need a preprocessor. Document the pattern, keep it manual. */
-
     /* Scan lines mask. Dark-mode shifts the gradient stop (light-dark() takes
        colors only, so swap via custom property + @media). */
     .scan-lines {
@@ -222,8 +256,11 @@
         mask-size: 100% max(1.5px, 0.02em);
         mask-image: linear-gradient(to bottom, transparent 0%, black var(--scan-stop));
     }
+
     @media (prefers-color-scheme: dark) {
-        .scan-lines { --scan-stop: 17.5%; }
+        .scan-lines {
+            --scan-stop: 17.5%;
+        }
     }
 
     /* 3D drop shadow (block).
@@ -231,18 +268,14 @@
          <div class="shadow-3d" style="--shadow-color: var(--color-blue-900)"></div>
        Optional --shadow-depth (any <length>, default 0.375cqh). */
     .shadow-3d {
-        box-shadow:
-            0 calc(var(--shadow-depth, 0.375cqh) / 2) 0
-                color-mix(in srgb, var(--shadow-color) 95%, white),
-            0 var(--shadow-depth, 0.375cqh) 0
-                color-mix(in srgb, var(--shadow-color) 95%, black);
+        box-shadow: 0 calc(var(--shadow-depth, 0.375cqh) / 2) 0 color-mix(in srgb, var(--shadow-color) 95%, white),
+        0 var(--shadow-depth, 0.375cqh) 0 color-mix(in srgb, var(--shadow-color) 95%, black);
     }
 
     /* 3D drop shadow (text). Parameterize identically via --shadow-color. */
     .text-shadow-3d {
-        text-shadow:
-            0 2px 0 color-mix(in srgb, var(--shadow-color) 95%, white),
-            0 4px 0 color-mix(in srgb, var(--shadow-color) 95%, black);
+        text-shadow: 0 2px 0 color-mix(in srgb, var(--shadow-color) 95%, white),
+        0 4px 0 color-mix(in srgb, var(--shadow-color) 95%, black);
     }
 
     /* Subtle scrollbar. */
@@ -250,11 +283,18 @@
         scrollbar-width: thin;
         scrollbar-color: light-dark(var(--color-neutral-300), var(--color-neutral-700)) transparent;
 
-        &::-webkit-scrollbar { width: 6px; }
-        &::-webkit-scrollbar-track { background: transparent; }
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
         &::-webkit-scrollbar-thumb {
             background: light-dark(var(--color-neutral-300), var(--color-neutral-700));
             border-radius: 3px;
+
             &:hover {
                 background: light-dark(var(--color-neutral-400), var(--color-neutral-600));
             }
