@@ -1,44 +1,24 @@
 ---
-/**
- * Unified page header for all content pages.
- * Renders the title, optional copy button, and either a description
- * (most pages) or a byline with author/date/reading time (essays).
- */
 import { Image } from 'astro:assets';
 import CopyPageButton from './CopyPageButton.astro';
 import { getFile } from '../lib/content';
 import { formatDate } from '../lib/utils';
-import type { ContentFile, ContentFolder } from '../lib/content';
-
-interface Props {
-    title: string;
-    description?: string;
-    file?: ContentFile | ContentFolder;
-    collection: string;
-}
 
 const { title, description, file, collection } = Astro.props;
 
 const isEssay = !!file && collection === 'essays';
 
-// Essay byline data
-let byline: {
-    authors: { name: string; url?: string; image?: ImageMetadata }[];
-    created?: Date;
-    modified?: Date;
-    readingMinutes?: number;
-} | null = null;
+let byline = null;
 
-const teamImages = import.meta.glob<{default: ImageMetadata}>('/src/assets/img/team/*.{png,jpg,jpeg,webp}', {eager: true});
+const teamImages = import.meta.glob('/src/assets/img/team/*.{png,jpg,jpeg,webp}', {eager: true});
 
 if (isEssay) {
-    const essayFile = file as ContentFile;
-    const fm = essayFile.frontmatter;
+    const fm = file.frontmatter;
     const teamFile = await getFile('team.yaml');
     const team = teamFile?.frontmatter || [];
 
-    const authors = (fm.authors || []).map((name: string) => {
-        const member = team.find((m: any) => m.name === name);
+    const authors = (fm.authors || []).map((name) => {
+        const member = team.find((m) => m.name === name);
         const image = member?.image ? (teamImages[member.image]?.default ?? member.image) : undefined;
         return { name, url: member?.url, image };
     });
@@ -46,9 +26,9 @@ if (isEssay) {
     const created = fm.created ? (fm.created instanceof Date ? fm.created : new Date(fm.created)) : undefined;
     const modified = fm.modified ? (fm.modified instanceof Date ? fm.modified : new Date(fm.modified)) : undefined;
 
-    const essayRaw = import.meta.glob('/src/content/essays/*.{md,mdx}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
-    let readingMinutes: number | undefined;
-    const raw = essayRaw[`/src/content/${essayFile.path}`];
+    const essayRaw = import.meta.glob('/src/content/essays/*.{md,mdx}', { query: '?raw', import: 'default', eager: true });
+    let readingMinutes;
+    const raw = essayRaw[`/src/content/${file.path}`];
     if (raw) {
         const body = raw.replace(/^---[\s\S]*?---/, '');
         readingMinutes = Math.max(1, Math.round(body.trim().split(/\s+/).length / 250));
@@ -63,44 +43,44 @@ const showModified = byline?.modified && byline?.created &&
 const primaryAuthor = byline?.authors[0];
 ---
 
-<div class="not-prose mb-6 mt-4 sm:mb-8 sm:mt-6 lg:mb-8 lg:mt-6 space-y-3.5 sm:space-y-4">
-    <div class="flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
-        <h1 class="flex-1 min-w-0 font-chicago text-2xl sm:text-[2em]/12 font-bold text-neutral-900 dark:text-neutral-100" set:html={title} />
-        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {file && <CopyPageButton file={file} />}
-        </div>
+<header class="not-prose page-header">
+    <div class="title-row">
+        <h1 set:html={title} />
+        {file && (
+            <div class="actions">
+                <CopyPageButton file={file} />
+            </div>
+        )}
     </div>
 
     {byline ? (
-        <div class="flex items-center">
+        <div class="byline">
             {primaryAuthor?.image ? (
-                <div class="size-10 rounded-full overflow-hidden shrink-0 bg-neutral-200 dark:bg-neutral-800">
+                <div class="avatar">
                     <Image
                         src={primaryAuthor.image}
                         alt=""
-                        class="size-full object-cover"
                         width={80}
                         height={80}
                         loading="eager"
                     />
                 </div>
             ) : byline.authors.length > 0 && (
-                <div class="size-10 rounded-full shrink-0 bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center">
-                    <i class="icon-[mdi--account-outline] size-5 text-neutral-400 dark:text-neutral-600" aria-hidden="true"></i>
+                <div class="avatar placeholder">
+                    <i class="icon-[mdi--account-outline]" aria-hidden="true"></i>
                 </div>
             )}
 
-            <div class:list={["flex flex-col gap-1.5", byline.authors.length > 0 && "ms-4"]}>
+            <div class:list={["meta", byline.authors.length > 0 && "has-avatar"]}>
                 {byline.authors.length > 0 && (
-                    <span class="font-chicago text-sm text-neutral-900 dark:text-neutral-100">
+                    <span class="authors">
                         {byline.authors.map((author, i) => (
                             <>
                                 {i > 0 && ", "}
                                 {author.url ? (
                                     <a href={author.url}
                                        target="_blank"
-                                       rel="noopener noreferrer"
-                                       class="interact:text-blue-600 dark:interact:text-blue-300 interact:underline underline-offset-4">
+                                       rel="author noopener noreferrer">
                                         {author.name}
                                     </a>
                                 ) : (
@@ -112,16 +92,19 @@ const primaryAuthor = byline?.authors[0];
                 )}
 
                 {byline.created && (
-                    <span class="text-xs font-mono tabular-nums text-neutral-600 dark:text-neutral-400">
+                    <span class="dates">
                         {byline.readingMinutes && (
-                            <span>{byline.readingMinutes} min read<span class="mx-1">·</span></span>
+                            <span>{byline.readingMinutes} min read · </span>
                         )}
                         <time datetime={byline.created.toISOString().slice(0, 10)}>
                             {formatDate(byline.created, 'long')}
                         </time>
                         {showModified && (
                             <span>
-                                {" "}· updated <time datetime={byline.modified!.toISOString().slice(0, 10)}>{formatDate(byline.modified!, 'long')}</time>
+                                {" · updated "}
+                                <time datetime={byline.modified.toISOString().slice(0, 10)}>
+                                    {formatDate(byline.modified, 'long')}
+                                </time>
                             </span>
                         )}
                     </span>
@@ -129,6 +112,130 @@ const primaryAuthor = byline?.authors[0];
             </div>
         </div>
     ) : description && (
-        <p class="font-light text-base sm:text-lg lg:text-xl text-neutral-650 dark:text-neutral-350">{description}</p>
+        <p class="description">{description}</p>
     )}
-</div>
+</header>
+
+<style>
+    .page-header {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.875rem;
+
+        @media (min-width: 640px) {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+    }
+
+    .title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        @media (min-width: 640px) { gap: 0.75rem; }
+    }
+
+    h1 {
+        flex: 1;
+        min-width: 0;
+        font-family: var(--font-chicago);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
+
+        @media (min-width: 640px) { font-size: 2em; line-height: 3rem; }
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        flex-shrink: 0;
+
+        @media (min-width: 640px) { gap: 0.5rem; }
+    }
+
+    .byline {
+        display: flex;
+        align-items: center;
+    }
+
+    .avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 9999px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: light-dark(var(--color-neutral-200), var(--color-neutral-800));
+
+        :global(img) {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        &.placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            i {
+                width: 1.25rem;
+                height: 1.25rem;
+                color: light-dark(var(--color-neutral-400), var(--color-neutral-600));
+            }
+        }
+    }
+
+    .meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+
+        &.has-avatar { margin-inline-start: 1rem; }
+    }
+
+    .authors {
+        font-family: var(--font-chicago);
+        font-size: 0.875rem;
+        color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
+
+        a {
+            text-underline-offset: 0.25em;
+
+            @media (hover: hover) {
+                &:hover {
+                    color: light-dark(var(--color-blue-600), var(--color-blue-300));
+                    text-decoration: underline;
+                }
+            }
+
+            &:is(:focus-visible, :active) {
+                color: light-dark(var(--color-blue-600), var(--color-blue-300));
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .dates {
+        font-size: 0.75rem;
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+        color: light-dark(var(--color-neutral-600), var(--color-neutral-400));
+    }
+
+    .description {
+        font-weight: 300;
+        font-size: 1rem;
+        color: light-dark(var(--color-neutral-650), var(--color-neutral-350));
+
+        @media (min-width: 640px) { font-size: 1.125rem; }
+        @media (min-width: 1024px) { font-size: 1.25rem; }
+    }
+</style>

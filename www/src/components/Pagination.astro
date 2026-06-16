@@ -1,81 +1,164 @@
 ---
-/**
- * Prev/next navigation for content pages.
- * - variant="full": detailed cards at the bottom of articles
- * - variant="compact": small buttons in the TOC sidebar
- */
-import type { ContentFile } from '../lib/content';
-
-interface Props {
-    prev?: ContentFile;
-    next?: ContentFile;
-    variant?: 'full' | 'compact';
-}
-
-const { prev, next, variant = 'full' } = Astro.props;
-
-const links = [
-    { link: prev, label: 'Previous', icon: 'icon-[mdi--chevron-left]' },
-    { link: next, label: 'Next', icon: 'icon-[mdi--chevron-right]', reverse: true },
-];
+const { prev, next } = Astro.props;
 ---
 
-{variant === 'compact' ? (
-    <div class="flex gap-2">
-        {links.map(({ link, label, icon, reverse }) => {
-            const Tag = link ? 'a' : 'span';
-            return (
-                <Tag href={link?.url}
-                     title={link?.frontmatter.title}
-                     class:list={[
-                         "card",
-                         "flex-1 group flex items-center gap-2 p-2 text-xs font-medium transition select-none",
-                         reverse && "flex-row-reverse",
-                         link
-                             ? "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 interact:bg-neutral-75 dark:interact:bg-neutral-875 interact:border-neutral-400 dark:interact:border-neutral-600 interact:text-neutral-900 dark:interact:text-white outline-hidden focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400"
-                             : "border-transparent bg-neutral-50 dark:bg-neutral-930 text-neutral-300 dark:text-neutral-700 cursor-not-allowed"
-                     ]}>
-                    <i class:list={[icon, "size-4", link ? "text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition" : "opacity-50"]}></i>
-                    <span class="flex-1 inline-flex justify-center">{label}</span>
-                </Tag>
-            );
-        })}
-    </div>
-) : (
-    <nav class="not-prose mt-16">
-        <div class="grid grid-cols-2 gap-3 sm:gap-4">
-            {links.map(({ link, label, icon, reverse }) =>
-                link ? (
-                    <div class:list={[
-                        "card xl",
-                        "group relative isolate flex items-center gap-3 sm:gap-4 p-3 sm:p-4 transition",
-                        "interact:bg-neutral-75 dark:interact:bg-neutral-875",
-                        "interact:border-neutral-400 dark:interact:border-neutral-600",
-                        "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2",
-                        "has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400"
-                    ]}>
-                        {!reverse && <i class:list={[icon, "text-2xl sm:text-3xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0"]}></i>}
-                        <div class="flex-1 min-w-0">
-                            {link.breadcrumbs.length > 2 && (
-                                <div class="text-xs tracking-wide text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-300 mb-1.5 sm:mb-2 transition">
-                                    {link.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
-                                </div>
-                            )}
-                            <h4 class="font-chicago text-sm sm:text-base text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-white transition line-clamp-1 sm:line-clamp-2"
-                                set:html={link.frontmatter.title}></h4>
-                            <a href={link.url} class="outline-hidden">
-                                <span class="absolute inset-0 z-10"></span>
-                                <span class="sr-only">{label}: {link.frontmatter.title}</span>
-                            </a>
-                            {link.frontmatter.description &&
-                                <div class="max-sm:hidden text-sm text-neutral-600 dark:text-neutral-400 group-interact:text-neutral-700 dark:group-interact:text-neutral-200 mt-1.5 sm:mt-2 line-clamp-2 leading-relaxed transition">{link.frontmatter.description}</div>}
-                        </div>
-                        {reverse && <i class:list={[icon, "text-2xl sm:text-3xl text-neutral-400 group-interact:text-neutral-600 dark:group-interact:text-neutral-200 transition shrink-0"]}></i>}
-                    </div>
-                ) : (
-                    <div></div>
-                )
-            )}
+<nav class="not-prose" aria-label="Page navigation">
+    {prev ? (
+        <div class="card xl page-link">
+            <i class="icon-[mdi--chevron-left]" aria-hidden="true"></i>
+            <div>
+                {prev.breadcrumbs.length > 2 && (
+                    <p class="crumbs">
+                        {prev.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
+                    </p>
+                )}
+                <h4 set:html={prev.frontmatter.title}></h4>
+                <a href={prev.url} rel="prev">
+                    <span class="sr-only">Previous: {prev.frontmatter.title}</span>
+                </a>
+                {prev.frontmatter.description &&
+                    <p class="desc">{prev.frontmatter.description}</p>}
+            </div>
         </div>
-    </nav>
-)}
+    ) : null}
+
+    {next ? (
+        <div class="card xl page-link">
+            <i class="icon-[mdi--chevron-right]" aria-hidden="true"></i>
+            <div>
+                {next.breadcrumbs.length > 2 && (
+                    <p class="crumbs">
+                        {next.breadcrumbs.slice(1, -1).map(b => b.label).join(' / ')}
+                    </p>
+                )}
+                <h4 set:html={next.frontmatter.title}></h4>
+                <a href={next.url} rel="next">
+                    <span class="sr-only">Next: {next.frontmatter.title}</span>
+                </a>
+                {next.frontmatter.description &&
+                    <p class="desc">{next.frontmatter.description}</p>}
+            </div>
+        </div>
+    ) : null}
+</nav>
+
+<style>
+    nav {
+        margin-top: 4rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+
+        @media (min-width: 640px) { gap: 1rem; }
+    }
+
+    .page-link {
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        transition: background 0.15s, border-color 0.15s;
+
+        @media (min-width: 640px) { gap: 1rem; padding: 1rem; }
+
+        &:has([rel="next"]) {
+            flex-direction: row-reverse;
+            grid-column: 2;
+        }
+
+        > i {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            color: var(--color-neutral-400);
+            transition: color 0.15s;
+
+            @media (min-width: 640px) { font-size: 1.875rem; }
+        }
+
+        > div {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .crumbs {
+            font-size: 0.75rem;
+            letter-spacing: 0.025em;
+            color: light-dark(var(--color-neutral-600), var(--color-neutral-400));
+            margin-bottom: 0.375rem;
+            transition: color 0.15s;
+
+            @media (min-width: 640px) { margin-bottom: 0.5rem; }
+        }
+
+        h4 {
+            font-family: var(--font-chicago);
+            font-size: 0.875rem;
+            color: light-dark(var(--color-neutral-700), var(--color-neutral-300));
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            transition: color 0.15s;
+
+            @media (min-width: 640px) { font-size: 1rem; -webkit-line-clamp: 2; }
+        }
+
+        a {
+            outline: none;
+
+            &::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                z-index: 10;
+            }
+        }
+
+        .desc {
+            display: none;
+            font-size: 0.875rem;
+            color: light-dark(var(--color-neutral-600), var(--color-neutral-400));
+            margin-top: 0.375rem;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            line-height: 1.625;
+            transition: color 0.15s;
+
+            @media (min-width: 640px) {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                margin-top: 0.5rem;
+            }
+        }
+
+        /* Interact states */
+        @media (hover: hover) {
+            &:hover {
+                background: light-dark(var(--color-neutral-75), var(--color-neutral-875));
+                border-color: light-dark(var(--color-neutral-400), var(--color-neutral-600));
+
+                > i { color: light-dark(var(--color-neutral-600), var(--color-neutral-200)); }
+                .crumbs { color: light-dark(var(--color-neutral-700), var(--color-neutral-300)); }
+                h4 { color: light-dark(var(--color-neutral-900), white); }
+                .desc { color: light-dark(var(--color-neutral-700), var(--color-neutral-200)); }
+            }
+        }
+
+        &:has(:is(:focus-visible, :active)) {
+            background: light-dark(var(--color-neutral-75), var(--color-neutral-875));
+            border-color: light-dark(var(--color-neutral-400), var(--color-neutral-600));
+
+            > i { color: light-dark(var(--color-neutral-600), var(--color-neutral-200)); }
+            .crumbs { color: light-dark(var(--color-neutral-700), var(--color-neutral-300)); }
+            h4 { color: light-dark(var(--color-neutral-900), white); }
+            .desc { color: light-dark(var(--color-neutral-700), var(--color-neutral-200)); }
+        }
+
+        &:has(:focus-visible) {
+            outline: 2px solid light-dark(var(--color-neutral-500), var(--color-neutral-400));
+            outline-offset: 2px;
+        }
+    }
+</style>
