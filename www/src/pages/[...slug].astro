@@ -90,6 +90,7 @@ const includeTableOfContents = headings.length > 0;
             authors: file?.frontmatter.authors,
             tags: file?.frontmatter.tags,
         } : undefined}
+        breadcrumbs={page.breadcrumbs}
         hasSidebar={includeSidebar}>
 
     {includeSidebar && <Sidebar folder={sidebarFolder} file={file} scrollspy={isDocsRoot} />}

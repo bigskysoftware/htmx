@@ -18,6 +18,7 @@ const {
     image = "/img/og-image.png",
     keywords,
     article,
+    breadcrumbs,
     hasSidebar = false,
 } = Astro.props;
 
@@ -128,7 +129,7 @@ const footerSections = [
 
     <!-- Structured Data -->
     <script type="application/ld+json" set:html={JSON.stringify(buildJsonLd({
-        title, description, image, article,
+        title, description, image, article, breadcrumbs,
         url: Astro.url,
         siteUrl: Astro.site?.href ?? "https://four.htmx.org",
     }))}/>
