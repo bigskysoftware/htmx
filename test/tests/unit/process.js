@@ -112,19 +112,26 @@ describe('process() unit tests', function() {
         assert.equal(count, 0, 'load should not re-fire on re-process')
     })
 
-    it('hx-on:load and hx-trigger="load" both fire on first init', async function () {
-        mockResponse('GET', '/dual', '<span/>')
-        let requestCount = 0
-        let onReq = () => requestCount++
-        document.addEventListener('htmx:before:request', onReq)
-        try {
-            let div = createProcessedHTML('<div hx-get="/dual" hx-trigger="load" hx-on:load="this.setAttribute(\'setup\', \'true\')">x</div>')
-            await waitForEvent('htmx:after:request', 100)
-            assert.equal(div.getAttribute('setup'), 'true', 'hx-on:load should fire')
-            assert.equal(requestCount, 1, 'hx-trigger="load" should fire')
-        } finally {
-            document.removeEventListener('htmx:before:request', onReq)
-        }
+    it('process(elt, true) picks up a changed hx-trigger value', async function () {
+        mockResponse('GET', '/test', '<span/>')
+        let btn = createProcessedHTML('<button hx-get="/test" hx-trigger="click">x</button>')
+        let fired = 0
+        btn.addEventListener('htmx:before:request', () => fired++)
+
+        btn.click()
+        await waitForEvent('htmx:after:request', 100)
+        assert.equal(fired, 1, 'baseline click fires')
+
+        btn.setAttribute('hx-trigger', 'keyup')
+        htmx.process(btn, true)
+
+        btn.click()
+        await new Promise(r => setTimeout(r, 20))
+        assert.equal(fired, 1, 'click no longer fires after trigger change')
+
+        btn.dispatchEvent(new KeyboardEvent('keyup'))
+        await waitForEvent('htmx:after:request', 100)
+        assert.equal(fired, 2, 'keyup fires after force reprocess')
     })
 
 });
