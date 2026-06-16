@@ -189,6 +189,20 @@ describe('swap() unit tests', function() {
         find('#d2').innerText.should.equal("OOB");
     })
 
+    it('does not swap main target when response contains only hx-swap-oob elements', async function () {
+        createProcessedHTML("<div id='d1'>Original</div><div id='d2'>Old</div>")
+        await htmx.swap({"target":"#d1", "text":"<div id='d2' hx-swap-oob='true'>OOB Updated</div>"})
+        find('#d1').innerText.should.equal("Original");
+        find('#d2').innerText.should.equal("OOB Updated");
+    })
+
+    it('does not swap main target when response contains only hx-swap-oob with whitespace', async function () {
+        createProcessedHTML("<div id='d1'>Original</div><div id='d2'>Old</div>")
+        await htmx.swap({"target":"#d1", "text":"\n  <div id='d2' hx-swap-oob='true'>OOB Updated</div>  \n"})
+        find('#d1').innerText.should.equal("Original");
+        find('#d2').innerText.should.equal("OOB Updated");
+    })
+
     it('swaps oob with innerHTML', async function () {
         createProcessedHTML("<div id='d1'></div><div id='d2'><span>Old</span></div>")
         await htmx.swap({"target":"#d1", "text":"<div>Main</div><div id='d2' hx-swap-oob='innerHTML'>OOB</div>"})

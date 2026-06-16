@@ -1186,7 +1186,7 @@ var htmx = (() => {
                 tasks.push(...oobTasks, ...partialTasks);
 
                 // Process main swap first
-                let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
+                let mainSwap = this.__processMainSwap(ctx, fragment, tasks);
                 if (mainSwap) {
                     tasks.unshift(mainSwap);
                 }
@@ -1225,29 +1225,37 @@ var htmx = (() => {
             }
         }
 
-        __processMainSwap(ctx, fragment, partialTasks) {
-            // Create main task if needed
+        /**
+         * @param {object} ctx - request context
+         * @param {DocumentFragment} fragment - response content (after extraction)
+         * @param {Array} extractedTasks - swap tasks from hx-swap-oob and <hx-partial>
+         */
+        __processMainSwap(ctx, fragment, extractedTasks) {
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
-            // skip creating main swap if extracting partials resulted in empty response except for delete style
-            if (swapSpec.style === 'delete' || fragment.childElementCount > 0 || /\S/.test(fragment.textContent) || !partialTasks.length) {
-                if (ctx.select) {
-                    let selected = fragment.querySelectorAll(ctx.select);
-                    fragment = document.createDocumentFragment();
-                    fragment.append(...selected);
-                }
-                if (this.__isBoosted(ctx.sourceElement)) {
-                    swapSpec.show ||= 'top';
-                }
-                let mainSwap = {
-                    type: 'main',
-                    fragment,
-                    target: this.__resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
-                    swapSpec,
-                    sourceElement: ctx.sourceElement,
-                    transition: ctx.transition && swapSpec.transition !== false
-                };
-                return mainSwap;
+
+            let hasElements = fragment.childElementCount > 0;
+            let hasText = /\S/.test(fragment.textContent);
+            let allContentWasExtracted = !hasElements && !hasText && extractedTasks.length > 0;
+
+            // delete always proceeds (intentional target removal)
+            if (allContentWasExtracted && swapSpec.style !== 'delete') return;
+
+            if (ctx.select) { // hx-select / HX-Reselect
+                let selected = fragment.querySelectorAll(ctx.select);
+                fragment = document.createDocumentFragment();
+                fragment.append(...selected);
             }
+            if (this.__isBoosted(ctx.sourceElement)) {
+                swapSpec.show ||= 'top';
+            }
+            return {
+                type: 'main',
+                fragment,
+                target: this.__resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
+                swapSpec,
+                sourceElement: ctx.sourceElement,
+                transition: ctx.transition && swapSpec.transition !== false
+            };
         }
 
         async __insertContent(task, cssTransition = true) {
