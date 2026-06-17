@@ -1,6 +1,6 @@
 ---
 title: "hx-csp"
-description: "Content Security Policy enforcement for htmx — nonce gating, Trusted Types, and safe eval"
+description: "Make htmx work under strict Content Security Policy"
 category: "Security"
 icon: "icon-[mdi--shield-lock-outline]"
 keywords: ["nonce", "csp", "security", "trusted types", "xss", "content security policy"]
