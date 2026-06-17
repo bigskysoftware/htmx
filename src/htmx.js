@@ -1302,8 +1302,13 @@ var htmx = (() => {
         __processMainSwap(ctx, fragment, partialTasks) {
             // Create main task if needed
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
-            // skip creating main swap if extracting partials resulted in empty response except for delete style
-            if (swapSpec.style === 'delete' || fragment.childElementCount > 0 || /\S/.test(fragment.textContent) || !partialTasks.length) {
+            // skip main swap if fragment is empty after hx-partial removal but respect empty modifier
+            if (
+                swapSpec.style === 'delete' ||           // delete always runs regardless of content
+                fragment.childElementCount > 0 ||        // or fragment has elements
+                fragment.textContent.trim() ||           // or fragment has text
+                (swapSpec.empty ?? !partialTasks.length) // empty:true/false overrides, default: allow if no partials
+            ) {
                 if (ctx.select) {
                     let selected = fragment.querySelectorAll(ctx.select);
                     fragment = document.createDocumentFragment();

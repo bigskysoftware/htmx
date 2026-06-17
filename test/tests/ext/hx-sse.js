@@ -1060,6 +1060,51 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    it('oob-only SSE message does not blank main target by default', async function() {
+        const stream = mockStreamResponse('/oob-only');
+        createProcessedHTML('<div id="target" hx-sse:connect="/oob-only" hx-swap="innerHTML">Original</div><div id="oob">OOB</div>');
+
+        await htmx.timeout(1);
+
+        stream.send('<div id="oob" hx-swap-oob="true">Updated</div>');
+        await waitForEvent('htmx:after:sse:message');
+
+        assertTextContentIs('#target', 'Original');
+        assertTextContentIs('#oob', 'Updated');
+
+        stream.close();
+    });
+
+    it('oob-only SSE message blanks main target when empty:true explicitly set', async function() {
+        const stream = mockStreamResponse('/oob-empty-true');
+        createProcessedHTML('<div id="target" hx-sse:connect="/oob-empty-true" hx-swap="innerHTML empty:true">Original</div><div id="oob">OOB</div>');
+
+        await htmx.timeout(1);
+
+        stream.send('<div id="oob" hx-swap-oob="true">Updated</div>');
+        await waitForEvent('htmx:after:sse:message');
+
+        assertTextContentIs('#target', '');
+        assertTextContentIs('#oob', 'Updated');
+
+        stream.close();
+    });
+
+    it('SSE message with real content alongside oob still swaps main target', async function() {
+        const stream = mockStreamResponse('/oob-with-content');
+        createProcessedHTML('<div id="target" hx-sse:connect="/oob-with-content" hx-swap="innerHTML">Original</div><div id="oob">OOB</div>');
+
+        await htmx.timeout(1);
+
+        stream.send('<div>New Content</div><div id="oob" hx-swap-oob="true">Updated</div>');
+        await waitForEvent('htmx:after:sse:message');
+
+        assertTextContentIs('#oob', 'Updated');
+        find('#target').innerText.trim().should.equal('New Content');
+
+        stream.close();
+    });
+
     it('supports legacy sse-connect attribute with deprecation warning', async function() {
         let warnCalled = false;
         let originalWarn = console.warn;
