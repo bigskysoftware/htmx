@@ -6,10 +6,9 @@ import { Code } from 'astro:components';
 import integrity from '../data/integrity.json';
 import { codeBlockTransformer } from '../lib/shiki-transformers.js';
 
-# Get Started
+<hr data-sidebar-group="Get Started" />
 
 ## Installation
-
 
 htmx is a single JavaScript file with no dependencies. No build step is required to use it.
 
@@ -880,14 +879,14 @@ Return truthy if handled, falsy otherwise. Can return an array of elements for s
 
 #### Removed Callbacks
 
-| htmx 2.x callback | htmx 4 replacement |
-|---|---|
-| `getSelectors()` | `htmx_after_init` hook |
-| `onEvent(name, evt)` | Individual `htmx_*` hooks |
-| `transformResponse(text, xhr, elt)` | `htmx_after_request` hook (modify `detail.ctx.text`) |
-| `encodeParameters(xhr, params, elt)` | `htmx_config_request` hook (modify `detail.ctx.request.body`) |
-| `isInlineSwap(swapStyle)` | `handle_swap` or name swap style with "outer" prefix |
-| `handleSwap(style, target, frag, info)` | `handle_swap(style, target, frag, spec)` |
+| htmx 2.x callback                       | htmx 4 replacement                                            |
+|-----------------------------------------|---------------------------------------------------------------|
+| `getSelectors()`                        | `htmx_after_init` hook                                        |
+| `onEvent(name, evt)`                    | Individual `htmx_*` hooks                                     |
+| `transformResponse(text, xhr, elt)`     | `htmx_after_request` hook (modify `detail.ctx.text`)          |
+| `encodeParameters(xhr, params, elt)`    | `htmx_config_request` hook (modify `detail.ctx.request.body`) |
+| `isInlineSwap(swapStyle)`               | `handle_swap` or name swap style with "outer" prefix          |
+| `handleSwap(style, target, frag, info)` | `handle_swap(style, target, frag, spec)`                      |
 
 #### Checklist
 
@@ -901,7 +900,7 @@ Return truthy if handled, falsy otherwise. Can return an array of elements for s
 8. Update event names (colons to underscores in hook names)
 9. Test custom swap styles with OOB swaps
 
-# Core Concepts
+<hr data-sidebar-group="Core Concepts" />
 
 ## Mental Model
 
@@ -1850,8 +1849,7 @@ Either `hx-target` or `id` is required. If both are present, `hx-target` takes p
 
 <details>
 <summary>Alternative syntax for template languages that strip unknown tags</summary>
-
-You can use the equivalent `<template>` form: `<template hx type="partial" hx-target="..." hx-swap="...">`. htmx converts `<hx-partial>` to this form internally.
+You can use the equivalent <code>&lt;template&gt;</code> form: <code>&lt;template hx type="partial" hx-target="..." hx-swap="..."&gt;</code>. htmx converts <code>&lt;hx-partial&gt;</code> to this form internally.
 </details>
 
 #### When to Use Partials
@@ -2072,7 +2070,7 @@ This works for any attribute that accepts HCON/JSON, including `hx-vals` and `hx
 - **Prototype safety**, keys `__proto__`, `constructor`, and `prototype` are silently ignored.
 - **Mixed JSON+HCON**, a string starting with `{` is always JSON; you cannot mix the two syntaxes in one attribute value.
 
-# Features
+<hr data-sidebar-group="Features" />
 
 ## CSS Transitions
 
@@ -2873,7 +2871,7 @@ htmx.registerExtension("my-swap", {
 
 For migrating extensions written for htmx 2.x, see [Migration → Migrating Your Own Extensions](#migrating-your-own-extensions).
 
-# Security
+<hr data-sidebar-group="Security" />
 
 ## Best Practices
 
@@ -3048,7 +3046,7 @@ fragment of that HTML when `HX-Request: true`, you need to add `Vary: HX-Request
 based on a composite of the response URL and the `HX-Request` request header rather than being based just on the
 response URL.
 
-# Troubleshoot
+<hr data-sidebar-group="Troubleshoot" />
 
 ## Debugging
 
@@ -3139,7 +3137,7 @@ Have fun with htmx!
 
 You can accomplish [quite a bit](/patterns) without writing a lot of code!
 
-# Editor Support
+<hr data-sidebar-group="Editor Support" />
 
 ## VS Code
 The [HTMX Toolkit](https://marketplace.visualstudio.com/items?itemName=atoolz.htmx-vscode-toolkit) extension adds htmx support to Visual Studio Code with autocomplete, hover documentation, and snippets.
@@ -3158,3 +3156,5 @@ Search for **HTMX Toolkit** in the VS Code Extensions panel, or install from the
 ### Source
 
 The extension source code is maintained at [atoolz/htmx-vscode-toolkit](https://github.com/atoolz/htmx-vscode-toolkit).
+
+<style>{`[data-sidebar-group] { display: none; }`}</style>

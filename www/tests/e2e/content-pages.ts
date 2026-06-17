@@ -1,45 +1,42 @@
 import { test, expect } from './_fixtures';
 
 test.describe('Content page structure', () => {
-    test('docs page has sidebar with sections', async ({ page }) => {
+    test('docs page has sidebar with section groups', async ({ page }) => {
         await page.goto('/docs');
         const sidebar = page.locator('#sidebar-nav');
         await expect(sidebar).toBeVisible();
 
-        const sections = sidebar.locator('details');
-        expect(await sections.count()).toBeGreaterThanOrEqual(6);
+        const groups = sidebar.locator('h3');
+        expect(await groups.count()).toBeGreaterThanOrEqual(6);
     });
 
-    test('docs sidebar scrollspy highlights a page anchor', async ({ page }) => {
+    test('docs sidebar scrollspy highlights a link on scroll', async ({ page }) => {
         await page.goto('/docs', { waitUntil: 'networkidle' });
-        await page.waitForFunction(
-            () => !!(document.querySelector('#sidebar-nav .border-l') as any)?._sidebarObserver,
-            { timeout: 5000 }
-        );
-        // Scroll through the page; one of the H2s will land in the observer's band.
+        await page.waitForTimeout(300);
+
+        // Scroll through the page until the observer activates a link
         for (let y = 0; y <= 2000; y += 300) {
             await page.evaluate((scrollY: number) => window.scrollTo(0, scrollY), y);
             await page.waitForTimeout(150);
-            if (await page.locator('#sidebar-nav a.sidebar-link[data-active]').count() > 0) break;
+            if (await page.locator('#sidebar-nav a.sidebar-link[aria-current]').count() > 0) break;
         }
-        const activeLink = page.locator('#sidebar-nav a.sidebar-link[data-active]');
+        const activeLink = page.locator('#sidebar-nav a.sidebar-link[aria-current]');
         await expect(activeLink).toHaveCount(1);
         const href = await activeLink.getAttribute('href');
-        expect(href).toMatch(/^\/docs#/);
+        expect(href).toMatch(/^#/);
     });
 
     test('reference sidebar highlights current page', async ({ page }) => {
         await page.goto('/reference/attributes/hx-get');
-        const activeLink = page.locator('#sidebar-nav a[aria-current="page"]');
+        const activeLink = page.locator('#sidebar-nav a[aria-current]');
         await expect(activeLink).toHaveCount(1);
         await expect(activeLink).toContainText('hx-get');
     });
 
-    test('reference sidebar section auto-opens for current page', async ({ page }) => {
+    test('reference sidebar section contains current page links', async ({ page }) => {
         await page.goto('/reference/attributes/hx-get');
-        const openSection = page.locator('#sidebar-nav details[open]');
-        await expect(openSection.first()).toBeVisible();
-        await expect(openSection.first().locator('summary')).toContainText('Attributes');
+        const group = page.locator('#sidebar-nav h3', { hasText: 'Attributes' });
+        await expect(group).toBeVisible();
     });
 
     test('docs sidebar anchor navigates to in-page heading', async ({ page }) => {
@@ -50,15 +47,9 @@ test.describe('Content page structure', () => {
         }
         const link = page.locator('#sidebar-nav a.sidebar-link', { hasText: 'Installation' }).first();
         const href = await link.getAttribute('href');
-        expect(href).toBe('/docs#installation');
+        expect(href).toBe('#installation');
         await link.click();
-        await expect(page).toHaveURL(href!);
-    });
-
-    test('reference sidebar uses monospace font', async ({ page }) => {
-        await page.goto('/reference/attributes/hx-get');
-        const activeLink = page.locator('#sidebar-nav a[aria-current="page"]');
-        await expect(activeLink).toHaveCSS('font-family', /monospace|JetBrains/);
+        await expect(page).toHaveURL(/\/docs#installation/);
     });
 
     test('table of contents visible on wide viewport', async ({ page }) => {

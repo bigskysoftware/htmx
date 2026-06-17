@@ -86,7 +86,7 @@ export function isAggregate(file) {
     return file.slug === 'full';
 }
 
-function readRaw(fullPath) {
+export function readRaw(fullPath) {
     try {
         return readFileSync(join(process.cwd(), fullPath.replace(/^\//, '')), 'utf-8');
     } catch {

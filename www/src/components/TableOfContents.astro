@@ -6,100 +6,43 @@ interface Heading {
 }
 
 interface Props {
-    headings: Heading[];
-    mode?: 'flat' | 'grouped';
+    headings: (Heading & { label?: boolean })[];
 }
 
-const {headings, mode = 'flat'} = Astro.props;
+const {headings} = Astro.props;
 
-// Grouped: H3/H4 grouped by parent H2, only the active group is visible.
-// The first H2's group is marked active at SSR so the initial paint matches.
-type TocItem = Heading & { parent?: string };
-const items: TocItem[] = [];
-let firstH2: string | null = null;
-if (mode === 'grouped') {
-    let currentH2: string | null = null;
-    for (const h of headings) {
-        if (h.depth === 2) {
-            currentH2 = h.slug;
-            if (!firstH2) firstH2 = h.slug;
-        } else if ((h.depth === 3 || h.depth === 4) && currentH2) {
-            items.push({...h, parent: currentH2});
-        }
-    }
-} else {
-    for (const h of headings) {
-        if (h.depth >= 2 && h.depth <= 4) items.push(h);
-    }
-}
-
+const items = headings.filter(h => h.depth >= 2 && h.depth <= 4);
 const minDepth = items.length > 0 ? Math.min(...items.map(h => h.depth)) : 2;
 ---
 
 {items.length > 0 && (
-<nav
-        id="page-outline"
-        aria-label="Table of Contents"
-        class="w-full"
-        data-toc-mode={mode}
-        _=`def setupTOC()
-            wait 50ms
-            set allHeadings to <main :is(h2,h3,h4)[id]/> as Array
-            js(me, allHeadings)
-                if (me._tocObserver) me._tocObserver.disconnect();
-                const mode = me.dataset.tocMode;
-                const setActiveGroup = (h2Id) => {
-                    if (me.dataset.activeH2 === h2Id) return;
-                    me.dataset.activeH2 = h2Id;
-                    me.querySelectorAll('.toc-link[data-parent]').forEach(el => {
-                        el.classList.toggle('toc-group-active', el.dataset.parent === h2Id);
-                    });
-                };
-                const observer = new IntersectionObserver(
-                    (entries) => entries.forEach(entry => {
-                        if (!entry.isIntersecting) return;
-                        const id = entry.target.getAttribute('id');
-                        const depth = parseInt(entry.target.tagName.slice(1));
-                        if (mode === 'grouped' && depth === 2) {
-                            setActiveGroup(id);
-                            return;
-                        }
-                        const tocLink = me.querySelector('.toc-link[href="#' + id + '"]');
-                        if (tocLink) {
-                            _hyperscript.evaluate(
-                                "take [@data-active] from .toc-link for first <.toc-link[href='#" + id + "']/>"
-                            );
-                            var pageY = window.scrollY;
-                            tocLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-                            window.scrollTo(0, pageY);
-                        }
-                    }),
-                    { rootMargin: '-100px 0px -66% 0px', threshold: 0 }
-                );
-                allHeadings.forEach(h => observer.observe(h));
-                me._tocObserver = observer;
-            end
-            init call setupTOC() end
-            on htmx:after:swap from document call setupTOC() end`>
+<nav id="page-outline"
+     aria-label="Table of Contents"
+     class="w-full"
+     _="install Scrollspy">
     <div class="w-full border-l border-neutral-200 dark:border-neutral-800">
         {items.map((heading) => {
             const depth = heading.depth - minDepth;
             const indentClass = depth === 0 ? 'pl-4' : depth === 1 ? 'pl-8' : 'pl-12';
-            const initiallyActive = mode === 'grouped' && heading.parent === firstH2;
+            const isLabel = heading.label;
 
-            return (
+            return isLabel ? (
+                    <span class:list={[
+                        'block py-2 pr-2 -ml-px border-l-2 border-transparent',
+                        indentClass,
+                        'font-sans text-[0.625rem] tracking-widest uppercase text-neutral-600 dark:text-neutral-400',
+                    ]}>
+                        {heading.text}
+                    </span>
+            ) : (
                     <a href={`#${heading.slug}`}
-                       data-depth={depth}
-                       data-parent={heading.parent}
                        class:list={[
-                           'toc-link block py-2 pr-2 text-sm truncate -ml-px border-l-2',
+                           'block py-2 pr-2 text-sm truncate -ml-px border-l-2',
                            indentClass,
                            'border-transparent text-neutral-600 interact:text-neutral-900 interact:border-neutral-300',
                            'dark:text-neutral-400 dark:interact:text-neutral-200 dark:interact:border-neutral-700',
-                           'data-active:border-neutral-900 data-active:text-neutral-900 data-active:font-semibold',
-                           'data-active:dark:border-neutral-100 data-active:dark:text-neutral-100',
-                           heading.parent && '[&:not(.toc-group-active)]:hidden',
-                           initiallyActive && 'toc-group-active',
+                           'aria-[current]:border-neutral-900 aria-[current]:text-neutral-900 aria-[current]:font-semibold',
+                           'dark:aria-[current]:border-neutral-100 dark:aria-[current]:text-neutral-100',
                        ]}>
                         {heading.text}
                     </a>
@@ -107,4 +50,4 @@ const minDepth = items.length > 0 ? Math.min(...items.map(h => h.depth)) : 2;
         })}
     </div>
 </nav>
-    )}
+)}

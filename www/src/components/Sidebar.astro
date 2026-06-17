@@ -3,16 +3,16 @@ import type {ContentFolder, ContentFile} from '../lib/content';
 
 interface Props {
     folder: ContentFolder;
-    file?: ContentFile;
-    /** /docs anchor mode: forces sections open, scrollspy lights up the link for the visible H2. */
-    scrollspy?: boolean;
 }
 
-const {folder, file, scrollspy = false} = Astro.props;
+const {folder} = Astro.props;
 const currentUrl = Astro.url.pathname;
+const isAnchorNav = folder.folders[0]?.files[0]?.url?.startsWith('#');
 
 const isReference = folder.folder === 'reference';
 const isPatterns = folder.folder === 'patterns';
+
+const linkClasses = 'sidebar-link flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200 aria-[current]:bg-neutral-150 dark:aria-[current]:bg-neutral-800 aria-[current]:text-black dark:aria-[current]:text-neutral-50 aria-[current]:font-semibold';
 ---
 
 <aside id="sidebar" class="fixed top-(--header-height) inset-x-0 isolate z-30 group/sidebar">
@@ -35,88 +35,28 @@ const isPatterns = folder.folder === 'patterns';
             <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400">
                 {folder.frontmatter.title}
             </h2>
-            {!scrollspy && folder.folders.length > 1 && (
-                    <div class="flex items-center gap-0.5 text-neutral-400 dark:text-neutral-500">
-                        <button type="button"
-                                title="Expand all sections"
-                                aria-label="Expand all sections"
-                                class="p-1 rounded interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-neutral-700 dark:interact:text-neutral-200 cursor-pointer"
-                                _="on click for d in <#sidebar-nav details/> set d.open to true">
-                            <i class="icon-[mdi--unfold-more-horizontal] size-4 block" aria-hidden="true"></i>
-                        </button>
-                        <button type="button"
-                                title="Collapse all sections"
-                                aria-label="Collapse all sections"
-                                class="p-1 rounded interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-neutral-700 dark:interact:text-neutral-200 cursor-pointer"
-                                _="on click for d in <#sidebar-nav details/> set d.open to false">
-                            <i class="icon-[mdi--unfold-less-horizontal] size-4 block" aria-hidden="true"></i>
-                        </button>
-                    </div>
-            )}
         </div>
 
-        <div class="border-l border-neutral-200 dark:border-neutral-800"
-             _={scrollspy ? `def setupSidebarSpy()
-                    wait 50ms
-                    set allH2s to <main h2[id]/> as Array
-                    js(me, allH2s)
-                        if (me._sidebarObserver) me._sidebarObserver.disconnect();
-                        const observer = new IntersectionObserver(
-                            (entries) => entries.forEach(entry => {
-                                if (!entry.isIntersecting) return;
-                                const id = entry.target.getAttribute('id');
-                                const link = me.querySelector('.sidebar-link[href$="#' + id + '"]');
-                                if (link) {
-                                    _hyperscript.evaluate(
-                                        "take [@data-active] from .sidebar-link for first <.sidebar-link[href$='#" + id + "']/>"
-                                    );
-                                    var pageY = window.scrollY;
-                                    link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-                                    window.scrollTo(0, pageY);
-                                }
-                            }),
-                            { rootMargin: '-100px 0px -66% 0px', threshold: 0 }
-                        );
-                        allH2s.forEach(h => observer.observe(h));
-                        me._sidebarObserver = observer;
-                    end
-                    init call setupSidebarSpy() end
-                    on htmx:after:swap from document call setupSidebarSpy() end` : undefined}>
+        <div _={isAnchorNav ? `install Scrollspy` : undefined}>
 
-            {!scrollspy && (
+            {!isAnchorNav && (
                     <a href={folder.url}
-                       data-active={currentUrl === folder.url ? '' : undefined}
-                       class="sidebar-link block py-2 pl-4 pr-3 text-sm truncate -ml-px border-l-2 border-transparent text-neutral-600 dark:text-neutral-400 interact:text-neutral-900 dark:interact:text-neutral-200 interact:border-neutral-300 dark:interact:border-neutral-700 data-active:border-neutral-900 dark:data-active:border-neutral-100 data-active:text-neutral-900 dark:data-active:text-neutral-100 data-active:font-semibold">
+                       aria-current={currentUrl === folder.url ? 'page' : undefined}
+                       class:list={[linkClasses, 'block mb-2 truncate']}>
                         Overview
                     </a>
             )}
 
             {folder.folders.map((subFolder) => {
                 const files = subFolder.files;
-                const containsCurrentPage = files.some((f: ContentFile) => currentUrl === f.url);
 
                 return (
-                        <details class="group/section w-full mt-3 no-morph"
-                                 open={scrollspy || containsCurrentPage}>
-                            <summary class="
-                                       list-none select-none cursor-pointer pl-4 pr-3 py-1
-                                       flex items-center justify-between gap-2
-                                       [&::-webkit-details-marker]:hidden
-                                       text-neutral-500 dark:text-neutral-500
-                                       interact:text-neutral-700 dark:interact:text-neutral-300">
-
-                                <h3 class:list={[
-                                    "font-sans text-[0.625rem] tracking-widest uppercase truncate min-w-0 text-neutral-600 dark:text-neutral-400",
-                                    containsCurrentPage && "text-neutral-700 dark:text-neutral-300"
-                                ]}
-                                    set:html={subFolder.frontmatter.title}/>
-                                {!scrollspy && (
-                                        <i class="icon-[mdi--chevron-down] size-4 transition group-open/section:rotate-180 text-neutral-400 dark:text-neutral-500 shrink-0"></i>
-                                )}
-                            </summary>
+                        <div class="w-full not-first:mt-3">
+                            <h3 class="font-sans text-[0.625rem] tracking-widest uppercase truncate min-w-0 px-3 py-1 text-neutral-600 dark:text-neutral-400"
+                                set:html={subFolder.frontmatter.title}/>
 
                             {files.length > 0 && (
-                                    <ul class="mt-1 mb-2">
+                                    <ul class="space-y-0.5 border-l border-neutral-150 dark:border-neutral-850 ml-3 pl-3 mt-1 mb-4">
                                         {files.map((file: ContentFile) => {
                                             const isActive = currentUrl === file.url;
                                             const isSoon = file.frontmatter.soon;
@@ -127,11 +67,10 @@ const isPatterns = folder.folder === 'patterns';
                                                            aria-current={isActive ? 'page' : undefined}
                                                            aria-disabled={isSoon ? 'true' : undefined}
                                                            hx-boost={isSoon && 'false'}
-                                                           data-active={isActive ? '' : undefined}
                                                            class:list={[
-                                                               'sidebar-link flex items-center gap-2.5 py-2 pl-4 pr-3 text-sm -ml-px border-l-2 border-transparent text-neutral-600 dark:text-neutral-400 interact:text-neutral-900 dark:interact:text-neutral-200 interact:border-neutral-300 dark:interact:border-neutral-700 data-active:border-neutral-900 dark:data-active:border-neutral-100 data-active:text-neutral-900 dark:data-active:text-neutral-100 data-active:font-semibold',
+                                                               linkClasses,
                                                                isReference && 'font-mono',
-                                                               isSoon && 'opacity-50 cursor-not-allowed text-neutral-400 dark:text-neutral-400',
+                                                               isSoon && 'opacity-50 cursor-not-allowed',
                                                            ]}>
                                                             {isPatterns && file.frontmatter.icon && (
                                                                     <i class:list={[file.frontmatter.icon, "size-4 shrink-0"]}></i>
@@ -146,7 +85,7 @@ const isPatterns = folder.folder === 'patterns';
                                         })}
                                     </ul>
                             )}
-                        </details>
+                        </div>
                 );
             })}
 
@@ -156,8 +95,7 @@ const isPatterns = folder.folder === 'patterns';
                         <a href={f.url}
                            title={f.frontmatter.description}
                            aria-current={isActive ? 'page' : undefined}
-                           data-active={isActive ? '' : undefined}
-                           class="sidebar-link block py-2 pl-4 pr-3 text-sm truncate -ml-px border-l-2 border-transparent text-neutral-600 dark:text-neutral-400 interact:text-neutral-900 dark:interact:text-neutral-200 interact:border-neutral-300 dark:interact:border-neutral-700 data-active:border-neutral-900 dark:data-active:border-neutral-100 data-active:text-neutral-900 dark:data-active:text-neutral-100 data-active:font-semibold">
+                           class:list={[linkClasses, 'block truncate']}>
                             <span set:html={f.frontmatter.title}/>
                         </a>
                 );

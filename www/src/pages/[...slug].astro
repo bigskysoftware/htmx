@@ -77,6 +77,7 @@ if (file) {
     headings = folder!.folders.map(sub => ({ depth: 2, slug: sub.slug, text: sub.frontmatter.title }));
 } else if (isDocsRoot) {
     ({headings, sidebar: sidebarFolder} = await buildDocsSidebar(folder));
+    headings = headings.map(h => h.depth === 2 ? {...h, label: true} : h);
 }
 const includeTableOfContents = headings.length > 0;
 ---
@@ -93,7 +94,7 @@ const includeTableOfContents = headings.length > 0;
         breadcrumbs={page.breadcrumbs}
         hasSidebar={includeSidebar}>
 
-    {includeSidebar && <Sidebar folder={sidebarFolder} file={file} scrollspy={isDocsRoot} />}
+    {includeSidebar && <Sidebar folder={sidebarFolder} />}
 
     <div id="content-wrapper" class:list={[includeSidebar && "lg:pl-72"]}>
         <main id="content-main-content" class="flex-1" data-home-page={isHomePage ? '' : undefined}>
@@ -104,7 +105,7 @@ const includeTableOfContents = headings.length > 0;
 
                     {includeHeader && <PageHeader {title} description={isReferenceIndex ? undefined : description} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
 
-                    <article class:list={["prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none", isDocsRoot && "sticky-headers"]}>
+                    <article class:list={["prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none", (isDocsRoot || isReferenceIndex) && "sticky-headers"]}>
                         {includeMockServer && <script is:inline set:html={mockServerScript}></script>}
                         <Content/>
                         {includePagination && <Pagination prev={file!.prev} next={file!.next} />}
@@ -134,12 +135,12 @@ const includeTableOfContents = headings.length > 0;
                         ]}>
                             <div class="shrink-0 mb-2">
                                 <h2 class="text-[0.625rem] font-sans tracking-widest uppercase text-neutral-600 dark:text-neutral-400">
-                                    {isDocsRoot ? 'In this section' : 'On this page'}
+                                    On this page
                                 </h2>
                             </div>
                             <div class="flex-1 min-h-0 overflow-hidden">
                                 <div class="h-full overflow-y-auto scrollbar-subtle">
-                                    <TableOfContents {headings} mode={isDocsRoot ? 'grouped' : 'flat'}/>
+                                    <TableOfContents {headings}/>
                                 </div>
                             </div>
                         </aside>
