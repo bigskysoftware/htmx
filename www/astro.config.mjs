@@ -88,7 +88,7 @@ export default defineConfig({
         "/docs/core-concepts/requests-and-responses": "/docs#requests--responses",
         "/docs/core-concepts/client-scripting": "/docs#client-side-scripting",
         "/docs/core-concepts/multi-target-updates": "/docs#multi-target-updates",
-        "/docs/core-concepts/hcon": "/docs#hcon-htmx-configuration-object-notation",
+        "/docs/core-concepts/hcon": "/docs#hcon",
         "/docs/features": "/docs#css-transitions",
         "/docs/features/css-transitions": "/docs#css-transitions",
         "/docs/features/synchronization": "/docs#synchronization",

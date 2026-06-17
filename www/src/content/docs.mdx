@@ -1129,7 +1129,7 @@ happen once, you can use the `once` modifier for the trigger:
 </div>
 ```
 
-Other modifiers you can use for triggers are (parsed as [HCON](#hcon--htmx-configuration-object-notation)):
+Other modifiers you can use for triggers are (parsed as [HCON](#hcon)):
 
 * `changed` - only issue a request if the value of the element has changed
 * `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
@@ -1412,7 +1412,7 @@ behavior off by setting the `ignoreTitle` modifier to true:
 <button hx-post="/like" hx-swap="outerHTML ignoreTitle:true">Like</button>
 ```
 
-The modifiers available on `hx-swap` are (parsed as [HCON](#hcon--htmx-configuration-object-notation)):
+The modifiers available on `hx-swap` are (parsed as [HCON](#hcon)):
 
 | Option       | Description                                                                                          |
 |--------------|------------------------------------------------------------------------------------------------------|
@@ -1898,7 +1898,7 @@ Add [`hx-preserve`](/reference/attributes/hx-preserve)`="true"` to elements you 
 
 This keeps the video playing even when the parent container gets updated.
 
-## HCON, htmx Configuration Object Notation
+## HCON
 HCON (htmx Configuration Object Notation) is the mini config language that htmx uses to parse structured values out of HTML attributes. It is designed to feel natural in attribute values, no outer braces required, flexible quoting, flag-style booleans, while still accepting plain JSON when you need it.
 
 You encounter HCON any time htmx reads a structured attribute:
@@ -3123,7 +3123,7 @@ They are listed below:
 
 </div>
 
-You can set most options directly in JavaScript, or you can use a `meta` tag (accepts [HCON](#hcon--htmx-configuration-object-notation) or JSON):
+You can set most options directly in JavaScript, or you can use a `meta` tag (accepts [HCON](#hcon) or JSON):
 
 > **Note:** Some options are read only once during initialisation and must be set via the `meta` tag to take effect. These include `prefix`, `extensions`, and `metaCharacter`.
 
