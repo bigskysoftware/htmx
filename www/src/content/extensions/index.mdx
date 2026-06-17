@@ -5,12 +5,12 @@ thumbnail: "docs/extensions.svg"
 ---
 
 import { getFolder } from '../../lib/content';
-import FinderLink from '../../components/FinderLink.astro';
 
 export const folder = await getFolder('extensions');
 export const CATEGORY_ORDER = ['Networking', 'Performance', 'UX', 'Swap behaviors', 'Compatibility', 'Security'];
 export const grouped = CATEGORY_ORDER.map(category => ({
     category,
+    slug: category.toLowerCase().replace(/\s+/g, '-'),
     items: folder.files.filter(f => f.frontmatter.category === category).map(f => ({
         title: f.frontmatter.title,
         url: f.url,
@@ -19,29 +19,52 @@ export const grouped = CATEGORY_ORDER.map(category => ({
     })),
 })).filter(g => g.items.length > 0);
 
-<div class="not-prose">
-    {grouped.map(group => (
-        <section class="mt-10 first:mt-4">
-            <h2 id={group.category.toLowerCase().replace(/\s+/g, '-')}
-                class="flex items-baseline gap-2.5 mb-3 scroll-mt-[calc(var(--header-height)+var(--construction-banner-height,0px)+2rem)]">
-                <a href={`#${group.category.toLowerCase().replace(/\s+/g, '-')}`}
-                   class="text-base font-semibold text-neutral-800 dark:text-neutral-100 no-underline interact:underline">
-                    {group.category}
-                </a>
-            </h2>
-            <div class="flex flex-col gap-0.5">
-                {group.items.map(item => (
-                    <FinderLink href={item.url}>
-                        {item.icon && <i class={`${item.icon} size-5 shrink-0 -translate-y-px group-interact/link:text-white dark:group-interact/link:text-black`}></i>}
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 flex-1 min-w-0">
-                            <span class="text-sm font-mono font-medium sm:min-w-[22ch]">{item.title}</span>
-                            {item.description && (
-                                <span class="text-sm text-neutral-650 dark:text-neutral-350 group-interact/link:text-white dark:group-interact/link:text-black">{item.description}</span>
-                            )}
-                        </div>
-                    </FinderLink>
-                ))}
-            </div>
-        </section>
-    ))}
+<div class="not-prose mb-6">
+    <input
+        type="text"
+        placeholder="Filter extensions..."
+        autocomplete="off"
+        class="w-full px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50 focus:border-neutral-300 dark:focus:border-neutral-600"
+        _="on input
+            set q to my.value.toLowerCase()
+            for row in <.filter-item/>
+                if q is '' or row.dataset.filter contains q
+                    remove @hidden from row
+                else
+                    add @hidden to row
+                end
+            end
+            for section in <.filter-group/>
+                set visible to 0
+                for row in <.filter-item/> in section
+                    if row.hidden is false then increment visible
+                end
+                if visible is 0 then add @hidden to section else remove @hidden from section
+            end"
+    />
 </div>
+
+{grouped.map(group => (
+<section class="filter-group">
+
+<h2 id={group.slug}>{group.category}</h2>
+
+<table>
+    <tbody>
+        {group.items.map(item => (
+            <tr class="stretch-link filter-item" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()}>
+                <td>
+                    {item.icon && <i class={`${item.icon} size-5 inline-block align-middle -translate-y-0.5 mr-5`}></i>}
+                    <span class="inline-block align-middle">
+                        <a href={item.url}><code>{item.title}</code></a>
+                        {item.description && <span class="block sm:hidden text-[0.8125em] text-neutral-650 dark:text-neutral-350 mt-0.5 pl-[6px]">{item.description}</span>}
+                    </span>
+                </td>
+                <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350">{item.description || ''}</td>
+            </tr>
+        ))}
+    </tbody>
+</table>
+
+</section>
+))}

@@ -41,5 +41,9 @@ const { href, class: className, ...rest } = Astro.props;
             background: light-dark(var(--color-blue-700), var(--color-blue-350));
             color: light-dark(white, black);
         }
+
+        &[aria-current] {
+            color: light-dark(white, black);
+        }
     }
 </style>

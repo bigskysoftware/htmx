@@ -58,6 +58,7 @@ const isReference = collection === 'reference';
 const isReferenceIndex = isCollectionRootPage && isReference;
 const isPatternsIndex = isCollectionRootPage && collection === 'patterns';
 const isExtensionsIndex = isCollectionRootPage && collection === 'extensions';
+const isEssaysIndex = isCollectionRootPage && collection === 'essays';
 const isDocsRoot = isCollectionRootPage && collection === 'docs';
 // Extensions is flat (no subfolders), but sibling navigation is useful, so show sidebar on inner pages.
 const isFlatCollectionWithSidebar = collection === 'extensions';
@@ -103,9 +104,9 @@ const includeTableOfContents = headings.length > 0;
                 <div class:list={["pt-6 sm:pt-8 lg:pt-12 flex-1 w-full relative starting:opacity-0 transition", useWideLayout ? 'max-w-4xl' : 'max-w-prose']}>
                     <Breadcrumbs breadcrumbs={page.breadcrumbs} />
 
-                    {includeHeader && <PageHeader {title} description={isReferenceIndex ? undefined : description} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
+                    {includeHeader && <PageHeader {title} {description} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
 
-                    <article class:list={["prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none", (isDocsRoot || isReferenceIndex) && "sticky-headers"]}>
+                    <article class:list={["prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none", (isDocsRoot || isReferenceIndex || isEssaysIndex || isPatternsIndex || isExtensionsIndex) && "sticky-headers"]}>
                         {includeMockServer && <script is:inline set:html={mockServerScript}></script>}
                         <Content/>
                         {includePagination && <Pagination prev={file!.prev} next={file!.next} />}

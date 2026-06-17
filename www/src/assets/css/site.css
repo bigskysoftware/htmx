@@ -218,16 +218,57 @@
     }
 }
 
+/* ─── Stretched link (unlayered to override prose table padding) ───────── */
+table:has(.stretch-link) {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+tr.stretch-link {
+    position: relative;
+
+    & td {
+        padding-block: 0.75em;
+    }
+
+    & td:first-child {
+        padding-inline-start: 0.75rem;
+    }
+
+    & td:last-child {
+        padding-inline-end: 0.75rem;
+    }
+
+    & td:first-child a {
+        position: static;
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+        }
+    }
+
+    @media (hover: hover) {
+        &:hover td {
+            color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
+        }
+    }
+
+}
+
 /* ─── Docs full-page sticky section headers ───────────────────────────── */
 article.sticky-headers > section > h2 {
     position: sticky;
     top: var(--header-height);
     scroll-margin-top: var(--header-height);
     z-index: 20;
+    font-size: 1.15em;
+    margin-bottom: 0;
     background: light-dark(var(--color-neutral-25), var(--color-neutral-920));
-    padding-block: 1rem;
+    padding-block: 0.75rem;
     @media (width >= 40rem) {
-        padding-block: 1.25rem;
+        padding-block: 1rem;
     }
     margin-inline: -1rem;
     padding-inline: 1rem;
@@ -237,6 +278,38 @@ article.sticky-headers > section > h2 {
 html:has(#construction-banner) article.sticky-headers > section > h2 {
     top: calc(var(--header-height) + var(--construction-banner-height));
     scroll-margin-top: calc(var(--header-height) + var(--construction-banner-height));
+}
+
+/* Scroll-driven: show bg/border only when stuck.
+   Tracks parent section (not the sticky h2, which never exits the viewport).
+   Uses cover range with absolute offset: fires when section top reaches the sticky threshold. */
+@supports (animation-timeline: view()) {
+    article.sticky-headers > section {
+        view-timeline: --section block;
+    }
+
+    article.sticky-headers > section > h2 {
+        background: transparent;
+        border-bottom-color: transparent;
+        animation: stick-bg linear both;
+        animation-timeline: --section;
+        animation-range:
+            cover calc(100vh - var(--header-height))
+            cover calc(100vh - var(--header-height) + 1px);
+    }
+
+    html:has(#construction-banner) article.sticky-headers > section > h2 {
+        animation-range:
+            cover calc(100vh - var(--header-height) - var(--construction-banner-height))
+            cover calc(100vh - var(--header-height) - var(--construction-banner-height) + 1px);
+    }
+
+    @keyframes stick-bg {
+        to {
+            background: light-dark(var(--color-neutral-25), var(--color-neutral-920));
+            border-bottom-color: light-dark(var(--color-neutral-200), var(--color-neutral-850));
+        }
+    }
 }
 
 /* ─── Utilities ────────────────────────────────────────────────────────── */
