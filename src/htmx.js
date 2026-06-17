@@ -869,16 +869,21 @@ var htmx = (() => {
             return func.call(thisArg, ...values);
         }
 
-        process(elt) {
-            if (!elt) return;
-            if (!(elt instanceof Element)) {
-                for (let child of elt.children || []) this.process(child);
+        /**
+         * Initialize htmx attributes on root and all its descendants.
+         * @see https://four.htmx.org/reference/methods/htmx-process
+         * @param {Element | ShadowRoot | DocumentFragment} root
+         */
+        process(root) {
+            if (!root) return;
+            if (!(root instanceof Element)) { // ShadowRoot, DocumentFragment
+                for (let elt of root.children || []) this.process(elt);
                 return;
             }
-            if (this.__ignore(elt)) return;
-            if (!this.__trigger(elt, "htmx:before:process")) return
-            let hxOnNodes = [elt];
-            let iter = this.#hxOnQuery.evaluate(elt)
+            if (this.__ignore(root)) return;
+            if (!this.__trigger(root, "htmx:before:process")) return
+            let hxOnNodes = [root];
+            let iter = this.#hxOnQuery.evaluate(root)
             let node = null
             while (node = iter.iterateNext()) hxOnNodes.push(node)
             for (let hxOnNode of hxOnNodes) {
@@ -886,13 +891,13 @@ var htmx = (() => {
                     this.__handleHxOnAttributes(hxOnNode);
                 }
             }
-            for (let child of this.__queryEltAndDescendants(elt, this.#actionSelector)) {
-                this.__initializeElement(child);
+            for (let elt of this.__queryEltAndDescendants(root, this.#actionSelector)) {
+                this.__initializeElement(elt);
             }
-            for (let child of this.__queryEltAndDescendants(elt, this.#boostSelector)) {
-                this.__maybeBoost(child);
+            for (let elt of this.__queryEltAndDescendants(root, this.#boostSelector)) {
+                this.__maybeBoost(elt);
             }
-            this.__trigger(elt, "htmx:after:process");
+            this.__trigger(root, "htmx:after:process");
         }
 
         __maybeBoost(elt) {
@@ -936,23 +941,27 @@ var htmx = (() => {
             return !elt._htmx?.initialized && !this.__ignore(elt);
         }
 
-        __cleanup(elt) {
-            if (elt._htmx) {
-                this.__trigger(elt, "htmx:before:cleanup")
-                for (let spec of elt._htmx.triggerSpecs || []) {
+        /**
+         * Remove listeners, timers, and observers from root and all powered descendants.
+         * @param {Element} root
+         */
+        __cleanup(root) {
+            if (root._htmx) {
+                this.__trigger(root, "htmx:before:cleanup")
+                for (let spec of root._htmx.triggerSpecs || []) {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
                     if (spec.throttleTimeout) clearTimeout(spec.throttleTimeout);
                     spec.observer?.disconnect()
                 }
-                for (let listenerInfo of elt._htmx.listeners || []) {
+                for (let listenerInfo of root._htmx.listeners || []) {
                     listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler, listenerInfo);
                 }
-                this.__trigger(elt, "htmx:after:cleanup")
+                this.__trigger(root, "htmx:after:cleanup")
             }
-            if (elt.firstChild) {
-                for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
-                    this.__cleanup(child);
+            if (root.firstChild) {
+                for (let elt of root.querySelectorAll('[data-htmx-powered]')) {
+                    this.__cleanup(elt);
                 }
             }
         }
