@@ -134,4 +134,59 @@ describe('process() unit tests', function() {
         assert.equal(fired, 2, 'keyup fires after force reprocess')
     })
 
+    it('process(parent, true) reprocesses descendants with mutated hx-on', function () {
+        window._n = 0
+        let div = createProcessedHTML('<div><button id="b" hx-on:click="window._n++">b</button></div>')
+        let btn = div.querySelector('#b')
+        btn.click(); assert.equal(window._n, 1)
+        btn.setAttribute('hx-on:click', 'window._n += 10')
+        htmx.process(div, true)
+        btn.click()
+        assert.equal(window._n, 11, 'descendant rebound from current attribute')
+        delete window._n
+    })
+
+    it('process(elt, true) unwires a removed hx-on attribute', function () {
+        window._n = 0
+        let btn = createProcessedHTML('<button hx-on:click="window._n++">b</button>')
+        btn.click(); assert.equal(window._n, 1)
+        btn.removeAttribute('hx-on:click')
+        htmx.process(btn, true)
+        btn.click()
+        assert.equal(window._n, 1, 'removed handler is gone')
+        delete window._n
+    })
+
+    it('process(elt, true) mid-request keeps the indicator wired to the running request', async function () {
+        mockResponse('GET', '/slow', '<span/>')
+        let btn = createProcessedHTML('<button hx-get="/slow">x</button>')
+        btn.click()
+        assert.isTrue(btn.classList.contains('htmx-request'), 'indicator on during request')
+        htmx.process(btn, true) // force mid-flight must not orphan the indicator
+        await forRequest()
+        assert.isFalse(btn.classList.contains('htmx-request'), 'indicator cleared when request completes')
+    })
+
+    it('cleanup fires before:cleanup and after:cleanup exactly once per element', async function () {
+        let div = createProcessedHTML('<div id="target"><div id="parent" hx-get="/a"><button id="child" hx-get="/b">x</button></div></div>')
+        let events = []
+        div.addEventListener('htmx:before:cleanup', (e) => events.push('before:' + e.target.id))
+        div.addEventListener('htmx:after:cleanup', (e) => events.push('after:' + e.target.id))
+        await htmx.swap({target: '#target', text: '<p>replaced</p>', swap: 'innerHTML', sourceElement: div})
+        assert.deepEqual(events, ['before:parent', 'after:parent', 'before:child', 'after:child'])
+    })
+
+    it('cleanup fires exactly once per element in nested tree (no double-fire)', async function () {
+        let html = '<div id="target"><div id="gp" hx-get="/a"><div id="p" hx-get="/b"><button id="c" hx-get="/c">x</button></div></div></div>'
+        let div = createProcessedHTML(html)
+        let counts = {}
+        div.addEventListener('htmx:before:cleanup', (e) => {
+            counts[e.target.id] = (counts[e.target.id] || 0) + 1
+        })
+        await htmx.swap({target: '#target', text: '<p>replaced</p>', swap: 'innerHTML', sourceElement: div})
+        assert.equal(counts['gp'], 1, 'grandparent cleaned once')
+        assert.equal(counts['p'], 1, 'parent cleaned once')
+        assert.equal(counts['c'], 1, 'child cleaned once')
+    })
+
 });

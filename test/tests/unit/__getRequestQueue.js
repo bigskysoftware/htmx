@@ -250,7 +250,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
 
         // Both children should share the parent's queue
         assert.equal(queueA, queueB)
-        assert.equal(htmx.__htmxProp(parent).rq, queueA)
+        assert.equal(htmx.__htmxState(parent).rq, queueA)
         assert.equal(htmx.__determineSyncStrategy(a), 'replace')
     })
 
@@ -438,7 +438,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         assert.equal(htmx.__determineSyncStrategy(btn), 'queue first')
         // queue should be on the form, not the button
         let queue = htmx.__getRequestQueue(btn)
-        assert.equal(htmx.__htmxProp(form).rq, queue)
+        assert.equal(htmx.__htmxState(form).rq, queue)
     })
 
     it('hx-sync="closest form:replace" uses closest form with replace strategy', function () {
@@ -446,7 +446,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let btn = form.querySelector('#btn')
         assert.equal(htmx.__determineSyncStrategy(btn), 'replace')
         let queue = htmx.__getRequestQueue(btn)
-        assert.equal(htmx.__htmxProp(form).rq, queue)
+        assert.equal(htmx.__htmxState(form).rq, queue)
     })
 
     it('hx-sync with "this" shares queue between sibling elements synced to parent', function () {
