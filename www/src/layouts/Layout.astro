@@ -2,6 +2,7 @@
 import '../assets/css/site.css';
 import '../assets/css/input.css';
 import scrollspyBehavior from '../assets/hyperscript/scrollspy.hs?raw';
+import activeSearchBehavior from '../assets/hyperscript/active-search.hs?raw';
 
 import {Image} from 'astro:assets';
 import {getFile} from '../lib/content';
@@ -118,6 +119,7 @@ const footerSections = [
     <script is:inline defer src="/js/_hyperscript.min.js"></script>
 
     <script type="text/hyperscript" is:inline set:html={scrollspyBehavior}></script>
+    <script type="text/hyperscript" is:inline set:html={activeSearchBehavior}></script>
 
     <!-- Re-execute inline scripts after morph navigation (hyperscript + pattern demos) -->
     <script is:inline defer src="/js/morph-afterswap.js"></script>

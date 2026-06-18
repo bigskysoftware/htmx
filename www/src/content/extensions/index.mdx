@@ -22,37 +22,22 @@ export const grouped = CATEGORY_ORDER.map(category => ({
 <div class="not-prose mb-6">
     <input
         type="text"
-        placeholder="Filter extensions..."
+        placeholder="Search extensions..."
         autocomplete="off"
         class="w-full px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50 focus:border-neutral-300 dark:focus:border-neutral-600"
-        _="on input
-            set q to my.value.toLowerCase()
-            for row in <.filter-item/>
-                if q is '' or row.dataset.filter contains q
-                    remove @hidden from row
-                else
-                    add @hidden to row
-                end
-            end
-            for section in <.filter-group/>
-                set visible to 0
-                for row in <.filter-item/> in section
-                    if row.hidden is false then increment visible
-                end
-                if visible is 0 then add @hidden to section else remove @hidden from section
-            end"
+        _="install ActiveSearch"
     />
 </div>
 
 {grouped.map(group => (
-<section class="filter-group">
+<section role="group">
 
 <h2 id={group.slug}>{group.category}</h2>
 
 <table>
     <tbody>
         {group.items.map(item => (
-            <tr class="stretch-link filter-item" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()}>
+            <tr class="stretch-link" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()}>
                 <td>
                     {item.icon && <i class={`${item.icon} size-5 inline-block align-middle -translate-y-0.5 mr-5`}></i>}
                     <span class="inline-block align-middle">
