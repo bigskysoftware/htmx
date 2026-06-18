@@ -264,12 +264,12 @@ toggle('data-open', 'on|')             // cycle: 'on' ↔ absent
 
 ### `take(name, scope?)`
 
-Move a class or attribute from any element that has it to this one. Pass a `scope` selector to restrict the source set.
+Move a class or attribute from siblings to this element. Pass a `scope` selector to widen or restrict the source set.
 
 ```js
 take('.selected', '.tab')              // become the selected tab among .tab
 take('aria-current', 'nav a')          // become the current nav item
-take('.active')                        // implicit scope: any .active in document
+take('.active')                        // implicit scope: parent element's subtree
 ```
 
 ### `data`
