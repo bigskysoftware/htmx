@@ -27,8 +27,10 @@
         "@iconify-json/bitcoin-icons": "^1.2.5",
         "@iconify-json/cil": "^1.2.3",
         "@iconify-json/circum": "^1.2.2",
+        "@iconify-json/fa6-brands": "^1.2.6",
         "@iconify-json/fluent": "^1.2.51",
         "@iconify-json/ic": "^1.2.4",
+        "@iconify-json/lucide": "^1.2.113",
         "@iconify-json/material-symbols": "^1.2.78",
         "@iconify-json/mdi": "^1.2.3",
         "@iconify-json/ph": "^1.2.2",
@@ -142,9 +144,13 @@
 
     "@iconify-json/circum": ["@iconify-json/circum@1.2.2", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-lIC4xg4p62SValfSiUnrcuLKYf2rpgDydlGu9V3PwO7rVfNB4P1gMgt/Hqs7M0ttDEBC6hSxxMlXDfQGNXmVqA=="],
 
+    "@iconify-json/fa6-brands": ["@iconify-json/fa6-brands@1.2.6", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-twL3X4KWcxAhbc1vz/mIDsVr+CAItk1/EIfxKUVQtpv6O4eydk5KNYqTZWdvJNHGInUgd6vKg21aWfVgb5DXEg=="],
+
     "@iconify-json/fluent": ["@iconify-json/fluent@1.2.51", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-9yvCpC3uk1ZpSWNPnlSy/Rd+6HNT5/eyRwgZ42GSBbWzqnzo2GNpmDhVt3587sVrXNStI0KmU+K0ptIAqDgpPw=="],
 
     "@iconify-json/ic": ["@iconify-json/ic@1.2.4", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-pzPMmrZrBQuwT7nmtrYdkttun8KalRGgZPIL1Ny9KpF2zjRGIUPN+npTfuD3lrgO/OnSwAoJWuekQwBpt/Cqrw=="],
+
+    "@iconify-json/lucide": ["@iconify-json/lucide@1.2.113", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-hfHPXZmLAsZkEfSd4kKRPMRM2HOQz1k11XWtSReEWeecOM+nLtZlfHAzv8nSsrJw2scLz3DKqosNMNXd3mP60Q=="],
 
     "@iconify-json/material-symbols": ["@iconify-json/material-symbols@1.2.78", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-ITcvZUeHGRowyVc5SGWlAR6eW7r4Ywj/cXT3FUd3lnUHT47GIyaWL93zFOflq9Fwz+3AZ8UCzU8k/jBie+BDqQ=="],
 
