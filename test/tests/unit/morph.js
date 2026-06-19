@@ -696,49 +696,6 @@ describe('Morph Swap Styles Tests', function() {
         });
     });
 
-    describe('morphSkip config', function() {
-        afterEach(function() {
-            htmx.config.morphSkip = null;
-        });
-
-        it('skips morphing elements matching selector', async function() {
-            htmx.config.morphSkip = '.no-morph';
-            mockResponse('GET', '/test', '<div class="no-morph" data-value="new">new content</div>');
-            const div = createProcessedHTML('<div id="target"><div class="no-morph" data-value="old">old content</div></div>');
-            const noMorph = div.querySelector('.no-morph');
-            
-            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
-            
-            assert.equal(noMorph.getAttribute('data-value'), 'old', 'Attributes should not be updated');
-            assert.equal(noMorph.textContent, 'old content', 'Content should not be updated');
-        });
-
-        it('skips morphing custom elements', async function() {
-            htmx.config.morphSkip = 'custom-element';
-            mockResponse('GET', '/test', '<custom-element id="ce" data-value="new"><span>new</span></custom-element>');
-            const div = createProcessedHTML('<div id="target"><custom-element id="ce" data-value="old"><span>old</span></custom-element></div>');
-            const ce = div.querySelector('custom-element');
-            
-            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
-            
-            assert.equal(ce.getAttribute('data-value'), 'old');
-            assert.equal(ce.querySelector('span').textContent, 'old');
-        });
-
-        it('morphs other elements when some are skipped', async function() {
-            htmx.config.morphSkip = '.skip';
-            mockResponse('GET', '/test', '<div class="skip" data-value="new">skip</div><div class="morph" data-value="new">morph</div>');
-            const div = createProcessedHTML('<div id="target"><div class="skip" data-value="old">skip</div><div class="morph" data-value="old">morph</div></div>');
-            const skip = div.querySelector('.skip');
-            const morph = div.querySelector('.morph');
-            
-            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
-            
-            assert.equal(skip.getAttribute('data-value'), 'old');
-            assert.equal(morph.getAttribute('data-value'), 'new');
-        });
-    });
-
     describe('text node handling', function() {
         it('removes text nodes during morph without error', async function() {
             mockResponse('GET', '/test', '<div id="child">content</div>');
@@ -771,100 +728,464 @@ describe('Morph Swap Styles Tests', function() {
         });
     });
 
-    describe('morphSkipChildren config', function() {
+    describe('morphPreserve config', function() {
         afterEach(function() {
-            htmx.config.morphSkipChildren = null;
+            htmx.config.morphPreserve = null;
+            htmx.config.morphPreserveChildrenOf = null;
+            htmx.config.morphPreserveAttributes = null;
         });
 
-        it('updates attributes but skips children morphing', async function() {
-            htmx.config.morphSkipChildren = '.skip-children';
-            mockResponse('GET', '/test', '<div class="skip-children" data-value="new"><span>new child</span></div>');
-            const div = createProcessedHTML('<div id="target"><div class="skip-children" data-value="old"><span>old child</span></div></div>');
-            const skipChildren = div.querySelector('.skip-children');
-            
-            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
-            
-            assert.equal(skipChildren.getAttribute('data-value'), 'new', 'Attributes should be updated');
-            assert.equal(skipChildren.querySelector('span').textContent, 'old child', 'Children should not be morphed');
+        describe('morphPreserve (element scope)', function() {
+            it('freezes matching elements deep (attrs and children untouched)', async function() {
+                htmx.config.morphPreserve = '.frozen';
+                mockResponse('GET', '/test', '<div class="frozen" data-value="new"><span>new</span></div>');
+                const div = createProcessedHTML('<div id="target"><div class="frozen" data-value="old"><span>old</span></div></div>');
+                const frozen = div.querySelector('.frozen');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(frozen.getAttribute('data-value'), 'old');
+                assert.equal(frozen.querySelector('span').textContent, 'old');
+            });
+
+            it('comma-joined selectors all match (native CSS)', async function() {
+                htmx.config.morphPreserve = '.a, .b';
+                mockResponse('GET', '/test', '<div class="a" data-v="new">a</div><div class="b" data-v="new">b</div><div class="c" data-v="new">c</div>');
+                const div = createProcessedHTML('<div id="target"><div class="a" data-v="old">a</div><div class="b" data-v="old">b</div><div class="c" data-v="old">c</div></div>');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(div.querySelector('.a').getAttribute('data-v'), 'old');
+                assert.equal(div.querySelector('.b').getAttribute('data-v'), 'old');
+                assert.equal(div.querySelector('.c').getAttribute('data-v'), 'new');
+            });
         });
 
-        it('preserves Light DOM children in custom elements', async function() {
-            htmx.config.morphSkipChildren = 'lit-component';
-            mockResponse('GET', '/test', '<lit-component id="lc" value="new"><div class="internal">new</div></lit-component>');
-            const div = createProcessedHTML('<div id="target"><lit-component id="lc" value="old"><div class="internal">old</div></lit-component></div>');
-            const lc = div.querySelector('lit-component');
-            const internal = lc.querySelector('.internal');
-            
-            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
-            
-            assert.equal(lc.getAttribute('value'), 'new', 'Attributes should update');
-            assert.equal(internal.textContent, 'old', 'Light DOM children should be preserved');
+        describe('morphPreserveChildrenOf (children scope)', function() {
+            it('preserves children, attrs still morph', async function() {
+                htmx.config.morphPreserveChildrenOf = 'lit-component';
+                mockResponse('GET', '/test', '<lit-component id="lc" value="new"><div class="internal">new</div></lit-component>');
+                const div = createProcessedHTML('<div id="target"><lit-component id="lc" value="old"><div class="internal">old</div></lit-component></div>');
+                const lc = div.querySelector('lit-component');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(lc.getAttribute('value'), 'new', 'attrs update');
+                assert.equal(lc.querySelector('.internal').textContent, 'old', 'children preserved');
+            });
+
+            it('allows normal morphing for non-matching elements', async function() {
+                htmx.config.morphPreserveChildrenOf = '.skip-children';
+                mockResponse('GET', '/test', '<div class="normal" data-v="new"><span>new</span></div><div class="skip-children" data-v="new"><span>new</span></div>');
+                const div = createProcessedHTML('<div id="target"><div class="normal" data-v="old"><span>old</span></div><div class="skip-children" data-v="old"><span>old</span></div></div>');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(div.querySelector('.normal span').textContent, 'new', 'normal morphs children');
+                assert.equal(div.querySelector('.skip-children span').textContent, 'old', 'preserved children stay');
+            });
         });
 
-        it('works with multiple selectors', async function() {
-            htmx.config.morphSkipChildren = '.skip1, .skip2';
-            mockResponse('GET', '/test', '<div class="skip1" data-value="new"><span>new1</span></div><div class="skip2" data-value="new"><span>new2</span></div>');
-            const div = createProcessedHTML('<div id="target"><div class="skip1" data-value="old"><span>old1</span></div><div class="skip2" data-value="old"><span>old2</span></div></div>');
-            
-            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
-            
-            assert.equal(div.querySelector('.skip1').getAttribute('data-value'), 'new');
-            assert.equal(div.querySelector('.skip1 span').textContent, 'old1');
-            assert.equal(div.querySelector('.skip2').getAttribute('data-value'), 'new');
-            assert.equal(div.querySelector('.skip2 span').textContent, 'old2');
+        describe('morphPreserveAttributes (attrs scope)', function() {
+            it('exact name match (no wildcard)', async function() {
+                htmx.config.morphPreserveAttributes = ['data-keep'];
+                mockResponse('GET', '/test', '<div id="child" data-keep="new" data-keep-extra="new" data-other="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old" data-keep-extra="old" data-other="old">x</div></div>');
+                const child = div.querySelector('#child');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('data-keep'), 'old', 'exact match preserved');
+                assert.equal(child.getAttribute('data-keep-extra'), 'new', 'no longer matched');
+                assert.equal(child.getAttribute('data-other'), 'new');
+            });
+
+            it('star wildcard matches by prefix', async function() {
+                htmx.config.morphPreserveAttributes = ['data-keep*'];
+                mockResponse('GET', '/test', '<div id="child" data-keep="new" data-keep-extra="new" data-other="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old" data-keep-extra="old" data-other="old">x</div></div>');
+                const child = div.querySelector('#child');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('data-keep'), 'old');
+                assert.equal(child.getAttribute('data-keep-extra'), 'old');
+                assert.equal(child.getAttribute('data-other'), 'new');
+            });
+
+            it('star wildcard matches by suffix', async function() {
+                htmx.config.morphPreserveAttributes = ['*-id'];
+                mockResponse('GET', '/test', '<div id="child" user-id="new" post-id="new" data-foo="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" user-id="old" post-id="old" data-foo="old">x</div></div>');
+                const child = div.querySelector('#child');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('user-id'), 'old');
+                assert.equal(child.getAttribute('post-id'), 'old');
+                assert.equal(child.getAttribute('data-foo'), 'new');
+            });
+
+            it('star wildcard in the middle of a pattern', async function() {
+                htmx.config.morphPreserveAttributes = ['data-*-foo'];
+                mockResponse('GET', '/test', '<div id="child" data-x-foo="new" data-y-foo="new" data-x-bar="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-x-foo="old" data-y-foo="old" data-x-bar="old">x</div></div>');
+                const child = div.querySelector('#child');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('data-x-foo'), 'old');
+                assert.equal(child.getAttribute('data-y-foo'), 'old');
+                assert.equal(child.getAttribute('data-x-bar'), 'new');
+            });
+
+            it('alternation pattern (a|b)', async function() {
+                htmx.config.morphPreserveAttributes = ['aria-(label|hidden)'];
+                mockResponse('GET', '/test', '<div id="child" aria-label="new" aria-hidden="new" aria-describedby="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" aria-label="old" aria-hidden="old" aria-describedby="old">x</div></div>');
+                const child = div.querySelector('#child');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('aria-label'), 'old');
+                assert.equal(child.getAttribute('aria-hidden'), 'old');
+                assert.equal(child.getAttribute('aria-describedby'), 'new');
+            });
+
+            it('regex special chars in pattern are escaped (treated literally)', async function() {
+                htmx.config.morphPreserveAttributes = ['data.x'];
+                mockResponse('GET', '/test', '<div id="child" data.x="new" data-x="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data.x="old" data-x="old">x</div></div>');
+                const child = div.querySelector('#child');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('data.x'), 'old', 'literal dot match preserved');
+                assert.equal(child.getAttribute('data-x'), 'new', 'dot not treated as regex any-char');
+            });
+
+            it('regex literal as a pattern', async function() {
+                htmx.config.morphPreserveAttributes = [/^x-[0-9]+$/];
+                mockResponse('GET', '/test', '<div id="child" x-1="new" x-99="new" x-foo="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" x-1="old" x-99="old" x-foo="old">x</div></div>');
+                const child = div.querySelector('#child');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('x-1'), 'old');
+                assert.equal(child.getAttribute('x-99'), 'old');
+                assert.equal(child.getAttribute('x-foo'), 'new');
+            });
+
+            it('does not remove a preserved attr absent from source', async function() {
+                htmx.config.morphPreserveAttributes = ['data-keep'];
+                mockResponse('GET', '/test', '<div id="child">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old">x</div></div>');
+                const child = div.querySelector('#child');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('data-keep'), 'old');
+            });
+
+            it('comma-delimited string is split into patterns (HCON ergonomics)', async function() {
+                htmx.config.morphPreserveAttributes = 'data-keep, data-other*, aria-(label|hidden)';
+                mockResponse('GET', '/test', '<div id="child" data-keep="new" data-other-foo="new" aria-label="new" aria-describedby="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old" data-other-foo="old" aria-label="old" aria-describedby="old">x</div></div>');
+                const child = div.querySelector('#child');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('data-keep'), 'old');
+                assert.equal(child.getAttribute('data-other-foo'), 'old');
+                assert.equal(child.getAttribute('aria-label'), 'old');
+                assert.equal(child.getAttribute('aria-describedby'), 'new');
+            });
+
+            it('whitespace-only delimiter also works in the string form', async function() {
+                htmx.config.morphPreserveAttributes = 'data-keep aria-label';
+                mockResponse('GET', '/test', '<div id="child" data-keep="new" aria-label="new" data-other="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old" aria-label="old" data-other="old">x</div></div>');
+                const child = div.querySelector('#child');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('data-keep'), 'old');
+                assert.equal(child.getAttribute('aria-label'), 'old');
+                assert.equal(child.getAttribute('data-other'), 'new');
+            });
         });
 
-        it('allows normal morphing for non-matching elements', async function() {
-            htmx.config.morphSkipChildren = '.skip-children';
-            mockResponse('GET', '/test', '<div class="normal" data-value="new"><span>new</span></div><div class="skip-children" data-value="new"><span>new</span></div>');
-            const div = createProcessedHTML('<div id="target"><div class="normal" data-value="old"><span>old</span></div><div class="skip-children" data-value="old"><span>old</span></div></div>');
-            
-            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
-            
-            assert.equal(div.querySelector('.normal span').textContent, 'new', 'Normal elements should morph children');
-            assert.equal(div.querySelector('.skip-children span').textContent, 'old', 'Skip elements should preserve children');
-        });
-    });
+        describe('data-htmx-powered preservation', function() {
+            it('preserved by default with no user config', async function() {
+                mockResponse('GET', '/test', '<div id="child">new</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-htmx-powered="true">old</div></div>');
+                const child = div.querySelector('#child');
 
-    describe('morphIgnore config', function() {
-        afterEach(function() {
-            htmx.config.morphIgnore = ['data-htmx-powered'];
-        });
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
 
-        it('preserves attributes whose name starts with an ignored prefix', async function() {
-            htmx.config.morphIgnore = ['data-keep'];
-            mockResponse('GET', '/test', '<div id="child" data-keep="new" data-keep-extra="new" data-other="new">content</div>');
-            const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old" data-keep-extra="old" data-other="old">content</div></div>');
-            const child = div.querySelector('#child');
+                assert.equal(child.getAttribute('data-htmx-powered'), 'true');
+            });
 
-            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            it('preserved even when user sets an unrelated morphPreserveAttributes', async function() {
+                htmx.config.morphPreserveAttributes = ['data-keep'];
+                mockResponse('GET', '/test', '<div id="child">new</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-htmx-powered="true">old</div></div>');
+                const child = div.querySelector('#child');
 
-            assert.equal(child.getAttribute('data-keep'), 'old', 'exact prefix match should be preserved');
-            assert.equal(child.getAttribute('data-keep-extra'), 'old', 'longer name sharing the prefix should be preserved');
-            assert.equal(child.getAttribute('data-other'), 'new', 'non-matching attribute should be morphed');
-        });
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
 
-        it('does not remove an ignored attribute that is absent from the new content', async function() {
-            htmx.config.morphIgnore = ['data-keep'];
-            mockResponse('GET', '/test', '<div id="child">content</div>');
-            const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old">content</div></div>');
-            const child = div.querySelector('#child');
+                assert.equal(child.getAttribute('data-htmx-powered'), 'true');
+            });
 
-            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+            it('preserved even when user sets an empty list', async function() {
+                htmx.config.morphPreserveAttributes = [];
+                mockResponse('GET', '/test', '<div id="child">new</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-htmx-powered="true">old</div></div>');
+                const child = div.querySelector('#child');
 
-            assert.equal(child.getAttribute('data-keep'), 'old', 'ignored attribute should not be removed');
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(child.getAttribute('data-htmx-powered'), 'true');
+            });
         });
 
-        it('matches an exact attribute name without affecting others', async function() {
-            htmx.config.morphIgnore = ['data-keep'];
-            mockResponse('GET', '/test', '<div id="child" data-keep="new" data-kee="new">content</div>');
-            const div = createProcessedHTML('<div id="target"><div id="child" data-keep="old" data-kee="old">content</div></div>');
-            const child = div.querySelector('#child');
+        describe('combinations and edge cases', function() {
+            it('all three scopes set together', async function() {
+                htmx.config.morphPreserve            = '.frozen';
+                htmx.config.morphPreserveChildrenOf    = '.shallow';
+                htmx.config.morphPreserveAttributes  = ['data-keep'];
 
-            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+                mockResponse('GET', '/test',
+                    '<div class="frozen" data-value="new">f-new</div>' +
+                    '<div class="shallow" data-value="new"><span>new</span></div>' +
+                    '<div id="normal" data-keep="new" data-other="new">n-new</div>');
+                const div = createProcessedHTML('<div id="target">' +
+                    '<div class="frozen" data-value="old">f-old</div>' +
+                    '<div class="shallow" data-value="old"><span>old</span></div>' +
+                    '<div id="normal" data-keep="old" data-other="old">n-old</div>' +
+                    '</div>');
 
-            assert.equal(child.getAttribute('data-keep'), 'old', 'exact name should be preserved');
-            assert.equal(child.getAttribute('data-kee'), 'new', 'shorter non-prefixed name should be morphed');
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(div.querySelector('.frozen').getAttribute('data-value'), 'old');
+                assert.equal(div.querySelector('.shallow').getAttribute('data-value'), 'new');
+                assert.equal(div.querySelector('.shallow span').textContent, 'old');
+                assert.equal(div.querySelector('#normal').getAttribute('data-keep'), 'old');
+                assert.equal(div.querySelector('#normal').getAttribute('data-other'), 'new');
+            });
+
+            it('children preservation uses pre-morph state when selector depends on attrs that morph changes', async function() {
+                // Selector matches via data-component, which morph would strip from old. Check must run pre-morph.
+                htmx.config.morphPreserveChildrenOf = '[data-component]';
+                mockResponse('GET', '/test', '<div id="x" value="new"><span>new</span></div>');
+                const div = createProcessedHTML('<div id="target"><div id="x" data-component value="old"><span>old</span></div></div>');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                const element = div.querySelector('#x');
+                assert.equal(element.getAttribute('value'), 'new', 'attrs morphed');
+                assert.isNull(element.getAttribute('data-component'), 'data-component removed by morph');
+                assert.equal(element.querySelector('span').textContent, 'old', 'children preserved using pre-morph match');
+            });
+
+            it('null config behaves as if no rules were set', async function() {
+                htmx.config.morphPreserve            = null;
+                htmx.config.morphPreserveChildrenOf    = null;
+                htmx.config.morphPreserveAttributes  = null;
+
+                mockResponse('GET', '/test', '<div class="x" data-v="new"><span>new</span></div>');
+                const div = createProcessedHTML('<div id="target"><div class="x" data-v="old"><span>old</span></div></div>');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(div.querySelector('.x').getAttribute('data-v'), 'new');
+                assert.equal(div.querySelector('span').textContent, 'new');
+            });
+        });
+
+        describe('bare hx-preserve in morph', function() {
+            it('preserves element fully when old has hx-preserve and response does not', async function() {
+                // Response lacks hx-preserve (server doesn't know about it). Old has it.
+                // Without our __morphNode check, the pantry mechanism wouldn't fire and morph would change attrs/children.
+                mockResponse('GET', '/test', '<div id="x" data-v="new"><span>new</span></div>');
+                const div = createProcessedHTML('<div id="target"><div id="x" hx-preserve data-v="old"><span>old</span></div></div>');
+                const preserved = div.querySelector('#x');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(preserved.getAttribute('data-v'), 'old', 'attrs not changed');
+                assert.equal(preserved.querySelector('span').textContent, 'old', 'children not changed');
+            });
+
+            it('works without an id (morph does not require pantry)', async function() {
+                mockResponse('GET', '/test', '<div class="x" data-v="new"><span>new</span></div>');
+                const div = createProcessedHTML('<div id="target"><div class="x" hx-preserve data-v="old"><span>old</span></div></div>');
+                const preserved = div.querySelector('.x');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(preserved.getAttribute('data-v'), 'old');
+                assert.equal(preserved.querySelector('span').textContent, 'old');
+            });
+
+            it('preserves other elements normally when only some have hx-preserve', async function() {
+                mockResponse('GET', '/test', '<div id="a" data-v="new">a</div><div id="b" data-v="new">b</div>');
+                const div = createProcessedHTML('<div id="target"><div id="a" hx-preserve data-v="old">a</div><div id="b" data-v="old">b</div></div>');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(div.querySelector('#a').getAttribute('data-v'), 'old', 'a preserved');
+                assert.equal(div.querySelector('#b').getAttribute('data-v'), 'new', 'b morphed normally');
+            });
+
+            it('hx-preserve="true" also preserves (any value triggers preservation)', async function() {
+                mockResponse('GET', '/test', '<div id="x" data-v="new">new</div>');
+                const div = createProcessedHTML('<div id="target"><div id="x" hx-preserve="true" data-v="old">old</div></div>');
+                const preserved = div.querySelector('#x');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(preserved.getAttribute('data-v'), 'old');
+                assert.equal(preserved.textContent, 'old');
+            });
+
+            it('takes precedence over hx-preserve:children (full freeze, not just children)', async function() {
+                mockResponse('GET', '/test', '<div id="x" data-v="new"><span>new</span></div>');
+                const div = createProcessedHTML('<div id="target"><div id="x" hx-preserve hx-preserve:children data-v="old"><span>old</span></div></div>');
+                const preserved = div.querySelector('#x');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(preserved.getAttribute('data-v'), 'old', 'attrs preserved (not just children)');
+                assert.equal(preserved.querySelector('span').textContent, 'old');
+            });
+        });
+
+        describe('hx-preserve modifiers (per-element)', function() {
+            it('hx-preserve:children preserves the children list', async function() {
+                mockResponse('GET', '/test', '<lit-component value="new"><div class="internal">new</div></lit-component>');
+                const div = createProcessedHTML('<div id="target"><lit-component value="old" hx-preserve:children><div class="internal">old</div></lit-component></div>');
+                const lc = div.querySelector('lit-component');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(lc.getAttribute('value'), 'new', 'attrs still morph');
+                assert.equal(lc.querySelector('.internal').textContent, 'old', 'children preserved');
+            });
+
+            it('hx-preserve:attributes preserves named attrs on this element only', async function() {
+                mockResponse('GET', '/test', '<div id="a" state="new" data-x="new">x</div><div id="b" state="new" data-x="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="a" state="old" data-x="old" hx-preserve:attributes="state">x</div><div id="b" state="old" data-x="old">x</div></div>');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(div.querySelector('#a').getAttribute('state'), 'old', 'preserved on this element');
+                assert.equal(div.querySelector('#a').getAttribute('data-x'), 'new', 'other attrs morph');
+                assert.equal(div.querySelector('#b').getAttribute('state'), 'new', 'no attr → no preservation');
+            });
+
+            it('hx-preserve:attributes accepts comma or whitespace separators', async function() {
+                mockResponse('GET', '/test', '<div id="child" state="new" value="new" data-x="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" state="old" value="old" data-x="old" hx-preserve:attributes="state, value">x</div></div>');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(div.querySelector('#child').getAttribute('state'), 'old');
+                assert.equal(div.querySelector('#child').getAttribute('value'), 'old');
+                assert.equal(div.querySelector('#child').getAttribute('data-x'), 'new');
+            });
+
+            it('hx-preserve:attributes supports glob patterns (shares the engine)', async function() {
+                mockResponse('GET', '/test', '<div id="child" data-a="new" data-b="new" other="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-a="old" data-b="old" other="old" hx-preserve:attributes="data-*">x</div></div>');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(div.querySelector('#child').getAttribute('data-a'), 'old');
+                assert.equal(div.querySelector('#child').getAttribute('data-b'), 'old');
+                assert.equal(div.querySelector('#child').getAttribute('other'), 'new');
+            });
+
+            it('per-element attrs compose with global morphPreserveAttributes', async function() {
+                htmx.config.morphPreserveAttributes = ['global-attr'];
+                mockResponse('GET', '/test', '<div id="child" global-attr="new" state="new" other="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" global-attr="old" state="old" other="old" hx-preserve:attributes="state">x</div></div>');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(div.querySelector('#child').getAttribute('global-attr'), 'old', 'global rule applies');
+                assert.equal(div.querySelector('#child').getAttribute('state'), 'old', 'per-element rule applies');
+                assert.equal(div.querySelector('#child').getAttribute('other'), 'new');
+            });
+
+            it('honors the configured prefix (data-hx-preserve:children works)', async function() {
+                mockResponse('GET', '/test', '<lit-component value="new"><div class="internal">new</div></lit-component>');
+                const div = createProcessedHTML('<div id="target"><lit-component value="old" data-hx-preserve:children><div class="internal">old</div></lit-component></div>');
+                const lc = div.querySelector('lit-component');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(lc.getAttribute('value'), 'new', 'attrs still morph');
+                assert.equal(lc.querySelector('.internal').textContent, 'old', 'children preserved via prefixed attribute');
+            });
+
+            it('honors the configured prefix (data-hx-preserve:attributes works)', async function() {
+                mockResponse('GET', '/test', '<div id="child" data-a="new" data-b="new" other="new">x</div>');
+                const div = createProcessedHTML('<div id="target"><div id="child" data-a="old" data-b="old" other="old" data-hx-preserve:attributes="data-*">x</div></div>');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(div.querySelector('#child').getAttribute('data-a'), 'old', 'data-a preserved via prefixed attribute');
+                assert.equal(div.querySelector('#child').getAttribute('data-b'), 'old', 'data-b preserved via prefixed attribute');
+                assert.equal(div.querySelector('#child').getAttribute('other'), 'new', 'unmatched attr morphs');
+            });
+
+            it('honors a custom config.prefix for hx-preserve:children', async function() {
+                const originalPrefix = htmx.config.prefix;
+                htmx.config.prefix = 'x-';
+                try {
+                    mockResponse('GET', '/test', '<lit-component value="new"><div class="internal">new</div></lit-component>');
+                    const div = createProcessedHTML('<div id="target"><lit-component value="old" x-preserve:children><div class="internal">old</div></lit-component></div>');
+                    const lc = div.querySelector('lit-component');
+
+                    await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                    assert.equal(lc.getAttribute('value'), 'new', 'attrs still morph');
+                    assert.equal(lc.querySelector('.internal').textContent, 'old', 'children preserved via custom-prefix attribute');
+                } finally {
+                    htmx.config.prefix = originalPrefix;
+                }
+            });
+
+            it('honors a custom config.prefix for hx-preserve:attributes with patterns', async function() {
+                const originalPrefix = htmx.config.prefix;
+                htmx.config.prefix = 'x-';
+                try {
+                    mockResponse('GET', '/test', '<div id="child" data-a="new" data-b="new" other="new">x</div>');
+                    const div = createProcessedHTML('<div id="target"><div id="child" data-a="old" data-b="old" other="old" x-preserve:attributes="data-*">x</div></div>');
+
+                    await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                    assert.equal(div.querySelector('#child').getAttribute('data-a'), 'old', 'data-a preserved via custom-prefix attribute');
+                    assert.equal(div.querySelector('#child').getAttribute('data-b'), 'old', 'data-b preserved via custom-prefix attribute');
+                    assert.equal(div.querySelector('#child').getAttribute('other'), 'new', 'unmatched attr morphs');
+                } finally {
+                    htmx.config.prefix = originalPrefix;
+                }
+            });
+
+            it('hx-preserve:children and hx-preserve:attributes compose on same element', async function() {
+                mockResponse('GET', '/test', '<lit-component state="new" value="new"><div class="internal">new</div></lit-component>');
+                const div = createProcessedHTML('<div id="target"><lit-component state="old" value="old" hx-preserve:children hx-preserve:attributes="state"><div class="internal">old</div></lit-component></div>');
+                const lc = div.querySelector('lit-component');
+
+                await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+                assert.equal(lc.getAttribute('state'), 'old', 'attr preserved');
+                assert.equal(lc.getAttribute('value'), 'new', 'other attr morphs');
+                assert.equal(lc.querySelector('.internal').textContent, 'old', 'children preserved');
+            });
         });
     });
 

@@ -193,10 +193,10 @@ Key config values:
 | `history`             | `true`                  | Enable history support (`true`, `false`, `"reload"`)   |
 | `extensions`          | `""`                    | Whitelist of allowed extensions (empty = allow all)    |
 | `prefix`              | `""`                    | Custom attribute prefix (e.g. `"data-hx-"`)            |
-| `morphIgnore`         | `["data-htmx-powered"]` | Attributes to ignore when morphing                     |
-| `morphScanLimit`      | `10`                    | Sibling scan limit during morphing                     |
-| `morphSkip`           | `undefined`             | CSS selector for elements to skip morphing             |
-| `morphSkipChildren`   | `undefined`             | CSS selector for elements whose children skip morphing |
+| `morphPreserve`           | `null` | CSS selector. Matching elements kept entirely (attrs + children)              |
+| `morphPreserveChildrenOf` | `null` | CSS selector. Matching elements: children kept, own attrs still change         |
+| `morphPreserveAttributes` | `null` | Attribute name patterns (`*` wildcard, `(a\|b)` alternation). Matching names kept on any element, rest still changes |
+| `morphScanLimit`          | `10`   | Sibling scan limit during morphing                     |
 
 ## Events
 
@@ -398,7 +398,9 @@ that.
 | `hx-sync`        | Synchronize requests between elements                                     |
 | `hx-boost`       | Progressive enhancement for links and forms                               |
 | `hx-config`      | Per-element fetch config as JSON (`timeout`, `credentials`, `mode`, etc.) |
-| `hx-preserve`    | Keep element unchanged across swaps                                       |
+| `hx-preserve`            | Keep element unchanged across swaps                                                  |
+| `hx-preserve:children`   | `innerMorph`/`outerMorph` only: children kept, own attrs still change              |
+| `hx-preserve:attributes` | `innerMorph`/`outerMorph`/`outerSync`: listed attrs kept, rest still changes (globs + alternation) |
 | `hx-ignore`      | Disable htmx processing for element and children                          |
 | `hx-disable`     | Disable specified elements during requests                                |
 | `hx-preload`     | Preload content on trigger events                                         |

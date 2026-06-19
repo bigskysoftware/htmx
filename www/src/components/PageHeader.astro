@@ -45,7 +45,7 @@ const primaryAuthor = byline?.authors[0];
 
 <header class="not-prose page-header">
     <div class="title-row">
-        <h1 set:html={title} />
+        <h1 set:html={title?.replace(/([.\-])/g, '$1<wbr>')} />
         {file && (
             <div class="actions">
                 <CopyPageButton file={file} />

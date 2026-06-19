@@ -649,7 +649,7 @@ With `bindPrefix: 'hx:'`:
 
 - Expressions run on any DOM mutation. There is no per-variable tracking. The microtask coalescing keeps this cheap, but expensive expressions should `debounce` or guard themselves.
 - The DOM is the source of truth. To share state between expressions, use ARIA attributes, `data-*` attributes (the `data` proxy makes this ergonomic), or hidden inputs.
-- When using morph swap styles (`innerMorph` / `outerMorph`), server responses will overwrite `data-*` attributes by default. To preserve client-side state during morphs, add a prefix to `morphIgnore` — e.g. `morphIgnore:["data-"]` will protect all `data-*` attributes from being overwritten. Non-morph swaps (`innerHTML`, `outerHTML`) replace the DOM entirely, so state should live on an ancestor element that isn't swapped.
+- When using morph swap styles (`innerMorph` / `outerMorph`), server responses will overwrite `data-*` attributes by default. To preserve client-side state during morphs, add a pattern to `morphPreserveAttributes`, e.g. `htmx.config.morphPreserveAttributes = ["data-*"]` will protect all `data-*` attributes from being overwritten. Non-morph swaps (`innerHTML`, `outerHTML`) replace the DOM entirely, so state should live on an ancestor element that isn't swapped.
 - Expressions must be safe to run repeatedly. Avoid unconditional `fetch()` calls. Use `debounce` or guard on a value change.
 - If your build pipeline strips `:`-prefixed attributes, use the canonical `hx-live:<attr>` form instead. Behavior is identical.
 - If using Alpine.js on the same page, hx-live auto-detects it and disables the `:` short form. See [Configuration](#configuration) for details.

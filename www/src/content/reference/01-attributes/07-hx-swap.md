@@ -134,9 +134,10 @@ Morphs entire element, preserving state and focus.
 
 **Morph exclusions:**
 
-Exclude specific elements from morphing:
-- [`htmx.config.morphSkip`](/reference/config/htmx-config-morphskip) - Skip entire elements
-- [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphskipchildren) - Skip children only
+Three config keys tell morph what to preserve:
+- [`htmx.config.morphPreserve`](/reference/config/htmx-config-morphPreserve), matching elements kept entirely (attrs + children)
+- [`htmx.config.morphPreserveChildrenOf`](/reference/config/htmx-config-morphPreserveChildrenOf), matching elements: children kept, own attrs still change
+- [`htmx.config.morphPreserveAttributes`](/reference/config/htmx-config-morphPreserveAttributes), any element: matching attribute names kept, rest still changes
 
 ### `outerSync`
 

@@ -212,7 +212,9 @@ var htmx = (() => {
                 includeIndicatorCSS: true,
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
-                morphIgnore: ["data-htmx-powered"],
+                morphPreserve: null,
+                morphPreserveChildrenOf: null,
+                morphPreserveAttributes: null,
                 morphScanLimit: 10,
                 noSwap: [204, 304],
                 implicitInheritance: false,
@@ -1037,6 +1039,10 @@ var htmx = (() => {
             document.body.insertAdjacentElement('afterend', pantry);
             let newPreservedElts = fragment.querySelectorAll?.(this.__prefixSelector('[hx-preserve]')) || [];
             for (let preservedElt of newPreservedElts) {
+                if (!preservedElt.id) {
+                    console.warn('htmx: hx-preserve requires an id to work in non-morph swaps', preservedElt);
+                    continue;
+                }
                 let currentElt = document.getElementById(preservedElt.id);
                 if (currentElt) {
                     this.__moveBefore(pantry, currentElt, null);
@@ -1394,7 +1400,9 @@ var htmx = (() => {
                         target = newContent[0] || parentNode
                     }
                 } else if (swapStyle === 'outerSync') {
-                    this.__copyAttributes(target, fragment.firstElementChild);
+                    this.__morphAttributes(target, fragment.firstElementChild);
+                    this.__cleanup(target);
+                    delete target._htmx;
                     target.replaceChildren(...fragment.firstElementChild.childNodes);
                     newContent = [target];
                 } else if (swapStyle === 'innerMorph') {
@@ -2149,45 +2157,74 @@ var htmx = (() => {
                 if (oldNode.nodeValue !== newNode.nodeValue) oldNode.nodeValue = newNode.nodeValue;
                 return;
             }
-            if (this.config.morphSkip && oldNode.matches?.(this.config.morphSkip)) return;
-                
-            // Trigger extension hook - if returns false, skip morphing this node
-            if (!this.__triggerExtensions(oldNode, "htmx:before:morph:node", {oldNode, newNode})) return;
-                
-            this.__copyAttributes(oldNode, newNode);
-            if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
-                oldNode.value = newNode.value;
+
+            if (
+                // element has hx-preserve
+                this.__attributeValue(oldNode, 'hx-preserve') != null
+                // or element matches config.morphPreserve
+                || (this.config.morphPreserve && oldNode.matches?.(this.config.morphPreserve))
+            ) return // skip early
+
+            let shouldPreserveChildren =
+                // element has hx-preserve:children
+                this.__attributeValue(oldNode, 'hx-preserve:children') != null
+                // or element matches config.morphPreserveChildrenOf
+                || (this.config.morphPreserveChildrenOf && oldNode.matches?.(this.config.morphPreserveChildrenOf))
+
+            if (!this.__triggerExtensions(oldNode, "htmx:before:morph:node", {oldNode, newNode})) return
+
+            this.__morphAttributes(oldNode, newNode)
+
+            if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue !== newNode.defaultValue) {
+                oldNode.value = newNode.value
             }
-            let skipChildren = this.config.morphSkipChildren && oldNode.matches?.(this.config.morphSkipChildren);
-            // isEqualNode does not detect template content diff so always morph templates
-            if (!skipChildren && (!oldNode.isEqualNode(newNode) || newNode.tagName === 'TEMPLATE' || newNode.querySelector?.('template'))) {
-                this.__morphChildren(ctx, oldNode, newNode);
-            }
+
+            if (shouldPreserveChildren) return
+
+            // isEqualNode ignores <template> content
+            let containsTemplate = newNode instanceof HTMLTemplateElement || newNode.querySelector?.('template')
+            if (!oldNode.isEqualNode(newNode) || containsTemplate) this.__morphChildren(ctx, oldNode, newNode)
         }
 
-        __copyAttributes(destination, source) {
-            let attributesToIgnore = this.config.morphIgnore || [];
-            let needsReinit = false;
-            let isHxAttr = name => this.__prefixes('hx-').some(p => name.startsWith(p));
-            for (const attr of source.attributes) {
-                if (!attributesToIgnore.some(p => attr.name.startsWith(p)) && destination.getAttribute(attr.name) !== attr.value) {
-                    if (isHxAttr(attr.name)) needsReinit = true;
-                    if (!this.__triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: attr.value })) continue;
-                    destination.setAttribute(attr.name, attr.value);
-                    if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
-                        destination.value = attr.value;
-                    }
+        /** Sync attributes newNode → oldNode, skipping preserved names. */
+        __morphAttributes(oldNode, newNode) {
+            let preserveRegex = new RegExp('^(' + [
+                'data-htmx-powered',
+                'hx-preserve.*',
+                // prefix variant: "data-hx-" → "data-hx-preserve.*"
+                this.config.prefix && `${this.config.prefix.replace(/[.+?^${}\[\]\\]/g, '\\$&')}preserve.*`,
+                // user patterns from config + element
+                ...[this.config.morphPreserveAttributes, this.__attributeValue(oldNode, 'hx-preserve:attributes')]
+                    // ["data-*", "aria-*"] → "data-*", "aria-*"
+                    .flatMap(patterns => Array.isArray(patterns) ? patterns : [patterns])
+                    .filter(Boolean)
+                    // "data-*, aria-*" → ["data-*", "aria-*"]
+                    .flatMap(p => p instanceof RegExp ? [p] : String(p).split(/[\s,]+/))
+                    .filter(Boolean)
+                    // "data-*" → "data-.*";  /^x-/ → "^x-"
+                    .map(p => p instanceof RegExp ? p.source : p.replace(/[.+?^${}\[\]\\]/g, '\\$&').replace(/\*/g, '.*')),
+            ].filter(Boolean).join('|') + ')$');
+
+            let attributesToMorph = [...new Set([
+                ...Array.from(newNode.attributes, a => a.name),
+                ...Array.from(oldNode.attributes, a => a.name),
+            ])]
+                // exclude preserved attributes
+                .filter(name => !preserveRegex.test(name));
+
+            for (let name of attributesToMorph) {
+                if (!newNode.hasAttribute(name)) {
+                    oldNode.removeAttribute(name);
+                    continue;
+                }
+                let value = newNode.getAttribute(name);
+                if (oldNode.getAttribute(name) === value) continue;  // unchanged
+                oldNode.setAttribute(name, value);
+                // <input>.value is independent of attribute; sync. Skip file inputs.
+                if (name === "value" && oldNode instanceof HTMLInputElement && oldNode.type !== "file") {
+                    oldNode.value = value;
                 }
             }
-            for (let i = destination.attributes.length - 1; i >= 0; i--) {
-                let attr = destination.attributes[i];
-                if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.some(p => attr.name.startsWith(p))) {
-                    if (isHxAttr(attr.name)) needsReinit = true;
-                    if (!this.__triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: null })) continue;
-                    destination.removeAttribute(attr.name);
-                }
-            }
-            if (needsReinit) this.__cleanup(destination, true);
         }
 
         __populateIdMapWithTree(idMap, persistentIds, root, elements) {
@@ -2293,9 +2330,9 @@ var htmx = (() => {
                 let existing = existingElementsById[elt.id];
                 if (existing?.tagName === elt.tagName) {
                     let clone = elt.cloneNode(false); // shallow clone node
-                    this.__copyAttributes(elt, existing)
+                    this.__morphAttributes(elt, existing)
                     restoreTasks.push(()=>{
-                        this.__copyAttributes(elt, clone)
+                        this.__morphAttributes(elt, clone)
                     })
                 }
             }

@@ -135,6 +135,11 @@ export default defineConfig({
         "/reference/events": "/reference",
         "/reference/config": "/reference",
         "/reference/methods": "/reference",
+
+        // Morph configs renamed in 4.0.0-beta5
+        "/reference/config/htmx-config-morphSkip":         "/reference/config/htmx-config-morphPreserve",
+        "/reference/config/htmx-config-morphSkipChildren": "/reference/config/htmx-config-morphPreserveChildrenOf",
+        "/reference/config/htmx-config-morphIgnore":       "/reference/config/htmx-config-morphPreserveAttributes",
         "/help": "/about",
         "/server-examples": "/about",
 

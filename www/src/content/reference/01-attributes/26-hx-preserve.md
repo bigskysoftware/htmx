@@ -41,3 +41,67 @@ The response requires an element with the same `id`, but its type and other attr
     <div id="retain" hx-preserve></div>
   </div>
   ```
+
+## Morph modifiers
+
+During morph swaps, put `hx-preserve` on any element to keep it as-is:
+
+```html
+<div hx-preserve>Untouched by morph.</div>
+```
+
+> Unlike non-morph swaps, no `id` is required during morph.
+
+Two narrower per-element modifiers are also available:
+
+### `hx-preserve:children`
+
+*Applies during [`innerMorph`](/reference/attributes/hx-swap#innermorph) and [`outerMorph`](/reference/attributes/hx-swap#outermorph) only.*
+
+Children preserved, while the element's own attributes still change.
+
+```html
+<!-- DOM -->
+<lit-component value="old" hx-preserve:children>
+  <div>state set by JS</div>
+</lit-component>
+
+<!-- Response -->
+<lit-component value="new">
+  <div>ignored</div>
+</lit-component>
+
+<!-- After morph -->
+<lit-component value="new" hx-preserve:children>
+  <div>state set by JS</div>
+</lit-component>
+```
+
+Useful for web components, jQuery plugins (Select2, Sortable.js), canvas-based libraries (Chart.js, Leaflet), and anything whose children are managed outside the server response.
+
+Equivalent to the global [`morphPreserveChildrenOf`](/reference/config/htmx-config-morphPreserveChildrenOf) config, scoped to one element.
+
+### `hx-preserve:attributes`
+
+*Applies during [`innerMorph`](/reference/attributes/hx-swap#innermorph), [`outerMorph`](/reference/attributes/hx-swap#outermorph), and [`outerSync`](/reference/attributes/hx-swap#outersync).*
+
+Listed attributes preserved, while everything else on the element still changes.
+
+```html
+<!-- DOM -->
+<input name="q" value="user typed this" hx-preserve:attributes="value">
+
+<!-- Response -->
+<input name="q" value="server default">
+
+<!-- After morph -->
+<input name="q" value="user typed this" hx-preserve:attributes="value">
+```
+
+Accepts a comma- or whitespace-separated list. Patterns support `*` wildcard and `(a|b)` alternation, same as the global [`morphPreserveAttributes`](/reference/config/htmx-config-morphPreserveAttributes) config:
+
+```html
+<lit-component hx-preserve:attributes="state, data-internal-*, aria-(label|hidden)">
+```
+
+Per-element patterns compose with the global config: the union of both lists is preserved.
