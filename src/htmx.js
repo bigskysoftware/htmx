@@ -875,7 +875,7 @@ var htmx = (() => {
 
         // when force is true: re-wires elt and all powered descendants from current attributes
         process(elt, force) {
-            if (!elt) return;
+            if (!elt?.isConnected) return;
             if (!(elt instanceof Element)) {
                 for (let child of elt.children || []) this.process(child, force);
                 return;

@@ -542,6 +542,37 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(newBtn.getAttribute('data-htmx-powered'), 'true', 'New inserted element should be processed');
         });
 
+        it('does not process detached fragment children during outerMorph', async function() {
+            mockResponse('GET', '/test', '<div id="target"><span class="child" hx-get="/x">new</span></div>');
+            const container = createProcessedHTML('<div><div id="target"><span class="child">old</span></div></div>');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'outerMorph'});
+
+            assert.equal(container.querySelector('#target .child').getAttribute('data-htmx-powered'), 'true',
+                'live nested child should still be initialized');
+        });
+
+        it('does not attach htmx state to detached fragment children during outerMorph', async function() {
+            mockResponse('GET', '/test', '<div id="target"><span class="child" hx-get="/x">new</span></div>');
+            const container = createProcessedHTML('<div><div id="target"><span class="child">old</span></div></div>');
+
+            let fragmentChild;
+            document.addEventListener('htmx:before:swap', (e) => {
+                const mainTask = (e.detail.tasks || []).find(t => t.type === 'main');
+                fragmentChild = mainTask && mainTask.fragment && mainTask.fragment.querySelector('.child');
+            }, { once: true });
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'outerMorph'});
+
+            assert.isOk(fragmentChild, 'captured the fragment child before morph');
+            assert.isFalse(fragmentChild.isConnected,
+                'same-tag outerMorph leaves fragment children detached as templates');
+            assert.equal(typeof fragmentChild._htmx, 'undefined',
+                'process() should not have attached _htmx state to the detached fragment child');
+            assert.isNull(fragmentChild.getAttribute('data-htmx-powered'),
+                'detached fragment child should not be marked data-htmx-powered');
+        });
+
         it('processes new htmx attributes on tag-changing outerMorph (span to div)', async function() {
             mockResponse('GET', '/test', '<div id="target" hx-get="/click" hx-target="#result">Updated</div>');
             const container = createProcessedHTML('<div><span id="target">Original</span><div id="result"></div></div>');
