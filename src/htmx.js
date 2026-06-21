@@ -242,18 +242,24 @@ var htmx = (() => {
             return defaultVal;
         }
 
-        __parseConfig(configString) {
+        __parseConfig(configString, lazy) {
             if (!configString) return {};
             if (configString[0] === '{') return JSON.parse(configString);
-            let configPattern = /(?:"([^"]+)"|([^\s,:]+))(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
-            return [...configString.matchAll(configPattern)].reduce((result, match) => {
+            let configPattern = /(?:"([^"]+)"|([^\s,:]+))(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s*(,)|\s|$)/g;
+            let config = {};
+            let cursor = 0;
+            let match;
+            while ((match = configPattern.exec(configString))) {
                 let keyPath = (match[1] ?? match[2]).split('.');
                 let value = (match[3] ?? match[4] ?? match[5] ?? match[6] ?? 'true').trim();
                 try { value = JSON.parse(value); } catch {}
-                if (keyPath.some(k => this.__internalField(k))) return result;
-                keyPath.slice(0, -1).reduce((obj, key) => obj[key] ??= {}, result)[keyPath.at(-1)] = value;
-                return result;
-            }, {});
+                if (!keyPath.some(k => this.__internalField(k))) {
+                    keyPath.slice(0, -1).reduce((obj, key) => obj[key] ??= {}, config)[keyPath.at(-1)] = value;
+                }
+                cursor = match.index + match[0].length;
+                if (lazy && match[7]) break;  // this pair is followed by a comma. stop and report cursor
+            }
+            return lazy ? { config, cursor } : config;
         }
 
         __internalField(k) {
@@ -275,13 +281,22 @@ var htmx = (() => {
         }
 
         __parseTriggerSpecs(spec) {
-            // Split on commas that are NOT inside [...] — handles filters like click[myFunc(a,b)]
-            return spec.split(/,(?![^\[]*\])/).flatMap(s => {
-                let [,name,rest] = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/) ?? [];
-                if (!name) return [];  // skip empty/whitespace-only tokens
+            let specs = [];
+            let remaining = spec.trim();
+            while (remaining) {
+                let [,name,comma,rest] = remaining.match(/^[\s,]*([^\s,]+\[[^\]]*\]|[^\s,]+)\s*(,)?\s*([\s\S]*)$/) ?? [];
+                if (!name) break; // no more spec to parse
                 if (/\[[^\]]*$/.test(name)) throw "unterminated:" + name;  // e.g. click[ctrlKey
-                return [{name, ...this.__parseConfig(rest)}];  // spread modifiers (delay, throttle, etc.) onto result
-            });
+                if (comma) {  // name immediately followed by a separator. this spec has no config
+                    specs.push({name});
+                    remaining = rest;
+                } else {
+                    let {config, cursor} = this.__parseConfig(rest, true);
+                    specs.push({name, ...config});  // spread modifiers (delay, throttle, etc.) onto result
+                    remaining = rest.slice(cursor);
+                }
+            }
+            return specs;
         }
 
         __determineMethodAndAction(elt, evt) {

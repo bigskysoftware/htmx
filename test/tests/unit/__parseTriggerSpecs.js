@@ -132,4 +132,17 @@ describe('__parseTriggerSpecs unit tests', function() {
         assert.equal(specs[0].once, true)
     })
 
+    it('from clause works with multiple extended selectors', function () {
+        let specs = htmx.__parseTriggerSpecs('click[ctrlKey] from:"form input"')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, 'click[ctrlKey]')
+        assert.equal(specs[0].from, 'form input')
+    })
+
+    it('from clause works with multiple extended selectors including comma', function () {
+        let specs = htmx.__parseTriggerSpecs('click[ctrlKey] from:"previous button, next a"')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, 'click[ctrlKey]')
+        assert.equal(specs[0].from, 'previous button, next a')
+    })
 });
