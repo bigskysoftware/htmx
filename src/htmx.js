@@ -657,6 +657,7 @@ var htmx = (() => {
 
         __isModifierKeyClick(evt) {
             return evt.type === 'click' && (evt.ctrlKey || evt.metaKey || evt.shiftKey)
+                && !!evt.currentTarget?.closest?.('a[href]')
         }
 
         __shouldCancel(evt) {
