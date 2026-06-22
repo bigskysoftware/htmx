@@ -114,7 +114,7 @@ describe('__parseTriggerSpecs unit tests', function() {
         })
     })
 
-    it('does not split on comma inside function call filter when combined with other events', function () {
+    it('preserves commas inside filter', function () {
         let specs = htmx.__parseTriggerSpecs('click[myFunc(a,b)], keyup')
         assert.equal(specs.length, 2)
         assert.equal(specs[0].name, 'click[myFunc(a,b)]')
@@ -130,6 +130,157 @@ describe('__parseTriggerSpecs unit tests', function() {
         assert.equal(specs[0].from, 'body')
         assert.equal(specs[0].target, '.item')
         assert.equal(specs[0].once, true)
+    })
+
+    // ── quoted value commas (HCON value form, now reachable through hx-trigger) ──
+
+    it('parses double-quoted value with comma', function () {
+        let specs = htmx.__parseTriggerSpecs('pointerenter from:".grid, .brick"')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, 'pointerenter')
+        assert.equal(specs[0].from, '.grid, .brick')
+    })
+
+    it('parses single-quoted value with comma', function () {
+        let specs = htmx.__parseTriggerSpecs("pointerenter from:'.grid, .brick'")
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].from, '.grid, .brick')
+    })
+
+    it('parses quoted value with trailing modifier', function () {
+        let specs = htmx.__parseTriggerSpecs('pointerenter from:".a, .b" throttle:50ms')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].from, '.a, .b')
+        assert.equal(specs[0].throttle, '50ms')
+    })
+
+    it('parses quoted value among multiple specs', function () {
+        let specs = htmx.__parseTriggerSpecs('click from:".a, .b", intersect')
+        assert.equal(specs.length, 2)
+        assert.equal(specs[0].name, 'click')
+        assert.equal(specs[0].from, '.a, .b')
+        assert.equal(specs[1].name, 'intersect')
+    })
+
+    it('parses quoted value combined with filter', function () {
+        let specs = htmx.__parseTriggerSpecs('click[event.x > 0] from:".a, .b"')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, 'click[event.x > 0]')
+        assert.equal(specs[0].from, '.a, .b')
+    })
+
+    it('parses mixed double and single quoted specs', function () {
+        let specs = htmx.__parseTriggerSpecs('click from:".a, .b", change from:\'.c, .d\'')
+        assert.equal(specs.length, 2)
+        assert.equal(specs[0].from, '.a, .b')
+        assert.equal(specs[1].from, '.c, .d')
+    })
+
+    // ── quoted keys (JS-style; quoted means literal, no dot-nesting) ──
+
+    it('parses double-quoted key', function () {
+        let specs = htmx.__parseTriggerSpecs('click "from":body')
+        assert.equal(specs[0].from, 'body')
+    })
+
+    it('parses single-quoted key', function () {
+        let specs = htmx.__parseTriggerSpecs("click 'from':body")
+        assert.equal(specs[0].from, 'body')
+    })
+
+    it('parses quoted key with space', function () {
+        let specs = htmx.__parseTriggerSpecs('click "full name":alice')
+        assert.equal(specs[0]['full name'], 'alice')
+    })
+
+    it('parses quoted dotted key literally', function () {
+        let specs = htmx.__parseTriggerSpecs('click "user.id":42')
+        assert.equal(specs[0]['user.id'], 42)
+        assert.isUndefined(specs[0].user)
+    })
+
+    it('parses single-quoted dotted key literally', function () {
+        let specs = htmx.__parseTriggerSpecs("click 'user.id':42")
+        assert.equal(specs[0]['user.id'], 42)
+        assert.isUndefined(specs[0].user)
+    })
+
+    it('parses bare dotted key as nested', function () {
+        let specs = htmx.__parseTriggerSpecs('click user.id:42')
+        assert.deepEqual(specs[0].user, {id: 42})
+    })
+
+    // ── filter regression checks (must not weaken existing protection) ─
+
+    it('preserves commas inside parens in filter', function () {
+        let specs = htmx.__parseTriggerSpecs('click[fn(a, b)], intersect')
+        assert.equal(specs.length, 2)
+        assert.equal(specs[0].name, 'click[fn(a, b)]')
+        assert.equal(specs[1].name, 'intersect')
+    })
+
+    it('preserves commas inside braces in filter', function () {
+        let specs = htmx.__parseTriggerSpecs('click[{a:1, b:2}]')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, 'click[{a:1, b:2}]')
+    })
+
+    it('preserves commas inside regex in filter', function () {
+        let specs = htmx.__parseTriggerSpecs('click[/a,b/.test(c)]')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, 'click[/a,b/.test(c)]')
+    })
+
+    // ── malformed input ───────────────────────────────────────────────
+
+    it('skips leading commas', function () {
+        let specs = htmx.__parseTriggerSpecs(',click')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, 'click')
+    })
+
+    it('skips trailing commas', function () {
+        let specs = htmx.__parseTriggerSpecs('click,')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, 'click')
+    })
+
+    it('skips multiple consecutive commas', function () {
+        let specs = htmx.__parseTriggerSpecs('click,,,intersect')
+        assert.equal(specs.length, 2)
+        assert.equal(specs[0].name, 'click')
+        assert.equal(specs[1].name, 'intersect')
+    })
+
+    // hyperscript value protection in trigger specs
+
+    it('preserves > inside hyperscript value (CSS child combinator)', function () {
+        let specs = htmx.__parseTriggerSpecs('click from:<ul > li/>')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, 'click')
+        assert.equal(specs[0].from, 'ul > li')
+    })
+
+    it('preserves comma inside hyperscript value', function () {
+        let specs = htmx.__parseTriggerSpecs('click from:<:not(.a, .b)/>')
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, 'click')
+        assert.equal(specs[0].from, ':not(.a, .b)')
+    })
+
+    it('preserves both > and comma in hyperscript value', function () {
+        let specs = htmx.__parseTriggerSpecs('click from:<ul > li:not(.a, .b)/>, change')
+        assert.equal(specs.length, 2)
+        assert.equal(specs[0].name, 'click')
+        assert.equal(specs[0].from, 'ul > li:not(.a, .b)')
+        assert.equal(specs[1].name, 'change')
+    })
+
+    it('parses two specs each with hyperscript value', function () {
+        let specs = htmx.__parseTriggerSpecs('click from:<ul > li/>, change from:<.a, .b/>')
+        assert.equal(specs.length, 2)
+        assert.equal(specs[0].from, 'ul > li')
+        assert.equal(specs[1].from, '.a, .b')
     })
 
 });

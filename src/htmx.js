@@ -1,5 +1,92 @@
 var htmx = (() => {
 
+    /**
+     * HCON, htmx's mini config language. Mirrors the JSON API.
+     *
+     * Used by hx-trigger, hx-swap, hx-vals, and other htmx config attributes.
+     *
+     * @see https://four.htmx.org/docs#hcon
+     */
+    const HCON = {
+        /**
+         * Parses an HCON string into an object.
+         *
+         * @example
+         * HCON.parse('foo:1 bar:true');     // {foo: 1, bar: true}
+         * HCON.parse('sse.mode:once');      // {sse: {mode: 'once'}}
+         * HCON.parse('{"foo": 1}');         // {foo: 1}
+         */
+        parse(string) {
+            if (!string) return {};
+            if (string.startsWith('{')) return JSON.parse(string);
+            let pattern = /(?:"([^"]+)"|'([^']+)'|([^\s,:]+))(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<((?:[^/]|\/(?!>))+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
+            let result = {};
+            for (let match of string.matchAll(pattern)) {
+                let [,
+                    doubleQuotedKey,    // "key"
+                    singleQuotedKey,    // 'key'
+                    bareKey,            //  key
+                    doubleQuotedValue,  // "value"
+                    singleQuotedValue,  // 'value'
+                    hyperscriptValue,   // <value/>
+                    bareValue,          //  value
+                ] = match;
+
+                // pick this match's key and value forms
+                let key = doubleQuotedKey ?? singleQuotedKey ?? bareKey;
+                let value = (doubleQuotedValue ?? singleQuotedValue ?? hyperscriptValue ?? bareValue ?? 'true').trim();
+
+                // JSON-parse if possible (e.g. "5" -> 5; "abc" stays string)
+                try { value = JSON.parse(value); } catch {}
+
+                // bare a.b -> {a:{b:...}}; quoted "a.b" -> {"a.b":...}
+                let isDottedPath = bareKey?.includes('.');
+                let pair = isDottedPath
+                    ? key.split('.').reduceRight((acc, segment) => ({[segment]: acc}), value)
+                    : {[key]: value};
+                HCON.merge(pair, result);
+            }
+            return result;
+        },
+
+        /**
+         * Splits an HCON-aware string at top-level commas.
+         * Commas inside [], (), <.../>, "...", '...' are preserved.
+         *
+         * @example
+         * HCON.split('a:1, b:2');                // ['a:1', ' b:2']
+         * HCON.split('from:".a, .b", click');    // ['from:".a, .b"', ' click']
+         */
+        split(string) {
+            return string.split(/,(?![^\[]*\])(?![^(]*\))(?![^<]*\/>)(?=(?:[^"']|"[^"]*"|'[^']*')*$)/);
+        },
+
+        /**
+         * Deep-merges a source (HCON string or object) into a target.
+         *
+         * @example
+         * HCON.merge({a: {b: 1}}, {a: {c: 2}});   // {a: {b: 1, c: 2}}
+         * HCON.merge('a.b:1', {a: {c: 2}});       // {a: {b: 1, c: 2}}
+         */
+        merge(source, target) {
+            if (typeof source === 'string') source = HCON.parse(source);
+
+            for (let [key, val] of Object.entries(source)) {
+                if (['__proto__', 'constructor', 'prototype'].includes(key)) continue;
+
+                let sourceIsObject = val && typeof val === 'object' && !Array.isArray(val);
+                let targetIsObject = target[key] && typeof target[key] === 'object' && !Array.isArray(target[key]);
+
+                if (sourceIsObject && targetIsObject) {
+                    HCON.merge(val, target[key]);
+                } else {
+                    target[key] = val;
+                }
+            }
+            return target;
+        },
+    };
+
     class ReqQ {
         #c = null
         #q = []
@@ -57,6 +144,7 @@ var htmx = (() => {
 
     class Htmx {
 
+        __HCON = HCON
         __extMethods = new Map();
         __approvedExt = '';
         __registeredExt = new Set();
@@ -132,7 +220,7 @@ var htmx = (() => {
             }
             let metaConfig = document.querySelector('meta[name="htmx-config"]');
             if (metaConfig) {
-                this.__mergeConfig(metaConfig.content, this.config);
+                HCON.merge(metaConfig.content, this.config);
             }
             this.__approvedExt = this.config.extensions;
         }
@@ -242,45 +330,12 @@ var htmx = (() => {
             return defaultVal;
         }
 
-        __parseConfig(configString) {
-            if (!configString) return {};
-            if (configString[0] === '{') return JSON.parse(configString);
-            let configPattern = /(?:"([^"]+)"|([^\s,:]+))(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
-            return [...configString.matchAll(configPattern)].reduce((result, match) => {
-                let keyPath = (match[1] ?? match[2]).split('.');
-                let value = (match[3] ?? match[4] ?? match[5] ?? match[6] ?? 'true').trim();
-                try { value = JSON.parse(value); } catch {}
-                if (keyPath.some(k => this.__internalField(k))) return result;
-                keyPath.slice(0, -1).reduce((obj, key) => obj[key] ??= {}, result)[keyPath.at(-1)] = value;
-                return result;
-            }, {});
-        }
-
-        __internalField(k) {
-            return k === '_\x5fproto_\x5f' || k === 'constructor' || k === 'prototype';
-        }
-
-        __mergeConfig(configString, target) {
-            let parsed = this.__parseConfig(configString);
-            for (let key in parsed) {
-                if (this.__internalField(key)) continue;
-                let val = parsed[key];
-                if (val && typeof val === 'object' && !Array.isArray(val) && target[key]) {
-                    Object.assign(target[key], val);
-                } else {
-                    target[key] = val;
-                }
-            }
-            return target;
-        }
-
         __parseTriggerSpecs(spec) {
-            // Split on commas that are NOT inside [...] — handles filters like click[myFunc(a,b)]
-            return spec.split(/,(?![^\[]*\])/).flatMap(s => {
+            return HCON.split(spec).flatMap(s => {
                 let [,name,rest] = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/) ?? [];
                 if (!name) return [];  // skip empty/whitespace-only tokens
                 if (/\[[^\]]*$/.test(name)) throw "unterminated:" + name;  // e.g. click[ctrlKey
-                return [{name, ...this.__parseConfig(rest)}];  // spread modifiers (delay, throttle, etc.) onto result
+                return [{name, ...HCON.parse(rest)}];  // spread modifiers (delay, throttle, etc.) onto result
             });
         }
 
@@ -379,7 +434,7 @@ var htmx = (() => {
             };
             // Apply boost config overrides
             if (sourceElement._htmx?.boosted) {
-                this.__mergeConfig(sourceElement._htmx.boosted, ctx);
+                HCON.merge(sourceElement._htmx.boosted, ctx);
             }
             ctx.target = this.__resolveTarget(sourceElement, ctx.target);
             ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
@@ -390,7 +445,7 @@ var htmx = (() => {
             // Apply hx-config overrides
             let configAttr = this.__attributeValue(sourceElement, "hx-config");
             if (configAttr) {
-                this.__mergeConfig(configAttr, ctx.request);
+                HCON.merge(configAttr, ctx.request);
                 ctx.request.mode = this.config.mode;  // mode is security-sensitive, never allow per-element override
             }
             return ctx;
@@ -621,7 +676,7 @@ var htmx = (() => {
             if (ctx.hx.location) { // HX-Location
                 let path = ctx.hx.location, opts = {};
                 if (path[0] === '{' || /[\s,]/.test(path)) {
-                    opts = this.__parseConfig(path);
+                    opts = HCON.parse(path);
                     path = opts.path;
                     delete opts.path;
                 }
@@ -825,7 +880,7 @@ var htmx = (() => {
 
         __handleTriggerHeader(value, elt) {
             if (value[0] === '{') {
-                let triggers = this.__parseConfig(value);
+                let triggers = HCON.parse(value);
                 for (let name in triggers) {
                     let detail = triggers[name];
                     let target = elt;
@@ -1086,7 +1141,7 @@ var htmx = (() => {
                 style = m[1];
                 swapStr = m[2];
             }
-            return {style: this.__normalizeSwapStyle(style), ...this.__parseConfig(swapStr)};
+            return {style: this.__normalizeSwapStyle(style), ...HCON.parse(swapStr)};
         }
 
         __processPartials(fragment, ctx) {
@@ -1784,7 +1839,7 @@ var htmx = (() => {
                 });
             } else {
                 // Synchronous path - return the parsed object directly
-                callback(this.__parseConfig(attrValue));
+                callback(HCON.parse(attrValue));
             }
         }
 
@@ -1799,8 +1854,7 @@ var htmx = (() => {
             if (selector.startsWith('global ')) {
                 return this.__findAllExt(elt, selector.slice(7), thisAttr, true);
             }
-            let parts = selector ? selector.replace(/<[^>]+\/>/g, m => m.replace(/,/g, '%2C'))
-                .split(',').map(p => p.replace(/%2C/g, ',')) : [];
+            let parts = selector ? HCON.split(selector) : [];
             let result = []
             let unprocessedParts = []
             for (const part of parts) {
@@ -2176,7 +2230,7 @@ var htmx = (() => {
                 }
                 let statusValue = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
                 if (statusValue) {
-                    this.__mergeConfig(statusValue, ctx);
+                    HCON.merge(statusValue, ctx);
                     return;
                 }
             }
