@@ -1897,15 +1897,27 @@ Add [`hx-preserve`](/reference/attributes/hx-preserve)`="true"` to elements you 
 This keeps the video playing even when the parent container gets updated.
 
 ## HCON
-HCON (htmx Configuration Object Notation) is the mini config language that htmx uses to parse structured values out of HTML attributes. It is designed to feel natural in attribute values, no outer braces required, flexible quoting, flag-style booleans, while still accepting plain JSON when you need it.
+HCON (htmx Configuration Object Notation) is htmx's mini config language for structured HTML attributes.
+
+```html
+<meta name="htmx-config" content="transitions defaultTimeout:5000 sse.reconnect:true">
+```
+
+The equivalent JSON form works too:
+
+```html
+<meta name="htmx-config" content='{"transitions":true,"defaultTimeout":5000,"sse":{"reconnect":true}}'>
+```
+
+HCON drops the outer braces and accepts flag-style booleans, dotted paths, flexible quoting, and space-separated pairs.
 
 You encounter HCON any time htmx reads a structured attribute:
 
-- `hx-swap` modifiers, `innerHTML swap:200ms settle:100ms`
-- `hx-trigger` modifiers, `click delay:500ms throttle:1s`
-- `hx-config`, `credentials:"include" timeout:5000`
-- `hx-vals` / `hx-headers`, `token:"abc" retry:3`
-- The `<meta name="htmx-config">` tag
+- `hx-swap` modifiers: `innerHTML swap:200ms settle:100ms`
+- `hx-trigger` modifiers: `click delay:500ms throttle:1s`
+- `hx-config`: `credentials:"include" timeout:5000`
+- `hx-vals` / `hx-headers`: `token:"abc" retry:3`
+- `<meta name="htmx-config">`
 - `HX-Location` response header
 
 ---
@@ -1926,7 +1938,7 @@ key:value, key2:value2
 | Input | Parsed as |
 |---|---|
 | `true` / `false` | boolean |
-| `42`, `500` | integer |
+| `42`, `0.5` | number |
 | `"quoted string"` | string (double quotes) |
 | `'quoted string'` | string (single quotes) |
 | `bare-word` | string |
@@ -1968,6 +1980,31 @@ Any value starting with `{` is parsed as JSON instead of HCON. This lets you com
 ```
 
 JSON and HCON are not mixed, the entire string is one or the other.
+
+#### Escaping commas and special characters
+
+Wrap values in quotes when they contain commas, spaces, or HCON delimiters.
+
+```html
+<!-- comma ends the trigger spec -->
+<input hx-trigger="keyup from:.a, .b">
+
+<!-- quoted, comma is part of the value -->
+<input hx-trigger='keyup from:".a, .b"'>
+
+<!-- space ends the bare value -->
+<button hx-vals="message:hello world">
+
+<!-- quoted, the whole phrase is the value -->
+<button hx-vals='message:"hello world"'>
+```
+
+Use whichever quote style the HTML attribute is not using:
+
+```html
+<input hx-trigger="keyup from:'.a, .b'">
+<input hx-trigger='keyup from:".a, .b"'>
+```
 
 ---
 
@@ -2061,14 +2098,25 @@ This works for any attribute that accepts HCON/JSON, including `hx-vals` and `hx
 
 ---
 
-### Limitations
+### Notes and limitations
 
-- **No arrays**, HCON has no array literal syntax. Use JSON (`[...]`) or the JSON fallback (`{...}`) when you need arrays.
-- **No nesting beyond dot-notation**, `a.b.c:value` works; `a:{b:{c:value}}` does not (use JSON for that).
-- **Integer values only**, bare numbers are parsed as integers via `parseInt`. Floats must be quoted: `threshold:"0.5"`.
-- **No expressions**, values are literals only. For dynamic values use `js:` prefix on the attribute (e.g. `hx-vals="js:{token: getToken()}"`).
-- **Prototype safety**, keys `__proto__`, `constructor`, and `prototype` are silently ignored.
-- **Mixed JSON+HCON**, a string starting with `{` is always JSON; you cannot mix the two syntaxes in one attribute value.
+- **Use JSON literals for primitive types.** `count:42` becomes a number, `enabled:true` becomes a boolean, and `name:bob` stays a string.
+- **Quote values for grouping, not type control.** Quotes preserve spaces, commas, and delimiters. Quoted numeric and boolean values still parse as numbers and booleans.
+- **Write durations naturally.** `200ms`, `2s`, and `1m` stay strings in HCON; htmx converts them where durations are expected.
+- **Quote dotted keys to keep them literal.** `"a.b":1` produces `{"a.b": 1}`. Bare `a.b:1` produces `{a: {b: 1}}`.
+- **Quote spaces and commas.** HCON-aware comma splitting preserves commas inside `[...]`, `(...)`, `<.../>`, and quotes.
+- **Use JSON for arrays.** HCON has no array literal syntax, so use JSON fallback, such as `{"items":[1,2,3]}`.
+- **Use dot-notation for nested objects.** `a.b.c:value` works; `a:{b:{c:value}}` does not.
+- **Use `js:` for expressions.** HCON values are literals, so write `hx-vals="js:{token: getToken()}"` for dynamic values.
+- **Avoid prototype keys.** `__proto__`, `constructor`, and `prototype` are ignored.
+- **Choose JSON or HCON.** A string starting with `{` is JSON; the two syntaxes cannot be mixed.
+
+### See also
+
+- [`hx-swap`](/reference/attributes/hx-swap)
+- [`hx-trigger`](/reference/attributes/hx-trigger)
+- [`hx-vals`](/reference/attributes/hx-vals)
+- [`hx-config`](/reference/attributes/hx-config)
 
 <hr data-sidebar-group="Features" />
 
