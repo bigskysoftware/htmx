@@ -929,18 +929,25 @@ var htmx = (() => {
             return func.call(thisArg, ...values);
         }
 
-        // when force is true: re-wires elt and all powered descendants from current attributes
-        process(elt, force) {
-            if (!elt?.isConnected) return;
-            if (!(elt instanceof Element)) {
-                for (let child of elt.children || []) this.process(child, force);
+        /**
+         * Initialize htmx attributes on root and all its descendants. When force is true, root
+         * and every powered descendant are first torn down and re-wired from their current
+         * attributes - use this after mutating hx-* attributes on an already-processed element.
+         * @see https://four.htmx.org/reference/methods/htmx-process
+         * @param {Element | ShadowRoot} root
+         * @param {boolean} [force]
+         */
+        process(root, force) {
+            if (!root?.isConnected) return;
+            if (!(root instanceof Element)) { // ShadowRoot
+                for (let elt of root.children || []) this.process(elt, force);
                 return;
             }
-            if (force) this.__cleanup(elt, true);
-            if (this.__ignore(elt)) return;
-            if (!this.__trigger(elt, "htmx:before:process")) return
-            let hxOnNodes = [elt];
-            let iter = this.#hxOnQuery.evaluate(elt)
+            if (force) this.__cleanup(root, true);
+            if (this.__ignore(root)) return;
+            if (!this.__trigger(root, "htmx:before:process")) return
+            let hxOnNodes = [root];
+            let iter = this.#hxOnQuery.evaluate(root)
             let node = null
             while (node = iter.iterateNext()) hxOnNodes.push(node)
             for (let hxOnNode of hxOnNodes) {
@@ -948,13 +955,13 @@ var htmx = (() => {
                     this.__handleHxOnAttributes(hxOnNode);
                 }
             }
-            for (let child of this.__queryEltAndDescendants(elt, this.#actionSelector)) {
-                this.__initializeElement(child);
+            for (let elt of this.__queryEltAndDescendants(root, this.#actionSelector)) {
+                this.__initializeElement(elt);
             }
-            for (let child of this.__queryEltAndDescendants(elt, this.#boostSelector)) {
-                this.__maybeBoost(child);
+            for (let elt of this.__queryEltAndDescendants(root, this.#boostSelector)) {
+                this.__maybeBoost(elt);
             }
-            this.__trigger(elt, "htmx:after:process");
+            this.__trigger(root, "htmx:after:process");
         }
 
         __maybeBoost(elt) {
@@ -998,6 +1005,12 @@ var htmx = (() => {
             return !elt._htmx?.initialized && !this.__ignore(elt);
         }
 
+        /**
+         * Remove listeners, timers, and observers from elt and all its powered descendants.
+         * When force is true, also delete their htmx state so a re-process fully re-initializes them.
+         * @param {Element} elt
+         * @param {boolean} [force]
+         */
         __cleanup(elt, force) {
             let elts = [elt, ...elt.querySelectorAll?.('[data-htmx-powered]') ?? []];
             for (let e of elts) {
