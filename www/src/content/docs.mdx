@@ -2599,13 +2599,15 @@ Crosses shadow DOM boundaries.
 
 ### Multiple Targets
 
-Separate multiple selectors with commas.
+`hx-target` only resolves to a single element. To swap the same response into multiple elements, use the [`hx-targets`](/extensions/hx-targets) extension attribute:
 
 ```html
-<button hx-get="/data" hx-target="#results, #cache">Load</button>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-targets.js"></script>
+
+<button hx-get="/data" hx-targets="#results, #cache">Load</button>
 ```
 
-Updates both elements with the response.
+See the [hx-targets extension docs](/extensions/hx-targets) for full details.
 
 ### Hyperscript-Style Syntax
 

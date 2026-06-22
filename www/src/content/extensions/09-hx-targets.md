@@ -33,10 +33,10 @@ When the button is clicked, the response from `/api/notification` is swapped int
 
 ### Inheritance
 
-The `hx-targets` attribute is inherited, so you can set it on a parent element:
+To inherit `hx-targets` from a parent element, use the `hx-targets:inherited` form on the parent:
 
 ```html
-<div hx-targets=".card-body">
+<div hx-targets:inherited=".card-body">
     <button hx-get="/api/content">Update All Cards</button>
     <button hx-get="/api/reset">Reset All Cards</button>
 
