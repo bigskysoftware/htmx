@@ -3372,7 +3372,7 @@ var htmx = (() => {
             }
         }
     });
-})()
+})();
 (() => {
 
     if (typeof navigation === 'undefined') return;
