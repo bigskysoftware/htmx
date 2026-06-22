@@ -618,4 +618,26 @@ describe('hx-on="eventSpec -> code" syntax', function() {
         window.foo.should.equal(true);
         delete window.foo;
     });
+
+    it('calling process() multiple times does not duplicate hx-on listeners', function() {
+        window.fooCount = 0;
+        let btn = createProcessedHTML('<button hx-on:click="window.fooCount++">x</button>');
+        htmx.process(btn);
+        htmx.process(btn);
+        htmx.process(btn);
+        btn.click();
+        window.fooCount.should.equal(1);
+        delete window.fooCount;
+    });
+
+    it('calling process() multiple times does not duplicate hx-on= listeners', function() {
+        window.fooCount = 0;
+        let btn = createProcessedHTML('<button hx-on="click -> window.fooCount++">x</button>');
+        htmx.process(btn);
+        htmx.process(btn);
+        htmx.process(btn);
+        btn.click();
+        window.fooCount.should.equal(1);
+        delete window.fooCount;
+    });
 })

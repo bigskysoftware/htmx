@@ -323,6 +323,10 @@ var htmx = (() => {
             return elt._htmx;
         }
 
+        __htmxState(elt) {
+            return elt._htmx_state ||= {};
+        }
+
         __initializeElement(elt) {
             if (this.__shouldInitialize(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
                 let htmxProp = this.__htmxProp(elt);
@@ -652,7 +656,7 @@ var htmx = (() => {
                     : (/^(drop|abort|replace|queue)/.test(syncValue) ? null : syncValue);
                 if (selector) syncElt = this.__findOrWarn(elt, selector, "hx-sync") || elt;
             }
-            return this.__htmxProp(syncElt).rq ||= new ReqQ()
+            return this.__htmxState(syncElt).rq ||= new ReqQ()
         }
 
         __isModifierKeyClick(evt) {
@@ -870,12 +874,14 @@ var htmx = (() => {
             return func.call(thisArg, ...values);
         }
 
-        process(elt) {
-            if (!elt) return;
+        // when force is true: re-wires elt and all powered descendants from current attributes
+        process(elt, force) {
+            if (!elt?.isConnected) return;
             if (!(elt instanceof Element)) {
-                for (let child of elt.children || []) this.process(child);
+                for (let child of elt.children || []) this.process(child, force);
                 return;
             }
+            if (force) this.__cleanup(elt, true);
             if (this.__ignore(elt)) return;
             if (!this.__trigger(elt, "htmx:before:process")) return
             let hxOnNodes = [elt];
@@ -937,24 +943,23 @@ var htmx = (() => {
             return !elt._htmx?.initialized && !this.__ignore(elt);
         }
 
-        __cleanup(elt) {
-            if (elt._htmx) {
-                this.__trigger(elt, "htmx:before:cleanup")
-                for (let spec of elt._htmx.triggerSpecs || []) {
+        __cleanup(elt, force) {
+            let elts = [elt, ...elt.querySelectorAll?.('[data-htmx-powered]') ?? []];
+            for (let e of elts) {
+                if (!e._htmx) continue;
+                this.__trigger(e, "htmx:before:cleanup")
+                for (let spec of e._htmx.triggerSpecs || []) {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
                     if (spec.throttleTimeout) clearTimeout(spec.throttleTimeout);
                     spec.observer?.disconnect()
                 }
-                for (let listenerInfo of elt._htmx.listeners || []) {
-                    listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler, listenerInfo);
+                for (let info of e._htmx.listeners || []) {
+                    info.fromElt.removeEventListener(info.eventName, info.handler, info);
                 }
-                this.__trigger(elt, "htmx:after:cleanup")
-            }
-            if (elt.firstChild) {
-                for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
-                    this.__cleanup(child);
-                }
+                e.removeAttribute('data-htmx-powered');
+                this.__trigger(e, "htmx:after:cleanup")
+                if (force) delete e._htmx;
             }
         }
 
@@ -1322,8 +1327,6 @@ var htmx = (() => {
                     }
                 } else if (swapStyle === 'outerSync') {
                     this.__copyAttributes(target, fragment.firstElementChild);
-                    this.__cleanup(target);
-                    delete target._htmx;
                     target.replaceChildren(...fragment.firstElementChild.childNodes);
                     newContent = [target];
                 } else if (swapStyle === 'innerMorph') {
@@ -1623,6 +1626,7 @@ var htmx = (() => {
         // hx-on:<event> binds to <event> directly
         // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
         __handleHxOnAttributes(node) {
+            if (node._htmx?.onInitialized) return;
             let hxOnNames = this.__prefixes("hx-on");
             let mc = this.config.metaCharacter || ':';
             let handler = (code) => async (evt) => {
@@ -1636,6 +1640,7 @@ var htmx = (() => {
             for (let attr of node.getAttributeNames()) {
                 let prefix = hxOnNames.find(p => attr.startsWith(p));
                 if (!prefix) continue;
+                this.__htmxProp(node).onInitialized = true;
                 let rest = attr.substring(prefix.length);
                 let value = node.getAttribute(attr);
                 // hx-on="click once -> doA(); blur -> doB()"
@@ -1663,8 +1668,8 @@ var htmx = (() => {
                 indicatorElements = this.__findAllExt(elt, indicatorsSelector, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
-                let p = this.__htmxProp(indicator);
-                p.rc = (p.rc || 0) + 1;
+                let s = this.__htmxState(indicator);
+                s.rc = (s.rc || 0) + 1;
                 this.__addClass(indicator, this.config.requestClass)
             }
             return indicatorElements
@@ -1672,10 +1677,10 @@ var htmx = (() => {
 
         __hideIndicators(indicatorElements) {
             for (let indicator of indicatorElements) {
-                let p = this.__htmxProp(indicator);
-                if (p.rc && --p.rc <= 0) {
+                let s = this.__htmxState(indicator);
+                if (s.rc && --s.rc <= 0) {
                     this.__removeClass(indicator, this.config.requestClass);
-                    delete p.rc;
+                    delete s.rc;
                 }
             }
         }
@@ -1686,8 +1691,8 @@ var htmx = (() => {
             if (disabledSelector) {
                 disabledElements = this.__findAllExt(elt, disabledSelector, "hx-disable");
                 for (let indicator of disabledElements) {
-                    let p = this.__htmxProp(indicator);
-                    p.dc = (p.dc || 0) + 1;
+                    let s = this.__htmxState(indicator);
+                    s.dc = (s.dc || 0) + 1;
                     indicator.disabled = true
                 }
             }
@@ -1696,10 +1701,10 @@ var htmx = (() => {
 
         __enableElements(disabledElements) {
             for (const indicator of disabledElements) {
-                let p = this.__htmxProp(indicator);
-                if (p.dc && --p.dc <= 0) {
+                let s = this.__htmxState(indicator);
+                if (s.dc && --s.dc <= 0) {
                     indicator.disabled = false
-                    delete p.dc;
+                    delete s.dc;
                 }
             }
         }
@@ -2095,8 +2100,12 @@ var htmx = (() => {
 
         __copyAttributes(destination, source) {
             let attributesToIgnore = this.config.morphIgnore || [];
+            let needsReinit = false;
+            let isHxAttr = name => this.__prefixes('hx-').some(p => name.startsWith(p));
             for (const attr of source.attributes) {
                 if (!attributesToIgnore.some(p => attr.name.startsWith(p)) && destination.getAttribute(attr.name) !== attr.value) {
+                    if (isHxAttr(attr.name)) needsReinit = true;
+                    if (!this.__triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: attr.value })) continue;
                     destination.setAttribute(attr.name, attr.value);
                     if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
                         destination.value = attr.value;
@@ -2106,9 +2115,12 @@ var htmx = (() => {
             for (let i = destination.attributes.length - 1; i >= 0; i--) {
                 let attr = destination.attributes[i];
                 if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.some(p => attr.name.startsWith(p))) {
+                    if (isHxAttr(attr.name)) needsReinit = true;
+                    if (!this.__triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: null })) continue;
                     destination.removeAttribute(attr.name);
                 }
             }
+            if (needsReinit) this.__cleanup(destination, true);
         }
 
         __populateIdMapWithTree(idMap, persistentIds, root, elements) {

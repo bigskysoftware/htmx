@@ -76,7 +76,7 @@ export interface Htmx {
   on(event: string, handler: (evt: Event) => void): void;
   on(target: string | Element, event: string, handler: (evt: Event) => void): void;
   onLoad(callback: (elt: Element) => void): void;
-  process(elt: Element): void;
+  process(elt: Element, force?: boolean): void;
   registerExtension(name: string, ext: any): void;
   trigger(elt: Element | string, event: string, detail?: any, bubbles?: boolean): boolean;
   timeout(ms: number): Promise<void>;
