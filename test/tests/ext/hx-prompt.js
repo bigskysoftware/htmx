@@ -42,6 +42,28 @@ describe('hx-prompt extension', function() {
         assert.equal(lastFetch().request.headers['HX-Prompt'], 'because');
     });
 
+    it('URI-encodes unicode prompt responses for fetch headers', async function() {
+        window.prompt = () => '中文 reason';
+
+        let fetchCalled = false;
+        let encodedHeader;
+        let btn = createProcessedHTML('<button hx-delete="/items/1" hx-prompt="Reason for deletion?">Delete</button>');
+        btn.addEventListener('htmx:before:request', (e) => {
+            e.detail.ctx.fetch = async (action, request) => {
+                fetchCalled = true;
+                encodedHeader = request.headers['HX-Prompt'];
+                new Request(new URL(action, location.href), request);
+                return new Response('ok');
+            };
+        });
+
+        btn.click();
+        await forRequest();
+
+        assert.isTrue(fetchCalled);
+        assert.equal(encodedHeader, encodeURI('中文 reason'));
+    });
+
     it('aborts the request when the user cancels', async function() {
         window.prompt = () => null;
         mockResponse('DELETE', '/items/1', 'ok');
@@ -105,7 +127,7 @@ describe('hx-prompt extension', function() {
         btn.click();
         await forRequest();
 
-        assert.equal(lastFetch().request.headers['HX-Prompt'], 'a reason');
+        assert.equal(lastFetch().request.headers['HX-Prompt'], 'a%20reason');
         window.confirm = originalConfirm;
     });
 
@@ -155,7 +177,7 @@ describe('hx-prompt extension', function() {
         window.prompt = () => 'long enough';
         btn.click();
         await forRequest();
-        assert.equal(lastFetch().request.headers['HX-Prompt'], 'long enough');
+        assert.equal(lastFetch().request.headers['HX-Prompt'], 'long%20enough');
     });
 
     it('uses window.htmxPrompt when defined', async function() {
@@ -167,7 +189,7 @@ describe('hx-prompt extension', function() {
         btn.click();
         await forRequest();
 
-        assert.equal(lastFetch().request.headers['HX-Prompt'], 'answered: Q?');
+        assert.equal(lastFetch().request.headers['HX-Prompt'], 'answered:%20Q?');
     });
 
     it('null from window.htmxPrompt aborts the request', async function() {
