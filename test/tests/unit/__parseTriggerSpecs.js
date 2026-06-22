@@ -268,6 +268,20 @@ describe('__parseTriggerSpecs unit tests', function() {
         assert.equal(specs[0].from, ':not(.a, .b)')
     })
 
+    it('preserves comma inside from:<.../> selector list', function () {
+        let specs = htmx.__parseTriggerSpecs("keydown[(ctrlKey || metaKey) && key=='Enter'] from:<#title,#body/>")
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, "keydown[(ctrlKey || metaKey) && key=='Enter']")
+        assert.equal(specs[0].from, '#title,#body')
+    })
+
+    it('preserves comma and space inside from:<.../> selector list', function () {
+        let specs = htmx.__parseTriggerSpecs("keydown[(ctrlKey || metaKey) && key=='Enter'] from:<#title, #body/>")
+        assert.equal(specs.length, 1)
+        assert.equal(specs[0].name, "keydown[(ctrlKey || metaKey) && key=='Enter']")
+        assert.equal(specs[0].from, '#title, #body')
+    })
+
     it('preserves both > and comma in hyperscript value', function () {
         let specs = htmx.__parseTriggerSpecs('click from:<ul > li:not(.a, .b)/>, change')
         assert.equal(specs.length, 2)
