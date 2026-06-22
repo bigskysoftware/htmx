@@ -257,7 +257,8 @@ var htmx = (() => {
         }
 
         __internalField(k) {
-            return k === '__proto__' || k === 'constructor' || k === 'prototype';
+            // Escape underscores so build:iife's `sed s/__/#/g` leaves the literal intact.
+            return k === '_\x5fproto_\x5f' || k === 'constructor' || k === 'prototype';
         }
 
         __mergeConfig(configString, target) {
