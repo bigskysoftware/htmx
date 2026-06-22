@@ -257,7 +257,7 @@ var htmx = (() => {
         }
 
         __internalField(k) {
-            return k === '__proto__' || k === 'constructor' || k === 'prototype';
+            return k === '_\x5fproto_\x5f' || k === 'constructor' || k === 'prototype';
         }
 
         __mergeConfig(configString, target) {
