@@ -1304,10 +1304,10 @@ var htmx = (() => {
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
             // skip main swap if fragment is empty after hx-partial removal but respect empty modifier
             if (
-                swapSpec.style === 'delete' ||           // delete always runs regardless of content
-                fragment.childElementCount > 0 ||        // or fragment has elements
-                fragment.textContent.trim() ||           // or fragment has text
-                (swapSpec.empty ?? !partialTasks.length) // empty:true/false overrides, default: allow if no partials
+                swapSpec.style === 'delete' ||    // delete always runs regardless of content
+                fragment.childElementCount > 0 || // or fragment has elements
+                fragment.textContent.trim() ||    // or fragment has text
+                (swapSpec.empty ?? this.config.defaultSwapEmpty ?? !partialTasks.length) // empty:true/false overrides, default: allow if no partials
             ) {
                 if (ctx.select) {
                     let selected = fragment.querySelectorAll(ctx.select);
