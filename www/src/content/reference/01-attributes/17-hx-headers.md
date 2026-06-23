@@ -23,6 +23,19 @@ If you wish for `hx-headers` to *evaluate* the values given, you can prefix the 
   <div hx-get="/example" hx-headers='js:{myVal: calculateValue()}'>Get Some HTML, Including a Dynamic Custom Header from Javascript in the Request</div>
 ```
 
+## Inheritance
+
+By default, `hx-headers` does not inherit to child elements. Use the `:inherited` modifier to apply headers to all htmx requests within a subtree. This is useful for propagating a CSRF token across a section of the page:
+
+```html
+<div hx-headers:inherited='js:{"X-CSRF-Token": getCsrfToken()}'>
+  <button hx-post="/transfer">Submit</button>
+  <button hx-delete="/item/1">Delete</button>
+</div>
+```
+
+A child declaration of a header overrides a parent declaration.
+
 ## Security Considerations
 
 * By default, the value of `hx-headers` must be valid [JSON](https://developer.mozilla.org/en-US/docs/Glossary/JSON).
@@ -36,6 +49,4 @@ If you wish for `hx-headers` to *evaluate* the values given, you can prefix the 
   provide [CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
   For more information see the [CSRF Prevention](https://htmx.org/docs/#csrf-prevention) section.
 
-## Notes
 
-* A child declaration of a header overrides a parent declaration.
