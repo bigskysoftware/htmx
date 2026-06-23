@@ -573,8 +573,8 @@ All events provide a consistent `ctx` object with request/response information.
 | [`metaCharacter`](/reference/config/htmx-config-metaCharacter)         | `':'`           | Separator character in attribute/event names                  |
 | [`morphIgnore`](/reference/config/htmx-config-morphIgnore)             | `["data-htmx-powered"]` | Attribute name prefixes to preserve during morph              |
 | [`morphScanLimit`](/reference/config/htmx-config-morphScanLimit)       |                 | Max elements to scan during morph matching                    |
-| [`morphSkip`](/reference/config/htmx-config-morphSkip)                 | `''`            | CSS selector for elements to skip during morph                |
-| [`morphSkipChildren`](/reference/config/htmx-config-morphSkipChildren) | `''`            | CSS selector for elements whose children to skip during morph |
+| [`morphSkip`](/reference/config/htmx-config-morphSkip)                 | `'[hx-morph-skip]'`            | CSS selector for elements to skip during morph                |
+| [`morphSkipChildren`](/reference/config/htmx-config-morphSkipChildren) | `'[hx-morph-skip-children]'`            | CSS selector for elements whose children to skip during morph |
 
 #### Core extensions
 
@@ -1384,10 +1384,17 @@ Note that a similar effect can be achieved with the [`hx-preserve`](/reference/a
 
 ##### Excluding Elements from Morphing
 
-Exclude specific elements from morphing using config options:
+Add `hx-morph-skip` or `hx-morph-skip-children` to elements in your server templates:
 
-- [`htmx.config.morphSkip`](/reference/config/htmx-config-morphskip) - Completely skip morphing specific elements (they stay frozen)
-- [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphskipchildren) - Update element attributes but preserve children
+- `hx-morph-skip` - completely skip morphing specific elements (attrs + children stay frozen)
+- `hx-morph-skip-children` - update element attributes but preserve children
+
+Or configure globally with CSS selectors:
+
+```javascript
+htmx.config.morphSkip         = 'custom-widget, .frozen';
+htmx.config.morphSkipChildren = 'lit-component, .sortable';
+```
 
 Useful for third-party widgets, custom web components, or active animations.
 
@@ -3049,7 +3056,7 @@ If you do use these features, the [`hx-csp` extension](/extensions/hx-csp) with 
 
 htmx injects its indicator CSS using [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) (`document.adoptedStyleSheets`), which are not subject to `style-src` CSP restrictions.
 
-The one area to be aware of is morph swaps when used alongside JS frameworks like Alpine that set `style` attributes via JavaScript. During morph, htmx's `__copyAttributes` reads all attributes from the new element and copies them to the old one, including any `style` attributes set by the framework. Under a strict `style-src` policy without `'unsafe-inline'`, this `setAttribute("style", ...)` call will produce a CSP violation.
+The one area to be aware of is morph swaps when used alongside JS frameworks like Alpine that set `style` attributes via JavaScript. During morph, htmx reconciles attributes between the old and new element, including any `style` value. Under a strict `style-src` policy without `'unsafe-inline'`, this `setAttribute("style", ...)` call will produce a CSP violation.
 
 Add `"style"` to [`morphIgnore`](/reference/config/htmx-config-morphIgnore) to skip it:
 
@@ -3161,8 +3168,8 @@ They are listed below:
 | `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,optimistic'`)                                                                                                                                                                         |
 | `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute name prefixes to preserve when morphing elements                                                                                                                                                                   |
 | `htmx.config.morphScanLimit`      | limits the number of nodes scanned during morphing                                                                                                                                                                                                                         |
-| `htmx.config.morphSkip`           | CSS selector for elements to completely skip during morphing (they stay frozen)                                                                                                                                                                                             |
-| `htmx.config.morphSkipChildren`   | CSS selector for elements whose attributes update but children are preserved during morphing                                                                                                                                                                                |
+| `htmx.config.morphSkip`           | defaults to `'[hx-morph-skip]'`, CSS selector for elements to completely skip during morphing (they stay frozen)                                                                                                                                                            |
+| `htmx.config.morphSkipChildren`   | defaults to `'[hx-morph-skip-children]'`, CSS selector for elements whose attributes update but children are preserved during morphing                                                                                                                                      |
 | `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                                        |
 | `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                                          |
 | `htmx.config.defaultFocusScroll`  | defaults to `false`, whether to scroll focused elements into view after swap                                                                                                                                                                                                |

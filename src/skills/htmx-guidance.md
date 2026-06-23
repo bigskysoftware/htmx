@@ -193,10 +193,10 @@ Key config values:
 | `history`             | `true`                  | Enable history support (`true`, `false`, `"reload"`)   |
 | `extensions`          | `""`                    | Whitelist of allowed extensions (empty = allow all)    |
 | `prefix`              | `""`                    | Custom attribute prefix (e.g. `"data-hx-"`)            |
-| `morphIgnore`         | `["data-htmx-powered"]` | Attributes to ignore when morphing                     |
-| `morphScanLimit`      | `10`                    | Sibling scan limit during morphing                     |
-| `morphSkip`           | `undefined`             | CSS selector for elements to skip morphing             |
-| `morphSkipChildren`   | `undefined`             | CSS selector for elements whose children skip morphing |
+| `morphIgnore`         | `["data-htmx-powered"]` | Attribute name prefixes to leave unchanged when morphing |
+| `morphScanLimit`      | `10`                    | Sibling scan limit during morphing                       |
+| `morphSkip`           | `'[hx-morph-skip]'`     | CSS selector for elements to skip morphing entirely      |
+| `morphSkipChildren`   | `'[hx-morph-skip-children]'` | CSS selector for elements whose children skip morphing |
 
 ## Events
 
@@ -383,6 +383,23 @@ Server sends `HX-Trigger: newContact` header. Table listens for the event:
 
 **Warning:** morphing preserves user input values. It cannot be used to reset forms -- use `innerHTML`/`outerHTML` for
 that.
+
+**Excluding elements from morphing** — add attributes to your server templates:
+
+```html
+<!-- freeze entire element: attrs + children unchanged -->
+<custom-widget hx-morph-skip>...</custom-widget>
+
+<!-- freeze only children: attrs still update -->
+<lit-component hx-morph-skip-children>...</lit-component>
+```
+
+Or set CSS selectors globally in config:
+
+```javascript
+htmx.config.morphSkip         = 'custom-widget, .frozen';
+htmx.config.morphSkipChildren = 'lit-component, .sortable';
+```
 
 ## Other Attributes
 

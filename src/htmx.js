@@ -213,6 +213,8 @@ var htmx = (() => {
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
                 morphIgnore: ["data-htmx-powered"],
+                morphSkip: '[hx-morph-skip]',
+                morphSkipChildren: '[hx-morph-skip-children]',
                 morphScanLimit: 10,
                 noSwap: [204, 304],
                 implicitInheritance: false,
@@ -1395,6 +1397,9 @@ var htmx = (() => {
                     }
                 } else if (swapStyle === 'outerSync') {
                     this.__copyAttributes(target, fragment.firstElementChild);
+                    for (const child of target.children) {
+                        this.__cleanup(child)
+                    }
                     target.replaceChildren(...fragment.firstElementChild.childNodes);
                     newContent = [target];
                 } else if (swapStyle === 'innerMorph') {

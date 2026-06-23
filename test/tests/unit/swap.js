@@ -564,6 +564,24 @@ describe('swap() unit tests', function() {
         find('#d1').innerText.should.equal('New')
     })
 
+    it('outerSync cleans up powered children before replacing them', async function() {
+        mockResponse('GET', '/endpoint', 'response')
+        createProcessedHTML("<div id='target'><button id='btn' hx-get='/endpoint' hx-swap='innerHTML'>click</button></div>")
+        const btn = find('#btn')
+        assert.isNotNull(btn._htmx?.initialized, 'child should start initialized')
+
+        await htmx.swap({
+            target: '#target',
+            swap: 'outerSync',
+            text: '<div id="target"><span>replaced</span></div>',
+            sourceElement: find('#target')
+        })
+
+        assert.isNull(btn.getAttribute('data-htmx-powered'), 'old child should be cleaned up')
+        assert.isNotOk(find('#btn'), 'old button should be gone')
+        assert.equal(find('#target').textContent, 'replaced')
+    })
+
     it('outerSync adds hx-get to root element and initializes it', async function () {
         createProcessedHTML("<div id='target'><p>static</p></div>")
         mockResponse('GET', '/dynamic', 'fetched')

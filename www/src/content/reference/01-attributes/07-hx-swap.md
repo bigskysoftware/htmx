@@ -134,9 +134,11 @@ Morphs entire element, preserving state and focus.
 
 **Morph exclusions:**
 
-Exclude specific elements from morphing:
-- [`htmx.config.morphSkip`](/reference/config/htmx-config-morphskip) - Skip entire elements
-- [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphskipchildren) - Skip children only
+Add attributes to your server templates to exclude elements from morphing:
+- `hx-morph-skip` — freeze entire element (attrs + children unchanged)
+- `hx-morph-skip-children` — freeze children only, attrs still update
+
+Or configure globally via [`htmx.config.morphSkip`](/reference/config/htmx-config-morphSkip) and [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphSkipChildren).
 
 ### `outerSync`
 

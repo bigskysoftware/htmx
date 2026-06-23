@@ -41,3 +41,10 @@ The response requires an element with the same `id`, but its type and other attr
     <div id="retain" hx-preserve></div>
   </div>
   ```
+* Works with morph swaps (`innerMorph`/`outerMorph`). When the server response includes an element with `hx-preserve`,
+  htmx stashes the live element before morphing and restores it afterward. The `id` is required for morph the same as
+  for other swap styles. Note that morph already natively preserves element identity for elements with matching `id`s.
+  DOM state, focus, and scroll position are maintained without `hx-preserve`. To prevent server updates from changing
+  an element or its children entirely, use [`hx-morph-skip`](/reference/config/htmx-config-morphSkip) or
+  [`hx-morph-skip-children`](/reference/config/htmx-config-morphSkipChildren) in your server templates. These work
+  similarly to `hx-preserve` but are morph-specific and don't always require an `id`.
