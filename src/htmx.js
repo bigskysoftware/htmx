@@ -236,7 +236,7 @@ var htmx = (function() {
       /**
        * If set to true, disables htmx-based requests to non-origin hosts.
        * @type boolean
-       * @default false
+       * @default true
        */
       selfRequestsOnly: true,
       /**
