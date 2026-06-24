@@ -239,6 +239,23 @@ describe('__handleTriggerEvent unit tests', function() {
         assert.equal(ctx.request.submitter, button)
     })
 
+    it('keeps multipart form data as FormData when form enctype is multipart/form-data', async function () {
+        let form = createProcessedHTML('<form enctype="multipart/form-data"><input name="field" value="test"><button hx-post="js:"></button></form>')
+        let button = form.querySelector('button')
+        let ctx = htmx.__createRequestContext(button, new Event('click'))
+        await htmx.__handleTriggerEvent(ctx)
+        assert.instanceOf(ctx.request.body, FormData)
+    })
+
+    it('hx-encoding takes precedence over form enctype', async function () {
+        let form = createProcessedHTML('<form enctype="multipart/form-data"><input name="field" value="test"><button hx-post="/test" hx-encoding="application/x-www-form-urlencoded"></button></form>')
+        let button = form.querySelector('button')
+        let ctx = htmx.__createRequestContext(button, new Event('click'))
+        ctx.fetch = async () => ({ status: 200, headers: new Headers(), text: async () => '' })
+        await htmx.__handleTriggerEvent(ctx)
+        assert.instanceOf(ctx.request.body, URLSearchParams)
+    })
+
     it('sets credentials to same-origin', async function () {
         let div = createProcessedHTML('<div hx-get="js:"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))

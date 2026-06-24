@@ -559,7 +559,7 @@ var htmx = (() => {
                     ctx.request.action = url.href;
                 }
                 ctx.request.body = null;
-            } else if (this.__attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
+            } else if ((this.__attributeValue(elt, "hx-encoding") ?? form?.enctype) !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body);
             }
 
