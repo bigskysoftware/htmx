@@ -95,9 +95,26 @@ Supported modifiers:
 - `target:SELECTOR` - Target element selector
 - `select:SELECTOR` - Content selection from response (works with `outerSync`; use `innerHTML strip` instead of `innerHTML` + `select` when targeting a non-body element)
 
+## Anchor Boosting
+
+Anchors are boosted when they navigate to the same origin in the current window:
+
+```html
+<a href="/example">Same-origin link</a>
+<a href="/example" target="_self">Same-origin link targeting this window</a>
+```
+
+These anchors are not boosted:
+
+```html
+<a href="https://other-domain.com/example">Different origin</a>
+<a href="#section">Local anchor</a>
+<a href="/report.pdf" download>Browser download</a>
+<a href="/example" target="_blank">New window or tab</a>
+```
+
 ## Notes
 
-* Only links that are to the same domain and that are not local anchors will be boosted
 * All requests are done via AJAX, so keep that in mind when doing things like redirects
 * To find out if the request results from a boosted anchor or form, look for
   [`HX-Boosted`](/reference/headers/HX-Boosted) in the request header
