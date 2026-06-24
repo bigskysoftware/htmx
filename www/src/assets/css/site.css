@@ -238,17 +238,17 @@ tr.stretch-link {
         padding-inline-end: 0.75rem;
     }
 
-    & td:first-child a {
-        position: static;
+    @media (hover: hover) and (pointer: fine) {
+        & td:first-child a {
+            position: static;
 
-        &::after {
-            content: '';
-            position: absolute;
-            inset: 0;
+            &::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+            }
         }
-    }
 
-    @media (hover: hover) {
         &:hover td {
             color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
         }
