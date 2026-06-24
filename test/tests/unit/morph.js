@@ -696,9 +696,53 @@ describe('Morph Swap Styles Tests', function() {
         });
     });
 
+    describe('hx-morph-skip attribute (default morphSkip selector)', function() {
+        it('skips element with hx-morph-skip attribute', async function() {
+            mockResponse('GET', '/test', '<div hx-morph-skip data-v="new">new</div>');
+            const div = createProcessedHTML('<div id="target"><div hx-morph-skip data-v="old">old</div></div>');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            assert.equal(div.querySelector('[hx-morph-skip]').getAttribute('data-v'), 'old');
+            assert.equal(div.querySelector('[hx-morph-skip]').textContent, 'old');
+        });
+
+        it('morphs other elements when only some have hx-morph-skip', async function() {
+            mockResponse('GET', '/test', '<div hx-morph-skip data-v="new">skip</div><div class="morph" data-v="new">morph</div>');
+            const div = createProcessedHTML('<div id="target"><div hx-morph-skip data-v="old">skip</div><div class="morph" data-v="old">morph</div></div>');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            assert.equal(div.querySelector('[hx-morph-skip]').getAttribute('data-v'), 'old');
+            assert.equal(div.querySelector('.morph').getAttribute('data-v'), 'new');
+        });
+    });
+
+    describe('hx-morph-skip-children attribute (default morphSkipChildren selector)', function() {
+        it('updates attrs but preserves children with hx-morph-skip-children', async function() {
+            mockResponse('GET', '/test', '<div hx-morph-skip-children data-v="new"><span>new</span></div>');
+            const div = createProcessedHTML('<div id="target"><div hx-morph-skip-children data-v="old"><span>old</span></div></div>');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            assert.equal(div.querySelector('[hx-morph-skip-children]').getAttribute('data-v'), 'new', 'attrs update');
+            assert.equal(div.querySelector('[hx-morph-skip-children] span').textContent, 'old', 'children preserved');
+        });
+
+        it('morphs children of elements without hx-morph-skip-children', async function() {
+            mockResponse('GET', '/test', '<div hx-morph-skip-children data-v="new"><span>new</span></div><div class="normal"><span>new</span></div>');
+            const div = createProcessedHTML('<div id="target"><div hx-morph-skip-children data-v="old"><span>old</span></div><div class="normal"><span>old</span></div></div>');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            assert.equal(div.querySelector('[hx-morph-skip-children] span').textContent, 'old');
+            assert.equal(div.querySelector('.normal span').textContent, 'new');
+        });
+    });
+
     describe('morphSkip config', function() {
         afterEach(function() {
-            htmx.config.morphSkip = null;
+            htmx.config.morphSkip = '[hx-morph-skip]';
         });
 
         it('skips morphing elements matching selector', async function() {
@@ -773,7 +817,7 @@ describe('Morph Swap Styles Tests', function() {
 
     describe('morphSkipChildren config', function() {
         afterEach(function() {
-            htmx.config.morphSkipChildren = null;
+            htmx.config.morphSkipChildren = '[hx-morph-skip-children]';
         });
 
         it('updates attributes but skips children morphing', async function() {

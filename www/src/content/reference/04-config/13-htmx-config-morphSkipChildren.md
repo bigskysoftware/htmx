@@ -7,28 +7,18 @@ The `htmx.config.morphSkipChildren` option is a CSS selector for elements whose 
 
 The element itself updates (attributes change). Its children stay untouched.
 
-**Default:** `undefined`
+**Default:** `'[hx-morph-skip-children]'`
 
-## Example
+Add `hx-morph-skip-children` to any element in your server templates to freeze its children during morph while still allowing its own attributes to update:
+
+```html
+<lit-component hx-morph-skip-children value="{{value}}">...</lit-component>
+```
+
+Or override with any CSS selector:
 
 ```javascript
 htmx.config.morphSkipChildren = "my-component";
-```
-
-```html
-<meta name="htmx-config" content='{"morphSkipChildren":"my-component"}'>
-```
-
-## Usage
-
-```html
-<body hx-swap:inherited="innerMorph">
-  <my-component data-value="123">
-    <!-- Element attributes update above -->
-    <!-- Children below stay frozen -->
-    <div class="internal">Preserved</div>
-  </my-component>
-</body>
 ```
 
 ## Use Cases
