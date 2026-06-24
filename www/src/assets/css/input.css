@@ -127,9 +127,7 @@
         }
     }
 
-    /* Use Chicago font in headings */
     h1, h2, h3, h4, h5, h6 {
-        font-family: var(--font-chicago), serif;
         letter-spacing: var(--tracking-tightest);
 
         @media (width >= 40rem) {

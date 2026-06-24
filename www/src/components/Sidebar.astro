@@ -29,13 +29,7 @@ const linkClasses = 'sidebar-link flex items-center gap-2.5 px-3 py-2 text-sm ro
             lg:fixed lg:top-(--header-height) lg:left-0 lg:bottom-0 lg:w-[320px] lg:border-r
          ">
 
-        <div class="h-7 shrink-0"></div>
-
-        <div class="flex items-center justify-between gap-2 px-0.5 mb-6">
-            <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400">
-                {folder.frontmatter.title}
-            </h2>
-        </div>
+        <div class="h-7.5 shrink-0"></div>
 
         <div _={isAnchorNav ? `install Scrollspy` : undefined}>
 
@@ -52,11 +46,11 @@ const linkClasses = 'sidebar-link flex items-center gap-2.5 px-3 py-2 text-sm ro
 
                 return (
                         <div class="w-full not-first:mt-3">
-                            <h3 class="font-sans text-[0.625rem] tracking-widest uppercase truncate min-w-0 px-3 py-1 text-neutral-600 dark:text-neutral-400"
+                            <h3 class="font-sans text-[0.625rem] tracking-[0.125em] uppercase truncate min-w-0 px-3 py-1 text-neutral-500"
                                 set:html={subFolder.frontmatter.title}/>
 
                             {files.length > 0 && (
-                                    <ul class="space-y-0.5 border-l border-neutral-150 dark:border-neutral-850 ml-3 pl-3 mt-1 mb-4">
+                                    <ul class="space-y-0.5 mt-2 mb-4">
                                         {files.map((file: ContentFile) => {
                                             const isActive = currentUrl === file.url;
                                             const isSoon = file.frontmatter.soon;

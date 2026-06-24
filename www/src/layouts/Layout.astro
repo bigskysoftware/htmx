@@ -172,7 +172,7 @@ const footerSections = [
 
             <!-- Logo -->
             <a href="/" aria-label="HTMX Homepage"
-               class="group/logo text-xl sm:text-[1.375rem] lg:text-2xl whitespace-nowrap font-mono tracking-tight font-extrabold inline-flex items-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 shrink-0 rounded-sm outline-hidden">
+               class="group/logo text-xl sm:text-[1.375rem] lg:text-2xl whitespace-nowrap font-mono inline-flex items-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 shrink-0 rounded-sm outline-hidden">
                 <span aria-hidden="true">&lt;</span>
                 <b class="relative text-blue-700 dark:text-blue-350 dark:group-interact/logo:text-blue-300"
                    aria-hidden="true">
@@ -196,7 +196,7 @@ const footerSections = [
             <!-- Version Selector -->
             <div class="inline-flex items-center relative group/version">
                 <select aria-label="Select htmx version"
-                        class="appearance-none bg-transparent pl-2 pr-5 py-1 text-xs font-chicago rounded-sm text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white cursor-pointer outline-hidden border border-transparent interact:border-neutral-200 dark:interact:border-neutral-800 translate-y-0.5"
+                        class="appearance-none bg-transparent pl-2 pr-5 py-1 text-xs rounded-sm text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white cursor-pointer outline-hidden border border-transparent interact:border-neutral-200 dark:interact:border-neutral-800 translate-y-0.5"
                         onchange="window.location.href = this.value">
                     <option value="/" selected>v4</option>
                     <option value="https://htmx.org">v2</option>
@@ -211,12 +211,13 @@ const footerSections = [
         <div class="hidden lg:flex items-center justify-between flex-1 gap-4 xl:gap-6">
             <div aria-label="Main" class="hidden lg:flex items-center gap-4 xl:gap-6 flex-1"
                  hx-preload:inherited="mouseenter">
-                <ul class="flex gap-4 xl:gap-6 items-center justify-center xl:text-[1.075rem] font-chicago tracking-tight">
+                <ul class="flex gap-4 xl:gap-6 items-center justify-center xl:text-[1.075rem]">
                     {navigationItems.map((item) => (
                             <li>
                                 <a href={item.url}
+                                   data-label={item.name}
                                    aria-current={isCurrentPath(Astro.url.pathname, item.url) ? 'page' : undefined}
-                                   class="px-3 py-1 interact:underline text-neutral-500 dark:text-neutral-450 interact:text-blue-700 dark:interact:text-blue-300 aria-[current=page]:text-neutral-800 dark:aria-[current=page]:text-neutral-200 aria-[current=page]:font-bold outline-hidden">
+                                   class="inline-block px-3 py-1 text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline aria-[current=page]:font-bold aria-[current=page]:text-neutral-950 dark:aria-[current=page]:text-neutral-50 outline-hidden after:content-[attr(data-label)] after:block after:h-0 after:overflow-hidden after:font-bold after:invisible">
                                     {item.name}
                                 </a>
                             </li>

@@ -78,9 +78,9 @@ if (file) {
     headings = folder!.folders.map(sub => ({ depth: 2, slug: sub.slug, text: sub.frontmatter.title }));
 } else if (isDocsRoot) {
     ({headings, sidebar: sidebarFolder} = await buildDocsSidebar(folder));
-    headings = headings.map(h => h.depth === 2 ? {...h, label: true} : h);
 }
 const includeTableOfContents = headings.length > 0;
+const editPageUrl = `https://github.com/bigskysoftware/htmx/edit/four-dev/www/src/content/${page.path}`;
 ---
 
 <Layout title={title}
@@ -134,16 +134,25 @@ const includeTableOfContents = headings.length > 0;
                             "hidden xl:flex xl:flex-col xl:w-60 xl:min-w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) h-[calc(100vh-var(--header-height))] pt-27 pb-8 pr-4",
                             includeSidebar ? "xl:-me-16" : "xl:-me-[19rem]",
                         ]}>
-                            <div class="shrink-0 mb-2">
-                                <h2 class="text-[0.625rem] font-sans tracking-widest uppercase text-neutral-600 dark:text-neutral-400">
+                            <div class="shrink-0 mb-4">
+                                <h2 class="text-[0.625rem] font-sans tracking-[0.125em] uppercase text-neutral-500">
                                     On this page
                                 </h2>
                             </div>
-                            <div class="flex-1 min-h-0 overflow-hidden">
-                                <div class="h-full overflow-y-auto scrollbar-subtle">
+                            <div class="min-h-0 overflow-hidden">
+                                <div class="max-h-[calc(100vh-var(--header-height)-12rem)] overflow-y-auto scrollbar-subtle">
                                     <TableOfContents {headings}/>
                                 </div>
                             </div>
+                            <nav class="mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-850" aria-label="Page actions">
+                                <a href={editPageUrl}
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="group flex items-center gap-2.5 rounded-sm text-[13px] text-neutral-500 dark:text-neutral-450 interact:text-blue-700 dark:interact:text-blue-300 outline-hidden">
+                                    <i class="icon-[mdi--pencil] size-3.5" aria-hidden="true"></i>
+                                    <span>Edit page</span>
+                                </a>
+                            </nav>
                         </aside>
                 )}
             </div>
