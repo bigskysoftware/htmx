@@ -982,7 +982,7 @@ var htmx = (() => {
             if (this.__shouldInitialize(elt)) {
                 if (elt.tagName === "A") {
                     if (elt.target === '' || elt.target === '_self') {
-                        return !elt.getAttribute('href')?.startsWith?.("#") && this.__isSameOrigin(elt.href)
+                        return !elt.hasAttribute('download') && !elt.getAttribute('href')?.startsWith?.("#") && this.__isSameOrigin(elt.href)
                     }
                 } else if (elt.tagName === "FORM") {
                     return elt.method !== 'dialog' &&  this.__isSameOrigin(elt.action);
