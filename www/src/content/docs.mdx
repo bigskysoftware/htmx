@@ -257,166 +257,142 @@ See [Extensions documentation](#extensions) for details.
 
 ### Renames and Removals
 
-#### Rename `hx-disable`
+#### Attributes
 
-Do this **before** upgrading. The name `hx-disable` has been reassigned:
+Do the `hx-disable` rename **before** upgrading. In htmx 2, `hx-disable` meant "skip htmx processing on this element". In htmx 4, that role is [`hx-ignore`](/reference/attributes/hx-ignore), and `hx-disable` now does what `hx-disabled-elt` used to do.
 
-- In htmx 2, `hx-disable` meant "skip htmx processing on this element"
-- In htmx 4, that role is [`hx-ignore`](/reference/attributes/hx-ignore)
-- The name `hx-disable` now does what `hx-disabled-elt` used to do (disable form elements during requests)
+| htmx 2.x          | htmx 4.x                                                                                           | Type    | Notes                                                                                              |
+|-------------------|----------------------------------------------------------------------------------------------------|---------|----------------------------------------------------------------------------------------------------|
+| [`hx-disable`](https://htmx.org/attributes/hx-disable/)           | [`hx-ignore`](/reference/attributes/hx-ignore)                                                     | renamed | Rename this first to avoid conflicts.                                                              |
+| [`hx-disabled-elt`](https://htmx.org/attributes/hx-disabled-elt/) | [`hx-disable`](/reference/attributes/hx-disable)                                                   | renamed | Rename this after `hx-disable` becomes `hx-ignore`.                                                |
+| [`hx-vars`](https://htmx.org/attributes/hx-vars/)                 | [`hx-vals`](/reference/attributes/hx-vals)                                                         | removed | Use the `js:` prefix.                                                                              |
+| [`hx-params`](https://htmx.org/attributes/hx-params/)             | [`htmx:config:request`](/reference/events/htmx-config-request)                                     | removed | Configure request parameters in the event.                                                         |
+| [`hx-prompt`](https://htmx.org/attributes/hx-prompt/)             | [`hx-prompt` extension](/extensions/hx-prompt)                                                     | removed | You can also use a [one-liner with `hx-on`](/extensions/hx-prompt#without-the-extension).          |
+| [`hx-ext`](https://htmx.org/attributes/hx-ext/)                   | —                                                                                                  | removed | [Include extension scripts directly](#extensions).                                                 |
+| [`hx-disinherit`](https://htmx.org/attributes/hx-disinherit/)     | —                                                                                                  | removed | Not needed. Inheritance is explicit.                                                               |
+| [`hx-inherit`](https://htmx.org/attributes/hx-inherit/)           | —                                                                                                  | removed | Not needed. Inheritance is explicit.                                                               |
+| [`hx-request`](https://htmx.org/attributes/hx-request/)           | [`hx-config`](/reference/attributes/hx-config)                                                     | removed | —                                                                                                  |
+| [`hx-history`](https://htmx.org/attributes/hx-history/)           | —                                                                                                  | removed | No [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).           |
 
-Rename in this order to avoid conflicts:
+#### Events
 
-1. Rename `hx-disable` to [`hx-ignore`](/reference/attributes/hx-ignore)
-2. Rename `hx-disabled-elt` to [`hx-disable`](/reference/attributes/hx-disable)
+All events follow a new pattern: `htmx:phase:action[:sub-action]`. Most error events are consolidated to [`htmx:error`](/reference/events/htmx-error). HTTP error responses use [`htmx:response:error`](/reference/events/htmx-response-error).
 
-#### Removed attributes
+| htmx 2.x                    | htmx 4.x                                                                          | Type    | Notes                               |
+|-----------------------------|-----------------------------------------------------------------------------------|---------|-------------------------------------|
+| `htmx:afterOnLoad`          | [`htmx:after:init`](/reference/events/htmx-after-init)                            | renamed | —                                   |
+| `htmx:afterProcessNode`     | [`htmx:after:init`](/reference/events/htmx-after-init)                            | renamed | —                                   |
+| `htmx:afterRequest`         | [`htmx:after:request`](/reference/events/htmx-after-request)                      | renamed | —                                   |
+| `htmx:afterSettle`          | [`htmx:after:swap`](/reference/events/htmx-after-swap)                            | renamed | —                                   |
+| `htmx:afterSwap`            | [`htmx:after:swap`](/reference/events/htmx-after-swap)                            | renamed | —                                   |
+| `htmx:beforeCleanupElement` | [`htmx:before:cleanup`](/reference/events/htmx-before-cleanup)                    | renamed | —                                   |
+| `htmx:beforeHistorySave`    | [`htmx:before:history:update`](/reference/events/htmx-before-history-update)      | renamed | —                                   |
+| `htmx:beforeOnLoad`         | [`htmx:before:init`](/reference/events/htmx-before-init)                          | renamed | —                                   |
+| `htmx:beforeProcessNode`    | [`htmx:before:process`](/reference/events/htmx-before-process)                    | renamed | —                                   |
+| `htmx:beforeRequest`        | [`htmx:before:request`](/reference/events/htmx-before-request)                    | renamed | —                                   |
+| `htmx:beforeSwap`           | [`htmx:before:swap`](/reference/events/htmx-before-swap)                          | renamed | —                                   |
+| `htmx:configRequest`        | [`htmx:config:request`](/reference/events/htmx-config-request)                    | renamed | —                                   |
+| `htmx:historyCacheMiss`     | [`htmx:before:history:restore`](/reference/events/htmx-before-restore-history)    | renamed | —                                   |
+| `htmx:historyRestore`       | [`htmx:before:history:restore`](/reference/events/htmx-before-restore-history)    | renamed | —                                   |
+| `htmx:load`                 | [`htmx:after:init`](/reference/events/htmx-after-init)                            | renamed | —                                   |
+| `htmx:oobAfterSwap`         | [`htmx:after:swap`](/reference/events/htmx-after-swap)                            | renamed | —                                   |
+| `htmx:oobBeforeSwap`        | [`htmx:before:swap`](/reference/events/htmx-before-swap)                          | renamed | —                                   |
+| `htmx:pushedIntoHistory`    | [`htmx:after:history:push`](/reference/events/htmx-after-push-into-history)       | renamed | —                                   |
+| `htmx:replacedInHistory`    | [`htmx:after:history:replace`](/reference/events/htmx-after-replace-into-history) | renamed | —                                   |
+| `htmx:responseError`        | [`htmx:response:error`](/reference/events/htmx-response-error)                    | renamed | HTTP error responses use this event. |
+| `htmx:sendError`            | [`htmx:error`](/reference/events/htmx-error)                                      | renamed | —                                   |
+| `htmx:swapError`            | [`htmx:error`](/reference/events/htmx-error)                                      | renamed | —                                   |
+| `htmx:targetError`          | [`htmx:error`](/reference/events/htmx-error)                                      | renamed | —                                   |
+| `htmx:timeout`              | [`htmx:error`](/reference/events/htmx-error)                                      | renamed | —                                   |
+| `htmx:validation:validate`  | —                                                                                 | removed | Use native browser form validation.  |
+| `htmx:validation:failed`    | —                                                                                 | removed | Use native browser form validation.  |
+| `htmx:validation:halted`    | —                                                                                 | removed | Use native browser form validation.  |
+| `htmx:xhr:loadstart`        | —                                                                                 | removed | htmx uses `fetch()` now.             |
+| `htmx:xhr:loadend`          | [`htmx:finally:request`](/reference/events/htmx-finally-request)                  | removed | htmx uses `fetch()` now.             |
+| `htmx:xhr:progress`         | —                                                                                 | removed | htmx uses `fetch()` now.             |
+| `htmx:xhr:abort`            | [`htmx:error`](/reference/events/htmx-error)                                      | removed | htmx uses `fetch()` now.             |
 
-| Removed          | Use instead                                                                                       |
-|------------------|---------------------------------------------------------------------------------------------------|
-| `hx-vars`        | [`hx-vals`](/reference/attributes/hx-vals) with `js:` prefix                                      |
-| `hx-params`      | [`htmx:config:request`](/reference/events/htmx-config-request) event                              |
-| `hx-prompt`      | [`hx-prompt` extension](/extensions/hx-prompt), or a [one-liner with `hx-on`](/extensions/hx-prompt#without-the-extension) |
-| `hx-ext`         | [Include extension script directly](#extensions)                            |
-| `hx-disinherit`  | Not needed (inheritance is explicit)                                                              |
-| `hx-inherit`     | Not needed (inheritance is explicit)                                                              |
-| `hx-request`     | [`hx-config`](/reference/attributes/hx-config)                                                    |
-| `hx-history`     | Removed (no [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)) |
+#### Config
 
-#### Renamed events
-
-All events follow a new pattern: `htmx:phase:action[:sub-action]`
-
-Most error events are consolidated to [`htmx:error`](/reference/events/htmx-error). HTTP error responses have a dedicated [`htmx:response:error`](/reference/events/htmx-response-error) event.
-
-| htmx 2.x                    | htmx 4.x                                                                          |
-|-----------------------------|-----------------------------------------------------------------------------------|
-| `htmx:afterOnLoad`          | [`htmx:after:init`](/reference/events/htmx-after-init)                            |
-| `htmx:afterProcessNode`     | [`htmx:after:init`](/reference/events/htmx-after-init)                            |
-| `htmx:afterRequest`         | [`htmx:after:request`](/reference/events/htmx-after-request)                      |
-| `htmx:afterSettle`          | [`htmx:after:swap`](/reference/events/htmx-after-swap)                            |
-| `htmx:afterSwap`            | [`htmx:after:swap`](/reference/events/htmx-after-swap)                            |
-| `htmx:beforeCleanupElement` | [`htmx:before:cleanup`](/reference/events/htmx-before-cleanup)                    |
-| `htmx:beforeHistorySave`    | [`htmx:before:history:update`](/reference/events/htmx-before-history-update)      |
-| `htmx:beforeOnLoad`         | [`htmx:before:init`](/reference/events/htmx-before-init)                          |
-| `htmx:beforeProcessNode`    | [`htmx:before:process`](/reference/events/htmx-before-process)                    |
-| `htmx:beforeRequest`        | [`htmx:before:request`](/reference/events/htmx-before-request)                    |
-| `htmx:beforeSwap`           | [`htmx:before:swap`](/reference/events/htmx-before-swap)                          |
-| `htmx:configRequest`        | [`htmx:config:request`](/reference/events/htmx-config-request)                    |
-| `htmx:historyCacheMiss`     | [`htmx:before:history:restore`](/reference/events/htmx-before-restore-history)    |
-| `htmx:historyRestore`       | [`htmx:before:history:restore`](/reference/events/htmx-before-restore-history)    |
-| `htmx:load`                 | [`htmx:after:init`](/reference/events/htmx-after-init)                            |
-| `htmx:oobAfterSwap`         | [`htmx:after:swap`](/reference/events/htmx-after-swap)                            |
-| `htmx:oobBeforeSwap`        | [`htmx:before:swap`](/reference/events/htmx-before-swap)                          |
-| `htmx:pushedIntoHistory`    | [`htmx:after:history:push`](/reference/events/htmx-after-push-into-history)       |
-| `htmx:replacedInHistory`    | [`htmx:after:history:replace`](/reference/events/htmx-after-replace-into-history) |
-| `htmx:responseError`        | [`htmx:response:error`](/reference/events/htmx-response-error)                    |
-| `htmx:sendError`            | [`htmx:error`](/reference/events/htmx-error)                                      |
-| `htmx:swapError`            | [`htmx:error`](/reference/events/htmx-error)                                      |
-| `htmx:targetError`          | [`htmx:error`](/reference/events/htmx-error)                                      |
-| `htmx:timeout`              | [`htmx:error`](/reference/events/htmx-error)                                      |
-
-#### Removed events
-
-Validation events are removed. Use native browser form validation:
-
-- `htmx:validation:validate`
-- `htmx:validation:failed`
-- `htmx:validation:halted`
-
-XHR events are removed (htmx uses `fetch()` now):
-
-| Removed              | Use instead                                                      |
-|----------------------|------------------------------------------------------------------|
-| `htmx:xhr:loadstart` | No replacement                                                   |
-| `htmx:xhr:loadend`   | [`htmx:finally:request`](/reference/events/htmx-finally-request) |
-| `htmx:xhr:progress`  | No replacement                                                   |
-| `htmx:xhr:abort`     | [`htmx:error`](/reference/events/htmx-error)                     |
-
-#### Config changes
-
-**Renamed:**
-
-| htmx 2.x                 | htmx 4.x                                                                   |
-|--------------------------|----------------------------------------------------------------------------|
-| `defaultSwapStyle`       | [`defaultSwap`](/reference/config/htmx-config-defaultSwap)                 |
-| `globalViewTransitions`  | [`transitions`](/reference/config/htmx-config-transitions)                 |
-| `historyEnabled`         | [`history`](/reference/config/htmx-config-history)                         |
-| `includeIndicatorStyles` | [`includeIndicatorCSS`](/reference/config/htmx-config-includeIndicatorCSS) |
-| `timeout`                | [`defaultTimeout`](/reference/config/htmx-config-defaultTimeout)           |
-
-**Changed defaults:**
-
-| Config                                                                   | htmx 2           | htmx 4               |
-|--------------------------------------------------------------------------|------------------|----------------------|
-| [`defaultTimeout`](/reference/config/htmx-config-defaultTimeout)         | `0` (no timeout) | `60000` (60 seconds) |
-| [`defaultSettleDelay`](/reference/config/htmx-config-defaultSettleDelay) | `20`             | `1`                  |
-
-**Removed:**
-
-`addedClass`, `allowEval`, `allowNestedOobSwaps`, `allowScriptTags`, `attributesToSettle`, `defaultSwapDelay`,
-`disableSelector` (use [`hx-ignore`](/reference/attributes/hx-ignore)), `getCacheBusterParam`, `historyCacheSize`,
-`ignoreTitle` (still works per-swap via [`hx-swap`](/reference/attributes/hx-swap)`="... ignoreTitle:true"`),
-`inlineStyleNonce` (removed, indicator CSS now uses [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) and does not require a nonce),
-`methodsThatUseUrlParams`, `refreshOnHistoryMiss`, `responseHandling` (use [
-`hx-status`](/reference/attributes/hx-status) and [`noSwap`](/reference/config/htmx-config-noSwap)), `scrollBehavior`,
-`scrollIntoViewOnBoost`, `selfRequestsOnly` (use [`htmx.config.mode`](/reference/config/htmx-config-mode)),
-`settlingClass`, `swappingClass`, `triggerSpecsCache`, `useTemplateFragments`, `withCredentials` (use [
-`hx-config`](/reference/attributes/hx-config)), `wsBinaryType`, `wsReconnectDelay`
-
-The `htmx-swapping`, `htmx-settling`, and `htmx-added` CSS classes are still applied during swaps. The config keys to
-customize their names have been removed.
+| htmx 2.x                 | htmx 4.x                                                                   | Type            | Notes                                                                                                                                                |
+|--------------------------|----------------------------------------------------------------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `defaultSwapStyle`       | [`defaultSwap`](/reference/config/htmx-config-defaultSwap)                 | renamed         | —                                                                                                                                                    |
+| `globalViewTransitions`  | [`transitions`](/reference/config/htmx-config-transitions)                 | renamed         | —                                                                                                                                                    |
+| `historyEnabled`         | [`history`](/reference/config/htmx-config-history)                         | renamed         | —                                                                                                                                                    |
+| `includeIndicatorStyles` | [`includeIndicatorCSS`](/reference/config/htmx-config-includeIndicatorCSS) | renamed         | —                                                                                                                                                    |
+| `timeout`                | [`defaultTimeout`](/reference/config/htmx-config-defaultTimeout)           | renamed         | —                                                                                                                                                    |
+| `defaultTimeout`         | `60000`                                                                    | default changed | Was `0` (no timeout).                                                                                                                                |
+| `defaultSettleDelay`     | `1`                                                                        | default changed | Was `20`.                                                                                                                                            |
+| `addedClass`             | —                                                                          | removed         | The `htmx-added` CSS class is still applied during swaps.                                                                                            |
+| `allowEval`              | —                                                                          | removed         | —                                                                                                                                                    |
+| `allowNestedOobSwaps`    | —                                                                          | removed         | —                                                                                                                                                    |
+| `allowScriptTags`        | —                                                                          | removed         | —                                                                                                                                                    |
+| `attributesToSettle`     | —                                                                          | removed         | —                                                                                                                                                    |
+| `defaultSwapDelay`       | —                                                                          | removed         | —                                                                                                                                                    |
+| `disableSelector`        | [`hx-ignore`](/reference/attributes/hx-ignore)                             | removed         | —                                                                                                                                                    |
+| `getCacheBusterParam`    | —                                                                          | removed         | —                                                                                                                                                    |
+| `historyCacheSize`       | —                                                                          | removed         | —                                                                                                                                                    |
+| `ignoreTitle`            | —                                                                          | removed         | Still works per swap via [`hx-swap`](/reference/attributes/hx-swap)`="... ignoreTitle:true"`.                                                     |
+| `inlineStyleNonce`       | —                                                                          | removed         | Indicator CSS now uses [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet), so no nonce is needed. |
+| `methodsThatUseUrlParams` | —                                                                         | removed         | —                                                                                                                                                    |
+| `refreshOnHistoryMiss`   | —                                                                          | removed         | —                                                                                                                                                    |
+| `responseHandling`       | [`hx-status`](/reference/attributes/hx-status)                             | removed         | Use with [`noSwap`](/reference/config/htmx-config-noSwap).                                                                                          |
+| `scrollBehavior`         | —                                                                          | removed         | —                                                                                                                                                    |
+| `scrollIntoViewOnBoost`  | —                                                                          | removed         | —                                                                                                                                                    |
+| `selfRequestsOnly`       | [`htmx.config.mode`](/reference/config/htmx-config-mode)                   | removed         | —                                                                                                                                                    |
+| `settlingClass`          | —                                                                          | removed         | The `htmx-settling` CSS class is still applied during swaps.                                                                                         |
+| `swappingClass`          | —                                                                          | removed         | The `htmx-swapping` CSS class is still applied during swaps.                                                                                         |
+| `triggerSpecsCache`      | —                                                                          | removed         | —                                                                                                                                                    |
+| `useTemplateFragments`   | —                                                                          | removed         | —                                                                                                                                                    |
+| `withCredentials`        | [`hx-config`](/reference/attributes/hx-config)                             | removed         | —                                                                                                                                                    |
+| `wsBinaryType`           | —                                                                          | removed         | —                                                                                                                                                    |
+| `wsReconnectDelay`       | —                                                                          | removed         | —                                                                                                                                                    |
 
 #### Request headers
 
-| htmx 2.x          | htmx 4.x                                                | Notes                                                                  |
-|-------------------|---------------------------------------------------------|------------------------------------------------------------------------|
-| `HX-Trigger`      | [`HX-Source`](/reference/headers/HX-Source)             | Format changed to `tagName#id` (e.g. `button#submit`)                  |
-| `HX-Target`       | [`HX-Target`](/reference/headers/HX-Target)             | Format changed to `tagName#id`                                         |
-| `HX-Trigger-Name` | removed                                                 | Use [`HX-Source`](/reference/headers/HX-Source)                        |
-| `HX-Prompt`       | restored via extension                                  | Load the [`hx-prompt`](/extensions/hx-prompt) extension                |
-| *(new)*           | [`HX-Request-Type`](/reference/headers/HX-Request-Type) | `"full"` or `"partial"`                                                |
-| *(new)*           | [`Accept`](/reference/headers/Accept)                   | Now explicitly `text/html`                                             |
+| htmx 2.x          | htmx 4.x                                                | Type            | Notes                                                 |
+|-------------------|---------------------------------------------------------|-----------------|-------------------------------------------------------|
+| `HX-Trigger`      | [`HX-Source`](/reference/headers/HX-Source)             | changed format  | Format is `tagName#id`, e.g. `button#submit`.        |
+| `HX-Target`       | [`HX-Target`](/reference/headers/HX-Target)             | changed format  | Format is `tagName#id`.                              |
+| `HX-Trigger-Name` | [`HX-Source`](/reference/headers/HX-Source)             | removed         | —                                                     |
+| `HX-Prompt`       | [`hx-prompt` extension](/extensions/hx-prompt)          | restored by ext | Load the extension.                                   |
+| —                 | [`HX-Request-Type`](/reference/headers/HX-Request-Type) | new             | `"full"` or `"partial"`.                          |
+| —                 | [`Accept`](/reference/headers/Accept)                   | new             | Now explicitly `text/html`.                           |
 
 #### Response headers
 
-Removed:
+| htmx 2.x                 | htmx 4.x                                      | Type      | Notes                           |
+|--------------------------|-----------------------------------------------|-----------|---------------------------------|
+| `HX-Trigger-After-Swap`  | [`HX-Trigger`](/reference/headers/HX-Trigger) | removed   | You can also use JavaScript.    |
+| `HX-Trigger-After-Settle`| [`HX-Trigger`](/reference/headers/HX-Trigger) | removed   | You can also use JavaScript.    |
+| `HX-Trigger`             | [`HX-Trigger`](/reference/headers/HX-Trigger) | unchanged | —                               |
+| `HX-Location`            | [`HX-Location`](/reference/headers/HX-Location) | unchanged | —                             |
+| `HX-Push-Url`            | [`HX-Push-Url`](/reference/headers/HX-Push-Url) | unchanged | —                             |
+| `HX-Redirect`            | [`HX-Redirect`](/reference/headers/HX-Redirect) | unchanged | —                             |
+| `HX-Refresh`             | [`HX-Refresh`](/reference/headers/HX-Refresh) | unchanged | —                               |
+| `HX-Replace-Url`         | [`HX-Replace-Url`](/reference/headers/HX-Replace-Url) | unchanged | —                       |
+| `HX-Retarget`            | [`HX-Retarget`](/reference/headers/HX-Retarget) | unchanged | —                             |
+| `HX-Reswap`              | [`HX-Reswap`](/reference/headers/HX-Reswap)   | unchanged | —                               |
+| `HX-Reselect`            | [`HX-Reselect`](/reference/headers/HX-Reselect) | unchanged | —                             |
 
-- `HX-Trigger-After-Swap`
-- `HX-Trigger-After-Settle`
+#### JavaScript API
 
-Use [`HX-Trigger`](/reference/headers/HX-Trigger) or JavaScript instead.
+| htmx 2.x                 | htmx 4.x                      | Type      | Notes                                                                    |
+|--------------------------|-------------------------------|-----------|--------------------------------------------------------------------------|
+| `htmx.addClass()`        | `element.classList.add()`     | removed   | Use native JavaScript.                                                   |
+| `htmx.removeClass()`     | `element.classList.remove()`  | removed   | Use native JavaScript.                                                   |
+| `htmx.toggleClass()`     | `element.classList.toggle()`  | removed   | Use native JavaScript.                                                   |
+| `htmx.closest()`         | `element.closest()`           | removed   | Use native JavaScript.                                                   |
+| `htmx.remove()`          | `element.remove()`            | removed   | Use native JavaScript.                                                   |
+| `htmx.off()`             | `removeEventListener()`       | removed   | `htmx.on()` returns the callback.                                        |
+| `htmx.location()`        | `htmx.ajax()`                 | removed   | —                                                                        |
+| `htmx.defineExtension()` | `htmx.registerExtension()`    | renamed   | —                                                                        |
+| `htmx.logAll()`          | `htmx.config.logAll = true`   | removed   | htmx logs via `console.*`.                                               |
+| `htmx.logNone()`         | —                             | removed   | —                                                                        |
+| `htmx.logger`            | `console.*`                   | removed   | Observability tools capture `console.error`, `console.warn`, and `console.log`. |
+| `htmx.onLoad()`          | `htmx.onLoad()`               | changed   | Now listens on [`htmx:after:process`](/reference/events/htmx-after-process), not [`htmx:after:init`](/reference/events/htmx-after-init). |
 
-Unchanged: [`HX-Trigger`](/reference/headers/HX-Trigger), [`HX-Location`](/reference/headers/HX-Location), [
-`HX-Push-Url`](/reference/headers/HX-Push-Url), [`HX-Redirect`](/reference/headers/HX-Redirect), [
-`HX-Refresh`](/reference/headers/HX-Refresh), [`HX-Replace-Url`](/reference/headers/HX-Replace-Url), [
-`HX-Retarget`](/reference/headers/HX-Retarget), [`HX-Reswap`](/reference/headers/HX-Reswap), [`HX-Reselect`](/reference/headers/HX-Reselect).
-
-#### JavaScript API changes
-
-**Removed methods.** Use native JavaScript:
-
-| htmx 2.x             | Use instead                                                            |
-|----------------------|------------------------------------------------------------------------|
-| `htmx.addClass()`    | `element.classList.add()`                                              |
-| `htmx.removeClass()` | `element.classList.remove()`                                           |
-| `htmx.toggleClass()` | `element.classList.toggle()`                                           |
-| `htmx.closest()`     | `element.closest()`                                                    |
-| `htmx.remove()`      | `element.remove()`                                                     |
-| `htmx.off()`         | `removeEventListener()` (`htmx.on()` returns the callback)             |
-| `htmx.location()`    | `htmx.ajax()`                                                          |
-
-**Renamed:** `htmx.defineExtension()` is now `htmx.registerExtension()`.
-
-**Still available:** `htmx.ajax()`, `htmx.config`, `htmx.find()`, `htmx.findAll()`, `htmx.on()`,
-`htmx.onLoad()`, `htmx.parseInterval()`, `htmx.process()`, `htmx.swap()`, `htmx.trigger()`.
-
-**Removed:** `htmx.logAll()`, `htmx.logNone()`, and the pluggable `htmx.logger`. htmx now logs directly via
-`console.error` / `console.warn` / `console.log`. Set `htmx.config.logAll = true` to surface event-level
-output. Observability tools (Sentry, DataDog RUM, LogRocket, etc.) capture `console.*` automatically.
-
-Note: `htmx.onLoad()` now listens on [`htmx:after:process`](/reference/events/htmx-after-process), not [
-`htmx:after:init`](/reference/events/htmx-after-init).
+Still available: `htmx.ajax()`, `htmx.config`, `htmx.find()`, `htmx.findAll()`, `htmx.on()`, `htmx.onLoad()`, `htmx.parseInterval()`, `htmx.process()`, `htmx.swap()`, `htmx.trigger()`.
 
 ### What's New
 
