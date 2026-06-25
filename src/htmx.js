@@ -1307,7 +1307,7 @@ var htmx = (() => {
                 swapSpec.style === 'delete' ||    // delete always runs regardless of content
                 fragment.childElementCount > 0 || // or fragment has elements
                 fragment.textContent.trim() ||    // or fragment has text
-                (swapSpec.empty ?? this.config.defaultSwapEmpty ?? !partialTasks.length) // empty:true/false overrides, default: allow if no partials
+                (swapSpec.swapEmpty ?? this.config.defaultSwapEmpty ?? !partialTasks.length) // swapEmpty:true/false overrides, default: allow if no partials
             ) {
                 if (ctx.select) {
                     let selected = fragment.querySelectorAll(ctx.select);

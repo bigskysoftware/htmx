@@ -1075,9 +1075,9 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
-    it('oob-only SSE message blanks main target when empty:true explicitly set', async function() {
+    it('oob-only SSE message blanks main target when swapEmpty:true explicitly set', async function() {
         const stream = mockStreamResponse('/oob-empty-true');
-        createProcessedHTML('<div id="target" hx-sse:connect="/oob-empty-true" hx-swap="innerHTML empty:true">Original</div><div id="oob">OOB</div>');
+        createProcessedHTML('<div id="target" hx-sse:connect="/oob-empty-true" hx-swap="innerHTML swapEmpty:true">Original</div><div id="oob">OOB</div>');
 
         await htmx.timeout(1);
 

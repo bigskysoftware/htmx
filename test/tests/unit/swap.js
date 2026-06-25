@@ -647,30 +647,30 @@ describe('swap() unit tests', function() {
         playground().querySelectorAll('.target').forEach(el => el.innerText.should.equal('Updated'))
     })
 
-    it('empty:false prevents main swap when response is only oob', async function () {
+    it('swapEmpty:false prevents main swap when response is only oob', async function () {
         createProcessedHTML("<div id='target'>Original</div><div id='oob'>OOB</div>")
-        await htmx.swap({"target":"#target", "swap":"innerHTML empty:false", "text":"<div id='oob' hx-swap-oob='true'>Updated</div>"})
+        await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:false", "text":"<div id='oob' hx-swap-oob='true'>Updated</div>"})
         find('#target').innerText.should.equal('Original');
         find('#oob').innerText.should.equal('Updated');
     })
 
-    it('empty:false prevents main swap when response is only partials', async function () {
+    it('swapEmpty:false prevents main swap when response is only partials', async function () {
         createProcessedHTML("<div id='target'>Original</div><div id='partial'>Partial</div>")
-        await htmx.swap({"target":"#target", "swap":"innerHTML empty:false", "text":"<hx-partial hx-target='#partial'>Updated</hx-partial>"})
+        await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:false", "text":"<hx-partial hx-target='#partial'>Updated</hx-partial>"})
         find('#target').innerText.should.equal('Original');
         find('#partial').innerText.should.equal('Updated');
     })
 
-    it('empty:true forces main swap even on empty response with partials', async function () {
+    it('swapEmpty:true forces main swap even on empty response with partials', async function () {
         createProcessedHTML("<div id='target'>Original</div><div id='partial'>Partial</div>")
-        await htmx.swap({"target":"#target", "swap":"innerHTML empty:true", "text":"<hx-partial hx-target='#partial'>Updated</hx-partial>"})
+        await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:true", "text":"<hx-partial hx-target='#partial'>Updated</hx-partial>"})
         find('#target').innerText.should.equal('');
         find('#partial').innerText.should.equal('Updated');
     })
 
-    it('empty:false still swaps main target when response has real content alongside oob', async function () {
+    it('swapEmpty:false still swaps main target when response has real content alongside oob', async function () {
         createProcessedHTML("<div id='target'>Original</div><div id='oob'>OOB</div>")
-        await htmx.swap({"target":"#target", "swap":"innerHTML empty:false", "text":"<div>New Content</div><div id='oob' hx-swap-oob='true'>Updated</div>"})
+        await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:false", "text":"<div>New Content</div><div id='oob' hx-swap-oob='true'>Updated</div>"})
         find('#target').innerText.trim().should.equal('New Content');
         find('#oob').innerText.should.equal('Updated');
     })

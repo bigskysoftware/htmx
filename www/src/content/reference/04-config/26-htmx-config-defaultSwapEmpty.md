@@ -22,12 +22,12 @@ htmx.config.defaultSwapEmpty = true;
 <meta name="htmx-config" content='{"defaultSwapEmpty":true}'>
 ```
 
-Override per element with the [`empty`](/reference/attributes/hx-swap#empty) modifier on `hx-swap`:
+Override per element with the [`swapEmpty`](/reference/attributes/hx-swap#swapempty) modifier on `hx-swap`:
 
 ```html
 <!-- skip swap on empty response for this element only -->
-<div hx-swap="innerHTML empty"></div>
+<div hx-swap="innerHTML swapEmpty"></div>
 
 <!-- always proceed, regardless of global default -->
-<div hx-swap="innerHTML empty:false"></div>
+<div hx-swap="innerHTML swapEmpty:false"></div>
 ```

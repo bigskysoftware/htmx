@@ -157,17 +157,17 @@ from the page, and include `hx-swap-oob` elements to place the result elsewhere.
 <!-- no main content = form gets swapped with empty fragment, removing it -->
 ```
 
-If you want to prevent the empty main swap, use the [`empty`](/reference/attributes/hx-swap#empty) modifier:
+If you want to prevent the empty main swap, use the [`swapEmpty`](/reference/attributes/hx-swap#swapempty) modifier:
 
 ```html
-<form hx-post="/submit" hx-swap="outerHTML empty:false">
+<form hx-post="/submit" hx-swap="outerHTML swapEmpty:false">
 ```
 
 Or set the global default via [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).
 
 [`<hx-partial>`](/docs#partials-hx-partial) has the opposite default: a response containing only `<hx-partial>` elements
 and no main content will **not** trigger an empty main swap. This is because `<hx-partial>`-only responses signal
-intent — the server is explicitly routing multiple targeted updates with no main content to swap. Use `empty:true` on
+intent — the server is explicitly routing multiple targeted updates with no main content to swap. Use `swapEmpty:true` on
 the triggering element if you need the main swap to run anyway.
 
 ## See Also

@@ -297,16 +297,16 @@ Controls whether the outer element of the response content is removed before swa
 <div hx-swap="innerHTML strip:true"></div>
 ```
 
-### `empty`
+### `swapEmpty`
 
 Skips the swap when the response body is empty.
 
 ```html
 <!-- Skip swap on empty response -->
-<div hx-swap="innerHTML empty"></div>
+<div hx-swap="innerHTML swapEmpty"></div>
 
 <!-- Explicitly proceed with swap even if response is empty -->
-<div hx-swap="innerHTML empty:false"></div>
+<div hx-swap="innerHTML swapEmpty:false"></div>
 ```
 
 Defaults to [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).
