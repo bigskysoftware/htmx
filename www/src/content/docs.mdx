@@ -1420,7 +1420,7 @@ The modifiers available on `hx-swap` are (parsed as [HCON](#hcon)):
 | ignoreTitle  | If set to true, any title found in the new content will be ignored and not update the document title |
 | strip        | true or false, whether to strip the outer element when swapping (unwrap the content)                 |
 | focus-scroll | true or false, whether to scroll focused elements into view                                          |
-| empty        | true or false, whether to skip the swap when the response body is empty. Defaults to [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty) |
+| swapEmpty    | true or false, whether to skip the swap when the response body is empty. Defaults to [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty) |
 | scroll       | top or bottom, will scroll the target element to its top or bottom                                   |
 | show         | top or bottom, will scroll the target element's top or bottom into view                              |
 | target       | A selector to retarget the swap to a different element                                               |
@@ -1870,10 +1870,10 @@ content to swap.
 </hx-partial>
 ```
 
-If you also want the main target cleared, add `empty:true` to `hx-swap` on the triggering element:
+If you also want the main target cleared, add `swapEmpty:true` to `hx-swap` on the triggering element:
 
 ```html
-<button hx-post="/submit" hx-swap="outerHTML empty:true">Submit</button>
+<button hx-post="/submit" hx-swap="outerHTML swapEmpty:true">Submit</button>
 ```
 
 Or set the global default via [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).
