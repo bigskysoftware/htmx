@@ -1,5 +1,92 @@
 var htmx = (() => {
 
+    /**
+     * HCON, htmx's mini config language. Mirrors the JSON API.
+     *
+     * Used by hx-trigger, hx-swap, hx-vals, and other htmx config attributes.
+     *
+     * @see https://four.htmx.org/docs#hcon
+     */
+    const HCON = {
+        /**
+         * Parses an HCON string into an object.
+         *
+         * @example
+         * HCON.parse('foo:1 bar:true');     // {foo: 1, bar: true}
+         * HCON.parse('sse.mode:once');      // {sse: {mode: 'once'}}
+         * HCON.parse('{"foo": 1}');         // {foo: 1}
+         */
+        parse(string) {
+            if (!string) return {};
+            if (string.startsWith('{')) return JSON.parse(string);
+            let pattern = /(?:"([^"]+)"|'([^']+)'|([^\s,:]+))(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<((?:[^/]|\/(?!>))+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
+            let result = {};
+            for (let match of string.matchAll(pattern)) {
+                let [,
+                    doubleQuotedKey,    // "key"
+                    singleQuotedKey,    // 'key'
+                    bareKey,            //  key
+                    doubleQuotedValue,  // "value"
+                    singleQuotedValue,  // 'value'
+                    hyperscriptValue,   // <value/>
+                    bareValue,          //  value
+                ] = match;
+
+                // pick this match's key and value forms
+                let key = doubleQuotedKey ?? singleQuotedKey ?? bareKey;
+                let value = (doubleQuotedValue ?? singleQuotedValue ?? hyperscriptValue ?? bareValue ?? 'true').trim();
+
+                // JSON-parse if possible (e.g. "5" -> 5; "abc" stays string)
+                try { value = JSON.parse(value); } catch {}
+
+                // bare a.b -> {a:{b:...}}; quoted "a.b" -> {"a.b":...}
+                let isDottedPath = bareKey?.includes('.');
+                let pair = isDottedPath
+                    ? key.split('.').reduceRight((acc, segment) => ({[segment]: acc}), value)
+                    : {[key]: value};
+                HCON.merge(pair, result);
+            }
+            return result;
+        },
+
+        /**
+         * Splits an HCON-aware string at top-level commas.
+         * Commas inside [], (), <.../>, "...", '...' are preserved.
+         *
+         * @example
+         * HCON.split('a:1, b:2');                // ['a:1', ' b:2']
+         * HCON.split('from:".a, .b", click');    // ['from:".a, .b"', ' click']
+         */
+        split(string) {
+            return string.split(/,(?![^\[]*\])(?![^(]*\))(?![^<]*\/>)(?=(?:[^"']|"[^"]*"|'[^']*')*$)/);
+        },
+
+        /**
+         * Deep-merges a source (HCON string or object) into a target.
+         *
+         * @example
+         * HCON.merge({a: {b: 1}}, {a: {c: 2}});   // {a: {b: 1, c: 2}}
+         * HCON.merge('a.b:1', {a: {c: 2}});       // {a: {b: 1, c: 2}}
+         */
+        merge(source, target) {
+            if (typeof source === 'string') source = HCON.parse(source);
+
+            for (let [key, val] of Object.entries(source)) {
+                if (['__proto__', 'constructor', 'prototype'].includes(key)) continue;
+
+                let sourceIsObject = val && typeof val === 'object' && !Array.isArray(val);
+                let targetIsObject = target[key] && typeof target[key] === 'object' && !Array.isArray(target[key]);
+
+                if (sourceIsObject && targetIsObject) {
+                    HCON.merge(val, target[key]);
+                } else {
+                    target[key] = val;
+                }
+            }
+            return target;
+        },
+    };
+
     class ReqQ {
         #c = null
         #q = []
@@ -57,6 +144,7 @@ var htmx = (() => {
 
     class Htmx {
 
+        #HCON = HCON
         #extMethods = new Map();
         #approvedExt = '';
         #registeredExt = new Set();
@@ -125,6 +213,8 @@ var htmx = (() => {
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
                 morphIgnore: ["data-htmx-powered"],
+                morphSkip: '[hx-morph-skip]',
+                morphSkipChildren: '[hx-morph-skip-children]',
                 morphScanLimit: 10,
                 noSwap: [204, 304],
                 implicitInheritance: false,
@@ -132,7 +222,7 @@ var htmx = (() => {
             }
             let metaConfig = document.querySelector('meta[name="htmx-config"]');
             if (metaConfig) {
-                this.#mergeConfig(metaConfig.content, this.config);
+                HCON.merge(metaConfig.content, this.config);
             }
             this.#approvedExt = this.config.extensions;
         }
@@ -242,47 +332,12 @@ var htmx = (() => {
             return defaultVal;
         }
 
-        #parseConfig(configString) {
-            if (!configString) return {};
-            if (configString[0] === '{') return JSON.parse(configString);
-            let configPattern = /(?:"([^"]+)"|([^\s,:]+))(?:\s*:\s*(?:"([^"]*)"|'([^']*)'|<([^>]+)\/>|([^\s,]+)))?(?=\s|,|$)/g;
-            return [...configString.matchAll(configPattern)].reduce((result, match) => {
-                let keyPath = (match[1] ?? match[2]).split('.');
-                let value = (match[3] ?? match[4] ?? match[5] ?? match[6] ?? 'true').trim();
-                if (value === 'true') value = true;
-                else if (value === 'false') value = false;
-                else if (/^\d+$/.test(value)) value = parseInt(value);
-                if (keyPath.some(k => this.#internalField(k))) return result;
-                keyPath.slice(0, -1).reduce((obj, key) => obj[key] ??= {}, result)[keyPath.at(-1)] = value;
-                return result;
-            }, {});
-        }
-
-        #internalField(k) {
-            return k === '#proto#' || k === 'constructor' || k === 'prototype';
-        }
-
-        #mergeConfig(configString, target) {
-            let parsed = this.#parseConfig(configString);
-            for (let key in parsed) {
-                if (this.#internalField(key)) continue;
-                let val = parsed[key];
-                if (val && typeof val === 'object' && !Array.isArray(val) && target[key]) {
-                    Object.assign(target[key], val);
-                } else {
-                    target[key] = val;
-                }
-            }
-            return target;
-        }
-
         #parseTriggerSpecs(spec) {
-            // Split on commas that are NOT inside [...] — handles filters like click[myFunc(a,b)]
-            return spec.split(/,(?![^\[]*\])/).flatMap(s => {
+            return HCON.split(spec).flatMap(s => {
                 let [,name,rest] = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/) ?? [];
                 if (!name) return [];  // skip empty/whitespace-only tokens
                 if (/\[[^\]]*$/.test(name)) throw "unterminated:" + name;  // e.g. click[ctrlKey
-                return [{name, ...this.#parseConfig(rest)}];  // spread modifiers (delay, throttle, etc.) onto result
+                return [{name, ...HCON.parse(rest)}];  // spread modifiers (delay, throttle, etc.) onto result
             });
         }
 
@@ -323,6 +378,10 @@ var htmx = (() => {
                 elt.setAttribute('data-htmx-powered', 'true');
             }
             return elt._htmx;
+        }
+
+        #htmxState(elt) {
+            return elt._htmx_state ||= {};
         }
 
         #initializeElement(elt) {
@@ -377,7 +436,7 @@ var htmx = (() => {
             };
             // Apply boost config overrides
             if (sourceElement._htmx?.boosted) {
-                this.#mergeConfig(sourceElement._htmx.boosted, ctx);
+                HCON.merge(sourceElement._htmx.boosted, ctx);
             }
             ctx.target = this.#resolveTarget(sourceElement, ctx.target);
             ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
@@ -388,7 +447,7 @@ var htmx = (() => {
             // Apply hx-config overrides
             let configAttr = this.#attributeValue(sourceElement, "hx-config");
             if (configAttr) {
-                this.#mergeConfig(configAttr, ctx.request);
+                HCON.merge(configAttr, ctx.request);
                 ctx.request.mode = this.config.mode;  // mode is security-sensitive, never allow per-element override
             }
             return ctx;
@@ -411,10 +470,10 @@ var htmx = (() => {
             return headers;
         }
 
-        #handleHxHeaders(elt, headers) {
+        #handleHxHeaders(elt, ctx) {
             return this.#getAttributeObject(elt, "hx-headers", obj => {
-                for (let key in obj) headers[key] = String(obj[key]);
-            });
+                for (let key in obj) ctx.request.headers[key] = String(obj[key]);
+            }, {ctx});
         }
 
         #resolveTarget(elt, selector) {
@@ -457,7 +516,7 @@ var htmx = (() => {
             let valsResult = this.#getAttributeObject(elt, "hx-vals", obj => {
                 ctx.vals = obj; // make available for json extensions
                 for (let key in obj) body.set(key, obj[key]);
-            });
+            }, {ctx});
             if (valsResult) await valsResult; // Only await if it returned a promise
             if (ctx.values) {
                 for (let k in ctx.values) {
@@ -467,7 +526,7 @@ var htmx = (() => {
             }
 
             // Handle dynamic headers
-            let headersResult = this.#handleHxHeaders(elt, ctx.request.headers)
+            let headersResult = this.#handleHxHeaders(elt, ctx)
             if (headersResult) await headersResult  // Only await if it returned a promise
 
             // Setup event-dependent request details
@@ -502,7 +561,7 @@ var htmx = (() => {
                     ctx.request.action = url.href;
                 }
                 ctx.request.body = null;
-            } else if (this.#attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
+            } else if ((this.#attributeValue(elt, "hx-encoding") ?? form?.enctype) !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body);
             }
 
@@ -527,7 +586,7 @@ var htmx = (() => {
                         let detail = {ctx, issueRequest: () => resolve(true), dropRequest: () => resolve(false)};
                         if (this.#trigger(elt, "htmx:confirm", detail)) {
                             let js = this.#extractJavascriptContent(ctx.confirm);
-                            resolve(js ? this.#executeJavaScript(elt, {}, js, true) : window.confirm(ctx.confirm));
+                            resolve(js ? this.#executeJavaScript(elt, {ctx}, js, true) : window.confirm(ctx.confirm));
                         }
                     });
                     if (!confirmed) return;
@@ -619,7 +678,7 @@ var htmx = (() => {
             if (ctx.hx.location) { // HX-Location
                 let path = ctx.hx.location, opts = {};
                 if (path[0] === '{' || /[\s,]/.test(path)) {
-                    opts = this.#parseConfig(path);
+                    opts = HCON.parse(path);
                     path = opts.path;
                     delete opts.path;
                 }
@@ -654,11 +713,12 @@ var htmx = (() => {
                     : (/^(drop|abort|replace|queue)/.test(syncValue) ? null : syncValue);
                 if (selector) syncElt = this.#findOrWarn(elt, selector, "hx-sync") || elt;
             }
-            return this.#htmxProp(syncElt).rq ||= new ReqQ()
+            return this.#htmxState(syncElt).rq ||= new ReqQ()
         }
 
         #isModifierKeyClick(evt) {
             return evt.type === 'click' && (evt.ctrlKey || evt.metaKey || evt.shiftKey)
+                && !!evt.currentTarget?.closest?.('a[href]')
         }
 
         #shouldCancel(evt) {
@@ -822,7 +882,7 @@ var htmx = (() => {
 
         #handleTriggerHeader(value, elt) {
             if (value[0] === '{') {
-                let triggers = this.#parseConfig(value);
+                let triggers = HCON.parse(value);
                 for (let name in triggers) {
                     let detail = triggers[name];
                     let target = elt;
@@ -871,16 +931,25 @@ var htmx = (() => {
             return func.call(thisArg, ...values);
         }
 
-        process(elt) {
-            if (!elt) return;
-            if (!(elt instanceof Element)) {
-                for (let child of elt.children || []) this.process(child);
+        /**
+         * Initialize htmx attributes on root and all its descendants. When force is true, root
+         * and every powered descendant are first torn down and re-wired from their current
+         * attributes - use this after mutating hx-* attributes on an already-processed element.
+         * @see https://four.htmx.org/reference/methods/htmx-process
+         * @param {Element | ShadowRoot} root
+         * @param {boolean} [force]
+         */
+        process(root, force) {
+            if (!root?.isConnected) return;
+            if (!(root instanceof Element)) { // ShadowRoot
+                for (let elt of root.children || []) this.process(elt, force);
                 return;
             }
-            if (this.#ignore(elt)) return;
-            if (!this.#trigger(elt, "htmx:before:process")) return
-            let hxOnNodes = [elt];
-            let iter = this.#hxOnQuery.evaluate(elt)
+            if (force) this.#cleanup(root, true);
+            if (this.#ignore(root)) return;
+            if (!this.#trigger(root, "htmx:before:process")) return
+            let hxOnNodes = [root];
+            let iter = this.#hxOnQuery.evaluate(root)
             let node = null
             while (node = iter.iterateNext()) hxOnNodes.push(node)
             for (let hxOnNode of hxOnNodes) {
@@ -888,13 +957,13 @@ var htmx = (() => {
                     this.#handleHxOnAttributes(hxOnNode);
                 }
             }
-            for (let child of this.#queryEltAndDescendants(elt, this.#actionSelector)) {
-                this.#initializeElement(child);
+            for (let elt of this.#queryEltAndDescendants(root, this.#actionSelector)) {
+                this.#initializeElement(elt);
             }
-            for (let child of this.#queryEltAndDescendants(elt, this.#boostSelector)) {
-                this.#maybeBoost(child);
+            for (let elt of this.#queryEltAndDescendants(root, this.#boostSelector)) {
+                this.#maybeBoost(elt);
             }
-            this.#trigger(elt, "htmx:after:process");
+            this.#trigger(root, "htmx:after:process");
         }
 
         #maybeBoost(elt) {
@@ -915,7 +984,7 @@ var htmx = (() => {
             if (this.#shouldInitialize(elt)) {
                 if (elt.tagName === "A") {
                     if (elt.target === '' || elt.target === '_self') {
-                        return !elt.getAttribute('href')?.startsWith?.("#") && this.#isSameOrigin(elt.href)
+                        return !elt.hasAttribute('download') && !elt.getAttribute('href')?.startsWith?.("#") && this.#isSameOrigin(elt.href)
                     }
                 } else if (elt.tagName === "FORM") {
                     return elt.method !== 'dialog' &&  this.#isSameOrigin(elt.action);
@@ -938,24 +1007,29 @@ var htmx = (() => {
             return !elt._htmx?.initialized && !this.#ignore(elt);
         }
 
-        #cleanup(elt) {
-            if (elt._htmx) {
-                this.#trigger(elt, "htmx:before:cleanup")
-                for (let spec of elt._htmx.triggerSpecs || []) {
+        /**
+         * Remove listeners, timers, and observers from elt and all its powered descendants.
+         * When force is true, also delete their htmx state so a re-process fully re-initializes them.
+         * @param {Element} elt
+         * @param {boolean} [force]
+         */
+        #cleanup(elt, force) {
+            let elts = [elt, ...elt.querySelectorAll?.('[data-htmx-powered]') ?? []];
+            for (let e of elts) {
+                if (!e._htmx) continue;
+                this.#trigger(e, "htmx:before:cleanup")
+                for (let spec of e._htmx.triggerSpecs || []) {
                     if (spec.interval) clearInterval(spec.interval);
                     if (spec.timeout) clearTimeout(spec.timeout);
                     if (spec.throttleTimeout) clearTimeout(spec.throttleTimeout);
                     spec.observer?.disconnect()
                 }
-                for (let listenerInfo of elt._htmx.listeners || []) {
-                    listenerInfo.fromElt.removeEventListener(listenerInfo.eventName, listenerInfo.handler, listenerInfo);
+                for (let info of e._htmx.listeners || []) {
+                    info.fromElt.removeEventListener(info.eventName, info.handler, info);
                 }
-                this.#trigger(elt, "htmx:after:cleanup")
-            }
-            if (elt.firstChild) {
-                for (let child of elt.querySelectorAll('[data-htmx-powered]')) {
-                    this.#cleanup(child);
-                }
+                e.removeAttribute('data-htmx-powered');
+                this.#trigger(e, "htmx:after:cleanup")
+                if (force) delete e._htmx;
             }
         }
 
@@ -1082,7 +1156,7 @@ var htmx = (() => {
                 style = m[1];
                 swapStr = m[2];
             }
-            return {style: this.#normalizeSwapStyle(style), ...this.#parseConfig(swapStr)};
+            return {style: this.#normalizeSwapStyle(style), ...HCON.parse(swapStr)};
         }
 
         #processPartials(fragment, ctx) {
@@ -1230,8 +1304,13 @@ var htmx = (() => {
         #processMainSwap(ctx, fragment, partialTasks) {
             // Create main task if needed
             let swapSpec = this.#parseSwapSpec(ctx.swap || this.config.defaultSwap);
-            // skip creating main swap if extracting partials resulted in empty response except for delete style
-            if (swapSpec.style === 'delete' || fragment.childElementCount > 0 || /\S/.test(fragment.textContent) || !partialTasks.length) {
+            // skip main swap if fragment is empty after hx-partial removal but respect empty modifier
+            if (
+                swapSpec.style === 'delete' ||    // delete always runs regardless of content
+                fragment.childElementCount > 0 || // or fragment has elements
+                fragment.textContent.trim() ||    // or fragment has text
+                (swapSpec.swapEmpty ?? this.config.defaultSwapEmpty ?? !partialTasks.length) // swapEmpty:true/false overrides, default: allow if no partials
+            ) {
                 if (ctx.select) {
                     let selected = fragment.querySelectorAll(ctx.select);
                     fragment = document.createDocumentFragment();
@@ -1323,8 +1402,9 @@ var htmx = (() => {
                     }
                 } else if (swapStyle === 'outerSync') {
                     this.#copyAttributes(target, fragment.firstElementChild);
-                    this.#cleanup(target);
-                    delete target._htmx;
+                    for (const child of target.children) {
+                        this.#cleanup(child)
+                    }
                     target.replaceChildren(...fragment.firstElementChild.childNodes);
                     newContent = [target];
                 } else if (swapStyle === 'innerMorph') {
@@ -1624,6 +1704,7 @@ var htmx = (() => {
         // hx-on:<event> binds to <event> directly
         // hx-on::<event> is shorthand for hx-on:htmx:<event> (htmx events)
         #handleHxOnAttributes(node) {
+            if (node._htmx?.onInitialized) return;
             let hxOnNames = this.#prefixes("hx-on");
             let mc = this.config.metaCharacter || ':';
             let handler = (code) => async (evt) => {
@@ -1637,6 +1718,7 @@ var htmx = (() => {
             for (let attr of node.getAttributeNames()) {
                 let prefix = hxOnNames.find(p => attr.startsWith(p));
                 if (!prefix) continue;
+                this.#htmxProp(node).onInitialized = true;
                 let rest = attr.substring(prefix.length);
                 let value = node.getAttribute(attr);
                 // hx-on="click once -> doA(); blur -> doB()"
@@ -1664,8 +1746,8 @@ var htmx = (() => {
                 indicatorElements = this.#findAllExt(elt, indicatorsSelector, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
-                let p = this.#htmxProp(indicator);
-                p.rc = (p.rc || 0) + 1;
+                let s = this.#htmxState(indicator);
+                s.rc = (s.rc || 0) + 1;
                 this.#addClass(indicator, this.config.requestClass)
             }
             return indicatorElements
@@ -1673,10 +1755,10 @@ var htmx = (() => {
 
         #hideIndicators(indicatorElements) {
             for (let indicator of indicatorElements) {
-                let p = this.#htmxProp(indicator);
-                if (p.rc && --p.rc <= 0) {
+                let s = this.#htmxState(indicator);
+                if (s.rc && --s.rc <= 0) {
                     this.#removeClass(indicator, this.config.requestClass);
-                    delete p.rc;
+                    delete s.rc;
                 }
             }
         }
@@ -1687,8 +1769,8 @@ var htmx = (() => {
             if (disabledSelector) {
                 disabledElements = this.#findAllExt(elt, disabledSelector, "hx-disable");
                 for (let indicator of disabledElements) {
-                    let p = this.#htmxProp(indicator);
-                    p.dc = (p.dc || 0) + 1;
+                    let s = this.#htmxState(indicator);
+                    s.dc = (s.dc || 0) + 1;
                     indicator.disabled = true
                 }
             }
@@ -1697,10 +1779,10 @@ var htmx = (() => {
 
         #enableElements(disabledElements) {
             for (const indicator of disabledElements) {
-                let p = this.#htmxProp(indicator);
-                if (p.dc && --p.dc <= 0) {
+                let s = this.#htmxState(indicator);
+                if (s.dc && --s.dc <= 0) {
                     indicator.disabled = false
-                    delete p.dc;
+                    delete s.dc;
                 }
             }
         }
@@ -1764,7 +1846,7 @@ var htmx = (() => {
             }
         }
 
-        #getAttributeObject(elt, attrName, callback) {
+        #getAttributeObject(elt, attrName, callback, scope = {}) {
             let attrValue = this.#attributeValue(elt, attrName);
             if (!attrValue) return null;
 
@@ -1775,12 +1857,12 @@ var htmx = (() => {
                     javascriptContent = '{' + javascriptContent + '}';
                 }
                 // Return promise for async evaluation
-                return this.#executeJavaScript(elt, {}, javascriptContent, true).then(obj => {
+                return this.#executeJavaScript(elt, scope, javascriptContent, true).then(obj => {
                     callback(obj);
                 });
             } else {
                 // Synchronous path - return the parsed object directly
-                callback(this.#parseConfig(attrValue));
+                callback(HCON.parse(attrValue));
             }
         }
 
@@ -1795,8 +1877,7 @@ var htmx = (() => {
             if (selector.startsWith('global ')) {
                 return this.#findAllExt(elt, selector.slice(7), thisAttr, true);
             }
-            let parts = selector ? selector.replace(/<[^>]+\/>/g, m => m.replace(/,/g, '%2C'))
-                .split(',').map(p => p.replace(/%2C/g, ',')) : [];
+            let parts = selector ? HCON.split(selector) : [];
             let result = []
             let unprocessedParts = []
             for (const part of parts) {
@@ -2005,6 +2086,8 @@ var htmx = (() => {
         }
 
         #findBestMatch(ctx, node, startPoint, endPoint) {
+            // text nodes match positionally — patch in place via #morphNode, 3 = TEXT_NODE
+            if (node.nodeType === 3) return startPoint?.nodeType === 3 ? startPoint : null;
             if (!(node instanceof Element)) return null;
             let softMatch = null, displaceMatchCount = 0, scanLimit = this.config.morphScanLimit;
             let newSet = ctx.idMap.get(node), nodeMatchCount = newSet?.size || 0;
@@ -2026,8 +2109,8 @@ var htmx = (() => {
                 // Stop if too many ID elements would be displaced
                 displaceMatchCount += oldSet?.size || 0;
                 if (displaceMatchCount > nodeMatchCount) break;
-                // Don't move elements containing focus
-                if (cursor.contains(document.activeElement)) break;
+                // Don't move elements containing a focused typeable input
+                if (document.activeElement?.selectionStart != null && cursor.contains(document.activeElement)) break;
                 // Stop scanning if limit reached and no IDs to match
                 if (--scanLimit < 1 && nodeMatchCount === 0) break;
                 cursor = cursor.nextSibling;
@@ -2072,6 +2155,10 @@ var htmx = (() => {
         }
 
         #morphNode(oldNode, newNode, ctx) {
+            if (oldNode.nodeType === 3) { // text node
+                if (oldNode.nodeValue !== newNode.nodeValue) oldNode.nodeValue = newNode.nodeValue;
+                return;
+            }
             if (this.config.morphSkip && oldNode.matches?.(this.config.morphSkip)) return;
                 
             // Trigger extension hook - if returns false, skip morphing this node
@@ -2090,8 +2177,12 @@ var htmx = (() => {
 
         #copyAttributes(destination, source) {
             let attributesToIgnore = this.config.morphIgnore || [];
+            let needsReinit = false;
+            let isHxAttr = name => this.#prefixes('hx-').some(p => name.startsWith(p));
             for (const attr of source.attributes) {
-                if (!attributesToIgnore.includes(attr.name) && destination.getAttribute(attr.name) !== attr.value) {
+                if (!attributesToIgnore.some(p => attr.name.startsWith(p)) && destination.getAttribute(attr.name) !== attr.value) {
+                    if (isHxAttr(attr.name)) needsReinit = true;
+                    if (!this.#triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: attr.value })) continue;
                     destination.setAttribute(attr.name, attr.value);
                     if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
                         destination.value = attr.value;
@@ -2100,10 +2191,13 @@ var htmx = (() => {
             }
             for (let i = destination.attributes.length - 1; i >= 0; i--) {
                 let attr = destination.attributes[i];
-                if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.includes(attr.name)) {
+                if (attr && !source.hasAttribute(attr.name) && !attributesToIgnore.some(p => attr.name.startsWith(p))) {
+                    if (isHxAttr(attr.name)) needsReinit = true;
+                    if (!this.#triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: null })) continue;
                     destination.removeAttribute(attr.name);
                 }
             }
+            if (needsReinit) this.#cleanup(destination, true);
         }
 
         #populateIdMapWithTree(idMap, persistentIds, root, elements) {
@@ -2159,7 +2253,7 @@ var htmx = (() => {
                 }
                 let statusValue = this.#attributeValue(ctx.sourceElement, "hx-status:" + pattern);
                 if (statusValue) {
-                    this.#mergeConfig(statusValue, ctx);
+                    HCON.merge(statusValue, ctx);
                     return;
                 }
             }
