@@ -117,6 +117,15 @@ data: {"title": "New message", "body": "Hello!"}
 
 Messages without an `event:` field are swapped into the DOM as HTML content.
 
+SSE messages default to `swapEmpty:false` — if a message contains only `hx-swap-oob` or `<hx-partial>` elements and no
+main content, the connected element is left untouched. This differs from standard htmx requests where an OOB-only
+response clears the main target. Override per-element with the [`swapEmpty`](/reference/attributes/hx-swap#swapempty) modifier:
+
+```html
+<!-- Clear the connected element when an empty message arrives -->
+<div hx-sse:connect="/stream" hx-swap="innerHTML swapEmpty:true">
+```
+
 ## Configuration
 
 Configure SSE behavior globally via `htmx.config.sse` or per-element via [`hx-config`](/reference/attributes/hx-config) ([HCON](/docs#hx-config) or JSON):

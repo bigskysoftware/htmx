@@ -1427,6 +1427,7 @@ The modifiers available on `hx-swap` are (parsed as [HCON](#hcon)):
 | ignoreTitle  | If set to true, any title found in the new content will be ignored and not update the document title |
 | strip        | true or false, whether to strip the outer element when swapping (unwrap the content)                 |
 | focus-scroll | true or false, whether to scroll focused elements into view                                          |
+| swapEmpty    | true or false, whether to skip the swap when the response body is empty. Defaults to [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty) |
 | scroll       | top or bottom, will scroll the target element to its top or bottom                                   |
 | show         | top or bottom, will scroll the target element's top or bottom into view                              |
 | target       | A selector to retarget the swap to a different element                                               |
@@ -1858,6 +1859,31 @@ Either `hx-target` or `id` is required. If both are present, `hx-target` takes p
 <summary>Alternative syntax for template languages that strip unknown tags</summary>
 You can use the equivalent <code>&lt;template&gt;</code> form: <code>&lt;template hx type="partial" hx-target="..." hx-swap="..."&gt;</code>. htmx converts <code>&lt;hx-partial&gt;</code> to this form internally.
 </details>
+
+#### Empty Response Behaviour
+
+When a response contains only `<hx-partial>` elements and no main content, htmx will **not** perform the main swap.
+This is the opposite default to [`hx-swap-oob`](/reference/attributes/hx-swap-oob): with partials, an
+all-partial response signals intent — the server is explicitly routing multiple targeted updates and there is no main
+content to swap.
+
+```html
+<!-- Server returns only partials — main target is left untouched -->
+<hx-partial hx-target="#notifications">
+    <span class="badge">5</span>
+</hx-partial>
+<hx-partial hx-target="#messages" hx-swap="beforeend">
+    <div class="message">New message</div>
+</hx-partial>
+```
+
+If you also want the main target cleared, add `swapEmpty:true` to `hx-swap` on the triggering element:
+
+```html
+<button hx-post="/submit" hx-swap="outerHTML swapEmpty:true">Submit</button>
+```
+
+Or set the global default via [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).
 
 #### When to Use Partials
 
