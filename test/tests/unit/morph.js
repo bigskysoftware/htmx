@@ -345,6 +345,53 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(checkbox.className, 'updated');
         });
 
+        it('preserves focused input node when validation error div is inserted before it', async function() {
+            // Without the guard, scan advances past the focused input to soft-match
+            // div.info for div.error, and the skip-over loop removes the focused input.
+            const div = createProcessedHTML(
+                '<div id="target"><input name="q" placeholder="Search"><div class="info">hint</div></div>'
+            );
+            const input = div.querySelector('input[name=q]');
+            input.value = 'hello';
+            input.focus();
+
+            await htmx.swap({
+                target: '#target',
+                text: '<div class="error">Required</div><input name="q" placeholder="Search"><div class="info">hint</div>',
+                swap: 'innerMorph',
+                sourceElement: div
+            });
+
+            assert.isNotNull(div.querySelector('.error'), 'error div should be inserted');
+            assert.equal(div.querySelector('input[name=q]'), input, 'focused input node should be preserved');
+            assert.equal(input.value, 'hello', 'typed value should be preserved');
+        });
+
+        it('does not block morph when a clicked button holds focus but is removed in new content', async function() {
+            // Without the fix, scan stopped at the focused button causing sibling
+            // inputs to be inserted fresh and losing their live values.
+            const div = createProcessedHTML('<div id="target"><button class="action">Go</button><input name="name"><input name="email"></div>');
+            const btn = div.querySelector('button');
+            const nameInput = div.querySelector('input[name=name]');
+            const emailInput = div.querySelector('input[name=email]');
+            nameInput.value = 'Alice';
+            emailInput.value = 'alice@example.com';
+            btn.focus();
+
+            await htmx.swap({
+                target: '#target',
+                text: '<input name="name"><input name="email">',
+                swap: 'innerMorph',
+                sourceElement: div
+            });
+
+            assert.equal(div.querySelector('input[name=name]'), nameInput, 'name input node should be reused');
+            assert.equal(div.querySelector('input[name=email]'), emailInput, 'email input node should be reused');
+            assert.equal(nameInput.value, 'Alice', 'name value should be preserved');
+            assert.equal(emailInput.value, 'alice@example.com', 'email value should be preserved');
+            assert.isNull(div.querySelector('button'), 'button should be removed');
+        });
+
 
     });
 
