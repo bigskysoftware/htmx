@@ -1,9 +1,12 @@
 # Release checklist
 
 * Ensure CHANGELOG.md is updated
-* Bump version in all relevant files (js, package.json, markdown docs)
+* Bump version by hand in:
+  * `package.json` (then `npm install` to sync `package-lock.json`)
+  * `src/htmx.js`
+  * `README.md`
 * Ensure build is up to date: `npm install; npm build`
-* Update SHA `npm run update-sha`
+* Update SHA `npm run update-sha` (also writes version to `www/src/data/integrity.json`)
 * Run Tests
   * `npm run test:all`
   * `npm run upgrade-check:test`

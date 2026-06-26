@@ -11,8 +11,8 @@ The `hx-csp` extension provides Content Security Policy enforcement for htmx acr
 ## Installing
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-csp.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/ext/hx-csp.js"></script>
 ```
 
 ## The hx-nonce Attribute

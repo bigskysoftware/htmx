@@ -5,8 +5,13 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeExternalLinks from "rehype-external-links";
 import {rehypeSections} from "./src/lib/rehype-sections.js";
+import {remarkCdnVersion} from "./src/lib/remark-cdn-version.js";
 import {codeBlockTransformer} from "./src/lib/shiki-transformers.js";
-import {readdirSync} from "node:fs";
+import {readdirSync, readFileSync} from "node:fs";
+
+// Single source of truth for the version shown in CDN/npm snippets.
+// Generated from package.json by `npm run update-sha` at release time.
+const {version} = JSON.parse(readFileSync("./src/data/integrity.json", "utf8"));
 
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
@@ -50,6 +55,9 @@ export default defineConfig({
     },
 
     markdown: {
+        remarkPlugins: [
+            [remarkCdnVersion, {version}],
+        ],
         rehypePlugins: [
             rehypeSlug,
             [rehypeSections, {split: 'h2'}], // /docs sticky h2s need containing blocks to unstick naturally

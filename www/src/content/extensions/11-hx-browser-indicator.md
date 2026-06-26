@@ -13,8 +13,8 @@ This extension requires the [Navigation API](https://developer.mozilla.org/en-US
 ## Installing
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-browser-indicator.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/ext/hx-browser-indicator.js"></script>
 ```
 
 ## Usage

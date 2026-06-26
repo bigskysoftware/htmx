@@ -16,25 +16,25 @@ htmx is a single JavaScript file with no dependencies. No build step is required
 
 Add this in your `<head>` tag:
 
-<Code lang="html" code={`<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta5" integrity="${integrity.min}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
+<Code lang="html" code={`<script src="https://cdn.jsdelivr.net/npm/htmx.org@${integrity.version}" integrity="${integrity.min}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
 
 #### Unminified
 
-<Code lang="html" code={`<script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta5/dist/htmx.js" integrity="${integrity.full}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
+<Code lang="html" code={`<script src="https://cdn.jsdelivr.net/npm/htmx.org@${integrity.version}/dist/htmx.js" integrity="${integrity.full}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
 
 #### ES Module
 
-<Code lang="html" code={`<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta5/dist/htmx.esm.min.js" integrity="${integrity.esmMin}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
+<Code lang="html" code={`<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@${integrity.version}/dist/htmx.esm.min.js" integrity="${integrity.esmMin}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
 
 #### ES Module (unminified)
 
-<Code lang="html" code={`<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta5/dist/htmx.esm.js" integrity="${integrity.esm}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
+<Code lang="html" code={`<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@${integrity.version}/dist/htmx.esm.js" integrity="${integrity.esm}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
 
 ### Download
 
 Instead of using a CDN, consider [self-hosting in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn).
 
-1. Download <a download href="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta5/dist/htmx.min.js">htmx.min.js</a>
+1. Download <a download href="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.min.js">htmx.min.js</a>
 2. Save it to your project (e.g., `/js/htmx.min.js`)
 3. Add this in your `<head>` tag:
 
@@ -44,16 +44,16 @@ Instead of using a CDN, consider [self-hosting in production](https://blog.wesle
 
 #### Other formats
 
-Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta5/dist/htmx.js">htmx.js</a> (unminified)
+Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.js">htmx.js</a> (unminified)
 
-Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta5/dist/htmx.esm.min.js">htmx.esm.min.js</a> (ES module)
+Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.esm.min.js">htmx.esm.min.js</a> (ES module)
 
-Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta5/dist/htmx.esm.js">htmx.esm.js</a> (ES module, unminified)
+Download: <a download href="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.esm.js">htmx.esm.js</a> (ES module, unminified)
 
 ### npm
 
 ```sh
-npm install htmx.org@4.0.0-beta5
+npm install htmx.org@__VERSION__
 ```
 
 ```javascript
@@ -105,7 +105,7 @@ Add these two config lines to restore htmx 2.x behavior:
     htmx.config.implicitInheritance = true;
     htmx.config.noSwap = [204, 304, '4xx', '5xx'];
 </script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.min.js"></script>
 ```
 
 [`implicitInheritance`](/reference/config/htmx-config-implicitInheritance) restores htmx 2's implicit attribute
@@ -128,9 +128,9 @@ htmx 4 ships with a command-line tool scans your templates and JS files for htmx
 for removed attributes, old event names, inheritance patterns, extension changes, etc.
 
 ```bash
-npx htmx.org@next upgrade-check -- ./path/to/project/root
+npx htmx.org@__VERSION__ upgrade-check -- ./path/to/project/root
 
-npx htmx.org@next upgrade-check --ext .vue ./path/to/project/root
+npx htmx.org@__VERSION__ upgrade-check --ext .vue ./path/to/project/root
 ```
 
 By default, the tool scans `.html`, `.php`, `.js`, `.ts`, `.jinja`, `.jinja2`, `.j2`, `.erb`, and `.hbs` files.
@@ -2683,7 +2683,7 @@ Crosses shadow DOM boundaries.
 `hx-target` only resolves to a single element. To swap the same response into multiple elements, use the [`hx-targets`](/extensions/hx-targets) extension attribute:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-targets.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/ext/hx-targets.js"></script>
 
 <button hx-get="/data" hx-targets="#results, #cache">Load</button>
 ```
@@ -2770,8 +2770,8 @@ Extensions apply page-wide without requiring `hx-ext` on parent elements. They a
 Include the extension script after htmx. Core extensions ship with htmx in the `/ext/` directory:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-sse.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/ext/hx-sse.js"></script>
 ```
 
 Or with a bundler:

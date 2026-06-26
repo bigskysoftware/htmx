@@ -13,8 +13,8 @@ Before each request, it pops up a browser prompt. The answer becomes the `HX-Pro
 ## Installing
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-prompt.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/ext/hx-prompt.js"></script>
 ```
 
 ## Usage

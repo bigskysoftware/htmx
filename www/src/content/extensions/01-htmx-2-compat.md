@@ -11,8 +11,8 @@ The `htmx-2-compat` extension provides a compatibility layer that allows htmx 2.
 ## Installing
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/htmx-2-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/ext/htmx-2-compat.js"></script>
 ```
 
 ## Usage

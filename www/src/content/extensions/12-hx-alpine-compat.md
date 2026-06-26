@@ -11,8 +11,8 @@ The `alpine-compat` extension provides a compatibility layer between htmx and [A
 ## Installing
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/htmx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@next/dist/ext/hx-alpine-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/ext/hx-alpine-compat.js"></script>
 <script defer src="/path/to/alpine.js"></script>
 ```
 
