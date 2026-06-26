@@ -301,14 +301,14 @@ Controls whether the outer element of the response content is removed before swa
 
 ### `swapEmpty`
 
-Skips the swap when the response body is empty.
+Controls whether an empty response body still performs the main swap (which clears the target). `swapEmpty:false` skips the main swap; `swapEmpty:true` (or a bare `swapEmpty`) forces it.
 
 ```html
-<!-- Skip swap on empty response -->
-<div hx-swap="innerHTML swapEmpty"></div>
-
-<!-- Explicitly proceed with swap even if response is empty -->
+<!-- Skip the main swap when the response is empty -->
 <div hx-swap="innerHTML swapEmpty:false"></div>
+
+<!-- Force the main swap even when the response is empty -->
+<div hx-swap="innerHTML swapEmpty:true"></div>
 ```
 
 Defaults to [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).

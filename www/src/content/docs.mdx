@@ -1427,7 +1427,7 @@ The modifiers available on `hx-swap` are (parsed as [HCON](#hcon)):
 | ignoreTitle  | If set to true, any title found in the new content will be ignored and not update the document title |
 | strip        | true or false, whether to strip the outer element when swapping (unwrap the content)                 |
 | focus-scroll | true or false, whether to scroll focused elements into view                                          |
-| swapEmpty    | true or false, whether to skip the swap when the response body is empty. Defaults to [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty) |
+| swapEmpty    | true or false, whether to perform the main swap when the response body is empty (`false` skips it). Defaults to [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty) |
 | scroll       | top or bottom, will scroll the target element to its top or bottom                                   |
 | show         | top or bottom, will scroll the target element's top or bottom into view                              |
 | target       | A selector to retarget the swap to a different element                                               |
