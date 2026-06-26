@@ -174,7 +174,7 @@ Quick compatibility fixes:
 5. Replace `hx-disabled-elt` → `hx-disable`
 6. Replace `hx-disable` (old meaning of ignoring) → `hx-ignore`
 7. Replace `hx-vars` → `hx-vals` with `js:` prefix
-8. Replace `hx-prompt` → `hx-confirm` with `js:` prefix
+8. Load the `hx-prompt` extension to keep `hx-prompt` working
 9. Or load the `htmx-2-compat` extension for gradual migration
 
 ## Browser DevTools Techniques

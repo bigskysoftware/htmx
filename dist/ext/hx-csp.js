@@ -70,7 +70,7 @@
     function rewriteNoncesInText(text, responseNonce, replacement = pageNonce) {
         let escaped = escapeRegex(responseNonce);
         return text.replace(
-            new RegExp(`(nonce=)(["'])${escaped}\\2`, 'gi'),
+            new RegExp(`(nonce=)(["']?)${escaped}\\2`, 'gi'),
             (_, attr, quote) => replacement ? `${attr}${quote}${replacement}${quote}` : ''
         );
     }

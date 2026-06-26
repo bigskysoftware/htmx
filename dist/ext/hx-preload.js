@@ -60,7 +60,7 @@
             }
         };
         for (let eventName of preloadEvents) {
-            elt.addEventListener(eventName, preloadListener);
+            elt.addEventListener(eventName, preloadListener, { passive: true });
         }
         elt._htmx.preloadListener = preloadListener;
         elt._htmx.preloadEvents = preloadEvents;
@@ -96,4 +96,4 @@
             }
         }
     });
-})()
+})();

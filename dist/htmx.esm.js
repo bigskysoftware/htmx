@@ -198,7 +198,7 @@ var htmx = (() => {
         }
 
         #initHtmxConfig() {
-            this.version = '4.0.0-beta4'
+            this.version = '4.0.0-beta5'
             this.config = {
                 logAll: false,
                 prefix: "data-hx-",
@@ -213,6 +213,8 @@ var htmx = (() => {
                 defaultTimeout: 60000, /* 60 second default timeout */
                 extensions: '',
                 morphIgnore: ["data-htmx-powered"],
+                morphSkip: '[hx-morph-skip]',
+                morphSkipChildren: '[hx-morph-skip-children]',
                 morphScanLimit: 10,
                 noSwap: [204, 304],
                 implicitInheritance: false,
@@ -559,7 +561,7 @@ var htmx = (() => {
                     ctx.request.action = url.href;
                 }
                 ctx.request.body = null;
-            } else if (this.#attributeValue(elt, "hx-encoding") !== "multipart/form-data") {
+            } else if ((this.#attributeValue(elt, "hx-encoding") ?? form?.enctype) !== "multipart/form-data") {
                 ctx.request.body = new URLSearchParams(ctx.request.body);
             }
 
@@ -929,18 +931,25 @@ var htmx = (() => {
             return func.call(thisArg, ...values);
         }
 
-        // when force is true: re-wires elt and all powered descendants from current attributes
-        process(elt, force) {
-            if (!elt?.isConnected) return;
-            if (!(elt instanceof Element)) {
-                for (let child of elt.children || []) this.process(child, force);
+        /**
+         * Initialize htmx attributes on root and all its descendants. When force is true, root
+         * and every powered descendant are first torn down and re-wired from their current
+         * attributes - use this after mutating hx-* attributes on an already-processed element.
+         * @see https://four.htmx.org/reference/methods/htmx-process
+         * @param {Element | ShadowRoot} root
+         * @param {boolean} [force]
+         */
+        process(root, force) {
+            if (!root?.isConnected) return;
+            if (!(root instanceof Element)) { // ShadowRoot
+                for (let elt of root.children || []) this.process(elt, force);
                 return;
             }
-            if (force) this.#cleanup(elt, true);
-            if (this.#ignore(elt)) return;
-            if (!this.#trigger(elt, "htmx:before:process")) return
-            let hxOnNodes = [elt];
-            let iter = this.#hxOnQuery.evaluate(elt)
+            if (force) this.#cleanup(root, true);
+            if (this.#ignore(root)) return;
+            if (!this.#trigger(root, "htmx:before:process")) return
+            let hxOnNodes = [root];
+            let iter = this.#hxOnQuery.evaluate(root)
             let node = null
             while (node = iter.iterateNext()) hxOnNodes.push(node)
             for (let hxOnNode of hxOnNodes) {
@@ -948,13 +957,13 @@ var htmx = (() => {
                     this.#handleHxOnAttributes(hxOnNode);
                 }
             }
-            for (let child of this.#queryEltAndDescendants(elt, this.#actionSelector)) {
-                this.#initializeElement(child);
+            for (let elt of this.#queryEltAndDescendants(root, this.#actionSelector)) {
+                this.#initializeElement(elt);
             }
-            for (let child of this.#queryEltAndDescendants(elt, this.#boostSelector)) {
-                this.#maybeBoost(child);
+            for (let elt of this.#queryEltAndDescendants(root, this.#boostSelector)) {
+                this.#maybeBoost(elt);
             }
-            this.#trigger(elt, "htmx:after:process");
+            this.#trigger(root, "htmx:after:process");
         }
 
         #maybeBoost(elt) {
@@ -975,7 +984,7 @@ var htmx = (() => {
             if (this.#shouldInitialize(elt)) {
                 if (elt.tagName === "A") {
                     if (elt.target === '' || elt.target === '_self') {
-                        return !elt.getAttribute('href')?.startsWith?.("#") && this.#isSameOrigin(elt.href)
+                        return !elt.hasAttribute('download') && !elt.getAttribute('href')?.startsWith?.("#") && this.#isSameOrigin(elt.href)
                     }
                 } else if (elt.tagName === "FORM") {
                     return elt.method !== 'dialog' &&  this.#isSameOrigin(elt.action);
@@ -998,6 +1007,12 @@ var htmx = (() => {
             return !elt._htmx?.initialized && !this.#ignore(elt);
         }
 
+        /**
+         * Remove listeners, timers, and observers from elt and all its powered descendants.
+         * When force is true, also delete their htmx state so a re-process fully re-initializes them.
+         * @param {Element} elt
+         * @param {boolean} [force]
+         */
         #cleanup(elt, force) {
             let elts = [elt, ...elt.querySelectorAll?.('[data-htmx-powered]') ?? []];
             for (let e of elts) {
@@ -1289,8 +1304,13 @@ var htmx = (() => {
         #processMainSwap(ctx, fragment, partialTasks) {
             // Create main task if needed
             let swapSpec = this.#parseSwapSpec(ctx.swap || this.config.defaultSwap);
-            // skip creating main swap if extracting partials resulted in empty response except for delete style
-            if (swapSpec.style === 'delete' || fragment.childElementCount > 0 || /\S/.test(fragment.textContent) || !partialTasks.length) {
+            // skip main swap if fragment is empty after hx-partial removal but respect empty modifier
+            if (
+                swapSpec.style === 'delete' ||    // delete always runs regardless of content
+                fragment.childElementCount > 0 || // or fragment has elements
+                fragment.textContent.trim() ||    // or fragment has text
+                (swapSpec.swapEmpty ?? this.config.defaultSwapEmpty ?? !partialTasks.length) // swapEmpty:true/false overrides, default: allow if no partials
+            ) {
                 if (ctx.select) {
                     let selected = fragment.querySelectorAll(ctx.select);
                     fragment = document.createDocumentFragment();
@@ -1382,6 +1402,9 @@ var htmx = (() => {
                     }
                 } else if (swapStyle === 'outerSync') {
                     this.#copyAttributes(target, fragment.firstElementChild);
+                    for (const child of target.children) {
+                        this.#cleanup(child)
+                    }
                     target.replaceChildren(...fragment.firstElementChild.childNodes);
                     newContent = [target];
                 } else if (swapStyle === 'innerMorph') {
@@ -2086,8 +2109,8 @@ var htmx = (() => {
                 // Stop if too many ID elements would be displaced
                 displaceMatchCount += oldSet?.size || 0;
                 if (displaceMatchCount > nodeMatchCount) break;
-                // Don't move elements containing focus
-                if (cursor.contains(document.activeElement)) break;
+                // Don't move elements containing a focused typeable input
+                if (document.activeElement?.selectionStart != null && cursor.contains(document.activeElement)) break;
                 // Stop scanning if limit reached and no IDs to match
                 if (--scanLimit < 1 && nodeMatchCount === 0) break;
                 cursor = cursor.nextSibling;
