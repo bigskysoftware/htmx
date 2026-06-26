@@ -2109,8 +2109,8 @@ var htmx = (() => {
                 // Stop if too many ID elements would be displaced
                 displaceMatchCount += oldSet?.size || 0;
                 if (displaceMatchCount > nodeMatchCount) break;
-                // Don't move elements containing focus
-                if (cursor.contains(document.activeElement)) break;
+                // Don't move elements containing a focused typeable input
+                if (document.activeElement?.selectionStart != null && cursor.contains(document.activeElement)) break;
                 // Stop scanning if limit reached and no IDs to match
                 if (--scanLimit < 1 && nodeMatchCount === 0) break;
                 cursor = cursor.nextSibling;
