@@ -1454,6 +1454,59 @@ describe('hx-live extension', function () {
         elt.dataset.v.should.equal('hello');
     });
 
+    it('data proxy supports object spread with cascading values', async function() {
+        playground().innerHTML = `
+            <section data-x="1" data-y="2" data-user='{"name":"alice"}'>
+                <article data-y="3">
+                    <button id="me" hx-on:click="window.__spreadDataLive = { ...data }">x</button>
+                </article>
+            </section>
+        `;
+        htmx.process(playground());
+        playground().querySelector('#me').click();
+        window.__spreadDataLive.x.should.equal(1);
+        window.__spreadDataLive.y.should.equal(3);
+        window.__spreadDataLive.user.should.deep.equal({ name: 'alice' });
+        window.__spreadDataLive.should.not.have.property('htmxPowered');
+    });
+
+    it('data proxy supports Object.keys/Object.values/Object.entries', async function() {
+        playground().innerHTML = `
+            <section data-x="1" data-y="2">
+                <article data-y="3" data-z="4">
+                    <button id="me" hx-on:click="
+                        window.__keysDataLive = Object.keys(data);
+                        window.__valuesDataLive = Object.values(data);
+                        window.__entriesDataLive = Object.entries(data);
+                    ">x</button>
+                </article>
+            </section>
+        `;
+        htmx.process(playground());
+        playground().querySelector('#me').click();
+        window.__keysDataLive.slice(0, 3).should.deep.equal(['y', 'z', 'x']);
+        window.__valuesDataLive.slice(0, 3).should.deep.equal([3, 4, 1]);
+        window.__entriesDataLive.slice(0, 3).should.deep.equal([['y', 3], ['z', 4], ['x', 1]]);
+        window.__keysDataLive.should.not.include('htmxPowered');
+    });
+
+    it('data proxy supports object rest destructuring', async function() {
+        playground().innerHTML = `
+            <section data-x="1" data-y="2" data-z="3">
+                <button id="me" hx-on:click="
+                    let { x, ...rest } = data;
+                    window.__restDataLive = rest;
+                ">x</button>
+            </section>
+        `;
+        htmx.process(playground());
+        playground().querySelector('#me').click();
+        window.__restDataLive.y.should.equal(2);
+        window.__restDataLive.z.should.equal(3);
+        window.__restDataLive.should.not.have.property('x');
+        window.__restDataLive.should.not.have.property('htmxPowered');
+    });
+
     it('data is reactive in :attr expressions (re-runs on ancestor data change)', async function() {
         playground().innerHTML = `
             <section data-mode="light">

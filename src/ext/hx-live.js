@@ -208,6 +208,24 @@
                 if (typeof prop !== 'string') return false;
                 let kebab = camelToKebab(prop);
                 return !!elt.closest('[data-' + kebab + ']');
+            },
+            ownKeys: () => {
+                let result = [];
+                let seen = new Set();
+                for (let node = elt; node; node = node.parentElement) {
+                    for (let key of Object.keys(node.dataset)) {
+                        if (key !== 'htmxPowered' && !seen.has(key)) {
+                            seen.add(key);
+                            result.push(key);
+                        }
+                    }
+                }
+                return result;
+            },
+            getOwnPropertyDescriptor: (_, prop) => {
+                if (typeof prop !== 'string' || prop === 'htmxPowered') return;
+                let kebab = camelToKebab(prop);
+                if (elt.closest('[data-' + kebab + ']')) return { enumerable: true, configurable: true };
             }
         });
     }

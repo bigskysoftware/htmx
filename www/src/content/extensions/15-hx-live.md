@@ -302,6 +302,20 @@ Values are automatically JSON-serialized on write and parsed on read. Booleans, 
 
 Plain strings that aren't valid JSON are returned as-is.
 
+The `data` proxy is enumerable. Object spread, rest destructuring, and `Object.keys()`/`Object.entries()` use the same cascading lookup rules:
+
+```html
+<section data-x="1" data-y="2">
+    <button data-y="3"
+            hx-post="/cursor"
+            hx-vals="js:{ ...data }">
+        Send cursor
+    </button>
+</section>
+```
+
+Here, `hx-vals` receives `{ x: 1, y: 3 }`.
+
 `data` is also available on `q()` proxies via `q(selector).data`. It cascades from the first matched element:
 
 ```js
