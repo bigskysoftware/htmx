@@ -14,6 +14,7 @@
 import { readFileSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import yaml from 'js-yaml';
+import integrity from '../data/integrity.json';
 
 /**
  * @typedef {Object} Breadcrumb
@@ -170,6 +171,9 @@ export function fileAsMarkdown(path) {
     let body = rawBody(fullPath);
     if (!body) return '';
     if (path.endsWith('.mdx')) body = stripMdxForMarkdown(body, path);
+    // Resolve the CDN/npm version token (single source: integrity.json); the
+    // remark plugin handles the rendered HTML, this covers raw-markdown exports.
+    body = body.split('__VERSION__').join(integrity.version);
     const title = rawTitle(fullPath);
     return title && !/^#\s/.test(body) ? `# ${title}\n\n${body}` : body;
 }
