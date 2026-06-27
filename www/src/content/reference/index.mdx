@@ -101,7 +101,7 @@ export const groups = folder.folders.map(sub => {
                             {sg.items.map(item => (
                                 <tr class="filter-item stretch-link cursor-pointer" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()} onclick="if (!event.target.closest('a')) this.querySelector('a')?.click()">
                                     <td>
-                                        <a href={item.url}><code>{item.title}</code></a>
+                                        <a href={item.url}><code set:html={item.title} /></a>
                                         {item.description && <span class="block sm:hidden text-[0.8125em] text-neutral-650 dark:text-neutral-350 mt-0.5 pl-[6px]">{item.description}</span>}
                                     </td>
                                     <td class="hidden sm:table-cell">{item.description || ''}</td>

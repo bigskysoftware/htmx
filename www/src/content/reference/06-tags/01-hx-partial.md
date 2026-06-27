@@ -1,6 +1,7 @@
 ---
-title: "<hx-partial>"
+title: "&lt;hx-partial&gt;"
 description: "Target multiple elements from a single response"
+keywords: ["hx-partial", "partial", "partials"]
 ---
 
 The `<hx-partial>` tag lets you update multiple elements from a single response, with explicit control over targeting and swap strategy.

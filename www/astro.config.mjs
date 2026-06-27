@@ -173,6 +173,7 @@ export default defineConfig({
         "/reference/events": "/reference",
         "/reference/config": "/reference",
         "/reference/methods": "/reference",
+        "/reference/tags": "/reference",
         "/help": "/about",
         "/server-examples": "/about",
 

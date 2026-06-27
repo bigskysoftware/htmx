@@ -40,7 +40,7 @@ const footerSections = [
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{title === 'htmx' ? title : `${title} ~ htmx`}</title>
+    <title set:html={title === 'htmx' ? title : `${title} ~ htmx`} />
 
     <script is:inline>
         if (/Mac|iPad|iPhone|iPod/.test(navigator.userAgent)) {
