@@ -2,6 +2,7 @@
 includeMockServer: true
 title: "Drag to Reorder"
 description: Change order of records with drag and drop
+category: "Records"
 icon: "icon-[mdi--reorder-horizontal]"
 soon: true
 ---

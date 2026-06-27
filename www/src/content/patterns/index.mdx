@@ -4,12 +4,13 @@ description: "Patterns, recipes, and working examples."
 ---
 
 import { getFolder } from '../../lib/content';
+import { PATTERN_CATEGORIES, groupFilesByCategory } from '../../lib/content-groups';
 
 export const folder = await getFolder('patterns');
-export const groupedPatterns = folder.folders.map(sub => ({
-    slug: sub.slug,
-    label: sub.frontmatter.title,
-    items: sub.files.map(f => ({
+export const groupedPatterns = groupFilesByCategory(folder.files, PATTERN_CATEGORIES).map(group => ({
+    slug: group.slug,
+    label: group.category,
+    items: group.files.map(f => ({
         title: f.frontmatter.title,
         url: f.url,
         description: f.frontmatter.description,

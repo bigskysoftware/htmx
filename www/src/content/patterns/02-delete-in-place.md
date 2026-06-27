@@ -2,6 +2,7 @@
 includeMockServer: true
 title: "Delete in Place"
 description: Remove a record without page refresh
+category: "Records"
 icon: "icon-[mdi--delete]"
 soon: true
 ---

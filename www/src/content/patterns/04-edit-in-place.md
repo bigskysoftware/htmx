@@ -2,6 +2,7 @@
 includeMockServer: true
 title: "Edit in Place"
 description: Update a record without page refresh
+category: "Records"
 icon: "icon-[mdi--square-edit-outline]"
 soon: true
 ---

@@ -2,6 +2,7 @@
 includeMockServer: true
 title: "Dialogs"
 description: Show modals and popups on demand
+category: "Display"
 icon: "icon-[vaadin--modal-list]"
 soon: true
 ---

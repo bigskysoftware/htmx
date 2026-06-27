@@ -1117,7 +1117,7 @@ Other modifiers you can use for triggers are (parsed as [HCON](#hcon)):
 
 Multiple triggers can be specified in the [`hx-trigger`](/reference/attributes/hx-trigger) attribute, separated by commas.
 
-You can use these features to implement many common UX patterns, such as [Active Search](/patterns/forms/active-search):
+You can use these features to implement many common UX patterns, such as [Active Search](/patterns/active-search):
 
 ```html
 <input type="text"
@@ -1196,7 +1196,7 @@ If the `/messages` end point keeps returning a div set up this way, it will keep
 second.
 
 Load polling can be useful in situations where a poll has an end point at which point the polling terminates, such as
-when you are showing the user a [progress bar](/patterns/loading/progress-bar).
+when you are showing the user a [progress bar](/patterns/progress-bar).
 
 #### Request Indicators
 
@@ -1669,7 +1669,7 @@ Here is an example that adds a parameter to an htmx request
 
 Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
 
-Another use case is to [reset user input](/patterns/forms/reset-on-submit) on successful requests using the [`htmx:after:swap`](/reference/events/htmx-after-swap)
+Another use case is to [reset user input](/patterns/reset-on-submit) on successful requests using the [`htmx:after:swap`](/reference/events/htmx-after-swap)
 event:
 
 ```html
@@ -1685,7 +1685,7 @@ Htmx integrates well with third party libraries.
 
 If the library fires events on the DOM, you can use those events to trigger requests from htmx.
 
-A good example of this is the [SortableJS demo](/patterns/records/drag-to-reorder):
+A good example of this is the [SortableJS demo](/patterns/drag-to-reorder):
 
 ```html
 <form class="sortable" hx-post="/items" hx-trigger="end">
@@ -2281,7 +2281,7 @@ a wider audience to use your site's functionality.
 
 Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
 
-Consider the [active search](/patterns/forms/active-search) example. As it is written, it will not degrade gracefully:
+Consider the [active search](/patterns/active-search) example. As it is written, it will not degrade gracefully:
 someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity's sake,
 to keep the example as brief as possible.
 

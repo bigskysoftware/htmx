@@ -2,6 +2,7 @@
 includeMockServer: true
 title: "Click to Load"
 description: Load more items when you click a button
+category: "Loading"
 icon: "icon-[mdi--cursor-pointer]"
 ---
 

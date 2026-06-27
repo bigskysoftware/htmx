@@ -2,6 +2,7 @@
 includeMockServer: true
 title: Active Search
 description: Filter search results as you type
+category: "Forms"
 icon: "icon-[mdi--magnify]"
 ---
 

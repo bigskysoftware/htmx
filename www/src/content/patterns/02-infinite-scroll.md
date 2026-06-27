@@ -2,6 +2,7 @@
 includeMockServer: true
 title: "Infinite Scroll"
 description: Load content when you scroll to bottom
+category: "Loading"
 icon: "icon-[mdi--arrow-expand-down]"
 ---
 

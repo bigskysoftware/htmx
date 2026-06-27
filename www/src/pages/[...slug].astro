@@ -9,6 +9,7 @@ import Pagination from '../components/Pagination.astro';
 import FinderLink from '../components/FinderLink.astro';
 import { getFolder, render, COLLECTIONS } from '../lib/content';
 import { buildDocsSidebar } from '../lib/docs-sidebar';
+import { EXTENSION_CATEGORIES, PATTERN_CATEGORIES, buildCategorySidebar } from '../lib/content-groups';
 
 export async function getStaticPaths() {
     const paths = [];
@@ -60,10 +61,13 @@ const isPatternsIndex = isCollectionRootPage && collection === 'patterns';
 const isExtensionsIndex = isCollectionRootPage && collection === 'extensions';
 const isEssaysIndex = isCollectionRootPage && collection === 'essays';
 const isDocsRoot = isCollectionRootPage && collection === 'docs';
-// Extensions is flat (no subfolders), but sibling navigation is useful, so show sidebar on inner pages.
-const isFlatCollectionWithSidebar = collection === 'extensions';
+const flatSidebarCategories = collection === 'extensions'
+    ? EXTENSION_CATEGORIES
+    : collection === 'patterns'
+        ? PATTERN_CATEGORIES
+        : null;
 const includeSidebar = isDocsRoot
-    || (!!(folder?.folders?.length || (isFlatCollectionWithSidebar && folder?.files?.length))
+    || (!!(folder?.folders?.length || (flatSidebarCategories && folder?.files?.length))
         && !isReferenceIndex && !isPatternsIndex && !isExtensionsIndex);
 const includeHeader = !isHomePage;
 const includeMockServer = file?.frontmatter?.includeMockServer === true;
@@ -78,6 +82,10 @@ if (file) {
     headings = folder!.folders.map(sub => ({ depth: 2, slug: sub.slug, text: sub.frontmatter.title }));
 } else if (isDocsRoot) {
     ({headings, sidebar: sidebarFolder} = await buildDocsSidebar(folder));
+}
+
+if (flatSidebarCategories) {
+    sidebarFolder = buildCategorySidebar(folder, flatSidebarCategories);
 }
 const includeTableOfContents = headings.length > 0;
 const editPageUrl = `https://github.com/bigskysoftware/htmx/edit/four-dev/www/src/content/${page.path}`;

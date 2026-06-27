@@ -2,6 +2,7 @@
 includeMockServer: true
 title: "File Upload"
 description: Upload files with progress and validation
+category: "Forms"
 icon: "icon-[mdi--file-upload-outline]"
 soon: true
 ---

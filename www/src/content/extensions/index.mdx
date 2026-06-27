@@ -5,19 +5,19 @@ thumbnail: "docs/extensions.svg"
 ---
 
 import { getFolder } from '../../lib/content';
+import { EXTENSION_CATEGORIES, groupFilesByCategory } from '../../lib/content-groups';
 
 export const folder = await getFolder('extensions');
-export const CATEGORY_ORDER = ['Networking', 'Performance', 'UX', 'Swap behaviors', 'Compatibility', 'Security'];
-export const grouped = CATEGORY_ORDER.map(category => ({
-    category,
-    slug: category.toLowerCase().replace(/\s+/g, '-'),
-    items: folder.files.filter(f => f.frontmatter.category === category).map(f => ({
+export const grouped = groupFilesByCategory(folder.files, EXTENSION_CATEGORIES).map(group => ({
+    category: group.category,
+    slug: group.slug,
+    items: group.files.map(f => ({
         title: f.frontmatter.title,
         url: f.url,
         description: f.frontmatter.description,
         icon: f.frontmatter.icon,
     })),
-})).filter(g => g.items.length > 0);
+}));
 
 <div class="not-prose mb-6">
     <input

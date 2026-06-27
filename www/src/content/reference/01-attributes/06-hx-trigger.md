@@ -55,7 +55,7 @@ htmx provides synthetic events beyond standard DOM events:
 
 ### `load`
 
-Fires when the element is loaded into the DOM. Useful for [lazy-loading](/patterns/loading/lazy-load) content.
+Fires when the element is loaded into the DOM. Useful for [lazy-loading](/patterns/lazy-load) content.
 
 ```html
 <div hx-trigger="load" hx-get="...">Loading...</div>
@@ -63,7 +63,7 @@ Fires when the element is loaded into the DOM. Useful for [lazy-loading](/patter
 
 ### `revealed`
 
-Fires when the element is scrolled into the viewport. Useful for [infinite scroll](/patterns/loading/infinite-scroll).
+Fires when the element is scrolled into the viewport. Useful for [infinite scroll](/patterns/infinite-scroll).
 
 ```html
 <div hx-trigger="revealed" hx-get="...">Loading...</div>
@@ -229,6 +229,6 @@ A search box that searches on `input`, but only if the value has [`changed`](#ch
 
 - [`hx-on`](/reference/attributes/hx-on) (attribute)
 - [Extended Selectors](/docs#extended-selectors-1) (reference)
-- [Lazy Load](/patterns/loading/lazy-load) (pattern)
-- [Infinite Scroll](/patterns/loading/infinite-scroll) (pattern)
-- [Progress Bar](/patterns/loading/progress-bar) (pattern)
+- [Lazy Load](/patterns/lazy-load) (pattern)
+- [Infinite Scroll](/patterns/infinite-scroll) (pattern)
+- [Progress Bar](/patterns/progress-bar) (pattern)

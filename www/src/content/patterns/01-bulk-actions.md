@@ -2,6 +2,7 @@
 includeMockServer: true
 title: "Bulk Actions"
 description: Perform actions on multiple records
+category: "Records"
 icon: "icon-[mdi--checkbox-multiple-marked]"
 ---
 

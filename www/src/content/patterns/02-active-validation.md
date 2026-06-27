@@ -2,6 +2,7 @@
 includeMockServer: true
 title: Active Validation
 description: Validate form input as you type
+category: "Forms"
 icon: "icon-[mdi--check]"
 ---
 

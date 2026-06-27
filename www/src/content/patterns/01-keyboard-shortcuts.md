@@ -2,6 +2,7 @@
 includeMockServer: true
 title: "Keyboard Shortcuts"
 description: Bind keyboard shortcuts to interactive elements
+category: "Advanced"
 icon: "icon-[mdi--keyboard]"
 soon: true
 ---

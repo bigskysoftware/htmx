@@ -2,6 +2,7 @@
 includeMockServer: true
 title: "Linked Selects"
 description: Update select options via another select
+category: "Forms"
 icon: "icon-[mdi--form-dropdown]"
 ---
 

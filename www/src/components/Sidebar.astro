@@ -10,7 +10,7 @@ const currentUrl = Astro.url.pathname;
 const isAnchorNav = folder.folders[0]?.files[0]?.url?.startsWith('#');
 
 const isReference = folder.folder === 'reference';
-const isPatterns = folder.folder === 'patterns';
+const showIcons = folder.folder === 'patterns' || folder.folder === 'extensions';
 
 const linkClasses = 'sidebar-link flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200 aria-[current]:bg-neutral-150 dark:aria-[current]:bg-neutral-800 aria-[current]:text-black dark:aria-[current]:text-neutral-50 aria-[current]:font-semibold';
 ---
@@ -66,7 +66,7 @@ const linkClasses = 'sidebar-link flex items-center gap-2.5 px-3 py-2 text-sm ro
                                                                isReference && 'font-mono',
                                                                isSoon && 'opacity-50 cursor-not-allowed',
                                                            ]}>
-                                                            {isPatterns && file.frontmatter.icon && (
+                                                            {showIcons && file.frontmatter.icon && (
                                                                     <i class:list={[file.frontmatter.icon, "size-4 shrink-0"]}></i>
                                                             )}
                                                             <span class="truncate" set:html={file.frontmatter.title}/>
