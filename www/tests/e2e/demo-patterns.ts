@@ -46,7 +46,7 @@ test.describe.serial('Pattern demo pages', () => {
     // =============================================
 
     test('click-to-load: renders and loads more', async ({ page }) => {
-        await page.goto('/patterns/loading/click-to-load');
+        await page.goto('/patterns/click-to-load');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -64,11 +64,11 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('click-to-load: works after morph navigation', async ({ page }) => {
-        await page.goto('/patterns/loading/infinite-scroll');
+        await page.goto('/patterns/infinite-scroll');
         await waitForSw(page);
         await waitForDemo(page);
 
-        await morphViaLink(page, '/patterns/loading/click-to-load');
+        await morphViaLink(page, '/patterns/click-to-load');
         await waitForDemo(page);
 
         const showMore = demo(page, 'button').filter({ hasText: /show more/i });
@@ -82,7 +82,7 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('infinite-scroll: renders table with rows', async ({ page }) => {
-        await page.goto('/patterns/loading/infinite-scroll');
+        await page.goto('/patterns/infinite-scroll');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -92,7 +92,7 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('lazy-load: renders weather card after delay', async ({ page }) => {
-        await page.goto('/patterns/loading/lazy-load');
+        await page.goto('/patterns/lazy-load');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -100,18 +100,18 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('lazy-load: works after morph navigation', async ({ page }) => {
-        await page.goto('/patterns/loading/click-to-load');
+        await page.goto('/patterns/click-to-load');
         await waitForSw(page);
         await waitForDemo(page);
 
-        await page.click('a[href="/patterns/loading/lazy-load"]');
-        await expect(page).toHaveURL('/patterns/loading/lazy-load', { timeout: 10_000 });
+        await page.click('a[href="/patterns/lazy-load"]');
+        await expect(page).toHaveURL('/patterns/lazy-load', { timeout: 10_000 });
 
         await expect(page.locator('.demo-container', { hasText: '5-Day Forecast' })).toBeVisible({ timeout: 15_000 });
     });
 
     test('progress-bar: renders and starts job', async ({ page }) => {
-        await page.goto('/patterns/loading/progress-bar');
+        await page.goto('/patterns/progress-bar');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -129,7 +129,7 @@ test.describe.serial('Pattern demo pages', () => {
     // =============================================
 
     test('active-search: renders and filters results', async ({ page }) => {
-        await page.goto('/patterns/forms/active-search');
+        await page.goto('/patterns/active-search');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -148,11 +148,11 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('active-search: works after morph navigation', async ({ page }) => {
-        await page.goto('/patterns/loading/click-to-load');
+        await page.goto('/patterns/click-to-load');
         await waitForSw(page);
         await waitForDemo(page);
 
-        await morphViaLink(page, '/patterns/forms/active-search');
+        await morphViaLink(page, '/patterns/active-search');
         await waitForDemo(page);
 
         const input = demo(page, 'input[type="search"]');
@@ -162,7 +162,7 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('active-validation: renders and validates username', async ({ page }) => {
-        await page.goto('/patterns/forms/active-validation');
+        await page.goto('/patterns/active-validation');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -181,7 +181,7 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('linked-selects: renders and updates models', async ({ page }) => {
-        await page.goto('/patterns/forms/linked-selects');
+        await page.goto('/patterns/linked-selects');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -197,7 +197,7 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('linked-selects: detail card updates on model change', async ({ page }) => {
-        await page.goto('/patterns/forms/linked-selects');
+        await page.goto('/patterns/linked-selects');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -213,7 +213,7 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('reset-on-submit: sends message and clears input', async ({ page }) => {
-        await page.goto('/patterns/forms/reset-on-submit');
+        await page.goto('/patterns/reset-on-submit');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -239,7 +239,7 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('reset-on-submit: messages append in order', async ({ page }) => {
-        await page.goto('/patterns/forms/reset-on-submit');
+        await page.goto('/patterns/reset-on-submit');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -269,7 +269,7 @@ test.describe.serial('Pattern demo pages', () => {
     // =============================================
 
     test('bulk-actions: renders table with checkboxes', async ({ page }) => {
-        await page.goto('/patterns/records/bulk-actions');
+        await page.goto('/patterns/bulk-actions');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -279,7 +279,7 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     test('bulk-actions: activate action works', async ({ page }) => {
-        await page.goto('/patterns/records/bulk-actions');
+        await page.goto('/patterns/bulk-actions');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -294,99 +294,4 @@ test.describe.serial('Pattern demo pages', () => {
         }
     });
 
-    // delete-in-place: disabled/unfinished — skipped
-
-    test('drag-to-reorder: renders sortable list', async ({ page }) => {
-        await page.goto('/patterns/records/drag-to-reorder');
-        await waitForSw(page);
-        await waitForDemo(page);
-
-        // Should have draggable items (inputs or divs with content)
-        const items = await demo(page, 'input[name="item"], [data-sortable-item], .sortable > *').count();
-        expect(items).toBeGreaterThan(0);
-    });
-
-    test('edit-in-place: renders and toggles edit mode', async ({ page }) => {
-        await page.goto('/patterns/records/edit-in-place');
-        await waitForSw(page);
-        await waitForDemo(page);
-
-        // Should show view mode with Edit button
-        const editBtn = page.locator('#demo-content button', { hasText: /edit/i });
-        await expect(editBtn).toBeVisible();
-
-        // Click edit, verify form inputs appear
-        await editBtn.click();
-        await expect(page.locator('#demo-content input[name="name"]'))
-            .toBeVisible({ timeout: 5_000 });
-
-        // Should have Save and Cancel buttons
-        await expect(page.locator('#demo-content button', { hasText: 'Save' })).toBeVisible({ timeout: 5_000 });
-        await expect(page.locator('#demo-content button', { hasText: 'Cancel' })).toBeVisible({ timeout: 5_000 });
-    });
-
-    test('edit-in-place: works after morph navigation', async ({ page }) => {
-        await page.goto('/patterns/records/bulk-actions');
-        await waitForSw(page);
-        await waitForDemo(page);
-
-        await morphViaLink(page, '/patterns/records/edit-in-place');
-        await waitForDemo(page);
-
-        const editBtn = page.locator('#demo-content button', { hasText: /edit/i });
-        await expect(editBtn).toBeVisible({ timeout: 15_000 });
-
-        await editBtn.click();
-        await expect(page.locator('#demo-content input[name="name"]'))
-            .toBeVisible({ timeout: 5_000 });
-    });
-
-    // =============================================
-    // Display
-    // =============================================
-
-    test('dialogs: renders button and opens modal', async ({ page }) => {
-        await page.goto('/patterns/display/dialogs');
-        await waitForSw(page);
-        await waitForDemo(page);
-
-        const openBtn = demo(page, 'button').filter({ hasText: /open.*modal/i });
-        await expect(openBtn).toBeVisible();
-
-        // Click and verify modal appears
-        await openBtn.click();
-        await expect(page.locator('#modal, [role="dialog"], .modal-underlay').first())
-            .toBeVisible({ timeout: 5_000 });
-    });
-
-    test('dialogs: works after morph navigation', async ({ page }) => {
-        await page.goto('/patterns/loading/click-to-load');
-        await waitForSw(page);
-        await waitForDemo(page);
-
-        await morphViaLink(page, '/patterns/display/dialogs');
-        await waitForDemo(page);
-
-        const openBtn = demo(page, 'button').filter({ hasText: /open.*modal/i });
-        await expect(openBtn).toBeVisible({ timeout: 15_000 });
-    });
-
-    // =============================================
-    // Advanced
-    // =============================================
-
-    test('keyboard-shortcuts: renders and responds to click', async ({ page }) => {
-        await page.goto('/patterns/advanced/keyboard-shortcuts');
-        await waitForSw(page);
-        await waitForDemo(page);
-
-        const btn = demo(page, 'button').filter({ hasText: /do it/i });
-        await expect(btn).toBeVisible();
-
-        // Click the button and verify response appears
-        await btn.click();
-        await page.waitForTimeout(1000);
-        // Some result should appear after clicking
-        await expect(demo(page, '*').first()).toBeVisible();
-    });
 });

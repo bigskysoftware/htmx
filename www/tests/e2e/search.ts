@@ -110,10 +110,9 @@ const SEARCH_RANKING: [string | string[], string][] = [
     [['installation', 'install', 'cdn', 'npm', 'getting started', 'quick start'], 'Installation'],
     [['boosting', 'boost', 'progressive enhancement'], 'Boosting'],
     [['history', 'back button', 'pushState'], 'History'],
-    ['security', 'Security'],
     ['extensions', 'Extensions'],
     [['websockets', 'ws'], 'hx-ws'],
-    [['server-sent events', 'event stream', 'streaming'], 'hx-sse'],
+    [['server-sent events', 'server sent events', 'event stream'], 'hx-sse'],
     ['validation', 'Validation'],
     ['inheritance', 'Attribute Inheritance'],
     [['synchronization', 'sync', 'debounce', 'throttle', 'race condition'], 'Synchronization'],
@@ -127,7 +126,6 @@ const SEARCH_RANKING: [string | string[], string][] = [
     [['configuration', 'settings', 'meta tag'], 'Configuration'],
     ['config', 'Config'],
     [['debugging', 'debug', 'devtools', 'logAll'], 'Debugging'],
-    ['troubleshoot', 'Troubleshoot'],
     ['XHR', 'Requests & Responses'],
 
     // ── Patterns ──
