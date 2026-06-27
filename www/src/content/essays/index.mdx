@@ -76,20 +76,15 @@ export const grouped = GROUPS.map(g => ({
     essays: allEssays.filter(e => (e.tags || '').includes(g.id)),
 })).filter(g => g.essays.length > 0);
 
-export const essayRow = (essay) => ({
-    class: "stretch-link",
-    'data-filter': `${essay.title} ${essay.author || ''} ${essay.tags || ''}`.toLowerCase(),
-});
-
-<div class="not-prose mb-6">
-    <input
-        type="text"
-        placeholder="Search essays..."
-        autocomplete="off"
-        class="w-full px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50 focus:border-neutral-300 dark:focus:border-neutral-600"
-        _="install ActiveSearch"
-    />
-</div>
+<input
+    id="essays-search"
+    type="text"
+    placeholder="Search essays..."
+    autocomplete="off"
+    autofocus="true"
+    class="not-prose mb-6 w-full px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50 focus:border-neutral-300 dark:focus:border-neutral-600"
+    _="install ActiveSearch"
+/>
 
 <section role="group">
 
@@ -98,7 +93,7 @@ export const essayRow = (essay) => ({
 <table>
     <tbody>
         {recentEssays.map(essay => (
-            <tr {...essayRow(essay)}>
+            <tr class="stretch-link">
                 <td><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></td>
                 <td class="whitespace-nowrap text-neutral-650 dark:text-neutral-350">{essay.author || ''}</td>
                 <td class="whitespace-nowrap tabular-nums text-neutral-650 dark:text-neutral-350">{essay.date}</td>
@@ -117,7 +112,7 @@ export const essayRow = (essay) => ({
 <table>
     <tbody>
         {group.essays.map(essay => (
-            <tr {...essayRow(essay)}>
+            <tr class="stretch-link">
                 <td><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></td>
                 <td class="whitespace-nowrap text-neutral-650 dark:text-neutral-350">{essay.author || ''}</td>
                 <td class="whitespace-nowrap tabular-nums text-neutral-650 dark:text-neutral-350">{essay.date || ''}</td>

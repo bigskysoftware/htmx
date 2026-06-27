@@ -268,12 +268,22 @@ class SearchIndex extends HTMLElement {
             // 3. Exact keyword match (curated aliases like "sse", "ws")
             if (aHasKw !== bHasKw) return aHasKw ? -1 : 1;
 
-            // 4. Case-sensitive title contains
+            // 4. Case-sensitive title starts with query
+            const aStarts = aRaw.startsWith(trimmedQuery);
+            const bStarts = bRaw.startsWith(trimmedQuery);
+            if (aStarts !== bStarts) return aStarts ? -1 : 1;
+
+            // 5. Case-insensitive title starts with query
+            const aStartsI = aLower.startsWith(queryLower);
+            const bStartsI = bLower.startsWith(queryLower);
+            if (aStartsI !== bStartsI) return aStartsI ? -1 : 1;
+
+            // 6. Case-sensitive title contains
             const aContains = aRaw.includes(trimmedQuery);
             const bContains = bRaw.includes(trimmedQuery);
             if (aContains !== bContains) return aContains ? -1 : 1;
 
-            // 5. Case-insensitive title contains
+            // 7. Case-insensitive title contains
             const aContainsI = aLower.includes(queryLower);
             const bContainsI = bLower.includes(queryLower);
             if (aContainsI !== bContainsI) return aContainsI ? -1 : 1;

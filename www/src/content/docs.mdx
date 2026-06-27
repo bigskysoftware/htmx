@@ -253,7 +253,7 @@ Restrict which extensions can load:
 
 Extension authors use `htmx.registerExtension(name, methodMap)` to register.
 
-See [Extensions documentation](#extensions) for details.
+See [Extension System](#extension-system) for details.
 
 ### Renames and Removals
 
@@ -268,7 +268,7 @@ Do the `hx-disable` rename **before** upgrading. In htmx 2, `hx-disable` meant "
 | [`hx-vars`](https://htmx.org/attributes/hx-vars/)                 | [`hx-vals`](/reference/attributes/hx-vals)                                                         | removed | Use the `js:` prefix.                                                                              |
 | [`hx-params`](https://htmx.org/attributes/hx-params/)             | [`htmx:config:request`](/reference/events/htmx-config-request)                                     | removed | Configure request parameters in the event.                                                         |
 | [`hx-prompt`](https://htmx.org/attributes/hx-prompt/)             | [`hx-prompt` extension](/extensions/hx-prompt)                                                     | removed | You can also use a [one-liner with `hx-on`](/extensions/hx-prompt#without-the-extension).          |
-| [`hx-ext`](https://htmx.org/attributes/hx-ext/)                   | —                                                                                                  | removed | [Include extension scripts directly](#extensions).                                                 |
+| [`hx-ext`](https://htmx.org/attributes/hx-ext/)                   | —                                                                                                  | removed | [Include extension scripts directly](#extension-system).                                           |
 | [`hx-disinherit`](https://htmx.org/attributes/hx-disinherit/)     | —                                                                                                  | removed | Not needed. Inheritance is explicit.                                                               |
 | [`hx-inherit`](https://htmx.org/attributes/hx-inherit/)           | —                                                                                                  | removed | Not needed. Inheritance is explicit.                                                               |
 | [`hx-request`](https://htmx.org/attributes/hx-request/)           | [`hx-config`](/reference/attributes/hx-config)                                                     | removed | —                                                                                                  |
@@ -2729,7 +2729,7 @@ Avoid `id` attributes when relative selectors work.
 
 This keeps your HTML cleaner.
 
-## Extensions
+## Extension System
 
 htmx supports extensions to augment its core hypermedia infrastructure. The extension mechanism takes pressure off the core library to add new features, allowing it to focus on its main purpose of generalizing hypermedia controls.
 

@@ -139,7 +139,7 @@ export default defineConfig({
         "/docs/features/web-components": "/docs#web-components",
         "/docs/features/attribute-inheritance": "/docs#attribute-inheritance",
         "/docs/features/extended-selectors": "/docs#extended-selectors-1",
-        "/docs/features/extensions": "/docs#extensions",
+        "/docs/features/extensions": "/docs#extension-system",
         "/docs/security": "/docs#best-practices",
         "/docs/security/best-practices": "/docs#best-practices",
         "/docs/security/caching": "/docs#caching",
@@ -217,11 +217,11 @@ export default defineConfig({
         "/extensions/alpine-compat": "/extensions/hx-alpine-compat",
         "/extensions/optimistic": "/extensions/hx-optimistic",
         "/extensions/upsert": "/extensions/hx-upsert",
-        "/extensions/building": "/docs/features/extensions",
+        "/extensions/building": "/docs#extension-system",
 
         // /docs/extensions/* paths → current locations.
         "/docs/extensions": "/extensions",
-        "/docs/extensions/using-extensions": "/docs/features/extensions",
+        "/docs/extensions/using-extensions": "/docs#extension-system",
         "/docs/extensions/extension-migration": "/docs/get-started/migration",
         "/docs/extensions/htmx-2-compat": "/extensions/htmx-2-compat",
         "/docs/extensions/sse": "/extensions/hx-sse",
