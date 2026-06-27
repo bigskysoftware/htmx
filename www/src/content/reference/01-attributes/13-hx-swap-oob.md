@@ -172,4 +172,4 @@ the triggering element if you need the main swap to run anyway.
 
 ## See Also
 
-- [`<hx-partial>`](/docs#partials-hx-partial), an alternative for multi-target updates with explicit control over targeting and swap strategy
+- [`<hx-partial>`](/reference/tags/hx-partial), an alternative for multi-target updates with explicit control over targeting and swap strategy
