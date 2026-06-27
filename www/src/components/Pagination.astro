@@ -94,6 +94,7 @@ const { prev, next } = Astro.props;
 
         h4 {
             font-family: var(--font-chicago);
+            letter-spacing: var(--tracking-tightest);
             font-size: 0.875rem;
             color: light-dark(var(--color-neutral-700), var(--color-neutral-300));
             overflow: hidden;
@@ -102,7 +103,7 @@ const { prev, next } = Astro.props;
             -webkit-box-orient: vertical;
             transition: color 0.15s;
 
-            @media (min-width: 640px) { font-size: 1rem; -webkit-line-clamp: 2; }
+            @media (min-width: 640px) { font-size: 1rem; letter-spacing: var(--tracking-tight); -webkit-line-clamp: 2; }
         }
 
         a {

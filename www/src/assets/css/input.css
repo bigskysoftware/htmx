@@ -127,14 +127,6 @@
         }
     }
 
-    h1, h2, h3, h4, h5, h6 {
-        letter-spacing: var(--tracking-tightest);
-
-        @media (width >= 40rem) {
-            letter-spacing: var(--tracking-tight);
-        }
-    }
-
     /* Improve underlines in anchors */
     a, a * {
         text-decoration-thickness: 0.125em;

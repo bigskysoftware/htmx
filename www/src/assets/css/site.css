@@ -127,8 +127,9 @@
         touch-action: manipulation;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    :where(h1, h2, h3, h4, h5, h6):where(.font-chicago) {
         letter-spacing: var(--tracking-tightest);
+
         @media (width >= 40rem) {
             letter-spacing: var(--tracking-tight);
         }
@@ -164,6 +165,15 @@
         &.xl {
             border-radius: var(--radius-xl);
         }
+    }
+
+    .text-tertiary {
+        font-family: var(--font-sans);
+        font-size: 0.625rem;
+        font-weight: 500;
+        letter-spacing: 0.125em;
+        text-transform: uppercase;
+        color: light-dark(var(--color-neutral-500), var(--color-neutral-500));
     }
 
     /* Demo window chrome — border, title bar with dots + label, content padding.
@@ -262,10 +272,11 @@ article.sticky-headers > section > h2 {
     top: var(--header-height);
     scroll-margin-top: var(--header-height);
     z-index: 20;
-    font-size: 1.15em;
+    font-size: 1.5em;
+    line-height: 1.2;
     margin-bottom: 0;
     background: light-dark(var(--color-neutral-25), var(--color-neutral-920));
-    padding-block: 0.75rem;
+    padding-block: 0.875rem;
     @media (width >= 40rem) {
         padding-block: 1rem;
     }

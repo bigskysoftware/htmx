@@ -53,10 +53,11 @@ import HeroStats from "./HeroStats.astro";
         font-weight: 700;
         line-height: 1;
         font-family: var(--font-chicago);
+        letter-spacing: var(--tracking-tightest);
         color: light-dark(black, white);
         transform: translateZ(0);
 
-        @media (min-width: 640px) { font-size: 3.75rem; }
+        @media (min-width: 640px) { font-size: 3.75rem; letter-spacing: var(--tracking-tight); }
         @media (min-width: 1024px) { font-size: 4.5rem; }
 
         em {

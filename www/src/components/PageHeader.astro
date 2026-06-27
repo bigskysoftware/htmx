@@ -145,11 +145,12 @@ const primaryAuthor = byline?.authors[0];
         flex: 1;
         min-width: 0;
         font-family: var(--font-chicago);
+        letter-spacing: var(--tracking-tightest);
         font-size: 1.5rem;
         font-weight: 700;
         color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
 
-        @media (min-width: 640px) { font-size: 2em; line-height: 3rem; }
+        @media (min-width: 640px) { font-size: 2em; line-height: 3rem; letter-spacing: var(--tracking-tight); }
     }
 
     .actions {
