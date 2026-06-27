@@ -27,11 +27,11 @@ const tiers = Object.keys(sponsorsByTier);
                     <div class="first:mt-8 sm:first:mt-10 not-first:mt-12 sm:not-first:mt-16">
                         <h3 id={`${tier}-sponsors-heading`}
                             class:list={[
-                                'inline-flex items-center gap-3 mb-6 sm:mb-8 font-chicago text-xs uppercase tracking-widest',
-                                { 'text-blue-700 dark:text-blue-350': tier === 'platinum' },
+                                'inline-flex items-center gap-3 mb-6 sm:mb-8 font-chicago text-xs uppercase tracking-wide',
+                                { 'text-neutral-900 dark:text-neutral-100': tier === 'platinum' },
                                 { 'text-neutral-600 dark:text-neutral-400': tier === 'silver' }
                             ]}>
-                            <span aria-hidden="true">{tier === 'platinum' ? '◆' : '★'}</span>
+                            <span aria-hidden="true">★</span>
                             <span>
                                 {tier} Sponsor{tierSponsors.length > 1 ? 's' : ''}
                             </span>
@@ -95,7 +95,7 @@ const tiers = Object.keys(sponsorsByTier);
         <a href="https://github.com/sponsors/bigskysoftware?o=esb"
            target="_blank"
            rel="noopener noreferrer"
-           class="inline-flex items-center justify-center gap-2 h-10 px-6 bg-linear-to-b font-chicago text-sm rounded-lg from-white to-neutral-75 dark:from-neutral-850 dark:to-neutral-900 text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white border border-neutral-200 dark:border-neutral-800 interact:border-neutral-300 dark:interact:border-neutral-700 shadow-3d-neutral-500 dark:shadow-3d-neutral-950 active:translate-y-[0.375cqh] active:shadow-3d-depth-[2px] transition">
+           class="inline-flex items-center justify-center gap-2 h-10 px-6 bg-linear-to-b font-chicago text-sm rounded-lg from-neutral-650 to-neutral-750 dark:from-neutral-150 dark:to-neutral-200 text-white dark:text-neutral-900 interact:from-neutral-600 interact:to-neutral-700 dark:interact:from-neutral-100 dark:interact:to-neutral-150 border border-neutral-700 dark:border-neutral-300 interact:border-neutral-650 dark:interact:border-neutral-400 shadow-3d-neutral-950 dark:shadow-3d-neutral-500 active:translate-y-[0.375cqh] active:shadow-3d-depth-[2px] transition">
             <i class="icon-[mdi--heart] text-red-500" aria-hidden="true"></i>
             Sponsor htmx
         </a>
