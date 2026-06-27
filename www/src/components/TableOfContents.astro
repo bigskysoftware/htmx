@@ -20,7 +20,7 @@ const minDepth = items.length > 0 ? Math.min(...items.map(h => h.depth)) : 2;
      aria-label="Table of Contents"
      class="w-full"
      _="install Scrollspy">
-    <div class="w-full border-l border-neutral-200 dark:border-neutral-800">
+    <div class="w-full border-l border-neutral-100 dark:border-neutral-900">
         {items.map((heading) => {
             const depth = heading.depth - minDepth;
             const indentClass = depth === 0 ? 'pl-4' : depth === 1 ? 'pl-8' : 'pl-12';
