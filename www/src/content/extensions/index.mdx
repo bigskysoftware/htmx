@@ -19,20 +19,32 @@ export const grouped = groupFilesByCategory(folder.files, EXTENSION_CATEGORIES).
     })),
 }));
 
-<input
-    id="extensions-search"
-    type="text"
-    placeholder="Search extensions..."
-    autocomplete="off"
-    autofocus="true"
-    class="not-prose mb-6 w-full px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50 focus:border-neutral-300 dark:focus:border-neutral-600"
-    _="install ActiveSearch"
-/>
+<label class="not-prose text-field" for="extensions-search">
+    <span class="sr-only">Search extensions</span>
+    <i class="icon-[mdi--magnify]" aria-hidden="true"></i>
+    <input
+        id="extensions-search"
+        type="text"
+        placeholder="Search extensions..."
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        enterkeyhint="search"
+        aria-keyshortcuts="/"
+        _="install ActiveSearch"
+    />
+    <span aria-hidden="true">Press <kbd>/</kbd></span>
+</label>
 
 {grouped.map(group => (
 <section role="group">
 
-<h2 id={group.slug}>{group.category}</h2>
+<h2 id={group.slug}>
+    <a href={`#${group.slug}`} class="no-underline interact:underline">
+        {group.category}
+    </a>
+</h2>
 
 <table>
     <tbody>

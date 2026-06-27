@@ -1,5 +1,17 @@
 behavior ActiveSearch
 
+  on keydown[key is '/' and not (metaKey or ctrlKey or altKey)] from window
+    if not document.activeElement.matches('input, textarea, select, [contenteditable]')
+      halt the event
+      call me.focus()
+      call me.select()
+    end
+  end
+
+  on keydown[key is 'Escape']
+    call me.blur()
+  end
+
   on input
     set q to my.value.toLowerCase()
     for item in <tbody tr/>

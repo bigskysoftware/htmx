@@ -43,74 +43,54 @@ export const groups = folder.folders.map(sub => {
     return { slug: sub.slug, label: sub.frontmatter.title, subgroups: [{ label: null, items }] };
 });
 
-<div class="not-prose mb-6">
+<label class="not-prose text-field" for="reference-search">
+    <span class="sr-only">Search reference</span>
+    <i class="icon-[mdi--magnify]" aria-hidden="true"></i>
     <input
-        id="filter-input"
+        id="reference-search"
         type="text"
         placeholder="Search reference..."
         autocomplete="off"
-        class="w-full px-3 py-2 text-sm border border-neutral-200 dark:border-neutral-800 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-300/50 dark:focus:ring-neutral-600/50 focus:border-neutral-300 dark:focus:border-neutral-600"
-        _="on input
-            set q to my.value.toLowerCase()
-            if q is ''
-                for s in <.filter-group/> remove @hidden from s end
-                for sg in <.filter-subgroup/> remove @hidden from sg end
-                for i in <.filter-item/> remove @hidden from i end
-                for ct in <.filter-count/>
-                    set parts to ct.dataset.total
-                    put parts into ct
-                end
-            else
-                for section in <.filter-group/>
-                    set sectionTotal to 0
-                    for subgroup in <.filter-subgroup/> in section
-                        set subgroupTotal to 0
-                        for item in <.filter-item/> in subgroup
-                            if item.dataset.filter contains q
-                                remove @hidden from item
-                                increment subgroupTotal
-                            else
-                                add @hidden to item
-                            end
-                        end
-                        set sectionTotal to sectionTotal + subgroupTotal
-                        if subgroupTotal is 0 then add @hidden to subgroup else remove @hidden from subgroup
-                    end
-                    put sectionTotal into first <.filter-count/> in section
-                    if sectionTotal is 0 then add @hidden to section else remove @hidden from section
-                end
-            end"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        enterkeyhint="search"
+        aria-keyshortcuts="/"
+        _="install ActiveSearch"
     />
-</div>
+    <span aria-hidden="true">Press <kbd>/</kbd></span>
+</label>
 
-{groups.map(group => {
-    const totalItems = group.subgroups.reduce((n, sg) => n + sg.items.length, 0);
-    return (
-        <section class="filter-group">
-            <h2 id={group.slug}>
-                <a href={`#${group.slug}`} class="no-underline interact:underline">
-                    {group.label}
-                </a>
-                {' '}<span class="filter-count text-xs font-normal text-neutral-400 dark:text-neutral-500 tabular-nums inline-block -translate-y-px" data-total={totalItems}>{totalItems}</span>
-            </h2>
-            {group.subgroups.map(sg => (
-                <div class="filter-subgroup">
-                    {sg.label && <h4 id={`${group.slug}-${sg.label.toLowerCase()}`} class="font-sans text-[0.625rem] font-normal uppercase tracking-widest text-neutral-600 dark:text-neutral-400">{sg.label}</h4>}
-                    <table>
-                        <tbody>
-                            {sg.items.map(item => (
-                                <tr class="filter-item stretch-link cursor-pointer" data-filter={`${item.title} ${item.description || ''}`.toLowerCase()} onclick="if (!event.target.closest('a')) this.querySelector('a')?.click()">
-                                    <td>
-                                        <a href={item.url}><code set:html={item.title} /></a>
-                                        {item.description && <span class="block sm:hidden text-[0.8125em] text-neutral-650 dark:text-neutral-350 mt-0.5 pl-[6px]">{item.description}</span>}
-                                    </td>
-                                    <td class="hidden sm:table-cell">{item.description || ''}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            ))}
-        </section>
-    );
-})}
+{groups.map(group => (
+<section role="group">
+
+<h2 id={group.slug}>
+    <a href={`#${group.slug}`} class="no-underline interact:underline">
+        {group.label}
+    </a>
+</h2>
+
+{group.subgroups.map(sg => (
+<section role="group">
+
+{sg.label && <h4 id={`${group.slug}-${sg.label.toLowerCase()}`} class="font-sans text-[0.625rem] font-normal uppercase tracking-widest text-neutral-600 dark:text-neutral-400">{sg.label}</h4>}
+
+<table>
+    <tbody>
+        {sg.items.map(item => (
+            <tr class="stretch-link">
+                <td>
+                    <a href={item.url}><code set:html={item.title} /></a>
+                    {item.description && <span class="block sm:hidden text-[0.8125em] text-neutral-650 dark:text-neutral-350 mt-0.5 pl-[6px]">{item.description}</span>}
+                </td>
+                <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350">{item.description || ''}</td>
+            </tr>
+        ))}
+    </tbody>
+</table>
+
+</section>
+))}
+
+</section>
+))}

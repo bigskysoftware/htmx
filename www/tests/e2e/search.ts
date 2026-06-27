@@ -166,7 +166,7 @@ test.describe('Search ranking', () => {
                     await input.fill(query);
                     await expect(firstResult).toBeAttached({ timeout: 2000 });
 
-                    const titleEl = firstResult.locator('~ article .font-chicago');
+                    const titleEl = firstResult.locator('~ article .truncate.leading-tight');
                     await expect(titleEl).toHaveText(expectedTitle, { timeout: 2000 });
                 });
             }
