@@ -1297,7 +1297,7 @@ var htmx = (() => {
                 if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
                 this.__handleAnchorScroll(ctx);
             } finally {
-                this.__trigger(ctx.sourceElement, "htmx:swap:finally", {ctx});
+                this.__trigger(ctx.sourceElement, "htmx:finally:swap", {ctx});
             }
         }
 

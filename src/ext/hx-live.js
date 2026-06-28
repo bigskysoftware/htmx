@@ -2,7 +2,7 @@
 // Hooks:
 //   htmx:after:process  find new [hx-live] elements and register them
 //   htmx:before:swap    increment swap depth (defer recomputes)
-//   htmx:swap:finally   decrement, fire one consolidated recompute
+//   htmx:finally:swap   decrement, fire one consolidated recompute
 //   htmx:scope          inject q, wait, trigger, debounce into JS expression scopes
 (() => {
     let api;
@@ -634,7 +634,7 @@
         htmx_before_swap: () => {
             swaps++;
         },
-        htmx_swap_finally: () => {
+        htmx_finally_swap: () => {
             if (--swaps === 0 && fns.size > 0) schedule();
         },
         htmx_scope: (elt, detail) => {
