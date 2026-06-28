@@ -22,12 +22,12 @@ If you call `evt.preventDefault()`, you **must** call either `issueRequest()` or
 ```javascript
 htmx.on('htmx:confirm', (evt) => {
   // Ignore elements that don't use hx-confirm
-  if (!evt.detail.target.hasAttribute('hx-confirm')) return;
+  if (!evt.detail.ctx.sourceElement.hasAttribute('hx-confirm')) return;
 
   evt.preventDefault(); // Prevent default confirm dialog
 
   // Show custom modal
-  showCustomModal(evt.detail.ctx.confirmMessage).then((confirmed) => {
+  showCustomModal(evt.detail.ctx.confirm).then((confirmed) => {
     if (confirmed) {
       evt.detail.issueRequest(); // User confirmed — proceed
     } else {

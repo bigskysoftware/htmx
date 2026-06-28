@@ -22,15 +22,13 @@ Here is an example:
 
 ## Event details
 
-The event triggered by `hx-confirm` contains additional properties in its `detail`:
+The [`htmx:confirm`](/reference/events/htmx-confirm) event is fired before every request. Its `detail` contains:
 
-* triggeringEvent: the event that triggered the original request
-* issueRequest(skipConfirmation=false): a callback which can be used to confirm the AJAX request
-* question: the value of the `hx-confirm` attribute on the HTML element
+* `ctx` - the request context object; the confirm message is at `ctx.confirm` and the triggering element is at `ctx.sourceElement`
+* `issueRequest()` - call this to proceed with the request
+* `dropRequest()` - call this to cancel the request
 
 ## Notes
 
-* `hx-confirm` uses the browser's `window.confirm` by default. You can customize this behavior as
-  shown in the [Dialogs](/patterns/dialogs) pattern.
-* a boolean `skipConfirmation` can be passed to the `issueRequest` callback; if true (defaults to false), the
-  `window.confirm` will not be called and the AJAX request is issued directly
+* `hx-confirm` uses the browser's `window.confirm` by default. You can customize this behavior by
+  listening to the [`htmx:confirm`](/reference/events/htmx-confirm) event.
