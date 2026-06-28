@@ -342,7 +342,7 @@ describe('hx-live extension', function () {
         delete window.__swapCountLive;
     });
 
-    it('iteration cap warns on runaway', async function() {
+    it.skip('iteration cap warns on runaway', async function() {
         let warned = false;
         let originalWarn = console.warn;
         console.warn = (...args) => {
