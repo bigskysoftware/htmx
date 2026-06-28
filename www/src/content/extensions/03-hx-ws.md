@@ -208,7 +208,8 @@ htmx.config.ws = {
     reconnectMaxAttempts: Infinity,// Maximum reconnect attempts (default: Infinity)
     reconnectJitter: 0.3,         // Jitter factor 0-1 for randomizing delays (default: 0.3)
     pauseOnBackground: true,      // Pause connection when tab is backgrounded (default: true)
-    pendingRequestTTL: 30000      // TTL for pending requests in ms (default: 30000)
+    pendingRequestTTL: 30000,     // TTL for pending requests in ms (default: 30000)
+    protocols: null               // WebSocket subprotocol to negotiate (string or array, default: null)
 };
 ```
 
@@ -220,6 +221,21 @@ htmx.config.ws = {
 Delay values accept time strings: `"500ms"`, `"1s"`, `"2m"`, or raw milliseconds.
 
 Per-element config is read from the element that creates the connection and stored on the connection object for its lifetime.
+
+### Subprotocols
+
+Set `protocols` to negotiate a [WebSocket subprotocol](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket#protocols) during the handshake. Accepts a string or array of strings.
+
+```html
+<!-- Global via <meta> tag -->
+<meta name="htmx-config" content='{"ws":{"protocols":"mqtt"}}'>
+
+<!-- Per-element via HCON -->
+<div hx-ws:connect="/ws" hx-config="ws.protocols:mqtt">
+
+<!-- Multiple protocols (browser negotiates the first supported one) -->
+<div hx-ws:connect="/ws" hx-config='{"ws":{"protocols":["mqtt","graphql-ws"]}}'>
+```
 
 ### Reconnection Strategy
 

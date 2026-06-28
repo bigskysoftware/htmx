@@ -15,8 +15,9 @@ describe('hx-ws WebSocket extension', function() {
             static CLOSING = 2;
             static CLOSED = 3;
             
-            constructor(url) {
+            constructor(url, protocols) {
                 this.url = url;
+                this.protocols = protocols;
                 this.readyState = MockWebSocket.CONNECTING;
                 this.listeners = {};
                 mockWebSocketInstances.push(this);
@@ -1308,6 +1309,45 @@ describe('hx-ws WebSocket extension', function() {
             assert.isNotNull(beforeDetail.message.json, 'message.json should be set for JSON messages');
             assert.isDefined(beforeDetail.message.json.content, 'message.json should have content field');
         });
+        it('passes protocols to WebSocket constructor', async function() {
+            htmx.config.ws = { protocols: 'my-protocol' };
+
+            createProcessedHTML('<div hx-ws:connect="/ws/test"></div>');
+            await htmx.timeout(50);
+
+            let ws = mockWebSocketInstances[0];
+            assert.equal(ws.protocols, 'my-protocol', 'WebSocket should receive protocols from config');
+        });
+
+        it('passes protocols array to WebSocket constructor', async function() {
+            htmx.config.ws = { protocols: ['proto1', 'proto2'] };
+
+            createProcessedHTML('<div hx-ws:connect="/ws/test"></div>');
+            await htmx.timeout(50);
+
+            let ws = mockWebSocketInstances[0];
+            assert.isArray(ws.protocols);
+            assert.deepEqual(ws.protocols, ['proto1', 'proto2']);
+        });
+
+        it('protocols defaults to undefined when not configured', async function() {
+            createProcessedHTML('<div hx-ws:connect="/ws/test"></div>');
+            await htmx.timeout(50);
+
+            let ws = mockWebSocketInstances[0];
+            assert.isUndefined(ws.protocols, 'protocols should be undefined when not configured');
+        });
+
+        it('per-element protocols override global config', async function() {
+            htmx.config.ws = { protocols: 'global-proto' };
+
+            createProcessedHTML('<div hx-ws:connect="/ws/test" hx-config="ws.protocols:per-element-proto"></div>');
+            await htmx.timeout(50);
+
+            let ws = mockWebSocketInstances[0];
+            assert.equal(ws.protocols, 'per-element-proto', 'Per-element protocols should override global');
+        });
+
     });
 
     // ========================================
