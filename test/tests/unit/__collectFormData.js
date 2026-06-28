@@ -233,4 +233,16 @@ describe('__collectFormData unit tests', function() {
         let formData = htmx.__collectFormData(form, form, null);
         assert.deepEqual(formData.getAll('items'), ['a', 'b']);
     });
+
+    it('collects form-associated custom element value as standalone trigger (no form)', function () {
+        let elt = createProcessedHTML('<test-input name="foo" value="hello"></test-input>');
+        let formData = htmx.__collectFormData(elt, null, null);
+        assert.equal(formData.get('foo'), 'hello');
+    });
+
+    it('collects form-associated custom element value as standalone trigger with POST', function () {
+        let elt = createProcessedHTML('<test-input name="tenantId" value="acme"></test-input>');
+        let formData = htmx.__collectFormData(elt, null, null, false, false);
+        assert.equal(formData.get('tenantId'), 'acme');
+    });
 });
