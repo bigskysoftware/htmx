@@ -195,6 +195,7 @@ All other attributes available in htmx.
 | [`htmx.find()`](@/api.md#find)  | Finds a single element matching the selector
 | [`htmx.findAll()` `htmx.findAll(elt, selector)`](@/api.md#find)  | Finds all elements matching a given selector
 | [`htmx.logAll()`](@/api.md#logAll)  | Installs a logger that will log all htmx events
+| [`htmx.logNone()`](@/api.md#logAll)  | Disables logger if it was previously enabled
 | [`htmx.logger`](@/api.md#logger)  | A property set to the current logger (default is `null`)
 | [`htmx.off()`](@/api.md#off)  | Removes an event listener from the given element
 | [`htmx.on()`](@/api.md#on)  | Creates an event listener on the given element, returning it
