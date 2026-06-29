@@ -9,11 +9,13 @@ Processes htmx attributes on the specified element and its descendants, initiali
 
 ```javascript
 htmx.process(element)
+htmx.process(element, force)
 ```
 
 ## Parameters
 
 - `element` - DOM element to process
+- `force` - (optional) when `true`, cleans up and resets existing htmx state before processing. Use after manually mutating hx attributes on an already-initialized element
 
 ## Usage
 
@@ -29,6 +31,14 @@ document.body.appendChild(newContent);
 htmx.process(newContent);
 ```
 
+Use `force` after manually mutating hx attributes on an already-initialized element:
+
+```javascript
+const btn = document.querySelector('#my-btn');
+btn.setAttribute('hx-trigger', 'keyup');
+htmx.process(btn, true);
+```
+
 ## Notes
 
 * Automatically called by htmx after swaps
@@ -38,3 +48,4 @@ htmx.process(newContent);
 * Initializes event listeners for [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc.
 * Sets up boosted links and forms
 * Processes [`hx-on`](/reference/attributes/hx-on) attributes
+* When `force` is `true`, triggers [`htmx:before:cleanup`](/reference/events/htmx-before-cleanup) before reinitializing

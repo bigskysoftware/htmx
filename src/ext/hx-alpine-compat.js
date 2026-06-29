@@ -90,7 +90,11 @@
             document.querySelectorAll('[data-alpine-state]').forEach(el => {
                 let saved = JSON.parse(el.getAttribute('data-alpine-state'));
                 el.removeAttribute('data-alpine-state');
-                if (el._x_dataStack) Object.assign(el._x_dataStack[0], saved);
+                if (el._x_dataStack) {
+                    for (let key in saved) {
+                        try { el._x_dataStack[0][key] = saved[key]; } catch {}
+                    }
+                }
             });
         },
 

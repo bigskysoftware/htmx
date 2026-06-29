@@ -201,4 +201,33 @@ describe('__findAllExt unit tests', function() {
         assert.equal(results.length, 0)
     })
 
+    // comma protection: keyword-prefixed selectors with commas in :not() or attribute values
+
+    it('preserves comma in :not() with find keyword', function () {
+        let parent = createProcessedHTML('<div><div class="x a"></div><div class="x b"></div><div class="x c"></div></div>')
+        let results = htmx.__findAllExt(parent, 'find .x:not(.a, .b)')
+        assert.equal(results.length, 1)
+        assert.include(results[0].className, 'c')
+    })
+
+    it('preserves comma in :not() with findAll keyword', function () {
+        let parent = createProcessedHTML('<div><div class="x a"></div><div class="x b"></div><div class="x c"></div></div>')
+        let results = htmx.__findAllExt(parent, 'findAll .x:not(.a, .b)')
+        assert.equal(results.length, 1)
+        assert.include(results[0].className, 'c')
+    })
+
+    it('preserves comma in attribute selector with findAll keyword', function () {
+        let parent = createProcessedHTML('<div><div data-list="a,b"></div><div data-list="c"></div></div>')
+        let results = htmx.__findAllExt(parent, 'findAll [data-list="a,b"]')
+        assert.equal(results.length, 1)
+    })
+
+    it('preserves comma in :not() with closest keyword', function () {
+        let target = createProcessedHTML('<div class="x outer"><div class="inner"></div></div>').querySelector('.inner')
+        let results = htmx.__findAllExt(target, 'closest .x:not(.skip, .ignore)')
+        assert.equal(results.length, 1)
+        assert.include(results[0].className, 'outer')
+    })
+
 });

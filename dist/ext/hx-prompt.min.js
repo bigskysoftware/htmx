@@ -1,0 +1,1 @@
+(()=>{let t;htmx.registerExtension("hx-prompt",{init(e){t=e},htmx_config_request(e,{ctx:r}){let o=t.attributeValue(r.sourceElement,"hx-prompt");if(null==o)return;let m=(window.htmxPrompt||window.prompt)(o);return null!==m&&(!!htmx.trigger(r.sourceElement,"htmx:prompt",{prompt:m,target:r.target})&&void(r.request.headers["HX-Prompt"]=encodeURI(m)))}})})();

@@ -16,7 +16,7 @@ page is a blank canvas on which you can import as much or as little JavaScript a
 If your app is largely hypermedia, but you want an interactive, React-based calendar for one page, just import it on
 that one page with a script tag.
 
-We sometimes call this pattern "Islands of Interactivity"—it's referenced in our
+We sometimes call this pattern "Islands of Interactivity", it's referenced in our
 explainers [here](/essays/10-tips-for-SSR-HDA-apps#tip-8-when-necessary-create-islands-of-interactivity), [here](/essays/hypermedia-friendly-scripting#islands),
 and [here](/essays/you-cant#myth-5-with-htmx-or-mpas-every-user-action-must-happen-on-the-server).
 Unlike JS frameworks, which are largely incompatible with each other, using islands with htmx won't lock you into any
@@ -119,7 +119,7 @@ That's not too bad!
 The save button will submit all the data in the table, and the server will respond with a new table that reflects the
 updated state.
 We can also use CSS to make the `<select>`s fit our design language.
-But it's easy to see how this could start to get unwieldy—with more columns, more rows, and more options in each cell,
+But it's easy to see how this could start to get unwieldy, with more columns, more rows, and more options in each cell,
 sending all that information each time starts to get costly.
 
 Let's remove all that redundancy with a web component!
@@ -147,9 +147,9 @@ Let's remove all that redundancy with a web component!
 </form>
 ```
 
-We still have an entirely declarative [HATEOAS](https://htmx.org/essays/hateoas/) interface—both current state (the
+We still have an entirely declarative [HATEOAS](https://htmx.org/essays/hateoas/) interface, both current state (the
 `value` attribute) and possible actions on that state (the `<form>` and `<edit-cell>` elements) are efficiently encoded
-in the hypertext—only now we've expressed the same ideas a lot more concisely.
+in the hypertext, only now we've expressed the same ideas a lot more concisely.
 htmx can add or remove rows (or better yet, whole tables) with the `<edit-cell>` web component as if `<edit-cell>` were
 a built-in HTML element.
 
@@ -171,7 +171,7 @@ Here at htmx, we agree with [SvelteJS creator Rich Harris](https://x.com/Rich_Ha
 components are [not] useful primitives on which to build web frameworks."
 
 The good news is that htmx [is not really a JavaScript web framework](/essays/is-htmx-another-javascript-framework).
-The DOM-based lifecycles of custom elements work great in htmx, because everything in htmx has a DOM-based lifecycle—we
+The DOM-based lifecycles of custom elements work great in htmx, because everything in htmx has a DOM-based lifecycle, we
 get stuff from the server, and we add it to the DOM.
 The default htmx swap style is to just set [
 `.innerHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML), and that works great for the vast
@@ -183,7 +183,7 @@ merged [Shadow DOM support for htmx 2.0](https://github.com/bigskysoftware/htmx/
 implementation details of a Web Component,
 and supporting that
 is [occasionally](https://github.com/bigskysoftware/htmx/pull/2846) [frustrating](https://github.com/bigskysoftware/htmx/pull/2866).
-But being able to work with both the [Shadow DOM](/docs/features/web-components) and
+But being able to work with both the [Shadow DOM](/docs#web-components) and
 the ["Light DOM"](https://meyerweb.com/eric/thoughts/2023/11/01/blinded-by-the-light-dom/) is a nice feature for htmx,
 and it carries a relatively minimal support burden because htmx just isn't doing all that much.
 
@@ -206,7 +206,7 @@ The idea that [behavior belongs in the HTML](https://unplannedobsolescence.com/b
 the zeitgeist, considered [a violation of separation of concerns](https://htmx.org/essays/locality-of-behaviour/);
 disrespecting HTML was best practice.
 
-The relatively recent success of htmx—itself now a participant in the zeitgeist—offers an alternative path: take HTML
+The relatively recent success of htmx, itself now a participant in the zeitgeist, offers an alternative path: take HTML
 seriously again.
 If your website is one whose functionality can be primarily described
 with [large-grain hypermedia transfers](/essays/when-to-use-hypermedia) (we believe most of them can), then the value of

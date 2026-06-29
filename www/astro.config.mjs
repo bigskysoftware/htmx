@@ -4,17 +4,23 @@ import tailwindcss from "@tailwindcss/vite";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeExternalLinks from "rehype-external-links";
+import {rehypeSections} from "./src/lib/rehype-sections.js";
+import {remarkCdnVersion} from "./src/lib/remark-cdn-version.js";
 import {codeBlockTransformer} from "./src/lib/shiki-transformers.js";
-import {readdirSync} from "node:fs";
+import {readdirSync, readFileSync} from "node:fs";
+
+// Single source of truth for the version shown in CDN/npm snippets.
+// Generated from package.json by `npm run update-sha` at release time.
+const {version} = JSON.parse(readFileSync("./src/data/integrity.json", "utf8"));
 
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
 // Build category redirects dynamically from folder structure.
-// Each category folder (e.g. docs/01-get-started/) redirects to its first file.
+// Each category folder (e.g. reference/attributes/) redirects to its first file.
 function buildCategoryRedirects() {
     const redirects = {};
-    for (const collection of ['docs', 'reference', 'patterns']) {
+    for (const collection of ['reference', 'patterns']) {
         const base = `./src/content/${collection}`;
         let subfolders;
         try { subfolders = readdirSync(base, {withFileTypes: true}).filter(d => d.isDirectory() && d.name !== 'index'); } catch { continue; }
@@ -41,11 +47,20 @@ export default defineConfig({
 
     vite: {
         plugins: [tailwindcss()],
+        // Force dep re-optimization on every dev start. Avoids the recurring
+        // "504 Outdated Optimize Dep" errors that show up after `bun add` /
+        // `bun remove` when Vite's hash check misses a lockfile change. Cold
+        // start cost ~1-2s; production builds are unaffected.
+        optimizeDeps: { force: true },
     },
 
     markdown: {
+        remarkPlugins: [
+            [remarkCdnVersion, {version}],
+        ],
         rehypePlugins: [
             rehypeSlug,
+            [rehypeSections, {split: 'h2'}], // /docs sticky h2s need containing blocks to unstick naturally
             [
                 rehypeAutolinkHeadings,
                 {
@@ -72,6 +87,38 @@ export default defineConfig({
 
         // Category index redirects (computed from folder structure)
         ...buildCategoryRedirects(),
+
+        // /docs sub-page URLs (htmx 2.x/3.x layout) -> anchors on the new one-page /docs.
+        "/docs/get-started": "/docs#installation",
+        "/docs/get-started/installation": "/docs#installation",
+        "/docs/get-started/migration": "/docs#migration",
+        "/docs/core-concepts": "/docs#mental-model",
+        "/docs/core-concepts/mental-model": "/docs#mental-model",
+        "/docs/core-concepts/hypermedia-controls": "/docs#hypermedia-controls",
+        "/docs/core-concepts/requests-and-responses": "/docs#requests--responses",
+        "/docs/core-concepts/client-scripting": "/docs#client-side-scripting",
+        "/docs/core-concepts/multi-target-updates": "/docs#multi-target-updates",
+        "/docs/core-concepts/hcon": "/docs#hcon",
+        "/docs/features": "/docs#css-transitions",
+        "/docs/features/css-transitions": "/docs#css-transitions",
+        "/docs/features/synchronization": "/docs#synchronization",
+        "/docs/features/confirmations": "/docs#confirmations",
+        "/docs/features/boosting": "/docs#boosting",
+        "/docs/features/history": "/docs#history",
+        "/docs/features/validation": "/docs#validation",
+        "/docs/features/web-components": "/docs#web-components",
+        "/docs/features/attribute-inheritance": "/docs#attribute-inheritance",
+        "/docs/features/extended-selectors": "/docs#extended-selectors-1",
+        "/docs/features/extensions": "/docs#extensions",
+        "/docs/security": "/docs#best-practices",
+        "/docs/security/best-practices": "/docs#best-practices",
+        "/docs/security/caching": "/docs#caching",
+        "/docs/troubleshoot": "/docs#debugging",
+        "/docs/troubleshoot/debugging": "/docs#debugging",
+        "/docs/troubleshoot/configuration": "/docs#configuration",
+        "/docs/editors": "/docs#vs-code",
+        "/docs/editors/vscode": "/docs#vs-code",
+        "/docs/full": "/docs",
 
         // Old site: migration guides
         // TODO: Create these migration guide pages (content exists on old site):
@@ -130,18 +177,34 @@ export default defineConfig({
         "/examples/web-components": "/patterns",
         "/examples/move-before": "/patterns",
 
-        // Old site: extensions were top-level
-        "/extensions": "/docs/extensions",
-        "/extensions/sse": "/docs/extensions/sse",
-        "/extensions/ws": "/docs/extensions/ws",
-        "/extensions/head-support": "/docs/extensions/head-support",
-        "/extensions/preload": "/docs/extensions/preload",
-        "/extensions/browser-indicator": "/docs/extensions/browser-indicator",
-        "/extensions/alpine-compat": "/docs/extensions/alpine-compat",
-        "/extensions/htmx-2-compat": "/docs/extensions/htmx-2-compat",
-        "/extensions/optimistic": "/docs/extensions/optimistic",
-        "/extensions/upsert": "/docs/extensions/upsert",
-        "/extensions/building": "/docs/extensions/overview",
+        // htmx 2.x extension paths → current /extensions/hx-* slugs.
+        "/extensions/sse": "/extensions/hx-sse",
+        "/extensions/ws": "/extensions/hx-ws",
+        "/extensions/head-support": "/extensions/hx-head",
+        "/extensions/preload": "/extensions/hx-preload",
+        "/extensions/browser-indicator": "/extensions/hx-browser-indicator",
+        "/extensions/alpine-compat": "/extensions/hx-alpine-compat",
+        "/extensions/optimistic": "/extensions/hx-optimistic",
+        "/extensions/upsert": "/extensions/hx-upsert",
+        "/extensions/building": "/docs/features/extensions",
+
+        // /docs/extensions/* paths → current locations.
+        "/docs/extensions": "/extensions",
+        "/docs/extensions/using-extensions": "/docs/features/extensions",
+        "/docs/extensions/extension-migration": "/docs/get-started/migration",
+        "/docs/extensions/htmx-2-compat": "/extensions/htmx-2-compat",
+        "/docs/extensions/sse": "/extensions/hx-sse",
+        "/docs/extensions/ws": "/extensions/hx-ws",
+        "/docs/extensions/head-support": "/extensions/hx-head",
+        "/docs/extensions/preload": "/extensions/hx-preload",
+        "/docs/extensions/optimistic": "/extensions/hx-optimistic",
+        "/docs/extensions/download": "/extensions/hx-download",
+        "/docs/extensions/upsert": "/extensions/hx-upsert",
+        "/docs/extensions/targets": "/extensions/hx-targets",
+        "/docs/extensions/ptag": "/extensions/hx-ptag",
+        "/docs/extensions/browser-indicator": "/extensions/hx-browser-indicator",
+        "/docs/extensions/alpine-compat": "/extensions/hx-alpine-compat",
+        "/docs/extensions/history-cache": "/extensions/hx-history-cache",
 
         // Old site: interviews were under /essays/
         "/essays/interviews/henning-koch": "/interviews/henning-koch",

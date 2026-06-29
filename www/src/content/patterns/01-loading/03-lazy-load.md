@@ -1,4 +1,5 @@
 ---
+includeMockServer: true
 title: "Lazy Load"
 description: Load content after the page renders
 icon: "icon-[bitcoin-icons--visible-filled]"

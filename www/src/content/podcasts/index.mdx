@@ -4,6 +4,7 @@ description: "Talks, interviews, and appearances about htmx."
 ---
 
 import FinderLink from '../../components/FinderLink.astro';
+import { formatDate } from '../../lib/utils';
 
 export const podcasts = [
     {name: "ThePrimeTime - So I Talked With Creator HTMX", url: "https://www.youtube.com/watch?v=r8icH07gWBw", date: "2024-06-06"},
@@ -39,11 +40,6 @@ export const podcasts = [
     {name: "devMode.fm - Dynamic HTML with htmx", url: "https://devmode.fm/episodes/dynamic-html-with-htmx", date: "2020-09-07"},
 ];
 
-export const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
-};
-
 export const grouped = (() => {
     const sorted = [...podcasts].sort((a, b) => new Date(b.date) - new Date(a.date));
     const map = new Map();
@@ -67,9 +63,9 @@ export const grouped = (() => {
                         <span class="flex-1 min-w-0 flex items-center gap-4">
                             <span class="flex-1 min-w-0 flex items-center gap-2">
                                 <span class="text-[13px] sm:text-sm leading-snug truncate">{p.name}</span>
-                                <i class="icon-[mdi--open-in-new] size-3 shrink-0 text-neutral-400 group-interact/link:text-blue-200 dark:group-interact/link:text-black transition" aria-label="External link"></i>
+                                <i class="icon-[mdi--open-in-new] size-3 shrink-0 text-neutral-400 group-interact/link:text-blue-200 dark:group-interact/link:text-black" aria-label="External link"></i>
                             </span>
-                            <span class="shrink-0 text-[11px] font-mono tabular-nums text-neutral-500 dark:text-neutral-450 group-interact/link:text-blue-200 dark:group-interact/link:text-black transition sm:w-[12ch] sm:text-right">{formatDate(p.date)}</span>
+                            <span class="shrink-0 text-[11px] font-mono tabular-nums text-neutral-500 dark:text-neutral-450 group-interact/link:text-blue-200 dark:group-interact/link:text-black sm:w-[12ch] sm:text-right">{formatDate(p.date)}</span>
                         </span>
                     </FinderLink>
                 ))}

@@ -16,6 +16,23 @@ describe('hx-include attribute', function() {
         fetchMock.calls[0].request.body.get("i1").should.equal("test");
     })
 
+    it('checked checkbox via hx-include is sent', async function () {
+        mockResponse('GET', '/include', "OK")
+        createProcessedHTML('<input type="checkbox" id="cb" name="notify" checked><button id="btn" hx-get="/include" hx-include="#cb">Go</button>')
+        find('#btn').click()
+        await forRequest()
+        new URL(fetchMock.calls[0].url, location.href).searchParams.get('notify').should.equal('on')
+    })
+
+    it('unchecked checkbox via hx-include is not sent', async function () {
+        mockResponse('GET', '/include', "OK")
+        createProcessedHTML('<input type="checkbox" id="cb" name="notify"><button id="btn" hx-get="/include" hx-include="#cb">Go</button>')
+        find('#btn').click()
+        await forRequest()
+        assert.equal(new URL(fetchMock.calls[0].url, location.href).searchParams.get('notify'), null)
+    })
+
+
     it('non-GET includes closest form', async function () {
         mockResponse('POST', '/include', "Dummy")
         createProcessedHTML('<form hx-target="this"><div id="d1" hx-post="/include"></div><input name="i1" value="test"/></form>')

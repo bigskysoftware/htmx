@@ -25,6 +25,31 @@ describe('hx-preload attribute', function() {
         cleanupTest(this.currentTest)
     })
 
+    it('preloads on mousedown with bare attribute on hx-get element', async function () {
+        mockResponse('GET', '/test', 'Preloaded')
+        let btn = createProcessedHTML('<button hx-get="/test" hx-preload>Click</button>');
+        btn.dispatchEvent(new Event('mousedown'))
+        await htmx.timeout(20)
+        assert.isDefined(btn._htmx.preload)
+    })
+
+    it('preloads on mousedown with bare attribute on boosted anchor', async function () {
+        mockResponse('GET', '/test', 'Preloaded')
+        let div = createProcessedHTML('<div hx-boost:inherited="true"><a id="a1" href="/test" hx-preload>Link</a></div>');
+        let a = div.querySelector('#a1')
+        a.dispatchEvent(new Event('mousedown'))
+        await htmx.timeout(20)
+        assert.isDefined(a._htmx.preload)
+    })
+
+    it('does not preload with bare attribute on non-hx-get element', async function () {
+        mockResponse('POST', '/test', 'Posted')
+        let btn = createProcessedHTML('<button hx-post="/test" hx-preload>Click</button>');
+        btn.dispatchEvent(new Event('mousedown'))
+        await htmx.timeout(20)
+        assert.isUndefined(btn._htmx?.preload)
+    })
+
     it('preloads on specified event', async function () {
         mockResponse('GET', '/test', 'Preloaded')
         let btn = createProcessedHTML('<button hx-get="/test" hx-preload="mouseenter">Click</button>');
@@ -81,6 +106,29 @@ describe('hx-preload attribute', function() {
         btn.dispatchEvent(new Event('foo'))
         await htmx.timeout(20)
         assert.isDefined(btn._htmx.preload)
+    })
+
+    it('auto-preloads boosted anchors by default', async function () {
+        mockResponse('GET', '/test', 'Preloaded')
+        let div = createProcessedHTML('<div hx-boost:inherited="true"><a id="a1" href="/test">Link</a></div>');
+        let a = div.querySelector('#a1')
+        a.dispatchEvent(new Event('mousedown'))
+        await htmx.timeout(20)
+        assert.isDefined(a._htmx.preload)
+    })
+
+    it('does not auto-preload boosted anchors when autoBoost is false', async function () {
+        htmx.config.preload = { autoBoost: false }
+        try {
+            mockResponse('GET', '/test', 'Preloaded')
+            let div = createProcessedHTML('<div hx-boost:inherited="true"><a id="a1" href="/test">Link</a></div>');
+            let a = div.querySelector('#a1')
+            a.dispatchEvent(new Event('mousedown'))
+            await htmx.timeout(20)
+            assert.isUndefined(a._htmx?.preload)
+        } finally {
+            delete htmx.config.preload
+        }
     })
 
     it('builds URL with form params', async function () {

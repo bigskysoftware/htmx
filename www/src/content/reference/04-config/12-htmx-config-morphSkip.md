@@ -7,29 +7,18 @@ The `htmx.config.morphSkip` option is a CSS selector for elements to skip during
 
 Matching elements won't be morphed. They stay exactly as they are.
 
-**Default:** `undefined`
+**Default:** `'[hx-morph-skip]'`
 
-## Example
+Add `hx-morph-skip` to any element in your server templates to freeze it entirely during morph:
+
+```html
+<custom-widget hx-morph-skip>...</custom-widget>
+```
+
+Or override with any CSS selector:
 
 ```javascript
 htmx.config.morphSkip = ".no-morph";
-```
-
-```html
-<meta name="htmx-config" content='{"morphSkip":".no-morph"}'>
-```
-
-## Usage
-
-```html
-<body hx-swap:inherited="innerMorph">
-  <div class="no-morph">
-    <!-- Never morphed. Stays frozen. -->
-  </div>
-  <div>
-    <!-- Morphed normally -->
-  </div>
-</body>
 ```
 
 ## Use Cases

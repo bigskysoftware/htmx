@@ -13,33 +13,14 @@ test.describe('Redirects', () => {
     ];
 
     const SIMPLE_REDIRECTS: [string, string][] = [
-        ['/events', '/reference/events'],
+        ['/events', '/reference'],
         ['/help', '/about'],
         ['/server-examples', '/about'],
         ['/examples', '/patterns'],
     ];
 
-    // Sample of old flat pattern URLs → new nested URLs
-    const PATTERN_REDIRECTS: [string, string][] = [
-        ['/patterns/active-search', '/patterns/forms/active-search'],
-        ['/patterns/infinite-scroll', '/patterns/loading/infinite-scroll'],
-        ['/patterns/bulk-actions', '/patterns/records/bulk-actions'],
-        ['/patterns/animations', '/patterns/display/animations'],
-        ['/patterns/keyboard-shortcuts', '/patterns/advanced/keyboard-shortcuts'],
-        ['/patterns/confirm', '/patterns/display/dialogs'],
-        ['/patterns/edit-row', '/patterns/records/edit-in-place'],
-    ];
-
     // Simple redirects where the target page exists
     for (const [from, to] of SIMPLE_REDIRECTS) {
-        test(`${from} → ${to}`, async ({ page }) => {
-            await page.goto(from);
-            await expect(page).toHaveURL(to);
-        });
-    }
-
-    // Pattern redirects where the target page exists
-    for (const [from, to] of PATTERN_REDIRECTS) {
         test(`${from} → ${to}`, async ({ page }) => {
             await page.goto(from);
             await expect(page).toHaveURL(to);

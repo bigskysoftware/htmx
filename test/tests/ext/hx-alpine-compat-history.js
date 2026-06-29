@@ -69,16 +69,13 @@
         htmx.process(historyElt);
         await htmx.timeout(50);
 
-        let savedState;
-        document.addEventListener('htmx:history:cache:after:save', () => {
-            savedState = { ...history.state };
-        }, { once: true });
-
         mockResponse('GET', '/page2', '<p>page 2</p>');
         playground().querySelector('button').click();
         await forRequest();
 
-        history.replaceState(savedState, '', cachedPath);
+        let index = JSON.parse(sessionStorage.getItem('htmx-history-index') || '[]');
+        let htmxId = index[index.length - 1];
+        history.replaceState({ htmx: true, htmxId }, '', cachedPath);
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
             htmx.__restoreHistory(cachedPath);
@@ -98,21 +95,17 @@
         htmx.process(historyElt);
         await htmx.timeout(50);
 
-        // Simulate user incrementing the counter
         let component = historyElt.querySelector('[x-data]');
         Alpine.$data(component).count = 42;
         await htmx.timeout(10);
-
-        let savedState;
-        document.addEventListener('htmx:history:cache:after:save', () => {
-            savedState = { ...history.state };
-        }, { once: true });
 
         mockResponse('GET', '/page2', '<p>page 2</p>');
         playground().querySelector('button').click();
         await forRequest();
 
-        history.replaceState(savedState, '', cachedPath);
+        let index = JSON.parse(sessionStorage.getItem('htmx-history-index') || '[]');
+        let htmxId = index[index.length - 1];
+        history.replaceState({ htmx: true, htmxId }, '', cachedPath);
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
             htmx.__restoreHistory(cachedPath);
@@ -136,16 +129,13 @@
         Alpine.$data(historyElt.querySelector('[x-data]')).name = 'changed';
         await htmx.timeout(10);
 
-        let savedState;
-        document.addEventListener('htmx:history:cache:after:save', () => {
-            savedState = { ...history.state };
-        }, { once: true });
-
         mockResponse('GET', '/page2', '<p>page 2</p>');
         playground().querySelector('button').click();
         await forRequest();
 
-        history.replaceState(savedState, '', cachedPath);
+        let index = JSON.parse(sessionStorage.getItem('htmx-history-index') || '[]');
+        let htmxId = index[index.length - 1];
+        history.replaceState({ htmx: true, htmxId }, '', cachedPath);
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
             htmx.__restoreHistory(cachedPath);
@@ -184,16 +174,13 @@
         htmx.process(historyElt);
         await htmx.timeout(50);
 
-        let savedState;
-        document.addEventListener('htmx:history:cache:after:save', () => {
-            savedState = { ...history.state };
-        }, { once: true });
-
         mockResponse('GET', '/page2', '<p>page 2</p>');
         playground().querySelector('button').click();
         await forRequest();
 
-        history.replaceState(savedState, '', cachedPath);
+        let index = JSON.parse(sessionStorage.getItem('htmx-history-index') || '[]');
+        let htmxId = index[index.length - 1];
+        history.replaceState({ htmx: true, htmxId }, '', cachedPath);
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
             htmx.__restoreHistory(cachedPath);
@@ -202,6 +189,26 @@
 
         let teleportTarget = playground().querySelector('#tp-target');
         assert.equal(teleportTarget.querySelectorAll('.tp-content').length, 1);
+    });
+
+    it('does not throw when restoring state with getter and method properties', async function () {
+        let elt = await saveAndRestoreAlpine(root => {
+            root.innerHTML =
+                '<div x-data="{' +
+                '  selectedCategory: \'all\',' +
+                '  searchTerm: \'htmx\',' +
+                '  cartItems: 3,' +
+                '  products: [],' +
+                '  get filteredProducts() { return this.products; },' +
+                '  addToCart(p) { this.cartItems++; }' +
+                '}">' +
+                '  <span id="cart" x-text="cartItems"></span>' +
+                '  <span id="cat" x-text="selectedCategory"></span>' +
+                '</div>';
+        });
+        // Plain data restored, no exception thrown
+        assert.equal(elt.querySelector('#cart').textContent, '3');
+        assert.equal(elt.querySelector('#cat').textContent, 'all');
     });
 
     it('teleport target is empty after destroyTree runs before snapshot', async function () {

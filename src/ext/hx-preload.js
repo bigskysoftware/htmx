@@ -3,7 +3,7 @@
 
     function initializePreload(elt) {
         let preloadSpec = api.attributeValue(elt, "hx-preload");
-        if (!preloadSpec && !elt._htmx?.boosted) return;
+        if (preloadSpec == undefined && !elt._htmx?.boosted) return;
 
         let preloadEvents = []
         let timeout = 5000;
@@ -17,14 +17,15 @@
                 }
             }
         } else {
-            //only boosted links are supported
-            if (elt.tagName === "A") {
-                if(htmx.config?.preload?.boostTimeout) {
-                    timeout = htmx.parseInterval(htmx.config.preload.boostTimeout)
-                }
-                preloadEvents.push(htmx.config?.preload?.boostEvent || "mousedown");
-                preloadEvents.push("touchstart");
+            let isBoostedAnchor = elt._htmx?.boosted && elt.tagName === "A";
+            let isHxGet = api.attributeValue(elt, "hx-get") != null;
+            if (!isBoostedAnchor && !isHxGet) return;
+            if (isBoostedAnchor && htmx.config?.preload?.autoBoost === false) return;
+            if (htmx.config?.preload?.boostTimeout) {
+                timeout = htmx.parseInterval(htmx.config.preload.boostTimeout)
             }
+            preloadEvents.push(htmx.config?.preload?.boostEvent || "mousedown");
+            preloadEvents.push("touchstart");
         }
 
         let preloadListener = async (evt) => {
@@ -43,7 +44,6 @@
 
             let action = ctx.request.action.replace?.(/#.*$/, '');
 
-
             let params = new URLSearchParams(body);
             if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
 
@@ -60,7 +60,7 @@
             }
         };
         for (let eventName of preloadEvents) {
-            elt.addEventListener(eventName, preloadListener);
+            elt.addEventListener(eventName, preloadListener, { passive: true });
         }
         elt._htmx.preloadListener = preloadListener;
         elt._htmx.preloadEvents = preloadEvents;
@@ -96,4 +96,4 @@
             }
         }
     });
-})()
+})();

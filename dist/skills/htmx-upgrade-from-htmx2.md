@@ -40,13 +40,12 @@ hx-disabled-elt  →  hx-disable    (htmx 2's "disable elements during request")
 |-----------------------|-------------------------------------------------------------|
 | `hx-vars='...'`       | `hx-vals='js:...'` (wrap value in `js:` prefix)             |
 | `hx-params="..."`     | Remove; use `htmx:config:request` event to filter params    |
-| `hx-prompt="..."`     | `hx-confirm="js:myAsyncPromptFn()"` (write a JS function)   |
+| `hx-prompt="..."`     | Load the `hx-prompt` extension (same syntax as htmx 2)      |
 | `hx-ext="..."`        | Remove (just including the extension script is enough)      |
 | `hx-disinherit="..."` | Remove (inheritance is explicit by default)                 |
 | `hx-inherit="..."`    | Remove (use `:inherited` modifier on individual attributes) |
 | `hx-request='...'`    | `hx-config='...'` (same JSON format)                        |
 | `hx-history="false"`  | Remove (history no longer uses localStorage)                |
-| `hx-history-elt`      | Remove (history uses target element)                        |
 
 ## Step 3: Update Attribute Inheritance
 
@@ -148,7 +147,7 @@ htmx 2 uses camelCase event names. htmx 4 uses colon-separated names.
 | `htmx:beforeTransition`     | `htmx:before:viewTransition`      |
 | `htmx:oobBeforeSwap`        | `htmx:before:swap`                |
 | `htmx:oobAfterSwap`         | `htmx:after:swap`                 |
-| `htmx:responseError`        | `htmx:error`                      |
+| `htmx:responseError`        | `htmx:response:error`             |
 | `htmx:sendError`            | `htmx:error`                      |
 | `htmx:sendAbort`            | `htmx:error`                      |
 | `htmx:swapError`            | `htmx:error`                      |
@@ -225,7 +224,7 @@ Removed configs (no equivalent): `refreshOnHistoryMiss`, `historyCacheSize`, `de
 | `HX-Trigger`      | `HX-Source`   | Was element ID → now `tag#id` (e.g. `button#submit`) |
 | `HX-Trigger-Name` | Removed       | Use `HX-Source`                                      |
 | `HX-Target`       | `HX-Target`   | Was element ID → now `tag#id`                        |
-| `HX-Prompt`       | Removed       | Use `hx-confirm` with `js:` prefix                   |
+| `HX-Prompt`       | Via extension | Load the `hx-prompt` extension to restore the header |
 
 New request header: `HX-Request-Type` (`"full"` or `"partial"`).
 
@@ -244,8 +243,6 @@ Still supported: `HX-Trigger`, `HX-Push-Url`, `HX-Replace-Url`, `HX-Redirect`, `
 | htmx 2                       | htmx 4                             |
 |------------------------------|------------------------------------|
 | `htmx.defineExtension(...)`  | `htmx.registerExtension(...)`      |
-| `htmx.logAll()`              | `htmx.config.logAll = true`        |
-| `htmx.logNone()`             | `htmx.config.logAll = false`       |
 | `htmx.addClass(elt, cls)`    | `elt.classList.add(cls)`           |
 | `htmx.removeClass(elt, cls)` | `elt.classList.remove(cls)`        |
 | `htmx.toggleClass(elt, cls)` | `elt.classList.toggle(cls)`        |

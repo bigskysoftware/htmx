@@ -42,6 +42,12 @@ describe('__shouldBoost() unit tests', function() {
             assert.isFalse(result);
         });
 
+        it('should not boost links with download', function() {
+            const link = createDisconnectedHTML('<a href="/report.pdf" download>Download</a>');
+            const result = htmx.__shouldBoost(link);
+            assert.isFalse(result);
+        });
+
         it('should not boost links with target="_blank"', function() {
             const link = createDisconnectedHTML('<a href="/test" target="_blank">Link</a>');
             const result = htmx.__shouldBoost(link);

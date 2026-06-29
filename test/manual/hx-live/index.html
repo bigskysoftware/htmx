@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>hx-live playground</title>
+<script src="../../../src/htmx.js"></script>
+<script src="../../../src/ext/hx-live.js"></script>
+<style>
+  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+  body { max-width: 900px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+  section { border: 1px solid #ddd; border-radius: 6px; padding: 1rem 1.25rem; margin: 1rem 0; }
+  h2 { margin-top: 0; font-size: 1.1rem; }
+  h3 { font-size: 0.95rem; color: #555; margin-bottom: 0.4rem; }
+  code, pre { background: #f4f4f4; padding: 1px 4px; border-radius: 3px; font-size: 0.85em; }
+  pre { padding: 8px; overflow-x: auto; }
+  label { display: inline-block; margin-right: 0.5rem; }
+  input, select, textarea, button { font: inherit; padding: 3px 6px; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #eee; font-size: 0.85em; }
+  .pill.big { background: #fdd; color: #900; font-weight: 600; }
+  .pill.expensive { background: #fec; color: #850; }
+  .badge { display: inline-block; padding: 1px 6px; border-radius: 3px; background: gold; font-size: 0.8em; }
+  [role=tab] { padding: 4px 12px; background: #eee; border: 1px solid #ccc; cursor: pointer; }
+  [role=tab][aria-selected=true] { background: #fff; border-bottom-color: #fff; font-weight: 600; }
+  [role=tablist] { display: flex; gap: 0; border-bottom: 1px solid #ccc; }
+  [role=tabpanel] { padding: 0.75rem 0; }
+  [role=tabpanel][hidden] { display: none; }
+  .focused { box-shadow: 0 0 0 3px #fc6; }
+  fieldset[disabled] { opacity: 0.5; }
+  progress { width: 100%; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .small { font-size: 0.85em; color: #666; }
+  .external { outline: 1px dashed #999; padding: 2px; }
+  .transition { transition: opacity 0.3s, background 0.3s; }
+  .visible { background: #cfc; }
+  .hidden.faded { opacity: 0.4; background: #fcc; }
+  [aria-pressed=true] { background: #fcd; }
+  [role=tab].active { background: #fff; border-bottom-color: #fff; font-weight: 600; }
+</style>
+</head>
+<body hx-ext="hx-live">
+
+<h1>hx-live playground</h1>
+<p class="small">Open DevTools. Type, click, change inputs. Verify state updates without server round-trips.</p>
+
+<!-- =================================================================== -->
+<section>
+  <h2>1. Simple form: <code>:attr="expr"</code> — boolean attributes</h2>
+  <p>
+    <label><input type="checkbox" id="lock"> Lock everything below</label>
+  </p>
+  <fieldset :disabled="q('#lock').checked">
+    <legend>Fieldset disables on lock</legend>
+    <input placeholder="email">
+    <button>Save</button>
+  </fieldset>
+  <p>
+    <button :hidden="!q('#lock').checked">I only appear when locked</button>
+  </p>
+  <pre>:disabled="q('#lock').checked"
+:hidden="!q('#lock').checked"</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>2. <code>:text</code> — computed text content</h2>
+  <p>
+    <label>Price: <input id="price" type="number" value="10"></label>
+    <label>Qty: <input id="qty" type="number" value="3"></label>
+  </p>
+  <p>
+    Subtotal: $<output :text="(q('#price').valueAsNumber * q('#qty').valueAsNumber).toFixed(2)"></output>
+  </p>
+  <p>
+    With 10% tax: $<output :text="(q('#price').valueAsNumber * q('#qty').valueAsNumber * 1.1).toFixed(2)"></output>
+  </p>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>3. <code>:html</code> — innerHTML binding</h2>
+  <p>
+    <label>Markdown-ish input: <input id="md" value="hello world"></label>
+  </p>
+  <div :html="`<em>${q('#md').value || 'type something…'}</em>`"></div>
+  <p class="small">Note: <code>:html</code> is XSS-unsafe if value comes from untrusted source. Prefer <code>:text</code>.</p>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>4. <code>:class</code> — string and object forms</h2>
+  <h3>String form (class-set swap, leaves managed classes alone)</h3>
+  <p class="small">
+    Use <code>:class</code> only when CSS pseudo-classes can't express the rule (cross-element
+    comparison, arithmetic). For checkbox/focus/invalid state, use CSS (<code>:has()</code>,
+    <code>peer-checked:</code>). Example below: branch on value-vs-budget comparison — CSS can't see it.
+  </p>
+  <p>
+    <label>Cost: <input id="cost" type="number" value="40"></label>
+    <label>Budget: <input id="budget" type="number" value="100"></label>
+  </p>
+  <div class="external transition"
+       :class="q('#cost').valueAsNumber > q('#budget').valueAsNumber ? 'hidden faded' : 'visible'">
+    External class stays; managed classes swap. (Goes red+faded when cost &gt; budget.)
+  </div>
+  <pre>:class="q('#cost').valueAsNumber > q('#budget').valueAsNumber
+            ? 'hidden faded'
+            : 'visible'"</pre>
+
+  <h3>Object form (toggle each class independently)</h3>
+  <p>
+    <label>Price: <input id="price2" type="number" value="500"></label>
+  </p>
+  <span class="pill"
+        :class="{ big: q('#price2').valueAsNumber > 1000, expensive: q('#price2').valueAsNumber > 100 }">
+    $<span :text="q('#price2').valueAsNumber"></span>
+  </span>
+  <pre>:class="{ big: price > 1000, expensive: price > 100 }"</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>5. <code>:style</code> — string and object forms</h2>
+  <h3>Object form</h3>
+  <p><label>Width: <input id="w" type="range" min="0" max="100" value="40">%</label></p>
+  <div :style="{ width: q('#w').value + '%', height: '20px', background: 'cornflowerblue' }"></div>
+
+  <h3>String form (CSS custom property)</h3>
+  <p><label>Progress: <input id="p" type="range" min="0" max="100" value="60">%</label></p>
+  <progress :value="q('#p').valueAsNumber" max="100"></progress>
+  <pre>:style="'--pct: ' + q('#p').valueAsNumber / 100"</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>6. <code>:aria-*</code> — always "true"/"false" (never removed)</h2>
+  <p><label><input type="checkbox" id="exp"> Expand</label></p>
+  <button :aria-expanded="q('#exp').checked">Toggleable section</button>
+  <div :hidden="!q('#exp').checked">
+    <p>Hidden until expanded.</p>
+  </div>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>7. <code>matches()</code> — bare alias for <code>this.matches()</code></h2>
+  <form>
+    <label>Required field: <input required placeholder="required"></label>
+    <fieldset :disabled="matches(':has(input:invalid)')">
+      <legend>Disabled while form has any :invalid input</legend>
+      <button>Submit</button>
+    </fieldset>
+  </form>
+  <pre>:disabled="matches(':has(input:invalid)')"</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>8. <code>:checked</code> and <code>:value</code> — property + attribute sync</h2>
+  <p>
+    <label><input type="checkbox" id="src-chk"> Source checkbox</label>
+  </p>
+  <p>
+    Mirror: <input type="checkbox" :checked="q('#src-chk').checked">
+    (DOM attribute AND .checked property stay in sync)
+  </p>
+  <p>
+    Source text: <input id="src-text" value="hello">
+  </p>
+  <p>
+    Uppercased mirror: <input :value="q('#src-text').value.toUpperCase()">
+  </p>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>9. ARIA-as-state: tabs via <code>take()</code></h2>
+  <div role="tablist">
+    <button role="tab" id="t1" aria-controls="p1" aria-selected="true"
+      hx-on:click="take('aria-selected', '[role=tab]')">Home</button>
+    <button role="tab" id="t2" aria-controls="p2" aria-selected="false"
+      hx-on:click="take('aria-selected', '[role=tab]')">Profile</button>
+    <button role="tab" id="t3" aria-controls="p3" aria-selected="false"
+      hx-on:click="take('aria-selected', '[role=tab]')">Settings</button>
+  </div>
+  <div role="tabpanel" id="p1" :hidden="q('#t1').matches('[aria-selected=false]')">Home content.</div>
+  <div role="tabpanel" id="p2" :hidden="q('#t2').matches('[aria-selected=false]')" hidden>Profile content.</div>
+  <div role="tabpanel" id="p3" :hidden="q('#t3').matches('[aria-selected=false]')" hidden>Settings content.</div>
+  <pre>hx-on:click="take('aria-selected', '[role=tab]')"
+:hidden="q('#tab-id').matches('[aria-selected=false]')"</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>10. <code>toggle()</code> — binary flip + N-value cycling</h2>
+  <p>
+    <button hx-on:click="toggle('.active'); toggle('aria-pressed')" aria-pressed="false">Toggle me</button>
+    <span class="small">(class.active + aria-pressed)</span>
+  </p>
+  <p>
+    <button hx-on:click="toggle('data-mode', 'light|dark|auto')" data-mode="light">
+      Mode: <span :text="this.parentElement.querySelector('button').dataset.mode || 'unset'"></span>
+    </button>
+    <span class="small">(cycles through light → dark → auto)</span>
+  </p>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>11. <code>&lt;output&gt;</code> as computed variable</h2>
+  <p>
+    <label>Rate: <input id="rate" type="number" value="100"></label>
+    <label>Nights: <input id="nights" type="number" value="3"></label>
+    <label><input type="checkbox" id="promo"> 10% promo</label>
+  </p>
+  <output id="subtotal" style="display:none" :value="q('#rate').valueAsNumber * q('#nights').valueAsNumber"></output>
+  <p>
+    Subtotal: $<span :text="(+q('#subtotal').value).toFixed(2)"></span>
+  </p>
+  <p>
+    Total: $<output :text="(+q('#subtotal').value * (q('#promo').checked ? 0.9 : 1)).toFixed(2)"></output>
+  </p>
+  <p class="small">
+    <code>&lt;output :value="..."&gt;</code> acts as a named computed value. <code>output.value</code> is an alias for
+    <code>textContent</code>, so the result is readable via <code>q('#subtotal').value</code> elsewhere.
+    Add your own <code>display:none</code> (or a global rule) if you want it invisible.
+    Use <code>:text</code> on <code>&lt;output&gt;</code> when you want it visible.
+  </p>
+  <pre>&lt;output id="subtotal" style="display:none" :value="..."&gt;&lt;/output&gt;
+q('#subtotal').value                                    // read elsewhere</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>12. <code>.focused</code> via <code>:class</code> + <code>:focus-within</code></h2>
+  <div :class="{ focused: matches(':focus-within') }" style="padding: 8px; border: 1px solid #ccc;">
+    <input placeholder="focus me">
+    <input placeholder="or me">
+  </div>
+  <pre>:class="{ focused: matches(':focus-within') }"</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>13. Extended form: debounced live search</h2>
+  <p><label>Search: <input id="q" placeholder="type fast…"></label></p>
+  <output id="search-result" hx-live="
+    let term = q('#q').value;
+    if (!term) { this.textContent = '(empty)'; return; }
+    await debounce(300);
+    this.textContent = 'searching for &quot;' + term + '&quot;… (debounced 300ms)';
+  ">(empty)</output>
+  <pre>hx-live="
+  let term = q('#q').value;
+  if (!term) { this.textContent = '(empty)'; return; }
+  await debounce(300);
+  this.textContent = 'searching for \"' + term + '\"…';
+"</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>14. Extended form: cross-element writes</h2>
+  <p>
+    <label>Width: <input id="cross-w" type="range" min="50" max="500" value="200"></label>
+    <span :text="q('#cross-w').value + 'px'"></span>
+  </p>
+  <div hx-live="
+    let w = q('#cross-w').valueAsNumber;
+    q('#bar1').style.width = w + 'px';
+    q('#bar2').style.width = (w / 2) + 'px';
+    q('#bar3').style.width = (w * 1.5) + 'px';
+  "></div>
+  <div id="bar1" style="height: 10px; background: tomato; margin: 4px 0;"></div>
+  <div id="bar2" style="height: 10px; background: gold;     margin: 4px 0;"></div>
+  <div id="bar3" style="height: 10px; background: limegreen; margin: 4px 0;"></div>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>15. Extended form: imperative DOM ops (filter)</h2>
+  <p><label>Filter: <input id="filter" placeholder="type to filter"></label></p>
+  <ul>
+    <li>apple</li>
+    <li>apricot</li>
+    <li>banana</li>
+    <li>blueberry</li>
+    <li>cherry</li>
+    <li>date</li>
+    <li>elderberry</li>
+  </ul>
+  <div hx-live="
+    let f = q('#filter').value.toLowerCase();
+    for (let li of q('ul li'))
+      li.hidden = f && !li.textContent.toLowerCase().includes(f);
+  "></div>
+  <pre>hx-live="
+  let f = q('#filter').value.toLowerCase();
+  for (let li of q('ul li'))
+    li.hidden = f && !li.textContent.toLowerCase().includes(f);
+"</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>16. <code>attr()</code> scope helper — unified attribute access</h2>
+  <p>
+    <button hx-on:click="attr('aria-pressed', !attr('aria-pressed'))" aria-pressed="false">
+      Toggle aria-pressed via attr()
+    </button>
+  </p>
+  <p>
+    <input id="attr-target" placeholder="will be disabled below">
+    <button hx-on:click="q('#attr-target').attr('disabled', true)">Disable target</button>
+    <button hx-on:click="q('#attr-target').attr('disabled', false)">Enable target</button>
+  </p>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>17. <code>q()</code> directional selectors</h2>
+  <p>
+    <input value="seed value">
+    <button hx-on:click="q('previous input').value = q('previous input').value + ' (clicked)'">
+      Append to previous input
+    </button>
+  </p>
+  <p>
+    <button hx-on:click="alert(q('closest section').querySelector('h2').textContent)">
+      Show closest section h2
+    </button>
+  </p>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>18. <code>htmx.live.refresh()</code> for non-DOM state</h2>
+  <output id="storage-out" :text="localStorage.getItem('hx-live-demo-key') || '(none)'"></output>
+  <p>
+    <button hx-on:click="localStorage.setItem('hx-live-demo-key', Date.now()); htmx.live.refresh()">
+      Set localStorage + refresh()
+    </button>
+    <button hx-on:click="localStorage.removeItem('hx-live-demo-key'); htmx.live.refresh()">
+      Clear + refresh()
+    </button>
+  </p>
+  <pre>localStorage.setItem(...)
+htmx.live.refresh()  // expressions reading localStorage recompute</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>19. Cascading <code>data</code> proxy (Alpine <code>x-data</code> style)</h2>
+  <p class="small">
+    State lives on a container as <code>data-*</code> attribute. Descendants inherit reads and
+    writes via the <code>data</code> scope helper (Proxy). <code>data.foo</code> resolves to the
+    nearest ancestor with <code>data-foo</code>. Writes target the same ancestor.
+  </p>
+  <div data-count="0" style="padding: 0.5rem; border: 1px dashed #ccc;">
+    <p>
+      <button hx-on:click="data.count++">+</button>
+      <button hx-on:click="data.count--">−</button>
+      <button hx-on:click="data.count = 0">Reset</button>
+      Count (read at top level): <strong :text="data.count"></strong>
+    </p>
+    <div style="padding-left: 1rem; border-left: 2px solid #aaa;">
+      <p>Nested child reads ancestor: <strong :text="data.count"></strong></p>
+      <p>
+        <button hx-on:click="data.count++">Increment from nested (writes to ancestor)</button>
+      </p>
+      <div style="padding-left: 1rem; border-left: 2px solid #ccc;">
+        <p>Deeper still: <strong :text="data.count"></strong></p>
+      </div>
+    </div>
+  </div>
+  <pre>&lt;div data-count="0"&gt;
+  &lt;button hx-on:click="data.count++"&gt;+&lt;/button&gt;
+  &lt;span :text="data.count"&gt;&lt;/span&gt;       &lt;!-- reactive --&gt;
+&lt;/div&gt;</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>20. <code>with (data) { ... }</code> — multi-write handlers</h2>
+  <p class="small">
+    JavaScript <code>with</code> statement scopes property lookups to <code>data</code>, letting
+    you mutate multiple keys without prefixing. Use sparingly — works only in non-strict mode
+    (hx-on / hx-live expressions, not modules).
+  </p>
+  <div data-likes="0" data-shares="0" data-views="0" style="padding: 0.5rem; border: 1px dashed #ccc;">
+    <p>
+      <button hx-on:click="with (data) { likes++; views++ }">Like</button>
+      <button hx-on:click="with (data) { shares++; likes++; views++ }">Share + Like</button>
+      <button hx-on:click="with (data) { likes = 0; shares = 0; views = 0 }">Reset</button>
+    </p>
+    <p>
+      ❤️ <span :text="data.likes"></span> ·
+      🔁 <span :text="data.shares"></span> ·
+      👁 <span :text="data.views"></span>
+    </p>
+  </div>
+  <pre>&lt;div data-likes="0" data-shares="0"&gt;
+  &lt;button hx-on:click="with (data) { likes++; shares++ }"&gt;Boost&lt;/button&gt;
+&lt;/div&gt;</pre>
+</section>
+
+<!-- =================================================================== -->
+<section>
+  <h2>21. Cascading data + <code>:class</code> for branching UI</h2>
+  <p class="small">
+    Tab state via cascading <code>data-tab</code> instead of <code>aria-selected</code>. One state attribute,
+    descendants read it. No <code>take()</code> needed since the state lives in one place.
+  </p>
+  <div data-tab="home">
+    <div role="tablist">
+      <button role="tab" hx-on:click="data.tab = 'home'"
+              :class="{ active: data.tab === 'home' }">Home</button>
+      <button role="tab" hx-on:click="data.tab = 'profile'"
+              :class="{ active: data.tab === 'profile' }">Profile</button>
+      <button role="tab" hx-on:click="data.tab = 'settings'"
+              :class="{ active: data.tab === 'settings' }">Settings</button>
+    </div>
+    <div :hidden="data.tab !== 'home'">Home panel content.</div>
+    <div :hidden="data.tab !== 'profile'">Profile panel content.</div>
+    <div :hidden="data.tab !== 'settings'">Settings panel content.</div>
+  </div>
+  <pre>&lt;div data-tab="home"&gt;
+  &lt;button hx-on:click="data.tab = 'home'" :class="{ active: data.tab === 'home' }"&gt;Home&lt;/button&gt;
+  &lt;div :hidden="data.tab !== 'home'"&gt;...&lt;/div&gt;
+&lt;/div&gt;</pre>
+</section>
+
+<footer class="small">
+  <p>Source: <code>src/ext/hx-live.js</code> · Run via local server (e.g. <code>npx http-server -c-1 .</code>) then open this file.</p>
+</footer>
+
+</body>
+</html>

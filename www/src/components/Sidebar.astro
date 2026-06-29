@@ -1,18 +1,18 @@
 ---
-import type {ContentFolder, ContentFile} from '../lib/content.ts';
+import type {ContentFolder, ContentFile} from '../lib/content';
 
 interface Props {
     folder: ContentFolder;
-    file?: ContentFile;
 }
 
-const {folder, file} = Astro.props;
+const {folder} = Astro.props;
 const currentUrl = Astro.url.pathname;
+const isAnchorNav = folder.folders[0]?.files[0]?.url?.startsWith('#');
 
-// Check if this is the reference collection for monospace styling
 const isReference = folder.folder === 'reference';
-const isDocumentation = folder.folder === 'docs';
 const isPatterns = folder.folder === 'patterns';
+
+const linkClasses = 'sidebar-link flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200 aria-[current]:bg-neutral-150 dark:aria-[current]:bg-neutral-800 aria-[current]:text-black dark:aria-[current]:text-neutral-50 aria-[current]:font-semibold';
 ---
 
 <aside id="sidebar" class="fixed top-(--header-height) inset-x-0 isolate z-30 group/sidebar">
@@ -31,104 +31,76 @@ const isPatterns = folder.folder === 'patterns';
 
         <div class="h-7 shrink-0"></div>
 
-        {/* Collection header (static, non-interactive) */}
-        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 px-0.5 mb-6">
-            {folder.frontmatter.title}
-        </h2>
+        <div class="flex items-center justify-between gap-2 px-0.5 mb-6">
+            <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400">
+                {folder.frontmatter.title}
+            </h2>
+        </div>
 
-        {/* Overview link */}
-        <a href={folder.url}
-           class:list={[
-               "block px-3 py-2 mb-2 text-sm rounded-md transition truncate",
-               currentUrl === folder.url
-                   ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
-                   : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
-           ]}>
-            Overview
-        </a>
+        <div _={isAnchorNav ? `install Scrollspy` : undefined}>
 
-        {/* Grouped files (subfolders with their files) */}
-        {folder.folders.map((subFolder) => {
-            const files = subFolder.files;
-            const containsCurrentPage = files.some((f: ContentFile) => currentUrl === f.url);
+            {!isAnchorNav && (
+                    <a href={folder.url}
+                       aria-current={currentUrl === folder.url ? 'page' : undefined}
+                       class:list={[linkClasses, 'block mb-2 truncate']}>
+                        Overview
+                    </a>
+            )}
 
-            return (
-                    <details class="group/section w-full not-first-of-type:mt-2 no-morph"
-                             open={containsCurrentPage}
-                             name={subFolder.folder}>
-                        <summary class="sticky top-0 z-40 py-2 rounded-md
-                                       bg-neutral-25 dark:bg-neutral-920
-                                       list-none select-none
-                                       flex items-center justify-between gap-2
-                                       [&::-webkit-details-marker]:hidden
-                                       transition cursor-pointer
-                                       text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200
-                                       px-3">
+            {folder.folders.map((subFolder) => {
+                const files = subFolder.files;
 
-                            <h3 class:list={[
-                                "font-sans text-sm truncate tracking-wide transition min-w-0",
-                                containsCurrentPage
-                                    ? "font-semibold text-neutral-900 dark:text-neutral-100"
-                                    : "text-neutral-600 dark:text-neutral-400 group-hover/section:text-neutral-800 dark:group-hover/section:text-neutral-200"
-                            ]}
-                                set:html={subFolder.frontmatter.title}/><i
-                                class="icon-[mdi--chevron-down] size-4.5 transition group-open/section:rotate-180 text-neutral-400 dark:text-neutral-500 shrink-0"></i>
-                        </summary>
+                return (
+                        <div class="w-full not-first:mt-3">
+                            <h3 class="font-sans text-[0.625rem] tracking-widest uppercase truncate min-w-0 px-3 py-1 text-neutral-600 dark:text-neutral-400"
+                                set:html={subFolder.frontmatter.title}/>
 
-                        {files.length > 0 && (
-                                <ul class="space-y-0.5 border-l border-neutral-150 dark:border-neutral-850 ml-3 pl-3 mt-1 mb-4">
-                                    {files.map((file: ContentFile) => {
-                                        const isActive = currentUrl === file.url;
-                                        const isSoon = file.frontmatter.soon;
-                                        return (
-                                                <li>
-                                                    <a href={isSoon ? undefined : file.url}
-                                                       title={file.frontmatter.description}
-                                                       aria-current={isActive ? 'page' : undefined}
-                                                       aria-disabled={isSoon ? 'true' : undefined}
-                                                       class:list={[
-                                                           "flex items-center gap-2.5 px-3 py-2 text-sm rounded-md transition",
-                                                           isReference && "font-mono",
-                                                           isSoon
-                                                               ? "opacity-50 cursor-not-allowed"
-                                                               : isActive
-                                                                   ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
-                                                                   : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
-                                                       ]}>
-                                                        {isPatterns && file.frontmatter.icon && (
-                                                            <i class:list={[file.frontmatter.icon, "size-4 shrink-0"]}></i>
-                                                        )}
-                                                        <span class="truncate" set:html={file.frontmatter.title}/>
-                                                        {isSoon && (
-                                                            <span class="text-[9px] px-1.5 py-0.5 shrink-0 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide ml-auto">Soon</span>
-                                                        )}
-                                                    </a>
-                                                </li>
-                                        );
-                                    })}
-                                </ul>
-                        )}
-                    </details>
-            );
-        })}
+                            {files.length > 0 && (
+                                    <ul class="space-y-0.5 border-l border-neutral-150 dark:border-neutral-850 ml-3 pl-3 mt-1 mb-4">
+                                        {files.map((file: ContentFile) => {
+                                            const isActive = currentUrl === file.url;
+                                            const isSoon = file.frontmatter.soon;
+                                            return (
+                                                    <li>
+                                                        <a href={isSoon ? undefined : file.url}
+                                                           title={file.frontmatter.description}
+                                                           aria-current={isActive ? 'page' : undefined}
+                                                           aria-disabled={isSoon ? 'true' : undefined}
+                                                           hx-boost={isSoon && 'false'}
+                                                           class:list={[
+                                                               linkClasses,
+                                                               isReference && 'font-mono',
+                                                               isSoon && 'opacity-50 cursor-not-allowed',
+                                                           ]}>
+                                                            {isPatterns && file.frontmatter.icon && (
+                                                                    <i class:list={[file.frontmatter.icon, "size-4 shrink-0"]}></i>
+                                                            )}
+                                                            <span class="truncate" set:html={file.frontmatter.title}/>
+                                                            {isSoon && (
+                                                                    <span class="text-[9px] px-1.5 py-0.5 shrink-0 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide ml-auto">Soon</span>
+                                                            )}
+                                                        </a>
+                                                    </li>
+                                            );
+                                        })}
+                                    </ul>
+                            )}
+                        </div>
+                );
+            })}
 
-        {/* Direct files (not nested in subfolders) */}
-        {folder.files.map((f: ContentFile) => {
-            const isActive = currentUrl === f.url;
-            return (
-                <a href={f.url}
-                   title={f.frontmatter.description}
-                   aria-current={isActive ? 'page' : undefined}
-                   class:list={[
-                       "block px-3 py-2 text-sm rounded-md transition truncate",
-                       isActive
-                           ? "bg-neutral-150 dark:bg-neutral-800 text-black dark:text-neutral-50 font-semibold"
-                           : "text-neutral-600 dark:text-neutral-400 interact:bg-neutral-100 dark:interact:bg-neutral-850 interact:text-black dark:interact:text-neutral-200"
-                   ]}>
-                    <span set:html={f.frontmatter.title}/>
-                </a>
-            );
-        })}
+            {folder.files.map((f: ContentFile) => {
+                const isActive = currentUrl === f.url;
+                return (
+                        <a href={f.url}
+                           title={f.frontmatter.description}
+                           aria-current={isActive ? 'page' : undefined}
+                           class:list={[linkClasses, 'block truncate']}>
+                            <span set:html={f.frontmatter.title}/>
+                        </a>
+                );
+            })}
+        </div>
     </nav>
 
     <input id="sidebar-toggle-mobile" type="checkbox" class="sr-only" _="on click from <a/> set my.checked to false">

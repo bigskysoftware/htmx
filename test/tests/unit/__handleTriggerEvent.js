@@ -16,12 +16,22 @@ describe('__handleTriggerEvent unit tests', function() {
         assert.isUndefined(window.testExecuted)
     })
 
-    it('returns early if modifier key click', async function () {
+    it('returns early if modifier key click on a link', async function () {
+        let link = createProcessedHTML('<a href="/test" hx-get="js:window.testExecuted = true">link</a>')
+        let evt = new MouseEvent('click', {ctrlKey: true, bubbles: true, cancelable: true})
+        Object.defineProperty(evt, 'currentTarget', {value: link})
+        let ctx = htmx.__createRequestContext(link, evt)
+        await htmx.__handleTriggerEvent(ctx)
+        assert.isUndefined(window.testExecuted)
+    })
+
+    it('does not return early if modifier key click on a non-link', async function () {
         let div = createProcessedHTML('<div hx-get="js:window.testExecuted = true"></div>')
         let evt = new MouseEvent('click', {ctrlKey: true})
         let ctx = htmx.__createRequestContext(div, evt)
         await htmx.__handleTriggerEvent(ctx)
-        assert.isUndefined(window.testExecuted)
+        assert.isTrue(window.testExecuted)
+        delete window.testExecuted
     })
 
     it('prevents default when shouldCancel returns true', async function () {
@@ -227,6 +237,23 @@ describe('__handleTriggerEvent unit tests', function() {
         let ctx = htmx.__createRequestContext(button, evt)
         await htmx.__handleTriggerEvent(ctx)
         assert.equal(ctx.request.submitter, button)
+    })
+
+    it('keeps multipart form data as FormData when form enctype is multipart/form-data', async function () {
+        let form = createProcessedHTML('<form enctype="multipart/form-data"><input name="field" value="test"><button hx-post="js:"></button></form>')
+        let button = form.querySelector('button')
+        let ctx = htmx.__createRequestContext(button, new Event('click'))
+        await htmx.__handleTriggerEvent(ctx)
+        assert.instanceOf(ctx.request.body, FormData)
+    })
+
+    it('hx-encoding takes precedence over form enctype', async function () {
+        let form = createProcessedHTML('<form enctype="multipart/form-data"><input name="field" value="test"><button hx-post="/test" hx-encoding="application/x-www-form-urlencoded"></button></form>')
+        let button = form.querySelector('button')
+        let ctx = htmx.__createRequestContext(button, new Event('click'))
+        ctx.fetch = async () => ({ status: 200, headers: new Headers(), text: async () => '' })
+        await htmx.__handleTriggerEvent(ctx)
+        assert.instanceOf(ctx.request.body, URLSearchParams)
     })
 
     it('sets credentials to same-origin', async function () {

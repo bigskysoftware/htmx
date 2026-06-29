@@ -193,10 +193,10 @@ Key config values:
 | `history`             | `true`                  | Enable history support (`true`, `false`, `"reload"`)   |
 | `extensions`          | `""`                    | Whitelist of allowed extensions (empty = allow all)    |
 | `prefix`              | `""`                    | Custom attribute prefix (e.g. `"data-hx-"`)            |
-| `morphIgnore`         | `["data-htmx-powered"]` | Attributes to ignore when morphing                     |
-| `morphScanLimit`      | `10`                    | Sibling scan limit during morphing                     |
-| `morphSkip`           | `undefined`             | CSS selector for elements to skip morphing             |
-| `morphSkipChildren`   | `undefined`             | CSS selector for elements whose children skip morphing |
+| `morphIgnore`         | `["data-htmx-powered"]` | Attribute name prefixes to leave unchanged when morphing |
+| `morphScanLimit`      | `10`                    | Sibling scan limit during morphing                       |
+| `morphSkip`           | `'[hx-morph-skip]'`     | CSS selector for elements to skip morphing entirely      |
+| `morphSkipChildren`   | `'[hx-morph-skip-children]'` | CSS selector for elements whose children skip morphing |
 
 ## Events
 
@@ -384,6 +384,23 @@ Server sends `HX-Trigger: newContact` header. Table listens for the event:
 **Warning:** morphing preserves user input values. It cannot be used to reset forms -- use `innerHTML`/`outerHTML` for
 that.
 
+**Excluding elements from morphing** — add attributes to your server templates:
+
+```html
+<!-- freeze entire element: attrs + children unchanged -->
+<custom-widget hx-morph-skip>...</custom-widget>
+
+<!-- freeze only children: attrs still update -->
+<lit-component hx-morph-skip-children>...</lit-component>
+```
+
+Or set CSS selectors globally in config:
+
+```javascript
+htmx.config.morphSkip         = 'custom-widget, .frozen';
+htmx.config.morphSkipChildren = 'lit-component, .sortable';
+```
+
 ## Other Attributes
 
 | Attribute        | Description                                                               |
@@ -428,9 +445,10 @@ htmx.find("closest .container")                  // Extended CSS selector query
 htmx.findAll(".items")                           // Find all matching
 htmx.trigger(elt, "myEvent", {detail: ...})      // Fire custom event
 htmx.swap(ctx)                                   // Manual swap
-htmx.forEvent("myEvent", 5000)                   // Promise that resolves on event
 htmx.timeout(1000)                               // Promise that resolves after delay
-htmx.takeClass(elt, "active")                    // Take class from siblings
+htmx.live.take(elt, "active", ".tab")            // Take class — provided by hx-live
+htmx.live.forEvent(elt, "click", 5000)           // Race events/timeouts — provided by hx-live
+htmx.live.nextFrame()                            // requestAnimationFrame promise — provided by hx-live
 ```
 
 ## Common Patterns
@@ -526,6 +544,14 @@ the element with the id `result`.
 The `htmx-indicator` class hides the element by default (opacity: 0). When a request is in flight, `htmx-request` class
 is added, making indicators visible.
 
+To avoid flashing the spinner on fast requests, add a `transition-delay` (the second time value) to the indicator's CSS:
+
+```css
+.htmx-request .htmx-indicator { transition: opacity 200ms ease-in 200ms; }
+```
+
+If the request finishes before the delay elapses, the spinner never appears
+
 ### Disabling Elements During Request
 
 ```html
@@ -563,7 +589,7 @@ modifier on attributes, or colon-separated event names like `htmx:after:swap`. T
 | `hx-disable` (stops htmx processing) | `hx-ignore`                                                   | Different purpose in each version                 |
 | `hx-ext="my-ext"`                    | Just include the script file                                  | No attribute needed; config whitelist is optional  |
 | `hx-request='{"timeout":5000}'`      | `hx-config='{"timeout":5000}'`                                | Renamed                                           |
-| `hx-prompt="Enter value"`            | `hx-confirm="js:myPromptFn()"`                                | hx-prompt removed; use hx-confirm with js: prefix |
+| `hx-prompt="Enter value"`            | [`hx-prompt` extension](/extensions/hx-prompt) (same syntax), or [`hx-on::config:request` one-liner](/extensions/hx-prompt#without-the-extension) | Restored via extension                            |
 | `hx-disinherit="*"`                  | Not needed                                                    | Inheritance is explicit by default in htmx 4      |
 | `hx-vars`                            | `hx-vals` with `js:` prefix                                   | hx-vars removed                                   |
 | Attributes inherit implicitly        | Must use `:inherited` modifier                                | `hx-target:inherited="#out"`                      |
@@ -577,8 +603,8 @@ htmx 2 uses camelCase: `htmx:afterSwap`, `htmx:beforeRequest`, `htmx:configReque
 
 htmx 4 uses colons: `htmx:after:swap`, `htmx:before:request`, `htmx:config:request`.
 
-All error events (`htmx:responseError`, `htmx:sendError`, `htmx:swapError`, `htmx:targetError`, `htmx:timeout`) are
-consolidated into `htmx:error` in htmx 4.
+Most error events (`htmx:sendError`, `htmx:swapError`, `htmx:targetError`, `htmx:timeout`) are consolidated into
+`htmx:error` in htmx 4. HTTP error responses fire `htmx:response:error` (replacing `htmx:responseError`).
 
 ### Configuration
 
@@ -598,13 +624,12 @@ consolidated into `htmx:error` in htmx 4.
 | htmx 2                                        | htmx 4                      | Notes                            |
 |-----------------------------------------------|-----------------------------|----------------------------------|
 | `htmx.defineExtension()`                      | `htmx.registerExtension()`  | Renamed                          |
-| `htmx.logAll()`                               | `htmx.config.logAll = true` | Now a config flag                |
 | `htmx.addClass()`, `htmx.removeClass()`, etc. | Native DOM methods          | Removed; use `element.classList` |
 | `htmx.off()`                                  | `removeEventListener()`     | Removed; use native              |
 | `htmx.remove()`                               | `element.remove()`          | Removed; use native              |
 | `htmx.swap(target, content, spec)`            | `htmx.swap(ctx)`            | Signature changed                |
 
-htmx 4 adds: `htmx.forEvent()`, `htmx.timeout()`.
+htmx 4 adds: `htmx.timeout()`. Logging now goes directly to `console.error` / `console.warn` / `console.log` (gated by `config.logAll` for events). `htmx.takeClass()` is **removed**; use `htmx.live.take()` (provided by the `hx-live` extension) or the unprefixed `take` helper inside expression scope. The `hx-live` extension also exposes `htmx.live.forEvent()`, `htmx.live.nextFrame()`, `htmx.live.q()`, `htmx.live.debounce()`, `htmx.live.refresh()`.
 
 ### Swap Styles
 

@@ -1,4 +1,5 @@
 ---
+includeMockServer: true
 title: "Reset on Submit"
 description: Clear form inputs after submission
 icon: "icon-[mdi--eraser]"

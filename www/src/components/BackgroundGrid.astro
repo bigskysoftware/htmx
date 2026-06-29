@@ -1,0 +1,90 @@
+---
+const cam = {dist: 800, tz: -390, angle: 67 * Math.PI / 180, scale: 0.7};
+const step = 260;
+
+function project(x, y) {
+    const xs = x * cam.scale;
+    const ys = y * cam.scale;
+    const depth = cam.dist - (ys * Math.sin(cam.angle) + cam.tz);
+    if (depth <= 0) return null;
+    return {x: xs / (depth / cam.dist), y: (ys * Math.cos(cam.angle)) / (depth / cam.dist)};
+}
+
+const lines = [];
+
+// Horizontal: front to back, stop when lines converge
+let prevY = null;
+for (let j = 10; j >= -100; j--) {
+    const l = project(-8000, j * step);
+    const r = project(8000, j * step);
+    if (!l || !r) continue;
+    if (prevY !== null && Math.abs(prevY - l.y) < 1.5) break;
+    lines.push({x1: l.x, y1: l.y, x2: r.x, y2: r.y});
+    prevY = l.y;
+}
+
+// Vertical: left to right
+for (let i = -30; i <= 30; i++) {
+    const near = project(i * step, 1700);
+    const far = project(i * step, -3000);
+    if (!near || !far) continue;
+    lines.push({x1: near.x, y1: near.y, x2: far.x, y2: far.y});
+}
+---
+
+<div id="background-grid" aria-hidden="true">
+    <svg viewBox="-1000 -1000 2000 2000" preserveAspectRatio="xMidYMid slice">
+        <defs>
+            <linearGradient id="horizonFade" x1="0" y1="-100" x2="0" y2="-320" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="white"/>
+                <stop offset="100%" stop-color="black"/>
+            </linearGradient>
+            <mask id="fadeMask">
+                <rect x="-8000" y="-8000" width="16000" height="16000" fill="url(#horizonFade)"/>
+            </mask>
+        </defs>
+        <g mask="url(#fadeMask)">
+            {lines.map(l =>
+                    <line x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}/>)}
+        </g>
+    </svg>
+</div>
+
+<style>
+    div {
+        position: fixed;
+        inset: 0;
+        z-index: -10;
+        overflow: hidden;
+        pointer-events: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        mask-image: radial-gradient(ellipse 50% 70% at 50% 50%, black 10%, transparent 80%);
+        will-change: transform;
+        contain: strict;
+        transition: opacity 0.5s;
+
+        svg {
+            width: 100vw;
+            height: 100vh;
+            min-width: 100%;
+            min-height: 100%;
+        }
+
+        line {
+            stroke: light-dark(rgb(0 0 0 / 0.02), rgb(255 255 255 / 0.01));
+            stroke-width: 1.5px;
+            vector-effect: non-scaling-stroke;
+            transition: stroke 0.5s ease;
+        }
+    }
+
+    :global(body:has([data-home-page])) div line {
+        stroke: light-dark(rgb(0 0 0 / 0.04), rgb(255 255 255 / 0.05));
+    }
+
+    :global(body:has([data-home-page])) div:global(.grid-dimmed) line {
+        stroke: light-dark(rgb(0 0 0 / 0.02), rgb(255 255 255 / 0.01));
+    }
+</style>

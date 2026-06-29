@@ -1,6 +1,6 @@
 ---
 title: "hx-replace-url"
-description: "Replace current URL in browser history"
+description: "Replaces the current URL in browser history"
 ---
 
 The `hx-replace-url` attribute allows you to replace the current url of the

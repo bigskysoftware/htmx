@@ -3,7 +3,18 @@
 @plugin "@tailwindcss/typography";
 @plugin "@iconify/tailwind4";
 
-/* Local font */
+/* Use `mac:` to gate utilities on Apple platforms. Detection is a tiny
+   synchronous script in <head> that sets [data-os="mac"] on <html>
+   before paint, so platform-specific UI never flashes the wrong state. */
+@custom-variant mac ([data-os="mac"] &);
+
+/* Self-hosted variable fonts (Inter, JetBrains Mono). Replaces the Google
+   Fonts CDN: no third-party request, no FOUT, subsets gated by unicode-range. */
+@import "@fontsource-variable/inter/opsz.css";
+@import "@fontsource-variable/inter/opsz-italic.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght-italic.css";
+
 @font-face {
     font-family: 'ChicagoFLF';
     src: url('/fonts/ChicagoFLF.ttf') format('truetype');
@@ -11,11 +22,11 @@
 
 @theme {
     /* Body */
-    --font-sans: 'Inter', sans-serif;
+    --font-sans: 'Inter Variable', 'Inter', sans-serif;
     /* Headings & Buttons */
     --font-chicago: 'ChicagoFLF', sans-serif;
     /* Code */
-    --font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
+    --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 
     /* Gray tones
 
@@ -267,7 +278,7 @@
         @apply relative border border-neutral-200 dark:border-neutral-850 rounded-lg bg-white dark:bg-neutral-950 overflow-y-hidden;
 
         code {
-            @apply block overflow-x-auto text-xs leading-5 whitespace-pre p-4 pr-12 mask-l-from-97% mask-r-from-95%;
+            @apply block overflow-x-auto text-sm font-medium leading-6 whitespace-pre p-4 pr-12 mask-l-from-97% mask-r-from-95%;
         }
     }
 

@@ -281,6 +281,20 @@ describe('hx-ws WebSocket extension', function() {
     
     describe('Message Sending', function() {
         
+        it('sends message on load trigger (waits for socket open)', async function() {
+            let div = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test">
+                    <div id="load-sender" hx-ws:send hx-trigger="load" hx-vals='{"test": "load"}'></div>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            let ws = mockWebSocketInstances[0];
+            assert.isDefined(ws.lastSent, 'Should have sent a message on load');
+            let sent = JSON.parse(ws.lastSent);
+            assert.equal(sent.body.test, 'load');
+        });
+
         it('sends message with hx-ws:send on form submit', async function() {
             let div = createProcessedHTML(`
                 <div hx-ws:connect="/ws/chat">

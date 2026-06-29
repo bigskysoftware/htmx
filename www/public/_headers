@@ -1,0 +1,12 @@
+# HTTP header overrides for static assets. Read by Cloudflare Pages and
+# Netlify (identical syntax). Astro's prerendered .xml outputs lose the
+# endpoint's declared Content-Type (static files are served by extension).
+# RSS readers tolerate text/xml, but RFC 4287 (Atom) and the RSS 2.0 spec
+# recommend the specific subtypes. Advertise them here so production is
+# RFC-correct.
+
+/atom.xml
+  Content-Type: application/atom+xml; charset=utf-8
+
+/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8

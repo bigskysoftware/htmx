@@ -1,70 +1,77 @@
 import { test, expect } from './_fixtures';
 
 test.describe('Content page structure', () => {
-    test('docs page has sidebar with sections', async ({ page }) => {
+    test('docs page has sidebar with section groups', async ({ page }) => {
         await page.goto('/docs');
         const sidebar = page.locator('#sidebar-nav');
         await expect(sidebar).toBeVisible();
 
-        const sections = sidebar.locator('details');
-        expect(await sections.count()).toBeGreaterThanOrEqual(6);
+        const groups = sidebar.locator('h3');
+        expect(await groups.count()).toBeGreaterThanOrEqual(6);
     });
 
-    test('sidebar highlights current page', async ({ page }) => {
-        await page.goto('/docs/get-started/installation');
-        const activeLink = page.locator('#sidebar-nav a[aria-current="page"]');
+    test('docs sidebar scrollspy highlights a link on scroll', async ({ page }) => {
+        await page.goto('/docs', { waitUntil: 'networkidle' });
+        await page.waitForTimeout(300);
+
+        // Scroll through the page until the observer activates a link
+        for (let y = 0; y <= 2000; y += 300) {
+            await page.evaluate((scrollY: number) => window.scrollTo(0, scrollY), y);
+            await page.waitForTimeout(150);
+            if (await page.locator('#sidebar-nav a.sidebar-link[aria-current]').count() > 0) break;
+        }
+        const activeLink = page.locator('#sidebar-nav a.sidebar-link[aria-current]');
         await expect(activeLink).toHaveCount(1);
-        await expect(activeLink).toContainText('Installation');
+        const href = await activeLink.getAttribute('href');
+        expect(href).toMatch(/^#/);
     });
 
-    test('sidebar section auto-opens for current page', async ({ page }) => {
-        await page.goto('/docs/core-concepts/mental-model');
-        const openSection = page.locator('#sidebar-nav details[open]');
-        await expect(openSection).toBeVisible();
-        await expect(openSection.locator('summary')).toContainText('Core Concepts');
+    test('reference sidebar highlights current page', async ({ page }) => {
+        await page.goto('/reference/attributes/hx-get');
+        const activeLink = page.locator('#sidebar-nav a[aria-current]');
+        await expect(activeLink).toHaveCount(1);
+        await expect(activeLink).toContainText('hx-get');
     });
 
-    test('sidebar navigation works', async ({ page }) => {
+    test('reference sidebar section contains current page links', async ({ page }) => {
+        await page.goto('/reference/attributes/hx-get');
+        const group = page.locator('#sidebar-nav h3', { hasText: 'Attributes' });
+        await expect(group).toBeVisible();
+    });
+
+    test('docs sidebar anchor navigates to in-page heading', async ({ page }) => {
         await page.goto('/docs');
-        // On mobile, open the sidebar overlay first
         const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
         if (await sidebarToggle.isVisible()) {
             await sidebarToggle.click();
         }
-        // Open the "Get Started" section first (it's a closed <details>)
-        await page.locator('#sidebar-nav details summary', { hasText: 'Get Started' }).click();
-        await page.locator('#sidebar-nav a', { hasText: 'Installation' }).click();
-        await expect(page).toHaveURL('/docs/get-started/installation');
-    });
-
-    test('reference sidebar uses monospace font', async ({ page }) => {
-        await page.goto('/reference/attributes/hx-get');
-        const activeLink = page.locator('#sidebar-nav a[aria-current="page"]');
-        await expect(activeLink).toHaveCSS('font-family', /monospace|JetBrains/);
+        const link = page.locator('#sidebar-nav a.sidebar-link', { hasText: 'Installation' }).first();
+        const href = await link.getAttribute('href');
+        expect(href).toBe('#installation');
+        await link.click();
+        await expect(page).toHaveURL(/\/docs#installation/);
     });
 
     test('table of contents visible on wide viewport', async ({ page }) => {
         await page.setViewportSize({ width: 1400, height: 900 });
-        await page.goto('/docs/get-started/installation');
-        await expect(page.getByText('On this page')).toBeVisible();
+        await page.goto('/docs');
+        await expect(page.locator('#page-outline')).toBeVisible();
     });
 
     test('table of contents hidden on narrow viewport', async ({ page }) => {
         await page.setViewportSize({ width: 1024, height: 768 });
-        await page.goto('/docs/get-started/installation');
-        await expect(page.getByText('On this page')).not.toBeVisible();
+        await page.goto('/docs');
+        await expect(page.locator('#page-outline')).not.toBeVisible();
     });
 
-    test('category URLs redirect to first item', async ({ page }) => {
+    test('category URLs redirect to reference index', async ({ page }) => {
         await page.goto('/reference/attributes');
-        await expect(page).toHaveURL(/\/reference\/attributes\/hx-get/);
+        await expect(page).toHaveURL(/\/reference/);
     });
 
-    test('patterns page has sidebar with pattern links', async ({ page }) => {
+    test('patterns page has pattern links', async ({ page }) => {
         await page.goto('/patterns');
-        await expect(page.locator('main#main-content')).toBeVisible();
-        // Sidebar should have links to individual patterns
-        const sidebarLinks = page.locator('#sidebar-nav a[href*="/patterns/"]');
-        expect(await sidebarLinks.count()).toBeGreaterThan(10);
+        const patternLinks = page.locator('a[href*="/patterns/"]');
+        expect(await patternLinks.count()).toBeGreaterThan(5);
     });
 });

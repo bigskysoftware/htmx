@@ -1,0 +1,7 @@
+{
+    "version": "4.0.0-beta5",
+    "min": "sha384-5dnhUXCt1hXGvYrjAnKwgNX3I8xtIJiW6eIHIbeo7oWyXv2XpWYC/rl+ZiWfuYO5",
+    "full": "sha384-RZoQSZlu2BAuZMuM5lTKAWXXSKC+7X6eVzP1pwkUBcyfPmOswexqVOsUqQMKbAFA",
+    "esmMin": "sha384-Cl5av1mJwKSEtxZ8YJHlswWY9aDsl+vt+B6MNMX/L6cKegcHf5SAiHSQDvK64Fam",
+    "esm": "sha384-MHDsXPUUg6cfagWjuYnoCwvDYebZe3FpqZX02U3YaQnHvgKUPFKLzwDeaXPAq99l"
+}

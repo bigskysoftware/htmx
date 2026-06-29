@@ -564,10 +564,133 @@ describe('swap() unit tests', function() {
         find('#d1').innerText.should.equal('New')
     })
 
+    it('outerSync cleans up powered children before replacing them', async function() {
+        mockResponse('GET', '/endpoint', 'response')
+        createProcessedHTML("<div id='target'><button id='btn' hx-get='/endpoint' hx-swap='innerHTML'>click</button></div>")
+        const btn = find('#btn')
+        assert.isNotNull(btn._htmx?.initialized, 'child should start initialized')
+
+        await htmx.swap({
+            target: '#target',
+            swap: 'outerSync',
+            text: '<div id="target"><span>replaced</span></div>',
+            sourceElement: find('#target')
+        })
+
+        assert.isNull(btn.getAttribute('data-htmx-powered'), 'old child should be cleaned up')
+        assert.isNotOk(find('#btn'), 'old button should be gone')
+        assert.equal(find('#target').textContent, 'replaced')
+    })
+
+    it('outerSync adds hx-get to root element and initializes it', async function () {
+        createProcessedHTML("<div id='target'><p>static</p></div>")
+        mockResponse('GET', '/dynamic', 'fetched')
+
+        await htmx.swap({
+            target: '#target',
+            swap: 'outerSync',
+            text: '<div id="target" hx-get="/dynamic" hx-trigger="click" hx-swap="innerHTML"><p>now interactive</p></div>',
+            sourceElement: find('#target')
+        })
+
+        let target = find('#target')
+        target.getAttribute('hx-get').should.equal('/dynamic')
+        assert.isNotNull(target._htmx?.initialized, 'target root should be initialized with htmx')
+        target.click()
+        await forRequest()
+        target.textContent.should.equal('fetched')
+    })
+
+    it('outerSync removes hx-get from root element and old handler no longer fires', async function () {
+        mockResponse('GET', '/should-not-fire', 'bad')
+        createProcessedHTML("<div id='target' hx-get='/should-not-fire' hx-trigger='click' hx-swap='innerHTML'>interactive</div>")
+        let target = find('#target')
+        assert.isNotNull(target._htmx?.initialized, 'target should start initialized')
+
+        // outerSync removes hx-get from the root
+        await htmx.swap({
+            target: '#target',
+            swap: 'outerSync',
+            text: '<div id="target">no longer interactive</div>',
+            sourceElement: target
+        })
+
+        target = find('#target')
+        target.textContent.should.equal('no longer interactive')
+        assert.isNull(target.getAttribute('hx-get'), 'hx-get should be removed')
+
+        // clicking should NOT issue a request — track via event
+        let requestFired = false
+        let handler = () => { requestFired = true }
+        document.addEventListener('htmx:before:request', handler)
+        target.click()
+        await htmx.timeout(50)
+        document.removeEventListener('htmx:before:request', handler)
+        assert.isFalse(requestFired, 'no request should fire after hx-get removed')
+    })
+
+    it('outerSync changes hx-trigger on root element and new trigger fires', async function () {
+        mockResponse('GET', '/endpoint', 'response')
+        createProcessedHTML("<div id='target' hx-get='/endpoint' hx-trigger='click' hx-swap='innerHTML'>original</div>")
+
+        // Change trigger from click to mousedown
+        await htmx.swap({
+            target: '#target',
+            swap: 'outerSync',
+            text: '<div id="target" hx-get="/endpoint" hx-trigger="mousedown" hx-swap="innerHTML">updated</div>',
+            sourceElement: find('#target')
+        })
+
+        let target = find('#target')
+        target.getAttribute('hx-trigger').should.equal('mousedown')
+
+        // click should no longer trigger a request
+        let requestFired = false
+        let handler = () => { requestFired = true }
+        document.addEventListener('htmx:before:request', handler)
+        target.click()
+        await htmx.timeout(50)
+        document.removeEventListener('htmx:before:request', handler)
+        assert.isFalse(requestFired, 'click should not trigger after hx-trigger changed to mousedown')
+
+        // mousedown should trigger the request
+        target.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}))
+        await forRequest()
+        target.textContent.should.equal('response')
+    })
+
     it('swaps partial to all elements matching a class selector', async function () {
         createProcessedHTML("<div class='target'>A</div><div class='target'>B</div>")
         await htmx.swap({"target":"#test-playground", "text":"<hx-partial hx-target='.target' hx-swap='innerHTML'>Updated</hx-partial>"})
         playground().querySelectorAll('.target').forEach(el => el.innerText.should.equal('Updated'))
+    })
+
+    it('swapEmpty:false prevents main swap when response is only oob', async function () {
+        createProcessedHTML("<div id='target'>Original</div><div id='oob'>OOB</div>")
+        await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:false", "text":"<div id='oob' hx-swap-oob='true'>Updated</div>"})
+        find('#target').innerText.should.equal('Original');
+        find('#oob').innerText.should.equal('Updated');
+    })
+
+    it('swapEmpty:false prevents main swap when response is only partials', async function () {
+        createProcessedHTML("<div id='target'>Original</div><div id='partial'>Partial</div>")
+        await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:false", "text":"<hx-partial hx-target='#partial'>Updated</hx-partial>"})
+        find('#target').innerText.should.equal('Original');
+        find('#partial').innerText.should.equal('Updated');
+    })
+
+    it('swapEmpty:true forces main swap even on empty response with partials', async function () {
+        createProcessedHTML("<div id='target'>Original</div><div id='partial'>Partial</div>")
+        await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:true", "text":"<hx-partial hx-target='#partial'>Updated</hx-partial>"})
+        find('#target').innerText.should.equal('');
+        find('#partial').innerText.should.equal('Updated');
+    })
+
+    it('swapEmpty:false still swaps main target when response has real content alongside oob', async function () {
+        createProcessedHTML("<div id='target'>Original</div><div id='oob'>OOB</div>")
+        await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:false", "text":"<div>New Content</div><div id='oob' hx-swap-oob='true'>Updated</div>"})
+        find('#target').innerText.trim().should.equal('New Content');
+        find('#oob').innerText.should.equal('Updated');
     })
 
     it('restores focus to textarea after innerHTML swap', async function () {

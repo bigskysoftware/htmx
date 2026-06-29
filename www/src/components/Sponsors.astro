@@ -4,7 +4,6 @@ interface Props {
 }
 
 import { Image } from 'astro:assets';
-import Card from './Card.astro';
 
 const { sponsors } = Astro.props;
 
@@ -52,13 +51,14 @@ const tiers = Object.keys(sponsorsByTier);
 
                                 return (
                                         <li>
-                                            <Card variant="lg" as="a" href={sponsor.url} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${sponsor.name} website`}
-                                                  class:list={[
-                                                      'flex items-center justify-center w-full h-full group relative transition outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400 interact:border-neutral-300 dark:interact:border-neutral-600',
-                                                      { 'p-8': tier === 'platinum', 'p-6': tier !== 'platinum' },
-                                                      { 'min-h-[180px]': tier === 'platinum' },
-                                                      { 'min-h-[120px]': tier === 'silver' }
-                                                  ]}>
+                                            <a href={sponsor.url} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${sponsor.name} website`}
+                                               class:list={[
+                                                   'card lg',
+                                                   'flex items-center justify-center w-full h-full group relative outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400 interact:border-neutral-300 dark:interact:border-neutral-600',
+                                                   { 'p-8': tier === 'platinum', 'p-6': tier !== 'platinum' },
+                                                   { 'min-h-[180px]': tier === 'platinum' },
+                                                   { 'min-h-[120px]': tier === 'silver' }
+                                               ]}>
                                                 {isSvg ? (
                                                         <SvgComponent
                                                                 role="presentation"
@@ -83,7 +83,7 @@ const tiers = Object.keys(sponsorsByTier);
                                                                 height={tier === 'platinum' ? 80 : 55}
                                                         />
                                                 )}
-                                            </Card>
+                                            </a>
                                         </li>
                                 )})}
                         </ul>
@@ -96,7 +96,7 @@ const tiers = Object.keys(sponsorsByTier);
            target="_blank"
            rel="noopener noreferrer"
            class="inline-flex items-center justify-center gap-2 h-10 px-6 bg-linear-to-b font-chicago text-sm rounded-lg from-white to-neutral-75 dark:from-neutral-850 dark:to-neutral-900 text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white border border-neutral-200 dark:border-neutral-800 interact:border-neutral-300 dark:interact:border-neutral-700 shadow-3d-neutral-500 dark:shadow-3d-neutral-950 active:translate-y-[0.375cqh] active:shadow-3d-depth-[2px] transition">
-            <i class="icon-[tabler--heart-filled] text-red-500" aria-hidden="true"></i>
+            <i class="icon-[mdi--heart] text-red-500" aria-hidden="true"></i>
             Sponsor htmx
         </a>
     </div>

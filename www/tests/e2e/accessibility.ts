@@ -4,7 +4,7 @@ test.describe('Accessibility', () => {
     test('page has proper landmark structure', async ({ page }) => {
         await page.goto('/');
         await expect(page.locator('header[role="banner"]')).toBeVisible();
-        await expect(page.locator('main#main-content')).toBeVisible();
+        await expect(page.locator('main#content-main-content')).toBeVisible();
     });
 
     test('navigation has aria-label', async ({ page }) => {
@@ -33,7 +33,7 @@ test.describe('Accessibility', () => {
     });
 
     test('no duplicate IDs on a content page', async ({ page }) => {
-        await page.goto('/docs/get-started/installation');
+        await page.goto('/reference/attributes/hx-get');
         const duplicates = await page.evaluate(() => {
             const ids = Array.from(document.querySelectorAll('[id]')).map(el => el.id);
             return ids.filter((id, i) => ids.indexOf(id) !== i);

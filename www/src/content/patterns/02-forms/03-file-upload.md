@@ -1,7 +1,8 @@
 ---
+includeMockServer: true
 title: "File Upload"
 description: Upload files with progress and validation
-icon: "icon-[ic--round-file-upload]"
+icon: "icon-[mdi--file-upload-outline]"
 soon: true
 ---
 

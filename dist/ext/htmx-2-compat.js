@@ -88,4 +88,4 @@
             maybeRetriggerEvent(elt, "htmx:targetError", detail);
         },
     });
-})()
+})();

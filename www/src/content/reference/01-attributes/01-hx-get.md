@@ -1,6 +1,6 @@
 ---
 title: "hx-get"
-description: "Issue GET request to specified URL"
+description: "Issues a GET request to the specified URL"
 ---
 
 The `hx-get` attribute will cause an element to issue a `GET` to the specified URL and swap
@@ -21,5 +21,5 @@ the `innerHTML` of the `button`.
 * You can control the swap strategy by using the [`hx-swap`](/reference/attributes/hx-swap) attribute
 * You can control what event triggers the request with the [`hx-trigger`](/reference/attributes/hx-trigger) attribute
 * You can control the data submitted with the request in various ways, documented
-  here: [Parameters](/docs/core-concepts/hypermedia-controls#parameters)
+  here: [Parameters](/docs#parameters)
 * An empty `hx-get:""` will make a get request to the current url and will swap the current HTML page 
