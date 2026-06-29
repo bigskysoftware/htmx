@@ -10,7 +10,8 @@ authors = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-I am ambivalent towards AI.  It has become a very powerful tool for development but also comes with many dangers, both
+I am, generally, ambivalent towards AI.  There is no doubt has become a very powerful tool for development in the 
+last year, but it also comes with many dangers, both
 for us individually (e.g. the slow dulling of our intellects) as well as collectively (e.g. environmental concerns,
 increasingly expensive personal computing, etc.)
 
@@ -18,8 +19,8 @@ In ["Code is Cheap(er)"](@/essays/code-is-cheap.md), I warn about The Sorcerer's
 understand and properly address issues that come up in the systems they are building.
 
 In this article I want to go through a specific interaction that I had with AI while maintaining 
-[hyperscript](https://hyperscript.org) to demonstrate the dangers of AI in general and The Sorcerer's Apprentice 
-problem in particular.
+[hyperscript](https://hyperscript.org) to show the strengths and weaknesses of AI in general and to demonstrate
+The Sorcerer's Apprentice problem (which I narrowly avoided) in particular.
 
 ## The Hyperscript Parser
 
@@ -58,20 +59,21 @@ given url with the results treated as JSON.
 This sort of binding conflict is a classic problem in parsing.  
 
 Because hyperscript is an [xTalk](https://en.wikipedia.org/wiki/HyperTalk#Descendants_of_HyperTalk) style language and 
-inherits the ambiguities of English, this problem is all the worse.
+inherits many of the ambiguities of English, this problem is all the worse in it.
 
 ## Investigating The Cause
 
-The first thing to do was to investigate why this regression occurred.  This is an area where I am typically going to
-lean on AI to help.  
+The first thing to do was to investigate _why_ this regression occurred.  
+
+This is an area where I am typically going to lean on AI to help.  
 
 I use Claude, and it did an admirable job finding the root cause: in 0.9.91 I had been overly
-aggressive in refactoring the [go](https://hyperscript.org/commands/go/) command to reuse logic in the [fetch](https://hyperscript.org/commands/fetch/) command.  
+aggressive in refactoring the [go](https://hyperscript.org/commands/go/) command to reuse/share logic with the [fetch](https://hyperscript.org/commands/fetch/) command.  
 
 I had extracted a common method for both of these commands to use, `parseURLOrExpression()`, but, in doing so, I 
-accidentally expanded the grammar after the `fetch` command to include `expression`.
+accidentally expanded the grammar after the `fetch` command to include the general `expression`, er, expression.
 
-Now, the `as` keyword has a meaning in expressions: it is a [conversion expression](https://hyperscript.org/expressions/as/),
+The `as` keyword has a meaning in expressions: it is a [conversion expression](https://hyperscript.org/expressions/as/),
 allowing you to convert between types:
 
 ```applescript
@@ -86,18 +88,20 @@ But the `as` keyword is *also* a modifier of the `fetch` command, telling it how
 
 (Perhaps this fact makes you throw up a little bit in your mouth.  Good.)
 
-The crux was that, inadvertently in the refactor, I had made the parser parse an expression after a `fetch` keyword
-which was now consuming the `as` keyword as an expression, rather than allowing it to be a modifier.
+The crux of the issue was that, inadvertently in the refactor, I had made the parser parse an expression after a `fetch` keyword
+which was now consuming the `as` keyword as an expression, rather than allowing it to be a modifier for `fetch`.
 
-With the help of Claude I was able to figure this out in a few minutes, dramatically faster than if I had had to
-do so on my own.
+With the help of Claude I was able to figure this out in a few minutes, much faster than if I had had to
+figure it out on my own.
 
 ## Fixing The Issue
 
-So AI was very helpful in finding the cause of the problem.  In _fixing_ the problem, however, it was much weaker.
+AI was very helpful in finding the cause of the problem.  
 
-I will admit I was being lazy and asking AI for a solution, so complaining about those solutions feels a bit, well,
-lazy, but I think the string of events is informative, so let's go through what happened.
+In _fixing_ the problem, however, it was much weaker.
+
+I will admit here I was being lazy and asked AI for a solution, so complaining about those solutions feels a bit, well,
+lazy, but I still think the string of events is informative, so let's go through exactly what happened.
 
 ## Proposed Fix 1: A Hack
 
@@ -108,8 +112,9 @@ then fall back to a full expression:
 return this.parseElement("stringLike") || this.requireElement("expression");
 ```
 
-This fix would have solved the immediate problem presented by the user.  However, it was very specific to the reported
-bug and wouldn't have fixed the general case, such as if someone uses a variable as the target of a fetch:
+This fix would have solved the immediate problem presented by the user.
+
+However, it was very specific to the reported bug and wouldn't have fixed the general case, such as if someone uses a variable as the target of a fetch:
 
 ```applescript
   fetch $url as JSON
@@ -117,12 +122,12 @@ bug and wouldn't have fixed the general case, such as if someone uses a variable
 
 I rejected this proposal because of this: too hacky and not general enough.  
 
-(The hyperscript parser has plenty of organically supplied hacks in it, so this may have been the pot calling the
+(Note that the hyperscript parser has plenty of organically supplied hacks in it, so this may have been the pot calling the
 kettle black.)
 
 ## Proposed Fix 2: Better But Unnecessary Complexity
 
-The second proposal was interesting: add a `noConversions` flag on the parser, set it around the URL parse, and have
+The second proposal was more interesting: add a `noConversions` flag on the parser, set it around the URL parse, and have
 `AsExpression.parse` bail when it is set:
 
 ```js
@@ -135,10 +140,10 @@ This will horrify many parser engineers because it makes the hyperscript parser
 
 Good.  
 
-The hyperscript parser was already context-sensitive.
+The hyperscript parser was _already_ context-sensitive.
 
-However, in looking at this fix and thinking for a second, I realized that we already had the hacky context-sensitive 
-infrastructure we needed without introducing a new flag on the parser.
+In looking at this fix and thinking for a second, I realized that we already had the hacky context-sensitive 
+infrastructure we needed without introducing a new flag on the parser, but Claude had missed it.
 
 ### "Follows" In The Hyperscript Parser
 
@@ -173,7 +178,7 @@ Good to go.
 
 ## The Final, Semi-Organic Fix
 
-However, when I was reviewing the change, I realized that the new fix was overly broad: both `fetch` and `go` shared
+However, as I was reviewing the change, I realized that the new fix was overly broad: both `fetch` and `go` shared
 this method, but only `fetch` used `as` to signal a modifier.  
 
 The existing fix prevented the perfectly valid use of `as` conversion expressions in `go` commands as well.
@@ -194,14 +199,16 @@ So I implemented the final fix myself, in `FetchCommand#parse()`:
 
 Here I narrowed the special case to only the `fetch` command, leaving `go` parsing unaffected.
 
-This ended up being the final answer to the bug.
+This ended up being my final answer to the bug.
 
 ## Tests
 
 Along the way I had Claude generate some tests for the various cases.  
 
-There is a good existing test suite for hyperscript, and it did a good job of creating small, focused tests that showed the 
+There is a good existing test suite for hyperscript, and Claude did a good job of creating small, focused tests that showed the 
 problem and that the fix was working properly.
+
+Another area AI appears to work well.
 
 ## The Moral of The Story
 
@@ -213,26 +220,26 @@ with where it didn't do so well: coming up with a clean solution.
 If I had not been familiar with the hyperscript parser and its infrastructure this fix could have easily led to technical
 debt being accrued in the project: another hacky parsing corner case, another bit of state on the parser, etc.
 
-Technical debt, I assert without evidence[^dream], grows exponentially, and, so, it is very
+Technical debt, I assert without evidence[^dream], grows exponentially, and therefpre it is very
 important to minimize it in your projects.
 
-I think that this story shows how having a human in the loop, working with an agent and with a good understanding of the underlying
+This story shows how having a human in the loop, working with an agent and with a good understanding of the underlying
 infrastructure, can be much more effective in controlling complexity than an agent left to its own devices.
 
-Now, some people will look at the hyperscript code base and scoff at the notion that controlling complexity was ever
-a consideration at all.  I am sympathetic to that view.  
+Some people will look at the hyperscript code base and scoff at the notion that controlling complexity was ever
+a consideration at all.  I am sympathetic to that view.
 
 However, in this example we can see in a concrete scenario how complexity was restrained, at least a bit, in fixing an 
-admittedly embarrassing bug.
+admittedly embarrassing bug, by a knowledgeable human working with an AI agent.
 
-This is a situation where, rather than being a sorcerer's apprentice blindly accepting the solutions AI proposed,
+This is a situation where, rather than being a sorcerer's apprentice and blindly accepting the solutions AI proposed,
 I was acting as a sorcerer (I hope that's not too arrogant to say!) demanding a correct solution that better fit the 
-existing codebase.  
+existing codebase's architecture.  
 
 I understood the problem and saw the correct solution and was able to work with AI to achieve it and then verify the
 solution with the help of AI-generated tests.
 
-This is in contrast, I hope a good contrast, with some forms of vibe coding, in which developers (or whatever) appear
+This is in contrast, I hope a good contrast, with some forms of vibe coding currently being pushed in which developers (or whatever) appear
 to pride themselves on not understanding what is actually going on.
 
 ## Aside: AI & The Older Developer
@@ -271,9 +278,10 @@ This is an area I am still trying to navigate myself.
 
 ## Conclusion
 
-I wanted to capture this series of interactions because I thought it captured some of the good and some of the bad
-of AI assistance in coding, that it demonstrated the value of a reasonably competent developer in the loop working
-with an AI agent, and shows the danger of blindly accepting the first solution that an AI agent suggests to a problem.
+I wanted to write up this series of interactions because I thought it captured some of the good and some of the bad
+of AI assistance in coding.  It demonstrated the value of a reasonably competent developer in the loop working
+with an AI agent, and also showed the danger of blindly accepting the first (or second) solution that an AI agent 
+suggests to a problem.
 
 I hope that it is useful to you as you develop your own thoughts and strategies around AI agents.
 
