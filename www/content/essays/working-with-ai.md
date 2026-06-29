@@ -10,7 +10,7 @@ authors = ["Carson Gross"]
 tag = ["posts"]
 +++
 
-I am, generally, ambivalent towards AI.  There is no doubt has become a very powerful tool for development in the 
+I am, generally, ambivalent towards AI.  There is no doubt it has become a very powerful tool for development in the 
 last year, but it also comes with many dangers, both
 for us individually (e.g. the slow dulling of our intellects) as well as collectively (e.g. environmental concerns,
 increasingly expensive personal computing, etc.)
