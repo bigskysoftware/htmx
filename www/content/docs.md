@@ -194,6 +194,7 @@ The core of htmx is a set of attributes that allow you to issue AJAX requests di
 | [hx-get](@/attributes/hx-get.md)       | Issues a `GET` request to the given URL    |
 | [hx-post](@/attributes/hx-post.md)     | Issues a `POST` request to the given URL   |
 | [hx-put](@/attributes/hx-put.md)       | Issues a `PUT` request to the given URL    |
+| [hx-query](@/attributes/hx-query.md)   | Issues a `QUERY` request to the given URL  |
 | [hx-patch](@/attributes/hx-patch.md)   | Issues a `PATCH` request to the given URL  |
 | [hx-delete](@/attributes/hx-delete.md) | Issues a `DELETE` request to the given URL |
 

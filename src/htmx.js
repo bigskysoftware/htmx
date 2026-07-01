@@ -351,7 +351,7 @@ var htmx = (function() {
     withExtensions
   }
 
-  const VERBS = ['get', 'post', 'put', 'delete', 'patch']
+  const VERBS = ['get', 'post', 'put', 'delete', 'patch', 'query']
   const VERB_SELECTOR = VERBS.map(function(verb) {
     return '[hx-' + verb + '], [data-hx-' + verb + ']'
   }).join(', ')
@@ -5155,7 +5155,7 @@ var htmx = (function() {
   return htmx
 })()
 
-/** @typedef {'get'|'head'|'post'|'put'|'delete'|'connect'|'options'|'trace'|'patch'} HttpVerb */
+/** @typedef {'get'|'head'|'post'|'put'|'delete'|'connect'|'options'|'trace'|'patch'|'query'} HttpVerb */
 
 /**
  * @typedef {Object} SwapOptions
