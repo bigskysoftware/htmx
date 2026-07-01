@@ -486,6 +486,11 @@
           "doc-url": "https://four.htmx.org/reference/events/htmx-after-swap"
         },
         {
+          "name": "finally:swap",
+          "description": "Fires after a swap attempt finishes, even when the swap throws or is skipped. `detail.ctx` is the request context.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-finally-swap"
+        },
+        {
           "name": "before:settle",
           "description": "Fires before the settle phase. `detail.task`, `detail.newContent`, and `detail.settleTasks` describe the settle work.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-before-settle"
