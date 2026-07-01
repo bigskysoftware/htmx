@@ -523,7 +523,7 @@ If recomputes exceed 50/sec, the extension logs a warning. Bindings continue run
 
 ### Coordinating with htmx swaps
 
-Recomputes are deferred between [`htmx:before:swap`](/reference/events/htmx-before-swap) and [`htmx:swap:finally`](/reference/events/htmx-swap-finally). One consolidated recompute runs when the swap finishes, regardless of how much markup changed.
+Recomputes are deferred between [`htmx:before:swap`](/reference/events/htmx-before-swap) and [`htmx:finally:swap`](/reference/events/htmx-finally-swap). One consolidated recompute runs when the swap finishes, regardless of how much markup changed.
 
 ### Cleanup
 

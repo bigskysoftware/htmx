@@ -2825,6 +2825,7 @@ Extensions hook into htmx lifecycle events. Event names use underscores instead 
 |-----------|----------------|------------|-------------|
 | `htmx_before_swap` | [`htmx:before:swap`](/reference/events/htmx-before-swap) | `(elt, detail)` | Before content swap |
 | `htmx_after_swap` | [`htmx:after:swap`](/reference/events/htmx-after-swap) | `(elt, detail)` | After content swap |
+| `htmx_finally_swap` | [`htmx:finally:swap`](/reference/events/htmx-finally-swap) | `(elt, detail)` | After swap (success or error) |
 | `htmx_before_settle` | `htmx:before:settle` | `(elt, detail)` | Before settle phase |
 | `htmx_after_settle` | `htmx:after:settle` | `(elt, detail)` | After settle phase |
 | `handle_swap` | _(direct call)_ | `(swapStyle, target, fragment, swapSpec)` | Custom swap handler |
