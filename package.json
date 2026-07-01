@@ -33,6 +33,7 @@
     "build:editors": "mkdir -p dist/editors && cp -r src/editors/* dist/editors/",
     "build:scripts": "mkdir -p dist/scripts && cp src/scripts/*.js src/scripts/*.py dist/scripts/",
     "build:compress": "brotli-cli compress dist/*.js dist/ext/*.js",
+    "check:web-types": "python3 src/scripts/check-web-types.py",
     "upgrade-check": "python3 src/scripts/upgrade-check.py",
     "upgrade-check:test": "python3 src/scripts/upgrade-check.py test/manual/upgrade/",
     "test": "npm run test:chrome",
