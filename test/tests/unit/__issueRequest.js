@@ -311,6 +311,28 @@ describe('__issueRequest unit tests', function() {
         assert.isFalse(errorFired)
     })
 
+    it('does not crash when show target is a text node after outerHTML swap', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="outerHTML show:top"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers(),
+            text: async () => 'Response'
+        })
+
+        let errorFired = false
+        let onError = () => errorFired = true
+        document.addEventListener('htmx:error', onError)
+
+        try {
+            await htmx.__issueRequest(ctx)
+            assert.isFalse(errorFired)
+        } finally {
+            document.removeEventListener('htmx:error', onError)
+        }
+    })
+
     it('throws clean error for unknown swap style with no extensions', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="foobar"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
