@@ -32,6 +32,54 @@ describe('hx-include attribute', function() {
         assert.equal(new URL(fetchMock.calls[0].url, location.href).searchParams.get('notify'), null)
     })
 
+    it('button children inside hx-include container are not sent', async function () {
+        mockResponse('GET', '/include', "OK")
+        createProcessedHTML('<div id="container"><input name="i1" value="yes"><button name="btn" value="no">Click</button></div><button id="trigger" hx-get="/include" hx-include="#container">Go</button>')
+        find('#trigger').click()
+        await forRequest()
+        let params = new URL(fetchMock.calls[0].url, location.href).searchParams;
+        params.get('i1').should.equal('yes');
+        assert.equal(params.get('btn'), null);
+    })
+
+    it('custom element with checked=true via hx-include sends value', async function () {
+        mockResponse('GET', '/include', "OK")
+        createProcessedHTML('<div id="container"></div><button id="btn" hx-get="/include" hx-include="#container">Go</button>')
+        let el = document.createElement('my-toggle');
+        el.setAttribute('name', 'toggle');
+        Object.defineProperty(el, 'checked', { value: true, configurable: true });
+        Object.defineProperty(el, 'value', { value: 'on', configurable: true });
+        find('#container').appendChild(el);
+        find('#btn').click()
+        await forRequest()
+        new URL(fetchMock.calls[0].url, location.href).searchParams.get('toggle').should.equal('on');
+    })
+
+    it('custom element with checked=false via hx-include is not sent', async function () {
+        mockResponse('GET', '/include', "OK")
+        createProcessedHTML('<div id="container"></div><button id="btn" hx-get="/include" hx-include="#container">Go</button>')
+        let el = document.createElement('my-toggle');
+        el.setAttribute('name', 'toggle');
+        Object.defineProperty(el, 'checked', { value: false, configurable: true });
+        Object.defineProperty(el, 'value', { value: 'on', configurable: true });
+        find('#container').appendChild(el);
+        find('#btn').click()
+        await forRequest()
+        assert.equal(new URL(fetchMock.calls[0].url, location.href).searchParams.get('toggle'), null);
+    })
+
+    it('custom element with name and value inside hx-include container is sent', async function () {
+        mockResponse('GET', '/include', "OK")
+        createProcessedHTML('<div id="container"></div><button id="btn" hx-get="/include" hx-include="#container">Go</button>')
+        let el = document.createElement('my-input');
+        el.setAttribute('name', 'custom');
+        Object.defineProperty(el, 'value', { value: 'hello', configurable: true });
+        find('#container').appendChild(el);
+        find('#btn').click()
+        await forRequest()
+        new URL(fetchMock.calls[0].url, location.href).searchParams.get('custom').should.equal('hello');
+    })
+
 
     it('non-GET includes closest form', async function () {
         mockResponse('POST', '/include', "Dummy")

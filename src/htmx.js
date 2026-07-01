@@ -1816,7 +1816,7 @@ var htmx = (() => {
             if (tag === 'BUTTON' || tag.includes('-')) {
                 inputs = [elt]; // send own value only, never collect children
             } else if (['INPUT', 'SELECT', 'TEXTAREA', 'FIELDSET'].includes(tag) || !isGet) {
-                inputs = this.__queryEltAndDescendants(elt, 'input, select, textarea');
+                inputs = this.__queryEltAndDescendants(elt, '[name]:not(button)');
             }
             // GET on non-form-control containers (div, etc.) sends nothing — use hx-include for explicit inclusion
 
@@ -1826,7 +1826,7 @@ var htmx = (() => {
                 included.add(input);
 
                 let type = input.type;
-                if (type === 'checkbox' || type === 'radio') {
+                if (type === 'checkbox' || type === 'radio' || (input.tagName !== 'INPUT' && 'checked' in input)) {
                     // Only add if checked
                     if (input.checked) {
                         formData.append(name, input.value);
