@@ -207,6 +207,14 @@
           "doc-url": "https://htmx.org/attributes/hx-put/"
         },
         {
+          "name": "hx-query",
+          "description": "The `hx-query` attribute will cause an element to issue a `QUERY` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-query=\"/products\" hx-target=\"body\">\n  Search for products\n</button>\n```",
+          "description-sections": {
+            "Not Inherited": ""
+          },
+          "doc-url": "https://htmx.org/attributes/hx-query/"
+        },
+        {
           "name": "hx-replace-url",
           "description": "The `hx-replace-url` attribute allows you to replace the current url of the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).\n\nThe possible values of this attribute are:\n\n1. `true`, which replaces the fetched URL in the browser navigation bar.\n2. `false`, which disables replacing the fetched URL if it would otherwise be replaced due to inheritance.\n3. A URL to be replaced into the location bar.\n   This may be relative or absolute, as per [`history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState).",
           "description-sections": {

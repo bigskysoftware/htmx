@@ -63,6 +63,7 @@ All other attributes available in htmx.
 | [`hx-preserve`](@/attributes/hx-preserve.md)         | specifies elements to keep unchanged between requests                                                                              |
 | [`hx-prompt`](@/attributes/hx-prompt.md)             | shows a `prompt()` before submitting a request                                                                                     |
 | [`hx-put`](@/attributes/hx-put.md)                   | issues a `PUT` to the specified URL                                                                                                |
+| [`hx-query`](@/attributes/hx-query.md)               | issues a `QUERY` to the specified URL                                                                                              |
 | [`hx-replace-url`](@/attributes/hx-replace-url.md)   | replace the URL in the browser location bar                                                                                        |
 | [`hx-request`](@/attributes/hx-request.md)           | configures various aspects of the request                                                                                          |
 | [`hx-sync`](@/attributes/hx-sync.md)                 | control how requests made by different elements are synchronized                                                                   |

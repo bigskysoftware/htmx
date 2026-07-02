@@ -39,4 +39,12 @@ describe('Core htmx AJAX Verbs', function() {
     this.server.respond()
     div.innerHTML.should.equal('delete')
   })
+
+  it('handles basic query properly', function() {
+    this.server.respondWith('QUERY', '/test', 'query')
+    var div = make('<div hx-query="/test">click me</div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('query')
+  })
 })
