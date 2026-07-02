@@ -1,20 +1,20 @@
 +++
 title = "hx-query"
 description = """\
-  The hx-query attribute in htmx will cause an element to issue a query request to the specified URL and swap the returned \
+  The hx-query attribute in htmx will cause an element to issue a QUERY request to the specified URL and swap the returned \
   HTML into the DOM using a swap strategy."""
 +++
 
-The `hx-query` attribute will cause an element to issue a `query` to the specified URL and swap
+The `hx-query` attribute will cause an element to issue a `QUERY` to the specified URL and swap
 the HTML into the DOM using a swap strategy:
 
 ```html
-<button hx-query="/account" hx-target="body">
-  query products
+<button hx-query="/products" hx-target="body">
+  Search for products
 </button>
 ```
 
-This example will cause the `button` to issue a `query` to `/account` and swap the returned HTML into
+This example will cause the `button` to issue a `QUERY` to `/products` and swap the returned HTML into
  the `innerHTML` of the `body`.
  
 ## Notes
