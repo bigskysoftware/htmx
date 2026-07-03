@@ -357,7 +357,7 @@ All events follow a new pattern: `htmx:phase:action[:sub-action]`. Most error ev
 | `HX-Trigger-Name` | [`HX-Source`](/reference/headers/HX-Source)             | removed         | —                                                     |
 | `HX-Prompt`       | [`hx-prompt` extension](/extensions/hx-prompt)          | restored by ext | Load the extension.                                   |
 | —                 | [`HX-Request-Type`](/reference/headers/HX-Request-Type) | new             | `"full"` or `"partial"`.                          |
-| —                 | [`Accept`](/reference/headers/Accept)                   | new             | Now explicitly `text/html`.                           |
+| —                 | `Accept`                                                | new             | Core requests send `text/html`; [`hx-sse`](/extensions/hx-sse#request-headers) adds `text/event-stream`. |
 
 #### Response headers
 
