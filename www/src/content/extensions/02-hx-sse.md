@@ -23,6 +23,16 @@ The SSE extension hooks into htmx's request pipeline. When any htmx request rece
 
 This means **any [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc. that returns an SSE stream will just work**, no special attributes needed beyond loading the extension.
 
+## Request Headers
+
+With this extension loaded, outgoing htmx requests advertise SSE support:
+
+```http
+Accept: text/html, text/event-stream
+```
+
+Core htmx requests set `Accept: text/html`. The SSE extension adds `text/event-stream` so the server can return an SSE stream for any htmx request.
+
 ## `hx-sse:connect`
 
 For persistent SSE connections (auto-connect on load, reconnect on failure), use `hx-sse:connect`:
