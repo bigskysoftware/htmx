@@ -15,7 +15,7 @@ This event does **not** fire for network errors or timeouts — use [`htmx:error
 
 - `ctx` - The full request context, including:
   - `ctx.response.status` - The HTTP status code
-  - `ctx.response.headers` - Response headers
+  - `ctx.response.headers` - Response [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance
   - `ctx.text` - The response body
 
 ## Example

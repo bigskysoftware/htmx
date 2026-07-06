@@ -25,7 +25,7 @@
 
         htmx_config_request(elt, {ctx}) {
             let ptag = elt._htmx?.ptag;
-            if (ptag) ctx.request.headers["HX-PTag"] = ptag;
+            if (ptag) ctx.request.headers.set("HX-PTag", ptag);
         },
 
         htmx_after_request(elt, {ctx}) {

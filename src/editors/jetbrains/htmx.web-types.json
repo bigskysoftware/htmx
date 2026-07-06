@@ -452,7 +452,7 @@
         },
         {
           "name": "before:response",
-          "description": "Fires after response headers are received but before the body is consumed. `detail.ctx.response.raw` is the unconsumed `Response`.",
+          "description": "Fires after response headers are received but before the body is consumed. `detail.ctx.response.raw` is the unconsumed `Response`; `detail.ctx.response.headers` is a standard `Headers` instance.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-before-response"
         },
         {

@@ -13,7 +13,7 @@ describe('hx-headers attribute', function() {
         let div = createProcessedHTML("<div hx-post='/vars' hx-headers='\"i1\":\"test\"'></div>")
         div.click()
         await forRequest()
-        fetchMock.calls[0].request.headers.i1.should.equal('test');
+        fetchMock.calls[0].request.headers.get('i1').should.equal('test');
         div.innerHTML.should.equal('Clicked!')
     })
 
@@ -22,7 +22,7 @@ describe('hx-headers attribute', function() {
         let div = createProcessedHTML('<div hx-post="/vars" hx-headers=\'{"i1":"test"}\'></div>')
         div.click()
         await forRequest()
-        fetchMock.calls[0].request.headers.i1.should.equal('test');
+        fetchMock.calls[0].request.headers.get('i1').should.equal('test');
         div.innerHTML.should.equal('Clicked!')
     })
 
@@ -31,8 +31,8 @@ describe('hx-headers attribute', function() {
         let div = createProcessedHTML('<div hx-post="/vars" hx-headers=\'{"v1":"test", "v2":"42"}\'></div>')
         div.click()
         await forRequest()
-        fetchMock.calls[0].request.headers.v1.should.equal('test');
-        fetchMock.calls[0].request.headers.v2.should.equal('42');
+        fetchMock.calls[0].request.headers.get('v1').should.equal('test');
+        fetchMock.calls[0].request.headers.get('v2').should.equal('42');
         div.innerHTML.should.equal('Clicked!')
     })
 
@@ -42,7 +42,7 @@ describe('hx-headers attribute', function() {
         let div = find('#d1')
         div.click()
         await forRequest()
-        fetchMock.calls[0].request.headers.i1.should.equal('test');
+        fetchMock.calls[0].request.headers.get('i1').should.equal('test');
         div.innerHTML.should.equal('Clicked!')
     })
 
@@ -52,7 +52,7 @@ describe('hx-headers attribute', function() {
         let div = find('#d1')
         div.click()
         await forRequest()
-        fetchMock.calls[0].request.headers.i1.should.equal('best');
+        fetchMock.calls[0].request.headers.get('i1').should.equal('best');
         div.innerHTML.should.equal('Clicked!')
     })
 
@@ -61,7 +61,7 @@ describe('hx-headers attribute', function() {
         let div = createProcessedHTML('<div hx-post="/vars" hx-headers="javascript:i1:\'test\'"></div>')
         div.click()
         await forRequest()
-        fetchMock.calls[0].request.headers.i1.should.equal('test');
+        fetchMock.calls[0].request.headers.get('i1').should.equal('test');
         div.innerHTML.should.equal('Clicked!')
     })
 
@@ -70,7 +70,7 @@ describe('hx-headers attribute', function() {
         let div = createProcessedHTML('<div hx-post="/vars" hx-headers="javascript:{i1:\'test\'}"></div>')
         div.click()
         await forRequest()
-        fetchMock.calls[0].request.headers.i1.should.equal('test');
+        fetchMock.calls[0].request.headers.get('i1').should.equal('test');
         div.innerHTML.should.equal('Clicked!')
     })
 
@@ -79,8 +79,8 @@ describe('hx-headers attribute', function() {
         let div = createProcessedHTML('<div hx-post="/vars" hx-headers="javascript:v1:\'test\', v2:42"></div>')
         div.click()
         await forRequest()
-        fetchMock.calls[0].request.headers.v1.should.equal('test');
-        fetchMock.calls[0].request.headers.v2.should.equal('42');
+        fetchMock.calls[0].request.headers.get('v1').should.equal('test');
+        fetchMock.calls[0].request.headers.get('v2').should.equal('42');
         div.innerHTML.should.equal('Clicked!')
     })
 
@@ -90,7 +90,7 @@ describe('hx-headers attribute', function() {
         let div = find('#d1')
         div.click()
         await forRequest()
-        fetchMock.calls[0].request.headers.i1.should.equal('test');
+        fetchMock.calls[0].request.headers.get('i1').should.equal('test');
         div.innerHTML.should.equal('Clicked!')
     })
 
@@ -100,7 +100,7 @@ describe('hx-headers attribute', function() {
         let div = find('#d1')
         div.click()
         await forRequest()
-        fetchMock.calls[0].request.headers.i1.should.equal('best');
+        fetchMock.calls[0].request.headers.get('i1').should.equal('best');
         div.innerHTML.should.equal('Clicked!')
     })
 

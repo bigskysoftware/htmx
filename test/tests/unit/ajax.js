@@ -128,8 +128,9 @@ describe('ajax() unit Tests', function() {
         });
         assert.equal(div.innerHTML, 'Clicked!');
         const lastCall = lastFetch();
-        assert.equal(lastCall.request.headers['X-Custom'], 'test-value');
+        assert.equal(lastCall.request.headers.get('X-Custom'), 'test-value');
     });
+
 
     it('ajax collects form data from source element', async function() {
         mockResponse('POST', '/test', 'Submitted!');

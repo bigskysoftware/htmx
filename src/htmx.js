@@ -71,14 +71,21 @@ var htmx = (() => {
         merge(source, target) {
             if (typeof source === 'string') source = HCON.parse(source);
 
-            for (let [key, val] of Object.entries(source)) {
+            // Support native key-value collections like Headers and Map.
+            let entries = source?.[Symbol.iterator] && !Array.isArray(source) ? source : Object.entries(source);
+            let targetIsCollection = typeof target.get === 'function' && typeof target.set === 'function';
+
+            for (let [key, val] of entries) {
                 if (['__proto__', 'constructor', 'prototype'].includes(key)) continue;
 
+                let targetVal = targetIsCollection ? target.get(key) : target[key];
                 let sourceIsObject = val && typeof val === 'object' && !Array.isArray(val);
-                let targetIsObject = target[key] && typeof target[key] === 'object' && !Array.isArray(target[key]);
+                let targetIsObject = targetVal && typeof targetVal === 'object' && !Array.isArray(targetVal);
 
                 if (sourceIsObject && targetIsObject) {
-                    HCON.merge(val, target[key]);
+                    HCON.merge(val, targetVal);
+                } else if (targetIsCollection) {
+                    target.set(key, val);
                 } else {
                     target[key] = val;
                 }
@@ -225,7 +232,6 @@ var htmx = (() => {
             if (metaConfig) {
                 HCON.merge(metaConfig.content, this.config);
             }
-            this.__approvedExt = this.config.extensions;
         }
 
         __initRequestIndicatorCss() {
@@ -440,9 +446,9 @@ var htmx = (() => {
                 HCON.merge(sourceElement._htmx.boosted, ctx);
             }
             ctx.target = this.__resolveTarget(sourceElement, ctx.target);
-            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
+            ctx.request.headers.set("HX-Request-Type", (ctx.target === document.body || ctx.select) ? "full" : "partial");
             if (ctx.target) {
-                ctx.request.headers["HX-Target"] = this.__buildIdentifier(ctx.target);
+                ctx.request.headers.set("HX-Target", this.__buildIdentifier(ctx.target));
             }
 
             // Apply hx-config overrides
@@ -459,21 +465,21 @@ var htmx = (() => {
         }
 
         __createCoreHeaders(elt) {
-            let headers = {
+            let headers = new Headers({
                 "HX-Request": "true",
                 "HX-Source": this.__buildIdentifier(elt),
                 "HX-Current-URL": location.href,
                 "Accept": "text/html"
-            };
+            });
             if (this.__isBoosted(elt)) {
-                headers["HX-Boosted"] = "true"
+                headers.set("HX-Boosted", "true")
             }
             return headers;
         }
 
         __handleHxHeaders(elt, ctx) {
             return this.__getAttributeObject(elt, "hx-headers", obj => {
-                for (let key in obj) ctx.request.headers[key] = String(obj[key]);
+                HCON.merge(obj, ctx.request.headers);
             }, {ctx});
         }
 
@@ -1594,10 +1600,11 @@ var htmx = (() => {
             sourceElt ||= document.body;
 
             let ctx = this.__createRequestContext(sourceElt, context.event || {});
-            Object.assign(ctx, context);
+            HCON.merge(context, ctx);
             if (context.target) ctx.target = this.__resolveTarget(document.body, context.target);
-            Object.assign(ctx.request, {action: path, method: verb.toUpperCase()});
-            if (context.headers) Object.assign(ctx.request.headers, context.headers);
+            ctx.request.action = path;
+            ctx.request.method = verb.toUpperCase();
+            if (context.headers) HCON.merge(context.headers, ctx.request.headers);
 
             return this.__handleTriggerEvent(ctx);
         }
@@ -2344,3 +2351,85 @@ var htmx = (() => {
 })()
 
 ;
+
+// Compatibility shims for breaking changes made during the htmx 4 beta.
+// Auto-registered for now; eventually a third-party extension for beta compatibility.
+htmx.registerExtension('hx-compat-htmx-4-beta', (() => {
+    let warned = new Set();
+
+    let warnCompatOnce = (message, oldSyntax, newSyntax, docs) => {
+        let warning = [
+            `[htmx] ${message}`,
+            `  old: ${oldSyntax}`,
+            `  new: ${newSyntax}`,
+            docs && `  docs: ${docs}`
+        ].filter(Boolean).join('\n');
+
+        if (warned.has(warning)) return;
+        warned.add(warning);
+        console.warn(warning);
+    };
+
+    let headersCompat = (() => {
+        let warnBracketAccess = () => warnCompatOnce(
+            'Deprecated: replace ctx.request.headers[name] with Headers methods',
+            'ctx.request.headers[name]',
+            'ctx.request.headers.get(name), .set(name, value), or .delete(name)',
+            'https://developer.mozilla.org/en-US/docs/Web/API/Headers'
+        );
+        let wrapped = new WeakSet();
+
+        return {
+            htmx_config_request(elt, {ctx}) {
+                if (wrapped.has(ctx.request.headers)) return;
+
+                let headers = ctx.request.headers instanceof Headers ? ctx.request.headers : new Headers(ctx.request.headers || {});
+                let proxy = new Proxy(headers, {
+                    get(target, prop) {
+                        let value = Reflect.get(target, prop, target);
+                        if (value !== undefined) return typeof value === 'function' ? value.bind(target) : value;
+                        if (typeof prop !== 'string' || !target.has(prop)) return;
+                        warnBracketAccess();
+                        return target.get(prop);
+                    },
+                    set(target, prop, value) {
+                        if (typeof prop !== 'string' || prop in target) return Reflect.set(target, prop, value, target);
+                        warnBracketAccess();
+                        target.set(prop, value);
+                        return true;
+                    },
+                    deleteProperty(target, prop) {
+                        if (typeof prop !== 'string' || prop in target) return Reflect.deleteProperty(target, prop);
+                        warnBracketAccess();
+                        target.delete(prop);
+                        return true;
+                    }
+                });
+                wrapped.add(proxy);
+                ctx.request.headers = proxy;
+            }
+        };
+    })();
+
+    let compatModules = [
+        headersCompat,
+        // Add future beta compatibility modules here.
+    ];
+
+    let extension = {};
+    for (let module of compatModules) {
+        for (let [hookName, fn] of Object.entries(module)) {
+            let previous = extension[hookName];
+            extension[hookName] = previous
+                ? (...args) => {
+                    if (previous(...args) === false || args[1]?.cancelled) return false;
+                    return fn(...args);
+                }
+                : fn;
+        }
+    }
+
+    return extension;
+})());
+
+htmx.__approvedExt = htmx.config.extensions;

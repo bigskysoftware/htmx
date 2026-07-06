@@ -358,10 +358,12 @@
         // [Correlation] Cleanup expired pending requests periodically
         cleanupExpiredRequests(connection);
 
-        // Build headers using core's request context (same as HTTP requests)
         let ctx = api.createRequestContext(element, event);
-        let headers = {...ctx.request.headers};
-        delete headers['Accept'];
+        // Headers lowercases names; restore htmx-style casing for WS messages.
+        let headers = {};
+        ctx.request.headers.forEach((value, name) => {
+            if (name !== 'accept') headers[name.replace(/(^|-)(hx|id|url|.)/g, (_, dash, part) => dash + ({hx: 'HX', id: 'ID', url: 'URL'}[part] || part.toUpperCase()))] = value;
+        });
 
         // [Correlation] Add request ID as a header
         let requestId = crypto.randomUUID();

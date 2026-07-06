@@ -28,7 +28,7 @@ The event provides a `ctx` object with the following structure:
         validate,     // Whether to validate the form
         action,       // Request URL
         method,       // HTTP method
-        headers,      // Request headers object
+        headers,      // Request Headers instance
         body,         // Request body (FormData)
         credentials,  // Fetch credentials mode
         mode,         // Fetch mode
@@ -39,7 +39,7 @@ The event provides a `ctx` object with the following structure:
 }
 ```
 
-You can modify any property to change the request.
+You can modify any property to change the request. `ctx.request.headers` is a request [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance.
 
 Call `evt.preventDefault()` to cancel the request.
 
@@ -49,7 +49,7 @@ Call `evt.preventDefault()` to cancel the request.
 
 ```javascript
 document.body.addEventListener('htmx:config:request', function(evt) {
-    evt.detail.ctx.request.headers['X-Auth-Token'] = getAuthToken();
+    evt.detail.ctx.request.headers.set('X-Auth-Token', getAuthToken());
 });
 ```
 

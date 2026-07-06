@@ -17,7 +17,7 @@
             let answer = (window.htmxPrompt || window.prompt)(question);
             if (answer === null) return false;
             if (!htmx.trigger(ctx.sourceElement, 'htmx:prompt', { prompt: answer, target: ctx.target })) return false;
-            ctx.request.headers['HX-Prompt'] = encodeURI(answer);
+            ctx.request.headers.set('HX-Prompt', encodeURI(answer));
         }
     });
 })();

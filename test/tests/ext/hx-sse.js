@@ -120,7 +120,7 @@ describe('hx-sse SSE extension', function() {
         assert.equal(lastEventIdSent, 'msg-123', 'Should send last event ID on reconnect');
 
         const lastCall = lastFetch();
-        assert.equal(lastCall.request.headers['Last-Event-ID'], 'msg-123', 'Last-Event-ID header should be set');
+        assert.equal(lastCall.request.headers.get('Last-Event-ID'), 'msg-123', 'Last-Event-ID header should be set');
 
         stream.close();
     });
@@ -976,7 +976,7 @@ describe('hx-sse SSE extension', function() {
             // On reconnect, check Last-Event-ID and replay missed messages
             if (controllers.length > 1) {
                 const calls = fetchMock.getCalls();
-                const lastId = calls[calls.length - 1].request.headers?.['Last-Event-ID'];
+                const lastId = calls[calls.length - 1].request.headers?.get('Last-Event-ID');
                 if (lastId) {
                     let start = allMessages.findIndex(m => m.id === lastId) + 1;
                     for (let i = start; i < allMessages.length; i++) {
@@ -1013,7 +1013,7 @@ describe('hx-sse SSE extension', function() {
 
         // Verify Last-Event-ID header was sent
         const reconnectCall = fetchMock.getCalls()[fetchMock.getCalls().length - 1];
-        assert.equal(reconnectCall.request.headers['Last-Event-ID'], 'n-2', 'Should send Last-Event-ID of last received message');
+        assert.equal(reconnectCall.request.headers.get('Last-Event-ID'), 'n-2', 'Should send Last-Event-ID of last received message');
 
         // Server replayed n-3 on reconnect — verify it was swapped in
         await waitForEvent('htmx:after:sse:message', 1000);
@@ -1055,7 +1055,7 @@ describe('hx-sse SSE extension', function() {
         find('button').click();
         await htmx.timeout(1);
 
-        assert.equal(fetchMock.getLastCall().request.headers['Accept'], 'text/html, text/event-stream');
+        assert.equal(fetchMock.getLastCall().request.headers.get('Accept'), 'text/html, text/event-stream');
 
         stream.close();
     });

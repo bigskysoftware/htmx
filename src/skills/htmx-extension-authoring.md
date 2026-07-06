@@ -177,7 +177,7 @@ The context object available via `detail.ctx` in hook callbacks:
     request: {
         action,         // Request URL
         method,         // HTTP method (GET, POST, etc.)
-        headers,        // Request headers object
+        headers,        // Request Headers instance
         body,           // Request body (FormData)
         validate,       // Whether to validate form
         abort,          // Function to abort request
@@ -189,7 +189,7 @@ The context object available via `detail.ctx` in hook callbacks:
     response: {         // Available after request completes
         raw,            // Raw Response object
         status,         // HTTP status code
-        headers,        // Response headers
+        headers,        // Response Headers instance
     },
     text,               // Response text (after request)
     hx,                 // Parsed HX-* response headers

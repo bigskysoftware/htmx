@@ -8,30 +8,51 @@ describe('Request Headers', function() {
         cleanupTest();
     });
 
+    describe('Headers API', function() {
+
+        it('uses a Headers-compatible request headers object', function() {
+            let btn = createProcessedHTML('<button hx-get="/test"></button>');
+            let ctx = htmx.__createRequestContext(btn, new Event('click'));
+
+            assert.isTrue(ctx.request.headers instanceof Headers);
+            assert.equal(ctx.request.headers.get('Accept'), 'text/html');
+        });
+
+        it('supports appending request header values', function() {
+            let btn = createProcessedHTML('<button hx-get="/test"></button>');
+            let ctx = htmx.__createRequestContext(btn, new Event('click'));
+
+            ctx.request.headers.append('Accept', 'text/event-stream');
+
+            assert.equal(ctx.request.headers.get('Accept'), 'text/html, text/event-stream');
+        });
+
+    });
+
     describe('HX-Source header', function() {
 
         it('formats element with id', function() {
             let btn = createProcessedHTML('<button id="test-btn" hx-get="/test"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            ctx.request.headers['HX-Source'].should.equal('button#test-btn');
+            ctx.request.headers.get('HX-Source').should.equal('button#test-btn');
         });
 
         it('formats element with neither id nor name', function() {
             let btn = createProcessedHTML('<button hx-get="/test"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            ctx.request.headers['HX-Source'].should.equal('button');
+            ctx.request.headers.get('HX-Source').should.equal('button');
         });
 
         it('formats div element', function() {
             let div = createProcessedHTML('<div id="content" hx-get="/test"></div>');
             let ctx = htmx.__createRequestContext(div, new Event('click'));
-            ctx.request.headers['HX-Source'].should.equal('div#content');
+            ctx.request.headers.get('HX-Source').should.equal('div#content');
         });
 
         it('formats form element', function() {
             let form = createProcessedHTML('<form id="my-form" name="contact" hx-post="/test"></form>');
             let ctx = htmx.__createRequestContext(form, new Event('submit'));
-            ctx.request.headers['HX-Source'].should.equal('form#my-form');
+            ctx.request.headers.get('HX-Source').should.equal('form#my-form');
         });
 
     });
@@ -43,21 +64,21 @@ describe('Request Headers', function() {
             let btn = document.querySelector('button');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Target'].should.equal('div#result');
+            ctx.request.headers.get('HX-Target').should.equal('div#result');
         });
 
         it('formats target when targeting self', async function() {
             let btn = createProcessedHTML('<button id="self-btn" hx-get="js:"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Target'].should.equal('button#self-btn');
+            ctx.request.headers.get('HX-Target').should.equal('button#self-btn');
         });
 
         it('formats body target', async function() {
             let btn = createProcessedHTML('<button hx-get="js:" hx-target="body"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Target'].should.equal('body');
+            ctx.request.headers.get('HX-Target').should.equal('body');
         });
 
     });
@@ -69,35 +90,35 @@ describe('Request Headers', function() {
             let btn = document.querySelector('button');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Request-Type'].should.equal('partial');
+            ctx.request.headers.get('HX-Request-Type').should.equal('partial');
         });
 
         it('sets to partial when targeting self', async function() {
             let btn = createProcessedHTML('<button hx-get="js:"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Request-Type'].should.equal('partial');
+            ctx.request.headers.get('HX-Request-Type').should.equal('partial');
         });
 
         it('sets to full when targeting body', async function() {
             let btn = createProcessedHTML('<button hx-get="js:" hx-target="body"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Request-Type'].should.equal('full');
+            ctx.request.headers.get('HX-Request-Type').should.equal('full');
         });
 
         it('sets to full when hx-select is present', async function() {
             let btn = createProcessedHTML('<button hx-get="js:" hx-select="#content"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Request-Type'].should.equal('full');
+            ctx.request.headers.get('HX-Request-Type').should.equal('full');
         });
 
         it('sets to full when hx-select and body target both present', async function() {
             let btn = createProcessedHTML('<button hx-get="js:" hx-target="body" hx-select="#content"></button>');
             let ctx = htmx.__createRequestContext(btn, new Event('click'));
             await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Request-Type'].should.equal('full');
+            ctx.request.headers.get('HX-Request-Type').should.equal('full');
         });
 
     });

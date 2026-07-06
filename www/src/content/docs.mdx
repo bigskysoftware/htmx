@@ -677,7 +677,7 @@ handle_swap: (swapStyle, target, fragment, swapSpec) => {
 All hooks receive `detail.ctx` with full request/response context:
 
 - `detail.ctx.request.body` (FormData in `htmx_config_request`)
-- `detail.ctx.request.headers`
+- `detail.ctx.request.headers` (a [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance)
 - `detail.ctx.response.status`
 - `detail.ctx.text` (response body, modifiable in `htmx_after_request`)
 - `detail.ctx.target`
@@ -809,7 +809,7 @@ encodeParameters: function(xhr, parameters, elt) {
 
 // htmx 4
 htmx_config_request: (elt, detail) => {
-    detail.ctx.request.headers['Content-Type'] = 'application/json';
+    detail.ctx.request.headers.set('Content-Type', 'application/json');
     var object = {};
     detail.ctx.request.body.forEach(function(value, key) {
         if (Object.hasOwn(object, key)) {
@@ -1606,7 +1606,7 @@ before it is issued:
 ```javascript
 document.body.addEventListener('htmx:config:request', function (evt) {
     evt.detail.ctx.request.parameters['auth_token'] = getAuthToken(); // add a new parameter into the request
-    evt.detail.ctx.request.headers['Authentication-Token'] = getAuthToken(); // add a new header into the request
+    evt.detail.ctx.request.headers.set('Authentication-Token', getAuthToken()); // add a new header into the request
 });
 ```
 
@@ -2897,7 +2897,7 @@ The `detail.ctx` object contains request information:
     request: {
         action,        // Request URL
         method,        // HTTP method
-        headers,       // Request headers
+        headers,       // Request Headers instance
         body,          // Request body (FormData)
         validate,      // Whether to validate
         abort,         // Function to abort request
@@ -2906,7 +2906,7 @@ The `detail.ctx` object contains request information:
     response: {        // Available after request
         raw,           // Raw Response object
         status,        // HTTP status code
-        headers        // Response headers
+        headers        // Response Headers instance
     },
     text,              // Response text (after request)
     hx                 // HX-* response headers (parsed)

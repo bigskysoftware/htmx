@@ -39,7 +39,7 @@ describe('hx-prompt extension', function() {
         btn.click();
         await forRequest();
 
-        assert.equal(lastFetch().request.headers['HX-Prompt'], 'because');
+        assert.equal(lastFetch().request.headers.get('HX-Prompt'), 'because');
     });
 
     it('URI-encodes unicode prompt responses for fetch headers', async function() {
@@ -51,7 +51,7 @@ describe('hx-prompt extension', function() {
         btn.addEventListener('htmx:before:request', (e) => {
             e.detail.ctx.fetch = async (action, request) => {
                 fetchCalled = true;
-                encodedHeader = request.headers['HX-Prompt'];
+                encodedHeader = request.headers.get('HX-Prompt');
                 new Request(new URL(action, location.href), request);
                 return new Response('ok');
             };
@@ -83,7 +83,7 @@ describe('hx-prompt extension', function() {
         btn.click();
         await forRequest();
 
-        assert.equal(lastFetch().request.headers['HX-Prompt'], '');
+        assert.equal(lastFetch().request.headers.get('HX-Prompt'), '');
     });
 
     it('does nothing when hx-prompt is absent', async function() {
@@ -96,7 +96,7 @@ describe('hx-prompt extension', function() {
         await forRequest();
 
         assert.isFalse(prompted);
-        assert.isUndefined(lastFetch().request.headers['HX-Prompt']);
+        assert.isNull(lastFetch().request.headers.get('HX-Prompt'));
     });
 
     it('inherits via :inherited from a container', async function() {
@@ -112,7 +112,7 @@ describe('hx-prompt extension', function() {
         find('button').click();
         await forRequest();
 
-        assert.equal(lastFetch().request.headers['HX-Prompt'], 'inherited');
+        assert.equal(lastFetch().request.headers.get('HX-Prompt'), 'inherited');
     });
 
     it('composes with hx-confirm (both pass)', async function() {
@@ -127,7 +127,7 @@ describe('hx-prompt extension', function() {
         btn.click();
         await forRequest();
 
-        assert.equal(lastFetch().request.headers['HX-Prompt'], 'a%20reason');
+        assert.equal(lastFetch().request.headers.get('HX-Prompt'), 'a%20reason');
         window.confirm = originalConfirm;
     });
 
@@ -177,7 +177,7 @@ describe('hx-prompt extension', function() {
         window.prompt = () => 'long enough';
         btn.click();
         await forRequest();
-        assert.equal(lastFetch().request.headers['HX-Prompt'], 'long%20enough');
+        assert.equal(lastFetch().request.headers.get('HX-Prompt'), 'long%20enough');
     });
 
     it('uses window.htmxPrompt when defined', async function() {
@@ -189,7 +189,7 @@ describe('hx-prompt extension', function() {
         btn.click();
         await forRequest();
 
-        assert.equal(lastFetch().request.headers['HX-Prompt'], 'answered:%20Q?');
+        assert.equal(lastFetch().request.headers.get('HX-Prompt'), 'answered:%20Q?');
     });
 
     it('null from window.htmxPrompt aborts the request', async function() {
@@ -204,7 +204,7 @@ describe('hx-prompt extension', function() {
     });
 
     describe('hx-on recipe (no extension needed)', () => {
-        const recipe = "ctx.request.headers['HX-Prompt'] = prompt('Reason?') ?? event.preventDefault()";
+        const recipe = "let answer = prompt('Reason?'); answer == null ? event.preventDefault() : ctx.request.headers.set('HX-Prompt', answer)";
 
         it('sends HX-Prompt with the answer', async function() {
             window.prompt = () => 'a reason';
@@ -214,7 +214,18 @@ describe('hx-prompt extension', function() {
             btn.click();
             await forRequest();
 
-            assert.equal(lastFetch().request.headers['HX-Prompt'], 'a reason');
+            assert.equal(lastFetch().request.headers.get('HX-Prompt'), 'a reason');
+        });
+
+        it('sends an empty HX-Prompt when the answer is empty', async function() {
+            window.prompt = () => '';
+            mockResponse('DELETE', '/items/1', 'ok');
+
+            let btn = createProcessedHTML(`<button hx-delete="/items/1" hx-on::config:request="${recipe}">Delete</button>`);
+            btn.click();
+            await forRequest();
+
+            assert.equal(lastFetch().request.headers.get('HX-Prompt'), '');
         });
 
         it('aborts the request on cancel', async function() {

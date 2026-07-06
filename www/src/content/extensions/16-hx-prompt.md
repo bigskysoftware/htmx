@@ -101,7 +101,7 @@ If you'd rather skip the extension, a single `hx-on` can do the same thing:
 
 ```html
 <button hx-delete="/items/1"
-        hx-on::config:request="ctx.request.headers['HX-Prompt'] = prompt('Reason?') ?? event.preventDefault()">
+        hx-on::config:request="let answer = prompt('Reason?'); answer == null ? event.preventDefault() : ctx.request.headers.set('HX-Prompt', answer)">
     Delete
 </button>
 ```

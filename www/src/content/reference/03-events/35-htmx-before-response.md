@@ -13,7 +13,7 @@ After the network response is received, before the body is consumed or any swap 
 
 - `ctx.response.raw` - The raw Response object (body not yet consumed)
 - `ctx.response.status` - The HTTP status code
-- `ctx.response.headers` - The response headers
+- `ctx.response.headers` - Response [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) instance
 
 ## Example
 

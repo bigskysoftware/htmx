@@ -244,7 +244,7 @@ document.body.addEventListener('htmx:config:request', (evt) => {
     // ctx.swap           -- hx-swap value
     // ctx.request.action -- URL
     // ctx.request.method -- HTTP method
-    // ctx.request.headers -- headers object
+    // ctx.request.headers -- Headers instance
     // ctx.request.body   -- FormData body
 });
 ```

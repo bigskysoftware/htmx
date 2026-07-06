@@ -396,6 +396,52 @@ describe('HCON.merge unit tests', function() {
         assert.deepEqual(result.list, [3, 4])
     })
 
+    it('merges iterable key-value sources', function () {
+        let result = HCON.merge(new Map([['a', 1]]), {})
+        assert.deepEqual(result, { a: 1 })
+    })
+
+    it('sets key-value collection targets', function () {
+        let target = new Map([['a', 1]])
+        let result = HCON.merge({ b: 2 }, target)
+        assert.strictEqual(result, target)
+        assert.equal(target.get('a'), 1)
+        assert.equal(target.get('b'), 2)
+    })
+
+    it('sets native Headers targets', function () {
+        let headers = new Headers({ 'HX-Request': 'true' })
+        let result = HCON.merge({ 'X-Custom': 'value' }, headers)
+        assert.strictEqual(result, headers)
+        assert.equal(headers.get('X-Custom'), 'value')
+        assert.equal(headers.get('HX-Request'), 'true')
+    })
+
+    it('deep-merges into nested native Headers targets', function () {
+        let request = { headers: new Headers({ 'HX-Request': 'true' }) }
+        let result = HCON.merge({ headers: { 'X-Custom': 'value' } }, request)
+        assert.strictEqual(result, request)
+        assert.equal(request.headers.get('X-Custom'), 'value')
+        assert.equal(request.headers.get('HX-Request'), 'true')
+    })
+
+    it('sets native Headers targets from Headers sources', function () {
+        let source = new Headers({ 'X-Custom': 'value' })
+        let headers = new Headers({ 'HX-Request': 'true' })
+        let result = HCON.merge(source, headers)
+        assert.strictEqual(result, headers)
+        assert.equal(headers.get('X-Custom'), 'value')
+        assert.equal(headers.get('HX-Request'), 'true')
+    })
+
+    it('deep-merges nested Headers sources into native Headers targets', function () {
+        let request = { headers: new Headers({ 'HX-Request': 'true' }) }
+        let result = HCON.merge({ headers: new Headers({ 'X-Custom': 'value' }) }, request)
+        assert.strictEqual(result, request)
+        assert.equal(request.headers.get('X-Custom'), 'value')
+        assert.equal(request.headers.get('HX-Request'), 'true')
+    })
+
     // string source (auto-parse)
 
     it('parses an HCON string source', function () {

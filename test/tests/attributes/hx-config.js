@@ -228,7 +228,21 @@ describe('hx-config attribute', function() {
         let btn = createProcessedHTML('<button hx-get="/test" hx-config=\'{"headers": {"X-Custom": "value"}}\'>Click</button>');
         btn.click()
         await forRequest()
-        assert.equal(ctx.request.headers['X-Custom'], 'value')
-        assert.equal(ctx.request.headers['HX-Request'], 'true')
+        assert.equal(ctx.request.headers.get('X-Custom'), 'value')
+        assert.equal(ctx.request.headers.get('HX-Request'), 'true')
+    })
+
+    it('merges dotted headers config into native request Headers', async function () {
+        mockResponse('GET', '/test', 'Done')
+        let ctx = null
+        document.addEventListener('htmx:config:request', function(e) {
+            ctx = e.detail.ctx
+        }, {once: true})
+
+        let btn = createProcessedHTML('<button hx-get="/test" hx-config="headers.X-Custom:value">Click</button>');
+        btn.click()
+        await forRequest()
+        assert.equal(ctx.request.headers.get('X-Custom'), 'value')
+        assert.equal(ctx.request.headers.get('HX-Request'), 'true')
     })
 })

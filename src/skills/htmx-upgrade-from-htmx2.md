@@ -193,7 +193,7 @@ document.addEventListener('htmx:configRequest', (evt) => {
 
 // htmx 4: event.detail.ctx contains request context
 document.addEventListener('htmx:config:request', (evt) => {
-    evt.detail.ctx.request.headers['X-Custom'] = 'value';
+    evt.detail.ctx.request.headers.set('X-Custom', 'value');
     evt.detail.ctx.request.body.set('key', 'value');  // FormData
     evt.detail.ctx.request.action = '/modified-url';
 });

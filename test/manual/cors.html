@@ -37,7 +37,7 @@
         document.addEventListener('htmx:config:request', function(evt) {
             // Clear htmx headers for CORS requests
             if (evt.detail.ctx.request.mode === 'cors') {
-                evt.detail.ctx.request.headers = {};
+                evt.detail.ctx.request.headers = new Headers();
             }
         });
     </script>

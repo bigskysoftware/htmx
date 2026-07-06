@@ -194,7 +194,7 @@
                     let ac = new AbortController();
                     connection.abortController = ac;
                     try {
-                        if (connection.lastEventId) ctx.request.headers['Last-Event-ID'] = connection.lastEventId;
+                        if (connection.lastEventId) ctx.request.headers.set('Last-Event-ID', connection.lastEventId);
                         currentResponse = await fetch(ctx.request.action, {
                             ...ctx.request,
                             signal: ac.signal
@@ -342,7 +342,7 @@
         },
 
         htmx_config_request: (element, detail) => {
-            detail.ctx.request.headers['Accept'] = 'text/html, text/event-stream';
+            detail.ctx.request.headers.append('Accept', 'text/event-stream');
         },
 
         // Intercept SSE responses before core consumes the body

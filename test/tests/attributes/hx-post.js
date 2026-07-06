@@ -14,7 +14,7 @@ describe('hx-post attribute', function() {
         btn.click()
         await forRequest()
         fetchMock.calls[0].request.method.should.equal('POST');
-        should.equal(fetchMock.calls[0].request.headers['X-HTTP-Method-Override'], undefined);
+        should.equal(fetchMock.calls[0].request.headers.get('X-HTTP-Method-Override'), null);
         btn.innerHTML.should.equal('Posted!')
     })
 
