@@ -25,6 +25,18 @@ Like [`hx-boost`](/reference/attributes/hx-boost), `hx-action` supports progress
 </form>
 ```
 
+Unlike `hx-boost` (which always requests the same URL as the native `href`/`action`), `hx-action` can optionally point to a *different* URL. The recommended approach is still to detect htmx request headers and return fragments from the same URL, but in cases where separate endpoints are preferred, `hx-action` makes that possible:
+
+```html
+<form action="/contacts/new"               <!-- full page (no-JS fallback) -->
+      hx-action="/fragments/contacts/new"  <!-- separate partial endpoint -->
+      method="post"
+      hx-target="#contact-list">
+    <input name="name" required>
+    <button>Create</button>
+</form>
+```
+
 ## Method Resolution
 
 When `hx-action` is used without [`hx-method`](/reference/attributes/hx-method), htmx resolves the HTTP method using the same fallback chain browsers use:
@@ -51,7 +63,7 @@ Clicking "View" sends a GET, clicking "Delete" sends a DELETE — matching nativ
 |---------|----------|
 | `hx-get`, `hx-post`, etc. | You know the method at authoring time and don't need native fallback |
 | `hx-action` + `hx-method` | Method is dynamic (e.g. server-rendered) or you want a clear separation of URL and verb |
-| `hx-action` alone | Progressive enhancement — method resolved from native `method`/`formmethod` attributes |
+| `hx-action` alone | Progressive enhancement — method from native attributes, with option to use a separate AJAX endpoint |
 | `hx-boost` | Progressive enhancement with page-navigation defaults (target body, push URL) |
 
 ## Notes
