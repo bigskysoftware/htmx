@@ -52,6 +52,7 @@ function setupTest(test) {
 function cleanupTest() {
     let pg = playground()
     if (pg && !testDebugging) {
+        htmx.__cleanup(pg)
         pg.innerHTML = ''
     }
     testDebugging = false;

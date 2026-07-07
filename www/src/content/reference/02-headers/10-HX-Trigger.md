@@ -3,12 +3,22 @@ title: "HX-Trigger"
 description: "Trigger client-side events from the server"
 ---
 
-The `HX-Trigger` response header triggers client-side events when content is swapped.
+The `HX-Trigger` response header triggers client-side events when a response is received.
+
+## Basic Usage
 
 Send a single event:
 
 ```http
 HX-Trigger: myEvent
+```
+
+By default, the event is dispatched on the element that made the request and bubbles. Use `from:body` when listening elsewhere.
+
+Listen from markup with [`hx-on`](/reference/attributes/hx-on):
+
+```html
+<div hx-on="myEvent from:body -> this.classList.add('updated')"></div>
 ```
 
 Send multiple events:
@@ -17,22 +27,79 @@ Send multiple events:
 HX-Trigger: event1, event2
 ```
 
-Send event with detail:
+## Event Detail
+
+Send event detail with a JSON object:
 
 ```http
-HX-Trigger: {"showMessage":"Hello World"}
+HX-Trigger: {"notification":"Hello World"}
 ```
 
-Handle the event:
+Scalar values are available on `detail.value`:
+
+```html
+<div hx-on="notification from:body -> alert(value)"></div>
+```
+
+You can also listen from JavaScript:
 
 ```javascript
-document.body.addEventListener("showMessage", (evt) => {
+document.body.addEventListener("notification", (evt) => {
     alert(evt.detail.value); // "Hello World"
 });
 ```
 
-Use [`hx-trigger`](/reference/attributes/hx-trigger) to respond to server-triggered events:
+Send multiple detail fields with a nested object:
+
+```http
+HX-Trigger: {"notification":{"level":"info", "message":"Saved"}}
+```
+
+Each nested property is copied onto the event detail:
 
 ```html
-<div hx-trigger="showMessage from:body" hx-get="/message"></div>
+<div hx-on="notification from:body -> this.dataset.level = level; this.textContent = message"></div>
 ```
+
+Send multiple events with detail by adding properties to the top-level JSON object:
+
+```http
+HX-Trigger: {"notification":"Saved", "refreshList":true}
+```
+
+```html
+<div hx-on="notification from:body -> this.textContent = value;
+            refreshList from:body -> this.dataset.refresh = value"></div>
+```
+
+## Targeting Other Elements
+
+Trigger an event on another element with `target`:
+
+```http
+HX-Trigger: {"notification":{"target":"#notifications", "message":"Saved"}}
+```
+
+The `target` value is resolved as a selector. The event is dispatched on that element instead of the source element.
+
+```html
+<div id="notifications" hx-on="notification -> this.textContent = message"></div>
+```
+
+This can update client-owned state while the response swaps normal HTML elsewhere:
+
+```http
+HX-Trigger: {"cartUpdated":{"target":"#cart", "count":3}}
+```
+
+```html
+<div id="cart" data-count="0" hx-on="cartUpdated -> data.count = count">
+    Cart (<span :text="data.count"></span>)
+</div>
+```
+
+_This example uses the [`hx-live`](/extensions/hx-live) extension._
+
+## Notes
+
+Response headers are not processed on 3xx response codes. Return a 2xx status when using this header.
