@@ -501,6 +501,34 @@ For a single inline section, native [`<details>`](https://developer.mozilla.org/
 <div role="slider" :aria-valuenow="q('#slider').valueAsNumber"></div>
 ```
 
+## Advanced Examples
+
+### Auto-clearing flash messages
+
+Server response:
+
+```http
+HX-Trigger: {"flash":{"target":"#flash", "level":"success", "message":"Saved"}}
+```
+
+Client state:
+
+```html
+<style>
+#flash:empty { display: none; }
+</style>
+
+<div id="flash"
+     data-message=""
+     data-level=""
+     hx-on="flash -> data.message = message; data.level = level;
+                     await timeout(3000);
+                     data.message = ''"
+     :text="data.message"
+     :.success="data.level === 'success'"
+     :.error="data.level === 'error'"></div>
+```
+
 ## How it works
 
 ### Re-run triggers
