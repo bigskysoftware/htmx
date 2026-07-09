@@ -343,34 +343,23 @@ var htmx = (() => {
         }
 
         __determineMethodAndAction(elt, evt) {
-            if (this.__isBoosted(elt)) {
-                return this.__boostedMethodAndAction(elt, evt)
-            } else {
-                let method = this.__attributeValue(elt, "hx-method") || "GET"
-                let action = this.__attributeValue(elt, "hx-action");
-                if (!action) {
-                    for (let verb of this.#verbs) {
-                        let verbAction = this.__attributeValue(elt, "hx-" + verb);
-                        if (verbAction != null) {
-                            action = verbAction;
-                            method = verb;
-                            break;
-                        }
+            let method = this.__attributeValue(elt, "hx-method");
+            let action = this.__attributeValue(elt, "hx-action");
+            if (!action) {
+                for (let verb of this.#verbs) {
+                    let verbAction = this.__attributeValue(elt, "hx-" + verb);
+                    if (verbAction != null) {
+                        action = verbAction;
+                        method = verb;
+                        break;
                     }
                 }
-                method = method.toUpperCase()
-                return {action, method}
             }
-        }
-
-        __boostedMethodAndAction(elt, evt) {
-            if (elt.matches("a")) {
-                return {action: elt.getAttribute("href"), method: "GET"}
-            } else {
-                let action = evt.submitter?.getAttribute?.("formAction") || elt.getAttribute("action");
-                let method = evt.submitter?.getAttribute?.("formMethod") || elt.getAttribute("method") || "GET";
-                return {action, method: method.toUpperCase()}
+            if (this.__isBoosted(elt)) {
+                action ||= evt.submitter?.getAttribute?.("formAction") || elt.getAttribute(elt.matches("a") ? "href" : "action");
             }
+            method ||= evt.submitter?.getAttribute?.("formmethod") || elt.getAttribute("method") || "GET";
+            return {action, method: method.toUpperCase()};
         }
 
         __htmxProp(elt) {
@@ -2060,6 +2049,7 @@ var htmx = (() => {
                     let placeholder = document.createElement(newChild.tagName);
                     oldParent.insertBefore(placeholder, insertionPoint);
                     this.__morphNode(placeholder, newChild, ctx);
+                    this.process(placeholder);
                     insertionPoint = placeholder.nextSibling;
                 } else {
                     oldParent.insertBefore(newChild, insertionPoint);
@@ -2127,10 +2117,6 @@ var htmx = (() => {
             }
             // Script tags must be identical to match - never patch a script with different content
             if (oldNode.tagName === 'SCRIPT' && !oldNode.isEqualNode(newNode)) return false;
-            // If both have Alpine reactive ID bindings, ignore ID mismatch
-            if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
-                return true;
-            }
             return !oldNode.id || oldNode.id === newNode.id;
         }
 

@@ -638,6 +638,37 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(container.querySelector('#result').textContent, 'Clicked!', 'htmx actions on new div should work');
         });
 
+        it('processes hx-* on tag-changing outerMorph when new root has a persistent child id (issue #3882)', async function() {
+            // The bug: when outerMorph changes the root tag (div→form) AND the new root
+            // contains a child with a persistent id, __morphChildren creates a placeholder
+            // element instead of reusing the fragment node. newContent then holds the
+            // detached fragment node, so process() bails on !isConnected and hx-* attrs
+            // on the new root are never initialized.
+            mockResponse('GET', '/test',
+                '<form id="target" hx-post="/submit"><input id="same-child-id" name="q"></form>');
+            const container = createProcessedHTML(
+                '<div><div id="target"><input id="same-child-id" name="q"></div><div id="result"></div></div>');
+            const childInput = container.querySelector('#same-child-id');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'outerMorph'});
+
+            const newForm = container.querySelector('#target');
+            assert.isNotNull(newForm, 'new form should be in the DOM');
+            assert.equal(newForm.tagName, 'FORM', 'root tag should have changed to FORM');
+            assert.equal(container.querySelector('#same-child-id'), childInput,
+                'persistent child should be the same node');
+            assert.equal(newForm.getAttribute('data-htmx-powered'), 'true',
+                'new form root must be processed so hx-post works');
+
+            mockResponse('POST', '/submit', 'Submitted!');
+            newForm.dispatchEvent(new Event('submit', {bubbles: true}));
+            await waitForEvent('htmx:after:swap', 100);
+
+            assert.equal(container.querySelector('#result') ??
+                container.querySelector('#target'), container.querySelector('#result') ??
+                newForm, 'swap target should be reachable');
+        });
+
         it('does not stack hx-on:click handlers across innerMorph', async function() {
             window._calls = 0;
             mockResponse('GET', '/test', '<button id="btn" hx-on:click="window._calls++">v</button>');
