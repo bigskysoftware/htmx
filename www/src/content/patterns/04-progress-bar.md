@@ -20,8 +20,9 @@ function _progressBar() {
 }
 
 function _jobView() {
-    return `<div id="job-status" class="flex flex-col items-center justify-center gap-4 w-full"
-          hx-trigger="every 400ms" hx-get="/job/progress" hx-swap="outerMorph">
+    // When complete, omit the polling attributes so the morph tears down the interval and polling stops.
+    let polling = _job.complete ? '' : 'hx-trigger="every 400ms" hx-get="/job/progress" hx-swap="outerMorph"';
+    return `<div id="job-status" class="flex flex-col items-center justify-center gap-4 w-full" ${polling}>
         <div class="flex items-center justify-between w-full">
             <p class="text-sm font-medium text-neutral-700 dark:text-neutral-200" role="status">${_job.complete ? 'Complete' : 'Processing\u2026'}</p>
             <button class="flex items-center gap-1.5 text-[0.8125rem] text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 cursor-pointer transition duration-300 ${_job.complete ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
@@ -45,7 +46,7 @@ server.post("/start", () => { _job.complete = false; _job.percentComplete = 0; r
 server.get("/job/progress", () => {
     _job.percentComplete = Math.min(100, _job.percentComplete + 8 + Math.floor(8 * Math.random()));
     _job.complete = _job.percentComplete >= 100;
-    return { body: _jobView(), status: _job.complete ? 286 : 200 };
+    return _jobView();
 });
 
 server.start("/demo");
@@ -76,7 +77,7 @@ On the server, respond with a container that polls for progress:
 - [`hx-trigger`](/reference/attributes/hx-trigger)=[`"every 400ms"`](/reference/attributes/hx-trigger#polling) polls the server on an interval.
 - [`outerMorph`](/reference/attributes/hx-swap#outermorph) morphs the element in place, so CSS transitions on `transform` animate smoothly.
 
-Each poll returns updated progress. When done, the server responds with [HTTP 286](https://en.wikipedia.org/wiki/86_(term)) to stop polling.
+Each poll returns updated progress. When done, the server responds with markup that omits `hx-trigger`, so the morph tears down the polling interval and polling stops.
 
 ## Notes
 
