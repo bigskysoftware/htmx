@@ -85,7 +85,7 @@ class FetchMock {
     // Mock a response for a specific URL pattern
     mockResponse(method, urlPattern, response, options = {}) {
         let upperCasedMethod = method.toUpperCase();
-        if (['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].indexOf(upperCasedMethod) < 0) {
+        if (['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'QUERY'].indexOf(upperCasedMethod) < 0) {
             throw Error("Invalid HTTP method: " + method)
         }
         if (typeof response === 'string') {
