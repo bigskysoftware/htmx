@@ -11,6 +11,7 @@
     let dbSym = Symbol();
     let observer = null;
     let recomputeBound = null;
+    let inputBound = null;
     let swaps = 0;
     let i = 0;
     let start = 0;
@@ -24,10 +25,8 @@
     function ensureActive() {
         if (observer) return;
         recomputeBound = () => schedule();
-        document.addEventListener('input', () => {
-            clearTimeout(inputDebounceId);
-            inputDebounceId = setTimeout(schedule, INPUT_DEBOUNCE_MS);
-        }, true);
+        inputBound = () => { clearTimeout(inputDebounceId); inputDebounceId = setTimeout(schedule, INPUT_DEBOUNCE_MS); };
+        document.addEventListener('input', inputBound, true);
         document.addEventListener('change', recomputeBound, true);
         observer = new MutationObserver(recomputeBound);
         observer.observe(document.documentElement, OBSERVE_OPTIONS);
@@ -37,7 +36,8 @@
         if (!observer) return;
         clearTimeout(inputDebounceId);
         inputDebounceId = null;
-        document.removeEventListener('input', recomputeBound, true);
+        document.removeEventListener('input', inputBound, true);
+        inputBound = null;
         document.removeEventListener('change', recomputeBound, true);
         observer.disconnect();
         observer = null;
