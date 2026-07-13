@@ -53,4 +53,13 @@ describe('hx-action attribute', function() {
         playground().innerHTML.should.equal('Put!')
     })
 
+    it('hx-action with hx-method QUERY issues a QUERY request', async function() {
+        mockResponse('QUERY', '/test', 'Queried!')
+        let btn = createProcessedHTML('<button hx-action="/test" hx-method="QUERY">Click Me!</button>')
+        btn.click()
+        await forRequest()
+        fetchMock.calls[0].request.method.should.equal('QUERY')
+        btn.innerHTML.should.equal('Queried!')
+    })
+
 })

@@ -527,7 +527,7 @@ var htmx = (() => {
             })
 
             if (!this.__trigger(elt, "htmx:config:request", {ctx: ctx})) return
-            if (!this.#verbs.includes(ctx.request.method.toLowerCase())) return
+            if (ctx.request.method === 'DIALOG') return
 
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
             if (javascriptContent != null) {
