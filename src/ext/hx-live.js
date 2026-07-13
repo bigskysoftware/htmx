@@ -18,10 +18,16 @@
 
     const OBSERVE_OPTIONS = { childList: true, subtree: true, attributes: true, characterData: true };
 
+    let inputDebounceId = null;
+    const INPUT_DEBOUNCE_MS = htmx.config.live?.inputDebounceMs ?? 100;
+
     function ensureActive() {
         if (observer) return;
         recomputeBound = () => schedule();
-        document.addEventListener('input', recomputeBound, true);
+        document.addEventListener('input', () => {
+            clearTimeout(inputDebounceId);
+            inputDebounceId = setTimeout(schedule, INPUT_DEBOUNCE_MS);
+        }, true);
         document.addEventListener('change', recomputeBound, true);
         observer = new MutationObserver(recomputeBound);
         observer.observe(document.documentElement, OBSERVE_OPTIONS);
@@ -29,6 +35,8 @@
 
     function deactivate() {
         if (!observer) return;
+        clearTimeout(inputDebounceId);
+        inputDebounceId = null;
         document.removeEventListener('input', recomputeBound, true);
         document.removeEventListener('change', recomputeBound, true);
         observer.disconnect();
@@ -112,6 +120,7 @@
 
         let value = rest[0];
         for (let e of elts) {
+            if (applyAttr([e], name) === value) continue;
             if (isClass) {
                 e.classList.toggle(name.slice(1), !!value);
                 if (e.classList.length === 0) e.removeAttribute('class');
@@ -595,8 +604,16 @@
     }
 
     function writeAttrBinding(elt, attrName, value) {
-        if (attrName === 'text') { elt.textContent = value == null ? '' : String(value); return; }
-        if (attrName === 'html') { elt.innerHTML = value == null ? '' : String(value); return; }
+        if (attrName === 'text') {
+            let s = value == null ? '' : String(value);
+            if (elt.textContent !== s) elt.textContent = s;
+            return;
+        }
+        if (attrName === 'html') {
+            let s = value == null ? '' : String(value);
+            if (elt.innerHTML !== s) elt.innerHTML = s;
+            return;
+        }
         if (attrName === 'style') { applyStyleBinding(elt, value); return; }
         // Everything else (class, .class, aria-*, boolean, property-sync, regular) → applyAttr.
         applyAttr([elt], attrName, value);
