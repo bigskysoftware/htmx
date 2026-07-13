@@ -10,7 +10,6 @@ import {buildJsonLd} from '../lib/jsonld';
 import {isCurrentPath} from '../lib/utils';
 import bssBars from '../assets/img/bss-bars.png';
 
-import FinderLink from '../components/FinderLink.astro';
 import Search from "../components/Search.astro";
 import BackgroundGrid from "../components/BackgroundGrid.astro";
 
@@ -208,8 +207,8 @@ const footerSections = [
         </div>
 
         <!-- Desktop: Nav Links + Search + Social -->
-        <div class="hidden lg:flex items-center justify-between flex-1 gap-4 xl:gap-6">
-            <div aria-label="Main" class="hidden lg:flex items-center gap-4 xl:gap-6 flex-1"
+        <div class="hidden xl:flex items-center justify-between flex-1 gap-4 xl:gap-6">
+            <div aria-label="Main" class="hidden xl:flex items-center gap-4 xl:gap-6 flex-1"
                  hx-preload:inherited="mouseenter">
                 <ul class="flex gap-4 xl:gap-6 items-center justify-center xl:text-[1.075rem]">
                     {navigationItems.map((item) => (
@@ -232,7 +231,7 @@ const footerSections = [
                                    border border-neutral-200 dark:border-neutral-800 rounded-lg py-2 px-3 text-base font-sans text-neutral-400
                                    interact:bg-neutral-100 dark:interact:bg-neutral-800/50
                                    interact:border-neutral-400 dark:interact:border-neutral-600
-                                   outline-hidden cursor-pointer"
+                                   shadow-xs outline-hidden cursor-pointer"
                             aria-label="Open Search"
                             aria-keyshortcuts="Control+K Meta+K"
                             _="on click
@@ -256,14 +255,15 @@ const footerSections = [
                 <div class="h-6 w-px bg-neutral-200 dark:bg-neutral-800 ml-7.5 mr-5.5" role="separator"></div>
                 <a href="/discord" aria-label="Join Discord" title="Join the Discord community"
                    target="_blank" rel="noopener noreferrer"
+                   hx-boost="false"
                    class="flex px-3 py-2 group">
-                    <i class="icon-[mdi--discord] size-5.5 scale-[1.1] text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white"
+                    <i class="icon-[simple-icons--discord] size-5.5 text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white"
                        aria-hidden="true"></i>
                 </a>
                 <a href="https://github.com/bigskysoftware/htmx" aria-label="View Source on GitHub"
                    title="View source code on GitHub"
                    target="_blank" rel="noopener noreferrer"
-                   class="flex ml-3 px-3 py-2 group">
+                   class="flex px-3 py-2 group">
                     <i class="icon-[mdi--github] size-5.5 text-neutral-600 dark:text-neutral-400 group-interact:text-black dark:group-interact:text-white"
                        aria-hidden="true"></i>
                 </a>
@@ -271,7 +271,7 @@ const footerSections = [
         </div>
 
         <!-- Mobile: Search + Navigation toggle -->
-        <div class="lg:hidden flex items-center gap-4">
+        <div class="xl:hidden flex items-center gap-4">
             <button type="button"
                     class="flex items-center justify-center size-10 text-neutral-600 dark:text-neutral-400 rounded-xs outline-hidden"
                     aria-label="Search"
@@ -295,34 +295,47 @@ const footerSections = [
 
 <!-- Mobile Navigation Drawer -->
 <nav id="mobile-navigation" aria-label="Mobile Navigation"
-     class="lg:hidden z-50 opacity-0 top-(--header-height) fixed inset-0 h-screen bg-neutral-10 dark:bg-neutral-920 pointer-events-none select-none [html:has(#mobile-navigation-toggle:checked)_&]:opacity-100 [html:has(#mobile-navigation-toggle:checked)_&]:pointer-events-auto overflow-y-auto overscroll-contain">
-    <div class="p-4 space-y-2">
-        {navigationItems.map((item) => (
-                <FinderLink href={item.url}
-                            aria-current={isCurrentPath(Astro.url.pathname, item.url) ? 'page' : undefined}
-                            class="!mx-0 font-chicago text-base tracking-tight gap-2 aria-[current=page]:bg-blue-700 aria-[current=page]:text-white dark:aria-[current=page]:bg-blue-350 dark:aria-[current=page]:text-black aria-[current=page]:font-bold"
-                            _="on click set #mobile-navigation-toggle.checked to false">
-                    {item.name}
-                </FinderLink>
-        ))}
+     class="xl:hidden z-50 opacity-0 top-(--header-height) fixed inset-0 h-screen bg-neutral-10 dark:bg-neutral-920 pointer-events-none select-none [html:has(#mobile-navigation-toggle:checked)_&]:opacity-100 [html:has(#mobile-navigation-toggle:checked)_&]:pointer-events-auto overflow-y-auto overscroll-contain">
+    <div class="p-4">
+        <ul class="flex flex-col gap-1">
+            {navigationItems.map((item) => (
+                    <li>
+                        <a href={item.url}
+                           data-label={item.name}
+                           aria-current={isCurrentPath(Astro.url.pathname, item.url) ? 'page' : undefined}
+                           class="block rounded-sm px-3 py-2 text-base font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline aria-[current=page]:font-bold aria-[current=page]:text-neutral-950 dark:aria-[current=page]:text-neutral-50 outline-hidden after:content-[attr(data-label)] after:block after:h-0 after:overflow-hidden after:font-bold after:invisible"
+                           _="on click set #mobile-navigation-toggle.checked to false">
+                            {item.name}
+                        </a>
+                    </li>
+            ))}
+        </ul>
 
         <div class="h-px bg-neutral-200 dark:bg-neutral-800 my-4" role="separator"></div>
 
-        <FinderLink href="/discord" title="Join the Discord community"
-                    class="!mx-0 font-chicago text-base tracking-tight gap-3"
-                    _="on click set #mobile-navigation-toggle.checked to false">
-            <i class="icon-[mdi--discord] text-xl" aria-hidden="true"></i>
-            Discord
-        </FinderLink>
+        <ul class="flex flex-col gap-1">
+            <li>
+                <a href="/discord"
+                   title="Join the Discord community"
+                   hx-boost="false"
+                   class="flex items-center gap-3 rounded-sm px-3 py-2 text-base font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline outline-hidden"
+                   _="on click set #mobile-navigation-toggle.checked to false">
+                    <i class="icon-[simple-icons--discord] size-4.5 text-current" aria-hidden="true"></i>
+                    Discord
+                </a>
+            </li>
 
-        <FinderLink href="https://github.com/bigskysoftware/htmx"
-                    target="_blank" rel="noopener noreferrer"
-                    title="View source code on GitHub"
-                    class="!mx-0 font-chicago text-base tracking-tight gap-3"
-                    _="on click set #mobile-navigation-toggle.checked to false">
-            <i class="icon-[mdi--github] text-xl" aria-hidden="true"></i>
-            GitHub
-        </FinderLink>
+            <li>
+                <a href="https://github.com/bigskysoftware/htmx"
+                   target="_blank" rel="noopener noreferrer"
+                   title="View source code on GitHub"
+                   class="flex items-center gap-3 rounded-sm px-3 py-2 text-base font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline outline-hidden"
+                   _="on click set #mobile-navigation-toggle.checked to false">
+                    <i class="icon-[mdi--github] size-5 text-current" aria-hidden="true"></i>
+                    GitHub
+                </a>
+            </li>
+        </ul>
     </div>
 </nav>
 
@@ -364,7 +377,7 @@ const footerSections = [
                                             <a href={link.url}
                                                target={link.url?.startsWith('http') ? "_blank" : undefined}
                                                rel={link.url?.startsWith('http') ? "noopener noreferrer" : undefined}
-                                               hx-boost={link.boost === false ? "false" : undefined}
+                                               hx-boost={section.name === "Community" || link.boost === false ? "false" : undefined}
                                                title={`Go to ${link.url}`}
                                                class:list={[
                                                    "text-neutral-600 dark:text-neutral-400 interact:text-blue-600 dark:interact:text-blue-300 interact:underline",

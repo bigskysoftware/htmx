@@ -4,7 +4,7 @@ const { prev, next } = Astro.props;
 
 <nav class="not-prose" aria-label="Page navigation">
     {prev ? (
-        <div class="card xl page-link">
+        <div class="card xl page-link shadow-2xs">
             <i class="icon-[mdi--chevron-left]" aria-hidden="true"></i>
             <div>
                 {prev.breadcrumbs.length > 2 && (
@@ -23,7 +23,7 @@ const { prev, next } = Astro.props;
     ) : null}
 
     {next ? (
-        <div class="card xl page-link">
+        <div class="card xl page-link shadow-2xs">
             <i class="icon-[mdi--chevron-right]" aria-hidden="true"></i>
             <div>
                 {next.breadcrumbs.length > 2 && (
