@@ -120,7 +120,6 @@
 
         let value = rest[0];
         for (let e of elts) {
-            if (applyAttr([e], name) === value) continue;
             if (isClass) {
                 e.classList.toggle(name.slice(1), !!value);
                 if (e.classList.length === 0) e.removeAttribute('class');
@@ -615,7 +614,9 @@
             return;
         }
         if (attrName === 'style') { applyStyleBinding(elt, value); return; }
-        // Everything else (class, .class, aria-*, boolean, property-sync, regular) → applyAttr.
+        // Always write aria-* and property-backed attrs (getter type differs from setter).
+        // For everything else skip if unchanged.
+        if (!attrName.startsWith('aria-') && !PROPERTY_ATTRS.has(attrName) && applyAttr([elt], attrName) === value) return;
         applyAttr([elt], attrName, value);
     }
 
