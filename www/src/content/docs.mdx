@@ -675,7 +675,7 @@ handle_swap: (swapStyle, target, fragment, swapSpec) => {
 All hooks receive `detail.ctx` with full request/response context:
 
 - `detail.ctx.request.body` (FormData in `htmx_config_request`)
-- `detail.ctx.request.headers`
+- `detail.ctx.request.headers` ([Web API Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object)
 - `detail.ctx.response.status`
 - `detail.ctx.text` (response body, modifiable in `htmx_after_request`)
 - `detail.ctx.target`
@@ -2903,7 +2903,7 @@ The `detail.ctx` object contains request information:
     response: {        // Available after request
         raw,           // Raw Response object
         status,        // HTTP status code
-        headers        // Response headers
+        headers        // Response headers: https://developer.mozilla.org/en-US/docs/Web/API/Headers
     },
     text,              // Response text (after request)
     hx                 // HX-* response headers (parsed)
