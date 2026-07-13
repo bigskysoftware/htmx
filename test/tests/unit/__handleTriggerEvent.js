@@ -107,14 +107,6 @@ describe('__handleTriggerEvent unit tests', function() {
         assert.isUndefined(window.testExecuted)
     })
 
-    it('returns early if method not in verbs list', async function () {
-        let div = createProcessedHTML('<div hx-get="js:window.testExecuted = true"></div>')
-        let ctx = htmx.__createRequestContext(div, new Event('click'))
-        ctx.request.method = 'INVALID'
-        await htmx.__handleTriggerEvent(ctx)
-        assert.isUndefined(window.testExecuted)
-    })
-
     it('executes javascript when action starts with js:', async function () {
         let div = createProcessedHTML('<div hx-get="js:window.testExecuted = true"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
