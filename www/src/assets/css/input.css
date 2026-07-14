@@ -127,16 +127,6 @@
         }
     }
 
-    /* Use Chicago font in headings */
-    h1, h2, h3, h4, h5, h6 {
-        font-family: var(--font-chicago), serif;
-        letter-spacing: var(--tracking-tightest);
-
-        @media (width >= 40rem) {
-            letter-spacing: var(--tracking-tight);
-        }
-    }
-
     /* Improve underlines in anchors */
     a, a * {
         text-decoration-thickness: 0.125em;
@@ -333,7 +323,7 @@
         }
 
         &.warning {
-            @apply px-4 py-0 rounded-[4px] border border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/30 dark:bg-yellow-900/10;
+            @apply px-4 py-0 rounded-lg border border-yellow-200/70 bg-white shadow-xs dark:border-yellow-900/50 dark:bg-yellow-900/10;
 
             summary {
                 @apply text-yellow-800 dark:text-yellow-300
@@ -345,8 +335,12 @@
                 }
             }
 
+            &[open] {
+                @apply pb-4;
+            }
+
             &[open] summary {
-                @apply text-yellow-900 dark:text-yellow-200;
+                @apply mb-3 text-yellow-900 dark:text-yellow-200;
             }
         }
 
@@ -449,8 +443,34 @@
 }
 
 
-/* Demo window chrome — border, title bar with dots + label, content padding */
 @layer components {
+    .text-field {
+        @apply mb-6 flex min-h-[44px] w-full cursor-text items-center rounded-lg border border-neutral-200 bg-white px-3 py-2 text-base font-sans text-neutral-400 outline-hidden shadow-xs transition-all focus-within:border-neutral-300 focus-within:ring-2 focus-within:ring-neutral-300/50 dark:border-neutral-800 dark:bg-neutral-910 dark:focus-within:border-neutral-600 dark:focus-within:ring-neutral-600/50;
+
+        > i {
+            @apply size-5 shrink-0 text-neutral-400;
+        }
+
+        > input {
+            @apply mx-2 min-w-0 flex-1 border-0 bg-transparent p-0 text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:ring-0 dark:text-neutral-100 dark:placeholder:text-neutral-500;
+        }
+
+        > span[aria-hidden="true"] {
+            @apply ms-auto flex items-center gap-1 text-xs text-neutral-400 pointer-events-none transition-opacity dark:text-neutral-500;
+        }
+
+        > span[aria-hidden="true"] > kbd {
+            @apply flex h-5 min-w-5 items-center justify-center rounded border border-neutral-200 bg-neutral-25 px-1.5 font-sans text-[10px] text-neutral-600 dark:border-neutral-800 dark:bg-neutral-910 dark:text-neutral-400;
+        }
+
+        > input:focus ~ span[aria-hidden="true"],
+        > input:not(:placeholder-shown) ~ span[aria-hidden="true"] {
+            @apply opacity-0;
+        }
+
+    }
+
+    /* Demo window chrome. */
     .demo-container {
         position: relative;
         margin-block: 2rem;

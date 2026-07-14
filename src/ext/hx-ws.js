@@ -178,7 +178,7 @@
         }
 
         try {
-            connection.socket = new WebSocket(url);
+            connection.socket = new WebSocket(url, connection.config?.protocols);
             let ac = new AbortController();
             connection.abortController = ac;
             let opts = { signal: ac.signal };

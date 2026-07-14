@@ -32,9 +32,9 @@ async function morphViaLink(page: any, url: string) {
     await expect(page).toHaveURL(url, { timeout: 10_000 });
 }
 
-const DEMO_A = '/patterns/loading/click-to-load';
-const DEMO_B = '/patterns/loading/lazy-load';
-const STUB = '/patterns/real-time/polling';
+const DEMO_A = '/patterns/click-to-load';
+const DEMO_B = '/patterns/lazy-load';
+const STUB = '/patterns/polling';
 
 // Serial: SW state leaks between parallel workers
 test.describe.serial('Pattern demos', () => {
@@ -79,13 +79,13 @@ test.describe.serial('Pattern demos', () => {
     });
 
     test('renders after morph between same-group demos', async ({ page }) => {
-        await page.goto('/patterns/loading/infinite-scroll');
+        await page.goto('/patterns/infinite-scroll');
         await waitForSw(page);
         await waitForDemo(page);
 
         // Morph to click-to-load via sidebar link
-        await page.click('a[href="/patterns/loading/click-to-load"]');
-        await expect(page).toHaveURL('/patterns/loading/click-to-load', { timeout: 10_000 });
+        await page.click('a[href="/patterns/click-to-load"]');
+        await expect(page).toHaveURL('/patterns/click-to-load', { timeout: 10_000 });
 
         // Verify click-to-load specific content appears (not stale infinite-scroll)
         await expect(page.locator('#demo-content button', { hasText: /show more/i }))
@@ -98,7 +98,7 @@ test.describe.serial('Pattern demos', () => {
         await waitForDemo(page);
 
         // Cross-group navigation (Loading → Forms) via injected link
-        await morphViaLink(page, '/patterns/forms/active-search');
+        await morphViaLink(page, '/patterns/active-search');
 
         await expect(page.locator('#demo-content input[type="search"]'))
             .toBeVisible({ timeout: 15_000 });
@@ -108,13 +108,13 @@ test.describe.serial('Pattern demos', () => {
         const errors: string[] = [];
         page.on('pageerror', (err) => errors.push(err.message));
 
-        await page.goto('/patterns/loading/infinite-scroll');
+        await page.goto('/patterns/infinite-scroll');
         await waitForSw(page);
         await waitForDemo(page);
 
         // Morph to click-to-load
-        await page.click('a[href="/patterns/loading/click-to-load"]');
-        await expect(page).toHaveURL('/patterns/loading/click-to-load', { timeout: 10_000 });
+        await page.click('a[href="/patterns/click-to-load"]');
+        await expect(page).toHaveURL('/patterns/click-to-load', { timeout: 10_000 });
 
         const loadMore = page.locator('#demo-content button', { hasText: /show more/i });
         await expect(loadMore).toBeVisible({ timeout: 15_000 });

@@ -16,7 +16,7 @@ footer:
 social:
   - name: Discord
     description: Join 1.4K+ developers discussing htmx
-    iconClass: "icon-[ic--baseline-discord]"
+    iconClass: "icon-[simple-icons--discord]"
     url: /discord
 
   - name: GitHub

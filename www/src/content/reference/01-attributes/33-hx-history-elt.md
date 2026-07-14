@@ -52,5 +52,5 @@ else:
 * The server response must include a `hx-history-elt` element for the select to work; if it is
   missing, htmx falls back to a full body swap
 * In htmx 2, history was cached in localStorage. In htmx 4, caching has moved to the
-  [`hx-history-cache`](/docs/extensions/history-cache) extension — `hx-history-elt` works with
+  [`hx-history-cache`](/extensions/hx-history-cache) extension — `hx-history-elt` works with
   both the core re-fetch behavior and the extension's cache restore

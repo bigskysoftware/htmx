@@ -131,7 +131,7 @@ But this experience stinks compared to what people are used to: drag-and-drop.
 
 In cases like this, it is perfectly fine to use a front-end heavy approach as an "Island of Interactivity".
 
-Consider the [SortableJS](/patterns/records/drag-to-reorder) example. Here you have a sophisticated area of interactivity that
+Consider the [SortableJS](/patterns/drag-to-reorder) example. Here you have a sophisticated area of interactivity that
 allows for
 drag-and-drop, and that integrates with htmx and the broader hypermedia-driven application via events.
 

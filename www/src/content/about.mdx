@@ -46,17 +46,25 @@ export const exploreItems = [
     {url: "/memes", icon: "icon-[mdi--emoticon-cool-outline]", title: "Memes", description: "For hypermedia teens"},
 ];
 
-{/* Team */}
-<section class="not-prose mb-16">
-    <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">Team</h2>
+export const linkSections = [
+    { id: "community", title: "Community", gridClass: "grid grid-cols-1 sm:grid-cols-2 gap-4", centered: false, items: communityItems },
+    { id: "keep-exploring", title: "Keep Exploring", gridClass: "grid grid-cols-1 sm:grid-cols-3 gap-4", centered: true, items: exploreItems },
+];
 
+{/* Team */}
+<section class="mb-16">
+    <h2 id="team">
+        <a href="#team" class="no-underline interact:underline">Team</a>
+    </h2>
+
+    <div class="not-prose">
     {creator && (
         <div class="card lg flex flex-col sm:flex-row sm:items-center gap-6 p-4 sm:p-6 mb-6">
             <Image src={creator.image} alt={creator.name}
                    class="object-cover size-20 rounded-full" width={224} height={224} />
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1">
-                    <h3 class="font-chicago text-xl leading-none text-neutral-900 dark:text-neutral-100">{creator.name}</h3>
+                    <h3 class="font-sans text-xl font-semibold leading-none text-neutral-900 dark:text-neutral-100">{creator.name}</h3>
                     {creator.github && (
                         <a href={`https://github.com/${creator.github}`} target="_blank" rel="noopener noreferrer"
                            class="p-2 sm:p-3 flex justify-center items-center text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white sm:transition"
@@ -80,7 +88,7 @@ export const exploreItems = [
                 </div>
                 <div class="flex-1 min-w-0 pt-0.5">
                     <div class="flex items-center mb-1">
-                        <h3 class="font-chicago text-sm leading-none text-neutral-900 dark:text-neutral-100">{member.name}</h3>
+                        <h3 class="font-sans text-sm font-semibold leading-none text-neutral-900 dark:text-neutral-100">{member.name}</h3>
                         {member.github && (
                             <a href={`https://github.com/${member.github}`} target="_blank" rel="noopener noreferrer"
                                class="px-3 py-0.5 sm:py-1 flex justify-center items-center text-neutral-600 dark:text-neutral-400 interact:text-black dark:interact:text-white sm:transition"
@@ -94,15 +102,18 @@ export const exploreItems = [
             </div>
         ))}
     </div>
+    </div>
 </section>
 
 {/* Books */}
-<section class="not-prose mb-16">
-    <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">Books</h2>
-    <div class="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-8">
+<section class="mb-16">
+    <h2 id="books">
+        <a href="#books" class="no-underline interact:underline">Books</a>
+    </h2>
+    <div class="not-prose grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-8">
         {books.map(book => (
             <a href={book.href} target="_blank" rel="noopener noreferrer"
-               class="group font-chicago text-sm text-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 interact:underline">
+               class="group text-sm font-medium text-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 interact:underline">
                 <Image src={book.img} alt={book.title} width={280} class="mb-3 rounded-sm group-interact:-translate-y-0.5" />
                 {book.title}
             </a>
@@ -111,13 +122,14 @@ export const exploreItems = [
 </section>
 
 {/* Community */}
-{[
-    { title: "Community", gridClass: "grid grid-cols-1 sm:grid-cols-2 gap-4", centered: false, items: communityItems },
-    { title: "Keep Exploring", gridClass: "grid grid-cols-1 sm:grid-cols-3 gap-4", centered: true, items: exploreItems },
-].map((section) => (
-    <section class="not-prose mb-16">
-        <h2 class="font-sans text-xs font-medium uppercase tracking-widest text-neutral-600 dark:text-neutral-400 mb-6">{section.title}</h2>
-        <div class={section.gridClass}>
+{linkSections.map((section) => (
+    <section class="mb-16">
+        <h2 id={section.id}>
+            <a href={`#${section.id}`} class="no-underline interact:underline">
+                {section.title}
+            </a>
+        </h2>
+        <div class:list={["not-prose", section.gridClass]}>
             {section.items.map((item) => (
                 <div class="card lg group relative isolate p-5 overflow-hidden outline-hidden interact:border-neutral-300 dark:interact:border-neutral-600 interact:bg-neutral-50 dark:interact:bg-neutral-875 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-neutral-500 dark:has-[:focus-visible]:ring-neutral-400">
                     <div class:list={[
@@ -126,8 +138,11 @@ export const exploreItems = [
                     ]}>
                         <i class={`${item.icon} ${section.centered ? 'size-8' : 'size-7'} text-neutral-500 dark:text-neutral-450 shrink-0 group-interact:text-neutral-700 dark:group-interact:text-neutral-300`}></i>
                         <div class:list={["min-w-0", section.centered || "flex-1"]}>
-                            <h3 class="font-chicago text-sm text-neutral-900 dark:text-neutral-100 mb-1 sm:mb-2">
-                                <a href={item.url} target={item.target} rel={item.rel}
+                            <h3 class="font-sans text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-1 sm:mb-2">
+                                <a href={item.url}
+                                   target={item.target}
+                                   rel={item.rel}
+                                   hx-boost={section.id === "community" ? "false" : undefined}
                                    class="outline-hidden text-neutral-700 dark:text-neutral-300 group-interact:text-neutral-900 dark:group-interact:text-white">
                                     {item.title}
                                     <span class="absolute inset-0 z-10"></span>

@@ -166,6 +166,7 @@ var htmx = (() => {
             this.#actionSelector = this.__prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]');
             this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.__prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
             this.#internalAPI = {
+                HCON,
                 attributeValue: this.__attributeValue.bind(this),
                 parseTriggerSpecs: this.__parseTriggerSpecs.bind(this),
                 determineMethodAndAction: this.__determineMethodAndAction.bind(this),
@@ -342,34 +343,23 @@ var htmx = (() => {
         }
 
         __determineMethodAndAction(elt, evt) {
-            if (this.__isBoosted(elt)) {
-                return this.__boostedMethodAndAction(elt, evt)
-            } else {
-                let method = this.__attributeValue(elt, "hx-method") || "GET"
-                let action = this.__attributeValue(elt, "hx-action");
-                if (!action) {
-                    for (let verb of this.#verbs) {
-                        let verbAction = this.__attributeValue(elt, "hx-" + verb);
-                        if (verbAction != null) {
-                            action = verbAction;
-                            method = verb;
-                            break;
-                        }
+            let method = this.__attributeValue(elt, "hx-method");
+            let action = this.__attributeValue(elt, "hx-action");
+            if (!action) {
+                for (let verb of this.#verbs) {
+                    let verbAction = this.__attributeValue(elt, "hx-" + verb);
+                    if (verbAction != null) {
+                        action = verbAction;
+                        method = verb;
+                        break;
                     }
                 }
-                method = method.toUpperCase()
-                return {action, method}
             }
-        }
-
-        __boostedMethodAndAction(elt, evt) {
-            if (elt.matches("a")) {
-                return {action: elt.getAttribute("href"), method: "GET"}
-            } else {
-                let action = evt.submitter?.getAttribute?.("formAction") || elt.getAttribute("action");
-                let method = evt.submitter?.getAttribute?.("formMethod") || elt.getAttribute("method") || "GET";
-                return {action, method: method.toUpperCase()}
+            if (this.__isBoosted(elt)) {
+                action ||= evt.submitter?.getAttribute?.("formAction") || elt.getAttribute(elt.matches("a") ? "href" : "action");
             }
+            method ||= evt.submitter?.getAttribute?.("formmethod") || elt.getAttribute("method") || "GET";
+            return {action, method: method.toUpperCase()};
         }
 
         __htmxProp(elt) {
@@ -537,7 +527,7 @@ var htmx = (() => {
             })
 
             if (!this.__trigger(elt, "htmx:config:request", {ctx: ctx})) return
-            if (!this.#verbs.includes(ctx.request.method.toLowerCase())) return
+            if (ctx.request.method === 'DIALOG') return
 
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
             if (javascriptContent != null) {
@@ -1220,7 +1210,7 @@ var htmx = (() => {
             }
             if (swapSpec.show === 'top' || swapSpec.show === 'bottom') {
                 let showTarget = swapSpec.showTarget ? this.__findExt(swapSpec.showTarget) : target;
-                showTarget?.scrollIntoView(swapSpec.show === 'top')
+                showTarget?.scrollIntoView?.(swapSpec.show === 'top')
             }
         }
 
@@ -1297,7 +1287,7 @@ var htmx = (() => {
                 if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
                 this.__handleAnchorScroll(ctx);
             } finally {
-                this.__trigger(ctx.sourceElement, "htmx:swap:finally", {ctx});
+                this.__trigger(ctx.sourceElement, "htmx:finally:swap", {ctx});
             }
         }
 
@@ -1813,35 +1803,36 @@ var htmx = (() => {
         __addInputValues(elt, included, formData, isGet) {
             let tag = elt.tagName;
             let inputs = [];
-            if (tag === 'BUTTON') {
-                inputs = [elt]; // buttons only send own value, never collect children
+            if (tag === 'BUTTON' || tag.includes('-')) {
+                inputs = [elt]; // send own value only, never collect children
             } else if (['INPUT', 'SELECT', 'TEXTAREA', 'FIELDSET'].includes(tag) || !isGet) {
-                inputs = this.__queryEltAndDescendants(elt, 'input, select, textarea');
+                inputs = this.__queryEltAndDescendants(elt, '[name]:not(button)');
             }
             // GET on non-form-control containers (div, etc.) sends nothing — use hx-include for explicit inclusion
 
             for (let input of inputs) {
-                if (!input.name || input.matches(':disabled') || included.has(input)) continue;
+                let name = input.name || input.getAttribute?.('name');
+                if (!name || input.matches(':disabled') || included.has(input)) continue;
                 included.add(input);
 
                 let type = input.type;
-                if (type === 'checkbox' || type === 'radio') {
+                if (type === 'checkbox' || type === 'radio' || (input.tagName !== 'INPUT' && 'checked' in input)) {
                     // Only add if checked
                     if (input.checked) {
-                        formData.append(input.name, input.value);
+                        formData.append(name, input.value);
                     }
                 } else if (type === 'file') {
                     // Add all selected files
                     for (let file of input.files) {
-                        formData.append(input.name, file);
+                        formData.append(name, file);
                     }
                 } else if (type === 'select-multiple') {
                     // Add all selected options
                     for (let option of input.selectedOptions) {
-                        formData.append(input.name, option.value);
+                        formData.append(name, option.value);
                     }
                 } else {
-                    formData.append(input.name, input.value);
+                    formData.append(name, input.value);
                 }
             }
         }
@@ -2059,6 +2050,7 @@ var htmx = (() => {
                     let placeholder = document.createElement(newChild.tagName);
                     oldParent.insertBefore(placeholder, insertionPoint);
                     this.__morphNode(placeholder, newChild, ctx);
+                    this.process(placeholder);
                     insertionPoint = placeholder.nextSibling;
                 } else {
                     oldParent.insertBefore(newChild, insertionPoint);
@@ -2126,10 +2118,6 @@ var htmx = (() => {
             }
             // Script tags must be identical to match - never patch a script with different content
             if (oldNode.tagName === 'SCRIPT' && !oldNode.isEqualNode(newNode)) return false;
-            // If both have Alpine reactive ID bindings, ignore ID mismatch
-            if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
-                return true;
-            }
             return !oldNode.id || oldNode.id === newNode.id;
         }
 

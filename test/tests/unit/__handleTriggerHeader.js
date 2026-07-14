@@ -141,4 +141,81 @@ describe('__handleTriggerHeader unit tests', function() {
         assert.equal(eventDetail.value, 42)
     })
 
+    it('works with hx-on listeners using from:body', function () {
+        let root = createProcessedHTML(`
+            <div>
+                <button id="source"></button>
+                <div id="listener" hx-on="myEvent from:body -> this.classList.add('updated')"></div>
+            </div>
+        `)
+        let source = root.querySelector('#source')
+        let listener = root.querySelector('#listener')
+
+        htmx.__handleTriggerHeader('myEvent', source)
+
+        assert.isTrue(listener.classList.contains('updated'))
+    })
+
+    it('exposes scalar event detail as value in hx-on handlers', function () {
+        let root = createProcessedHTML(`
+            <div>
+                <button id="source"></button>
+                <div id="listener" hx-on="notification from:body -> this.dataset.value = value"></div>
+            </div>
+        `)
+        let source = root.querySelector('#source')
+        let listener = root.querySelector('#listener')
+
+        htmx.__handleTriggerHeader('{"notification":"Hello World"}', source)
+
+        assert.equal(listener.dataset.value, 'Hello World')
+    })
+
+    it('exposes nested event detail properties in hx-on handlers', function () {
+        let root = createProcessedHTML(`
+            <div>
+                <button id="source"></button>
+                <div id="listener" hx-on="notification from:body -> this.dataset.level = level; this.textContent = message"></div>
+            </div>
+        `)
+        let source = root.querySelector('#source')
+        let listener = root.querySelector('#listener')
+
+        htmx.__handleTriggerHeader('{"notification":{"level":"info", "message":"Saved"}}', source)
+
+        assert.equal(listener.dataset.level, 'info')
+        assert.equal(listener.textContent, 'Saved')
+    })
+
+    it('fires multiple events with independent detail values for hx-on handlers', function () {
+        let root = createProcessedHTML(`
+            <div>
+                <button id="source"></button>
+                <div id="listener" hx-on="notification from:body -> this.textContent = value; refreshList from:body -> this.dataset.refresh = value"></div>
+            </div>
+        `)
+        let source = root.querySelector('#source')
+        let listener = root.querySelector('#listener')
+
+        htmx.__handleTriggerHeader('{"notification":"Saved", "refreshList":true}', source)
+
+        assert.equal(listener.textContent, 'Saved')
+        assert.equal(listener.dataset.refresh, 'true')
+    })
+
+    it('dispatches targeted events to the selected element', function () {
+        let root = createProcessedHTML(`
+            <div>
+                <button id="source"></button>
+                <div id="notifications" hx-on="notification -> this.textContent = message"></div>
+            </div>
+        `)
+        let source = root.querySelector('#source')
+        let notifications = root.querySelector('#notifications')
+
+        htmx.__handleTriggerHeader('{"notification":{"target":"#notifications", "message":"Saved"}}', source)
+
+        assert.equal(notifications.textContent, 'Saved')
+    })
+
 });

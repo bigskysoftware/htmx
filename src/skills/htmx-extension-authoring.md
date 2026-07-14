@@ -98,6 +98,7 @@ Hook names use underscores (not colons). All hooks receive `(elt, detail)` unles
 |------|-------|-------------|
 | `htmx_before_swap` | `htmx:before:swap` | Before content swap |
 | `htmx_after_swap` | `htmx:after:swap` | After content swap |
+| `htmx_finally_swap` | `htmx:finally:swap` | After swap (success or error) |
 | `htmx_before_settle` | `htmx:before:settle` | Before settle phase |
 | `htmx_after_settle` | `htmx:after:settle` | After settle phase |
 | `handle_swap` | _(direct call)_ | Custom swap handler. Signature: `(swapStyle, target, fragment, swapSpec)`. Return truthy if handled. |

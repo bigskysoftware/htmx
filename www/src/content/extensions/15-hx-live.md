@@ -501,6 +501,34 @@ For a single inline section, native [`<details>`](https://developer.mozilla.org/
 <div role="slider" :aria-valuenow="q('#slider').valueAsNumber"></div>
 ```
 
+## Advanced Examples
+
+### Auto-clearing flash messages
+
+Server response:
+
+```http
+HX-Trigger: {"flash":{"target":"#flash", "level":"success", "message":"Saved"}}
+```
+
+Client state:
+
+```html
+<style>
+#flash:empty { display: none; }
+</style>
+
+<div id="flash"
+     data-message=""
+     data-level=""
+     hx-on="flash -> data.message = message; data.level = level;
+                     await timeout(3000);
+                     data.message = ''"
+     :text="data.message"
+     :.success="data.level === 'success'"
+     :.error="data.level === 'error'"></div>
+```
+
 ## How it works
 
 ### Re-run triggers
@@ -523,7 +551,7 @@ If recomputes exceed 50/sec, the extension logs a warning. Bindings continue run
 
 ### Coordinating with htmx swaps
 
-Recomputes are deferred between [`htmx:before:swap`](/reference/events/htmx-before-swap) and [`htmx:swap:finally`](/reference/events/htmx-swap-finally). One consolidated recompute runs when the swap finishes, regardless of how much markup changed.
+Recomputes are deferred between [`htmx:before:swap`](/reference/events/htmx-before-swap) and [`htmx:finally:swap`](/reference/events/htmx-finally-swap). One consolidated recompute runs when the swap finishes, regardless of how much markup changed.
 
 ### Cleanup
 

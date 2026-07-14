@@ -37,8 +37,8 @@ test.describe('Smoke tests', () => {
         '/reference/attributes/hx-get',
         '/reference/headers/HX-Request',
         '/reference/events',
-        '/patterns/loading/click-to-load',
-        '/patterns/forms/active-search',
+        '/patterns/click-to-load',
+        '/patterns/active-search',
         '/essays/locality-of-behaviour',
     ];
 

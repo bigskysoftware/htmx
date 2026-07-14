@@ -1,104 +1,73 @@
 {
   "$schema": "https://json.schemastore.org/web-types",
   "name": "htmx",
-  "version": "4.0.0-alpha.6",
+  "version": "4.0.0-beta5",
   "default-icon": "./htmx.svg",
   "js-types-syntax": "typescript",
   "description-markup": "markdown",
   "contributions": {
     "html": {
+      "elements": [
+        {
+          "name": "hx-partial",
+          "description": "Routes response content to a specific target. Use `hx-target` or `id` to choose the destination and `hx-swap` to choose the swap style.",
+          "doc-url": "https://four.htmx.org/docs#partials-hx-partial"
+        }
+      ],
       "attributes": [
         {
-          "name": "hx-action",
-          "description": "The `hx-action` attribute specifies the URL to make a request to. This attribute should be used with `hx-method` to specify the HTTP method.\n\n```html\n<button hx-method=\"POST\" hx-action=\"/api/data\">\n  Submit\n</button>\n```\n\nThis provides an alternative to the verb-specific attributes like `hx-get`, `hx-post`, etc.",
-          "doc-url": "https://htmx.org/attributes/hx-action/"
+          "name": "hx-get",
+          "description": "Issues a `GET` request to the specified URL and swaps the response into the DOM.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-get"
         },
         {
-          "name": "hx-boost",
-          "description": "The `hx-boost` attribute allows you to \"boost\" normal anchors and form tags to use AJAX instead.  This\nhas the [nice fallback](https://en.wikipedia.org/wiki/Progressive_enhancement) that, if the user does not \nhave javascript enabled, the site will continue to work.\n\nFor anchor tags, clicking on the anchor will issue a `GET` request to the url specified in the `href` and\nwill push the url so that a history entry is created.  The target is the `<body>` tag, and the `innerHTML`\nswap strategy is used by default.  All of these can be modified by using the appropriate attributes, except\nthe `click` trigger.",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-boost:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-boost/"
+          "name": "hx-post",
+          "description": "Issues a `POST` request to the specified URL and swaps the response into the DOM.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-post"
         },
         {
-          "name": "hx-config",
-          "description": "The `hx-config` attribute allows you to configure various aspects of the request behavior using JSON syntax.\n\nYou can configure:\n* Request validation\n* SSE (Server-Sent Events) settings\n* Transition settings\n\nExample:\n```html\n<div hx-config='{\"validate\": false, \"transition\": false}'>\n  ...\n</div>\n```",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-config:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-config/"
+          "name": "hx-put",
+          "description": "Issues a `PUT` request to the specified URL and swaps the response into the DOM.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-put"
         },
         {
-          "name": "hx-confirm",
-          "description": "The `hx-confirm` attribute allows you to confirm an action before issuing a request.  This can be useful\nin cases where the action is destructive and you want to ensure that the user really wants to do it.\n\nIn htmx 4, you can also use an async JavaScript function for custom confirmation dialogs.\n\nExample with simple confirmation:\n```html\n<button hx-delete=\"/account\" hx-confirm=\"Are you sure you wish to delete your account?\">\n  Delete My Account\n</button>\n```\n\nExample with async JavaScript:\n```html\n<button hx-delete=\"/account\" hx-confirm=\"js:await customConfirm()\">\n  Delete My Account\n</button>\n```",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-confirm:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-confirm/"
+          "name": "hx-patch",
+          "description": "Issues a `PATCH` request to the specified URL and swaps the response into the DOM.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-patch"
         },
         {
           "name": "hx-delete",
-          "description": "The `hx-delete` attribute will cause an element to issue a `DELETE` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-delete=\"/account\" hx-target=\"body\">\n  Delete Your Account\n</button>\n```",
-          "doc-url": "https://htmx.org/attributes/hx-delete/"
+          "description": "Issues a `DELETE` request to the specified URL and swaps the response into the DOM.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-delete"
         },
         {
-          "name": "hx-disable",
-          "description": "The `hx-disable` attribute allows you to disable elements for the duration of a request. The value of this attribute can be:\n\n* A CSS query selector of the element to disable.\n* `this` to disable the element itself\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector\n* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector\n* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.\n\nNote: This was called `hx-disabled-elt` in htmx 2.x.",
+          "name": "hx-trigger",
+          "description": "Controls which event specifications trigger an element's request. Supports filters and modifiers such as `delay`, `throttle`, `once`, `changed`, `from`, and `target`.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-trigger"
+        },
+        {
+          "name": "hx-swap",
+          "description": "Controls how response content is inserted. Supports swap styles such as `innerHTML`, `outerHTML`, `textContent`, `beforebegin`, `afterbegin`, `beforeend`, `afterend`, `innerMorph`, `outerMorph`, `outerSync`, `delete`, `none`, and extension-provided styles.",
           "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-disable:inherited`) to make this attribute inherit to child elements"
+            "Inheritance": "Use the :inherited modifier (for example, `hx-swap:inherited`) to apply this attribute to htmx requests in child elements."
           },
-          "doc-url": "https://htmx.org/attributes/hx-disable/"
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-swap"
         },
         {
-          "name": "hx-encoding",
-          "description": "The `hx-encoding` attribute allows you to switch the request encoding from the usual `application/x-www-form-urlencoded`\nencoding to `multipart/form-data`, usually to support file uploads in an ajax request.\n\nThe value of this attribute should be `multipart/form-data`.",
+          "name": "hx-target",
+          "description": "Specifies where to insert the response content. Accepts CSS selectors, `this`, and htmx extended selectors such as `closest`, `find`, `next`, and `previous`.",
           "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-encoding:inherited`) to make this attribute inherit to child elements"
+            "Inheritance": "Use the :inherited modifier (for example, `hx-target:inherited`) to apply this attribute to htmx requests in child elements."
           },
-          "doc-url": "https://htmx.org/attributes/hx-encoding/"
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-target"
         },
         {
-          "name": "hx-get",
-          "description": "The `hx-get` attribute will cause an element to issue a `GET` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n  <button hx-get=\"/example\">Get Some HTML</button>\n```",
-          "doc-url": "https://htmx.org/attributes/hx-get/"
-        },
-        {
-          "name": "hx-headers",
-          "description": "The `hx-headers` attribute allows you to add to the headers that will be submitted with an AJAX request.\n\nBy default, the value of this attribute is a list of name-expression values in [JSON (JavaScript Object Notation)](https://www.json.org/json-en.html)\nformat.",
+          "name": "hx-select",
+          "description": "Selects the part of the response to swap into the target. The value is a CSS selector.",
           "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-headers:inherited`) to make this attribute inherit to child elements"
+            "Inheritance": "Use the :inherited modifier (for example, `hx-select:inherited`) to apply this attribute to htmx requests in child elements."
           },
-          "doc-url": "https://htmx.org/attributes/hx-headers/"
-        },
-        {
-          "name": "hx-ignore",
-          "description": "The `hx-ignore` attribute will disable htmx processing for a given element and all its children.  This can be \nuseful as a backup for HTML escaping, when you include user generated content in your site, and you want to \nprevent malicious scripting attacks.\n\nThe value of the tag is ignored, and it cannot be reversed by any content beneath it.\n\nNote: This replaces `hx-disable` from htmx 2.x, which served this purpose.",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-ignore:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-ignore/"
-        },
-        {
-          "name": "hx-include",
-          "description": "The `hx-include` attribute allows you to include additional element values in an AJAX request. The value of this\nattribute can be:\n\n* A CSS query selector of the elements to include.\n* `this` which will include the descendants of the element.\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-include:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-include/"
-        },
-        {
-          "name": "hx-indicator",
-          "description": "The `hx-indicator` attribute allows you to specify the element that will have the `htmx-request` class\nadded to it for the duration of the request. This can be used to show spinners or progress indicators\nwhile the request is in flight.\n\nThe value of this attribute is a CSS query selector of the element or elements to apply the class to,\nor the keyword [`closest`](https://developer.mozilla.org/docs/Web/API/Element/closest), followed by a CSS selector, \nwhich will find the closest ancestor element or itself, that matches the given CSS selector (e.g. `closest tr`);",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-indicator:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-indicator/"
-        },
-        {
-          "name": "hx-method",
-          "description": "The `hx-method` attribute specifies the HTTP method to use for a request. This attribute should be used with `hx-action` to specify the URL.\n\n```html\n<button hx-method=\"POST\" hx-action=\"/api/data\">\n  Submit\n</button>\n```\n\nValid values are: GET, POST, PUT, PATCH, DELETE\n\nThis provides an alternative to the verb-specific attributes like `hx-get`, `hx-post`, etc.",
-          "doc-url": "https://htmx.org/attributes/hx-method/"
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-select"
         },
         {
           "name": "hx-on",
@@ -126,118 +95,242 @@
               }
             ]
           },
-          "description": "The `hx-on*` attributes allow you to embed scripts inline to respond to events directly on an element; similar to the \n[`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties) found in HTML, such as `onClick`.\n\nThe `hx-on*` attributes improve upon `onevent` by enabling the handling of any arbitrary JavaScript event,\nfor enhanced [Locality of Behaviour (LoB)](/essays/locality-of-behaviour/) even when dealing with non-standard DOM events. For example, these\nattributes allow you to handle [htmx events](/reference#events).",
-          "description-sections": {},
-          "doc-url": "https://htmx.org/attributes/hx-on/"
-        },
-        {
-          "name": "hx-patch",
-          "description": "The `hx-patch` attribute will cause an element to issue a `PATCH` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-patch=\"/account\" hx-target=\"body\">\n  Patch Your Account\n</button>\n```",
-          "doc-url": "https://htmx.org/attributes/hx-patch/"
-        },
-        {
-          "name": "hx-post",
-          "description": "The `hx-post` attribute will cause an element to issue a `POST` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-post=\"/account/enable\" hx-target=\"body\">\n  Enable Your Account\n</button>\n```",
-          "doc-url": "https://htmx.org/attributes/hx-post/"
-        },
-        {
-          "name": "hx-preserve",
-          "description": "The `hx-preserve` attribute allows you to keep an element unchanged during HTML replacement.\nElements with `hx-preserve` set are preserved by `id` when htmx updates any ancestor element.\nYou *must* set an unchanging `id` on elements for `hx-preserve` to work.\nThe response requires an element with the same `id`, but its type and other attributes are ignored.",
-          "doc-url": "https://htmx.org/attributes/hx-preserve/"
-        },
-        {
-          "name": "hx-push-url",
-          "description": "The `hx-push-url` attribute allows you to push a URL into the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).\nThis creates a new history entry, allowing navigation with the browser's back and forward buttons.\nhtmx snapshots the current DOM and saves it into its history cache, and restores from this cache on navigation.\n\nThe possible values of this attribute are:\n\n1. `true`, which pushes the fetched URL into history.\n2. `false`, which disables pushing the fetched URL if it would otherwise be pushed due to inheritance or [`hx-boost`](/attributes/hx-boost).\n3. A URL to be pushed into the location bar.\n   This may be relative or absolute, as per [`history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState).",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-push-url:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-push-url/"
-        },
-        {
-          "name": "hx-put",
-          "description": "The `hx-put` attribute will cause an element to issue a `PUT` to the specified URL and swap\nthe HTML into the DOM using a swap strategy:\n\n```html\n<button hx-put=\"/account\" hx-target=\"body\">\n  Put Money In Your Account\n</button>\n```",
-          "doc-url": "https://htmx.org/attributes/hx-put/"
-        },
-        {
-          "name": "hx-replace-url",
-          "description": "The `hx-replace-url` attribute allows you to replace the current url of the browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).\n\nThe possible values of this attribute are:\n\n1. `true`, which replaces the fetched URL in the browser navigation bar.\n2. `false`, which disables replacing the fetched URL if it would otherwise be replaced due to inheritance.\n3. A URL to be replaced into the location bar.\n   This may be relative or absolute, as per [`history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState).",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-replace-url:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-replace-url/"
-        },
-        {
-          "name": "hx-select-oob",
-          "description": "The `hx-select-oob` attribute allows you to select content from a response to be swapped in via an out-of-band swap.  \nThe value of this attribute is comma separated list of elements to be swapped out of band.  This attribute is almost\nalways paired with [hx-select](@/attributes/hx-select.md).\n\nHere is an example that selects a subset of the response content:\n\n```html\n<div>\n   <div id=\"alert\"></div>\n    <button hx-get=\"/info\" \n            hx-select=\"#info-details\" \n            hx-swap=\"outerHTML\"\n            hx-select-oob=\"#alert\">\n        Get Info!\n    </button>\n</div>\n```",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-select-oob:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-select-oob/"
-        },
-        {
-          "name": "hx-select",
-          "description": "The `hx-select` attribute allows you to select the content you want swapped from a response.  The value of\nthis attribute is a CSS query selector of the element or elements to select from the response.\n\nHere is an example that selects a subset of the response content:\n\n```html\n<div>\n    <button hx-get=\"/info\" hx-select=\"#info-detail\" hx-swap=\"outerHTML\">\n        Get Info!\n    </button>\n</div>\n```",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-select:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-select/"
-        },
-        {
-          "name": "hx-swap-oob",
-          "description": "The `hx-swap-oob` attribute allows you to specify that some content in a response should be\nswapped into the DOM somewhere other than the target, that is \"Out of Band\".  This allows you to piggyback updates to other element updates on a response.\n\nConsider the following response HTML:\n\n```html\n<div>\n ...\n</div>\n<div id=\"alerts\" hx-swap-oob=\"true\">\n    Saved!\n</div>",
-          "doc-url": "https://htmx.org/attributes/hx-swap-oob/"
-        },
-        {
-          "name": "hx-swap",
-          "description": "The `hx-swap` attribute allows you to specify how the response will be swapped in relative to the\n[target](@/attributes/hx-target.md) of an AJAX request. If you do not specify the option, the default is\n`htmx.config.defaultSwapStyle` (`innerHTML`).\n\nThe possible values of this attribute are:\n\n* `innerHTML` - Replace the inner html of the target element\n* `outerHTML` - Replace the entire target element with the response\n* `textContent` - Replace the text content of the target element, without parsing the response as HTML\n* `beforebegin` - Insert the response before the target element\n* `afterbegin` - Insert the response before the first child of the target element\n* `beforeend` - Insert the response after the last child of the target element\n* `afterend` - Insert the response after the target element\n* `delete` - Deletes the target element regardless of the response\n* `none`- Does not append content from response (out of band items will still be processed).\n* `morph` - Morphs the target element with the response (requires morphing extension or built-in morphing)\n* `morph:outerHTML` - Morphs the outer HTML of the target element\n* `morph:innerHTML` - Morphs the inner HTML of the target element",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-swap:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-swap/"
-        },
-        {
-          "name": "hx-sync",
-          "description": "The `hx-sync` attribute allows you to synchronize AJAX requests between multiple elements.\n\nThe `hx-sync` attribute consists of a CSS selector to indicate the element to synchronize on, followed optionally\nby a colon and then by an optional syncing strategy.  The available strategies are:\n\n* `drop` - drop (ignore) this request if an existing request is in flight (the default)\n* `abort` - drop (ignore) this request if an existing request is in flight, and, if that is not the case, \n            *abort* this request if another request occurs while it is still in flight\n* `replace` - abort the current request, if any, and replace it with this request\n* `queue` - place this request in the request queue associated with the given element",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-sync:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-sync/"
-        },
-        {
-          "name": "hx-target",
-          "description": "The `hx-target` attribute allows you to target a different element for swapping than the one issuing the AJAX\nrequest.  The value of this attribute can be:\n\n* A CSS query selector of the element to target.\n* `this` which indicates that the element that the `hx-target` attribute is on is the target.\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.\n* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.\n* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.",
-          "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-target:inherited`) to make this attribute inherit to child elements"
-          },
-          "doc-url": "https://htmx.org/attributes/hx-target/"
-        },
-        {
-          "name": "hx-trigger",
-          "description": "The `hx-trigger` attribute allows you to specify what triggers an AJAX request.  A trigger\nvalue can be one of the following:\n\n* An event name (e.g. \"click\" or \"my-custom-event\") followed by an event filter and a set of event modifiers\n* A polling definition of the form `every <timing declaration>`\n* A comma-separated list of such events",
-          "doc-url": "https://htmx.org/attributes/hx-trigger/"
-        },
-        {
-          "name": "hx-validate",
-          "description": "The `hx-validate` attribute will cause an element to validate itself by way of the [HTML5 Validation API](@/docs.md#validation)\nbefore it submits a request.\n\nOnly `<form>` elements validate data by default, but other elements do not. Adding `hx-validate=\"true\"` to `<input>`, `<textarea>` or `<select>` enables validation before sending requests.",
-          "doc-url": "https://htmx.org/attributes/hx-validate/"
+          "description": "Wires inline JavaScript to run when an event fires. Use `hx-on:event` for any DOM event, or `hx-on::event` as shorthand for `hx-on:htmx:event`.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-on"
         },
         {
           "name": "hx-vals",
-          "description": "The `hx-vals` attribute allows you to add to the parameters that will be submitted with an AJAX request.\n\nBy default, the value of this attribute is a list of name-expression values in [JSON (JavaScript Object Notation)](https://www.json.org/json-en.html)\nformat.\n\nIn htmx 4, you can use the `js:` prefix to evaluate JavaScript expressions:\n\n```html\n<button hx-post=\"/api/data\" hx-vals='js:{token: getAuthToken()}'>\n  Submit\n</button>\n```",
+          "description": "Adds values to request parameters. Accepts HCON/JSON, and can evaluate JavaScript expressions with the `js:` prefix.",
           "description-sections": {
-            "Inheritance": "Use the :inherited modifier (e.g., `hx-vals:inherited`) to make this attribute inherit to child elements"
+            "Inheritance": "Use the :inherited modifier (for example, `hx-vals:inherited`) to apply this attribute to htmx requests in child elements."
           },
-          "doc-url": "https://htmx.org/attributes/hx-vals/"
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-vals"
+        },
+        {
+          "name": "hx-include",
+          "description": "Includes additional element values in the request. Accepts CSS selectors, `this`, and htmx extended selectors.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-include:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-include"
+        },
+        {
+          "name": "hx-swap-oob",
+          "description": "Marks response elements to swap into the page out of band, outside the normal target.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-swap-oob"
+        },
+        {
+          "name": "hx-select-oob",
+          "description": "Selects response elements to swap into the page out of band.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-select-oob:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-select-oob"
+        },
+        {
+          "name": "hx-push-url",
+          "description": "Pushes a URL into browser history after a request. Accepts `true`, `false`, or a URL.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-push-url:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-push-url"
+        },
+        {
+          "name": "hx-replace-url",
+          "description": "Replaces the current browser history URL after a request. Accepts `true`, `false`, or a URL.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-replace-url:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-replace-url"
+        },
+        {
+          "name": "hx-headers",
+          "description": "Adds custom headers to the request. Accepts HCON/JSON, and can evaluate JavaScript expressions with the `js:` prefix.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-headers:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-headers"
+        },
+        {
+          "name": "hx-encoding",
+          "description": "Sets the request encoding type. Use `multipart/form-data` for file uploads.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-encoding:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-encoding"
+        },
+        {
+          "name": "hx-indicator",
+          "description": "Specifies the element or elements that receive the `htmx-request` class while the request is in flight.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-indicator:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-indicator"
+        },
+        {
+          "name": "hx-boost",
+          "description": "Converts eligible links and forms to htmx-powered requests while preserving progressive enhancement. Can carry boost-specific request config.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-boost:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-boost"
+        },
+        {
+          "name": "hx-sync",
+          "description": "Synchronizes requests between elements using strategies such as `drop`, `abort`, `replace`, `queue first`, `queue last`, and `queue all`.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-sync:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-sync"
+        },
+        {
+          "name": "hx-confirm",
+          "description": "Shows a confirmation dialog before issuing a request. A `js:` value can run custom confirmation logic.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-confirm:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-confirm"
+        },
+        {
+          "name": "hx-validate",
+          "description": "Runs HTML5 constraint validation before sending the request.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-validate"
+        },
+        {
+          "name": "hx-disable",
+          "description": "Disables selected elements while the request is in flight.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-disable:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-disable"
+        },
+        {
+          "name": "hx-ignore",
+          "description": "Disables htmx processing for the element and its descendants.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-ignore"
+        },
+        {
+          "name": "hx-preserve",
+          "description": "Preserves an element with a stable `id` across swaps when the response contains a matching element.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-preserve"
+        },
+        {
+          "name": "hx-preload",
+          "description": "Preloads content before the user triggers a request. Requires the preload extension.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-preload:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-preload"
+        },
+        {
+          "name": "hx-optimistic",
+          "description": "Shows optimistic UI content from a template while a request is in flight. Requires the optimistic extension.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-optimistic"
+        },
+        {
+          "name": "hx-status",
+          "pattern": {
+            "regex": "hx-status:(\\d{3}|\\d{2}[xX]|\\d[xX]{2})"
+          },
+          "description": "Overrides swap behavior for specific HTTP response status codes. Supports exact codes such as `404` and wildcard patterns such as `50x` and `5xx`.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-status"
+        },
+        {
+          "name": "hx-action",
+          "description": "Specifies the URL that receives the request. Use with `hx-method` or as the shared action for verb-specific attributes.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-action"
+        },
+        {
+          "name": "hx-method",
+          "description": "Specifies the HTTP method to use with `hx-action`. Valid methods are `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-method"
+        },
+        {
+          "name": "hx-config",
+          "description": "Configures per-request behavior using HCON or JSON. Values are merged into the request config; `mode` is always reset to the global `htmx.config.mode`.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-config:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-config"
+        },
+        {
+          "name": "hx-history-elt",
+          "description": "Marks the element that htmx swaps when restoring browser history. If absent, htmx falls back to the body element.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-history-elt"
         },
         {
           "name": "hx-sse:connect",
-          "description": "Establishes a persistent SSE connection to the specified URL. Requires the SSE extension.\n\nDefaults to trigger on `load`, auto-reconnect with exponential backoff, and pause on background tab.\n\n```html\n<div hx-sse:connect=\"/stream\" hx-swap=\"beforeend\">\n  Messages appear here\n</div>\n```",
-          "doc-url": "https://htmx.org/extensions/sse/#hx-sseconnect"
+          "description": "Establishes a persistent Server-Sent Events connection. Defaults to loading immediately, reconnecting with exponential backoff, and pausing on background tabs.",
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#hx-sseconnect"
         },
         {
           "name": "hx-sse:close",
-          "description": "Closes an SSE connection when a named event matching the attribute value is received from the server.\n\n```html\n<div hx-sse:connect=\"/stream\" hx-sse:close=\"done\">\n  Streaming until server sends \"done\"...\n</div>\n```",
-          "doc-url": "https://htmx.org/extensions/sse/#hx-sseclose"
+          "description": "Closes an SSE connection when a named event matching the attribute value is received from the server.",
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#hx-sseclose"
+        },
+        {
+          "name": "hx-ws:connect",
+          "description": "Establishes a WebSocket connection to the specified URL. Requires the WebSocket extension.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#usage"
+        },
+        {
+          "name": "hx-ws:send",
+          "description": "Sends form data and `hx-vals` to a WebSocket when the element is triggered. Requires the WebSocket extension.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#sending-messages"
+        },
+        {
+          "name": "hx-head",
+          "description": "Controls how the head-support extension merges or appends response `<head>` content.",
+          "doc-url": "https://four.htmx.org/extensions/hx-head#controlling-merge-behavior"
+        },
+        {
+          "name": "hx-browser-indicator",
+          "description": "Enables the browser native loading indicator for this element's requests when set to `true`. Requires the browser-indicator extension.",
+          "doc-url": "https://four.htmx.org/extensions/hx-browser-indicator#usage"
+        },
+        {
+          "name": "hx-targets",
+          "description": "Swaps the same response content into all elements matching the selector. Requires the targets extension.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-targets:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/extensions/hx-targets#usage"
+        },
+        {
+          "name": "hx-ptag",
+          "description": "Sets the initial per-element polling tag sent as the `HX-PTag` request header. Requires the ptag extension.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ptag#setting-an-initial-ptag"
+        },
+        {
+          "name": "hx-history",
+          "description": "Opts an element or page out of the history-cache extension when set to `false`.",
+          "doc-url": "https://four.htmx.org/extensions/hx-history-cache#usage"
+        },
+        {
+          "name": "hx-nonce",
+          "description": "Marks htmx elements as server-rendered trusted markup for the CSP extension nonce gate.",
+          "doc-url": "https://four.htmx.org/extensions/hx-csp#the-hx-nonce-attribute"
+        },
+        {
+          "name": "hx-live",
+          "description": "Runs a reactive expression whenever hx-live observes relevant DOM or state changes. Requires the hx-live extension.",
+          "doc-url": "https://four.htmx.org/extensions/hx-live#hx-live"
+        },
+        {
+          "name": "hx-live:*",
+          "pattern": {
+            "regex": "hx-live:.+"
+          },
+          "description": "Binds a reactive expression to an attribute, property, class, style, text, or HTML update. Requires the hx-live extension.",
+          "doc-url": "https://four.htmx.org/extensions/hx-live#hx-liveattr"
+        },
+        {
+          "name": "hx-prompt",
+          "description": "Prompts before a request, sends the answer as the `HX-Prompt` header, and aborts when the user cancels. Requires the prompt extension.",
+          "description-sections": {
+            "Inheritance": "Use the :inherited modifier (for example, `hx-prompt:inherited`) to apply this attribute to htmx requests in child elements."
+          },
+          "doc-url": "https://four.htmx.org/extensions/hx-prompt#usage"
         }
       ]
     },
@@ -245,28 +338,33 @@
       "classes": [
         {
           "name": "htmx-added",
-          "description": "Applied to a new piece of content before it is swapped, removed after it is settled.",
-          "doc-url": "https://htmx.org/reference/#classes"
+          "description": "Applied to newly inserted content before settling, then removed after the settle phase.",
+          "doc-url": "https://four.htmx.org/docs#css-transitions"
         },
         {
           "name": "htmx-indicator",
-          "description": "A dynamically generated class that will toggle visible (opacity:1) when a `htmx-request` class is present",
-          "doc-url": "https://htmx.org/reference/#classes"
+          "description": "Default indicator class hidden by htmx CSS until a containing or matching element receives `htmx-request`.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-indicator"
         },
         {
           "name": "htmx-request",
-          "description": "Applied to either the element or the element specified with [`hx-indicator`](@/attributes/hx-indicator.md) while a request is ongoing",
-          "doc-url": "https://htmx.org/reference/#classes"
+          "description": "Applied to the request indicator elements while a request is in flight.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-indicator"
         },
         {
           "name": "htmx-settling",
-          "description": "Applied to a target after content is swapped, removed after it is settled. The duration can be modified via [`hx-swap`](@/attributes/hx-swap.md).",
-          "doc-url": "https://htmx.org/reference/#classes"
+          "description": "Applied to a target during the settle phase, then removed after settling completes.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-swap#settle"
         },
         {
           "name": "htmx-swapping",
-          "description": "Applied to a target before any content is swapped, removed after it is swapped. The duration can be modified via [`hx-swap`](@/attributes/hx-swap.md).",
-          "doc-url": "https://htmx.org/reference/#classes"
+          "description": "Applied to a target during the swap delay, then removed when content is inserted.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-swap#swap"
+        },
+        {
+          "name": "hx-optimistic",
+          "description": "Applied to optimistic UI content inserted by the hx-optimistic extension.",
+          "doc-url": "https://four.htmx.org/extensions/hx-optimistic#styling"
         }
       ]
     },
@@ -284,163 +382,308 @@
               "#item:HTMX event"
             ]
           }
+        },
+        {
+          "name": "every",
+          "description": "Periodic polling event emitted by `hx-trigger=\"every <timing>\"`.",
+          "doc-url": "https://four.htmx.org/reference/events/every"
+        },
+        {
+          "name": "intersect",
+          "description": "Event emitted when an element observed by `hx-trigger=\"intersect\"` enters the viewport.",
+          "doc-url": "https://four.htmx.org/reference/events/intersect"
         }
       ],
       "htmx-events": [
         {
           "name": "abort",
-          "description": "This event is different than other events: htmx does not *trigger* it, but rather *listens* for it.\n\nIf you send an `htmx:abort` event to an element making a request, it will abort the request:\n\n```html\n<button id=\"request-button\" hx-post=\"/example\">Issue Request</button>\n<button onclick=\"htmx.trigger('#request-button', 'htmx:abort')\">Cancel Request</button>\n```",
-          "doc-url": "https://htmx.org/events/#htmx:abort"
-        },
-        {
-          "name": "after:cleanup",
-          "description": "This event is triggered after htmx has cleaned up an element.\n\n##### Details\n\n* `detail.elt` - the element that was cleaned up",
-          "doc-url": "https://htmx.org/events/#htmx:after:cleanup"
-        },
-        {
-          "name": "after:history:update",
-          "description": "This event is triggered after a history update has occurred.\n\n##### Details\n\n* `detail.path` - the path that was pushed or replaced in history",
-          "doc-url": "https://htmx.org/events/#htmx:after:history:update"
-        },
-        {
-          "name": "after:init",
-          "description": "This event is triggered after htmx has initialized a DOM node.\n\n##### Details\n\n* `detail.elt` - the element that was initialized",
-          "doc-url": "https://htmx.org/events/#htmx:after:init"
-        },
-        {
-          "name": "after:process",
-          "description": "This event is triggered after htmx has processed an element.\n\n##### Details\n\n* `detail.elt` - the element that was processed",
-          "doc-url": "https://htmx.org/events/#htmx:after:process"
-        },
-        {
-          "name": "after:history:push",
-          "description": "This event is triggered after a URL has been pushed into history.\n\n##### Details\n\n* `detail.path` - the path that was pushed into history",
-          "doc-url": "https://htmx.org/events/#htmx:after:history:push"
-        },
-        {
-          "name": "after:history:replace",
-          "description": "This event is triggered after a URL has been replaced in history.\n\n##### Details\n\n* `detail.path` - the path that was replaced in history",
-          "doc-url": "https://htmx.org/events/#htmx:after:history:replace"
-        },
-        {
-          "name": "after:request",
-          "description": "This event is triggered after an AJAX request has finished.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:after:request"
-        },
-        {
-          "name": "after:settle",
-          "description": "This event is triggered after content has settled.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:after:settle"
-        },
-        {
-          "name": "after:sse:connection",
-          "description": "This event is triggered after a successful SSE connection or reconnection.\n\n##### Details\n\n* `detail.connection.attempt` - attempt number (0 = initial)\n* `detail.connection.url` - the URL connected to\n* `detail.connection.status` - the HTTP status code\n* `detail.connection.lastEventId` - the last event ID received (null on initial)",
-          "doc-url": "https://htmx.org/extensions/sse/#events"
-        },
-        {
-          "name": "after:sse:message",
-          "description": "This event is triggered after an SSE message has been processed.\n\n##### Details\n\n* `detail.message` - the SSE message object",
-          "doc-url": "https://htmx.org/extensions/sse/#events"
-        },
-        {
-          "name": "after:swap",
-          "description": "This event is triggered after new content has been swapped into the DOM.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:after:swap"
-        },
-        {
-          "name": "after:viewTransition",
-          "description": "This event is triggered after a view transition has completed.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:after:viewTransition"
-        },
-        {
-          "name": "before:cleanup",
-          "description": "This event is triggered before htmx cleans up an element.\n\n##### Details\n\n* `detail.elt` - the element about to be cleaned up",
-          "doc-url": "https://htmx.org/events/#htmx:before:cleanup"
-        },
-        {
-          "name": "before:history:update",
-          "description": "This event is triggered before a history update is performed.\n\n##### Details\n\n* `detail.history` - the history update information (path and type)",
-          "doc-url": "https://htmx.org/events/#htmx:before:history:update"
+          "description": "Listened for by htmx. Trigger `htmx:abort` on an element with an in-flight request to abort that request.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-abort"
         },
         {
           "name": "before:init",
-          "description": "This event is triggered before htmx initializes a DOM node.\n\n##### Details\n\n* `detail.elt` - the element about to be initialized",
-          "doc-url": "https://htmx.org/events/#htmx:before:init"
+          "description": "Fires before htmx initializes a specific element. Event detail is empty.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-init"
+        },
+        {
+          "name": "after:init",
+          "description": "Fires after htmx initializes a specific element. Event detail is empty.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-init"
         },
         {
           "name": "before:process",
-          "description": "This event is triggered before htmx processes an element.\n\n##### Details\n\n* `detail.elt` - the element about to be processed",
-          "doc-url": "https://htmx.org/events/#htmx:before:process"
+          "description": "Fires before htmx processes a DOM node. Event detail is empty.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-process"
         },
         {
-          "name": "before:request",
-          "description": "This event is triggered before an AJAX request is issued. If you call `preventDefault()`, the request will be cancelled.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:before:request"
+          "name": "after:process",
+          "description": "Fires after htmx processes a DOM node. Event detail is empty.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-process"
         },
         {
-          "name": "before:response",
-          "description": "This event is triggered after a fetch response is received but before the response body is consumed. Extensions can intercept the raw response here (e.g., for streaming). If you call `preventDefault()`, normal response processing will be skipped.\n\n##### Details\n\n* `detail.ctx` - the request context with `ctx.response.raw` containing the unconsumed Response object",
-          "doc-url": "https://htmx.org/events/#htmx:before:response"
+          "name": "after:implicitInheritance",
+          "description": "Fires after implicit inheritance is applied to an element.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-implicitInheritance"
         },
         {
-          "name": "before:history:restore",
-          "description": "This event is triggered before history is restored.\n\n##### Details\n\n* `detail.path` - the path being restored",
-          "doc-url": "https://htmx.org/events/#htmx:before:history:restore"
+          "name": "before:cleanup",
+          "description": "Fires before htmx removes listeners and internal data from an element. Event detail is empty.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-cleanup"
         },
         {
-          "name": "before:settle",
-          "description": "This event is triggered before the settle phase begins.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:before:settle"
-        },
-        {
-          "name": "before:sse:connection",
-          "description": "This event is triggered before an SSE connection attempt (initial or reconnection). Set detail.connection.cancelled = true to prevent.\n\n##### Details\n\n* `detail.connection.attempt` - attempt number (0 = initial)\n* `detail.connection.delay` - delay before connection (ms)\n* `detail.connection.url` - the URL being connected to\n* `detail.connection.lastEventId` - the last event ID received (null on initial)\n* `detail.connection.cancelled` - set to true to cancel",
-          "doc-url": "https://htmx.org/extensions/sse/#events"
-        },
-        {
-          "name": "before:sse:message",
-          "description": "This event is triggered before an SSE message is processed. Set detail.message.cancelled = true to skip.\n\n##### Details\n\n* `detail.message` - the SSE message object",
-          "doc-url": "https://htmx.org/extensions/sse/#events"
-        },
-        {
-          "name": "sse:error",
-          "description": "This event is triggered when an SSE stream error occurs.\n\n##### Details\n\n* `detail.error` - the error object",
-          "doc-url": "https://htmx.org/extensions/sse/#events"
-        },
-        {
-          "name": "sse:close",
-          "description": "This event is triggered when an SSE connection is closed.\n\n##### Details\n\n* `detail.reason` - why the connection was closed (\"message\", \"removed\", \"ended\", \"cancelled\", \"cleanup\")",
-          "doc-url": "https://htmx.org/extensions/sse/#events"
-        },
-        {
-          "name": "before:swap",
-          "description": "This event is triggered before new content is swapped into the DOM. If you call `preventDefault()`, no swap will occur.\n\n##### Details\n\n* `detail.ctx` - the request context\n* `detail.tasks` - the swap tasks to be performed",
-          "doc-url": "https://htmx.org/events/#htmx:before:swap"
-        },
-        {
-          "name": "before:viewTransition",
-          "description": "This event is triggered before a view transition occurs. If you call `preventDefault()`, the view transition will not occur.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:before:viewTransition"
+          "name": "after:cleanup",
+          "description": "Fires after htmx removes listeners and internal data from an element. Event detail is empty.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-cleanup"
         },
         {
           "name": "config:request",
-          "description": "This event is triggered when a request is being configured. You can modify the request parameters, headers, etc.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:config:request"
+          "description": "Fires after request parameters are collected and before the request is issued. `detail.ctx` is the request context and can be modified.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-config-request"
         },
         {
           "name": "confirm",
-          "description": "This event is triggered when a confirmation is required. If you call `preventDefault()`, the request will not be issued.\n\n##### Details\n\n* `detail.ctx` - the request context\n* `detail.issueRequest` - function to call to issue the request",
-          "doc-url": "https://htmx.org/events/#htmx:confirm"
+          "description": "Fires when confirmation is required. `detail.ctx` is the request context; call `preventDefault()` and `detail.issueRequest()` for custom dialogs.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-confirm"
         },
         {
-          "name": "error",
-          "description": "This event is triggered when any error occurs (network errors, swap errors, etc).\n\n##### Details\n\n* `detail.ctx` - the request context\n* `detail.error` - the error that occurred",
-          "doc-url": "https://htmx.org/events/#htmx:error"
+          "name": "before:request",
+          "description": "Fires immediately before `fetch()` is called. `detail.ctx` is the request context. Cancel to stop the request.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-request"
+        },
+        {
+          "name": "before:response",
+          "description": "Fires after response headers are received but before the body is consumed. `detail.ctx.response.raw` is the unconsumed `Response`.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-response"
+        },
+        {
+          "name": "after:request",
+          "description": "Fires after the response body is consumed. `detail.ctx` contains request, response, and text data.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-request"
+        },
+        {
+          "name": "response:error",
+          "description": "Fires when an HTTP error status code (400 or higher) is received. `detail.ctx.response.status` contains the status code.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-response-error"
         },
         {
           "name": "finally:request",
-          "description": "This event is always triggered after a request completes, whether successful or not.\n\n##### Details\n\n* `detail.ctx` - the request context",
-          "doc-url": "https://htmx.org/events/#htmx:finally:request"
+          "description": "Always fires at the end of the request lifecycle. `detail.ctx` is the request context.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-finally-request"
+        },
+        {
+          "name": "error",
+          "description": "Fires when a network, request, swap, or JavaScript error occurs. `detail.error` contains the error when available.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-error"
+        },
+        {
+          "name": "before:swap",
+          "description": "Fires before content is swapped. `detail.ctx` is the request context and `detail.tasks` contains the swap tasks. Cancel to skip the swap.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-swap"
+        },
+        {
+          "name": "after:swap",
+          "description": "Fires after content is swapped into the DOM. `detail.ctx` is the request context.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-swap"
+        },
+        {
+          "name": "finally:swap",
+          "description": "Fires after a swap attempt finishes, even when the swap throws or is skipped. `detail.ctx` is the request context.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-finally-swap"
+        },
+        {
+          "name": "before:settle",
+          "description": "Fires before the settle phase. `detail.task`, `detail.newContent`, and `detail.settleTasks` describe the settle work.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-settle"
+        },
+        {
+          "name": "after:settle",
+          "description": "Fires after the settle phase completes. `detail.task`, `detail.newContent`, and `detail.settleTasks` describe the settled work.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-settle"
+        },
+        {
+          "name": "before:history:update",
+          "description": "Fires before htmx pushes or replaces browser history. The detail contains the history update information.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-history-update"
+        },
+        {
+          "name": "after:history:update",
+          "description": "Fires after htmx pushes or replaces browser history. The detail contains the history update information.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-history-update"
+        },
+        {
+          "name": "after:history:push",
+          "description": "Fires after htmx pushes a new browser history entry. `detail.path` is the pushed path.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-push-into-history"
+        },
+        {
+          "name": "after:history:replace",
+          "description": "Fires after htmx replaces the current browser history entry. `detail.path` is the replaced path.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-replace-into-history"
+        },
+        {
+          "name": "before:history:restore",
+          "description": "Fires before htmx restores a history entry. `detail.path` is the restored path and `detail.cacheMiss` is set for core re-fetch restores.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-restore-history"
+        },
+        {
+          "name": "before:viewTransition",
+          "description": "Fires before a View Transition API swap task starts. `detail.task` is the swap task.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-viewTransition"
+        },
+        {
+          "name": "after:viewTransition",
+          "description": "Fires after a View Transition API swap task completes. `detail.task` is the swap task.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-viewTransition"
+        },
+        {
+          "name": "before:sse:connection",
+          "description": "Fires before an SSE connection attempt. `detail.connection` can be modified; set `cancelled` or cancel the event to stop connecting.",
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#connection-lifecycle"
+        },
+        {
+          "name": "after:sse:connection",
+          "description": "Fires after a successful SSE connection or reconnection. `detail.connection` describes the connection.",
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#connection-lifecycle"
+        },
+        {
+          "name": "sse:close",
+          "description": "Fires when an SSE connection closes. `detail.connection` and `detail.reason` describe the close.",
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#connection-lifecycle"
+        },
+        {
+          "name": "sse:error",
+          "description": "Fires when an SSE stream error occurs. `detail.error`, `detail.url`, and sometimes `detail.status` describe the failure.",
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#connection-lifecycle"
+        },
+        {
+          "name": "before:sse:message",
+          "description": "Fires before an SSE message is processed. `detail.message` contains `data`, `event`, `id`, and `cancelled`.",
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#message-events"
+        },
+        {
+          "name": "after:sse:message",
+          "description": "Fires after an SSE message is processed. `detail.message` contains `data`, `event`, and `id`.",
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#message-events"
+        },
+        {
+          "name": "before:ws:connection",
+          "description": "Fires before a WebSocket connection attempt. `detail.connection` can be modified; set `cancelled` or cancel the event to stop connecting.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#connection-lifecycle"
+        },
+        {
+          "name": "after:ws:connection",
+          "description": "Fires after a successful WebSocket connection. `detail.connection` describes the connection.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#connection-lifecycle"
+        },
+        {
+          "name": "ws:close",
+          "description": "Fires when a WebSocket connection closes. `detail.connection`, `detail.reason`, and `detail.code` describe the close.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#connection-lifecycle"
+        },
+        {
+          "name": "ws:error",
+          "description": "Fires on WebSocket connection or send errors. `detail.url` and `detail.error` describe the failure.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#connection-lifecycle"
+        },
+        {
+          "name": "before:ws:request",
+          "description": "Fires before sending a WebSocket message. `detail.headers` and `detail.body` are modifiable. Cancel to skip sending.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#request-events"
+        },
+        {
+          "name": "after:ws:request",
+          "description": "Fires after a WebSocket message is sent. `detail.headers` and `detail.body` contain the sent payload.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#request-events"
+        },
+        {
+          "name": "before:ws:message",
+          "description": "Fires before a WebSocket message is processed. `detail.message.text`, `detail.message.json`, and `detail.message.cancelled` are available.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#message-events"
+        },
+        {
+          "name": "after:ws:message",
+          "description": "Fires after a WebSocket message is processed. `detail.message.text` and `detail.message.json` are available.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#message-events"
+        },
+        {
+          "name": "download:start",
+          "description": "Fires when download response headers are received. `detail.total` is the content length or `null`.",
+          "doc-url": "https://four.htmx.org/extensions/hx-download#events"
+        },
+        {
+          "name": "download:progress",
+          "description": "Fires for each download chunk. `detail.loaded`, `detail.total`, and `detail.percent` describe progress.",
+          "doc-url": "https://four.htmx.org/extensions/hx-download#events"
+        },
+        {
+          "name": "download:complete",
+          "description": "Fires after a file download is triggered in the browser. `detail.filename` and `detail.size` describe the downloaded blob.",
+          "doc-url": "https://four.htmx.org/extensions/hx-download#events"
+        },
+        {
+          "name": "before:head:merge",
+          "description": "Fires before the head-support extension processes response `<head>` content. `detail.ctx` is the request context.",
+          "doc-url": "https://four.htmx.org/extensions/hx-head#events"
+        },
+        {
+          "name": "before:head:add",
+          "description": "Fires before the head-support extension adds a new head element. `detail.headElement` is the element. Cancel to skip it.",
+          "doc-url": "https://four.htmx.org/extensions/hx-head#events"
+        },
+        {
+          "name": "before:head:remove",
+          "description": "Fires before the head-support extension removes a head element. `detail.headElement` is the element. Cancel to keep it.",
+          "doc-url": "https://four.htmx.org/extensions/hx-head#events"
+        },
+        {
+          "name": "after:head:merge",
+          "description": "Fires after the head-support extension merges head content. `detail.added`, `detail.kept`, and `detail.removed` list affected elements.",
+          "doc-url": "https://four.htmx.org/extensions/hx-head#events"
+        },
+        {
+          "name": "history:cache:before:save",
+          "description": "Fires before the history-cache extension saves the current page. Cancel or set `detail.cancelled` to skip saving.",
+          "doc-url": "https://four.htmx.org/extensions/hx-history-cache#events"
+        },
+        {
+          "name": "history:cache:after:save",
+          "description": "Fires after the history-cache extension saves the current page.",
+          "doc-url": "https://four.htmx.org/extensions/hx-history-cache#events"
+        },
+        {
+          "name": "history:cache:miss",
+          "description": "Fires when the requested history entry is not in the cache. Set `detail.refreshOnMiss = true` to force a full reload.",
+          "doc-url": "https://four.htmx.org/extensions/hx-history-cache#events"
+        },
+        {
+          "name": "history:cache:hit",
+          "description": "Fires when a cache entry is found. Cancel to bypass the cache and let core fetch from the server.",
+          "doc-url": "https://four.htmx.org/extensions/hx-history-cache#events"
+        },
+        {
+          "name": "history:cache:before:restore",
+          "description": "Fires before cached content is restored. `detail.head` may be changed and `detail.ready` may delay the restore.",
+          "doc-url": "https://four.htmx.org/extensions/hx-history-cache#events"
+        },
+        {
+          "name": "history:cache:after:restore",
+          "description": "Fires after cached content is restored. `detail.item` is the restored cache item.",
+          "doc-url": "https://four.htmx.org/extensions/hx-history-cache#events"
+        },
+        {
+          "name": "security:strip",
+          "description": "Fires when the CSP extension strips htmx attributes from an element. `detail.reason` and `detail.stripped` describe the action.",
+          "doc-url": "https://four.htmx.org/extensions/hx-csp#security-events"
+        },
+        {
+          "name": "security:violation",
+          "description": "Fires when the CSP extension blocks an unsafe htmx action. `detail.reason` describes the violation.",
+          "doc-url": "https://four.htmx.org/extensions/hx-csp#security-events"
+        },
+        {
+          "name": "prompt",
+          "description": "Fires after the prompt extension receives an answer. `detail.prompt` is the answer and `detail.target` is the target. Cancel to abort.",
+          "doc-url": "https://four.htmx.org/extensions/hx-prompt#htmxprompt-event"
         }
       ]
     }

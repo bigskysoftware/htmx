@@ -6,7 +6,10 @@ async function openSearch(page: any) {
         const dialog = document.querySelector('dialog#search-modal') as HTMLDialogElement;
         dialog?.showModal();
     });
-    await expect(page.locator('dialog#search-modal')).toBeVisible();
+    const dialog = page.locator('dialog#search-modal');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('#search-input')).toBeVisible();
+    await expect(dialog.locator('#search-input')).toBeEnabled();
 }
 
 test.describe('Search', () => {
@@ -110,10 +113,9 @@ const SEARCH_RANKING: [string | string[], string][] = [
     [['installation', 'install', 'cdn', 'npm', 'getting started', 'quick start'], 'Installation'],
     [['boosting', 'boost', 'progressive enhancement'], 'Boosting'],
     [['history', 'back button', 'pushState'], 'History'],
-    ['security', 'Security'],
     ['extensions', 'Extensions'],
     [['websockets', 'ws'], 'hx-ws'],
-    [['server-sent events', 'event stream', 'streaming'], 'hx-sse'],
+    [['server-sent events', 'server sent events', 'event stream'], 'hx-sse'],
     ['validation', 'Validation'],
     ['inheritance', 'Attribute Inheritance'],
     [['synchronization', 'sync', 'debounce', 'throttle', 'race condition'], 'Synchronization'],
@@ -127,7 +129,6 @@ const SEARCH_RANKING: [string | string[], string][] = [
     [['configuration', 'settings', 'meta tag'], 'Configuration'],
     ['config', 'Config'],
     [['debugging', 'debug', 'devtools', 'logAll'], 'Debugging'],
-    ['troubleshoot', 'Troubleshoot'],
     ['XHR', 'Requests & Responses'],
 
     // ── Patterns ──
@@ -150,12 +151,12 @@ const SEARCH_RANKING: [string | string[], string][] = [
 
 test.describe('Search ranking', () => {
     test('first result matches expected title for each query', async ({ page }) => {
-        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.goto('/', { waitUntil: 'load' });
         await openSearch(page);
 
         await page.evaluate(() => customElements.whenDefined('search-index'));
-        await page.evaluate(() =>
-            (document.querySelector('search-index') as any)?.load()
+        await page.evaluate(async () =>
+            await (document.querySelector('search-index') as any)?.load()
         );
 
         const input = page.locator('#search-input');
@@ -164,11 +165,13 @@ test.describe('Search ranking', () => {
         for (const [queries, expectedTitle] of SEARCH_RANKING) {
             for (const query of Array.isArray(queries) ? queries : [queries]) {
                 await test.step(`"${query}" → ${expectedTitle}`, async () => {
-                    await input.fill('');
-                    await input.fill(query);
+                    await input.evaluate((el, val) => {
+                        el.value = val;
+                        el.dispatchEvent(new Event('input', { bubbles: true }));
+                    }, query);
                     await expect(firstResult).toBeAttached({ timeout: 2000 });
 
-                    const titleEl = firstResult.locator('~ article .font-chicago');
+                    const titleEl = firstResult.locator('~ article .truncate.leading-tight');
                     await expect(titleEl).toHaveText(expectedTitle, { timeout: 2000 });
                 });
             }

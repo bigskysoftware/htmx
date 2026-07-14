@@ -62,6 +62,7 @@ const patterns = defineCollection({
         description: z.string().optional(),
         keywords: z.array(z.string()).optional(),
         thumbnail: z.string().optional(),
+        category: z.enum(['Loading', 'Forms', 'Records', 'Display', 'Real-time', 'Advanced']).optional(),
         icon: z.string().optional(),
         soon: z.boolean().optional(),
         includeMockServer: z.boolean().optional(),

@@ -3,7 +3,7 @@ title: "hx-sse"
 description: "Stream updates via Server-Sent Events (SSE)"
 category: "Networking"
 icon: "icon-[mdi--rss]"
-keywords: ["sse", "server-sent events", "event stream", "streaming", "real-time"]
+keywords: ["sse", "server-sent events", "server sent events", "event stream", "streaming", "real-time"]
 ---
 
 The SSE extension adds support for [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) streaming to htmx. It works by intercepting any htmx response with `Content-Type: text/event-stream` and streaming SSE messages into the DOM in real-time.
@@ -22,6 +22,16 @@ SSE is a lightweight alternative to WebSockets that works over existing HTTP con
 The SSE extension hooks into htmx's request pipeline. When any htmx request receives a response with `Content-Type: text/event-stream`, the extension takes over and streams SSE messages into the DOM instead of performing a normal swap.
 
 This means **any [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc. that returns an SSE stream will just work**, no special attributes needed beyond loading the extension.
+
+## Request Headers
+
+With this extension loaded, outgoing htmx requests advertise SSE support:
+
+```http
+Accept: text/html, text/event-stream
+```
+
+Core htmx requests set `Accept: text/html`. The SSE extension adds `text/event-stream` so the server can return an SSE stream for any htmx request.
 
 ## `hx-sse:connect`
 

@@ -214,6 +214,18 @@ function sortContentFiles(a, b) {
 
 export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'extensions', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'];
 
+// These collections use subfolders as sections on the root page, not as pages.
+const INLINE_SUBFOLDER_COLLECTIONS = new Set(['reference']);
+
+export function hasSubfolderPages(collection) {
+    return !INLINE_SUBFOLDER_COLLECTIONS.has(collection);
+}
+
+function folderPageUrl(collection, slug) {
+    if (slug && !hasSubfolderPages(collection)) return undefined;
+    return slug ? `/${collection}/${slug}` : `/${collection}`;
+}
+
 export const TAG_ORDER = [
     {tag: 'foundations', label: 'Foundations'},
     {tag: 'the-case-for-hypermedia', label: 'The Case for Hypermedia'},
@@ -320,14 +332,14 @@ export async function getFolder(path) {
         const pathWithoutIndex = indexRelPath.replace(/\/index\.(md|mdx)$/, '');
         const pathWithoutFolder = pathWithoutIndex === folderName ? '' : pathWithoutIndex.replace(`${folderName}/`, '');
         const slug = cleanPath(pathWithoutFolder);
-        const folderUrl = slug ? `/${folderName}/${slug}` : `/${folderName}`;
+        const pageUrl = folderPageUrl(folderName, slug);
+        const folderUrl = pageUrl ?? `/${folderName}#${slug}`;
 
         // Breadcrumbs
         /** @type {Breadcrumb} */
-        const thisFolderBreadcrumb = {
-            label: indexFrontmatter.title,
-            href: folderUrl
-        };
+        const thisFolderBreadcrumb = pageUrl
+            ? {label: indexFrontmatter.title, href: pageUrl}
+            : {label: indexFrontmatter.title};
         const breadcrumbsWithHref = [...parentBreadcrumbs, thisFolderBreadcrumb];
         const folderBreadcrumbs = parentBreadcrumbs.length > 0
             ? [...parentBreadcrumbs, {label: indexFrontmatter.title}]
@@ -482,7 +494,10 @@ export async function getFile(path) {
             const partialSlug = slugParts.slice(0, i + 1).join('/');
             const subfolder = currentFolder.folders.find(sf => sf.slug === partialSlug);
             if (subfolder) {
-                breadcrumbs.push({label: subfolder.frontmatter.title, href: subfolder.url});
+                const subfolderPageUrl = folderPageUrl(folder, subfolder.slug);
+                breadcrumbs.push(subfolderPageUrl
+                    ? {label: subfolder.frontmatter.title, href: subfolderPageUrl}
+                    : {label: subfolder.frontmatter.title});
                 currentFolder = subfolder;
             }
         }

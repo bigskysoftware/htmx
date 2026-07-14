@@ -34,7 +34,7 @@ Alpine can bind reactive values to an element's `id` attribute via `:id` or `x-b
 
 ## Combining with `history-cache`
 
-When used alongside the [`history-cache`](/docs/extensions/history-cache) extension, `alpine-compat` also handles saving and restoring Alpine component state across history navigation.
+When used alongside the [`hx-history-cache`](/extensions/hx-history-cache) extension, `alpine-compat` also handles saving and restoring Alpine component state across history navigation.
 
 ### How it works
 

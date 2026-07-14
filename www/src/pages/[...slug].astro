@@ -7,8 +7,9 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PageHeader from '../components/PageHeader.astro';
 import Pagination from '../components/Pagination.astro';
 import FinderLink from '../components/FinderLink.astro';
-import { getFolder, render, COLLECTIONS } from '../lib/content';
+import { getFolder, render, COLLECTIONS, hasSubfolderPages } from '../lib/content';
 import { buildDocsSidebar } from '../lib/docs-sidebar';
+import { EXTENSION_CATEGORIES, PATTERN_CATEGORIES, buildCategorySidebar } from '../lib/content-groups';
 
 export async function getStaticPaths() {
     const paths = [];
@@ -29,8 +30,8 @@ export async function getStaticPaths() {
             });
         });
 
-        // Reference subfolders are listed inline on /reference, no separate pages
-        if (collection !== 'reference') {
+        // Inline subfolders are listed on their collection root, not as pages.
+        if (hasSubfolderPages(collection)) {
             folder.folders.forEach((subfolder) => {
                 paths.push({
                     params: { slug: `${collection}/${subfolder.slug}` },
@@ -60,10 +61,13 @@ const isPatternsIndex = isCollectionRootPage && collection === 'patterns';
 const isExtensionsIndex = isCollectionRootPage && collection === 'extensions';
 const isEssaysIndex = isCollectionRootPage && collection === 'essays';
 const isDocsRoot = isCollectionRootPage && collection === 'docs';
-// Extensions is flat (no subfolders), but sibling navigation is useful, so show sidebar on inner pages.
-const isFlatCollectionWithSidebar = collection === 'extensions';
+const flatSidebarCategories = collection === 'extensions'
+    ? EXTENSION_CATEGORIES
+    : collection === 'patterns'
+        ? PATTERN_CATEGORIES
+        : null;
 const includeSidebar = isDocsRoot
-    || (!!(folder?.folders?.length || (isFlatCollectionWithSidebar && folder?.files?.length))
+    || (!!(folder?.folders?.length || (flatSidebarCategories && folder?.files?.length))
         && !isReferenceIndex && !isPatternsIndex && !isExtensionsIndex);
 const includeHeader = !isHomePage;
 const includeMockServer = file?.frontmatter?.includeMockServer === true;
@@ -78,9 +82,13 @@ if (file) {
     headings = folder!.folders.map(sub => ({ depth: 2, slug: sub.slug, text: sub.frontmatter.title }));
 } else if (isDocsRoot) {
     ({headings, sidebar: sidebarFolder} = await buildDocsSidebar(folder));
-    headings = headings.map(h => h.depth === 2 ? {...h, label: true} : h);
+}
+
+if (flatSidebarCategories) {
+    sidebarFolder = buildCategorySidebar(folder, flatSidebarCategories);
 }
 const includeTableOfContents = headings.length > 0;
+const editPageUrl = `https://github.com/bigskysoftware/htmx/edit/four-dev/www/src/content/${page.path}`;
 ---
 
 <Layout title={title}
@@ -134,16 +142,25 @@ const includeTableOfContents = headings.length > 0;
                             "hidden xl:flex xl:flex-col xl:w-60 xl:min-w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) h-[calc(100vh-var(--header-height))] pt-27 pb-8 pr-4",
                             includeSidebar ? "xl:-me-16" : "xl:-me-[19rem]",
                         ]}>
-                            <div class="shrink-0 mb-2">
-                                <h2 class="text-[0.625rem] font-sans tracking-widest uppercase text-neutral-600 dark:text-neutral-400">
+                            <div class="shrink-0 mb-4">
+                                <h2 class="text-tertiary">
                                     On this page
                                 </h2>
                             </div>
-                            <div class="flex-1 min-h-0 overflow-hidden">
-                                <div class="h-full overflow-y-auto scrollbar-subtle">
+                            <div class="min-h-0 overflow-hidden">
+                                <div class="max-h-[calc(100vh-var(--header-height)-12rem)] overflow-y-auto scrollbar-subtle">
                                     <TableOfContents {headings}/>
                                 </div>
                             </div>
+                            <nav class="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900" aria-label="Page actions">
+                                <a href={editPageUrl}
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="group flex items-center gap-2.5 rounded-sm text-[13px] font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-600 dark:interact:text-blue-300 interact:underline outline-hidden">
+                                    <i class="icon-[mdi--pencil] size-3.5" aria-hidden="true"></i>
+                                    <span>Edit page</span>
+                                </a>
+                            </nav>
                         </aside>
                 )}
             </div>

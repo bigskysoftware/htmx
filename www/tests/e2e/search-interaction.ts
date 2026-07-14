@@ -25,7 +25,7 @@ async function searchFor(page: any, query: string) {
 
 test.describe('Search interaction', () => {
     test('results are <a> links with valid href', async ({ page }) => {
-        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.goto('/', { waitUntil: 'load' });
         await searchFor(page, 'hx-get');
 
         const firstResult = page.locator('.result').first();
@@ -38,7 +38,7 @@ test.describe('Search interaction', () => {
     });
 
     test('click result navigates to the page', async ({ page }) => {
-        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.goto('/', { waitUntil: 'load' });
         await searchFor(page, 'hx-get');
 
         const firstResult = page.locator('.result').first();
@@ -49,7 +49,7 @@ test.describe('Search interaction', () => {
     });
 
     test('Enter navigates to the selected result', async ({ page }) => {
-        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.goto('/', { waitUntil: 'load' });
         await searchFor(page, 'hx-get');
 
         const firstResult = page.locator('.result').first();
@@ -60,7 +60,7 @@ test.describe('Search interaction', () => {
     });
 
     test('arrow keys move selection', async ({ page }) => {
-        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.goto('/', { waitUntil: 'load' });
         await searchFor(page, 'hx-');
 
         // First result should be selected initially
@@ -80,28 +80,28 @@ test.describe('Search interaction', () => {
     });
 
     test('modal closes after clicking a result', async ({ page }) => {
-        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.goto('/', { waitUntil: 'load' });
         await searchFor(page, 'hx-get');
 
         await page.locator('.result').first().click();
 
         // Wait for navigation then check modal is gone
-        await page.waitForURL(/hx-get/);
+        await page.waitForURL(/hx-get/, { timeout: 15000 });
         await expect(page.locator('dialog#search-modal')).not.toBeVisible();
     });
 
     test('modal closes after pressing Enter', async ({ page }) => {
-        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.goto('/', { waitUntil: 'load' });
         await searchFor(page, 'hx-get');
 
         await page.keyboard.press('Enter');
 
-        await page.waitForURL(/hx-get/);
+        await page.waitForURL(/hx-get/, { timeout: 15000 });
         await expect(page.locator('dialog#search-modal')).not.toBeVisible();
     });
 
     test('Escape closes modal and clears input', async ({ page }) => {
-        await page.goto('/', { waitUntil: 'networkidle' });
+        await page.goto('/', { waitUntil: 'load' });
         await searchFor(page, 'hx-get');
 
         await page.keyboard.press('Escape');

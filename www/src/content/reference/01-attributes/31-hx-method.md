@@ -3,7 +3,7 @@ title: "hx-method"
 description: "Specifies the HTTP method for the request"
 ---
 
-The `hx-method` attribute specifies the HTTP method (verb) to use for the request.
+The `hx-method` attribute specifies the HTTP method (verb) to use for the request. It is typically paired with [`hx-action`](/reference/attributes/hx-action) to separate the URL from the method.
 
 ## Syntax
 
@@ -13,29 +13,42 @@ The `hx-method` attribute specifies the HTTP method (verb) to use for the reques
 </button>
 ```
 
+## Priority
+
+`hx-method` takes the highest priority in the [method resolution chain](/reference/attributes/hx-action#method-resolution). It overrides both `formmethod` on submitter buttons and the native `method` attribute on forms:
+
+```html
+<!-- Always sends PUT regardless of native method or submitter -->
+<form hx-action="/items/1" hx-method="put" method="post">
+    <input name="name">
+    <button>Save</button>
+</form>
+```
+
+When `hx-method` is omitted, htmx falls back to `formmethod`, then native `method`, then `GET`. See [`hx-action` Method Resolution](/reference/attributes/hx-action#method-resolution) for the full chain.
+
 ## Notes
 
-* Valid values: `get`, `post`, `put`, `patch`, `delete`
-* If no method is specified, defaults to `get`
-* `hx-method` is typically used with [`hx-action`](/reference/attributes/hx-action)
-* The shorthand attributes like [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc. can be used
-  instead
+* Valid values: `get`, `post`, `put`, `patch`, `delete` (case-insensitive)
+* If no method can be determined from any source, defaults to `GET`
+* The shorthand attributes [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc. combine URL and method into one attribute
 
 ## Examples
 
 ```html
-<!-- Explicit method specification -->
+<!-- Explicit method -->
 <button hx-action="/api/users/123" hx-method="delete">
     Delete User
 </button>
 
-<!-- Equivalent using hx-delete shorthand -->
+<!-- Equivalent shorthand -->
 <button hx-delete="/api/users/123">
     Delete User
 </button>
 
-<!-- Default to GET if no method specified -->
-<button hx-action="/api/users">
-    Get Users
-</button>
+<!-- Server-rendered dynamic method -->
+<form hx-action="/resources/${id}" hx-method="${method}" hx-target="this">
+    <input name="name">
+    <button>${action_label}</button>
+</form>
 ```

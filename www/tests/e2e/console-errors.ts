@@ -27,7 +27,7 @@ const SAMPLE_PAGES = [
     '/about',
     '/reference/attributes/hx-get',
     '/reference/attributes/hx-post',
-    '/patterns/loading/click-to-load',
+    '/patterns/click-to-load',
 ];
 
 test.describe('Console errors', () => {

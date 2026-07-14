@@ -1,6 +1,6 @@
 import { test, expect } from './_fixtures';
 test('debug search indicator', async ({ page }) => {
-    await page.goto('/patterns/forms/active-search');
+    await page.goto('/patterns/active-search');
     await page.waitForTimeout(3000);
     
     const spinner = page.locator('#search-spinner');

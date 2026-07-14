@@ -16,11 +16,20 @@ const {version} = JSON.parse(readFileSync("./src/data/integrity.json", "utf8"));
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
+function slugifyPathSegment(value) {
+    return value
+        .replace(/^\d+-/, '')
+        .replace(/\.(md|mdx)$/, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 // Build category redirects dynamically from folder structure.
 // Each category folder (e.g. reference/attributes/) redirects to its first file.
 function buildCategoryRedirects() {
     const redirects = {};
-    for (const collection of ['reference', 'patterns']) {
+    for (const collection of ['reference']) {
         const base = `./src/content/${collection}`;
         let subfolders;
         try { subfolders = readdirSync(base, {withFileTypes: true}).filter(d => d.isDirectory() && d.name !== 'index'); } catch { continue; }
@@ -29,11 +38,31 @@ function buildCategoryRedirects() {
             if (files.length === 0) continue;
             const hasIndexFile = readdirSync(`${base}/${dir.name}`).some(f => f === 'index.md' || f === 'index.mdx');
             if (hasIndexFile) continue; // real page exists, no redirect needed
-            const catSlug = dir.name.replace(/^\d+-/, '');
-            const firstSlug = files[0].replace(/\.(md|mdx)$/, '').replace(/^\d+-/, '');
+            const catSlug = slugifyPathSegment(dir.name);
+            const firstSlug = slugifyPathSegment(files[0]);
             redirects[`/${collection}/${catSlug}`] = `/${collection}/${catSlug}/${firstSlug}`;
         }
     }
+    return redirects;
+}
+
+function buildPatternRedirects() {
+    const redirects = {};
+    const base = './src/content/patterns';
+    let files;
+    try { files = readdirSync(base).filter(f => /\.(md|mdx)$/.test(f) && !f.startsWith('index')); } catch { return redirects; }
+
+    for (const fileName of files) {
+        const raw = readFileSync(`${base}/${fileName}`, 'utf8');
+        const category = raw.match(/^category:\s*["']?(.+?)["']?\s*$/m)?.[1];
+        if (!category) continue;
+
+        const categorySlug = slugifyPathSegment(category);
+        const fileSlug = slugifyPathSegment(fileName);
+        redirects[`/patterns/${categorySlug}`] = `/patterns#${categorySlug}`;
+        redirects[`/patterns/${categorySlug}/${fileSlug}`] = `/patterns/${fileSlug}`;
+    }
+
     return redirects;
 }
 
@@ -87,6 +116,7 @@ export default defineConfig({
 
         // Category index redirects (computed from folder structure)
         ...buildCategoryRedirects(),
+        ...buildPatternRedirects(),
 
         // /docs sub-page URLs (htmx 2.x/3.x layout) -> anchors on the new one-page /docs.
         "/docs/get-started": "/docs#installation",
@@ -109,7 +139,7 @@ export default defineConfig({
         "/docs/features/web-components": "/docs#web-components",
         "/docs/features/attribute-inheritance": "/docs#attribute-inheritance",
         "/docs/features/extended-selectors": "/docs#extended-selectors-1",
-        "/docs/features/extensions": "/docs#extensions",
+        "/docs/features/extensions": "/docs#extension-system",
         "/docs/security": "/docs#best-practices",
         "/docs/security/best-practices": "/docs#best-practices",
         "/docs/security/caching": "/docs#caching",
@@ -143,34 +173,35 @@ export default defineConfig({
         "/reference/events": "/reference",
         "/reference/config": "/reference",
         "/reference/methods": "/reference",
+        "/reference/tags": "/reference",
         "/help": "/about",
         "/server-examples": "/about",
 
         // Old site: /examples/* → /patterns/*
         "/examples": "/patterns",
-        "/examples/click-to-load": "/patterns/loading/click-to-load",
-        "/examples/infinite-scroll": "/patterns/loading/infinite-scroll",
-        "/examples/lazy-load": "/patterns/loading/lazy-load",
-        "/examples/progress-bar": "/patterns/loading/progress-bar",
-        "/examples/active-search": "/patterns/forms/active-search",
-        "/examples/inline-validation": "/patterns/forms/active-validation",
-        "/examples/file-upload": "/patterns/forms/file-upload",
-        "/examples/file-upload-input": "/patterns/forms/file-upload",
-        "/examples/value-select": "/patterns/forms/linked-selects",
-        "/examples/reset-user-input": "/patterns/forms/reset-on-submit",
-        "/examples/bulk-update": "/patterns/records/bulk-actions",
-        "/examples/delete-row": "/patterns/records/delete-in-place",
-        "/examples/sortable": "/patterns/records/drag-to-reorder",
-        "/examples/click-to-edit": "/patterns/records/edit-in-place",
-        "/examples/edit-row": "/patterns/records/edit-in-place",
-        "/examples/animations": "/patterns/display/animations",
-        "/examples/dialogs": "/patterns/display/dialogs",
-        "/examples/modal-uikit": "/patterns/display/dialogs",
-        "/examples/modal-bootstrap": "/patterns/display/dialogs",
-        "/examples/modal-custom": "/patterns/display/dialogs",
+        "/examples/click-to-load": "/patterns/click-to-load",
+        "/examples/infinite-scroll": "/patterns/infinite-scroll",
+        "/examples/lazy-load": "/patterns/lazy-load",
+        "/examples/progress-bar": "/patterns/progress-bar",
+        "/examples/active-search": "/patterns/active-search",
+        "/examples/inline-validation": "/patterns/active-validation",
+        "/examples/file-upload": "/patterns/file-upload",
+        "/examples/file-upload-input": "/patterns/file-upload",
+        "/examples/value-select": "/patterns/linked-selects",
+        "/examples/reset-user-input": "/patterns/reset-on-submit",
+        "/examples/bulk-update": "/patterns/bulk-actions",
+        "/examples/delete-row": "/patterns/delete-in-place",
+        "/examples/sortable": "/patterns/drag-to-reorder",
+        "/examples/click-to-edit": "/patterns/edit-in-place",
+        "/examples/edit-row": "/patterns/edit-in-place",
+        "/examples/animations": "/patterns/animations",
+        "/examples/dialogs": "/patterns/dialogs",
+        "/examples/modal-uikit": "/patterns/dialogs",
+        "/examples/modal-bootstrap": "/patterns/dialogs",
+        "/examples/modal-custom": "/patterns/dialogs",
         "/examples/tabs-hateoas": "/patterns",
         "/examples/tabs-javascript": "/patterns",
-        "/examples/keyboard-shortcuts": "/patterns/advanced/keyboard-shortcuts",
+        "/examples/keyboard-shortcuts": "/patterns/keyboard-shortcuts",
         "/examples/update-other-content": "/patterns",
         "/examples/confirm": "/patterns",
         "/examples/async-auth": "/patterns",
@@ -186,11 +217,11 @@ export default defineConfig({
         "/extensions/alpine-compat": "/extensions/hx-alpine-compat",
         "/extensions/optimistic": "/extensions/hx-optimistic",
         "/extensions/upsert": "/extensions/hx-upsert",
-        "/extensions/building": "/docs/features/extensions",
+        "/extensions/building": "/docs#extension-system",
 
         // /docs/extensions/* paths → current locations.
         "/docs/extensions": "/extensions",
-        "/docs/extensions/using-extensions": "/docs/features/extensions",
+        "/docs/extensions/using-extensions": "/docs#extension-system",
         "/docs/extensions/extension-migration": "/docs/get-started/migration",
         "/docs/extensions/htmx-2-compat": "/extensions/htmx-2-compat",
         "/docs/extensions/sse": "/extensions/hx-sse",
