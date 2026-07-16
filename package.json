@@ -7,6 +7,7 @@
   "jsdelivr": "dist/htmx.min.js",
   "unpkg": "dist/htmx.min.js",
   "types": "dist/htmx.d.ts",
+  "web-types": "dist/editors/jetbrains/htmx.web-types.json",
   "files": [
     "LICENSE",
     "README.md",
@@ -23,7 +24,7 @@
     "upgrade-check": "./dist/scripts/upgrade-check.js"
   },
   "scripts": {
-    "build": "npm run build:iife && npm run build:esm && npm run build:minify && npm run build:ext && npm run build:htmax && npm run build:editors && npm run build:skills && npm run build:scripts && npm run build:compress",
+    "build": "npm run build:iife && npm run build:esm && npm run build:minify && npm run build:ext && npm run build:htmax && npm run build:editors && npm run build:skills && npm run build:scripts && npm run build:types && npm run build:compress",
     "build:htmax": "EXTS='hx-sse hx-ws hx-preload hx-browser-indicator hx-download hx-optimistic hx-targets hx-live'; cat dist/htmx.js $(for e in $EXTS; do echo dist/ext/$e.js; done) > dist/htmax.js && terser --compress --mangle --source-map -o dist/htmax.min.js dist/htmax.js",
     "build:skills": "mkdir -p dist/skills && cp src/skills/*.md dist/skills/",
     "build:iife": "sed -e 's/__proto__/@@PROTOKEY@@/g' -e 's/__/#/g' -e 's/@@PROTOKEY@@/__proto__/g' src/htmx.js > dist/htmx.js",
@@ -32,6 +33,7 @@
     "build:ext": "mkdir -p dist/ext && for file in src/ext/*.js; do name=$(basename \"$file\" .js); cp \"$file\" \"dist/ext/$name.js\" && terser --compress --mangle --source-map -o \"dist/ext/$name.min.js\" \"dist/ext/$name.js\"; done",
     "build:editors": "mkdir -p dist/editors && cp -r src/editors/* dist/editors/",
     "build:scripts": "mkdir -p dist/scripts && cp src/scripts/*.js src/scripts/*.py dist/scripts/",
+    "build:types": "cp src/htmx.d.ts dist/htmx.d.ts",
     "build:compress": "brotli-cli compress dist/*.js dist/ext/*.js",
     "check:web-types": "python3 src/scripts/check-web-types.py",
     "upgrade-check": "python3 src/scripts/upgrade-check.py",
@@ -64,11 +66,11 @@
   "author": "Big Sky Software",
   "license": "BSD-0-Clause",
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.19",
-    "@web/test-runner": "^0.20.2",
-    "@web/test-runner-playwright": "^0.11.1",
+    "@tailwindcss/typography": "^0.5.20",
+    "@web/test-runner": "^1.0.0",
+    "@web/test-runner-playwright": "^1.0.0",
     "brotli-cli": "^2.1.1",
-    "terser": "^5.46.0",
-    "ws": "^8.20.0"
+    "terser": "^5.49.0",
+    "ws": "^8.21.1"
   }
 }
