@@ -28,7 +28,9 @@ Replaces content inside element.
 
 ```html
 <div hx-get="..." hx-swap="innerHTML">
-  ... <!-- This gets replaced -->
+  <!-- This... -->
+  ...
+  <!-- ...gets replaced -->
 </div>
 ```
 
@@ -48,11 +50,11 @@ Replaces entire element.
 
 Replaces the text content of the element, without parsing the response as HTML.
 
-Useful when the response is plain text and you want to avoid any HTML injection.
-
 ```html
 <span hx-get="..." hx-swap="textContent">0</span>
 ```
+
+Useful for plain text responses without HTML injection.
 
 ### `beforebegin` / `before`
 
@@ -110,8 +112,6 @@ Inserts content after element.
 
 Morphs content inside element, preserving state and focus.
 
-*Uses the [idiomorph](https://github.com/bigskysoftware/idiomorph) algorithm.*
-
 ```html
 <div hx-get="..." hx-swap="innerMorph">
   ... <!-- This gets morphed -->
@@ -122,8 +122,6 @@ Morphs content inside element, preserving state and focus.
 
 Morphs entire element, preserving state and focus.
 
-*Uses the [idiomorph](https://github.com/bigskysoftware/idiomorph) algorithm.*
-
 ```html
 <!-- This... -->
 <div hx-get="..." hx-swap="outerMorph">
@@ -132,28 +130,29 @@ Morphs entire element, preserving state and focus.
 <!-- ...gets morphed -->
 ```
 
-**Morph exclusions:**
+Skip morphing with:
 
-Add attributes to your server templates to exclude elements from morphing:
-- `hx-morph-skip` — freeze entire element (attrs + children unchanged)
-- `hx-morph-skip-children` — freeze children only, attrs still update
+- `hx-morph-skip`: attributes and children
+- `hx-morph-skip-children`: children only; attributes still morph
 
-Or configure globally via [`htmx.config.morphSkip`](/reference/config/htmx-config-morphSkip) and [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphSkipChildren).
+Global selectors: [`htmx.config.morphSkip`](/reference/config/htmx-config-morphSkip) / [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphSkipChildren)
 
 ### `outerSync`
 
-Syncs attributes from the response's outer element onto the target, then replaces the target's children. The target element itself stays in the DOM — listeners and component state are preserved.
-
-Useful when the server returns a full element (e.g. `<section class="active">...</section>`) and you want the target's attributes updated without replacing the element itself.
+Morphs the target's attributes, then replaces its children.
 
 ```html
-<!-- Target keeps its listeners, gets new attrs + children -->
+<!-- These attributes... -->
 <section id="main" hx-get="..." hx-swap="outerSync">
+  <!-- ...are morphed -->
+
+  <!-- These children... -->
   ...
+  <!-- ...are replaced -->
 </section>
 ```
 
-`outerHTML` on `document.body` automatically upgrades to `outerSync` so that body attributes (classes, data-attrs) are preserved across full-page swaps.
+The target stays in the DOM, preserving listeners and component state.
 
 ### `delete`
 
@@ -169,7 +168,7 @@ Removes element (ignores response content).
 
 ### `none`
 
-Doesn't insert content (out-of-band swaps still work).
+Doesn't insert content.
 
 ```html
 <div hx-get="..." hx-swap="none">
@@ -177,17 +176,19 @@ Doesn't insert content (out-of-band swaps still work).
 </div>
 ```
 
+[`hx-swap-oob`](/reference/attributes/hx-swap-oob) and [`<hx-partial>`](/reference/tags/hx-partial) swaps still work.
+
 ### `upsert`
 
 Updates existing elements by ID and inserts new ones.
-
-*Requires the [upsert extension](https://github.com/bigskysoftware/htmx-extensions).*
 
 ```html
 <div hx-get="..." hx-swap="upsert">
   <!-- Existing elements with matching IDs are updated, new ones are inserted -->
 </div>
 ```
+
+*Requires the [`hx-upsert`](/extensions/hx-upsert) extension.*
 
 ## Modifiers
 
@@ -207,11 +208,11 @@ Enable globally: [`htmx.config.transitions = true`](/reference/config/htmx-confi
 
 Adds delay before swap.
 
-Useful for showing loading states or coordinating with CSS animations.
-
 ```html
 <div hx-swap="innerHTML swap:1s"></div>
 ```
+
+Useful for showing loading states or coordinating with CSS animations.
 
 Default: `0ms`
 
@@ -219,11 +220,11 @@ Default: `0ms`
 
 Adds delay between the swap and the settle phase.
 
-Useful for synchronizing htmx with CSS transition timing.
-
 ```html
 <div hx-swap="innerHTML settle:200ms"></div>
 ```
+
+Useful for synchronizing htmx with CSS transition timing.
 
 Default: `1ms`
 
@@ -231,21 +232,21 @@ Default: `1ms`
 
 Prevents updating the page `<title>`.
 
-By default, htmx updates the page title from `<title>` tags in responses.
-
 ```html
 <div hx-swap="innerHTML ignoreTitle:true"></div>
 ```
 
+By default, htmx updates the page title from response `<title>` tags.
+
 ### `scroll`
 
-Auto-scroll to swapped content. 
-
-Useful for infinite scroll, chat messages, or focusing attention on new content.
+Auto-scroll to swapped content.
 
 ```html
 <div hx-swap="beforeend scroll:bottom"></div>
 ```
+
+Useful for infinite scroll, chat messages, or focusing attention on new content.
 
 Values: `top`, `bottom`
 
@@ -265,11 +266,11 @@ Scroll the window:
 
 Scrolls to show the target element in viewport.
 
-Values: `top`, `bottom`, `none`
-
 ```html
 <div hx-swap="innerHTML show:top"></div>
 ```
+
+Values: `top`, `bottom`, `none`
 
 Show a different element:
 
@@ -285,34 +286,73 @@ Boosted forms default to `show:top`. Disable:
 
 ### `target`
 
-Override swap target inline. Alternative to using [`hx-target`](/reference/attributes/hx-target) attribute.
+Sets the swap target.
 
 ```html
 <div hx-swap="innerHTML target:#results"></div>
 ```
 
+Alternative to the [`hx-target`](/reference/attributes/hx-target) attribute.
+
 ### `strip`
 
-Controls whether the outer element of the response content is removed before swapping.
+Controls whether the response's outer element is removed.
+
+Response:
 
 ```html
-<div hx-swap="innerHTML strip:true"></div>
+<section><p>Hello</p></section>
+```
+
+Results:
+
+```html
+<!-- strip:true -->
+<div id="target"><p>Hello</p></div>
+
+<!-- strip:false -->
+<div id="target"><section><p>Hello</p></section></div>
 ```
 
 ### `swapEmpty`
 
-Controls whether an empty response body still performs the main swap (which clears the target). `swapEmpty:false` skips the main swap; `swapEmpty:true` (or a bare `swapEmpty`) forces it.
+Controls the main target when no main content remains.
+
+The server might send:
 
 ```html
-<!-- Skip the main swap when the response is empty -->
-<div hx-swap="innerHTML swapEmpty:false"></div>
-
-<!-- Force the main swap even when the response is empty -->
-<div hx-swap="innerHTML swapEmpty:true"></div>
+<div id="notice" hx-swap-oob="true">Updated</div>
 ```
 
-Defaults to [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).
+After htmx extracts the `hx-swap-oob` update, no main content remains:
+
+```text
+(empty)
+```
+
+Use `swapEmpty` to keep the target or clear it:
+
+```html
+<!-- Keep the main target -->
+<div hx-swap="innerHTML swapEmpty:false">Original</div>
+
+<!-- These are equivalent -->
+<div hx-swap="innerHTML swapEmpty:true">Original</div>
+<div hx-swap="innerHTML swapEmpty">Original</div>
+```
+
+Default: [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty)
 
 ## Caveats
 
-* `outerHTML` on `document.body` automatically upgrades to `outerSync` to preserve body attributes (classes, data-attrs). Use `outerSync` explicitly if you want this behaviour on other elements.
+- On `<body>`, `outerHTML` behaves like [`outerSync`](#outersync):
+
+  ```html
+  <!-- This... -->
+  <body hx-get="..." hx-swap="outerHTML">...</body>
+
+  <!-- ...behaves like this -->
+  <body hx-get="..." hx-swap="outerSync">...</body>
+  ```
+
+  This is because replacing `<body>` would remove its event listeners and state.
