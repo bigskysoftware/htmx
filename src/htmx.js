@@ -1731,6 +1731,7 @@ var htmx = (() => {
             let indicatorsSelector = this.__attributeValue(elt, "hx-indicator");
             let indicatorElements;
             if (!indicatorsSelector) {
+                if (elt === document.body) return [];
                 indicatorElements = [elt]
             } else {
                 indicatorElements = this.__findAllExt(elt, indicatorsSelector, "hx-indicator");

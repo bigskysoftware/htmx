@@ -83,6 +83,19 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         assert.isFalse(span.classList.contains('htmx-request'))
     })
 
+    it('returns empty array and adds no class when elt is document.body', function () {
+        let span = createProcessedHTML('<span class="htmx-indicator"></span>')
+        document.body.appendChild(span)
+
+        let indicators = htmx.__showIndicators(document.body)
+
+        assert.deepEqual(indicators, [])
+        assert.isFalse(document.body.classList.contains('htmx-request'))
+        assert.isFalse(span.classList.contains('htmx-request'))
+
+        span.remove()
+    })
+
     it('includes element itself in indicators', function () {
         let div = createProcessedHTML('<div hx-indicator=".indicator" class="indicator"></div>')
 
