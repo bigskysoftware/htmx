@@ -1,6 +1,6 @@
 ---
 title: "htmx.find()"
-description: "Find first matching element"
+description: "Finds first matching element"
 ---
 
 The `htmx.find()` function finds the first element matching a CSS selector.

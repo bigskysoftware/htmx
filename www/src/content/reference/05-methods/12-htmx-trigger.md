@@ -1,6 +1,6 @@
 ---
 title: "htmx.trigger()"
-description: "Trigger custom events"
+description: "Triggers custom events"
 ---
 
 The `htmx.trigger()` function dispatches a custom event on an element.

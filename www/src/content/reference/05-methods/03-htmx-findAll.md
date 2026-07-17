@@ -1,6 +1,6 @@
 ---
 title: "htmx.findAll()"
-description: "Find all matching elements"
+description: "Finds all matching elements"
 ---
 
 The `htmx.findAll()` function finds all elements matching a CSS selector.

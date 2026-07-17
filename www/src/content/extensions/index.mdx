@@ -19,7 +19,7 @@ export const grouped = groupFilesByCategory(folder.files, EXTENSION_CATEGORIES).
     })),
 }));
 
-<label class="not-prose text-field" for="extensions-search">
+<label data-active-search class="not-prose text-field" for="extensions-search">
     <span class="sr-only">Search extensions</span>
     <i class="icon-[mdi--magnify]" aria-hidden="true"></i>
     <input
@@ -44,6 +44,8 @@ export const grouped = groupFilesByCategory(folder.files, EXTENSION_CATEGORIES).
     <a href={`#${group.slug}`} class="no-underline interact:underline">
         {group.category}
     </a>
+    <span data-search-count class="active-search-count">{group.items.length}
+    </span>
 </h2>
 
 <table>

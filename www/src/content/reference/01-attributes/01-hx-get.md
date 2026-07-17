@@ -1,6 +1,6 @@
 ---
 title: "hx-get"
-description: "Issues a GET request to the specified URL"
+description: "Issues `GET` request to specified URL"
 ---
 
 The `hx-get` attribute will cause an element to issue a `GET` to the specified URL and swap

@@ -1,9 +1,11 @@
 ---
 title: "htmx:confirm"
-description: "Show confirmation dialog before request"
+description: "Fires before handling `hx-confirm`"
 ---
 
-The `htmx:confirm` event is fired on every request trigger, allowing custom confirmation dialogs or request cancellation logic. Elements with [`hx-confirm`](/reference/attributes/hx-confirm) use this event to show a confirmation dialog, but the event fires even on elements without `hx-confirm` — it just isn't cancelled by default.
+The `htmx:confirm` event fires before htmx handles [`hx-confirm`](/reference/attributes/hx-confirm).
+
+Use it to replace the default confirmation UI or cancel the request.
 
 ## When It Fires
 

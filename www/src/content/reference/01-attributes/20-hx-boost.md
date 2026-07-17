@@ -3,41 +3,42 @@ title: "hx-boost"
 description: "Converts links and forms to AJAX"
 ---
 
-The `hx-boost` attribute allows you to "boost" normal anchors and form tags to use AJAX instead. This
-has the [nice fallback](https://en.wikipedia.org/wiki/Progressive_enhancement) that, if the user does not
-have javascript enabled, the site will continue to work.
+The `hx-boost` attribute makes links and forms use AJAX.
+
+Without JavaScript, they retain their normal browser behavior through [progressive enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement).
 
 ## Syntax
 
-For anchor tags, clicking on the anchor will issue a `GET` request to the url specified in the `href` and
-will push the url so that a history entry is created. The target is the `<body>` tag, and the `outerSync`
-swap strategy is used by default. All of these can be modified by using the appropriate attributes, except
-the `click` trigger.
+| Element | Request | Trigger | History | Target | Swap |
+|---|---|---|---|---|---|
+| `<a>` | `GET` to `href` | `click` | Push URL | `<body>` | [`outerSync`](/reference/attributes/hx-swap#outersync) |
+| `<form>` | `GET` or `POST` to `action` | `submit` | No push | `<body>` | [`outerSync`](/reference/attributes/hx-swap#outersync) |
 
-For forms the request will be converted into a `GET` or `POST`, based on the method in the `method` attribute
-and will be triggered by a `submit`. Again, the target will be the `body` of the page, and the `outerSync`
-swap will be used. The url will _not_ be pushed, however, and no history entry will be created. (You can use the
-[`hx-push-url`](/reference/attributes/hx-push-url) attribute if you want the url to be pushed.)
+Override target, swap, and history behavior with their corresponding attributes. Boosted links always use `click`.
+
+Boost several links from a parent:
 
 ```html
 <div hx-boost:inherited="true">
-  <a href="/page1">Go To Page 1</a>
-  <a href="/page2">Go To Page 2</a>
+  <a href="/page1">Page 1</a>
+  <a href="/page2">Page 2</a>
 </div>
 ```
 
-These links will issue an ajax `GET` request to the respective URLs and swap the full response into the
-`<body>` using `outerSync` — which replaces the body's children and syncs any attributes on the `<body>`
-element itself (e.g. `class`, `data-*`) without removing and re-creating the node.
+Each link sends `GET`, pushes its URL, and swaps the response into `<body>` with `outerSync`.
+
+`outerSync` replaces body children and syncs body attributes without replacing the `<body>` element.
+
+Boost a form directly:
 
 ```html
 <form hx-boost="true" action="/example" method="post">
-    <input name="email" type="email" placeholder="Enter email...">
-    <button>Submit</button>
+  <input name="email" type="email">
+  <button>Submit</button>
 </form>
 ```
 
-This form will issue an ajax `POST` to the given URL and swap the full response into the `<body>`.
+The form sends `POST` and swaps the response into `<body>` without pushing a URL. Add [`hx-push-url`](/reference/attributes/hx-push-url) to create a history entry.
 
 ## Advanced Syntax
 
@@ -91,6 +92,7 @@ This allows you to:
 - Use `hx-boost="true"` or `hx-boost="false"` to enable/disable
 
 Supported modifiers:
+
 - `swap:STYLE` - Swap strategy (`outerSync`, `innerHTML`, `outerHTML`, etc.)
 - `target:SELECTOR` - Target element selector
 - `select:SELECTOR` - Content selection from response (works with `outerSync`; use `innerHTML strip` instead of `innerHTML` + `select` when targeting a non-body element)

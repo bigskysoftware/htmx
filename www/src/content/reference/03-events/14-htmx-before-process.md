@@ -1,6 +1,6 @@
 ---
 title: "htmx:before:process"
-description: "Before htmx processes a DOM node"
+description: "Fires before DOM node processing"
 ---
 
 The `htmx:before:process` event fires before htmx begins processing a DOM node or subtree to attach htmx behaviors.

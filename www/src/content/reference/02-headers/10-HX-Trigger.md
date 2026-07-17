@@ -1,6 +1,6 @@
 ---
 title: "HX-Trigger"
-description: "Trigger client-side events from the server"
+description: "Triggers client-side events with `htmx.trigger()`"
 ---
 
 The `HX-Trigger` response header triggers client-side events when a response is received.
@@ -13,7 +13,7 @@ Send a single event:
 HX-Trigger: myEvent
 ```
 
-By default, the event is dispatched on the element that made the request and bubbles. Use `from:body` when listening elsewhere.
+By default, the event is dispatched on the element that made the request and bubbles. Use [`from:body`](/reference/attributes/hx-trigger#from) when listening elsewhere.
 
 Listen from markup with [`hx-on`](/reference/attributes/hx-on):
 
@@ -103,3 +103,7 @@ _This example uses the [`hx-live`](/extensions/hx-live) extension._
 ## Notes
 
 Response headers are not processed on 3xx response codes. Return a 2xx status when using this header.
+
+## See Also
+
+- [`htmx.trigger()`](/reference/methods/htmx-trigger)

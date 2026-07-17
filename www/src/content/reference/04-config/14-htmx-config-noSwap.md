@@ -1,6 +1,6 @@
 ---
 title: "htmx.config.noSwap"
-description: "HTTP status codes that skip swap"
+description: "Sets HTTP status codes that skip swap"
 ---
 
 The `htmx.config.noSwap` option is an array of HTTP status codes for which htmx will not perform a content swap.
@@ -18,3 +18,8 @@ htmx.config.noSwap = [204, 304, 205];
 ```
 
 Responses with these status codes will trigger events but won't swap content.
+
+## See Also
+
+- [`hx-status`](/reference/attributes/hx-status)
+- [`htmx:response:error`](/reference/events/htmx-response-error)

@@ -1,11 +1,11 @@
 ---
 title: "HX-Reswap"
-description: "Override the swap style from the server"
+description: "Overrides swap style from server"
 ---
 
 The `HX-Reswap` response header overrides the swap style used when inserting the response, replacing whatever `hx-swap` was set on the triggering element.
 
-## Syntax
+## Usage
 
 ```http
 HX-Reswap: outerHTML
@@ -13,7 +13,6 @@ HX-Reswap: outerHTML
 
 Accepts the same values as [`hx-swap`](/reference/attributes/hx-swap), including modifiers.
 
-## Example
 
 Force an outer replacement regardless of what the element specified:
 

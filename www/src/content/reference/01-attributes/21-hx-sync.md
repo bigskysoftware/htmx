@@ -3,84 +3,98 @@ title: "hx-sync"
 description: "Synchronizes requests between elements"
 ---
 
-The `hx-sync` attribute allows you to synchronize AJAX requests between multiple elements.
+The `hx-sync` attribute coordinates concurrent requests between elements.
 
-## Syntax
+## Usage
+
+Set a synchronization element and strategy:
 
 ```html
 <input hx-post="/validate" hx-sync="closest form:abort">
 ```
 
-The `hx-sync` attribute consists of a CSS selector to indicate the element to synchronize on, followed optionally
-by a colon and then by an optional syncing strategy. The available strategies are:
+```text
+SELECTOR:STRATEGY
+```
 
-* `drop` - drop (ignore) this request if an existing request is in flight (the default)
-* `abort` - drop (ignore) this request if an existing request is in flight, and, if that is not the case,
-  *abort* this request if another request occurs while it is still in flight
-* `replace` - abort the current request, if any, and replace it with this request
-* `queue` - place this request in the request queue associated with the given element
+The selector identifies the shared request queue. The strategy controls competing requests.
 
-The `queue` modifier can take an additional argument indicating exactly how to queue:
+| Strategy | Behavior |
+|---|---|
+| `drop` | Ignores new request while another is running. Default. |
+| `abort` | Drops this request if another is running; aborts it if another starts. |
+| `replace` | Aborts running request and starts new request. |
+| `queue` | Queues new request. |
 
-* `queue first` - queue the first request to show up while a request is in flight
-* `queue last` - queue the last request to show up while a request is in flight
-* `queue all` - queue all requests that show up while a request is in flight
+Choose which requests `queue` keeps:
 
-## Notes
+| Queue | Behavior |
+|---|---|
+| `queue first` | Keeps first waiting request. |
+| `queue last` | Keeps last waiting request. |
+| `queue all` | Keeps every waiting request. |
 
-This example resolves a race condition between a form's submit request and an individual input's validation request.
-Normally, without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel
-requests to `/validate` and `/store`. Using `hx-sync="closest form:abort"` on the input will watch for requests on the
-form and abort the input's request if a form request is present or starts while the input request is in flight.
+## Prioritize Form Submission
+
+Without `hx-sync`, validation and submission can run in parallel and race.
+
+Abort field validation when form submission starts:
 
 ```html
 <form hx-post="/store">
-    <input id="title" name="title" type="text" 
-        hx-post="/validate" 
-        hx-trigger="change"
-        hx-sync="closest form:abort">
-    <button type="submit">Submit</button>
+  <input name="title"
+         hx-post="/validate"
+         hx-trigger="change"
+         hx-sync="closest form:abort">
+  <button type="submit">Submit</button>
 </form>
 ```
 
-If you'd rather prioritize the validation request over the submit request, you can use the `drop` strategy. This example
-will prioritize the validation request over the submit request so that if a validation request is in flight, the form
-cannot be submitted.
+The input watches the form's request queue. Form submission aborts any running validation request.
+
+## Prioritize Validation
+
+Drop form submission while validation is running:
 
 ```html
 <form hx-post="/store">
-    <input id="title" name="title" type="text" 
-        hx-post="/validate" 
-        hx-trigger="change"
-        hx-sync="closest form:drop"
-    >
-    <button type="submit">Submit</button>
+  <input name="title"
+         hx-post="/validate"
+         hx-trigger="change"
+         hx-sync="closest form:drop">
+  <button type="submit">Submit</button>
 </form>
 ```
 
-When dealing with forms that contain many inputs, you can prioritize the submit request over all input validation
-requests using the `hx-sync` `replace` strategy on the form tag. This will cancel any in-flight validation requests and
-issue only the [`hx-post`](/reference/attributes/hx-post)`="/store"` request. If you'd rather abort the submit request and prioritize any existing
-validation requests you can use the `hx-sync="this:abort"` strategy on the form tag.
+## Replace Validation Requests
+
+Put `replace` on the form to cancel running validation before submission:
 
 ```html
 <form hx-post="/store" hx-sync="this:replace">
-    <input id="title" name="title" type="text" hx-post="/validate" hx-trigger="change" />
-    <button type="submit">Submit</button>
+  <input name="title" hx-post="/validate" hx-trigger="change">
+  <button type="submit">Submit</button>
 </form>
 ```
 
-When implementing active search functionality the [`hx-trigger`](/reference/attributes/hx-trigger) attribute's `delay` modifier can be used to debounce the
-user's input and avoid making multiple requests while the user types. However, once a request is made, if the user
-begins typing again a new request will begin even if the previous one has not finished processing. This example will
-cancel any in-flight requests and use only the last request. In cases where the search input is contained within the
-target, then using `hx-sync` like this also helps reduce the chances that the input will be replaced while the user is
-still typing.
+Use `hx-sync="this:abort"` instead to keep running validation and abort submission.
+
+## Keep Latest Search
+
+Combine [`delay`](/reference/attributes/hx-trigger#delaytime) with `replace`:
 
 ```html
-<input type="search" 
-    hx-get="/search" 
-    hx-trigger="keyup changed delay:500ms, search" 
-    hx-target="#search-results"
-    hx-sync="this:replace">
+<input type="search"
+       hx-get="/search"
+       hx-trigger="keyup changed delay:500ms, search"
+       hx-target="#search-results"
+       hx-sync="this:replace">
 ```
+
+`delay` waits for typing to pause. `replace` cancels any older search request.
+
+When the input is inside the target, this also reduces the chance that an older response replaces it while the user is typing.
+
+## See Also
+
+- [`hx-trigger`](/reference/attributes/hx-trigger)

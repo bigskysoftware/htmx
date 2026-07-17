@@ -1,6 +1,6 @@
 ---
 title: "htmx:process:{type}"
-description: "Custom template processing"
+description: "Fires during registered template processing"
 ---
 
 The `htmx:process:type` event is an internal event fired when a `<template>` tag has a custom `type` attribute that needs processing.

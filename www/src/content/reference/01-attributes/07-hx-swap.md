@@ -1,6 +1,6 @@
 ---
 title: "hx-swap"
-description: "Controls how the response is inserted"
+description: "Controls how response is inserted"
 ---
 
 The `hx-swap` attribute controls where the response content goes.
@@ -356,3 +356,7 @@ Default: [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultS
   ```
 
   This is because replacing `<body>` would remove its event listeners and state.
+
+## See Also
+
+- [`HX-Reswap`](/reference/headers/HX-Reswap)

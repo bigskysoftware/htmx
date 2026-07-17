@@ -1,6 +1,6 @@
 ---
 title: "htmx:before:cleanup"
-description: "Before htmx removes element data"
+description: "Fires before element data removal"
 ---
 
 The `htmx:before:cleanup` event fires before htmx removes listeners and internal data from an element.

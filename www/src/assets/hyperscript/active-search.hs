@@ -28,6 +28,15 @@ behavior ActiveSearch
         if item.hidden is false then increment visible
       end
       if visible is 0 then add @hidden to group else remove @hidden from group
+
+      set count to group.querySelector('[data-search-count]')
+      if count is not null
+        if q is ''
+          remove @data-visible from count
+        else
+          set count's @data-visible to visible
+        end
+      end
     end
   end
 

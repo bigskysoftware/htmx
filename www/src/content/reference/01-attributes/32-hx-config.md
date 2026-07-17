@@ -1,6 +1,6 @@
 ---
 title: "hx-config"
-description: "Configure request behavior"
+description: "Configures request behavior"
 ---
 
 The `hx-config` attribute configures request behavior with [HCON](/docs#hcon) or JSON.
@@ -35,12 +35,12 @@ Or use JSON:
 
 These options map to the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
 
-> **Security note:** The `mode` option is intentionally excluded from `hx-config`. It is always
-> reset to the global `htmx.config.mode` value (default: `"same-origin"`) to prevent injection
-> attacks from widening request scope. To change the fetch mode, set it globally via
-> `htmx.config.mode` or a `<meta name="htmx-config">` tag. See the
-> [mode config reference](/reference/config/htmx-config-mode) and
-> [security best practices](/docs#best-practices) for details.
+> **Security:** `hx-config` cannot set `mode`.
+>
+> htmx resets it to `htmx.config.mode` to prevent injected markup from widening request scope.
+>
+> Change it globally with `htmx.config.mode` or `<meta name="htmx-config">`. See
+> [mode config](/reference/config/htmx-config-mode) and [security best practices](/docs#best-practices).
 
 ## Inheritance
 

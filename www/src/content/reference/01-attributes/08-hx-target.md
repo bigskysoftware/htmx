@@ -1,6 +1,6 @@
 ---
 title: "hx-target"
-description: "Controls where the response is inserted"
+description: "Controls where response is inserted"
 ---
 
 The `hx-target` attribute specifies where to insert the response content.
@@ -71,3 +71,8 @@ See the full [extended selectors](/docs#extended-selectors-1) guide.
   <span class="status">Loading...</span>
 </div>
 ```
+
+## See Also
+
+- [`HX-Target`](/reference/headers/HX-Target)
+- [`HX-Retarget`](/reference/headers/HX-Retarget)

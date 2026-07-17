@@ -1,6 +1,6 @@
 ---
 title: "hx-action"
-description: "Specifies the URL to receive the request"
+description: "Specifies URL to receive request"
 ---
 
 The `hx-action` attribute specifies the URL that will receive the request.

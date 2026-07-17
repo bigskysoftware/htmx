@@ -1,12 +1,12 @@
 ---
 title: "hx-push-url"
-description: "Pushes the URL into browser history"
+description: "Pushes URL into browser history"
 ---
 
-The `hx-push-url` attribute allows you to push a URL into the
-browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
-This creates a new history entry, allowing navigation with the browser's back and forward buttons.
-htmx snapshots the current DOM and saves it into its history cache, and restores from this cache on navigation.
+The `hx-push-url` attribute pushes a URL into browser history.
+
+This creates a history entry for back and forward navigation. Core htmx restores the page by fetching its URL again.
+Use the [`hx-history-cache`](/extensions/hx-history-cache) extension to restore saved DOM snapshots instead.
 
 ## Syntax
 
@@ -31,8 +31,7 @@ Here is an example:
 </div>
 ```
 
-This will cause htmx to snapshot the current DOM to `localStorage` and push the URL `/account' into the browser location
-bar.
+This pushes `/account` into the browser history. Returning to this entry causes core htmx to fetch `/account` again.
 
 Another example:
 

@@ -1,13 +1,13 @@
 ---
 title: "htmx.config.mode"
-description: "Set request mode for fetch API"
+description: "Sets request mode for `fetch()`"
 ---
 
 The `htmx.config.mode` option sets the `mode` option for fetch requests.
 
-This is the **only** way to set the fetch mode — the `mode` key in per-element `hx-config`
-attributes is ignored and always reset to this global value. This prevents injected markup
-from widening request scope (e.g. switching from `same-origin` to `cors`).
+Set fetch mode globally. Per-element `hx-config` cannot override it.
+
+This prevents injected markup from widening request scope from `same-origin` to `cors`.
 
 **Default:** `"same-origin"`
 

@@ -110,3 +110,4 @@ Use the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/
 * [`hx-select`](/reference/attributes/hx-select)
 * [`hx-target`](/reference/attributes/hx-target)
 * [`htmx.config.noSwap`](/reference/config/htmx-config-noSwap)
+- [`htmx:response:error`](/reference/events/htmx-response-error)

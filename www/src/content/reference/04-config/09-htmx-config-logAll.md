@@ -1,6 +1,6 @@
 ---
 title: "htmx.config.logAll"
-description: "Log all htmx events to console"
+description: "Logs all htmx events to console"
 ---
 
 The `htmx.config.logAll` option, when set to `true`, causes htmx to surface event-level output via `console.log`.

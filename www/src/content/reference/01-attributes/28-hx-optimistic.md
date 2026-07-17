@@ -1,6 +1,6 @@
 ---
 title: "hx-optimistic"
-description: "Shows optimistic content during the request"
+description: "Shows optimistic content during request"
 ---
 
 The `hx-optimistic` attribute enables optimistic UI updates before a response arrives.

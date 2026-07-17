@@ -1,6 +1,6 @@
 ---
 title: "htmx:after:history:replace"
-description: "After a replace state action"
+description: "Fires after history replacement"
 ---
 
 The `htmx:after:history:replace` event fires specifically after a `history.replaceState()` operation (replaces current history entry).

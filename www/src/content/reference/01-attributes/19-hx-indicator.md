@@ -1,11 +1,11 @@
 ---
 title: "hx-indicator"
-description: "Specifies the loading indicator element"
+description: "Specifies loading indicator element"
 ---
 
-The `hx-indicator` attribute allows you to specify the element that will have the `htmx-request` class
-added to it for the duration of the request. This can be used to show spinners or progress indicators
-while the request is in flight.
+The `hx-indicator` attribute selects elements that receive the request-state class during requests.
+
+By default, htmx adds [`.htmx-request`](/reference/config/htmx-config-requestClass). Use it to show loading indicators.
 
 ## Syntax
 
@@ -13,9 +13,9 @@ while the request is in flight.
 <button hx-post="/submit" hx-indicator="#spinner">Submit</button>
 ```
 
-The value of this attribute is a CSS query selector of the element or elements to apply the class to,
-or the keyword [`closest`](https://developer.mozilla.org/docs/Web/API/Element/closest), followed by a CSS selector,
-which will find the closest ancestor element or itself, that matches the given CSS selector (e.g. `closest tr`);
+Set a CSS selector to choose indicator elements.
+
+Use [`closest SELECTOR`](https://developer.mozilla.org/docs/Web/API/Element/closest) to choose the element itself or nearest matching ancestor.
 
 Here is an example with a spinner adjacent to the button:
 
@@ -28,8 +28,7 @@ Here is an example with a spinner adjacent to the button:
 </div>
 ```
 
-Note that you can also use the `inherit` keyword to inherit parent values for an indicator and add additional indicator
-CSS selectors:
+Use `inherit` to keep parent indicators and add more selectors:
 
 ```html
 <main hx-indicator="#global-indicator">

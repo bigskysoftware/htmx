@@ -1,6 +1,6 @@
 ---
 title: "htmx.config.defaultFocusScroll"
-description: "Scroll to the focused element after a swap"
+description: "Scrolls to focused element after swap"
 ---
 
 The `htmx.config.defaultFocusScroll` option, when set to `true`, causes htmx to scroll the focused element into view after each swap.

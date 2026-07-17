@@ -16,7 +16,31 @@ export const ATTRIBUTE_GROUPS = [
     { label: 'Enhancements', titles: ['hx-boost', 'hx-preload', 'hx-optimistic'] },
     { label: 'Advanced', titles: ['hx-indicator', 'hx-status', 'hx-sync', 'hx-validate', 'hx-disable', 'hx-ignore', 'hx-preserve', 'hx-action', 'hx-method', 'hx-config'] },
 ];
-export const REQUEST_HEADERS = ['HX-Request', 'HX-Request-Type', 'HX-Current-URL', 'HX-Source', 'HX-Target', 'HX-Boosted', 'HX-History-Restore-Request', 'Last-Event-ID'];
+export const REQUEST_HEADERS = ['HX-Request', 'HX-Request-Type', 'HX-Current-URL', 'HX-Source', 'HX-Target', 'HX-Boosted', 'HX-History-Restore-Request'];
+export const EVENT_GROUPS = [
+    { label: 'Request Lifecycle', titles: ['htmx:config:request', 'htmx:confirm', 'htmx:before:request', 'htmx:before:response', 'htmx:after:request', 'htmx:response:error', 'htmx:before:swap', 'htmx:before:settle', 'htmx:after:settle', 'htmx:after:swap', 'htmx:finally:request', 'htmx:error', 'htmx:abort'] },
+    { label: 'Elements', titles: ['htmx:before:init', 'htmx:after:init', 'htmx:before:process', 'htmx:after:process', 'htmx:process:{type}', 'htmx:after:implicitInheritance', 'htmx:before:cleanup', 'htmx:after:cleanup', 'load'] },
+    { label: 'History', titles: ['htmx:before:history:update', 'htmx:after:history:update', 'htmx:after:history:push', 'htmx:after:history:replace', 'htmx:before:history:restore'] },
+    { label: 'View Transitions', titles: ['htmx:before:viewTransition', 'htmx:after:viewTransition'] },
+    { label: 'Triggers', titles: ['intersect', 'every'] },
+];
+export const CONFIG_GROUPS = [
+    { label: 'Core', titles: ['htmx.config', 'htmx.version', 'htmx.config.prefix', 'htmx.config.metaCharacter', 'htmx.config.extensions'] },
+    { label: 'Requests', titles: ['htmx.config.defaultTimeout', 'htmx.config.mode'] },
+    { label: 'Swaps', titles: ['htmx.config.defaultSwap', 'htmx.config.defaultSwapEmpty', 'htmx.config.noSwap', 'htmx.config.transitions', 'htmx.config.defaultSettleDelay', 'htmx.config.defaultFocusScroll'] },
+    { label: 'Morphing', titles: ['htmx.config.morphIgnore', 'htmx.config.morphSkip', 'htmx.config.morphSkipChildren', 'htmx.config.morphScanLimit'] },
+    { label: 'Indicators', titles: ['htmx.config.includeIndicatorCSS', 'htmx.config.indicatorClass', 'htmx.config.requestClass'] },
+    { label: 'Behavior', titles: ['htmx.config.history', 'htmx.config.implicitInheritance', 'htmx.config.inlineScriptNonce', 'htmx.config.logAll'] },
+];
+export const METHOD_GROUPS = [
+    { label: 'Requests', titles: ['htmx.ajax()'] },
+    { label: 'DOM', titles: ['htmx.find()', 'htmx.findAll()', 'htmx.process()', 'htmx.swap()'] },
+    { label: 'Events', titles: ['htmx.on()', 'htmx.onLoad()', 'htmx.trigger()'] },
+    { label: 'Extensions', titles: ['htmx.registerExtension()'] },
+    { label: 'Timing', titles: ['htmx.parseInterval()', 'htmx.timeout()'] },
+];
+
+export const descriptionHtml = text => text.replace(/`([^`]+)`/g, '<code>$1</code>');
 
 export const groups = folder.folders.map(sub => {
     const items = sub.files.map(f => ({
@@ -40,10 +64,21 @@ export const groups = folder.folders.map(sub => {
             { label: 'Response', items: response },
         ]};
     }
+    const namedGroups = sub.slug === 'events' ? EVENT_GROUPS
+        : sub.slug === 'config' ? CONFIG_GROUPS
+        : sub.slug === 'methods' ? METHOD_GROUPS
+        : null;
+    if (namedGroups) {
+        const subgroups = namedGroups.map(g => ({
+            label: g.label,
+            items: g.titles.map(t => items.find(i => i.title === t)).filter(Boolean),
+        }));
+        return { slug: sub.slug, label: sub.frontmatter.title, subgroups };
+    }
     return { slug: sub.slug, label: sub.frontmatter.title, subgroups: [{ label: null, items }] };
 });
 
-<label class="not-prose text-field" for="reference-search">
+<label data-active-search class="not-prose text-field" for="reference-search">
     <span class="sr-only">Search reference</span>
     <i class="icon-[mdi--magnify]" aria-hidden="true"></i>
     <input
@@ -61,6 +96,16 @@ export const groups = folder.folders.map(sub => {
     <span aria-hidden="true">Press <kbd>/</kbd></span>
 </label>
 
+<nav aria-label="Reference sections" class="not-prose mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm sm:text-base">
+    <span class="text-neutral-500 dark:text-neutral-400">Jump to:</span>
+    {groups.map((group, index) => (
+        <>
+            {index > 0 && <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">•</span>}
+            <a href={`#${group.slug}`} class="text-blue-700 no-underline interact:underline dark:text-blue-350 dark:interact:text-blue-300">{group.label}</a>
+        </>
+    ))}
+</nav>
+
 {groups.map(group => (
 <section role="group">
 
@@ -68,6 +113,8 @@ export const groups = folder.folders.map(sub => {
     <a href={`#${group.slug}`} class="no-underline interact:underline">
         {group.label}
     </a>
+    <span data-search-count class="active-search-count">{group.subgroups.reduce((total, sg) => total + sg.items.length, 0)}
+    </span>
 </h2>
 
 {group.subgroups.map(sg => (
@@ -80,10 +127,11 @@ export const groups = folder.folders.map(sub => {
         {sg.items.map(item => (
             <tr class="stretch-link">
                 <td>
-                    <a href={item.url}><code set:html={item.title} /></a>
-                    {item.description && <span class="block sm:hidden text-[0.8125em] text-neutral-650 dark:text-neutral-350 mt-0.5 pl-[6px]">{item.description}</span>}
+                    <span hidden>{group.label} {sg.label}</span>
+                    <a href={item.url}><code class="text-sm sm:text-[0.875em]" set:html={item.title} /></a>
+                    {item.description && <span class="mt-0.5 block pl-[6px] text-[0.8125rem] text-neutral-650 dark:text-neutral-350 sm:hidden" set:html={descriptionHtml(item.description)} />}
                 </td>
-                <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350">{item.description || ''}</td>
+                <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350" set:html={item.description ? descriptionHtml(item.description) : ''} />
             </tr>
         ))}
     </tbody>

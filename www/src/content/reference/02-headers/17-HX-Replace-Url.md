@@ -1,9 +1,11 @@
 ---
 title: "HX-Replace-Url"
-description: "Replace the current URL in the browser history"
+description: "Replaces current URL in browser history"
 ---
 
-The `HX-Replace-Url` response header replaces the current URL in the browser location history. This does not create a new history entry — it removes the previous current URL from the browser's history.
+The `HX-Replace-Url` response header replaces the current browser history URL.
+
+It does not create a new history entry.
 
 If present, this header overrides any behavior defined with attributes.
 

@@ -1,9 +1,9 @@
 ---
 title: "htmx.process()"
-description: "Process htmx attributes on element"
+description: "Processes htmx attributes on element"
 ---
 
-Processes htmx attributes on the specified element and its descendants, initializing htmx functionality.
+The `htmx.process()` function initializes htmx attributes on an element and its descendants.
 
 ## Syntax
 

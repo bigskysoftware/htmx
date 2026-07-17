@@ -1,9 +1,11 @@
 ---
 title: "htmx.config.defaultSwapEmpty"
-description: "Whether an empty response body performs the main swap"
+description: "Controls main swap when response body is empty"
 ---
 
-The `htmx.config.defaultSwapEmpty` option sets the default for whether htmx performs the main swap when the server returns an empty response body. It can be overridden per element with the [`swapEmpty`](/reference/attributes/hx-swap#swapempty) modifier on `hx-swap`.
+The `htmx.config.defaultSwapEmpty` option controls the main swap when the response body is empty.
+
+Override it per element with [`swapEmpty`](/reference/attributes/hx-swap#swapempty).
 
 **Default:** unset. When unset, htmx performs the main swap on an empty response except when the response contained only `<hx-partial>` elements.
 

@@ -1,6 +1,6 @@
 ---
 title: "htmx.config.prefix"
-description: "Set a secondary attribute prefix"
+description: "Sets secondary attribute prefix"
 ---
 
 The `htmx.config.prefix` option sets a secondary attribute prefix that htmx recognises in addition to the primary `hx-` prefix, which always works regardless of this setting.

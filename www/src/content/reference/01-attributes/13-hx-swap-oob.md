@@ -1,11 +1,11 @@
 ---
 title: "hx-swap-oob"
-description: "Marks response elements to swap into the page by ID"
+description: "Marks response elements to swap into page by ID"
 ---
 
-The `hx-swap-oob` attribute allows you to specify that some content in a response should be
-swapped into the DOM somewhere other than the target, that is "Out of Band". This allows you to piggyback updates to
-other element updates on a response.
+The `hx-swap-oob` attribute swaps response content outside the main target.
+
+Use it to update other elements from the same response.
 
 ## Syntax
 
@@ -27,8 +27,9 @@ Consider the following response HTML:
 
 ```
 
-The first div will be swapped into the target the usual manner. The second div, however, will be swapped in as a
-replacement for the element with the id `alerts`, and will not end up in the target.
+The first `<div>` swaps into the main target.
+
+The second replaces the existing `#alerts` element outside that target.
 
 The value of the `hx-swap-oob` can be:
 
@@ -46,8 +47,7 @@ the new content will be swapped.
 
 ### Using alternate swap strategies
 
-As mentioned previously when using swap strategies other than `true` or `outerHTML` the encapsulating tags are stripped,
-as such you need to encapsulate the returned data with the correct tags for the context.
+Swap strategies other than `true` or `outerHTML` strip the wrapper. Use a wrapper valid for the target context.
 
 When trying to insert a `<tr>` in a table that uses `<tbody>`:
 
@@ -87,9 +87,9 @@ A `<p>` can be encapsulated in `<div>` or `<span>`:
 
 ### Troublesome Tables and lists
 
-Note that you can use a `template` tag to encapsulate types of elements that, by the HTML spec, can't stand on their own
-in the
-DOM (`<tr>`, `<td>`, `<th>`, `<thead>`, `<tbody>`, `<tfoot>`, `<colgroup>`, `<caption>`, `<col>` & `<li>`).
+Use `<template>` to wrap elements that cannot stand alone in HTML:
+
+`<tr>`, `<td>`, `<th>`, `<thead>`, `<tbody>`, `<tfoot>`, `<colgroup>`, `<caption>`, `<col>`, and `<li>`.
 
 Here is an example with an out-of-band swap of a table row being encapsulated in this way:
 
@@ -108,10 +108,9 @@ Note that these template tags will be removed from the final content of the page
 
 ### Slippery SVGs
 
-Some element types, like SVG, use a specific XML namespace for their child elements. This prevents internal elements
-from working correctly when swapped in, unless they are encapsulated within a `svg` tag. To modify the internal contents
-of an existing SVG, you can use both `template` and `svg` tags to encapsulate the elements, allowing them to get the
-correct namespace applied.
+SVG children require the SVG namespace.
+
+Wrap them in `<template><svg>` so the browser applies the correct namespace.
 
 Here is an example with an out-of-band swap of svg elements being encapsulated in this way:
 
@@ -133,21 +132,19 @@ Note that these `template` and `svg` wrapping tags will be removed from the fina
 
 ## Nested OOB Swaps
 
-By default, any element with `hx-swap-oob=` attribute anywhere in the response is processed for oob swap behavior,
-including when an element is nested within the main response element.
-This can be problematic when using [template fragments](https://htmx.org/essays/template-fragments/) where a fragment
-may be reused as an oob-swap target and also as part of a bigger fragment. When the bigger fragment is the main response
-the inner fragment will still be processed as an oob swap, removing it from the dom.
+By default, htmx processes every `hx-swap-oob` element in the response, including elements nested inside main content.
 
-This behavior can be changed by setting the config `htmx.config.allowNestedOobSwaps` to `false`. If this config option
-is `false`, OOB swaps are only processed when the element is *adjacent to* the main response element, OOB swaps
-elsewhere will be ignored and oob-swap-related attributes stripped.
+This can remove nested [template fragments](https://htmx.org/essays/template-fragments/) that should remain in the main swap.
+
+Set `htmx.config.allowNestedOobSwaps` to `false` to process only OOB elements adjacent to main content.
+
+Nested OOB attributes are stripped without swapping.
 
 ## Empty Response Behaviour
 
-When a response contains only `hx-swap-oob` elements and no main content, htmx still performs the main swap with an
-empty fragment. You might for example submit a form, return an empty response to remove the form
-from the page, and include `hx-swap-oob` elements to place the result elsewhere.
+A response containing only OOB elements still performs an empty main swap.
+
+Use this to remove the main target while updating other elements.
 
 ```html
 <!-- Server returns this to remove the form and update the list -->
@@ -165,10 +162,9 @@ If you want to prevent the empty main swap, use the [`swapEmpty`](/reference/att
 
 Or set the global default via [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).
 
-[`<hx-partial>`](/docs#partials-hx-partial) has the opposite default: a response containing only `<hx-partial>` elements
-and no main content will **not** trigger an empty main swap. This is because `<hx-partial>`-only responses signal
-intent — the server is explicitly routing multiple targeted updates with no main content to swap. Use `swapEmpty:true` on
-the triggering element if you need the main swap to run anyway.
+[`<hx-partial>`](/reference/tags/hx-partial) uses the opposite default. Partial-only responses skip the empty main swap.
+
+A partial-only response explicitly routes targeted updates, so htmx assumes no main swap is needed. Set `swapEmpty:true` to run it.
 
 ## See Also
 

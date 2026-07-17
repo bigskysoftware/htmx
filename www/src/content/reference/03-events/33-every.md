@@ -1,6 +1,6 @@
 ---
 title: "every"
-description: "Periodic polling trigger"
+description: "Fires at each polling interval"
 ---
 
 The `every` trigger event fires periodically at a specified interval, used for polling.

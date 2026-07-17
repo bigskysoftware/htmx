@@ -1,6 +1,6 @@
 ---
 title: "htmx.parseInterval()"
-description: "Parse time intervals to milliseconds"
+description: "Parses time intervals to milliseconds"
 ---
 
 The `htmx.parseInterval()` function parses time interval strings into milliseconds.

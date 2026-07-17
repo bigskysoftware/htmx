@@ -1,6 +1,6 @@
 ---
 title: "intersect"
-description: "Element enters viewport"
+description: "Fires when element enters viewport"
 ---
 
 The `intersect` trigger event fires when an element enters the viewport, detected via IntersectionObserver.
