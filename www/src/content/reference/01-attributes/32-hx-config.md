@@ -1,15 +1,23 @@
 ---
 title: "hx-config"
-description: "Configures request behavior with JSON"
+description: "Configure request behavior"
 ---
 
-The `hx-config` attribute allows you to configure request behavior using JSON.
+The `hx-config` attribute configures request behavior with [HCON](/docs#hcon) or JSON.
 
 ## Syntax
 
 ```html
-<button hx-post="/api/users" hx-config='{"timeout": 5000}'>
-    Create User
+<button hx-post="/api/users" hx-config="timeout:5s">
+  Create User
+</button>
+```
+
+Or use JSON:
+
+```html
+<button hx-post="/api/users" hx-config='{"timeout":5000}'>
+  Create User
 </button>
 ```
 
@@ -34,22 +42,27 @@ These options map to the [Fetch API](https://developer.mozilla.org/en-US/docs/We
 > [mode config reference](/reference/config/htmx-config-mode) and
 > [security best practices](/docs#best-practices) for details.
 
-## Merging Configuration
+## Inheritance
 
-By default, child `hx-config` values replace parent configurations entirely. Use the `+` prefix to merge with parent config instead:
+Use `:inherited` to share config with descendants:
 
 ```html
-<div hx-config='{"timeout": 5000}'>
-    <button hx-get="/data"
-            hx-config='{"+headers": {"X-Custom": "value"}}'>
-        Load Data
-    </button>
+<div hx-config:inherited="timeout:5s">
+  <button hx-get="/data">Load</button>
 </div>
 ```
 
-The button inherits the timeout and adds a custom header.
+Use `:append` to add child config:
 
-Without `+`, the child config replaces the parent config entirely.
+```html
+<div hx-config:inherited="timeout:5s">
+  <button hx-get="/data" hx-config:append="cache:no-cache">
+    Load
+  </button>
+</div>
+```
+
+The button uses both `timeout:5s` and `cache:no-cache`.
 
 ## Examples
 
