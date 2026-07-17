@@ -446,11 +446,11 @@
 
 @layer components {
     h2:has(> .active-search-count) {
-        @apply flex items-center;
+        @apply flex items-baseline;
     }
 
     .active-search-count {
-        @apply ms-auto font-mono text-xs font-normal tracking-normal text-neutral-500 dark:text-neutral-400;
+        @apply ms-auto pe-2 font-mono text-xs font-normal tracking-normal text-neutral-500 dark:text-neutral-400;
 
         &[data-visible] {
             @apply text-blue-600 dark:text-blue-300;

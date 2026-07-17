@@ -5,6 +5,7 @@ description: "Patterns, recipes, and working examples."
 
 import { getFolder } from '../../lib/content';
 import { PATTERN_CATEGORIES, groupFilesByCategory } from '../../lib/content-groups';
+import JumpTo from '../../components/JumpTo.astro';
 
 export const folder = await getFolder('patterns');
 export const groupedPatterns = groupFilesByCategory(folder.files, PATTERN_CATEGORIES).map(group => ({
@@ -17,6 +18,12 @@ export const groupedPatterns = groupFilesByCategory(folder.files, PATTERN_CATEGO
         icon: f.frontmatter.icon || '',
         soon: f.frontmatter.soon || false,
     })),
+}));
+
+export const getPageHeadings = () => groupedPatterns.map(group => ({
+    depth: 2,
+    slug: group.slug,
+    text: group.label,
 }));
 
 <label data-active-search class="not-prose text-field" for="patterns-search">
@@ -37,6 +44,8 @@ export const groupedPatterns = groupFilesByCategory(folder.files, PATTERN_CATEGO
     <span aria-hidden="true">Press <kbd>/</kbd></span>
 </label>
 
+<JumpTo headings={getPageHeadings()} />
+
 {groupedPatterns.map(group => (
 <section role="group">
 
@@ -44,8 +53,6 @@ export const groupedPatterns = groupFilesByCategory(folder.files, PATTERN_CATEGO
     <a href={`#${group.slug}`} class="no-underline interact:underline">
         {group.label}
     </a>
-    <span data-search-count class="active-search-count">{group.items.length}
-    </span>
 </h2>
 
 <table>

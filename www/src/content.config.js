@@ -1,6 +1,7 @@
 import {defineCollection, z} from "astro:content";
 import {glob, file} from "astro/loaders";
 import {slugify} from "./lib/utils";
+import {EXTENSION_CATEGORIES, PATTERN_CATEGORIES} from "./lib/content-groups";
 import yaml from "js-yaml";
 
 const home = defineCollection({
@@ -49,7 +50,7 @@ const extensions = defineCollection({
         description: z.string().optional(),
         keywords: z.array(z.string()).optional(),
         thumbnail: z.string().optional(),
-        category: z.enum(['Networking', 'Performance', 'UX', 'Swap behaviors', 'Compatibility', 'Security']).optional(),
+        category: z.enum(EXTENSION_CATEGORIES).optional(),
         icon: z.string().optional(),
         includeMockServer: z.boolean().optional(),
     }).strict(),
@@ -62,7 +63,7 @@ const patterns = defineCollection({
         description: z.string().optional(),
         keywords: z.array(z.string()).optional(),
         thumbnail: z.string().optional(),
-        category: z.enum(['Loading', 'Forms', 'Records', 'Display', 'Real-time', 'Advanced']).optional(),
+        category: z.enum(PATTERN_CATEGORIES).optional(),
         icon: z.string().optional(),
         soon: z.boolean().optional(),
         includeMockServer: z.boolean().optional(),

@@ -1,0 +1,68 @@
+---
+interface Heading {
+    depth: number;
+    slug: string;
+    text: string;
+}
+
+interface Props {
+    headings: Heading[];
+}
+
+const {headings} = Astro.props;
+---
+
+{headings.length > 0 && (
+    <nav aria-label="Page sections" class="not-prose">
+        <span class="text-tertiary select-none pe-1">Jump to</span>
+        {headings.map((heading, index) => (
+            <>
+                {index > 0 && <span aria-hidden="true">/</span>}
+                <a href={`#${heading.slug}`}>{heading.text}</a>
+            </>
+        ))}
+    </nav>
+)}
+
+<style>
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        column-gap: 0.75rem;
+        row-gap: 0.25rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.75rem;
+
+        @media (min-width: 640px) {
+            font-size: 0.875rem;
+        }
+    }
+
+    [aria-hidden] {
+        font-size: 0.75em;
+        color: light-dark(var(--color-neutral-200), var(--color-neutral-800));
+        user-select: none;
+    }
+
+    a {
+        color: light-dark(var(--color-neutral-650), var(--color-neutral-350));
+        font-weight: 500;
+        text-decoration-line: none;
+        /* Match the site-wide underline formula from input.css. */
+        text-decoration-thickness: 0.125em;
+        text-underline-offset: 0.35em;
+
+        @media (hover: hover) {
+            &:hover {
+                color: light-dark(var(--color-black), var(--color-white));
+                text-decoration-line: underline;
+            }
+        }
+
+        &:is(:focus-visible, :active) {
+            color: light-dark(var(--color-black), var(--color-white));
+            text-decoration-line: underline;
+        }
+    }
+</style>
