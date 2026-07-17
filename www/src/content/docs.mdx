@@ -537,7 +537,7 @@ All events provide a consistent `ctx` object with request/response information.
 | [`htmx:after:settle`](/reference/events/htmx-after-settle)                   | After settle phase                                |
 | [`htmx:before:viewTransition`](/reference/events/htmx-before-viewTransition) | Before a view transition starts (cancellable)     |
 | [`htmx:after:viewTransition`](/reference/events/htmx-after-viewTransition)   | After a view transition completes                 |
-| [`htmx:finally:request`](/reference/events/htmx-finally-request)             | Always fires after a request (success or failure) |
+| [`htmx:finally:request`](/reference/events/htmx-finally-request)             | When request completes, fails, or is cancelled |
 
 #### Config keys
 
@@ -677,7 +677,7 @@ handle_swap: (swapStyle, target, fragment, swapSpec) => {
 All hooks receive `detail.ctx` with full request/response context:
 
 - `detail.ctx.request.body` (FormData in `htmx_config_request`)
-- `detail.ctx.request.headers` ([Web API Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object)
+- `detail.ctx.request.headers` (plain mutable object)
 - `detail.ctx.response.status`
 - `detail.ctx.text` (response body, modifiable in `htmx_after_request`)
 - `detail.ctx.target`
@@ -785,7 +785,7 @@ Event flow: response received, `ctx.text` set, `htmx:after:request` fires, `ctx.
 
 ##### `encodeParameters`
 
-Removed. Modify `detail.ctx.request.body` in `htmx_config_request`:
+Removed. Modify the final `detail.ctx.request.body` in `htmx_before_request`:
 
 ```javascript
 // htmx 2.x
@@ -808,7 +808,7 @@ encodeParameters: function(xhr, parameters, elt) {
 }
 
 // htmx 4
-htmx_config_request: (elt, detail) => {
+htmx_before_request: (elt, detail) => {
     detail.ctx.request.headers['Content-Type'] = 'application/json';
     var object = {};
     detail.ctx.request.body.forEach(function(value, key) {
@@ -823,7 +823,7 @@ htmx_config_request: (elt, detail) => {
 }
 ```
 
-`ctx.request.body` is FormData in `htmx_config_request`. It can be replaced with any value (string, JSON, URLSearchParams). For GET/DELETE, body becomes query parameters. For POST/PUT/PATCH, body becomes URLSearchParams (unless multipart).
+`ctx.request.body` is `FormData` in `htmx_config_request`. After that hook, GET and DELETE values move into the URL, non-multipart bodies become `URLSearchParams`, and multipart bodies remain `FormData`. In `htmx_before_request`, replace the final body with any valid `BodyInit`.
 
 ##### `isInlineSwap` and `handleSwap`
 
@@ -860,7 +860,7 @@ Return truthy if handled, falsy otherwise. Can return an array of elements for s
 | `getSelectors()`                        | `htmx_after_init` hook                                        |
 | `onEvent(name, evt)`                    | Individual `htmx_*` hooks                                     |
 | `transformResponse(text, xhr, elt)`     | `htmx_after_request` hook (modify `detail.ctx.text`)          |
-| `encodeParameters(xhr, params, elt)`    | `htmx_config_request` hook (modify `detail.ctx.request.body`) |
+| `encodeParameters(xhr, params, elt)`    | `htmx_before_request` hook (modify final `detail.ctx.request.body`) |
 | `isInlineSwap(swapStyle)`               | `handle_swap` or name swap style with "outer" prefix          |
 | `handleSwap(style, target, frag, info)` | `handle_swap(style, target, frag, spec)`                      |
 
@@ -869,7 +869,7 @@ Return truthy if handled, falsy otherwise. Can return an array of elements for s
 1. Rename `defineExtension` to `registerExtension`
 2. Replace `onEvent` with individual `htmx_*` hooks
 3. Replace `transformResponse` with `htmx_after_request`
-4. Replace `encodeParameters` with `htmx_config_request`
+4. Replace `encodeParameters` with `htmx_before_request`
 5. Merge `isInlineSwap` and `handleSwap` into `handle_swap`
 6. Replace `getSelectors` with `htmx_after_init`
 7. Remove `hx-ext` attributes from HTML
@@ -1605,7 +1605,7 @@ before it is issued:
 
 ```javascript
 document.body.addEventListener('htmx:config:request', function (evt) {
-    evt.detail.ctx.request.parameters['auth_token'] = getAuthToken(); // add a new parameter into the request
+    evt.detail.ctx.request.body.set('auth_token', getAuthToken()); // add a new parameter into the request
     evt.detail.ctx.request.headers['Authentication-Token'] = getAuthToken(); // add a new header into the request
 });
 ```
@@ -1662,7 +1662,7 @@ Here is an example that adds a parameter to an htmx request
 
 ```html
 <button hx-post="/example"
-        hx-on:htmx:config:request="ctx.request.parameters.example = 'Hello Scripting!'">
+        hx-on:htmx:config:request="ctx.request.body.set('example', 'Hello Scripting!')">
     Post Me!
 </button>
 ```
@@ -1963,7 +1963,7 @@ key:value, key2:value2
 
 <!-- strings, quotes needed when value contains spaces or special chars -->
 <button hx-get="/api" hx-config='credentials:"include"'>
-<button hx-get="/api" hx-config="mode:'cors'">
+<button hx-get="/api" hx-config="cache:'no-cache'">
 ```
 
 #### Dot-notation for nested keys
@@ -2060,7 +2060,7 @@ Merges into the request context before the request is issued. Useful for per-ele
 
 ```html
 <button hx-get="/slow" hx-config="timeout:30000">
-<button hx-get="https://api.example.com/data" hx-config='credentials:"include" mode:"cors"'>
+<button hx-get="/api/data" hx-config='credentials:"include" cache:"no-cache"'>
 ```
 
 #### `<meta name="htmx-config">`
@@ -2816,7 +2816,7 @@ Extensions hook into htmx lifecycle events. Event names use underscores instead 
 | `htmx_before_request` | [`htmx:before:request`](/reference/events/htmx-before-request) | `(elt, detail)` | Before request is sent |
 | `htmx_before_response` | `htmx:before:response` | `(elt, detail)` | After fetch, before body consumed |
 | `htmx_after_request` | [`htmx:after:request`](/reference/events/htmx-after-request) | `(elt, detail)` | After request completes |
-| `htmx_finally_request` | [`htmx:finally:request`](/reference/events/htmx-finally-request) | `(elt, detail)` | Always called after request |
+| `htmx_finally_request` | [`htmx:finally:request`](/reference/events/htmx-finally-request) | `(elt, detail)` | When request completes, fails, or is cancelled |
 | `htmx_error` | [`htmx:error`](/reference/events/htmx-error) | `(elt, detail)` | On request error |
 
 ##### Swap Events
@@ -2874,14 +2874,23 @@ htmx.registerExtension("my-ext", {
 });
 ```
 
-Available internal API methods:
+Available internal API:
 
-- `attributeValue(elt, name, defaultVal, returnElt)` - Get htmx attribute value with inheritance
-- `parseTriggerSpecs(spec)` - Parse trigger specification string
-- `determineMethodAndAction(elt, evt)` - Get HTTP method and URL
-- `createRequestContext(elt, evt)` - Create request context object
-- `collectFormData(elt, form, submitter)` - Collect form data
-- `handleHxVals(elt, body)` - Process [`hx-vals`](/reference/attributes/hx-vals) attribute
+- `HCON` - Parse and merge HCON values
+- `attributeValue(elt, name, defaultVal, returnElt)` - Get an attribute value with inheritance support
+- `parseTriggerSpecs(spec)` - Parse a trigger specification
+- `determineMethodAndAction(elt, evt)` - Get `{method, action}` for an element
+- `createRequestContext(elt, evt)` - Create a request context
+- `collectFormData(elt, form, submitter, validate, isGet)` - Collect form data
+- `getAttributeObject(elt, name, callback, scope)` - Read an object-valued attribute
+- `insertContent(task, cssTransition)` - Insert a swap task's content
+- `morph(oldNode, fragment, innerHTML)` - Morph existing content
+- `isSoftMatch(oldNode, newNode)` - Test whether two nodes can be morphed
+- `initSecurity(ttPolicy, syncFn, asyncFn)` - Configure Trusted Types and script constructors
+- `onTrigger(elt, spec, handler)` - Attach a parsed trigger handler
+- `htmxProp(elt)` - Get an element's internal htmx state
+- `triggerHtmxEvent(elt, name, detail, bubbles)` - Dispatch an htmx event
+- `executeJavaScript(thisArg, values, code, expression, isAsync)` - Execute JavaScript through htmx security policy
 
 #### Request Context
 
@@ -2898,7 +2907,7 @@ The `detail.ctx` object contains request information:
         action,        // Request URL
         method,        // HTTP method
         headers,       // Request headers
-        body,          // Request body (FormData)
+        body,          // FormData during htmx_config_request; final BodyInit later
         validate,      // Whether to validate
         abort,         // Function to abort request
         signal         // AbortSignal
@@ -3014,9 +3023,7 @@ for exploring this topic.
 htmx defaults [`htmx.config.mode`](/reference/config/htmx-config-mode) to `"same-origin"`, which causes the
 browser to reject any cross-origin fetch, even if an attacker injects an `hx-get` pointing elsewhere.
 
-This setting is enforced globally: any `mode` value in a per-element `hx-config` attribute is ignored and
-reset to the global config value. This means injected markup like
-`hx-config='{"mode":"cors"}'` cannot widen request scope.
+This setting is enforced for markup: any `mode` value in a per-element `hx-config` attribute is ignored and reset to the global config value. Injected markup like `hx-config='{"mode":"cors"}'` cannot widen request scope.
 
 If your application legitimately needs CORS (e.g. an API on a different subdomain):
 

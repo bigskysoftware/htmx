@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="htmx-config" content='{"logAll":true}'>
+    <meta name="htmx-config" content='{"logAll":true,"mode":"cors"}'>
     <script src="../../src/htmx.js"></script>
     <style>
         body {
@@ -44,11 +44,10 @@
 </head>
 <body>
     <h1>CORS Request Test</h1>
-    <p>This button makes a cross-origin request to the GitHub API using <code>mode: cors</code> configuration.</p>
+    <p>This button makes a cross-origin request to the GitHub API using global <code>mode: cors</code> configuration.</p>
 
     <button
         hx-get="https://api.github.com/users/1cg"
-        hx-config="mode: cors"
         hx-target="#result">
         Fetch GitHub User @1cg
     </button>

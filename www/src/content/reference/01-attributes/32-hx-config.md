@@ -37,7 +37,7 @@ These options map to the [Fetch API](https://developer.mozilla.org/en-US/docs/We
 
 > **Security note:** The `mode` option is intentionally excluded from `hx-config`. It is always
 > reset to the global `htmx.config.mode` value (default: `"same-origin"`) to prevent injection
-> attacks from widening request scope. To change the fetch mode, set it globally via
+> attacks from widening request scope. To change the mode in markup, set it globally through
 > `htmx.config.mode` or a `<meta name="htmx-config">` tag. See the
 > [mode config reference](/reference/config/htmx-config-mode) and
 > [security best practices](/docs#best-practices) for details.
