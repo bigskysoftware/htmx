@@ -15,6 +15,12 @@ The `history-cache` extension replaces htmx's default history handling with a cl
 <script src="/path/to/ext/hx-history-cache.js"></script>
 ```
 
+If you are using the [htmax bundle](/docs#htmax), `hx-history-cache` is already included but disabled by default. Opt in with:
+
+```html
+<meta name="htmx-config" content='{"historyCache": {"disable": false}}'>
+```
+
 ## Usage
 
 No markup changes are required. Once the script is loaded, all htmx-driven navigation is cached automatically.
@@ -45,7 +51,7 @@ To use morphing for smoother restores:
 |--------|---------|-------------|
 | `size` | `10` | Maximum number of pages to keep in the cache. Oldest entries are evicted first. Set to `0` to disable caching entirely. |
 | `refreshOnMiss` | `false` | When `true`, forces a full page reload if the requested history entry is not in the cache. |
-| `disable` | `false` | Disables the extension without unloading it. |
+| `disable` | `false` (`true` in htmax) | Disables the extension without unloading it. When using the htmax bundle, history caching is off by default — opt in via the meta config tag. |
 | `swapStyle` | `"outerSync"` | The htmx swap style used when restoring cached content. Defaults to `outerSync`, which preserves the target element in the DOM (keeping listeners and component state) while syncing its attributes and replacing its children. Use `innerHTML` to replace children only without syncing attributes. Can be set to `"innerMorph"` or `"outerMorph"` for smooth DOM diffing. |
 
 ## Events
