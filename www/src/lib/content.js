@@ -247,7 +247,7 @@ export async function render(item) {
     if (!mod) return {Content: null, headings: []};
     return {
         Content: mod.default,
-        headings: mod.getHeadings?.() || []
+        headings: mod.getPageHeadings?.() || mod.getHeadings?.() || []
     };
 }
 

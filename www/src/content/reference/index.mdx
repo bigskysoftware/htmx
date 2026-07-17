@@ -4,6 +4,7 @@ description: "Attributes, headers, events, and configuration."
 ---
 
 import { getFolder } from '../../lib/content';
+import JumpTo from '../../components/JumpTo.astro';
 
 export const folder = await getFolder('reference');
 
@@ -78,6 +79,8 @@ export const groups = folder.folders.map(sub => {
     return { slug: sub.slug, label: sub.frontmatter.title, subgroups: [{ label: null, items }] };
 });
 
+export const getPageHeadings = () => groups.map(group => ({depth: 2, slug: group.slug, text: group.label}));
+
 <label data-active-search class="not-prose text-field" for="reference-search">
     <span class="sr-only">Search reference</span>
     <i class="icon-[mdi--magnify]" aria-hidden="true"></i>
@@ -96,15 +99,7 @@ export const groups = folder.folders.map(sub => {
     <span aria-hidden="true">Press <kbd>/</kbd></span>
 </label>
 
-<nav aria-label="Reference sections" class="not-prose mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm sm:text-base">
-    <span class="text-neutral-500 dark:text-neutral-400">Jump to:</span>
-    {groups.map((group, index) => (
-        <>
-            {index > 0 && <span class="text-neutral-300 dark:text-neutral-700" aria-hidden="true">•</span>}
-            <a href={`#${group.slug}`} class="text-blue-700 no-underline interact:underline dark:text-blue-350 dark:interact:text-blue-300">{group.label}</a>
-        </>
-    ))}
-</nav>
+<JumpTo headings={getPageHeadings()} />
 
 {groups.map(group => (
 <section role="group">
@@ -113,8 +108,7 @@ export const groups = folder.folders.map(sub => {
     <a href={`#${group.slug}`} class="no-underline interact:underline">
         {group.label}
     </a>
-    <span data-search-count class="active-search-count">{group.subgroups.reduce((total, sg) => total + sg.items.length, 0)}
-    </span>
+    <span data-search-count class="active-search-count">{group.subgroups.reduce((total, sg) => total + sg.items.length, 0)} {group.label.toLowerCase()}</span>
 </h2>
 
 {group.subgroups.map(sg => (

@@ -51,7 +51,7 @@ const isSubfolderIndexPage = !!subfolder;
 const isHomePage = isCollectionRootPage && collection === 'home';
 const page = isCollectionRootPage ? folder! : isSubfolderIndexPage ? subfolder! : file;
 
-const {Content} = await render(page);
+const {Content, headings: pageHeadings} = await render(page);
 const {title, description, keywords} = page.frontmatter;
 
 // Display flags
@@ -74,13 +74,9 @@ const includeMockServer = file?.frontmatter?.includeMockServer === true;
 const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
 const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && collection === 'about';
 
-let headings: any[] = [];
+let headings: any[] = isHomePage ? [] : pageHeadings;
 let sidebarFolder = folder!;
-if (file) {
-    headings = (await render(file)).headings;
-} else if (isReferenceIndex) {
-    headings = folder!.folders.map(sub => ({ depth: 2, slug: sub.slug, text: sub.frontmatter.title }));
-} else if (isDocsRoot) {
+if (isDocsRoot) {
     ({headings, sidebar: sidebarFolder} = await buildDocsSidebar(folder));
 }
 
