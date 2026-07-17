@@ -1,18 +1,20 @@
 ---
 title: "hx-history-elt"
-description: "Marks the element to swap on history restore"
+description: "Marks element to swap on history restore"
 ---
 
-The `hx-history-elt` attribute marks the element that htmx should swap when restoring a page from
-history (back/forward navigation). Only this element is replaced — the rest of the page is left
-untouched.
+The `hx-history-elt` attribute selects the element restored during history navigation.
 
-When a history restore request is made, htmx sends a `GET` request with the
-[`HX-History-Restore-Request`](/reference/headers/HX-History-Restore-Request) header. The server
-should return a full page response; htmx selects the `hx-history-elt` element from it and swaps it
-into the matching element in the current page.
+The rest of the page remains unchanged.
 
-## Syntax
+By default, core htmx restores history with a `GET` containing
+[`HX-History-Restore-Request`](/reference/headers/HX-History-Restore-Request). The server returns a
+full page, and htmx selects its `hx-history-elt` element and swaps it into the current page.
+
+Extensions can cancel this request and restore content another way. For example,
+[`hx-history-cache`](/extensions/hx-history-cache) restores a saved DOM snapshot on a cache hit.
+
+## Usage
 
 ```html
 <main hx-history-elt>
@@ -20,7 +22,6 @@ into the matching element in the current page.
 </main>
 ```
 
-## Example
 
 ```html
 <body>

@@ -1,6 +1,6 @@
 ---
 title: "htmx:after:cleanup"
-description: "After listeners and data are removed"
+description: "Fires after element data removal"
 ---
 
 The `htmx:after:cleanup` event fires after htmx has removed all listeners and internal data from an element.

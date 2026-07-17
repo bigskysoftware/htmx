@@ -1,9 +1,11 @@
 ---
 title: "htmx.config.morphScanLimit"
-description: "Maximum number of siblings scanned when matching elements during morphing"
+description: "Limits siblings scanned during morph matching"
 ---
 
-The `htmx.config.morphScanLimit` option limits how many sibling elements htmx will scan when trying to match nodes during a morph swap. Higher values improve accuracy for long lists without IDs at the cost of performance.
+The `htmx.config.morphScanLimit` option limits siblings scanned during morph matching.
+
+Higher values improve accuracy for long lists without IDs at a performance cost.
 
 **Default:** `10`
 

@@ -1,6 +1,6 @@
 ---
 title: "htmx:finally:request"
-description: "At the end of request lifecycle"
+description: "Fires after lifecycle ends, including failures"
 ---
 
 The `htmx:finally:request` event fires when request completes, fails, or is cancelled.

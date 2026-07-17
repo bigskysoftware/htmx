@@ -1,10 +1,9 @@
 ---
 title: "hx-disable"
-description: "Disables elements during the request"
+description: "Disables elements during request"
 ---
 
-The `hx-disable` attribute allows you to specify elements that will have the `disabled` attribute
-added to them for the duration of the request.
+The `hx-disable` attribute adds `disabled` to selected elements during requests.
 
 ## Syntax
 
@@ -41,9 +40,9 @@ When a request is in flight, this will cause the button to be marked with [the
 `disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled),
 which will prevent further clicks from occurring.
 
-The `hx-disable` attribute also supports specifying multiple CSS selectors separated by commas to disable multiple
-elements during the request. Here is an example that disables buttons and text input fields of a particular form during
-the request:
+Separate selectors with commas to disable multiple elements.
+
+This form disables text inputs and buttons:
 
 ```html
 <form hx-post="/example" hx-disable="find input[type='text'], find button">
@@ -52,8 +51,7 @@ the request:
 </form>
 ```
 
-Note that you can also use the `merge` modifier to merge parent values for a disabled elements and add additional
-disabled element CSS selectors:
+Use `:merge` to keep parent selectors and add more:
 
 ```html
 <main hx-disable="#logout-button">

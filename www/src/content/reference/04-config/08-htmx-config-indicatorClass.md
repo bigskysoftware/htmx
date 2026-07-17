@@ -1,20 +1,32 @@
 ---
 title: "htmx.config.indicatorClass"
-description: "CSS class for loading indicators"
+description: "Sets class hidden by built-in indicator CSS"
 ---
 
-The `htmx.config.indicatorClass` option sets the CSS class applied to elements specified by [`hx-indicator`](/reference/attributes/hx-indicator) during requests.
+The `htmx.config.indicatorClass` option sets the CSS class used to mark loading indicator content.
+
+Add this class in your markup:
+
+```html
+<img id="spinner" class="htmx-indicator" alt="Loading">
+```
+
+htmx does not add the class. Built-in indicator CSS hides it until [`requestClass`](/reference/config/htmx-config-requestClass) marks the indicator or an ancestor as active.
 
 **Default:** `"htmx-indicator"`
 
-## Example
+## Usage
 
-```javascript
-htmx.config.indicatorClass = "loading";
-```
+Use a custom class:
 
 ```html
-<meta name="htmx-config" content='{"indicatorClass":"loading"}'>
+<meta name="htmx-config" content='indicatorClass:"loading"'>
+
+<img id="spinner" class="loading" alt="Loading">
 ```
 
-Elements with this class can be styled to show loading states.
+## See Also
+
+- [`hx-indicator`](/reference/attributes/hx-indicator)
+- [`htmx.config.includeIndicatorCSS`](/reference/config/htmx-config-includeIndicatorCSS)
+- [`htmx.config.requestClass`](/reference/config/htmx-config-requestClass)

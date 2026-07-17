@@ -1,6 +1,6 @@
 ---
 title: "htmx.config.mode"
-description: "Set request mode for fetch API"
+description: "Sets request mode for `fetch()`"
 ---
 
 The `htmx.config.mode` option sets the default `mode` for Fetch requests.

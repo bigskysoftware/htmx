@@ -1,9 +1,13 @@
 ---
 title: "htmx.ajax()"
-description: "Issues an htmx-style ajax request"
+description: "Issues htmx-style AJAX request"
 ---
 
-The `htmx.ajax()` function issues an AJAX request with htmx semantics. It returns a `Promise` that resolves after the response content has been inserted into the DOM, allowing you to chain callbacks.
+The `htmx.ajax()` function issues a request with htmx semantics.
+
+It returns a `Promise` that resolves after response content is inserted into the DOM.
+
+Use it to chain callbacks after the swap.
 
 ## Syntax
 

@@ -1,6 +1,6 @@
 ---
 title: "htmx.on()"
-description: "Listen for htmx events"
+description: "Listens for htmx events"
 ---
 
 The `htmx.on()` function registers an event listener for htmx events.

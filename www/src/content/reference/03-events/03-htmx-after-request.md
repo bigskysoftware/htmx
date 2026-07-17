@@ -1,6 +1,6 @@
 ---
 title: "htmx:after:request"
-description: "After response is received"
+description: "Fires after `response.text()`"
 ---
 
 The `htmx:after:request` event fires immediately after the `fetch()` call resolves and the response is received.

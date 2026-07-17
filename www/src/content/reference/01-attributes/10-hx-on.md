@@ -1,6 +1,6 @@
 ---
 title: "hx-on"
-description: "Runs inline JavaScript when an event fires"
+description: "Runs inline JavaScript when event fires"
 ---
 
 The `hx-on` attribute wires inline JavaScript to run when an event fires. 
@@ -108,7 +108,13 @@ _Note: `revealed` always observes the browser viewport. For scrollable container
 
 Fires when an element becomes visible in the viewport.
 
-Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) and supports [`root`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root), [`rootMargin`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin), and [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds) as modifiers.
+Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options).
+
+Modifiers:
+
+- [`root`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root)
+- [`rootMargin`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin)
+- [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds)
 
 ```html
 <div hx-on="intersect once -> this.classList.add('in-view')">

@@ -1,18 +1,15 @@
 ---
 title: "hx-select-oob"
-description: "Picks response elements to swap into the page by ID"
+description: "Picks response elements to swap into page by ID"
 ---
 
-The `hx-select-oob` attribute allows you to select content from a response to be swapped in via an out-of-band (OOB)
-swap, separate from the main content swap.
+The `hx-select-oob` attribute selects response elements to swap outside the main target.
 
-This is useful when you want to update multiple parts of the page from a single response, where some updates happen in
-the target element and others happen in different locations.
+Use it to update multiple page elements from one response.
 
-## Syntax
+## Usage
 
-The value is a comma-separated list of CSS selectors. Each selector can optionally be followed by a colon and a swap
-strategy.
+Set a comma-separated list of CSS selectors. Add `:SWAP` to override a selector's swap strategy.
 
 ```html
 <button hx-get="/example" hx-select-oob="#alert,#sidebar:afterbegin">
@@ -20,7 +17,6 @@ strategy.
 </button>
 ```
 
-## Basic Usage
 
 ```html
 <button hx-get="/update" hx-select-oob="#notification">
@@ -31,8 +27,7 @@ strategy.
 <!-- <div id="notification">New notification!</div> -->
 ```
 
-The element with id `notification` in the response will be swapped into the page at the location of the existing element
-with that id.
+htmx swaps the response's `#notification` into the existing element with the same ID.
 
 ## With Swap Strategies
 

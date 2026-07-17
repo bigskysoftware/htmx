@@ -5,6 +5,7 @@ import { getFile } from '../lib/content';
 import { formatDate } from '../lib/utils';
 
 const { title, description, file, collection } = Astro.props;
+const descriptionParts = description?.split(/(`[^`]+`)/g);
 
 const isEssay = !!file && collection === 'essays';
 
@@ -112,7 +113,11 @@ const primaryAuthor = byline?.authors[0];
             </div>
         </div>
     ) : description && (
-        <p class="description">{description}</p>
+        <p class="description">
+            {descriptionParts.map(part => part.startsWith('`')
+                ? <code>{part.slice(1, -1)}</code>
+                : part)}
+        </p>
     )}
 </header>
 
@@ -236,6 +241,16 @@ const primaryAuthor = byline?.authors[0];
         font-weight: 300;
         font-size: 1rem;
         color: light-dark(var(--color-neutral-650), var(--color-neutral-350));
+
+        code {
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            background: light-dark(rgb(229 229 229 / 25%), rgb(38 38 38 / 25%));
+            font-family: var(--font-mono);
+            font-size: 0.875em;
+            font-weight: 600;
+            color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
+        }
 
         @media (min-width: 640px) { font-size: 1.125rem; }
         @media (min-width: 1024px) { font-size: 1.25rem; }

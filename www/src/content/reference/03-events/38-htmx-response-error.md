@@ -1,6 +1,6 @@
 ---
 title: "htmx:response:error"
-description: "When an HTTP error status (4xx/5xx) is received"
+description: "Fires for HTTP status 400 or higher"
 ---
 
 The `htmx:response:error` event fires when the server responds with an HTTP error status code (400 or higher).
@@ -31,3 +31,8 @@ htmx.on('htmx:response:error', (evt) => {
 
 This event replaces htmx 2's `htmx:responseError`. The event detail structure has changed — the response
 information is now available via `evt.detail.ctx.response` rather than directly on `evt.detail`.
+
+## See Also
+
+- [`hx-status`](/reference/attributes/hx-status)
+- [`htmx.config.noSwap`](/reference/config/htmx-config-noSwap)

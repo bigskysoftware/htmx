@@ -1,6 +1,6 @@
 ---
 title: "htmx:after:init"
-description: "After an element is fully initialized"
+description: "Fires after element initialization"
 ---
 
 The `htmx:after:init` event fires after an element has been fully initialized and all event listeners have been attached.

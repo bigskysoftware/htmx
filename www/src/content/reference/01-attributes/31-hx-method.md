@@ -1,6 +1,6 @@
 ---
 title: "hx-method"
-description: "Specifies the HTTP method for the request"
+description: "Specifies HTTP method for request"
 ---
 
 The `hx-method` attribute specifies the HTTP method (verb) to use for the request. It is typically paired with [`hx-action`](/reference/attributes/hx-action) to separate the URL from the method.

@@ -1,6 +1,6 @@
 ---
 title: "htmx:before:history:update"
-description: "Before browser history is updated"
+description: "Fires before browser history update"
 ---
 
 The `htmx:before:history:update` event fires before htmx pushes or replaces a browser history state.

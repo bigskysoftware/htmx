@@ -1,6 +1,6 @@
 ---
 title: "htmx:after:settle"
-description: "After the settle phase completes"
+description: "Fires after settle tasks"
 ---
 
 The `htmx:after:settle` event fires after htmx finishes the settle phase, including any CSS transitions.

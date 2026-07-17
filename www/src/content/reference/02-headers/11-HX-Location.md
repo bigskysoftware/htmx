@@ -1,6 +1,6 @@
 ---
 title: "HX-Location"
-description: "Client-side AJAX navigation to a new URL"
+description: "Navigates with `htmx.ajax()`"
 ---
 
 The `HX-Location` response header navigates to a new URL without a full page reload.

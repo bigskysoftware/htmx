@@ -272,7 +272,6 @@ article.sticky-headers > section > h2 {
     top: var(--header-height);
     scroll-margin-top: var(--header-height);
     z-index: 20;
-    font-size: 1.5em;
     line-height: 1.2;
     margin-bottom: 0;
     background: light-dark(var(--color-neutral-25), var(--color-neutral-920));

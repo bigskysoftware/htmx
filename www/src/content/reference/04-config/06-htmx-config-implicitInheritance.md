@@ -1,6 +1,6 @@
 ---
 title: "htmx.config.implicitInheritance"
-description: "Enable implicit attribute inheritance"
+description: "Enables implicit attribute inheritance"
 ---
 
 The `htmx.config.implicitInheritance` option, when set to `true`, causes child elements to implicitly inherit htmx attributes from parent elements.

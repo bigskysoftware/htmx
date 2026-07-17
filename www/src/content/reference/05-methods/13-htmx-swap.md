@@ -1,6 +1,6 @@
 ---
 title: "htmx.swap()"
-description: "Perform an HTML content swap into the DOM"
+description: "Performs HTML content swap into DOM"
 ---
 
 The `htmx.swap()` function performs swapping of HTML content into the DOM. This is primarily an internal method used by htmx and extension developers.

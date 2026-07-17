@@ -1,10 +1,11 @@
 ---
 title: "hx-confirm"
-description: "Shows a confirmation dialog before the request"
+description: "Shows confirmation dialog before request"
 ---
 
-The `hx-confirm` attribute allows you to confirm an action before issuing a request. This can be useful
-in cases where the action is destructive and you want to ensure that the user really wants to do it.
+The `hx-confirm` attribute asks for confirmation before issuing a request.
+
+Use it for destructive or irreversible actions.
 
 ## Syntax
 

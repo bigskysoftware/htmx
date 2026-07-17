@@ -1,9 +1,9 @@
 ---
 title: "htmx.config.history"
-description: "Control htmx browser history management"
+description: "Controls htmx browser history management"
 ---
 
-Controls how htmx manages browser history during navigation.
+The `htmx.config.history` option controls browser history during navigation.
 
 **Default:** `true`
 

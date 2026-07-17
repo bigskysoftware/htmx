@@ -1,6 +1,6 @@
 ---
 title: "hx-validate"
-description: "Validates before submitting the request"
+description: "Validates before submitting request"
 ---
 
 The `hx-validate` attribute will cause an element to validate itself by way of

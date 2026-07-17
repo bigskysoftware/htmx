@@ -1,20 +1,32 @@
 ---
 title: "htmx.config.requestClass"
-description: "CSS class applied during requests"
+description: "Sets class applied during requests"
 ---
 
-The `htmx.config.requestClass` option sets the CSS class automatically applied to the element making a request.
+The `htmx.config.requestClass` option sets the CSS class htmx adds while a request is running.
+
+htmx adds it to the element selected by [`hx-indicator`](/reference/attributes/hx-indicator). Without `hx-indicator`, htmx adds it to the request source.
 
 **Default:** `"htmx-request"`
 
-## Example
+## Usage
 
-```javascript
-htmx.config.requestClass = "is-loading";
-```
+Use a custom request-state class:
 
 ```html
-<meta name="htmx-config" content='{"requestClass":"is-loading"}'>
+<meta name="htmx-config" content='requestClass:"is-loading"'>
 ```
 
-Use this class to style elements while they're making requests.
+```css
+.is-loading {
+  opacity: 0.5;
+}
+```
+
+htmx removes the class when the request ends.
+
+## See Also
+
+- [`hx-indicator`](/reference/attributes/hx-indicator)
+- [`htmx.config.includeIndicatorCSS`](/reference/config/htmx-config-includeIndicatorCSS)
+- [`htmx.config.indicatorClass`](/reference/config/htmx-config-indicatorClass)

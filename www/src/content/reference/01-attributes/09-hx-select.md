@@ -1,26 +1,51 @@
 ---
 title: "hx-select"
-description: "Controls which part of the response to insert"
+description: "Controls which response part is inserted"
 ---
 
-The `hx-select` attribute allows you to select the content you want swapped from a response. The value of
-this attribute is a CSS query selector of the element or elements to select from the response.
+The `hx-select` attribute selects response content to swap.
 
-## Syntax
-
-```html
-<button hx-get="/page" hx-select="#content">Load Content</button>
-```
-
-Here is an example that selects a subset of the response content:
+Set it to a CSS selector matched against the response:
 
 ```html
-<div>
-    <button hx-get="/info" hx-select="#info-detail" hx-swap="outerHTML">
-        Get Info!
-    </button>
+<button hx-get="/info" hx-target="#result" hx-select="#info-detail">
+  Get Info
+</button>
+
+<div id="result">
+  <!-- Selected content goes here -->
 </div>
 ```
 
-So this button will issue a `GET` to `/info` and then select the element with the id `info-detail`,
-which will replace the entire button in the DOM.
+The server can return a full page:
+
+```html
+<header>This is ignored</header>
+
+<!-- This... -->
+<section id="info-detail">
+  <h2>Details</h2>
+  <p>Only this section is selected.</p>
+</section>
+<!-- ...is selected -->
+
+<footer>This is also ignored</footer>
+```
+
+htmx swaps only the matching element into `#result`:
+
+```html
+<div id="result">
+  <!-- Only the selected element is inserted -->
+  <section id="info-detail">
+    <h2>Details</h2>
+    <p>Only this section is selected.</p>
+  </section>
+</div>
+```
+
+## See Also
+
+- [`hx-target`](/reference/attributes/hx-target)
+- [`hx-swap`](/reference/attributes/hx-swap)
+- [`HX-Reselect`](/reference/headers/HX-Reselect)

@@ -1,6 +1,6 @@
 ---
 title: "hx-config"
-description: "Configure request behavior"
+description: "Configures request behavior"
 ---
 
 The `hx-config` attribute configures request behavior with [HCON](/docs#hcon) or JSON.

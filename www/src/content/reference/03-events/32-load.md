@@ -1,6 +1,6 @@
 ---
 title: "load"
-description: "Fired immediately after initialization"
+description: "Fires after element initialization"
 ---
 
 The `load` trigger event fires immediately after element initialization, mimicking the standard DOM `load` event.

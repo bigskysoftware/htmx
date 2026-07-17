@@ -1,6 +1,6 @@
 ---
 title: "htmx:confirm"
-description: "Show confirmation dialog before request"
+description: "Fires before handling `hx-confirm`"
 ---
 
 The `htmx:confirm` event fires only when an element has an [`hx-confirm`](/reference/attributes/hx-confirm) attribute. It allows you to replace the default `window.confirm()` dialog with a custom confirmation UI.

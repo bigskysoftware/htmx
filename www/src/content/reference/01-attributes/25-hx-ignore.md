@@ -1,6 +1,6 @@
 ---
 title: "hx-ignore"
-description: "Disables htmx processing for the element"
+description: "Disables htmx processing for element"
 ---
 
 The `hx-ignore` attribute disables htmx processing for an element and all its children.

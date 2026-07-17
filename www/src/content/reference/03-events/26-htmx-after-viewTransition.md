@@ -1,6 +1,6 @@
 ---
 title: "htmx:after:viewTransition"
-description: "After View Transition completes"
+description: "Fires after view transition completes"
 ---
 
 The `htmx:after:viewTransition` event fires after a View Transition animation completes.

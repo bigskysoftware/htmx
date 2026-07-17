@@ -1,6 +1,6 @@
 ---
 title: "&lt;hx-partial&gt;"
-description: "Target multiple elements from a single response"
+description: "Targets multiple elements with one response"
 keywords: ["hx-partial", "partial", "partials"]
 ---
 

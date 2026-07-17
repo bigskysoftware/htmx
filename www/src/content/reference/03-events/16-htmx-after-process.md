@@ -1,6 +1,6 @@
 ---
 title: "htmx:after:process"
-description: "After htmx processes a DOM node"
+description: "Fires after DOM node processing"
 ---
 
 The `htmx:after:process` event fires after htmx has finished processing a DOM node or subtree.

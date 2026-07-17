@@ -1,6 +1,6 @@
 ---
 title: "htmx:config:request"
-description: "Configure request before it's sent"
+description: "Fires before request data is encoded"
 ---
 
 The `htmx:config:request` event fires after request values are collected and validated, but before encoding and sending.
