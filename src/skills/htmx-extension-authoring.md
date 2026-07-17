@@ -149,6 +149,7 @@ init: (internalAPI) => { api = internalAPI; },
 
 **Available API:**
 
+<!-- check_extension_api:start -->
 | Property | Description |
 |----------|-------------|
 | `api.HCON` | Parse and merge HCON values |
@@ -166,6 +167,7 @@ init: (internalAPI) => { api = internalAPI; },
 | `api.htmxProp(elt)` | Get an element's internal htmx state |
 | `api.triggerHtmxEvent(elt, name, detail, bubbles)` | Dispatch an htmx event |
 | `api.executeJavaScript(thisArg, values, code, expression, isAsync)` | Execute JavaScript through htmx security policy |
+<!-- check_extension_api:end -->
 
 ## Request Context (`detail.ctx`)
 

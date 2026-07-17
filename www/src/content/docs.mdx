@@ -2876,6 +2876,7 @@ htmx.registerExtension("my-ext", {
 
 Available internal API:
 
+{/* check_extension_api:start */}
 - `HCON` - Parse and merge HCON values
 - `attributeValue(elt, name, defaultVal, returnElt)` - Get an attribute value with inheritance support
 - `parseTriggerSpecs(spec)` - Parse a trigger specification
@@ -2891,6 +2892,7 @@ Available internal API:
 - `htmxProp(elt)` - Get an element's internal htmx state
 - `triggerHtmxEvent(elt, name, detail, bubbles)` - Dispatch an htmx event
 - `executeJavaScript(thisArg, values, code, expression, isAsync)` - Execute JavaScript through htmx security policy
+{/* check_extension_api:end */}
 
 #### Request Context
 

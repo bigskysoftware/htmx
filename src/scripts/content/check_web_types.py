@@ -15,7 +15,7 @@ from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlsplit
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 WEB_TYPES_PATH = ROOT / "src/editors/jetbrains/htmx.web-types.json"
 CONTENT_DIR = ROOT / "www/src/content"
 BASE_URL = "https://four.htmx.org"

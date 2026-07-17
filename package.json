@@ -35,7 +35,7 @@
     "build:scripts": "mkdir -p dist/scripts && cp src/scripts/*.js src/scripts/*.py dist/scripts/",
     "build:types": "cp src/htmx.d.ts dist/htmx.d.ts",
     "build:compress": "brotli-cli compress dist/*.js dist/ext/*.js",
-    "check:web-types": "python3 src/scripts/check-web-types.py",
+    "check:content": "python3 src/scripts/content/check.py",
     "upgrade-check": "python3 src/scripts/upgrade-check.py",
     "upgrade-check:test": "python3 src/scripts/upgrade-check.py test/manual/upgrade/",
     "test": "npm run test:chrome",

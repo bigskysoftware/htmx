@@ -54,8 +54,8 @@ jobs:
       - run: bun run build
       - run: bun run test
 
-  web_types:
+  content:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 src/scripts/check-web-types.py
+      - run: python3 src/scripts/content/check.py
