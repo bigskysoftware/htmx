@@ -279,10 +279,12 @@
     /* Code blocks - macOS window style */
 
     :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+        /* No font sizing here: the typography scale (prose-sm/prose-base) owns it. */
         @apply relative border border-neutral-200 dark:border-neutral-850 rounded-lg bg-white dark:bg-neutral-950 overflow-y-hidden;
 
         code {
-            @apply block overflow-x-auto text-sm font-medium leading-6 whitespace-pre p-4 pr-12 mask-l-from-97% mask-r-from-95%;
+            /* One step below the prose body at each scale; leading matches the old look. */
+            @apply block overflow-x-auto text-xs sm:text-sm leading-5 sm:leading-6 font-medium whitespace-pre p-4 pr-12 mask-l-from-97% mask-r-from-95%;
         }
     }
 
