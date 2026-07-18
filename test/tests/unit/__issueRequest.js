@@ -177,6 +177,23 @@ describe('__issueRequest unit tests', function() {
         assert.equal(capturedError, testError)
     })
 
+    it('fires HX-Trigger event after swap completes', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        let triggerFired = false
+        div.addEventListener('myEvent', () => triggerFired = true)
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers({ 'HX-Trigger': 'myEvent' }),
+            text: async () => ''
+        })
+
+        await htmx.__issueRequest(ctx)
+        assert.isTrue(triggerFired)
+    })
+
     it('always triggers htmx:finally:request', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))

@@ -3,7 +3,7 @@ title: "HX-Trigger"
 description: "Triggers client-side events with `htmx.trigger()`"
 ---
 
-The `HX-Trigger` response header triggers client-side events when a response is received.
+The `HX-Trigger` response header triggers client-side events after the swap has completed.
 
 ## Basic Usage
 
@@ -103,6 +103,8 @@ _This example uses the [`hx-live`](/extensions/hx-live) extension._
 ## Notes
 
 Response headers are not processed on 3xx response codes. Return a 2xx status when using this header.
+
+In htmx 2, there were three variants: `HX-Trigger`, `HX-Trigger-After-Swap`, and `HX-Trigger-After-Settle`. In htmx 4, these were consolidated into a single `HX-Trigger` header that fires after the swap completes.
 
 ## See Also
 
