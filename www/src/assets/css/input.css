@@ -174,15 +174,6 @@
     }
 }
 
-@utility scan-lines {
-    mask-size: 100% max(1.5px, 0.02em);
-    mask-image: linear-gradient(to bottom, transparent 0%, black 12.5%);
-
-    @variant dark {
-        mask-image: linear-gradient(to bottom, transparent 0%, black 17.5%);
-    }
-}
-
 /* Override prose pre padding with high specificity */
 .prose pre,
 .prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
@@ -244,10 +235,8 @@
     prose-img:border prose-img:border-neutral-200 prose-img:dark:border-neutral-800;
 
     @apply
-    prose-headings:scroll-pt-[calc(var(--header-height)+2rem)]
-    prose-headings:scroll-mt-[calc(var(--header-height)+2rem)]
-    [html:has(#construction-banner)_&]:prose-headings:scroll-pt-[calc(var(--header-height)+var(--construction-banner-height)+2rem)]
-    [html:has(#construction-banner)_&]:prose-headings:scroll-mt-[calc(var(--header-height)+var(--construction-banner-height)+2rem)];
+    prose-headings:scroll-pt-[calc(var(--header-offset)+2rem)]
+    prose-headings:scroll-mt-[calc(var(--header-offset)+2rem)];
 
     /* Inline code - remove backticks */
 
@@ -370,11 +359,6 @@
     & :where(h1):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
         font-size: 2em;
     }
-}
-
-@utility text-shadow-3d-* {
-    text-shadow: 0 2px 0 color-mix(in srgb, --value(--color-*) 95%, white),
-    0 4px 0 color-mix(in srgb, --value(--color-*) 95%, black);
 }
 
 @utility shadow-3d-* {
