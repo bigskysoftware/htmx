@@ -48,7 +48,7 @@ const parent = allCrumbs.slice(0, -1).reverse().find(c => c.href) || null;
         gap: 0.125rem;
         margin-left: -0.125rem;
         padding: 0.25rem 0.5rem 0.25rem 0;
-        font-size: 0.75rem;
+        font-size: 0.875rem;
         color: light-dark(var(--color-neutral-600), var(--color-neutral-400));
         border-radius: 0.125rem;
         text-decoration: none;
@@ -59,11 +59,13 @@ const parent = allCrumbs.slice(0, -1).reverse().find(c => c.href) || null;
 
         @media (hover: hover) {
             &:hover {
+                text-decoration: underline;
                 color: light-dark(var(--color-blue-700), var(--color-blue-300));
             }
         }
 
         &:is(:focus-visible, :active) {
+            text-decoration: underline;
             color: light-dark(var(--color-blue-700), var(--color-blue-300));
         }
 

@@ -14,12 +14,9 @@ const {headings} = Astro.props;
 
 {headings.length > 0 && (
     <nav aria-label="Page sections" class="not-prose">
-        <span class="text-tertiary select-none pe-1">Jump to</span>
-        {headings.map((heading, index) => (
-            <>
-                {index > 0 && <span aria-hidden="true">/</span>}
-                <a href={`#${heading.slug}`}>{heading.text}</a>
-            </>
+        <span class="text-tertiary select-none pe-1">Jump to:</span>
+        {headings.map(heading => (
+            <a href={`#${heading.slug}`}>{heading.text}</a>
         ))}
     </nav>
 )}
@@ -27,25 +24,28 @@ const {headings} = Astro.props;
 <style>
     nav {
         display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
-        column-gap: 0.75rem;
-        row-gap: 0.25rem;
+        flex-direction: column;
+        align-items: stretch;
+        row-gap: 0.375rem;
         margin-bottom: 1.5rem;
-        font-size: 0.825rem;
+        font-size: 0.875rem;
+    }
+
+    a::before {
+        content: '›';
+        /* Inline-block keeps the hover underline off the marker. */
+        display: inline-block;
+        margin-inline-end: 0.5rem;
+        color: light-dark(var(--color-neutral-300), var(--color-neutral-700));
 
         @media (min-width: 640px) {
-            font-size: 0.875rem;
+            margin-inline-end: 0.75rem;
         }
     }
 
-    [aria-hidden] {
-        font-size: 0.75em;
-        color: light-dark(var(--color-neutral-200), var(--color-neutral-800));
-        user-select: none;
-    }
-
     a {
+        /* Tap-target padding for touch. */
+        padding: 0.25rem 0.375rem 0.25rem 0.75rem;
         color: light-dark(var(--color-neutral-650), var(--color-neutral-350));
         font-weight: 500;
         text-decoration-line: none;

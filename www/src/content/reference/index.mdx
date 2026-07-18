@@ -96,7 +96,7 @@ export const getPageHeadings = () => groups.map(group => ({depth: 2, slug: group
         aria-keyshortcuts="/"
         _="install ActiveSearch"
     />
-    <span aria-hidden="true">Press <kbd>/</kbd></span>
+    <span aria-hidden="true">Focus <kbd>/</kbd></span>
 </label>
 
 <JumpTo headings={getPageHeadings()} />
@@ -105,10 +105,12 @@ export const getPageHeadings = () => groups.map(group => ({depth: 2, slug: group
 <section role="group">
 
 <h2 id={group.slug}>
-    <a href={`#${group.slug}`} class="no-underline interact:underline">
-        {group.label}
-    </a>
-    <span data-search-count class="active-search-count">{group.subgroups.reduce((total, sg) => total + sg.items.length, 0)} {group.label.toLowerCase()}</span>
+    <span>
+        <a href={`#${group.slug}`} class="no-underline interact:underline">
+            {group.label}
+        </a>
+        <span data-search-count class="active-search-count">{group.subgroups.reduce((total, sg) => total + sg.items.length, 0)} {group.label.toLowerCase()}</span>
+    </span>
 </h2>
 
 {group.subgroups.map(sg => (
@@ -123,7 +125,7 @@ export const getPageHeadings = () => groups.map(group => ({depth: 2, slug: group
                 <td>
                     <span hidden>{group.label} {sg.label}</span>
                     <a href={item.url}><code set:html={item.title} /></a>
-                    {item.description && <span class="mt-0.5 block pl-[6px] text-neutral-650 dark:text-neutral-350 sm:hidden" set:html={descriptionHtml(item.description)} />}
+                    {item.description && <span class="block pl-[6px] text-neutral-650 dark:text-neutral-350 sm:hidden" set:html={descriptionHtml(item.description)} />}
                 </td>
                 <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350" set:html={item.description ? descriptionHtml(item.description) : ''} />
             </tr>
