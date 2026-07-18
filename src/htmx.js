@@ -1603,13 +1603,14 @@ var htmx = (() => {
             window.addEventListener('popstate', (event) => {
                 if (event.state && event.state.htmx) {
                     this.#historyAbort?.abort();
-                    this.__restoreHistory();
+                    this.__restoreHistory().then(() => requestAnimationFrame(() => window.scrollTo(0, event.state.scrollY || 0)));
                 }
             });
         }
 
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
+            history.replaceState({...history.state, scrollY: window.scrollY}, '', location.href);
             history.pushState({htmx: true}, '', path);
             this.__trigger(document, "htmx:after:history:push", {path});
         }
@@ -1620,7 +1621,7 @@ var htmx = (() => {
             this.__trigger(document, "htmx:after:history:replace", {path});
         }
 
-        __restoreHistory(path) {
+        async __restoreHistory(path) {
             path = path || location.pathname + location.search;
             let historyElt = document.querySelector(this.__prefixSelector('[hx-history-elt]')) || document.body;
             if (this.__trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
@@ -1628,7 +1629,7 @@ var htmx = (() => {
                     location.reload();
                 } else {
                     this.#historyAbort = new AbortController();
-                    this.ajax('GET', path, {
+                    return this.ajax('GET', path, {
                         target: historyElt,
                         swap: 'outerSync',
                         select: historyElt !== document.body ? this.__prefixSelector('[hx-history-elt]') : undefined,

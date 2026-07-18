@@ -353,3 +353,44 @@ describe('hx-history-elt scopes history restore', function() {
         document.body.textContent.should.not.include('FOOTER LEAK');
     });
 });
+
+describe('scroll restoration on history traversal', function() {
+
+    beforeEach(() => { setupTest(this.currentTest); });
+
+    afterEach(() => {
+        window.scrollTo(0, 0);
+        cleanupTest();
+    });
+
+    async function untilScrollY(y, timeout = 1500) {
+        let start = performance.now();
+        while (window.scrollY !== y && performance.now() - start < timeout) {
+            await new Promise(r => requestAnimationFrame(r));
+        }
+    }
+
+    it('boosted back restores content, then restores scroll', async function() {
+        playground().innerHTML = '<main hx-history-elt><div style="height:3000px">page A</div></main>';
+        htmx.process(playground());
+        history.replaceState({htmx: true}, '', '/scroll-page-a');
+        window.scrollTo(0, 500);
+
+        htmx.__pushUrlIntoHistory('/scroll-page-b');
+        playground().innerHTML = '<main hx-history-elt><p>page B</p></main>';
+        window.scrollTo(0, 0);
+
+        mockResponse('GET', '/scroll-page-a', () => new Promise(resolve =>
+            setTimeout(() => resolve(new MockResponse(
+                '<html><body><main hx-history-elt><div style="height:3000px">page A restored</div></main></body></html>'
+            )), 100)));
+
+        history.back();
+        await forRequest(400);
+        await untilScrollY(500);
+
+        playground().textContent.should.include('page A restored');
+        assert.equal(window.scrollY, 500);
+    });
+
+});
