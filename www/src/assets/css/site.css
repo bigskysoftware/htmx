@@ -373,20 +373,21 @@ article.sticky-headers > section :is(h3, h4) {
     scroll-margin-top: calc(var(--header-offset) + var(--sticky-h2-height) + 1rem);
 }
 
-/* Desktop TOC fades in once the Jump-to list scrolls out under the header. */
+/* Desktop TOC fades in once the page intro scrolls out under the header. */
 @supports (animation-timeline: view()) {
     body {
-        timeline-scope: --jump-to;
+        timeline-scope: --toc-reveal;
     }
 
-    nav[aria-label="Page sections"] {
-        view-timeline: --jump-to block;
+    /* The search field drives the reveal: unlike jump-to, it never hides. */
+    [data-active-search] {
+        view-timeline: --toc-reveal block;
         view-timeline-inset: var(--header-offset) 0;
     }
 
     aside:has(#page-outline) {
         animation: toc-reveal linear both;
-        animation-timeline: --jump-to;
+        animation-timeline: --toc-reveal;
         animation-range: exit 0% exit 100%;
     }
 
