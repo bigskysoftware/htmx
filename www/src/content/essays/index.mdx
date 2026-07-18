@@ -4,6 +4,7 @@ description: "On hypermedia and building for the web."
 ---
 
 import { getFolder } from '../../lib/content';
+import JumpTo from '../../components/JumpTo.astro';
 
 export const essayFolder = await getFolder('essays');
 export const localEssays = essayFolder.files;
@@ -96,13 +97,17 @@ export const getPageHeadings = () => [
         aria-keyshortcuts="/"
         _="install ActiveSearch"
     />
-    <span aria-hidden="true">Press <kbd>/</kbd></span>
+    <span aria-hidden="true">Focus <kbd>/</kbd></span>
 </label>
+
+<JumpTo headings={getPageHeadings()} />
 
 <section role="group">
 
 <h2 id="most-recent">
-    <a href="#most-recent" class="no-underline interact:underline">Most Recent</a>
+    <span>
+        <a href="#most-recent" class="no-underline interact:underline">Most Recent</a>
+    </span>
 </h2>
 
 <table>
@@ -123,9 +128,11 @@ export const getPageHeadings = () => [
 <section role="group">
 
 <h2 id={group.id}>
-    <a href={`#${group.id}`} class="no-underline interact:underline">
-        {group.label}
-    </a>
+    <span>
+        <a href={`#${group.id}`} class="no-underline interact:underline">
+            {group.label}
+        </a>
+    </span>
 </h2>
 
 <table>

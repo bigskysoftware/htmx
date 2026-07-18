@@ -41,7 +41,7 @@ export const getPageHeadings = () => grouped.map(group => ({
         aria-keyshortcuts="/"
         _="install ActiveSearch"
     />
-    <span aria-hidden="true">Press <kbd>/</kbd></span>
+    <span aria-hidden="true">Focus <kbd>/</kbd></span>
 </label>
 
 <JumpTo headings={getPageHeadings()} />
@@ -50,9 +50,11 @@ export const getPageHeadings = () => grouped.map(group => ({
 <section role="group">
 
 <h2 id={group.slug}>
-    <a href={`#${group.slug}`} class="no-underline interact:underline">
-        {group.category}
-    </a>
+    <span>
+        <a href={`#${group.slug}`} class="no-underline interact:underline">
+            {group.category}
+        </a>
+    </span>
 </h2>
 
 <table>
@@ -60,11 +62,13 @@ export const getPageHeadings = () => grouped.map(group => ({
         {group.items.map(item => (
             <tr class="stretch-link">
                 <td>
-                    {item.icon && <i class={`${item.icon} size-5 inline-block align-middle mr-5`}></i>}
-                    <span class="inline-block align-middle">
-                        <a href={item.url}><code>{item.title}</code></a>
-                        {item.description && <span class="block sm:hidden text-neutral-650 dark:text-neutral-350 mt-0.5 pl-[6px]">{item.description}</span>}
-                    </span>
+                    <div class="flex items-center gap-5">
+                        {item.icon && <i class={`${item.icon} size-5 shrink-0`}></i>}
+                        <span class="min-w-0">
+                            <a href={item.url}><code>{item.title}</code></a>
+                            {item.description && <span class="block sm:hidden text-neutral-650 dark:text-neutral-350 pl-[6px]">{item.description}</span>}
+                        </span>
+                    </div>
                 </td>
                 <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350">{item.description || ''}</td>
             </tr>

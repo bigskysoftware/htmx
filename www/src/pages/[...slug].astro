@@ -135,7 +135,7 @@ const editPageUrl = `https://github.com/bigskysoftware/htmx/edit/four-dev/www/sr
 
                 {includeTableOfContents && (
                         <aside class:list={[
-                            "hidden xl:flex xl:flex-col xl:w-60 xl:min-w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) h-[calc(100vh-var(--header-height))] pt-27 pb-8 pr-4",
+                            "hidden xl:flex xl:flex-col xl:w-60 xl:min-w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) max-h-[calc(100vh-var(--header-height))] pt-27 pb-8 pr-4",
                             includeSidebar ? "xl:-me-16" : "xl:-me-[19rem]",
                         ]}>
                             <div class="shrink-0 mb-4">
