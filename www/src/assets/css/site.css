@@ -289,6 +289,23 @@ html:has(#construction-banner) article.sticky-headers > section > h2 {
     scroll-margin-top: calc(var(--header-height) + var(--construction-banner-height));
 }
 
+/* Sticky h2 bar height: font (1.375 × prose base) × 1.2 line-height + padding + border. */
+article.sticky-headers {
+    --sticky-h2-height: calc(1.375 * 0.875rem * 1.2 + 1.75rem + 1px);
+    @media (width >= 40rem) {
+        --sticky-h2-height: calc(1.375 * 1rem * 1.2 + 2rem + 1px);
+    }
+}
+
+/* Subheading anchor targets must clear the sticky h2 bar, not just the site header. */
+article.sticky-headers > section :is(h3, h4) {
+    scroll-margin-top: calc(var(--header-height) + var(--sticky-h2-height) + 1rem);
+}
+
+html:has(#construction-banner) article.sticky-headers > section :is(h3, h4) {
+    scroll-margin-top: calc(var(--header-height) + var(--construction-banner-height) + var(--sticky-h2-height) + 1rem);
+}
+
 /* Scroll-driven: show bg/border only when stuck.
    Tracks parent section (not the sticky h2, which never exits the viewport).
    Uses cover range with absolute offset: fires when section top reaches the sticky threshold. */
