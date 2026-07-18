@@ -353,3 +353,233 @@ describe('hx-history-elt scopes history restore', function() {
         document.body.textContent.should.not.include('FOOTER LEAK');
     });
 });
+
+describe('scroll restoration on history traversal', function() {
+
+    // NavAPI path: browser restores after swap. Fallback path: htmx scrolls after swap.
+    const hasNavigationAPI = typeof Navigation === 'function';
+
+    beforeEach(() => { setupTest(this.currentTest); });
+
+    afterEach(() => {
+        window.scrollTo(0, 0);
+        cleanupTest();
+    });
+
+    async function untilScrollY(y, timeout = 1500) {
+        let start = performance.now();
+        while (window.scrollY !== y && performance.now() - start < timeout) {
+            await new Promise(r => requestAnimationFrame(r));
+        }
+    }
+
+    it('boosted back restores content, then the browser restores scroll', async function() {
+        // page A is tall enough to scroll; page B is short, so the browser
+        // could only clamp scroll if it restored before the swap
+        playground().innerHTML = '<main hx-history-elt><div style="height:3000px">page A</div></main>';
+        htmx.process(playground());
+        history.replaceState({htmx: true}, '', '/scroll-page-a');
+        window.scrollTo(0, 500);
+
+        htmx.__pushUrlIntoHistory('/scroll-page-b');
+        playground().innerHTML = '<main hx-history-elt><p>page B</p></main>';
+        window.scrollTo(0, 0);
+
+        // delay past the browser's native restore attempt, like a real network request
+        mockResponse('GET', '/scroll-page-a', () => new Promise(resolve =>
+            setTimeout(() => resolve(new MockResponse(
+                '<html><body><main hx-history-elt><div style="height:3000px">page A restored</div></main></body></html>'
+            )), 100)));
+
+        history.back();
+        await forRequest(400);
+        await untilScrollY(500);
+
+        playground().textContent.should.include('page A restored');
+        assert.equal(window.scrollY, 500);
+    });
+
+    it('back returns to the latest scroll position after re-scrolling', async function() {
+        // the fallback only snapshots scroll at push time; latest-position needs the NavAPI
+        if (!hasNavigationAPI) this.skip();
+        this.timeout(5000);
+        playground().innerHTML = '<main hx-history-elt><div style="height:3000px">page A</div></main>';
+        htmx.process(playground());
+        history.replaceState({htmx: true}, '', '/scroll-page-a');
+        window.scrollTo(0, 500);
+
+        htmx.__pushUrlIntoHistory('/scroll-page-b');
+        playground().innerHTML = '<main hx-history-elt><div style="height:3000px">page B</div></main>';
+        window.scrollTo(0, 0);
+
+        mockResponse('GET', '/scroll-page-a',
+            '<html><body><main hx-history-elt><div style="height:3000px">page A</div></main></body></html>');
+        mockResponse('GET', '/scroll-page-b',
+            '<html><body><main hx-history-elt><div style="height:3000px">page B</div></main></body></html>');
+
+        history.back();
+        await forRequest();
+        await untilScrollY(500);
+
+        window.scrollTo(0, 800);
+        history.forward();
+        await forRequest();
+        await untilScrollY(0);
+
+        history.back();
+        await forRequest();
+        await untilScrollY(800);
+
+        assert.equal(window.scrollY, 800);
+    });
+
+    it('back to an entry created by an anchor jump still restores content', async function() {
+        playground().innerHTML = '<main hx-history-elt><div style="height:3000px">reference page</div></main>';
+        htmx.process(playground());
+        history.replaceState({htmx: true}, '', '/scroll-ref');
+
+        // fragment navigation creates a new entry without state
+        location.hash = '#events';
+        assert.isNull(history.state);
+        window.scrollTo(0, 500);
+
+        htmx.__pushUrlIntoHistory('/scroll-hxget');
+        playground().innerHTML = '<main hx-history-elt><p>hx-get page</p></main>';
+        window.scrollTo(0, 0);
+
+        mockResponse('GET', '/scroll-ref', () => new Promise(resolve =>
+            setTimeout(() => resolve(new MockResponse(
+                '<html><body><main hx-history-elt><div style="height:3000px">reference restored</div></main></body></html>'
+            )), 100)));
+
+        history.back();
+        await forRequest(400);
+        await untilScrollY(500);
+
+        playground().textContent.should.include('reference restored');
+        assert.equal(location.hash, '#events');
+        assert.equal(window.scrollY, 500);
+    });
+
+    it('restores horizontal scroll as well', async function() {
+        playground().innerHTML = '<main hx-history-elt><div style="height:3000px;width:3000px">wide page</div></main>';
+        htmx.process(playground());
+        history.replaceState({htmx: true}, '', '/scroll-wide');
+        window.scrollTo(300, 500);
+
+        htmx.__pushUrlIntoHistory('/scroll-narrow');
+        playground().innerHTML = '<main hx-history-elt><p>narrow page</p></main>';
+        window.scrollTo(0, 0);
+
+        mockResponse('GET', '/scroll-wide', () => new Promise(resolve =>
+            setTimeout(() => resolve(new MockResponse(
+                '<html><body><main hx-history-elt><div style="height:3000px;width:3000px">wide restored</div></main></body></html>'
+            )), 100)));
+
+        history.back();
+        await forRequest(400);
+        await untilScrollY(500);
+
+        assert.equal(window.scrollY, 500);
+        assert.equal(window.scrollX, 300);
+    });
+
+    it('ignores traversal to non-htmx history entries', async function() {
+        history.replaceState({foreign: true}, '', '/foreign-page');
+        history.pushState({htmx: true}, '', '/scroll-page-b');
+
+        history.back();
+        let evt = await forRequest(150);
+
+        assert.isNull(evt);
+    });
+
+    it('ignores hash-only traversal', async function() {
+        // the popstate fallback still refetches on hash traversal (pre-existing quirk)
+        if (!hasNavigationAPI) this.skip();
+        history.replaceState({htmx: true}, '', location.pathname + '#a');
+        history.pushState({htmx: true}, '', location.pathname + '#b');
+
+        history.back();
+        let evt = await forRequest(150);
+
+        assert.isNull(evt);
+        assert.equal(location.hash, '#a');
+    });
+});
+
+describe('history restore edge cases', function() {
+
+    beforeEach(() => { setupTest(this.currentTest); });
+    afterEach(() => { cleanupTest(); });
+
+    it('a second back aborts the in-flight restore', async function() {
+        this.timeout(5000);
+        playground().innerHTML = '<main hx-history-elt><p>page C</p></main>';
+        htmx.process(playground());
+        history.replaceState({htmx: true}, '', '/edge-a');
+        htmx.__pushUrlIntoHistory('/edge-b');
+        htmx.__pushUrlIntoHistory('/edge-c');
+
+        mockResponse('GET', '/edge-a',
+            '<html><body><main hx-history-elt><p>page A</p></main></body></html>');
+        mockResponse('GET', '/edge-b', () => new Promise(resolve =>
+            setTimeout(() => resolve(new MockResponse(
+                '<html><body><main hx-history-elt><p>page B</p></main></body></html>'
+            )), 150)));
+
+        history.back();
+        await new Promise(r => setTimeout(r, 50));
+        history.back();
+        await new Promise(r => setTimeout(r, 500));
+
+        assert.equal(location.pathname, '/edge-a');
+        playground().textContent.should.include('page A');
+    });
+
+    it('restores the replaced URL after a replace', async function() {
+        playground().innerHTML = '<main hx-history-elt><p>replaced page</p></main>';
+        htmx.process(playground());
+        history.replaceState({htmx: true}, '', '/edge-orig');
+        htmx.__pushUrlIntoHistory('/edge-next');
+        htmx.__replaceUrlInHistory('/edge-replaced');
+
+        mockResponse('GET', '/edge-orig',
+            '<html><body><main hx-history-elt><p>original restored</p></main></body></html>');
+        mockResponse('GET', '/edge-replaced',
+            '<html><body><main hx-history-elt><p>replaced restored</p></main></body></html>');
+
+        history.back();
+        await forRequest();
+        playground().textContent.should.include('original restored');
+        assert.equal(location.pathname, '/edge-orig');
+        await new Promise(r => setTimeout(r, 50));
+
+        history.forward();
+        await forRequest();
+        playground().textContent.should.include('replaced restored');
+        assert.equal(location.pathname, '/edge-replaced');
+    });
+
+    it('skips a foreign entry but restores the htmx entry behind it', async function() {
+        playground().innerHTML = '<main hx-history-elt><p>after page</p></main>';
+        htmx.process(playground());
+        history.replaceState({htmx: true}, '', '/edge-mine');
+        history.pushState({vue: true}, '', '/edge-foreign');
+        htmx.__pushUrlIntoHistory('/edge-after');
+
+        mockResponse('GET', '/edge-mine',
+            '<html><body><main hx-history-elt><p>mine restored</p></main></body></html>');
+
+        history.back();
+        let evt = await forRequest(150);
+        assert.isNull(evt);
+        playground().textContent.should.include('after page');
+        assert.equal(location.pathname, '/edge-foreign');
+
+        history.back();
+        await forRequest();
+        playground().textContent.should.include('mine restored');
+        assert.equal(location.pathname, '/edge-mine');
+    });
+});

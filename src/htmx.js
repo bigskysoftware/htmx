@@ -1595,21 +1595,37 @@ var htmx = (() => {
         // History Support
         //============================================================================================
 
+        #supportsNavigationApi = typeof Navigation === 'function'
+            && window.navigation instanceof Navigation && !!NavigateEvent.prototype.intercept;
+
         __initHistoryHandling() {
             if (!this.config.history) return;
             if (!history.state) {
                 history.replaceState({htmx: true}, '', location.href);
             }
-            window.addEventListener('popstate', (event) => {
-                if (event.state && event.state.htmx) {
+            if (this.#supportsNavigationApi) {
+                navigation.addEventListener('navigate', (event) => {
+                    if (event.navigationType !== 'traverse' || !event.canIntercept || event.hashChange) return;
                     this.#historyAbort?.abort();
-                    this.__restoreHistory();
-                }
-            });
+                    event.intercept({handler: async () => {
+                        await this.timeout(1);
+                        if (history.state?.htmx) return this.__restoreHistory();
+                    }});
+                });
+            } else {
+                window.addEventListener('popstate', (event) => {
+                    if (!event.state?.htmx) return;
+                    this.#historyAbort?.abort();
+                    let {scrollX: x, scrollY: y} = event.state;
+                    this.__restoreHistory().then(() => y >= 0 && window.scrollTo(x || 0, y));
+                });
+            }
         }
 
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
+            if (!history.state) history.replaceState({htmx: true}, '', location.href);
+            if (!this.#supportsNavigationApi) history.replaceState({...history.state, scrollX: window.scrollX, scrollY: window.scrollY}, '', location.href);
             history.pushState({htmx: true}, '', path);
             this.__trigger(document, "htmx:after:history:push", {path});
         }
@@ -1620,7 +1636,7 @@ var htmx = (() => {
             this.__trigger(document, "htmx:after:history:replace", {path});
         }
 
-        __restoreHistory(path) {
+        async __restoreHistory(path) {
             path = path || location.pathname + location.search;
             let historyElt = document.querySelector(this.__prefixSelector('[hx-history-elt]')) || document.body;
             if (this.__trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
@@ -1628,7 +1644,7 @@ var htmx = (() => {
                     location.reload();
                 } else {
                     this.#historyAbort = new AbortController();
-                    this.ajax('GET', path, {
+                    return this.ajax('GET', path, {
                         target: historyElt,
                         swap: 'outerSync',
                         select: historyElt !== document.body ? this.__prefixSelector('[hx-history-elt]') : undefined,
