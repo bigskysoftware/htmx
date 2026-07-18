@@ -1,7 +1,7 @@
 // @ts-check
 import {defineConfig} from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
-import rehypeSlug from "rehype-slug";
+import {rehypeHeadingIds} from "@astrojs/markdown-remark";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeExternalLinks from "rehype-external-links";
 import {rehypeSections} from "./src/lib/rehype-sections.js";
@@ -88,8 +88,8 @@ export default defineConfig({
             [remarkCdnVersion, {version}],
         ],
         rehypePlugins: [
-            rehypeSlug,
-            [rehypeSections, {split: 'h2'}], // /docs sticky h2s need containing blocks to unstick naturally
+            // Assign and collect heading ids before the plugins below run.
+            rehypeHeadingIds,
             [
                 rehypeAutolinkHeadings,
                 {
@@ -97,6 +97,7 @@ export default defineConfig({
                     test: (node) => node.tagName !== 'h1',
                 },
             ],
+            [rehypeSections, {split: 'h2'}], // sticky h2s need containing blocks to unstick naturally
             [
                 rehypeExternalLinks,
                 {
