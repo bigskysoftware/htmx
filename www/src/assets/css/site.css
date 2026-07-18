@@ -240,9 +240,11 @@ table:has(.stretch-link) {
 
 tr.stretch-link {
     position: relative;
+    /* WebKit only honors tr as abspos containing block with a transform. */
+    transform: translate(0);
 
     & td {
-        padding-block: 0.75em;
+        padding-block: 0.75rem;
     }
 
     & td:first-child {
@@ -253,22 +255,34 @@ tr.stretch-link {
         padding-inline-end: 0.75rem;
     }
 
-    @media (hover: hover) and (pointer: fine) {
-        & td:first-child a {
-            position: static;
+    /* Whole row is the tap target. */
+    & td:first-child a {
+        position: static;
 
-            &::after {
-                content: '';
-                position: absolute;
-                inset: 0;
-            }
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+        }
+    }
+
+    /* One place for index-table mobile type; keep the .mdx tables size-free. */
+    @media (width < 40rem) {
+        & td, & td code {
+            font-size: 0.875rem;
         }
 
+        /* Stacked description lines. */
+        & td .block {
+            font-size: 0.8125rem;
+        }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
         &:hover td {
             color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
         }
     }
-
 }
 
 /* ─── Docs full-page sticky section headers (unlayered) ────────────────── */
@@ -280,6 +294,8 @@ article.sticky-headers > section {
     contain-intrinsic-size: auto 60rem;
     margin-inline: -1rem;
     padding-inline: 1rem;
+    position: relative;
+    padding-top: calc(var(--sticky-h2-gap) + var(--sticky-h2-height));
 }
 
 /* Sections above the :target render fully so anchor jumps land exactly. */
@@ -288,28 +304,40 @@ article.sticky-headers > section:has(~ section :target) {
     content-visibility: visible;
 }
 
+/* The h2 holds the anchor id so it must not move: it spans the section as
+   an invisible track, and the <a> inside is the bar that sticks along it. */
 article.sticky-headers > section > h2 {
+    position: absolute;
+    inset: var(--sticky-h2-gap) 0 0 0;
+    pointer-events: none;
+    z-index: 20;
+    scroll-margin-top: var(--header-offset);
+    line-height: 1.2;
+    margin: 0;
+}
+
+article.sticky-headers > section > h2 > a {
     position: sticky;
     top: var(--header-offset);
-    scroll-margin-top: var(--header-offset);
-    z-index: 20;
-    line-height: 1.2;
-    margin-bottom: 0;
+    display: block;
+    pointer-events: auto;
     background: light-dark(var(--color-neutral-25), var(--color-neutral-920));
     padding-block: 0.875rem;
     @media (width >= 40rem) {
         padding-block: 1rem;
     }
-    margin-inline: -1rem;
     padding-inline: 1rem;
     border-bottom: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-850));
 }
 
-/* Sticky h2 bar height: font (1.375 × prose base) × 1.2 line-height + padding + border. */
+/* Bar height: font (1.375 × prose base) × 1.2 line-height + padding + border.
+   Gap above the bar: prose h2 margin-top (1.6em/2em of the h2 font). */
 article.sticky-headers {
     --sticky-h2-height: calc(1.375 * 0.875rem * 1.2 + 1.75rem + 1px);
+    --sticky-h2-gap: calc(1.6 * 1.375 * 0.875rem);
     @media (width >= 40rem) {
         --sticky-h2-height: calc(1.375 * 1rem * 1.2 + 2rem + 1px);
+        --sticky-h2-gap: calc(2 * 1.375 * 1rem);
     }
 }
 
@@ -318,14 +346,14 @@ article.sticky-headers > section :is(h3, h4) {
     scroll-margin-top: calc(var(--header-offset) + var(--sticky-h2-height) + 1rem);
 }
 
-/* Show the h2 bar's bg/border only while stuck.
-   Track the section, not the h2: the h2 never leaves the viewport. */
+/* Show the bar's bg/border only while stuck.
+   Track the section, not the bar: the bar never leaves the viewport. */
 @supports (animation-timeline: view()) {
     article.sticky-headers > section {
         view-timeline: --section block;
     }
 
-    article.sticky-headers > section > h2 {
+    article.sticky-headers > section > h2 > a {
         background: transparent;
         border-bottom-color: transparent;
         animation: stick-bg linear both;

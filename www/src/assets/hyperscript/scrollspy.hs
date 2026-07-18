@@ -12,12 +12,15 @@ behavior Scrollspy
   end
 
   on scroll from window throttled at 50ms
+    -- Hidden nav (mobile TOC) must not do scroll work.
+    if my offsetParent is null then exit end
     set current to null
     for a in <a[href^='#']/> in me
       set href to a's @href
       set id to href.slice(1)
       set el to document.getElementById(id)
-      if el exists
+      -- checkVisibility skips content-visibility sections without forcing layout.
+      if el exists and (no el.checkVisibility or el.checkVisibility({contentVisibilityAuto: true}))
         measure el
         if its top <= 150
           set current to href
