@@ -39,10 +39,10 @@ const extensions = await Promise.all(EXTENSION_LIST.map(async (ext) => {
 
 <section class="not-prose py-12 sm:py-16 font-sans">
 
-    <template id="script-tag"><span class='text-blue-700 dark:text-blue-350'>&lt;script</span> <span
-            class='text-blue-800 dark:text-blue-200'>src</span>=<span
-            class='text-red-700 dark:text-orange-300'>&quot;{'${unescaped url}'}&quot;</span><span
-            class='text-blue-700 dark:text-blue-350'>&gt;&lt;/script&gt;</span></template>
+    <template id="script-tag"><span class='text-(color:--astro-code-token-string-expression)'>&lt;script</span> <span
+            class='text-(color:--astro-code-token-function)'>src</span>=<span
+            class='text-(color:--astro-code-token-string)'>&quot;{'${unescaped url}'}&quot;</span><span
+            class='text-(color:--astro-code-token-string-expression)'>&gt;&lt;/script&gt;</span></template>
 
     <div id="cdn-widget"
          class="max-w-[755px] mx-auto w-full px-6 flex flex-col gap-2"
@@ -93,7 +93,7 @@ const extensions = await Promise.all(EXTENSION_LIST.map(async (ext) => {
                         <div class="size-2.5 rounded-full bg-neutral-200 dark:bg-neutral-800"/>)}
             </div>
             <div class="group relative pe-4 flex items-center gap-3">
-                <pre class="flex-1 overflow-x-auto text-xs leading-5 p-0! border-transparent! bg-transparent! text-neutral-900 dark:text-white"><code
+                <pre class="flex-1 overflow-x-auto text-xs sm:text-sm leading-5 sm:leading-6 p-0! border-transparent! bg-transparent! text-(color:--astro-code-foreground)"><code
                         id="code" class="whitespace-pre block"></code></pre>
 
                 <button class="relative text-neutral-400 interact:text-neutral-900 dark:interact:text-white active:scale-95 cursor-pointer"

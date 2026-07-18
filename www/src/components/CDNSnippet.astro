@@ -79,16 +79,21 @@ const INTEGRITY = integrity.min;
 
         code {
             font-family: var(--font-mono);
-            font-size: 0.625rem;
+            /* Same scale as prose code blocks. */
+            font-size: 0.75rem;
             line-height: 1.25rem;
             white-space: nowrap;
 
-            @media (min-width: 640px) { font-size: 0.75rem; }
+            @media (min-width: 640px) {
+                font-size: 0.875rem;
+                line-height: 1.5rem;
+            }
         }
 
-        .tag { color: light-dark(var(--color-blue-600), var(--color-blue-400)); }
-        .attr { color: light-dark(var(--color-neutral-600), var(--color-neutral-400)); }
-        .val { color: light-dark(var(--color-emerald-600), var(--color-emerald-400)); }
+        /* Same palette as the Shiki code blocks. */
+        .tag { color: var(--astro-code-token-string-expression); }
+        .attr { color: var(--astro-code-token-function); }
+        .val { color: var(--astro-code-token-string); }
     }
 
     .icon-wrap {
