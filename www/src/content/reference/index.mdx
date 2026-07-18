@@ -122,8 +122,8 @@ export const getPageHeadings = () => groups.map(group => ({depth: 2, slug: group
             <tr class="stretch-link">
                 <td>
                     <span hidden>{group.label} {sg.label}</span>
-                    <a href={item.url}><code class="text-sm sm:text-[0.875em]" set:html={item.title} /></a>
-                    {item.description && <span class="mt-0.5 block pl-[6px] text-[0.8125rem] text-neutral-650 dark:text-neutral-350 sm:hidden" set:html={descriptionHtml(item.description)} />}
+                    <a href={item.url}><code set:html={item.title} /></a>
+                    {item.description && <span class="mt-0.5 block pl-[6px] text-neutral-650 dark:text-neutral-350 sm:hidden" set:html={descriptionHtml(item.description)} />}
                 </td>
                 <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350" set:html={item.description ? descriptionHtml(item.description) : ''} />
             </tr>

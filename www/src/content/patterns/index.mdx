@@ -66,7 +66,7 @@ export const getPageHeadings = () => groupedPatterns.map(group => ({
                             ? <span>{item.title}</span>
                             : <a href={item.url}>{item.title}</a>}
                         {item.soon && <span class="sm:hidden text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">Soon</span>}
-                        {item.description && <span class="block sm:hidden text-[0.8125em] text-neutral-650 dark:text-neutral-350 mt-0.5">{item.description}</span>}
+                        {item.description && <span class="block sm:hidden text-neutral-650 dark:text-neutral-350 mt-0.5">{item.description}</span>}
                     </span>
                 </td>
                 <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350">

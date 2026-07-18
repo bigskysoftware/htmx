@@ -63,7 +63,7 @@ export const getPageHeadings = () => grouped.map(group => ({
                     {item.icon && <i class={`${item.icon} size-5 inline-block align-middle mr-5`}></i>}
                     <span class="inline-block align-middle">
                         <a href={item.url}><code>{item.title}</code></a>
-                        {item.description && <span class="block sm:hidden text-[0.8125em] text-neutral-650 dark:text-neutral-350 mt-0.5 pl-[6px]">{item.description}</span>}
+                        {item.description && <span class="block sm:hidden text-neutral-650 dark:text-neutral-350 mt-0.5 pl-[6px]">{item.description}</span>}
                     </span>
                 </td>
                 <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350">{item.description || ''}</td>
