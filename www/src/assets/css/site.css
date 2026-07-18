@@ -123,8 +123,11 @@
 
 /* ─── Base ─────────────────────────────────────────────────────────────── */
 @layer base {
+    html {
+        overflow-x: clip;
+    }
+
     body {
-        overflow-x: hidden;
         color: light-dark(var(--color-neutral-700), var(--color-neutral-300));
         background-color: light-dark(var(--color-neutral-25), var(--color-neutral-920));
     }
@@ -230,6 +233,11 @@
             30px 0 0 light-dark(var(--color-neutral-200), var(--color-neutral-800));
         }
     }
+}
+
+/* While searching, the jump-to directory is noise between input and results. */
+[data-active-search]:has(input:not(:placeholder-shown)) ~ nav[aria-label="Page sections"] {
+    display: none;
 }
 
 /* ─── Stretched link (unlayered to override prose table padding) ───────── */
@@ -350,13 +358,13 @@ article.sticky-headers > section > h2 > :first-child {
 }
 
 /* Bar height: font (1.375 × prose base) × 1.2 line-height + padding + border.
-   Gap above the bar: prose h2 margin-top (1.6em/2em of the h2 font). */
+   Gap above the bar: steps on the spacing grid. */
 article.sticky-headers {
     --sticky-h2-height: calc(1.375 * 0.875rem * 1.2 + 1.75rem + 1px);
-    --sticky-h2-gap: calc(1.6 * 1.375 * 0.875rem);
+    --sticky-h2-gap: calc(var(--spacing) * 5);
     @media (width >= 40rem) {
         --sticky-h2-height: calc(1.375 * 1rem * 1.2 + 2rem + 1px);
-        --sticky-h2-gap: calc(2 * 1.375 * 1rem);
+        --sticky-h2-gap: calc(var(--spacing) * 7);
     }
 }
 
