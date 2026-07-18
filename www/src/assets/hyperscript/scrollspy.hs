@@ -7,9 +7,7 @@ behavior Scrollspy
     set link to first <a[href='${hash}']/> in me
     if link exists
       set link's @aria-current to 'true'
-      set pageY to window.scrollY
       call link.scrollIntoView({block: 'nearest', behavior: 'instant'})
-      call window.scrollTo(0, pageY)
     end
   end
 
