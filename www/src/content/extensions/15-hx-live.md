@@ -163,6 +163,8 @@ htmx.live.q('.row').attr('hidden', true);
 
 Inside expressions, `this` is the element, the full htmx API is available unprefixed, and `await` works at the top level (expressions are `async` functions).
 
+> Don't leave a promise unawaited — htmx won't see it, and its errors will be swallowed silently.
+
 ```html
 <button hx-on:click="
     attr('disabled', true);
