@@ -78,7 +78,7 @@
         history.replaceState({ htmx: true, htmxId }, '', cachedPath);
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
-            htmx.__restoreHistory(cachedPath);
+            htmx.__restoreHistory(history.state, cachedPath);
         });
         await htmx.timeout(50);
         return historyElt;
@@ -108,7 +108,7 @@
         history.replaceState({ htmx: true, htmxId }, '', cachedPath);
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
-            htmx.__restoreHistory(cachedPath);
+            htmx.__restoreHistory(history.state, cachedPath);
         });
         await htmx.timeout(50);
 
@@ -138,7 +138,7 @@
         history.replaceState({ htmx: true, htmxId }, '', cachedPath);
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
-            htmx.__restoreHistory(cachedPath);
+            htmx.__restoreHistory(history.state, cachedPath);
         });
         await htmx.timeout(50);
 
@@ -183,7 +183,7 @@
         history.replaceState({ htmx: true, htmxId }, '', cachedPath);
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
-            htmx.__restoreHistory(cachedPath);
+            htmx.__restoreHistory(history.state, cachedPath);
         });
         await htmx.timeout(50);
 
