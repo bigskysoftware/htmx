@@ -234,7 +234,7 @@ describe('hx-live extension', function () {
         window.__debounceCountLive = 0;
         playground().innerHTML = `
             <input id="in" value="1">
-            <output hx-live="(async () => { await debounce(20); window.__debounceCountLive++; q('#in').value; })()"></output>
+            <output hx-live="await debounce(20); window.__debounceCountLive++; q('#in').value;"></output>
         `;
         htmx.process(playground());
         let inp = playground().querySelector('#in');

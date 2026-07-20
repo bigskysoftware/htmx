@@ -696,6 +696,18 @@ With `bindPrefix: 'hx:'`:
 - If your build pipeline strips `:`-prefixed attributes, use the canonical `hx-live:<attr>` form instead. Behavior is identical.
 - If using Alpine.js on the same page, hx-live auto-detects it and disables the `:` short form. See [Configuration](#configuration) for details.
 
+### Async Code
+
+Use top-level `await` in `hx-live`. Do not add an async wrapper.
+
+```html
+<!-- Good: htmx handles errors -->
+<div hx-live="await update()"></div>
+
+<!-- Bad: errors go unhandled -->
+<div hx-live="(async () => { await update() })()"></div>
+```
+
 ## See also
 
 - [`hx-on`](/reference/attributes/hx-on) (attribute)
