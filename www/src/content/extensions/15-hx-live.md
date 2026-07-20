@@ -163,8 +163,6 @@ htmx.live.q('.row').attr('hidden', true);
 
 Inside expressions, `this` is the element, the full htmx API is available unprefixed, and `await` works at the top level (expressions are `async` functions).
 
-> Don't leave a promise unawaited — htmx won't see it, and its errors will be swallowed silently.
-
 ```html
 <button hx-on:click="
     attr('disabled', true);
@@ -697,6 +695,18 @@ With `bindPrefix: 'hx:'`:
 - Expressions must be safe to run repeatedly. Avoid unconditional `fetch()` calls. Use `debounce` or guard on a value change.
 - If your build pipeline strips `:`-prefixed attributes, use the canonical `hx-live:<attr>` form instead. Behavior is identical.
 - If using Alpine.js on the same page, hx-live auto-detects it and disables the `:` short form. See [Configuration](#configuration) for details.
+
+### Async Code
+
+Use top-level `await` in `hx-live`. Do not add an async wrapper.
+
+```html
+<!-- Good: htmx handles errors -->
+<div hx-live="await update()"></div>
+
+<!-- Bad: errors go unhandled -->
+<div hx-live="(async () => { await update() })()"></div>
+```
 
 ## See also
 
