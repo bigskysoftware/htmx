@@ -1600,10 +1600,18 @@ var htmx = (() => {
             if (!history.state) {
                 history.replaceState({htmx: true}, '', location.href);
             }
-            if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
+            if (window.navigation) {
+                let scrollPositions = new Map();
+                window.addEventListener('scroll', () => {
+                    scrollPositions.set(navigation.currentEntry.key, window.scrollY);
+                }, {passive: true});
                 navigation.addEventListener('navigate', (event) => {
                     if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
-                        event.intercept({handler: () => this.__restoreHistory()});
+                        event.intercept({scroll: 'manual', handler: async () => {
+                            let scrollY = scrollPositions.get(event.destination.key) || 0;
+                            await this.__restoreHistory();
+                            window.scrollTo(0, scrollY);
+                        }});
                 });
             } else {
                 window.addEventListener('popstate', (event) => this.__restoreHistory(event.state));

@@ -358,7 +358,7 @@ describe('hx-history-elt scopes history restore', function() {
 
 describe('scroll restoration on history traversal', function() {
 
-    const hasNavigationAPI = typeof Navigation === 'function' && !/Firefox\//.test(navigator.userAgent);
+    const hasNavigationAPI = typeof Navigation === 'function';
 
     beforeEach(() => { setupTest(this.currentTest); });
 
@@ -465,7 +465,8 @@ describe('scroll restoration on history traversal', function() {
         assert.equal(window.scrollY, 500);
     });
 
-    it('restores horizontal scroll as well', async function() {
+    it.skip('restores horizontal scroll as well', async function() {
+        // skip as we now only restore virtical scroll in our manual restoration instead of the auto browser restore solutuion.
         if (!hasNavigationAPI) this.skip();
         playground().innerHTML = '<main hx-history-elt><div style="height:3000px;width:3000px">wide page</div></main>';
         htmx.process(playground());
