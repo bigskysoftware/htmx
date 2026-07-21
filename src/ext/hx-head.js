@@ -1,15 +1,11 @@
 //==========================================================
-// head-support.js
+// hx-head.js
 //
 // An extension to add head tag merging.
 //==========================================================
 (function () {
 
     let api
-
-    function log() {
-        //console.log(arguments)
-    }
 
     // Appends a new head node, returning a promise for render-critical resources
     // (blocking scripts, stylesheets) or null for fire-and-forget resources.
@@ -114,7 +110,6 @@
                 // Push the remaining new head elements in the Map into the
                 // nodes to append to the head tag
                 nodesToAppend.push(...srcToNewHeadNodes.values())
-                log("to append: ", nodesToAppend)
 
                 // defer scripts need the swapped DOM to exist — split them out
                 for (const newNode of nodesToAppend) {
@@ -129,7 +124,6 @@
                             newNode._preloadHint = hint
                         }
                     } else {
-                        log("adding: ", newNode)
                         if (htmx.trigger(document.body, "htmx:before:head:add", {headElement: newNode}) !== false) {
                             await appendNode(newNode)
                             added.push(newNode)
