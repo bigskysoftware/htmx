@@ -675,7 +675,13 @@ var htmx = (() => {
 
                 if (ctx.status === "issuing") {
                     ctx.status = "response received";
-                    this.__handleStatusCodes(ctx);
+
+                    let {swap: statusSwap, actions: statusActions} = this.__resolveStatusCode(
+                        ctx.response,
+                        ctx.sourceElement
+                    );
+                    ctx.swap = {...ctx.swap, ...statusSwap};
+                    ctx.actions = {...ctx.actions, ...statusActions};
 
                     let {pushUrl, replaceUrl, ...otherActions} = ctx.actions;
                     let historyAction = this.__resolveHistoryAction(ctx);
@@ -2385,32 +2391,44 @@ var htmx = (() => {
             return persistentIds;
         }
 
-        __handleStatusCodes(ctx) {
-            let status = ctx.response.raw.status;
-            let noSwapStrings = this.config.noSwap.map(x => x + "");
-            let str = status + ""
-            for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
-                if (noSwapStrings.includes(pattern)) {
-                    ctx.swap.style = "none";
-                    return
+        __resolveStatusCode(response, element) {
+            let statusCode = String(response.status);
+
+            let statusCodePatterns = [
+                statusCode,
+                statusCode.slice(0, 2) + 'x',
+                statusCode[0] + 'xx'
+            ];
+            let noSwapPatterns = this.config.noSwap.map(String);
+
+            for (let pattern of statusCodePatterns) {
+                if (noSwapPatterns.includes(pattern)) {
+                    return {swap: {style: 'none'}, actions: {}};
                 }
-                let hxStatus = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
-                if (hxStatus) {
-                    let {swap, push, replace, ...swapOverrides} = HCON.parse(hxStatus);
-                    HCON.merge({
+
+                let hxStatus = this.__attributeValue(element, 'hx-status:' + pattern);
+                if (!hxStatus) continue;
+
+                let {swap, push, replace, ...swapOptions} = HCON.parse(hxStatus);
+                let actions = {};
+                let hasHistoryHeader =
+                    response.headers?.get('HX-Push-Url') != null ||
+                    response.headers?.get('HX-Replace-Url') != null;
+
+                if (!hasHistoryHeader && (push !== undefined || replace !== undefined)) {
+                    actions = {pushUrl: push, replaceUrl: replace};
+                }
+
+                return {
+                    swap: {
                         ...this.__parseSwapSpec(swap),
-                        ...swapOverrides
-                    }, ctx.swap);
-                    // HX-Push-Url / HX-Replace-Url headers outrank hx-status config
-                    if ((push !== undefined || replace !== undefined)
-                        && ctx.response.headers?.get('HX-Push-Url') == null
-                        && ctx.response.headers?.get('HX-Replace-Url') == null) {
-                        ctx.actions.pushUrl = push;
-                        ctx.actions.replaceUrl = replace;
-                    }
-                    return;
-                }
+                        ...swapOptions
+                    },
+                    actions
+                };
             }
+
+            return {swap: {}, actions: {}};
         }
 
         __submitTransitionTask(task) {
