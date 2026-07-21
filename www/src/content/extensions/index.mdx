@@ -65,7 +65,7 @@ export const getPageHeadings = () => grouped.map(group => ({
                     <div class="flex items-center gap-5">
                         {item.icon && <i class={`${item.icon} size-5 shrink-0`}></i>}
                         <span class="min-w-0">
-                            <a href={item.url}><code>{item.title}</code></a>
+                            <a href={item.url}><code class="whitespace-nowrap">{item.title}</code></a>
                             {item.description && <span class="block sm:hidden text-neutral-650 dark:text-neutral-350 pl-[6px]">{item.description}</span>}
                         </span>
                     </div>
