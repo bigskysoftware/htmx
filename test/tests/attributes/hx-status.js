@@ -104,4 +104,13 @@ describe('hx-status attribute tests', function() {
         assert.equal(find('#target').innerText, 'Original');
     });
 
+    it('applies flat swap modifiers', async function() {
+        mockResponse('GET', '/test', '<div id="oob" hx-swap-oob="innerHTML">Updated</div>', {status: 500});
+        createProcessedHTML('<div id="target">Original</div><div id="oob">Old</div><button hx-get="/test" hx-target="#target" hx-status:500="swap:innerHTML swapEmpty:false">Click</button>');
+        find('button').click();
+        await forRequest();
+        assert.equal(find('#target').innerText, 'Original');
+        assert.equal(find('#oob').innerText, 'Updated');
+    });
+
 });

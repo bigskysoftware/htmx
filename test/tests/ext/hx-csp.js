@@ -37,19 +37,19 @@ describe('hx-csp extension', function() {
         cleanupTest()
     })
 
-    // CSP rewrites response text before core builds the swap fragment.
-    it('scrubs the page nonce from ctx.text', async function() {
+    // CSP rewrites canonical response content before core builds the swap fragment.
+    it('scrubs the page nonce from ctx.swap.content', async function() {
         mockResponse('GET', '/test', '<script type="application/json" nonce="test-nonce">{}</script>')
         let button = createProcessedHTML('<button hx-get="/test" hx-target="#target" hx-nonce="test-nonce">Load</button><div id="target"></div>')
-        let responseText
+        let responseContent
         button.addEventListener('htmx:after:request', event => {
-            responseText = event.detail.ctx.text
+            responseContent = event.detail.ctx.swap.content
         })
 
         button.click()
         await forRequest()
 
-        assert.notInclude(responseText, 'test-nonce')
+        assert.notInclude(responseContent, 'test-nonce')
         assert.isFalse(find('#target script').hasAttribute('nonce'))
     })
 })

@@ -16,7 +16,7 @@ This event does **not** fire for network errors or timeouts — use [`htmx:error
 - `ctx` - The full request context, including:
   - `ctx.response.status` - The HTTP status code
   - `ctx.response.headers` - Response headers
-  - `ctx.text` - The response body
+  - `ctx.swap.content` - The response body
 
 ## Example
 

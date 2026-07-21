@@ -62,6 +62,26 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    // SSE messages pass canonical swap state through the positional swap API.
+    it('uses canonical swap state for messages', async function() {
+        const stream = mockStreamResponse('/canonical');
+        createProcessedHTML('<div id="target"></div><button hx-get="/canonical" hx-target="#target" hx-swap="innerHTML transition:false">Stream</button>');
+        let messageSwap;
+        onDoc('htmx:before:swap', event => messageSwap = event.detail.ctx.swap);
+
+        find('button').click();
+        await htmx.timeout(1);
+        stream.send('message');
+        await waitForEvent('htmx:after:sse:message');
+
+        assert.equal(messageSwap.content, 'message');
+        assert.equal(messageSwap.target.id, 'target');
+        assert.equal(messageSwap.style, 'innerHTML');
+        assert.isFalse(messageSwap.transition);
+        assert.isFalse(messageSwap.swapEmpty);
+        stream.close();
+    });
+
     it('continuous stream reconnects with exponential backoff', async function() {
         const stream = mockStreamResponse('/reconnect');
         createProcessedHTML('<button hx-get="/reconnect" hx-config="sse.reconnect:true sse.reconnectDelay:50ms sse.reconnectMaxAttempts:3 sse.reconnectJitter:0" hx-swap="innerHTML">Connect</button>');

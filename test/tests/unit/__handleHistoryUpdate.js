@@ -20,8 +20,7 @@ describe('__handleHistoryUpdate unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let ctx = {
             sourceElement: div,
-            push: 'false',
-            replace: 'false',
+            actions: { pushUrl: 'false', replaceUrl: 'false' },
             response: { headers: new Headers() },
             request: { action: '/test' }
         }
@@ -35,7 +34,7 @@ describe('__handleHistoryUpdate unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let ctx = {
             sourceElement: div,
-            push: 'true',
+            actions: { pushUrl: 'true' },
             response: { headers: new Headers() },
             request: { action: '/test-path' }
         }
@@ -49,7 +48,7 @@ describe('__handleHistoryUpdate unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let ctx = {
             sourceElement: div,
-            replace: 'true',
+            actions: { replaceUrl: 'true' },
             response: { headers: new Headers() },
             request: { action: '/replace-path' }
         }
@@ -63,7 +62,7 @@ describe('__handleHistoryUpdate unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let ctx = {
             sourceElement: div,
-            push: '/custom-path',
+            actions: { pushUrl: '/custom-path' },
             response: { headers: new Headers() },
             request: { action: '/test' }
         }
@@ -77,7 +76,7 @@ describe('__handleHistoryUpdate unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let ctx = {
             sourceElement: div,
-            push: 'true',
+            actions: { pushUrl: 'true' },
             response: { 
                 headers: new Headers(),
                 raw: { url: 'http://localhost/redirected-path?foo=bar' }

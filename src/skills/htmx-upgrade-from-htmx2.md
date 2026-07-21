@@ -271,7 +271,7 @@ htmx.registerExtension('my-ext', {
         // detail.ctx has request context
     },
     htmx_after_request(elt, detail) {
-        // detail.ctx.text has response text
+        // detail.ctx.swap.content has response text
     }
 });
 ```

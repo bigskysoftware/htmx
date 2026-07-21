@@ -214,7 +214,7 @@ describe('hx-ws WebSocket extension', function() {
             let ws = mockWebSocketInstances[0];
             let target = document.getElementById('container');
 
-            await htmx.swap({ text: '', target, swap: 'innerHTML', sourceElement: target });
+            await htmx.swap('', target, {style: 'innerHTML', source: target});
             await htmx.timeout(50);
             
             assert.equal(ws.readyState, mockWebSocket.CLOSED);
@@ -232,7 +232,7 @@ describe('hx-ws WebSocket extension', function() {
             let ws = mockWebSocketInstances[0];
             let target = document.getElementById('div1');
 
-            await htmx.swap({ text: '', target, swap: 'delete', sourceElement: target });
+            await htmx.swap('', target, {style: 'delete', source: target});
             await htmx.timeout(50);
             
             assert.equal(ws.readyState, mockWebSocket.OPEN);
@@ -256,7 +256,7 @@ describe('hx-ws WebSocket extension', function() {
             // Remove div1 (the element captured as firstElement in createWebSocket)
             // but keep the connection alive via div2
             let target = document.getElementById('div1');
-            await htmx.swap({ text: '', target, swap: 'delete', sourceElement: target });
+            await htmx.swap('', target, {style: 'delete', source: target});
             await htmx.timeout(50);
 
             // Trigger an error on the still-open socket
@@ -730,11 +730,11 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(30);
 
             assert.equal(eventSource, button);
-            assert.equal(finalContext.target, 'closest .result');
+            assert.equal(finalContext.swap.target, result);
             assert.equal(mainTask.target, result);
             assert.equal(mainTask.swapSpec.style, 'beforeend');
-            assert.equal(mainTask.swapSpec.swap, '10ms');
-            assert.equal(mainTask.swapSpec.settle, 0);
+            assert.equal(mainTask.swapSpec.swapDelay, '10ms');
+            assert.equal(mainTask.swapSpec.settleDelay, 0);
             assert.equal(document.getElementById('response').parentElement, result);
         });
     });
@@ -2106,12 +2106,11 @@ describe('hx-ws WebSocket extension', function() {
 
             // Swap out the ws-host element entirely (simulates hx-swap replacing it)
             let target = document.getElementById('outer');
-            await htmx.swap({
-                text: '<div id="ws-host">Replaced — no hx-ws:connect</div>',
+            await htmx.swap(
+                '<div id="ws-host">Replaced — no hx-ws:connect</div>',
                 target,
-                swap: 'innerHTML',
-                sourceElement: target
-            });
+                {style: 'innerHTML', source: target}
+            );
             await htmx.timeout(50);
 
             assert.equal(ws.readyState, mockWebSocket.CLOSED, 'WebSocket should be closed after element removal');
@@ -2190,12 +2189,11 @@ describe('hx-ws WebSocket extension', function() {
 
             // Remove element during the reconnect delay
             let target = document.getElementById('outer');
-            await htmx.swap({
-                text: '<div>No more WS</div>',
+            await htmx.swap(
+                '<div>No more WS</div>',
                 target,
-                swap: 'innerHTML',
-                sourceElement: target
-            });
+                {style: 'innerHTML', source: target}
+            );
             await htmx.timeout(250);
 
             // Reconnect timer should have fired but found no element, so no new socket
@@ -2388,7 +2386,7 @@ describe('hx-ws WebSocket extension', function() {
 
             // Remove the element to trigger closeConnection
             let target = document.getElementById('outer');
-            await htmx.swap({ text: '', target, swap: 'innerHTML', sourceElement: target });
+            await htmx.swap('', target, {style: 'innerHTML', source: target});
             await htmx.timeout(50);
 
             assert.isTrue(ac.signal.aborted, 'AbortController should be aborted on close');

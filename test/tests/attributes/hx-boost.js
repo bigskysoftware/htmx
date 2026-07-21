@@ -130,6 +130,30 @@ describe('hx-boost attribute', async function() {
         should.equal(document.querySelector('#a1'), null)
     })
 
+    it('boost target config overrides hx-swap target modifier', async function() {
+        mockResponse('GET', '/test', 'New Content')
+        createProcessedHTML('<div id="swap-target">Swap Target</div><div id="boost-target">Boost Target</div><a hx-boost="target:#boost-target" hx-swap="innerHTML target:#swap-target" href="/test">Click</a>')
+        find('a').click()
+        await forRequest()
+        find('#boost-target').innerHTML.should.equal('New Content')
+        find('#swap-target').innerHTML.should.equal('Swap Target')
+    })
+
+    it('boost transition config overrides hx-swap transition modifier', async function() {
+        if (!document.startViewTransition) {
+            this.skip()
+            return
+        }
+
+        let transitioned = false
+        htmx.on('htmx:before:viewTransition', () => transitioned = true)
+        mockResponse('GET', '/test', 'New Content')
+        createProcessedHTML('<div id="target"></div><a hx-boost="transition:true" hx-swap="innerHTML transition:false" hx-target="#target" href="/test">Click</a>')
+        find('a').click()
+        await forRequest()
+        transitioned.should.be.true
+    })
+
     it('hx-boost true still works as before', async function() {
         mockResponse('GET', '/test', 'Clicked')
         createProcessedHTML('<div id="result"></div><a hx-boost="true" hx-target="#result" id="a1" href="/test">Click Me</a>')

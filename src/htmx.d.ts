@@ -120,28 +120,36 @@ export interface HtmxConfig {
   defaultSwapEmpty?: boolean;
 }
 
-/** Context object passed to `htmx.swap()` */
-export interface HtmxSwapContext {
-  /** HTML string to swap into the DOM */
-  text: string;
-  /** Element that triggered the swap — used for history and event firing */
-  sourceElement?: Element;
-  /** Swap style (e.g. `'innerHTML'`, `'outerHTML'`). Defaults to `htmx.config.defaultSwap` */
-  swap?: string;
-  /** CSS selector to extract content from the response */
+export interface HtmxSwap {
+  /** HTML content to swap. */
+  content?: string;
+  /** Target selector or element. */
+  target?: string | Element;
+  /** Swap style (e.g. `'innerHTML'`, `'outerHTML'`). */
+  style?: string;
+  /** CSS selector to extract content from the response. */
   select?: string;
-  /** Selector for out-of-band swaps */
+  /** Selector for out-of-band swaps. */
   selectOOB?: string;
-  /** Target element to swap into. Defaults to `document.body` */
-  target?: Element;
-  /** Whether to use the View Transitions API for this swap */
+  /** Whether to use the View Transitions API. */
   transition?: boolean;
-  /** `hx-push-url` value — push a URL into history after the swap */
-  push?: string | boolean;
-  /** `hx-replace-url` value — replace the current history entry after the swap */
-  replace?: string | boolean;
-  /** URL fragment to scroll into view after the swap */
-  anchor?: string;
+  swapDelay?: string | number;
+  settleDelay?: string | number;
+  scroll?: 'top' | 'bottom';
+  scrollTarget?: string;
+  show?: 'top' | 'bottom' | 'none';
+  showTarget?: string;
+  ignoreTitle?: boolean;
+  focusScroll?: boolean;
+  swapEmpty?: boolean;
+  strip?: boolean;
+}
+
+export interface HtmxSwapOptions extends HtmxSwap {
+  /** Serialized or structured swap specification. */
+  swap?: string | HtmxSwap;
+  /** Element used for relative selectors and lifecycle events. */
+  source?: Element | string;
 }
 
 export interface QProxy {
@@ -290,26 +298,17 @@ export interface HtmxRequestCtx {
   sourceElement: Element;
   /** Event that triggered the request */
   sourceEvent: Event | null;
-  /** Target element where the response will be swapped */
-  target: Element;
-  /** hx-select value */
-  select: string;
-  /** hx-select-oob value */
-  selectOOB: string;
-  /** hx-swap value */
-  swap: string;
-  /** hx-push-url value */
-  push: string | boolean;
-  /** hx-replace-url value */
-  replace: string | boolean;
-  /** Whether to use view transitions */
-  transition: boolean;
+  /** Swap fields */
+  swap: HtmxSwap;
+  /** History actions collected from request attributes */
+  actions: {
+    pushUrl?: string | boolean;
+    replaceUrl?: string | boolean;
+  };
   /** Fetch request options — modify here in htmx:config:request */
   request: HtmxRequestOptions;
   /** Response object, available after fetch resolves */
   response?: HtmxResponse;
-  /** Response body text, available during htmx:after:request */
-  text?: string;
 }
 
 /** History detail shared by htmx:before:history:update and htmx:after:history:update */
@@ -510,8 +509,8 @@ export interface HtmxEventMap {
 
 export type HtmxEvent<K extends keyof HtmxEventMap> = CustomEvent<HtmxEventMap[K]>;
 
-/** Context object accepted by `htmx.ajax()` */
-export interface HtmxAjaxContext {
+/** Options object accepted by `htmx.ajax()` */
+export interface HtmxAjaxOptions {
   /** Element to use as the request source (for headers, inheritance, etc.) */
   source?: Element | string;
   /** Event that triggered the request */
@@ -551,7 +550,7 @@ export interface Htmx {
    * htmx.ajax('GET', '/items', '#list')
    * htmx.ajax('POST', '/save', { target: '#result', swap: 'outerHTML' })
    */
-  ajax(verb: string, path: string, context?: Element | string | HtmxAjaxContext): Promise<void>;
+  ajax(verb: string, path: string, options?: Element | string | HtmxAjaxOptions): Promise<void>;
   /**
    * Find the first element matching `selector` in the document.
    */
@@ -622,7 +621,7 @@ export interface Htmx {
    * Perform an HTML content swap into the DOM.
    * Primarily used by extensions and advanced integrations — prefer `htmx.ajax()` for most use cases.
    */
-  swap(ctx: HtmxSwapContext): Promise<void>;
+  swap(content: string, target: Element | string, options?: string | HtmxSwapOptions): Promise<void>;
 }
 
 declare const htmx: Htmx;

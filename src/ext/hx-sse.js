@@ -256,10 +256,10 @@
                             continue;
                         }
 
-                        // Swap content using the ctx from core (target/swap already resolved)
-                        ctx.text = detail.message.data;
-                        if (!ctx.swap.includes('swapEmpty')) ctx.swap += ' swapEmpty:false';
-                        await htmx.swap(ctx);
+                        ctx.swap.content = detail.message.data;
+                        ctx.swap.swapEmpty ??= false;
+                        let {content, target, ...options} = ctx.swap;
+                        await htmx.swap(content, target, {...options, source: ctx.sourceElement});
                         delete detail.message.cancelled;
                         api.triggerHtmxEvent(element, 'htmx:after:sse:message', detail);
                     }

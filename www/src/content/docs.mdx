@@ -677,8 +677,9 @@ All hooks receive `detail.ctx` with full request/response context:
 - `detail.ctx.request.body` (FormData in `htmx_config_request`)
 - `detail.ctx.request.headers` (plain mutable object)
 - `detail.ctx.response.status`
-- `detail.ctx.text` (response body, modifiable in `htmx_after_request`)
-- `detail.ctx.target`
+- `detail.ctx.swap.content` (response body, modifiable in `htmx_after_request`)
+- `detail.ctx.swap.target`
+- `detail.ctx.swap.style`
 
 ##### OOB swap stripping
 
@@ -746,7 +747,7 @@ htmx_before_swap: (elt, detail) => {
     if (detail.ctx.response.status !== 200) {
         var target = getRespCodeTarget(elt, detail.ctx.response.status);
         if (target) {
-            detail.ctx.target = target;
+            detail.ctx.swap.target = target;
         }
     }
 }
@@ -754,7 +755,7 @@ htmx_before_swap: (elt, detail) => {
 
 ##### `transformResponse`
 
-Removed. Modify `detail.ctx.text` in `htmx_after_request`:
+Removed. Modify `detail.ctx.swap.content` in `htmx_after_request`:
 
 ```javascript
 // htmx 2.x
@@ -772,14 +773,14 @@ transformResponse: function(text, xhr, elt) {
 htmx_after_request: (elt, detail) => {
     var tpl = elt.closest('[mustache-template]');
     if (tpl) {
-        var data = JSON.parse(detail.ctx.text);
+        var data = JSON.parse(detail.ctx.swap.content);
         var template = document.querySelector('#' + tpl.getAttribute('mustache-template'));
-        detail.ctx.text = Mustache.render(template.innerHTML, data);
+        detail.ctx.swap.content = Mustache.render(template.innerHTML, data);
     }
 }
 ```
 
-Event flow: response received, `ctx.text` set, `htmx:after:request` fires, `ctx.text` consumed into fragment, `htmx:before:swap`.
+Event flow: response received, `ctx.swap.content` set, `htmx:after:request` fires, content consumed into a fragment, `htmx:before:swap`.
 
 ##### `encodeParameters`
 
@@ -857,7 +858,7 @@ Return truthy if handled, falsy otherwise. Can return an array of elements for s
 |-----------------------------------------|---------------------------------------------------------------|
 | `getSelectors()`                        | `htmx_after_init` hook                                        |
 | `onEvent(name, evt)`                    | Individual `htmx_*` hooks                                     |
-| `transformResponse(text, xhr, elt)`     | `htmx_after_request` hook (modify `detail.ctx.text`)          |
+| `transformResponse(text, xhr, elt)`     | `htmx_after_request` hook (modify `detail.ctx.swap.content`)  |
 | `encodeParameters(xhr, params, elt)`    | `htmx_before_request` hook (modify final `detail.ctx.request.body`) |
 | `isInlineSwap(swapStyle)`               | `handle_swap` or name swap style with "outer" prefix          |
 | `handleSwap(style, target, frag, info)` | `handle_swap(style, target, frag, spec)`                      |

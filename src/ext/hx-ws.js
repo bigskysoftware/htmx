@@ -525,17 +525,16 @@
         if (html != null) {
             let target = json?.target || api.attributeValue(element, 'hx-target');
             let swap = json?.swap || api.attributeValue(element, 'hx-swap') || htmx.config.defaultSwap;
-            if (!/(?:^|\s)swapEmpty(?::(?:true|false))?(?=\s|$)/.test(swap)) swap += ' swapEmpty:false';
-
-            htmx.swap({
-                sourceElement: element,
-                target: target || element,
+            let options = {
                 swap,
                 select: json?.select ?? api.attributeValue(element, 'hx-select'),
                 selectOOB: api.attributeValue(element, 'hx-select-oob'),
-                text: html,
+                source: element,
                 transition: false
-            });
+            };
+            if (!/(?:^|\s)swapEmpty(?::(?:true|false))?(?=\s|$)/.test(swap)) options.swapEmpty = false;
+
+            htmx.swap(html, target || element, options);
         }
 
         api.triggerHtmxEvent(element, 'htmx:ws:after:message:incoming', {message});

@@ -172,7 +172,7 @@ describe('process() unit tests', function() {
         let events = []
         div.addEventListener('htmx:before:cleanup', (e) => events.push('before:' + e.target.id))
         div.addEventListener('htmx:after:cleanup', (e) => events.push('after:' + e.target.id))
-        await htmx.swap({target: '#target', text: '<p>replaced</p>', swap: 'innerHTML', sourceElement: div})
+        await htmx.swap('<p>replaced</p>', '#target', {style: "innerHTML", source: div})
         assert.deepEqual(events, ['before:parent', 'after:parent', 'before:child', 'after:child'])
     })
 
@@ -183,7 +183,7 @@ describe('process() unit tests', function() {
         div.addEventListener('htmx:before:cleanup', (e) => {
             counts[e.target.id] = (counts[e.target.id] || 0) + 1
         })
-        await htmx.swap({target: '#target', text: '<p>replaced</p>', swap: 'innerHTML', sourceElement: div})
+        await htmx.swap('<p>replaced</p>', '#target', {style: "innerHTML", source: div})
         assert.equal(counts['gp'], 1, 'grandparent cleaned once')
         assert.equal(counts['p'], 1, 'parent cleaned once')
         assert.equal(counts['c'], 1, 'child cleaned once')

@@ -169,21 +169,19 @@
         let cachedHTML = item.content;
         let restoreSwapTarget = getHistoryTarget();
         let restoreSwapStyle = cfg().swapStyle;
-        let ctx = {
-            sourceElement: document.body,
-            target: restoreSwapTarget,
-            swap: restoreSwapStyle,
-            text: cachedHTML,
-            transition: false,
-            _deferredHeadScripts: detail._deferredHeadScripts
-        };
-        await htmx.swap(ctx);
+
+        await htmx.swap(cachedHTML, restoreSwapTarget, {
+            source: document.body,
+            style: restoreSwapStyle,
+            transition: false
+        });
 
         document.title = item.title || document.title;
         requestAnimationFrame(() => {
             window.scrollTo(0, item.scroll || 0);
             restoreAnnotations(getHistoryTarget());
-            api.triggerHtmxEvent(document, 'htmx:history:cache:after:restore', { item });
+            detail.item = item;
+            api.triggerHtmxEvent(document, 'htmx:history:cache:after:restore', detail);
         });
     }
 

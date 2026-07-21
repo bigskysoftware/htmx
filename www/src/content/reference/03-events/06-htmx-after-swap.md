@@ -17,7 +17,7 @@ Immediately after the DOM swap operation completes, before elements are processe
 
 ```javascript
 htmx.on('htmx:after:swap', (evt) => {
-  console.log('Content swapped into:', evt.detail.ctx.target);
+  console.log('Content swapped into:', evt.detail.ctx.swap.target);
   // Initialize widgets, scroll to position, etc.
 });
 ```

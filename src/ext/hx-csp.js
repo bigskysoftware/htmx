@@ -177,7 +177,7 @@
 
             // Always scrub stolen pageNonce from any response — the server cannot know the
             // page nonce, so its presence indicates a stolen-nonce injection attempt.
-            ctx.text = rewriteNoncesInText(ctx.text, pageNonce, '');
+            ctx.swap.content = rewriteNoncesInText(ctx.swap.content, pageNonce, '');
 
             // Only promote response nonce for verified same-origin responses
             let responseURL = ctx?.response?.raw?.url;
@@ -186,9 +186,9 @@
             catch (_) { return; }
 
             let responseNonce = extractNonceFromCSP(ctx?.response?.headers?.get('Content-Security-Policy'))
-                             ?? extractNonceFromMetaTag(ctx?.text);
+                             ?? extractNonceFromMetaTag(ctx.swap.content);
             if (responseNonce && responseNonce !== pageNonce) {
-                ctx.text = rewriteNoncesInText(ctx.text, responseNonce);
+                ctx.swap.content = rewriteNoncesInText(ctx.swap.content, responseNonce);
             }
         },
 

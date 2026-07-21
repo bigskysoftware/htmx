@@ -249,10 +249,10 @@ describe('Morph Swap Styles Tests', function() {
         it('does not re-execute identical script tags during morph', async function() {
             window._scriptMorphCount = 0;
             createProcessedHTML('<div id="target"></div>');
-            await htmx.swap({target: '#target', text: '<script>window._scriptMorphCount++<\/script><div id="content">original</div>', swap: 'innerHTML'});
+            await htmx.swap('<script>window._scriptMorphCount++<\/script><div id="content">original</div>', '#target', {style: "innerHTML"});
             assert.equal(window._scriptMorphCount, 1, 'Script should run once after initial swap');
 
-            await htmx.swap({target: '#target', text: '<script>window._scriptMorphCount++<\/script><div id="content">updated</div>', swap: 'innerMorph'});
+            await htmx.swap('<script>window._scriptMorphCount++<\/script><div id="content">updated</div>', '#target', {style: "innerMorph"});
 
             assert.equal(window._scriptMorphCount, 1, 'Identical script should not re-execute after morph');
             delete window._scriptMorphCount;
@@ -261,10 +261,10 @@ describe('Morph Swap Styles Tests', function() {
         it('executes changed script tags once when replaced during morph', async function() {
             window._scriptMorphCount = 0;
             createProcessedHTML('<div id="target"></div>');
-            await htmx.swap({target: '#target', text: '<script>window._scriptMorphCount++<\/script>', swap: 'innerHTML'});
+            await htmx.swap('<script>window._scriptMorphCount++<\/script>', '#target', {style: "innerHTML"});
             assert.equal(window._scriptMorphCount, 1, 'Original script should run once after initial swap');
 
-            await htmx.swap({target: '#target', text: '<script>window._scriptMorphCount += 10<\/script>', swap: 'innerMorph'});
+            await htmx.swap('<script>window._scriptMorphCount += 10<\/script>', '#target', {style: "innerMorph"});
 
             assert.equal(window._scriptMorphCount, 11, 'Changed script should execute exactly once after morph');
             delete window._scriptMorphCount;
@@ -355,12 +355,7 @@ describe('Morph Swap Styles Tests', function() {
             input.value = 'hello';
             input.focus();
 
-            await htmx.swap({
-                target: '#target',
-                text: '<div class="error">Required</div><input name="q" placeholder="Search"><div class="info">hint</div>',
-                swap: 'innerMorph',
-                sourceElement: div
-            });
+            await htmx.swap('<div class="error">Required</div><input name="q" placeholder="Search"><div class="info">hint</div>', '#target', {style: "innerMorph", source: div});
 
             assert.isNotNull(div.querySelector('.error'), 'error div should be inserted');
             assert.equal(div.querySelector('input[name=q]'), input, 'focused input node should be preserved');
@@ -378,12 +373,7 @@ describe('Morph Swap Styles Tests', function() {
             emailInput.value = 'alice@example.com';
             btn.focus();
 
-            await htmx.swap({
-                target: '#target',
-                text: '<input name="name"><input name="email">',
-                swap: 'innerMorph',
-                sourceElement: div
-            });
+            await htmx.swap('<input name="name"><input name="email">', '#target', {style: "innerMorph", source: div});
 
             assert.equal(div.querySelector('input[name=name]'), nameInput, 'name input node should be reused');
             assert.equal(div.querySelector('input[name=email]'), emailInput, 'email input node should be reused');
@@ -529,7 +519,7 @@ describe('Morph Swap Styles Tests', function() {
             mockResponse('GET', '/dynamic', 'fetched');
             const div = createProcessedHTML('<div id="target"><div id="child"><p>static</p></div></div>');
 
-            await htmx.swap({target: '#target', text: '<div id="child" hx-get="/dynamic" hx-trigger="click" hx-swap="innerHTML"><p>now interactive</p></div>', swap: 'innerMorph', sourceElement: div});
+            await htmx.swap('<div id="child" hx-get="/dynamic" hx-trigger="click" hx-swap="innerHTML"><p>now interactive</p></div>', '#target', {style: "innerMorph", source: div});
 
             const child = div.querySelector('#child');
             assert.isNotNull(child._htmx?.initialized, 'child should be initialized');
@@ -544,7 +534,7 @@ describe('Morph Swap Styles Tests', function() {
             const child = div.querySelector('#child');
             assert.isNotNull(child._htmx?.initialized, 'child should start initialized');
 
-            await htmx.swap({target: '#target', text: '<div id="child">no longer interactive</div>', swap: 'innerMorph', sourceElement: div});
+            await htmx.swap('<div id="child">no longer interactive</div>', '#target', {style: "innerMorph", source: div});
 
             assert.isNull(child.getAttribute('hx-get'), 'hx-get should be removed');
             let requestFired = false;
@@ -560,7 +550,7 @@ describe('Morph Swap Styles Tests', function() {
             mockResponse('GET', '/endpoint', 'response');
             const div = createProcessedHTML('<div id="target"><div id="child" hx-get="/endpoint" hx-trigger="click" hx-swap="innerHTML">original</div></div>');
 
-            await htmx.swap({target: '#target', text: '<div id="child" hx-get="/endpoint" hx-trigger="mousedown" hx-swap="innerHTML">updated</div>', swap: 'innerMorph', sourceElement: div});
+            await htmx.swap('<div id="child" hx-get="/endpoint" hx-trigger="mousedown" hx-swap="innerHTML">updated</div>', '#target', {style: "innerMorph", source: div});
 
             const child = div.querySelector('#child');
             assert.equal(child.getAttribute('hx-trigger'), 'mousedown');

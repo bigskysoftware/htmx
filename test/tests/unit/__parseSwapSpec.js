@@ -16,10 +16,11 @@ describe('__parseSwapSpec unit tests', function() {
         assert.equal(htmx.__parseSwapSpec('after').style, 'afterend')
     })
 
-    it('parses swap delay modifier', function () {
-        let spec = htmx.__parseSwapSpec('innerHTML swap:100ms')
+    it('parses delay modifiers', function () {
+        let spec = htmx.__parseSwapSpec('innerHTML swap:100ms settle:50ms')
         assert.equal(spec.style, 'innerHTML')
-        assert.equal(spec.swap, '100ms')
+        assert.equal(spec.swapDelay, '100ms')
+        assert.equal(spec.settleDelay, '50ms')
     })
 
     it('parses transition modifier', function () {
@@ -75,19 +76,27 @@ describe('__parseSwapSpec unit tests', function() {
     it('parses multiple modifiers', function () {
         let spec = htmx.__parseSwapSpec('innerHTML swap:100ms transition:true')
         assert.equal(spec.style, 'innerHTML')
-        assert.equal(spec.swap, '100ms')
+        assert.equal(spec.swapDelay, '100ms')
         assert.equal(spec.transition, true)
     })
 
-    it('uses default swap when empty', function () {
-        let spec = htmx.__parseSwapSpec('')
-        assert.equal(spec.style, htmx.config.defaultSwap)
+    // The parser currently hides config.defaultSwap inside otherwise partial results.
+    // Leave defaults to callers so parsed swap layers compose predictably.
+    it('does not apply an implicit style', function () {
+        assert.deepEqual(htmx.__parseSwapSpec(''), {})
+        assert.deepEqual(htmx.__parseSwapSpec('transition:true'), {transition: true})
+    })
+
+    it('accepts structured swap fields', function () {
+        let swap = {style: 'outerHTML', settleDelay: '200ms'}
+        assert.deepEqual(htmx.__parseSwapSpec(swap), swap)
+        assert.notStrictEqual(htmx.__parseSwapSpec(swap), swap)
     })
 
     it('parses legacy style names with modifiers', function () {
         let spec = htmx.__parseSwapSpec('prepend swap:10ms')
         assert.equal(spec.style, 'afterbegin')
-        assert.equal(spec.swap, '10ms')
+        assert.equal(spec.swapDelay, '10ms')
     })
 
 });

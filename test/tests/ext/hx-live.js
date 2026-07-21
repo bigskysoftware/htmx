@@ -1962,12 +1962,11 @@ describe('hx-live extension', function () {
 
             // outerMorph the element with a changed hx-live expression — morph will
             // detect the attribute change, cleanup the old registration, and re-process.
-            await htmx.swap({
-                target: '#wrap',
-                text: '<div id="wrap"><output id="o" hx-live="window.__morphLiveCount += 10"></output></div>',
-                swap: 'outerMorph',
-                sourceElement: playground()
-            });
+            await htmx.swap(
+                '<div id="wrap"><output id="o" hx-live="window.__morphLiveCount += 10"></output></div>',
+                '#wrap',
+                { style: 'outerMorph', source: playground() }
+            )
             await htmx.timeout(5);
 
             // Should have incremented by 10 (new code), not 1 (old code).
@@ -1984,12 +1983,11 @@ describe('hx-live extension', function () {
             await htmx.timeout(5);
 
             // outerMorph to a version with hx-live removed — morph cleans up the old fn.
-            await htmx.swap({
-                target: '#wrap',
-                text: '<div id="wrap"><output id="o"></output></div>',
-                swap: 'outerMorph',
-                sourceElement: playground()
-            });
+            await htmx.swap(
+                '<div id="wrap"><output id="o"></output></div>',
+                '#wrap',
+                { style: 'outerMorph', source: playground() }
+            )
 
             let countAfterMorph = window.__morphRemovedCount;
             // Trigger a recompute cycle — the old fn should no longer be in fns.
@@ -2008,12 +2006,11 @@ describe('hx-live extension', function () {
             await htmx.timeout(5);
             playground().querySelector('#o').textContent.should.equal('original');
 
-            await htmx.swap({
-                target: '#wrap',
-                text: '<div id="wrap"><output id="o" :text="\'updated\'"></output></div>',
-                swap: 'outerMorph',
-                sourceElement: playground()
-            });
+            await htmx.swap(
+                '<div id="wrap"><output id="o" :text="\'updated\'"></output></div>',
+                '#wrap',
+                { style: 'outerMorph', source: playground() }
+            )
             await htmx.timeout(5);
 
             playground().querySelector('#o').textContent.should.equal('updated');
@@ -2024,12 +2021,11 @@ describe('hx-live extension', function () {
             htmx.process(playground());
             await htmx.timeout(5);
 
-            await htmx.swap({
-                target: '#wrap',
-                text: '<div id="wrap"><output id="o" :text="\'hello\'" :data-extra="\'added\'"></output></div>',
-                swap: 'outerMorph',
-                sourceElement: playground()
-            });
+            await htmx.swap(
+                '<div id="wrap"><output id="o" :text="\'hello\'" :data-extra="\'added\'"></output></div>',
+                '#wrap',
+                { style: 'outerMorph', source: playground() }
+            )
             await htmx.timeout(5);
 
             playground().querySelector('#o').dataset.extra.should.equal('added');
@@ -2041,12 +2037,11 @@ describe('hx-live extension', function () {
             htmx.process(playground());
             await htmx.timeout(5);
 
-            await htmx.swap({
-                target: '#wrap',
-                text: '<div id="wrap"><output id="o"></output></div>',
-                swap: 'outerMorph',
-                sourceElement: playground()
-            });
+            await htmx.swap(
+                '<div id="wrap"><output id="o"></output></div>',
+                '#wrap',
+                { style: 'outerMorph', source: playground() }
+            )
 
             let countAfterMorph = window.__morphAttrCount;
             document.body.setAttribute('data-morph-attr-trigger', '1');
@@ -2066,12 +2061,11 @@ describe('hx-live extension', function () {
 
             // 3 morph cycles with identical content — each should cleanup and re-register once.
             for (let i = 0; i < 3; i++) {
-                await htmx.swap({
-                    target: '#wrap',
-                    text: '<div id="wrap"><output id="o" :data-v="(window.__morphMultiCount++, \'x\')"></output></div>',
-                    swap: 'outerMorph',
-                    sourceElement: playground()
-                });
+                await htmx.swap(
+                    '<div id="wrap"><output id="o" :data-v="(window.__morphMultiCount++, \'x\')"></output></div>',
+                    '#wrap',
+                    { style: 'outerMorph', source: playground() }
+                )
                 await htmx.timeout(5);
             }
 

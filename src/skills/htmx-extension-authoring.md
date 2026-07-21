@@ -35,7 +35,7 @@ Extensions are global -- they apply page-wide, activated by custom attributes wh
 
         htmx_after_request: (elt, detail) => {
             // After request completes
-            // detail.ctx.text has response text
+            // detail.ctx.swap.content has response text
             // detail.ctx.response has status, headers
         },
 
@@ -178,13 +178,19 @@ The context object available via `detail.ctx` in hook callbacks:
     sourceElement,      // Element that triggered the request
     sourceEvent,        // The triggering DOM event
     status,             // Request status string
-    target,             // Target element for swap
-    swap,               // Swap strategy string
-    select,             // hx-select value
-    selectOOB,          // hx-select-oob value
-    push,               // hx-push-url value
-    replace,            // hx-replace-url value
-    transition,         // Whether view transitions enabled
+    swap: {
+        content,        // Response text (after request)
+        target,         // Target element
+        style,          // Swap strategy
+        select,         // hx-select value
+        selectOOB,      // hx-select-oob value
+        transition,     // Whether view transitions are enabled
+        ...modifiers,
+    },
+    actions: {
+        pushUrl,        // hx-push-url value
+        replaceUrl,     // hx-replace-url value
+    },
     request: {
         action,         // Request URL
         method,         // HTTP method (GET, POST, etc.)
@@ -202,14 +208,13 @@ The context object available via `detail.ctx` in hook callbacks:
         status,         // HTTP status code
         headers,        // Response headers
     },
-    text,               // Response text (after request)
     hx,                 // Parsed HX-* response headers
 }
 ```
 
 **Modifying the request:** Change `detail.ctx.request` properties in `htmx_config_request` or `htmx_before_request`.
 
-**Modifying the response:** Change `detail.ctx.text` in `htmx_after_request` (before swap).
+**Modifying the response:** Change `detail.ctx.swap.content` in `htmx_after_request` (before swap).
 
 **Overriding fetch:** Set `detail.ctx.fetch` to a function returning a Response or Promise<Response>.
 
@@ -326,7 +331,7 @@ Key patterns:
 |-----------|---------|-------|
 | `htmx.defineExtension()` | `htmx.registerExtension()` | Different function name |
 | `onEvent(name, evt)` | Specific hooks (`htmx_before_request`, etc.) | Use underscored hook names |
-| `transformResponse(text, xhr, elt)` | `htmx_after_request` | Modify `detail.ctx.text` |
+| `transformResponse(text, xhr, elt)` | `htmx_after_request` | Modify `detail.ctx.swap.content` |
 | `handleSwap(style, target, fragment)` | `handle_swap(style, target, fragment, swapSpec)` | Extra `swapSpec` param, return truthy |
 | `encodeParameters(xhr, params, elt)` | `htmx_before_request` | Modify the final `detail.ctx.request.body` and `.headers` |
 | `getSelectors()` | `htmx_after_init` | Check `api.attributeValue(elt, "attr")` instead |

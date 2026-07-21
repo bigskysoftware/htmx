@@ -6,6 +6,7 @@
 (function () {
 
     let api
+    let deferredHeadScripts = new WeakMap()
 
     // Appends a new head node, returning a promise for render-critical resources
     // (blocking scripts, stylesheets) or null for fire-and-forget resources.
@@ -157,31 +158,34 @@
         },
         htmx_before_response: (elt, detail) => {
             let ctx = detail.ctx
-            let target = ctx.target
+            let target = ctx.swap.target
             // TODO - is there a better way to handle this?  it used to be based on if the element was boosted
             let defaultMergeStrategy = target === document.body ? "merge" : "append";
             if (htmx.trigger(document.body, "htmx:before:head:merge", detail)) {
                 let realText = ctx.response.raw.text.bind(ctx.response.raw)
                 ctx.response.raw.text = async () => {
                     let text = await realText()
-                    ctx._deferredHeadScripts = await mergeHead(text, defaultMergeStrategy)
+                    deferredHeadScripts.set(ctx, await mergeHead(text, defaultMergeStrategy))
                     return text
                 }
             }
         },
         htmx_after_swap: (elt, detail) => {
-            for (const node of detail.ctx._deferredHeadScripts || []) appendNode(node)
+            let deferred = deferredHeadScripts.get(detail.ctx) || []
+            deferredHeadScripts.delete(detail.ctx)
+            for (const node of deferred) appendNode(node)
         },
         htmx_history_cache_before_restore: (elt, detail) => {
             if (detail.head) {
-                // mergeHead awaits stylesheets/blocking scripts, returns deferred scripts.
-                // Set detail.ready so history-cache awaits before swapping body.
-                // Stash deferred scripts on detail — history-cache copies them onto the swap ctx
-                // so htmx_after_swap picks them up.
                 detail.ready = mergeHead(detail.head, 'merge').then(deferred => {
-                    detail._deferredHeadScripts = deferred;
-                });
+                    deferredHeadScripts.set(detail, deferred)
+                })
             }
+        },
+        htmx_history_cache_after_restore: (elt, detail) => {
+            let deferred = deferredHeadScripts.get(detail) || []
+            deferredHeadScripts.delete(detail)
+            for (const node of deferred) appendNode(node)
         }
     })
 

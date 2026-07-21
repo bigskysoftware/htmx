@@ -34,7 +34,7 @@
                 return;
             }
             let cd = ctx.response.headers.get('Content-Disposition');
-            if (ctx.swap !== 'download' && !cd?.includes('attachment')) return;
+            if (ctx.swap.style !== 'download' && !cd?.includes('attachment')) return;
             streamDownload(ctx.sourceElement, ctx.response.raw, ctx.request.action);
             return false;
         }

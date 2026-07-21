@@ -240,8 +240,9 @@ Events expose `detail.ctx` with the full request context:
 document.body.addEventListener('htmx:config:request', (evt) => {
     let ctx = evt.detail.ctx;
     // ctx.sourceElement  -- element that triggered request
-    // ctx.target         -- swap target element
-    // ctx.swap           -- hx-swap value
+    // ctx.swap.target    -- swap target element
+    // ctx.swap.style     -- hx-swap style
+    // ctx.swap.content   -- response content
     // ctx.request.action -- URL
     // ctx.request.method -- HTTP method
     // ctx.request.headers -- headers object
@@ -444,7 +445,7 @@ htmx.process(element)                            // Initialize htmx on dynamic c
 htmx.find("closest .container")                  // Extended CSS selector query
 htmx.findAll(".items")                           // Find all matching
 htmx.trigger(elt, "myEvent", {detail: ...})      // Fire custom event
-htmx.swap(ctx)                                   // Manual swap
+htmx.swap(content, target, options)              // Manual swap
 htmx.timeout(1000)                               // Promise that resolves after delay
 htmx.live.take(elt, "active", ".tab")            // Take class — provided by hx-live
 htmx.live.forEvent(elt, "click", 5000)           // Race events/timeouts — provided by hx-live
@@ -627,7 +628,7 @@ Most error events (`htmx:sendError`, `htmx:swapError`, `htmx:targetError`, `htmx
 | `htmx.addClass()`, `htmx.removeClass()`, etc. | Native DOM methods          | Removed; use `element.classList` |
 | `htmx.off()`                                  | `removeEventListener()`     | Removed; use native              |
 | `htmx.remove()`                               | `element.remove()`          | Removed; use native              |
-| `htmx.swap(target, content, spec)`            | `htmx.swap(ctx)`            | Signature changed                |
+| `htmx.swap(target, content, spec)`            | `htmx.swap(content, target, options)` | Signature changed          |
 
 htmx 4 adds: `htmx.timeout()`. Logging now goes directly to `console.error` / `console.warn` / `console.log` (gated by `config.logAll` for events). `htmx.takeClass()` is **removed**; use `htmx.live.take()` (provided by the `hx-live` extension) or the unprefixed `take` helper inside expression scope. The `hx-live` extension also exposes `htmx.live.forEvent()`, `htmx.live.nextFrame()`, `htmx.live.q()`, `htmx.live.debounce()`, `htmx.live.refresh()`.
 

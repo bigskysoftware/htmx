@@ -183,12 +183,11 @@ describe('outerSync swap into document.body', function() {
 
     it('syncs body attributes from response and replaces children', async function() {
         document.body.setAttribute('data-original', 'yes');
-        await htmx.swap({
-            target: document.body,
-            swap: 'outerSync',
-            text: '<html><body class="injected" data-test-x="1"><div id="bodyswap-marker"></div></body></html>',
-            sourceElement: document.body
-        });
+        await htmx.swap(
+            '<html><body class="injected" data-test-x="1"><div id="bodyswap-marker"></div></body></html>',
+            document.body,
+            { style: 'outerSync', source: document.body }
+        )
         document.body.classList.contains('injected').should.equal(true);
         document.body.getAttribute('data-test-x').should.equal('1');
         (document.body.getAttribute('data-original') === null).should.equal(true);
@@ -197,12 +196,11 @@ describe('outerSync swap into document.body', function() {
 
     it('outerHTML on body auto-upgrades to outerSync and syncs attributes', async function() {
         document.body.setAttribute('data-original', 'yes');
-        await htmx.swap({
-            target: document.body,
-            swap: 'outerHTML',
-            text: '<html><body class="injected" data-test-x="1"><div id="bodyswap-marker"></div></body></html>',
-            sourceElement: document.body
-        });
+        await htmx.swap(
+            '<html><body class="injected" data-test-x="1"><div id="bodyswap-marker"></div></body></html>',
+            document.body,
+            { style: 'outerHTML', source: document.body }
+        )
         document.body.classList.contains('injected').should.equal(true);
         document.body.getAttribute('data-test-x').should.equal('1');
         (document.body.getAttribute('data-original') === null).should.equal(true);
@@ -217,12 +215,11 @@ describe('full-page response strip auto-upgrade', function() {
 
     it('innerHTML on full-page response strips body wrapper', async function() {
         playground().innerHTML = '<div id="target">old</div>';
-        await htmx.swap({
-            target: '#target',
-            swap: 'innerHTML',
-            text: '<html><body><span id="new-child">new</span></body></html>',
-            sourceElement: playground()
-        });
+        await htmx.swap(
+            '<html><body><span id="new-child">new</span></body></html>',
+            '#target',
+            { style: 'innerHTML', source: playground() }
+        )
         let target = playground().querySelector('#target');
         target.should.not.equal(null);
         (target.querySelector('body') === null).should.equal(true);
@@ -232,12 +229,11 @@ describe('full-page response strip auto-upgrade', function() {
 
     it('innerMorph on full-page response strips body wrapper', async function() {
         playground().innerHTML = '<div id="target"><span id="orig">old</span></div>';
-        await htmx.swap({
-            target: '#target',
-            swap: 'innerMorph',
-            text: '<html><body><span id="new-child">new</span></body></html>',
-            sourceElement: playground()
-        });
+        await htmx.swap(
+            '<html><body><span id="new-child">new</span></body></html>',
+            '#target',
+            { style: 'innerMorph', source: playground() }
+        )
         let target = playground().querySelector('#target');
         target.should.not.equal(null);
         (target.querySelector('body') === null).should.equal(true);
@@ -246,12 +242,11 @@ describe('full-page response strip auto-upgrade', function() {
 
     it('beforeend on full-page response strips body wrapper', async function() {
         playground().innerHTML = '<div id="target"><span id="orig">old</span></div>';
-        await htmx.swap({
-            target: '#target',
-            swap: 'beforeend',
-            text: '<html><body><span id="appended">added</span></body></html>',
-            sourceElement: playground()
-        });
+        await htmx.swap(
+            '<html><body><span id="appended">added</span></body></html>',
+            '#target',
+            { style: 'beforeend', source: playground() }
+        )
         let target = playground().querySelector('#target');
         (target.querySelector('body') === null).should.equal(true);
         target.querySelector('#orig').should.not.equal(null);
@@ -260,12 +255,11 @@ describe('full-page response strip auto-upgrade', function() {
 
     it('partial response is unaffected by strip auto-upgrade', async function() {
         playground().innerHTML = '<div id="target">old</div>';
-        await htmx.swap({
-            target: '#target',
-            swap: 'innerHTML',
-            text: '<span id="partial-child">partial</span>',
-            sourceElement: playground()
-        });
+        await htmx.swap(
+            '<span id="partial-child">partial</span>',
+            '#target',
+            { style: 'innerHTML', source: playground() }
+        )
         let target = playground().querySelector('#target');
         target.querySelector('#partial-child').should.not.equal(null);
         target.querySelector('#partial-child').textContent.should.equal('partial');
@@ -285,12 +279,11 @@ describe('outerSync processes inserted nodes correctly', function() {
 
         let target = createProcessedHTML('<div id="sync-target"><p>old content</p></div>');
 
-        await htmx.swap({
-            target: '#sync-target',
-            swap: 'outerSync',
-            text: '<html><body><div id="sync-target"><span id="load-elt" hx-get="/load-target" hx-trigger="load" hx-swap="innerHTML">loading...</span></div></body></html>',
-            sourceElement: target
-        });
+        await htmx.swap(
+            '<html><body><div id="sync-target"><span id="load-elt" hx-get="/load-target" hx-trigger="load" hx-swap="innerHTML">loading...</span></div></body></html>',
+            '#sync-target',
+            { style: 'outerSync', source: target }
+        )
 
         // The load trigger should have fired and issued a request
         await forRequest();
@@ -303,12 +296,11 @@ describe('outerSync processes inserted nodes correctly', function() {
     it('initializes htmx attributes on nodes inserted via outerSync', async function() {
         let target = createProcessedHTML('<div id="sync-target"><p>old</p></div>');
 
-        await htmx.swap({
-            target: '#sync-target',
-            swap: 'outerSync',
-            text: '<html><body><div id="sync-target"><button id="btn" hx-get="/test" hx-swap="innerHTML">click</button></div></body></html>',
-            sourceElement: target
-        });
+        await htmx.swap(
+            '<html><body><div id="sync-target"><button id="btn" hx-get="/test" hx-swap="innerHTML">click</button></div></body></html>',
+            '#sync-target',
+            { style: 'outerSync', source: target }
+        )
 
         let btn = document.getElementById('btn');
         btn.should.not.equal(null);

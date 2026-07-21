@@ -3,147 +3,146 @@ title: "htmx.swap()"
 description: "Swaps HTML content"
 ---
 
-Use `htmx.swap()` to run the swap lifecycle without issuing a request.
-
-```javascript
-await htmx.swap({
-  text: '<p>Done</p>',
-  target: '#result'
-})
-```
-
-htmx swaps the content into `#result` with the default swap style.
-
-For requests, use [`htmx.ajax()`](/reference/methods/htmx-ajax).
+The `htmx.swap()` function runs the swap lifecycle without issuing a request.
 
 ## Syntax
 
 ```javascript
-htmx.swap(ctx)
+htmx.swap(content, target)
+htmx.swap(content, target, swap)
+htmx.swap(content, target, options)
 ```
-
-Set the content, target, and swap style in the context:
 
 ```javascript
-await htmx.swap({
-  text: '<p>Done</p>',
-  target: '#result',
-  swap: 'outerHTML transition:true'
-})
+// Default swap
+await htmx.swap('<p>Done</p>', '#result')
+
+// Serialized swap
+await htmx.swap(
+  '<p>Done</p>',
+  '#result',
+  'outerHTML transition:true'
+)
+
+// Structured swap
+await htmx.swap(
+  '<p>Done</p>',
+  '#result',
+  {
+    style: 'outerHTML',
+    transition: true
+  }
+)
 ```
 
-## Context
+## Parameters
 
-### `text`
+### `content`
 
 The HTML string to swap.
 
 ```javascript
-await htmx.swap({
-  text: '<strong>Saved</strong>',
-  target: '#status'
-})
+await htmx.swap('<strong>Saved</strong>', '#status')
 ```
 
 ### `target`
 
-The target element or selector. It defaults to `document.body`.
+The target element or selector.
 
 ```javascript
-await htmx.swap({
-  text: 'Saved',
-  target: document.querySelector('#status')
-})
-```
-
-```javascript
-await htmx.swap({
-  text: 'Saved',
-  target: '#status'
-})
+await htmx.swap('Done', document.querySelector('#status'))
+await htmx.swap('Done', '#status')
 ```
 
 ### `swap`
 
-A serialized [`hx-swap`](/reference/attributes/hx-swap) value.
+A serialized [`hx-swap`](/reference/attributes/hx-swap) specification.
 
 ```javascript
-await htmx.swap({
-  text: 'Saved',
-  target: '#status',
-  swap: 'innerHTML transition:true settle:100ms'
+await htmx.swap(
+  'Done',
+  '#status',
+  'innerHTML transition:true settle:100ms'
+)
+```
+
+### `options`
+
+An object with structured swap fields.
+
+```javascript
+await htmx.swap('Done', '#status', {
+  style: 'innerHTML',
+  transition: true,
+  settleDelay: '100ms'
 })
 ```
 
-It defaults to [`htmx.config.defaultSwap`](/reference/config/htmx-config-defaultSwap).
+Use `swap` to combine serialized or structured swap input with other options:
 
-### Other Fields
+```javascript
+await htmx.swap('Done', '#status', {
+  swap: 'innerHTML transition:true',
+  source: '#save'
+})
+```
 
-| Field | Description |
-|---|---|
-| `sourceElement` | Element used for relative selectors and swap events |
-| `select` | Content selected from `text` |
-| `selectOOB` | Out-of-band content selected from `text` |
-| `transition` | Whether to use a view transition |
+Flat swap fields override fields from `swap`.
 
-## Set the Source
+Supported fields:
 
-Set `sourceElement` when a target or swap modifier uses a relative selector:
+- `swap` - Serialized or structured swap input
+- `style`
+- [`select`](/reference/attributes/hx-select)
+- [`selectOOB`](/reference/attributes/hx-select-oob)
+- `transition`
+- `swapDelay`
+- `settleDelay`
+- Other [`hx-swap` modifiers](/reference/attributes/hx-swap)
+- `source`
+
+## Source
+
+Pass `source` when the swap needs an element for relative selectors or lifecycle events.
 
 ```javascript
 let button = document.querySelector('#save')
 
-await htmx.swap({
-  text: 'Saved',
-  target: 'closest .result',
-  sourceElement: button
+await htmx.swap('Saved', 'closest .result', {
+  swap: 'innerHTML transition:true',
+  source: button
 })
 ```
 
-The source element also receives swap lifecycle events.
-
-## Select Response Content
-
-Use `select` to swap part of the content:
-
-```javascript
-await htmx.swap({
-  text: '<p id="message">Saved</p><p>Ignored</p>',
-  target: '#status',
-  select: '#message'
-})
-```
-
-Use `selectOOB` for [out-of-band content](/reference/attributes/hx-select-oob).
+`source` accepts an element or selector. If omitted, the resolved target becomes the source.
 
 ## Events
 
 `htmx.swap()` fires:
 
 - [`htmx:before:swap`](/reference/events/htmx-before-swap)
-- [`htmx:before:settle`](/reference/events/htmx-before-settle)
-- [`htmx:after:settle`](/reference/events/htmx-after-settle)
 - [`htmx:after:swap`](/reference/events/htmx-after-swap)
 - [`htmx:finally:swap`](/reference/events/htmx-finally-swap)
+- [`htmx:before:settle`](/reference/events/htmx-before-settle)
+- [`htmx:after:settle`](/reference/events/htmx-after-settle)
 
-Swap events fire on `sourceElement`. Settle events fire on each swap target.
+Swap events fire on `source`. Settle events fire on the swap target.
 
 ## Return Value
 
-`htmx.swap()` returns a `Promise` that resolves after the swap finishes.
+Returns a `Promise` that resolves after the swap finishes.
 
 ```javascript
-await htmx.swap({
-  text: 'Saved',
-  target: '#result'
-})
+await htmx.swap('Saved', '#result')
 console.log('Swap complete')
 ```
 
 ## Notes
 
-- `htmx.swap()` processes main, out-of-band, and `<hx-partial>` content.
+- `content` and `target` come from the positional arguments.
+- `source` is public input. Events expose it as `ctx.sourceElement`.
 - `htmx.swap()` does not issue a request.
+- `htmx.swap()` does not run response actions or update history.
 
 ## See Also
 
