@@ -1,3 +1,63 @@
+function token(value, color) {
+    return {
+        type: 'element',
+        tagName: 'span',
+        properties: {style: `color:var(${color})`},
+        children: [{type: 'text', value}]
+    };
+}
+
+/**
+ * Keep repeated multipart boundaries and headers readable after the first body.
+ * The HTTP grammar otherwise treats the rest of the response as plain text.
+ */
+export const multipartHttpTransformer = {
+    name: 'multipart-http',
+    line(node, line) {
+        if (this.options.lang !== 'http') return;
+
+        let text = this.source.split('\n')[line - 1];
+        let status = text.match(/^(HTTP\/\d(?:\.\d)?)(\s+)(\d{3}(?:\s+.*)?)$/);
+        if (status) {
+            node.children = [
+                token(status[1], '--astro-code-token-string-expression'),
+                token(status[2], '--astro-code-foreground'),
+                token(status[3], status[3][0] === '2' ? '--astro-code-token-string' : '--astro-code-token-constant')
+            ];
+            return;
+        }
+
+        if (!/^Content-Type:\s*multipart\//mi.test(this.source)) return;
+
+        if (/^--[^\s]+$/.test(text)) {
+            node.children = [token(text, '--astro-code-token-punctuation')];
+            return;
+        }
+
+        let contentType = text.match(/^(Content-Type)(:)(.*\bboundary\s*=\s*)(?:"([^"]+)"|([^;\s]+))(.*)$/i);
+        if (contentType) {
+            let quoted = contentType[4] !== undefined;
+            node.children = [
+                token(contentType[1], '--astro-code-token-string-expression'),
+                token(contentType[2], '--astro-code-token-keyword'),
+                token(contentType[3] + (quoted ? '"' : ''), '--astro-code-token-string'),
+                token(contentType[4] ?? contentType[5], '--astro-code-token-punctuation'),
+                token((quoted ? '"' : '') + contentType[6], '--astro-code-token-string')
+            ];
+            return;
+        }
+
+        let header = text.match(/^([A-Za-z][A-Za-z0-9-]*)(:)(.*)$/);
+        if (header) {
+            node.children = [
+                token(header[1], '--astro-code-token-string-expression'),
+                token(header[2], '--astro-code-token-keyword'),
+                token(header[3], '--astro-code-token-string')
+            ];
+        }
+    }
+};
+
 /**
  * Shiki transformer that adds a macOS-style header with dots and a copy button to code blocks
  */
