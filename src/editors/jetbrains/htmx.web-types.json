@@ -457,13 +457,23 @@
         },
         {
           "name": "after:request",
-          "description": "Fires after the response body is consumed. `detail.ctx` contains request, response, and text data.",
+          "description": "Fires after the response body is consumed. `detail.ctx.swap.content` contains the response content.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-after-request"
         },
         {
           "name": "response:error",
           "description": "Fires when an HTTP error status code (400 or higher) is received. `detail.ctx.response.status` contains the status code.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-response-error"
+        },
+        {
+          "name": "before:actions",
+          "description": "Fires before a set of actions executes. `detail.actions` holds the actions; cancel to skip execution.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-actions"
+        },
+        {
+          "name": "after:actions",
+          "description": "Fires after a set of actions executes. `detail.actions` holds the actions.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-actions"
         },
         {
           "name": "finally:request",

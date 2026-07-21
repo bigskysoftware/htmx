@@ -216,6 +216,11 @@ htmx 4 naming convention: `htmx:phase:action`
 - `htmx:finally:request` -- when request completes, fails, or is cancelled
 - `htmx:error` -- on any error (network, response, swap)
 
+**Actions:**
+
+- `htmx:before:actions` -- before actions run. Cancel to skip
+- `htmx:after:actions` -- after actions run
+
 **Swap:**
 
 - `htmx:before:swap` / `htmx:after:swap` -- before/after content swap
@@ -243,6 +248,7 @@ document.body.addEventListener('htmx:config:request', (evt) => {
     // ctx.swap.target    -- swap target element
     // ctx.swap.style     -- hx-swap style
     // ctx.swap.content   -- response content
+    // ctx.actions        -- response and history actions
     // ctx.request.action -- URL
     // ctx.request.method -- HTTP method
     // ctx.request.headers -- headers object

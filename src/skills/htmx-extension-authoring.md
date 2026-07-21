@@ -92,6 +92,13 @@ Hook names use underscores (not colons). All hooks receive `(elt, detail)` unles
 | `htmx_finally_request` | `htmx:finally:request` | When request completes, fails, or is cancelled |
 | `htmx_error` | `htmx:error` | On any error |
 
+### Actions
+
+| Hook | Event | Description |
+|------|-------|-------------|
+| `htmx_before_actions` | `htmx:before:actions` | Before actions run; return `false` to skip |
+| `htmx_after_actions` | `htmx:after:actions` | After actions run |
+
 ### Swap
 
 | Hook | Event | Description |
@@ -164,6 +171,7 @@ init: (internalAPI) => { api = internalAPI; },
 | `api.isSoftMatch(oldNode, newNode)` | Test whether two nodes can be morphed |
 | `api.initSecurity(ttPolicy, syncFn, asyncFn)` | Configure Trusted Types and script constructors |
 | `api.onTrigger(elt, spec, handler)` | Attach a parsed trigger handler |
+| `api.runActions(actions, element, detail)` | Run actions and fire action events |
 | `api.htmxProp(elt)` | Get an element's internal htmx state |
 | `api.triggerHtmxEvent(elt, name, detail, bubbles)` | Dispatch an htmx event |
 | `api.executeJavaScript(thisArg, values, code, expression, isAsync)` | Execute JavaScript through htmx security policy |
@@ -188,8 +196,13 @@ The context object available via `detail.ctx` in hook callbacks:
         ...modifiers,
     },
     actions: {
-        pushUrl,        // hx-push-url value
-        replaceUrl,     // hx-replace-url value
+        pushUrl,        // HX-Push-Url or hx-push-url
+        replaceUrl,     // HX-Replace-Url or hx-replace-url
+        trigger,        // HX-Trigger
+        location,       // HX-Location
+        redirect,       // HX-Redirect
+        refresh,        // HX-Refresh
+        ...customActions,
     },
     request: {
         action,         // Request URL
@@ -208,13 +221,14 @@ The context object available via `detail.ctx` in hook callbacks:
         status,         // HTTP status code
         headers,        // Response headers
     },
-    hx,                 // Parsed HX-* response headers
 }
 ```
 
 **Modifying the request:** Change `detail.ctx.request` properties in `htmx_config_request` or `htmx_before_request`.
 
 **Modifying the response:** Change `detail.ctx.swap.content` in `htmx_after_request` (before swap).
+
+**Handling custom actions:** Unknown `HX-*` response headers become entries in `detail.ctx.actions` (`HX-Toast` becomes `toast`). Consume them in `htmx_before_actions` through `detail.actions`. Run transport actions with `api.runActions(actions, element, detail)`.
 
 **Overriding fetch:** Set `detail.ctx.fetch` to a function returning a Response or Promise<Response>.
 

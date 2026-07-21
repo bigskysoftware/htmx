@@ -2818,6 +2818,13 @@ Extensions hook into htmx lifecycle events. Event names use underscores instead 
 | `htmx_finally_request` | [`htmx:finally:request`](/reference/events/htmx-finally-request) | `(elt, detail)` | When request completes, fails, or is cancelled |
 | `htmx_error` | [`htmx:error`](/reference/events/htmx-error) | `(elt, detail)` | On request error |
 
+##### Action Events
+
+| Hook Name | Triggered Event | Parameters | Description |
+|-----------|----------------|------------|-------------|
+| `htmx_before_actions` | [`htmx:before:actions`](/reference/events/htmx-before-actions) | `(elt, detail)` | Before actions run |
+| `htmx_after_actions` | [`htmx:after:actions`](/reference/events/htmx-after-actions) | `(elt, detail)` | After actions run |
+
 ##### Swap Events
 
 | Hook Name | Triggered Event | Parameters | Description |
@@ -2888,6 +2895,7 @@ Available internal API:
 - `isSoftMatch(oldNode, newNode)` - Test whether two nodes can be morphed
 - `initSecurity(ttPolicy, syncFn, asyncFn)` - Configure Trusted Types and script constructors
 - `onTrigger(elt, spec, handler)` - Attach a parsed trigger handler
+- `runActions(actions, element, detail)` - Run actions and fire action events
 - `htmxProp(elt)` - Get an element's internal htmx state
 - `triggerHtmxEvent(elt, name, detail, bubbles)` - Dispatch an htmx event
 - `executeJavaScript(thisArg, values, code, expression, isAsync)` - Execute JavaScript through htmx security policy
@@ -2902,8 +2910,23 @@ The `detail.ctx` object contains request information:
     sourceElement,      // Element triggering request
     sourceEvent,        // Event that triggered request
     status,            // Request status
-    target,            // Target element for swap
-    swap,              // Swap strategy
+    swap: {
+        content,       // Response content
+        target,        // Target element
+        style,         // Swap style
+        select,
+        selectOOB,
+        ...modifiers
+    },
+    actions: {
+        pushUrl,
+        replaceUrl,
+        trigger,
+        location,
+        redirect,
+        refresh,
+        ...customActions
+    },
     request: {
         action,        // Request URL
         method,        // HTTP method
@@ -2917,9 +2940,7 @@ The `detail.ctx` object contains request information:
         raw,           // Raw Response object
         status,        // HTTP status code
         headers        // Response headers: https://developer.mozilla.org/en-US/docs/Web/API/Headers
-    },
-    text,              // Response text (after request)
-    hx                 // HX-* response headers (parsed)
+    }
 }
 ```
 

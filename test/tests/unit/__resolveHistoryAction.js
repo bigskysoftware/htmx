@@ -30,22 +30,6 @@ describe('__resolveHistoryAction unit tests', function() {
         assert.equal(action.path, '/replaced')
     })
 
-    it('server HX-Push-Url header overrides attribute', function() {
-        let div = createProcessedHTML('<div hx-get="/test"></div>')
-        let ctx = { sourceElement: div, actions: { pushUrl: '/from-attr' }, hx: { pushurl: '/from-header' } }
-        let action = htmx.__resolveHistoryAction(ctx)
-        assert.equal(action.type, 'push')
-        assert.equal(action.path, '/from-header')
-    })
-
-    it('server HX-Replace-Url header overrides attribute', function() {
-        let div = createProcessedHTML('<div hx-get="/test"></div>')
-        let ctx = { sourceElement: div, actions: { replaceUrl: '/from-attr' }, hx: { replaceurl: '/from-header' } }
-        let action = htmx.__resolveHistoryAction(ctx)
-        assert.equal(action.type, 'replace')
-        assert.equal(action.path, '/from-header')
-    })
-
     it('push "false" returns null', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let ctx = { sourceElement: div, actions: { pushUrl: 'false' } }
@@ -58,17 +42,17 @@ describe('__resolveHistoryAction unit tests', function() {
         assert.isNull(htmx.__resolveHistoryAction(ctx))
     })
 
-    it('HX-Push-Url: false does not block HX-Replace-Url', function() {
+    it('pushUrl "false" does not block replaceUrl', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
-        let ctx = { sourceElement: div, actions: {}, hx: { pushurl: 'false', replaceurl: '/new-path' } }
+        let ctx = { sourceElement: div, actions: { pushUrl: 'false', replaceUrl: '/new-path' } }
         let action = htmx.__resolveHistoryAction(ctx)
         assert.equal(action.type, 'replace')
         assert.equal(action.path, '/new-path')
     })
 
-    it('HX-Replace-Url: false does not block HX-Push-Url', function() {
+    it('replaceUrl "false" does not block pushUrl', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
-        let ctx = { sourceElement: div, actions: {}, hx: { pushurl: '/new-path', replaceurl: 'false' } }
+        let ctx = { sourceElement: div, actions: { pushUrl: '/new-path', replaceUrl: 'false' } }
         let action = htmx.__resolveHistoryAction(ctx)
         assert.equal(action.type, 'push')
         assert.equal(action.path, '/new-path')

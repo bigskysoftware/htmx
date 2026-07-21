@@ -292,6 +292,28 @@ export interface HtmxResponse {
   headers: Headers;
 }
 
+/**
+ * Server actions decoded from attributes and HX-* response headers.
+ * Unknown HX-* headers become custom actions: HX-Toast → toast.
+ * Core ignores custom actions; extensions consume them in htmx:before:actions / htmx:after:actions.
+ */
+export interface HtmxActions {
+  /** URL to push into history. `"true"` uses the request URL, `"false"` skips */
+  pushUrl?: string | boolean;
+  /** URL to replace in history. `"true"` uses the request URL, `"false"` skips */
+  replaceUrl?: string | boolean;
+  /** Event names or HCON object to trigger (HX-Trigger) */
+  trigger?: string;
+  /** Path or HCON options for a follow-up GET navigation (HX-Location) */
+  location?: string;
+  /** URL for a hard redirect via `location.href` (HX-Redirect) */
+  redirect?: string;
+  /** `true` reloads the page (HX-Refresh) */
+  refresh?: string | boolean;
+  /** Custom actions from unknown HX-* headers */
+  [action: string]: string | boolean | undefined;
+}
+
 /** Request context passed as evt.detail.ctx on most htmx request lifecycle events */
 export interface HtmxRequestCtx {
   /** Element that triggered the request */
@@ -300,15 +322,12 @@ export interface HtmxRequestCtx {
   sourceEvent: Event | null;
   /** Swap fields */
   swap: HtmxSwap;
-  /** History actions collected from request attributes */
-  actions: {
-    pushUrl?: string | boolean;
-    replaceUrl?: string | boolean;
-  };
   /** Fetch request options — modify here in htmx:config:request */
   request: HtmxRequestOptions;
   /** Response object, available after fetch resolves */
   response?: HtmxResponse;
+  /** Server actions. Attributes initialize them; HX-* response headers override them */
+  actions: HtmxActions;
 }
 
 /** History detail shared by htmx:before:history:update and htmx:after:history:update */
@@ -420,6 +439,18 @@ export interface HtmxEventMap {
   'htmx:response:error': { ctx: HtmxRequestCtx };
 
   /**
+   * Fires before a set of server actions executes.
+   * Read or mutate `detail.actions`; handle custom actions here.
+   * Cancel to skip execution and `htmx:after:actions`.
+   */
+  'htmx:before:actions': { actions: HtmxActions; ctx?: HtmxRequestCtx; [key: string]: unknown };
+
+  /**
+   * Fires after a set of server actions executed.
+   */
+  'htmx:after:actions': { actions: HtmxActions; ctx?: HtmxRequestCtx; [key: string]: unknown };
+
+  /**
    * Control event — fire this on an element to abort its ongoing request.
    * @example htmx.trigger('#myElement', 'htmx:abort')
    */
@@ -469,12 +500,12 @@ export interface HtmxEventMap {
    * Fires before `history.pushState()` or `history.replaceState()` is called.
    * Cancel to prevent the history update.
    */
-  'htmx:before:history:update': { history: HtmxHistoryDetail; sourceElement: Element; response: HtmxResponse };
+  'htmx:before:history:update': { history: HtmxHistoryDetail; sourceElement: Element };
 
   /**
    * Fires after `history.pushState()` or `history.replaceState()` completes.
    */
-  'htmx:after:history:update': { history: HtmxHistoryDetail; sourceElement: Element; response: HtmxResponse };
+  'htmx:after:history:update': { history: HtmxHistoryDetail; sourceElement: Element };
 
   /**
    * Fires after a `history.pushState()` operation (new history entry created).
@@ -527,9 +558,11 @@ export interface HtmxAjaxOptions {
   select?: string;
   /** Selector for out-of-band swaps */
   selectOOB?: string;
-  /** Push a URL into browser history after the swap. `true` uses the request URL */
+  /** Server actions to run, e.g. `{pushUrl: '/inbox'}`. Response headers override these */
+  actions?: HtmxActions;
+  /** Shorthand for `actions.pushUrl`. `true` uses the request URL */
   push?: string | boolean;
-  /** Replace the current history entry after the swap. `true` uses the request URL */
+  /** Shorthand for `actions.replaceUrl`. `true` uses the request URL */
   replace?: string | boolean;
 }
 
