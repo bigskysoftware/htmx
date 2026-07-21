@@ -17,8 +17,7 @@ server.get("/demo", () => {
   <div id="messages" class="flex-1 overflow-y-auto space-y-3 pb-3 pr-3 scrollbar-subtle"></div>
   <form class="flex gap-2 shrink-0 mt-3"
         hx-post="/chat" hx-target="#messages" hx-swap="beforeend"
-        hx-on:htmx:done="this.reset()"
-        hx-on:htmx:after:swap="document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight">
+        hx-on:htmx:after:swap="this.reset(); document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight">
     <input type="text" name="message" placeholder="Send a message…" required autocomplete="off"
            class="${inputCls}">
     <button class="${btnCls}">Send</button>

@@ -197,4 +197,29 @@ describe('__runActions unit tests', function() {
         assert.equal(div.textContent, 'Done')
     })
 
+    it('HX-Location pushes history by default', async function () {
+        mockResponse('GET', '/test', 'ignored', {headers: {'HX-Location': 'path:/location-path, target:#dest'}})
+        mockResponse('GET', '/location-path', 'Located')
+        createProcessedHTML('<div id="dest"></div><div id="loc-source" hx-get="/test"></div>')
+
+        find('#loc-source').click()
+        await htmx.timeout(50)
+
+        assert.equal(find('#dest').textContent, 'Located')
+        assert.include(window.location.href, '/location-path')
+    })
+
+    it('HX-Location honors replace', async function () {
+        mockResponse('GET', '/test', 'ignored', {headers: {'HX-Location': 'path:/location-replaced, target:#dest, replace:/location-replaced'}})
+        mockResponse('GET', '/location-replaced', 'Located')
+        createProcessedHTML('<div id="dest"></div><div id="loc-source" hx-get="/test"></div>')
+
+        find('#loc-source').click()
+        await htmx.timeout(50)
+
+        assert.equal(find('#dest').textContent, 'Located')
+        assert.include(window.location.href, '/location-replaced')
+        assert.equal(history.state?.htmx, true)
+    })
+
 });

@@ -723,21 +723,6 @@ var htmx = (() => {
 
             if (trigger) this.__handleTriggerHeader(trigger, element);
 
-            if (pushUrl === 'false' || pushUrl === false) pushUrl = null;
-            if (replaceUrl === 'false' || replaceUrl === false) replaceUrl = null;
-            if (this.config.history && (pushUrl != null || replaceUrl != null)) {
-                let type = pushUrl != null ? 'push' : 'replace';
-                let path = pushUrl ?? replaceUrl;
-                if (path === 'true' || path === true) path = location.pathname + location.search;
-                let historyDetail = {history: {type, path}, sourceElement: element};
-                if (this.__trigger(document, "htmx:before:history:update", historyDetail)) {
-                    path = historyDetail.history.path;
-                    if (type === 'push') this.__pushUrlIntoHistory(path);
-                    else this.__replaceUrlInHistory(path);
-                    this.__trigger(document, "htmx:after:history:update", historyDetail);
-                }
-            }
-
             let terminal = true;
             if (refresh === 'true' || refresh === true) {
                 location.reload();
@@ -750,10 +735,24 @@ var htmx = (() => {
                     path = opts.path;
                     delete opts.path;
                 }
-                opts.push ??= 'true';
+                if (opts.replace == null) opts.push ??= 'true';
                 this.ajax('GET', path, opts);
             } else {
                 terminal = false;
+                if (pushUrl === 'false' || pushUrl === false) pushUrl = null;
+                if (replaceUrl === 'false' || replaceUrl === false) replaceUrl = null;
+                if (this.config.history && (pushUrl != null || replaceUrl != null)) {
+                    let type = pushUrl != null ? 'push' : 'replace';
+                    let path = pushUrl ?? replaceUrl;
+                    if (path === 'true' || path === true) path = location.pathname + location.search;
+                    let historyDetail = {history: {type, path}, sourceElement: element};
+                    if (this.__trigger(document, "htmx:before:history:update", historyDetail)) {
+                        path = historyDetail.history.path;
+                        if (type === 'push') this.__pushUrlIntoHistory(path);
+                        else this.__replaceUrlInHistory(path);
+                        this.__trigger(document, "htmx:after:history:update", historyDetail);
+                    }
+                }
             }
 
             this.__trigger(element, "htmx:after:actions", detail);

@@ -32,7 +32,7 @@ export interface HtmxConfig {
    * Default swap style when `hx-swap` is not specified.
    * @default "innerHTML"
    */
-  defaultSwap: string;
+  defaultSwap: string | HtmxSwap;
   /**
    * Scroll the focused element into view after each swap.
    * @default false
@@ -311,7 +311,7 @@ export interface HtmxActions {
   /** `true` reloads the page (HX-Refresh) */
   refresh?: string | boolean;
   /** Custom actions from unknown HX-* headers */
-  [action: string]: string | boolean | undefined;
+  [action: string]: unknown;
 }
 
 /** Request context passed as evt.detail.ctx on most htmx request lifecycle events */
@@ -552,12 +552,14 @@ export interface HtmxAjaxOptions {
   event?: Event;
   /** Target element or CSS selector to swap the response into */
   target?: Element | string;
-  /** Swap style (e.g. `'innerHTML'`, `'outerHTML'`) */
-  swap?: string;
+  /** Serialized or structured swap specification */
+  swap?: string | HtmxSwap;
   /** Additional values to include in the request body */
   values?: Record<string, any>;
   /** Additional request headers */
   headers?: Record<string, string>;
+  /** Fetch, timeout, validation, and extension request options */
+  request?: Partial<HtmxRequestOptions>;
   /** CSS selector to extract content from the response */
   select?: string;
   /** Selector for out-of-band swaps */
