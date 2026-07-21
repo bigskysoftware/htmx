@@ -15,29 +15,20 @@
     // ========================================
     
     function getConfig(element) {
-        const defaults = {
+        let hxConfig = api.HCON.parse(api.attributeValue(element, 'hx-config')).ws || {};
+
+        return {
             reconnect: true,
+            reconnectCodes: [1006, 1011, 1012, 1013],
             reconnectDelay: 500,
             reconnectMaxDelay: 60000,
             reconnectMaxAttempts: Infinity,
             reconnectJitter: 0.3,
             pauseOnBackground: true,
-            pendingRequestTTL: 30000
+            pendingRequestTTL: 30000,
+            ...htmx.config.ws, // global defaults
+            ...hxConfig // hx-config overrides
         };
-        let global = htmx.config.ws || {};
-        let perElement = {};
-        if (element) {
-            let ctx = api.createRequestContext(element, new CustomEvent('_'));
-            perElement = ctx.request.ws || {};
-        }
-        let merged = { ...defaults, ...global, ...perElement };
-
-        // Backwards compat: boolean reconnectJitter (old API used true/false)
-        if (typeof merged.reconnectJitter === 'boolean') {
-            merged.reconnectJitter = merged.reconnectJitter ? 0.3 : 0;
-        }
-
-        return merged;
     }
     
     // ========================================
@@ -97,12 +88,13 @@
             attempt: 0,
             timer: null,
             pendingRequests: new Map(),
+            queue: [],
             abortController: null,
             visibilityHandler: null,
             cancelled: false
         };
 
-        if (!api.triggerHtmxEvent(element, 'htmx:before:ws:connection', {connection}) || connection.cancelled) {
+        if (!api.triggerHtmxEvent(element, 'htmx:ws:before:connection', {connection}) || connection.cancelled) {
             api.triggerHtmxEvent(element, 'htmx:ws:close', {
                 connection, reason: 'cancelled', code: null
             });
@@ -149,6 +141,7 @@
             connection.abortController.abort();
         }
         connection.pendingRequests.clear();
+        connection.queue.length = 0;
         if (connection.socket) {
             try {
                 if (connection.socket.readyState === WebSocket.OPEN || connection.socket.readyState === WebSocket.CONNECTING) {
@@ -187,17 +180,21 @@
             connection.socket.addEventListener('open', () => {
                 let elt = findConnectedElement(url);
                 if (elt) {
-                    api.triggerHtmxEvent(elt, 'htmx:after:ws:connection', {connection});
+                    api.triggerHtmxEvent(elt, 'htmx:ws:after:connection', {connection});
                 } else {
                     // Element was removed while connecting — orphaned socket
                     cleanupOrphanedConnection(url, connection);
                     return;
                 }
                 connection.attempt = 0;
+                flushQueue(connection);
             }, opts);
 
             connection.socket.addEventListener('message', (event) => {
-                handleMessage(connection, event);
+                handleMessage(connection, event).catch(error => {
+                    let elt = findConnectedElement(connection.url);
+                    if (elt) api.triggerHtmxEvent(elt, 'htmx:ws:error', { url: connection.url, error });
+                });
             }, opts);
 
             connection.socket.addEventListener('close', (event) => {
@@ -213,7 +210,7 @@
                 let config = connection.config;
                 if (config.pauseOnBackground && document.hidden) return;
 
-                if (config.reconnect && findConnectedElement(url)) {
+                if (config.reconnect && config.reconnectCodes.includes(event.code) && findConnectedElement(url)) {
                     scheduleReconnect(url, connection);
                 } else {
                     // No element or reconnect disabled — full cleanup
@@ -259,7 +256,7 @@
         let elt = findConnectedElement(url);
         if (elt) {
             connection.cancelled = false;
-            if (!api.triggerHtmxEvent(elt, 'htmx:before:ws:connection', {connection}) || connection.cancelled) {
+            if (!api.triggerHtmxEvent(elt, 'htmx:ws:before:connection', {connection}) || connection.cancelled) {
                 api.triggerHtmxEvent(elt, 'htmx:ws:close', {
                     connection, reason: 'cancelled', code: null
                 });
@@ -293,6 +290,7 @@
             connection.abortController.abort();
         }
         connection.pendingRequests.clear();
+        connection.queue.length = 0;
         api.triggerHtmxEvent(element, 'htmx:ws:close', {
             connection, reason: 'removed', code: null
         });
@@ -321,6 +319,23 @@
     // REQUESTS
     // ========================================
 
+    function sendMessage(connection, element, message, requestId) {
+        try {
+            connection.socket.send(message.data);
+            connection.pendingRequests.set(requestId, { element, timestamp: Date.now() });
+            api.triggerHtmxEvent(element, 'htmx:ws:after:message:outgoing', {message});
+        } catch (error) {
+            api.triggerHtmxEvent(element, 'htmx:ws:error', { url: connection.url, error });
+        }
+    }
+
+    function flushQueue(connection) {
+        while (connection.queue.length && connection.socket?.readyState === WebSocket.OPEN) {
+            let queuedMessage = connection.queue.shift();
+            sendMessage(connection, queuedMessage.element, queuedMessage.message, queuedMessage.requestId);
+        }
+    }
+
     async function sendRequest(element, event) {
         // hx-ws:send="/url" creates its own connection; hx-ws:send (no value) uses ancestor's
         let sendAttr = api.attributeValue(element, 'hx-ws:send');
@@ -342,16 +357,7 @@
         let normalizedUrl = normalizeWebSocketUrl(url);
         let connection = connections.get(normalizedUrl);
 
-        // Wait for socket to open if still connecting
-        if (connection && connection.socket && connection.socket.readyState === WebSocket.CONNECTING) {
-            await new Promise(resolve => {
-                connection.socket.addEventListener('open', resolve, { once: true });
-                connection.socket.addEventListener('close', resolve, { once: true });
-                connection.socket.addEventListener('error', resolve, { once: true });
-            });
-        }
-
-        if (!connection || !connection.socket || connection.socket.readyState !== WebSocket.OPEN) {
+        if (!connection) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error: 'Connection not open' });
             return;
         }
@@ -368,36 +374,55 @@
         let requestId = crypto.randomUUID();
         headers['HX-Request-ID'] = requestId;
 
-        // Build body from form data
+        // Build outgoing values from form data.
         let form = element.form || element.closest('form');
         let formData = api.collectFormData(element, form, event.submitter);
 
         // Preserve multi-value form fields (checkboxes, multi-selects)
-        let body = {};
+        let values = {};
         for (let [key, value] of formData) {
-            if (key in body) {
-                body[key] = [].concat(body[key], value);
+            if (key in values) {
+                values[key] = [].concat(values[key], value);
             } else {
-                body[key] = value;
+                values[key] = value;
             }
         }
 
         // Merge hx-vals after serialization to preserve JS types (numbers, booleans)
-        let valsResult = api.getAttributeObject(element, 'hx-vals', obj => Object.assign(body, obj));
-        if (valsResult) await valsResult;
+        let hxValsResult = api.getAttributeObject(element, 'hx-vals', obj => Object.assign(values, obj));
+        if (hxValsResult) await hxValsResult;
+        delete values.headers;
 
-        let detail = { headers, body };
-        if (!api.triggerHtmxEvent(element, 'htmx:before:ws:request', detail)) {
-            return;
-        }
+        let pendingWork = [];
+        let message = {
+            headers,
+            values,
+            data: undefined
+        };
+        let detail = {
+            message,
+            cancelled: false,
+            waitUntil(promise) {
+                pendingWork.push(Promise.resolve(promise));
+            }
+        };
+        let shouldSend = api.triggerHtmxEvent(element, 'htmx:ws:before:message:outgoing', detail);
 
         try {
-            connection.socket.send(JSON.stringify(detail));
+            await Promise.all(pendingWork);
+            if (!shouldSend || detail.cancelled) return;
 
-            // [Correlation] Store pending request for response matching
-            connection.pendingRequests.set(requestId, { element, timestamp: Date.now() });
+            message.data ??= JSON.stringify({ ...message.values, headers: message.headers });
+            if (connections.get(normalizedUrl) !== connection) {
+                api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error: 'Connection closed' });
+                return;
+            }
 
-            api.triggerHtmxEvent(element, 'htmx:after:ws:request', detail);
+            if (connection.socket?.readyState === WebSocket.OPEN) {
+                sendMessage(connection, element, message, requestId);
+            } else {
+                connection.queue.push({element, message, requestId});
+            }
         } catch (error) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error });
         }
@@ -407,78 +432,113 @@
     // MESSAGE RECEIVING & ROUTING
     // ========================================
     
-    function handleMessage(connection, event) {
+    async function handleMessage(connection, event) {
+        let data = event.data;
+        let textResult;
+        let jsonResult;
+        let arrayBufferResult;
+        let blobResult;
+        let pendingWork = [];
+        let message = {
+            data,
+            type: typeof data === 'string' ? 'text' : 'binary',
+            text() {
+                return textResult ??= typeof data === 'string'
+                    ? Promise.resolve(data)
+                    : data instanceof Blob
+                        ? data.text()
+                        : Promise.resolve(new TextDecoder().decode(data));
+            },
+            json() {
+                return jsonResult ??= message.text().then(JSON.parse);
+            },
+            arrayBuffer() {
+                return arrayBufferResult ??= data instanceof ArrayBuffer
+                    ? Promise.resolve(data)
+                    : data instanceof Blob
+                        ? data.arrayBuffer()
+                        : Promise.resolve(new TextEncoder().encode(data).buffer);
+            },
+            blob() {
+                return blobResult ??= data instanceof Blob
+                    ? Promise.resolve(data)
+                    : Promise.resolve(new Blob([data]));
+            }
+        };
+
         let json = null;
-        try {
-            json = JSON.parse(event.data);
-        } catch (e) {
-            // Not JSON - will be treated as raw HTML below
+        if (message.type === 'text') {
+            try {
+                json = await message.json();
+            } catch (e) {
+                // Non-JSON text is treated as raw HTML.
+            }
         }
 
         // [Correlation] Cleanup expired pending requests on every message
         cleanupExpiredRequests(connection);
 
-        // [Correlation] Match response to originating element, or fall back to first subscriber
-        let connectionElement = null;
-        let requestId = json?.['HX-Request-ID'] || json?.request_id;
-        if (requestId && connection.pendingRequests.has(requestId)) {
-            connectionElement = connection.pendingRequests.get(requestId).element;
-            connection.pendingRequests.delete(requestId);
-            // If the correlated element has been removed from the DOM, fall back
-            if (!connectionElement.isConnected) {
-                connectionElement = findConnectedElement(connection.url);
-            }
-        } else {
-            connectionElement = findConnectedElement(connection.url);
-        }
+        let requestId = json?.headers?.['HX-Request-ID'];
+        let pending = connection.pendingRequests.get(requestId);
+        if (pending) connection.pendingRequests.delete(requestId);
 
-        if (!connectionElement) {
+        // Route associated incoming messages through their sender.
+        let element = pending?.element;
+        if (!element?.isConnected) element = findConnectedElement(connection.url);
+
+        if (!element) {
             // No element in DOM for this connection — orphan cleanup
             cleanupOrphanedConnection(connection.url, connection);
             return;
         }
 
         let detail = {
-            message: { text: event.data, json, cancelled: false }
+            message,
+            cancelled: false,
+            waitUntil(promise) {
+                pendingWork.push(Promise.resolve(promise));
+            }
         };
+        let shouldProcess = api.triggerHtmxEvent(element, 'htmx:ws:before:message:incoming', detail);
 
-        if (!api.triggerHtmxEvent(connectionElement, 'htmx:before:ws:message', detail) || detail.message.cancelled) {
-            return;
-        }
+        await Promise.all(pendingWork);
+        if (!shouldProcess || detail.cancelled) return;
 
         // JSON with 'content' or 'payload' field: swap the HTML
         // Raw (non-JSON) string: swap the entire string as HTML
         // JSON without 'content'/'payload': data-only message, no swap (handle via events)
         let html;
-        if (detail.message.json) {
-            if (detail.message.json.content !== undefined) {
-                html = detail.message.json.content;
-            } else if (detail.message.json.payload !== undefined) {
-                html = detail.message.json.payload; // backwards compat
+        if (json) {
+            if (json.content !== undefined) {
+                html = json.content;
+            } else if (json.payload !== undefined) {
+                html = json.payload; // backwards compat
                 // Warn once per connection (not on every message)
                 if (!connection._payloadWarnFired) {
                     console.warn('htmx: [hx-ws] json.payload is deprecated; use json.content instead');
                     connection._payloadWarnFired = true;
                 }
             }
-        } else {
-            html = detail.message.text;
+        } else if (message.type === 'text') {
+            html = await message.text();
         }
         if (html != null) {
-            let target = detail.message.json?.target || api.attributeValue(connectionElement, 'hx-target');
-            let swap = detail.message.json?.swap || api.attributeValue(connectionElement, 'hx-swap');
+            let target = json?.target || api.attributeValue(element, 'hx-target');
+            let swap = json?.swap || api.attributeValue(element, 'hx-swap') || htmx.config.defaultSwap;
+            if (!/(?:^|\s)swapEmpty(?::(?:true|false))?(?=\s|$)/.test(swap)) swap += ' swapEmpty:false';
 
             htmx.swap({
-                sourceElement: connectionElement,
-                target: target || connectionElement,
-                swap: swap || (target ? htmx.config.defaultSwap : 'none'),
+                sourceElement: element,
+                target: target || element,
+                swap,
+                select: json?.select ?? api.attributeValue(element, 'hx-select'),
+                selectOOB: api.attributeValue(element, 'hx-select-oob'),
                 text: html,
                 transition: false
             });
         }
 
-        delete detail.message.cancelled;
-        api.triggerHtmxEvent(connectionElement, 'htmx:after:ws:message', detail);
+        api.triggerHtmxEvent(element, 'htmx:ws:after:message:incoming', {message});
     }
     
     // ========================================
@@ -637,6 +697,7 @@
                             connection.socket.close();
                         }
                         connection.pendingRequests.clear();
+                        connection.queue.length = 0;
                     });
                 },
                 get: (key) => connections.get(normalizeWebSocketUrl(key)),

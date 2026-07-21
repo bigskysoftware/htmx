@@ -385,7 +385,7 @@
         }
 
         // Listen to WebSocket events
-        document.addEventListener('htmx:before:ws:connection', (e) => {
+        document.addEventListener('htmx:ws:before:connection', (e) => {
             let attempt = e.detail.connection.attempt;
             if (attempt === 0) {
                 logEvent('CONNECT', `Connecting to ${e.detail.connection.url}`);
@@ -394,7 +394,7 @@
             }
         });
 
-        document.addEventListener('htmx:after:ws:connection', (e) => {
+        document.addEventListener('htmx:ws:after:connection', (e) => {
             logEvent('CONNECTED', `Connected to ${e.detail.url}`);
         });
 
@@ -406,16 +406,16 @@
             logEvent('ERROR', `WebSocket error: ${e.detail.url}`);
         });
 
-        document.addEventListener('htmx:before:ws:send', (e) => {
+        document.addEventListener('htmx:ws:before:message:outgoing', (e) => {
             logEvent('SEND', `Sending message`);
         });
 
-        document.addEventListener('htmx:after:ws:message', (e) => {
+        document.addEventListener('htmx:ws:after:message:incoming', (e) => {
             logEvent('MESSAGE', `Received message`);
         });
 
         // Clear chat input after sending
-        document.addEventListener('htmx:after:ws:send', (e) => {
+        document.addEventListener('htmx:ws:after:message:outgoing', (e) => {
             if (e.target.matches('form')) {
                 const input = e.target.querySelector('input[name="message"]');
                 if (input) {

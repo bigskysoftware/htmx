@@ -566,18 +566,18 @@
           "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxafterssemessage"
         },
         {
-          "name": "before:ws:connection",
+          "name": "ws:before:connection",
           "description": "Fires before a WebSocket connection attempt. `detail.connection` can be modified; set `cancelled` or cancel the event to stop connecting.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxbeforewsconnection"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsbeforeconnection"
         },
         {
-          "name": "after:ws:connection",
+          "name": "ws:after:connection",
           "description": "Fires after a successful WebSocket connection. `detail.connection` describes the connection.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxafterwsconnection"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsafterconnection"
         },
         {
           "name": "ws:close",
-          "description": "Fires when a WebSocket connection closes. `detail.connection`, `detail.reason`, and `detail.code` describe the close.",
+          "description": "Fires when a WebSocket connection closes. `detail.connection`, `detail.reason`, and `detail.code` describe the close. Codes in `detail.connection.config.reconnectCodes` reconnect.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsclose"
         },
         {
@@ -586,24 +586,24 @@
           "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwserror"
         },
         {
-          "name": "before:ws:request",
-          "description": "Fires before sending a WebSocket message. `detail.headers` and `detail.body` are modifiable. Cancel to skip sending.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxbeforewsrequest"
+          "name": "ws:before:message:outgoing",
+          "description": "Fires before sending a WebSocket message. Modify `detail.message`, use `detail.waitUntil()` to delay sending, or set `detail.cancelled` to cancel.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsbeforemessageoutgoing"
         },
         {
-          "name": "after:ws:request",
-          "description": "Fires after a WebSocket message is sent. `detail.headers` and `detail.body` contain the sent payload.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxafterwsrequest"
+          "name": "ws:after:message:outgoing",
+          "description": "Fires after a WebSocket message is sent. `detail.message.data` is the value passed to `WebSocket.send()`.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsaftermessageoutgoing"
         },
         {
-          "name": "before:ws:message",
-          "description": "Fires before a WebSocket message is processed. `detail.message.text`, `detail.message.json`, and `detail.message.cancelled` are available.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxbeforewsmessage"
+          "name": "ws:before:message:incoming",
+          "description": "Fires before an incoming WebSocket message is processed. Convert `detail.message`, use `detail.waitUntil()` to delay processing, or set `detail.cancelled` to cancel. Associated messages fire from their sending element.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsbeforemessageincoming"
         },
         {
-          "name": "after:ws:message",
-          "description": "Fires after a WebSocket message is processed. `detail.message.text` and `detail.message.json` are available.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxafterwsmessage"
+          "name": "ws:after:message:incoming",
+          "description": "Fires after an incoming WebSocket message is processed. `detail.message.data` preserves the native data; `text()`, `json()`, `blob()`, and `arrayBuffer()` convert it. Associated messages fire from their sending element.",
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsaftermessageincoming"
         },
         {
           "name": "download:start",
