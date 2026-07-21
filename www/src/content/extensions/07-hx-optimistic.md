@@ -1,8 +1,8 @@
 ---
 title: "hx-optimistic"
-description: "Apply optimistic UI updates before the server responds"
+description: "Show optimistic UI with `hx-optimistic`"
 category: "UX"
-icon: "icon-[mdi--lightning-bolt-outline]"
+icon: "icon-[mdi--progress-check]"
 keywords: ["optimistic", "ui", "instant", "updates"]
 ---
 

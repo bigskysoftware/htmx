@@ -238,12 +238,14 @@
     prose-a:not-in-prose-headings:text-blue-700
     prose-a:not-in-prose-headings:dark:text-blue-350!
     prose-a:not-in-prose-headings:dark:interact:text-blue-300!
-    prose-a:[[href^="#"]]:text-neutral-800
-    prose-a:[[href^="#"]]:dark:text-neutral-100
     prose-h1:text-[2em]/12
     prose-h2:text-[1.375em]
     prose-img:rounded-lg
     prose-img:border prose-img:border-neutral-200 prose-img:dark:border-neutral-800;
+
+    :where(h1, h2, h3, h4, h5, h6):not(:where([class~="not-prose"], [class~="not-prose"] *)) a {
+        color: inherit;
+    }
 
     @apply
     prose-headings:scroll-pt-[calc(var(--header-offset)+2rem)]
@@ -282,7 +284,7 @@
 
         summary {
             @apply flex w-full items-center cursor-pointer select-none text-sm
-            px-3 py-2 -mx-3 rounded-[4px]
+            py-2 rounded-lg
             text-neutral-600 dark:text-neutral-400
             interact:bg-neutral-75 dark:interact:bg-neutral-875
             interact:text-neutral-900 dark:interact:text-neutral-200

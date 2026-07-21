@@ -1,6 +1,6 @@
 ---
 title: "hx-ws"
-description: "Enable bidirectional connections over WebSockets (WS)"
+description: "Stream HTML and send data over WebSockets"
 category: "Networking"
 icon: "icon-[mdi--swap-horizontal]"
 keywords: ["websockets", "ws", "real-time", "bidirectional", "socket"]

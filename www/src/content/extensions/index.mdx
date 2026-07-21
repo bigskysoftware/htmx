@@ -15,7 +15,7 @@ export const grouped = groupFilesByCategory(folder.files, EXTENSION_CATEGORIES).
     items: group.files.map(f => ({
         title: f.frontmatter.title,
         url: f.url,
-        description: f.frontmatter.description,
+        descriptionParts: f.frontmatter.description?.split(/(`[^`]+`)/g),
         icon: f.frontmatter.icon,
     })),
 }));
@@ -62,15 +62,12 @@ export const getPageHeadings = () => grouped.map(group => ({
         {group.items.map(item => (
             <tr class="stretch-link">
                 <td>
-                    <div class="flex items-center gap-5">
-                        {item.icon && <i class={`${item.icon} size-5 shrink-0`}></i>}
-                        <span class="min-w-0">
-                            <a href={item.url}><code>{item.title}</code></a>
-                            {item.description && <span class="block sm:hidden text-neutral-650 dark:text-neutral-350 pl-[6px]">{item.description}</span>}
-                        </span>
+                    <div class="grid grid-cols-[1.25rem_minmax(0,1fr)] sm:grid-cols-[1.25rem_12rem_minmax(0,1fr)] gap-x-5 items-center">
+                        {item.icon ? <i class={`${item.icon} size-5 row-span-2 sm:row-span-1 self-start sm:self-center mt-1 sm:mt-0`}></i> : <span></span>}
+                        <a href={item.url}><code>{item.title}</code></a>
+                        <span class="col-start-2 sm:col-start-3 sm:row-start-1 text-[0.8125em] sm:text-[1em] text-neutral-650 dark:text-neutral-350 mt-0.5 sm:mt-0">{item.descriptionParts?.map(part => part.startsWith('`') ? <code>{part.slice(1, -1)}</code> : part)}</span>
                     </div>
                 </td>
-                <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350">{item.description || ''}</td>
             </tr>
         ))}
     </tbody>

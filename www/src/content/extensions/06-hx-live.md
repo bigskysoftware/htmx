@@ -1,6 +1,6 @@
 ---
 title: "hx-live"
-description: "Add lightweight reactivity backed by the DOM"
+description: "Add reactive bindings to HTML"
 category: "UX"
 icon: "icon-[mdi--lightning-bolt]"
 keywords: ["live", "reactive", "bind", "q", "selector"]

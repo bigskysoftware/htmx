@@ -1,6 +1,6 @@
 ---
 title: "hx-sse"
-description: "Stream updates via Server-Sent Events (SSE)"
+description: "Stream HTML over HTTP with Server-Sent Events (SSE)"
 category: "Networking"
 icon: "icon-[mdi--rss]"
 keywords: ["sse", "server-sent events", "server sent events", "event stream", "streaming", "real-time"]
