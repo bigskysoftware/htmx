@@ -2,7 +2,7 @@
  * Shared category grouping for flat content collections.
  */
 
-export const EXTENSION_CATEGORIES = ['Networking', 'Performance', 'UX', 'Swaps', 'Compatibility', 'Security'];
+export const EXTENSION_CATEGORIES = ['Networking', 'Performance', 'UX', 'Swaps', 'Compatibility', 'Security', 'Community'];
 export const PATTERN_CATEGORIES = ['Loading', 'Forms', 'Records', 'Display', 'Real-time', 'Advanced'];
 
 export function categorySlug(category) {
