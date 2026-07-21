@@ -74,8 +74,8 @@ var htmx = (() => {
             for (let [key, val] of Object.entries(source)) {
                 if (['__proto__', 'constructor', 'prototype'].includes(key)) continue;
 
-                let sourceIsObject = val && typeof val === 'object' && !Array.isArray(val);
-                let targetIsObject = target[key] && typeof target[key] === 'object' && !Array.isArray(target[key]);
+                let sourceIsObject = val?.constructor === Object;
+                let targetIsObject = target[key]?.constructor === Object;
 
                 if (sourceIsObject && targetIsObject) {
                     HCON.merge(val, target[key]);
