@@ -284,6 +284,16 @@ Boosted forms default to `show:top`. Disable:
 <form hx-swap="show:none"></form>
 ```
 
+### `focusScroll`
+
+Controls whether restoring focus after a swap scrolls the focused element into view.
+
+```html
+<input id="search" hx-get="/search" hx-swap="innerHTML focusScroll:true">
+```
+
+Default: [`htmx.config.defaultFocusScroll`](/reference/config/htmx-config-defaultFocusScroll)
+
 ### `target`
 
 Sets the swap target.
