@@ -119,7 +119,7 @@ describe('process() unit tests', function() {
         btn.addEventListener('htmx:before:request', () => fired++)
 
         btn.click()
-        await waitForEvent('htmx:after:request', 100)
+        await waitForEvent('htmx:done', 100)
         assert.equal(fired, 1, 'baseline click fires')
 
         btn.setAttribute('hx-trigger', 'keyup')
@@ -130,7 +130,7 @@ describe('process() unit tests', function() {
         assert.equal(fired, 1, 'click no longer fires after trigger change')
 
         btn.dispatchEvent(new KeyboardEvent('keyup'))
-        await waitForEvent('htmx:after:request', 100)
+        await waitForEvent('htmx:done', 100)
         assert.equal(fired, 2, 'keyup fires after force reprocess')
     })
 

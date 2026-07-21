@@ -710,7 +710,7 @@ describe('Morph Swap Styles Tests', function() {
             await new Promise(r => setTimeout(r, 20));
             assert.equal(fired, 0, 'click should no longer fire after morph');
             b.dispatchEvent(new KeyboardEvent('keyup'));
-            await waitForEvent('htmx:after:request', 100);
+            await waitForEvent('htmx:done', 100);
             assert.equal(fired, 1, 'keyup should fire after morph');
         });
 

@@ -42,7 +42,7 @@
             maybeRetriggerEvent(elt, "htmx:afterProcessNode", detail);
             maybeRetriggerEvent(elt, "htmx:load", detail);
         },
-        htmx_after_request: function (elt, detail) {
+        htmx_after_response: function (elt, detail) {
             maybeRetriggerEvent(elt, "htmx:afterRequest", detail);
         },
         htmx_after_swap: function (elt, detail) {

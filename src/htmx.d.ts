@@ -353,16 +353,10 @@ export interface HtmxEventMap {
   'htmx:before:request': { ctx: HtmxRequestCtx };
 
   /**
-   * Fires after the fetch resolves and the response is received, before swapping.
-   * `ctx.response` is available with status and headers.
+   * Fires immediately after `fetch()` resolves.
+   * `ctx.response` is available, but the body has not been consumed.
    */
   'htmx:after:request': { ctx: HtmxRequestCtx };
-
-  /**
-   * Fires when request completes, fails, or is cancelled.
-   * Does not run if processing stops before the request begins issuing.
-   */
-  'htmx:finally:request': { ctx: HtmxRequestCtx };
 
   /**
    * Fires after the network response arrives but before htmx reads the response body.
@@ -370,6 +364,16 @@ export interface HtmxEventMap {
    * Cancel to skip body consumption and the swap entirely.
    */
   'htmx:before:response': { ctx: HtmxRequestCtx };
+
+  /**
+   * Fires after the response body is stored in `ctx.swap.content`.
+   */
+  'htmx:after:response': { ctx: HtmxRequestCtx };
+
+  /**
+   * Fires when the admitted request pipeline ends, whether it completes, fails, or is cancelled.
+   */
+  'htmx:done': { ctx: HtmxRequestCtx };
 
   /**
    * Fires after response content is parsed but before it is inserted into the DOM.

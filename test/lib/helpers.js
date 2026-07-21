@@ -204,7 +204,7 @@ function waitForEvent(eventName, timeout = 200) {
 }
 
 function forRequest(timeout = 200) {
-  return waitForEvent("htmx:finally:request", timeout);
+  return waitForEvent("htmx:done", timeout);
 }
 
 function forRequestWithDelay(timeout = 200) {

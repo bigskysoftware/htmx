@@ -34,9 +34,13 @@ Extensions are global -- they apply page-wide, activated by custom attributes wh
         },
 
         htmx_after_request: (elt, detail) => {
-            // After request completes
+            // After fetch resolves
+            // detail.ctx.response has status and headers
+        },
+
+        htmx_after_response: (elt, detail) => {
+            // After the response body is read
             // detail.ctx.swap.content has response text
-            // detail.ctx.response has status, headers
         },
 
         htmx_before_swap: (elt, detail) => {
@@ -88,8 +92,9 @@ Hook names use underscores (not colons). All hooks receive `(elt, detail)` unles
 | `htmx_config_request` | `htmx:config:request` | Configure request (modify headers, body, URL) |
 | `htmx_before_request` | `htmx:before:request` | Before request is sent |
 | `htmx_before_response` | `htmx:before:response` | After fetch response, before body consumed |
-| `htmx_after_request` | `htmx:after:request` | After request completes |
-| `htmx_finally_request` | `htmx:finally:request` | When request completes, fails, or is cancelled |
+| `htmx_after_request` | `htmx:after:request` | After fetch resolves, before the body is read |
+| `htmx_after_response` | `htmx:after:response` | After the response body is read |
+| `htmx_done` | `htmx:done` | When the admitted request pipeline ends |
 | `htmx_error` | `htmx:error` | On any error |
 
 ### Actions
@@ -225,7 +230,7 @@ The context object available via `detail.ctx` in hook callbacks:
 
 **Modifying the request:** Change `detail.ctx.request` properties in `htmx_config_request` or `htmx_before_request`.
 
-**Modifying the response:** Change `detail.ctx.swap.content` in `htmx_after_request` (before swap).
+**Modifying the response:** Change `detail.ctx.swap.content` in `htmx_after_response` (before swap).
 
 **Handling custom actions:** Unknown `HX-*` response headers become entries in `detail.ctx.actions` (`HX-Toast` becomes `toast`). Consume them in `htmx_before_actions` through `detail.actions`. Run transport actions with `api.runActions(actions, element, detail)`.
 
@@ -344,7 +349,7 @@ Key patterns:
 |-----------|---------|-------|
 | `htmx.defineExtension()` | `htmx.registerExtension()` | Different function name |
 | `onEvent(name, evt)` | Specific hooks (`htmx_before_request`, etc.) | Use underscored hook names |
-| `transformResponse(text, xhr, elt)` | `htmx_after_request` | Modify `detail.ctx.swap.content` |
+| `transformResponse(text, xhr, elt)` | `htmx_after_response` | Modify `detail.ctx.swap.content` |
 | `handleSwap(style, target, fragment)` | `handle_swap(style, target, fragment, swapSpec)` | Extra `swapSpec` param, return truthy |
 | `encodeParameters(xhr, params, elt)` | `htmx_before_request` | Modify the final `detail.ctx.request.body` and `.headers` |
 | `getSelectors()` | `htmx_after_init` | Check `api.attributeValue(elt, "attr")` instead |

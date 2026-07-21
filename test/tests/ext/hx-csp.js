@@ -42,7 +42,7 @@ describe('hx-csp extension', function() {
         mockResponse('GET', '/test', '<script type="application/json" nonce="test-nonce">{}</script>')
         let button = createProcessedHTML('<button hx-get="/test" hx-target="#target" hx-nonce="test-nonce">Load</button><div id="target"></div>')
         let responseContent
-        button.addEventListener('htmx:after:request', event => {
+        button.addEventListener('htmx:after:response', event => {
             responseContent = event.detail.ctx.swap.content
         })
 

@@ -1,13 +1,17 @@
 ---
 title: "htmx:before:response"
-description: "Fires after `fetch()`, before `response.text()`"
+description: "After a response is received but before the body is consumed"
 ---
 
 The `htmx:before:response` event fires after a fetch response arrives but before htmx reads the response body.
 
+See the [request → response → swap lifecycle](/reference/events).
+
 ## When It Fires
 
-After the network response is received, before the body is consumed or any swap begins.
+After [`htmx:after:request`](/reference/events/htmx-after-request), before the body is consumed or any swap begins.
+
+Call `preventDefault()` to skip body consumption and all later response and swap processing.
 
 ## Event Detail
 

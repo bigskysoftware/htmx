@@ -451,14 +451,19 @@
           "doc-url": "https://four.htmx.org/reference/events/htmx-before-request"
         },
         {
+          "name": "after:request",
+          "description": "Fires immediately after `fetch()` resolves. `detail.ctx.response` is available, but the body is unconsumed.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-request"
+        },
+        {
           "name": "before:response",
-          "description": "Fires after response headers are received but before the body is consumed. `detail.ctx.response.raw` is the unconsumed `Response`.",
+          "description": "Fires before the response body is consumed. `detail.ctx.response.raw` is the unconsumed `Response`.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-before-response"
         },
         {
-          "name": "after:request",
-          "description": "Fires after the response body is consumed. `detail.ctx.swap.content` contains the response content.",
-          "doc-url": "https://four.htmx.org/reference/events/htmx-after-request"
+          "name": "after:response",
+          "description": "Fires after the response body is stored in `detail.ctx.swap.content`.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-after-response"
         },
         {
           "name": "response:error",
@@ -476,9 +481,9 @@
           "doc-url": "https://four.htmx.org/reference/events/htmx-after-actions"
         },
         {
-          "name": "finally:request",
-          "description": "Always fires at the end of the request lifecycle. `detail.ctx` is the request context.",
-          "doc-url": "https://four.htmx.org/reference/events/htmx-finally-request"
+          "name": "done",
+          "description": "Fires when the admitted request pipeline ends, whether it completes, fails, or is cancelled. `detail.ctx` is the request context.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-done"
         },
         {
           "name": "error",

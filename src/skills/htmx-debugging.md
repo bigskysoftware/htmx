@@ -42,7 +42,8 @@ Paste this in the console to monitor the request/swap lifecycle:
 
 ```js
 ['htmx:config:request', 'htmx:before:request', 'htmx:after:request',
- 'htmx:before:swap', 'htmx:after:swap', 'htmx:finally:swap', 'htmx:error', 'htmx:finally:request']
+ 'htmx:before:response', 'htmx:after:response', 'htmx:response:error',
+ 'htmx:before:swap', 'htmx:after:swap', 'htmx:finally:swap', 'htmx:error', 'htmx:done']
 .forEach(evt => document.body.addEventListener(evt, e => {
     console.log(evt, e.detail?.ctx?.request?.action, e.detail?.ctx?.response?.status, e.detail);
 }));

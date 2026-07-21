@@ -48,7 +48,7 @@
             hx-post="/redirect"
             hx-disabled-elt="#btn2"
             hx-indicator="#spinner2"
-            hx-on:htmx:finally:request="event.detail.ctx.keepIndicators = false">
+            hx-on:htmx:done="event.detail.ctx.keepIndicators = false">
         Click me (indicators cleared on redirect)
     </button>
 

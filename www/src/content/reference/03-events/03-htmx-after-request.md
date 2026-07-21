@@ -1,13 +1,17 @@
 ---
 title: "htmx:after:request"
-description: "Fires after `response.text()`"
+description: "Immediately after fetch resolves"
 ---
 
-The `htmx:after:request` event fires immediately after the `fetch()` call resolves and the response is received.
+The `htmx:after:request` event fires immediately after `fetch()` resolves and `ctx.response` is populated.
+
+See the [request → response → swap lifecycle](/reference/events).
 
 ## When It Fires
 
-After the server responds, before content swapping occurs.
+Before [`htmx:before:response`](/reference/events/htmx-before-response) and before htmx reads the response body.
+
+Cancelling this event has no effect.
 
 ## Event Detail
 
@@ -18,7 +22,6 @@ After the server responds, before content swapping occurs.
 ```javascript
 htmx.on('htmx:after:request', (evt) => {
   console.log('Response status:', evt.detail.ctx.response.status);
-  // Hide loading indicator
 });
 ```
 

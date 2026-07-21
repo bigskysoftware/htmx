@@ -17,7 +17,7 @@ server.get("/demo", () => {
   <div id="messages" class="flex-1 overflow-y-auto space-y-3 pb-3 pr-3 scrollbar-subtle"></div>
   <form class="flex gap-2 shrink-0 mt-3"
         hx-post="/chat" hx-target="#messages" hx-swap="beforeend"
-        hx-on:htmx:after:request="this.reset()"
+        hx-on:htmx:done="this.reset()"
         hx-on:htmx:after:swap="document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight">
     <input type="text" name="message" placeholder="Send a message…" required autocomplete="off"
            class="${inputCls}">
@@ -59,7 +59,7 @@ On the client, wrap your inputs in a `<form>` and use [`hx-on`](/reference/attri
 <form hx-post="/chat"
       hx-target="#messages"
       hx-swap="beforeend"
-      hx-on:htmx:after:request="this.reset()">
+      hx-on:htmx:done="this.reset()">
     <input type="text" name="message">
     <button>Send</button>
 </form>
@@ -69,7 +69,7 @@ On the client, wrap your inputs in a `<form>` and use [`hx-on`](/reference/attri
 - [`hx-post`](/reference/attributes/hx-post) submits the form to `/chat`.
 - [`hx-target`](/reference/attributes/hx-target) points at the `#messages` container.
 - [`hx-swap`](/reference/attributes/hx-swap)=[`"beforeend"`](/reference/attributes/hx-swap#beforeend) appends each new message to the bottom.
-- [`hx-on:htmx:after:request`](/reference/attributes/hx-on) listens for the [`htmx:after:request`](/reference/events/htmx-after-request) event and calls `this.reset()` to clear the form.
+- [`hx-on:htmx:done`](/reference/attributes/hx-on) listens for the [`htmx:done`](/reference/events/htmx-done) event and calls `this.reset()` to clear the form.
 
 On the server, respond with the new message:
 
@@ -90,7 +90,7 @@ The `reset()` method is only available on `<form>` elements. For standalone inpu
         hx-target="#messages"
         hx-swap="beforeend"
         hx-include="#chat-input"
-        hx-on:htmx:after:request="document.getElementById('chat-input').value = ''">
+        hx-on:htmx:done="document.getElementById('chat-input').value = ''">
     Send
 </button>
 ```

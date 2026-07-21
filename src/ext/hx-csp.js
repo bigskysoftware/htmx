@@ -171,7 +171,7 @@
 
         // Rewrites response nonces to pageNonce in raw HTML before fragment parsing.
         // Always scrubs stolen pageNonce. Only promotes response nonce for verified same-origin.
-        htmx_after_request: (elt, detail) => {
+        htmx_after_response: (elt, detail) => {
             if (!pageNonce) return false;
             let ctx = detail.ctx;
 

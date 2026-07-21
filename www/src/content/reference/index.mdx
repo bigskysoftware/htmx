@@ -19,7 +19,7 @@ export const ATTRIBUTE_GROUPS = [
 ];
 export const REQUEST_HEADERS = ['HX-Request', 'HX-Request-Type', 'HX-Current-URL', 'HX-Source', 'HX-Target', 'HX-Boosted', 'HX-History-Restore-Request'];
 export const EVENT_GROUPS = [
-    { label: 'Request Lifecycle', titles: ['htmx:config:request', 'htmx:confirm', 'htmx:before:request', 'htmx:before:response', 'htmx:after:request', 'htmx:response:error', 'htmx:before:swap', 'htmx:before:settle', 'htmx:after:settle', 'htmx:after:swap', 'htmx:finally:request', 'htmx:error', 'htmx:abort'] },
+    { label: 'Request Lifecycle', titles: ['htmx:config:request', 'htmx:confirm', 'htmx:before:request', 'htmx:after:request', 'htmx:before:response', 'htmx:after:response', 'htmx:response:error', 'htmx:before:actions', 'htmx:after:actions', 'htmx:before:swap', 'htmx:before:settle', 'htmx:after:settle', 'htmx:after:swap', 'htmx:finally:swap', 'htmx:done', 'htmx:error', 'htmx:abort'] },
     { label: 'Elements', titles: ['htmx:before:init', 'htmx:after:init', 'htmx:before:process', 'htmx:after:process', 'htmx:process:{type}', 'htmx:after:implicitInheritance', 'htmx:before:cleanup', 'htmx:after:cleanup', 'load'] },
     { label: 'History', titles: ['htmx:before:history:update', 'htmx:after:history:update', 'htmx:after:history:push', 'htmx:after:history:replace', 'htmx:before:history:restore'] },
     { label: 'View Transitions', titles: ['htmx:before:viewTransition', 'htmx:after:viewTransition'] },

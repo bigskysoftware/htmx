@@ -636,6 +636,8 @@ var htmx = (() => {
                     status: response.status,
                     headers: response.headers,
                 }
+                this.__trigger(elt, "htmx:after:request", {ctx});
+
                 // Swap directives update ctx.swap; the rest are actions.
                 let {retarget, reswap, reselect, ...headerActions} = this.__extractResponseActions(ctx.response);
                 ctx.actions = {...ctx.actions, ...headerActions};
@@ -650,9 +652,10 @@ var htmx = (() => {
                         ...this.__parseSwapSpec(reswap)
                     };
                 }
+
                 if (!this.__trigger(elt, "htmx:before:response", {ctx})) return;
                 ctx.swap.content = await response.text();
-                if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
+                this.__trigger(elt, "htmx:after:response", {ctx});
 
                 if (ctx.response.status >= 400) {
                     this.__trigger(elt, "htmx:response:error", {ctx})
@@ -683,13 +686,13 @@ var htmx = (() => {
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
                 clearTimeout(ctx.requestTimeout);
-                this.__trigger(elt, "htmx:finally:request", {ctx})
                 if (!ctx.keepIndicators) {
                     this.__hideIndicators(indicators);
                     this.__enableElements(disableElements);
                 }
 
                 requestQueue.finish()
+                this.__trigger(elt, "htmx:done", {ctx})
                 // start callbacks are intentionally not awaited; __issueRequest has its own try/catch
                 requestQueue.startNext()
             }

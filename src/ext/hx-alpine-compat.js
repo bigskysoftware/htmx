@@ -103,7 +103,7 @@
             maybeFlush();
         },
 
-        htmx_finally_request: (elt, detail) => {
+        htmx_done: (elt, detail) => {
             if (!detail.ctx._alpineFlushed) maybeFlush();
         }
     });

@@ -8,6 +8,42 @@ describe('__issueRequest unit tests', function() {
         cleanupTest();
     });
 
+    it('orders the request, response, and swap lifecycle', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+        let events = []
+
+        for (let name of ['before:request', 'after:request', 'before:response', 'after:response', 'before:swap', 'after:swap', 'finally:swap', 'done']) {
+            div.addEventListener(`htmx:${name}`, () => events.push(name))
+        }
+        ctx.fetch = async () => {
+            events.push('fetch')
+            return {
+                status: 200,
+                headers: new Headers(),
+                text: async () => {
+                    events.push('read body')
+                    return ''
+                }
+            }
+        }
+
+        await htmx.__issueRequest(ctx)
+
+        assert.deepEqual(events, [
+            'before:request',
+            'fetch',
+            'after:request',
+            'before:response',
+            'read body',
+            'after:response',
+            'before:swap',
+            'after:swap',
+            'finally:swap',
+            'done'
+        ])
+    })
+
     it('triggers htmx:before:request event', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
@@ -42,6 +78,44 @@ describe('__issueRequest unit tests', function() {
 
         await htmx.__issueRequest(ctx)
         assert.isTrue(afterRequestFired)
+    })
+
+    it('continues response processing when htmx:after:request is cancelled', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+        let bodyRead = false
+
+        div.addEventListener('htmx:after:request', event => event.preventDefault())
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers(),
+            text: async () => {
+                bodyRead = true
+                return ''
+            }
+        })
+
+        await htmx.__issueRequest(ctx)
+
+        assert.isTrue(bodyRead)
+    })
+
+    it('continues swap processing when htmx:after:response is cancelled', async function () {
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+        let beforeSwapFired = false
+
+        div.addEventListener('htmx:after:response', event => event.preventDefault())
+        div.addEventListener('htmx:before:swap', () => beforeSwapFired = true)
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers(),
+            text: async () => 'Response'
+        })
+
+        await htmx.__issueRequest(ctx)
+
+        assert.isTrue(beforeSwapFired)
     })
 
     it('calls custom fetch implementation', async function () {
@@ -177,17 +251,17 @@ describe('__issueRequest unit tests', function() {
         assert.equal(capturedError, testError)
     })
 
-    it('always triggers htmx:finally:request', async function () {
+    it('always triggers htmx:done', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
 
-        let finallyFired = false
-        div.addEventListener('htmx:finally:request', () => finallyFired = true)
+        let doneFired = false
+        div.addEventListener('htmx:done', () => doneFired = true)
 
         ctx.fetch = async () => { throw new Error('fail') }
 
         await htmx.__issueRequest(ctx)
-        assert.isTrue(finallyFired)
+        assert.isTrue(doneFired)
     })
 
 

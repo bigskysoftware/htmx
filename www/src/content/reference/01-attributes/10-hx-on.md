@@ -24,7 +24,7 @@ For htmx events, use `::` as shorthand for `htmx:`:
 ```html
 <!-- hx-on::before:request is shorthand for hx-on:htmx:before:request -->
 <button hx-get="/api" hx-on::before:request="showSpinner()">
-<button hx-get="/api" hx-on::after:request="hideSpinner()">
+<button hx-get="/api" hx-on::done="hideSpinner()">
 ```
 
 **Extended form**

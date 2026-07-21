@@ -1,9 +1,11 @@
 ---
 title: "htmx:before:request"
-description: "Fires immediately before `fetch()`"
+description: "Immediately before fetch is called"
 ---
 
 The `htmx:before:request` event fires immediately before the `fetch()` call is made.
+
+See the [request → response → swap lifecycle](/reference/events).
 
 ## When It Fires
 
