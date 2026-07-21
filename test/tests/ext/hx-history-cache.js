@@ -275,7 +275,6 @@ describe('hx-history-cache extension', function () {
     });
 
     it('cache:hit cancellation falls through to server fetch', async function () {
-        let cachedPath = location.pathname + location.search;
         createProcessedHTML(`
             <div hx-history-elt><p>cached</p></div>
             <button hx-get="/page2" hx-push-url="/page2">go</button>
@@ -288,14 +287,14 @@ describe('hx-history-cache extension', function () {
 
         let index = JSON.parse(sessionStorage.getItem('htmx-history-index') || '[]');
         let htmxId = index[index.length - 1];
-        history.replaceState({ htmx: true, htmxId }, '', cachedPath);
+        history.replaceState({ htmx: true, htmxId }, '', '/page1');
         document.addEventListener('htmx:history:cache:hit', e => e.preventDefault(), { once: true });
         document.addEventListener('htmx:before:swap', e => e.preventDefault(), { once: true });
 
         let serverFetched = false;
-        mockResponse('GET', cachedPath, () => { serverFetched = true; return '<p>from server</p>'; });
+        mockResponse('GET', '/page1', () => { serverFetched = true; return '<p>from server</p>'; });
 
-        htmx.__restoreHistory(history.state, cachedPath);
+        htmx.__restoreHistory(history.state, '/page1');
         await forRequest();
 
         assert.isTrue(serverFetched);

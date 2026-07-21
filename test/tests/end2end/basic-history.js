@@ -380,10 +380,12 @@ describe('scroll restoration on history traversal', function() {
         htmx.process(playground());
         history.replaceState({htmx: true}, '', '/scroll-page-a');
         window.scrollTo(0, 500);
+        await new Promise(r => setTimeout(r, 20));
 
         htmx.__pushUrlIntoHistory('/scroll-page-b');
         playground().innerHTML = '<main hx-history-elt><p>page B</p></main>';
         window.scrollTo(0, 0);
+        await new Promise(r => setTimeout(r, 20));
 
         mockResponse('GET', '/scroll-page-a', () => new Promise(resolve =>
             setTimeout(() => resolve(new MockResponse(
@@ -391,6 +393,7 @@ describe('scroll restoration on history traversal', function() {
             )), 100)));
 
         history.back();
+        await new Promise(r => setTimeout(r, 20));
         await forRequest(400);
         await untilScrollY(500);
 
@@ -405,11 +408,11 @@ describe('scroll restoration on history traversal', function() {
         htmx.process(playground());
         history.replaceState({htmx: true}, '', '/scroll-page-a');
         window.scrollTo(0, 500);
-
+        await new Promise(r => setTimeout(r, 10));
         htmx.__pushUrlIntoHistory('/scroll-page-b');
         playground().innerHTML = '<main hx-history-elt><div style="height:3000px">page B</div></main>';
         window.scrollTo(0, 0);
-
+        await new Promise(r => setTimeout(r, 10));
         mockResponse('GET', '/scroll-page-a',
             '<html><body><main hx-history-elt><div style="height:3000px">page A</div></main></body></html>');
         mockResponse('GET', '/scroll-page-b',
@@ -418,12 +421,13 @@ describe('scroll restoration on history traversal', function() {
         history.back();
         await forRequest();
         await untilScrollY(500);
-
+        await new Promise(r => setTimeout(r, 10));
         window.scrollTo(0, 800);
+        await new Promise(r => setTimeout(r, 10));
         history.forward();
         await forRequest();
         await untilScrollY(0);
-
+        await new Promise(r => setTimeout(r, 10));
         history.back();
         await forRequest();
         await untilScrollY(800);
@@ -440,10 +444,12 @@ describe('scroll restoration on history traversal', function() {
         location.hash = '#events';
         assert.isNull(history.state);
         window.scrollTo(0, 500);
+        await new Promise(r => setTimeout(r, 20));
 
         htmx.__pushUrlIntoHistory('/scroll-hxget');
         playground().innerHTML = '<main hx-history-elt><p>hx-get page</p></main>';
         window.scrollTo(0, 0);
+        await new Promise(r => setTimeout(r, 20));
 
         mockResponse('GET', '/scroll-ref', () => new Promise(resolve =>
             setTimeout(() => resolve(new MockResponse(
