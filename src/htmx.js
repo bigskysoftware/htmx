@@ -453,9 +453,9 @@ var htmx = (() => {
             }
 
             // Apply hx-config overrides
-            let configAttr = this.__attributeValue(sourceElement, "hx-config");
-            if (configAttr) {
-                HCON.merge(configAttr, ctx.request);
+            let hxConfig = this.__attributeValue(sourceElement, "hx-config");
+            if (hxConfig) {
+                HCON.merge(hxConfig, ctx.request);
                 ctx.request.mode = this.config.mode;  // mode is security-sensitive, never allow per-element override
             }
             return ctx;
@@ -706,19 +706,19 @@ var htmx = (() => {
         }
 
         __determineSyncStrategy(elt) {
-            let syncValue = this.__attributeValue(elt, "hx-sync");
-            if (!syncValue) return "queue first";
-            let strategy = syncValue.split(":").pop().trim();
+            let hxSync = this.__attributeValue(elt, "hx-sync");
+            if (!hxSync) return "queue first";
+            let strategy = hxSync.split(":").pop().trim();
             return /^(drop|abort|replace|queue)/.test(strategy) ? strategy : "queue first";
         }
 
         __getRequestQueue(elt) {
-            let syncValue = this.__attributeValue(elt, "hx-sync");
+            let hxSync = this.__attributeValue(elt, "hx-sync");
             let syncElt = elt
-            if (syncValue) {
-                let selector = syncValue.includes(":")
-                    ? syncValue.slice(0, syncValue.lastIndexOf(":")).trim()
-                    : (/^(drop|abort|replace|queue)/.test(syncValue) ? null : syncValue);
+            if (hxSync) {
+                let selector = hxSync.includes(":")
+                    ? hxSync.slice(0, hxSync.lastIndexOf(":")).trim()
+                    : (/^(drop|abort|replace|queue)/.test(hxSync) ? null : hxSync);
                 if (selector) syncElt = this.__findOrWarn(elt, selector, "hx-sync") || elt;
             }
             return this.__htmxState(syncElt).rq ||= new ReqQ()
@@ -752,13 +752,11 @@ var htmx = (() => {
         }
 
         __initializeTriggers(elt, initialHandler = elt._htmx.eventHandler) {
-            let specString = this.__attributeValue(elt, "hx-trigger");
-            if (!specString) {
-                specString = elt.matches("form") ? "submit" :
-                    elt.matches("input:not([type=button]):not([type=submit]),select,textarea") ? "change" :
-                        "click";
-            }
-            this.__onTrigger(elt, specString, initialHandler)
+            let hxTrigger = this.__attributeValue(elt, "hx-trigger");
+            let trigger = hxTrigger || (elt.matches("form") ? "submit" :
+                elt.matches("input:not([type=button]):not([type=submit]),select,textarea") ? "change" :
+                    "click");
+            this.__onTrigger(elt, trigger, initialHandler)
         }
 
         // Wire up event listeners with full modifier support (once, prevent, stop,
@@ -975,12 +973,12 @@ var htmx = (() => {
         }
 
         __maybeBoost(elt) {
-            let boostValue = this.__attributeValue(elt, "hx-boost");
-            if (boostValue && boostValue !== "false" && this.__shouldBoost(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
+            let hxBoost = this.__attributeValue(elt, "hx-boost");
+            if (hxBoost && hxBoost !== "false" && this.__shouldBoost(elt) && this.__trigger(elt, "htmx:before:init", {}, true)) {
                 let htmxProp = this.__htmxProp(elt);
                 htmxProp.initialized = true;
                 htmxProp.eventHandler = this.__createHtmxEventHandler(elt);
-                htmxProp.boosted = boostValue;
+                htmxProp.boosted = hxBoost;
                 let eventName = elt.matches('a') ? 'click' : 'submit';
                 elt._htmx.listeners.push({fromElt: elt, eventName, handler: elt._htmx.eventHandler});
                 elt.addEventListener(eventName, elt._htmx.eventHandler);
@@ -1746,13 +1744,13 @@ var htmx = (() => {
         }
 
         __showIndicators(elt) {
-            let indicatorsSelector = this.__attributeValue(elt, "hx-indicator");
+            let hxIndicator = this.__attributeValue(elt, "hx-indicator");
             let indicatorElements;
-            if (!indicatorsSelector) {
+            if (!hxIndicator) {
                 if (elt === document.body) return [];
                 indicatorElements = [elt]
             } else {
-                indicatorElements = this.__findAllExt(elt, indicatorsSelector, "hx-indicator");
+                indicatorElements = this.__findAllExt(elt, hxIndicator, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
                 let s = this.__htmxState(indicator);
@@ -1773,10 +1771,10 @@ var htmx = (() => {
         }
 
         __disableElements(elt) {
-            let disabledSelector = this.__attributeValue(elt, "hx-disable");
+            let hxDisable = this.__attributeValue(elt, "hx-disable");
             let disabledElements = []
-            if (disabledSelector) {
-                disabledElements = this.__findAllExt(elt, disabledSelector, "hx-disable");
+            if (hxDisable) {
+                disabledElements = this.__findAllExt(elt, hxDisable, "hx-disable");
                 for (let indicator of disabledElements) {
                     let s = this.__htmxState(indicator);
                     s.dc = (s.dc || 0) + 1;
@@ -1809,9 +1807,9 @@ var htmx = (() => {
                 formData.append(submitter.name, submitter.value)
                 included.add(submitter);
             }
-            let includeSelector = this.__attributeValue(elt, "hx-include");
-            if (includeSelector) {
-                for (let node of this.__findAllExt(elt, includeSelector)) {
+            let hxInclude = this.__attributeValue(elt, "hx-include");
+            if (hxInclude) {
+                for (let node of this.__findAllExt(elt, hxInclude)) {
                     if (validate && node.reportValidity && !node.reportValidity()) return
                     this.__addInputValues(node, included, formData);
                 }
@@ -1857,10 +1855,10 @@ var htmx = (() => {
         }
 
         __getAttributeObject(elt, attrName, callback, scope = {}) {
-            let attrValue = this.__attributeValue(elt, attrName);
-            if (!attrValue) return null;
+            let hxAttr = this.__attributeValue(elt, attrName);
+            if (!hxAttr) return null;
 
-            let javascriptContent = this.__extractJavascriptContent(attrValue);
+            let javascriptContent = this.__extractJavascriptContent(hxAttr);
             if (javascriptContent) {
                 // Wrap in braces if not already wrapped (for htmx 2.x compatibility)
                 if (javascriptContent.indexOf('{') !== 0) {
@@ -1872,7 +1870,7 @@ var htmx = (() => {
                 });
             } else {
                 // Synchronous path - return the parsed object directly
-                callback(HCON.parse(attrValue));
+                callback(HCON.parse(hxAttr));
             }
         }
 
