@@ -42,6 +42,21 @@ describe('hx-optimistic attribute', function() {
         assert.equal(find('#result').textContent.trim(), 'Final');
     })
 
+    it('resolves extended target selectors from the source element', async function () {
+        mockResponse('POST', '/submit', 'Final')
+        const result = createProcessedHTML('<div class="result"><span>Original</span><button hx-post="/submit" hx-target="closest .result" hx-swap="innerHTML" hx-optimistic="#opt">Go</button></div><div id="opt" style="display:none">Optimistic</div>');
+        let optimisticTarget
+        find('button').addEventListener('htmx:before:request', () => {
+            optimisticTarget = document.querySelector('.hx-optimistic')?.parentElement
+        })
+
+        find('button').click()
+        await forRequest()
+
+        assert.equal(optimisticTarget, result)
+        assert.equal(result.textContent.trim(), 'Final')
+    })
+
     it('outerHTML swap hides target and inserts optimistic div after', async function () {
         mockResponse('POST', '/submit', '<div id="result">Final</div>')
         createProcessedHTML('<div id="result">Original</div><div id="opt" style="display:none">Optimistic</div><button hx-post="/submit" hx-target="#result" hx-swap="outerHTML" hx-optimistic="#opt">Go</button>');
