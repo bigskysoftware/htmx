@@ -610,7 +610,7 @@
         window.addEventListener('pagehide', () => {
             connections.forEach((connection) => {
                 if (connection.socket) {
-                    connection.socket.close(1001, 'page navigating away');
+                    connection.socket.close(1000, 'page navigating away');
                 }
             });
         });
