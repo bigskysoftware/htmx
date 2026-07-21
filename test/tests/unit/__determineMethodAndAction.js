@@ -47,4 +47,11 @@ describe('__determineMethodAndAction unit tests', function() {
         assert.equal(result.action, '/test')
     })
 
+    it('hx-method overrides the shorthand request method', function() {
+        let div = createProcessedHTML('<div hx-post="/test" hx-method="delete"></div>')
+        let result = htmx.__determineMethodAndAction(div, new Event('click'))
+        assert.equal(result.method, 'DELETE')
+        assert.equal(result.action, '/test')
+    })
+
 })

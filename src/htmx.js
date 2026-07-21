@@ -154,7 +154,6 @@ var htmx = (() => {
         #ttPolicy = { createHTML: s => s, createScript: s => s };
         #actionSelector
         #boostSelector = "a,form";
-        #verbs = ["get", "post", "put", "patch", "delete"];
         #hxOnQuery
         #transitionQueue
         #historyAbort
@@ -343,23 +342,42 @@ var htmx = (() => {
         }
 
         __determineMethodAndAction(elt, evt) {
-            let method = this.__attributeValue(elt, "hx-method");
-            let action = this.__attributeValue(elt, "hx-action");
-            if (!action) {
-                for (let verb of this.#verbs) {
-                    let verbAction = this.__attributeValue(elt, "hx-" + verb);
-                    if (verbAction != null) {
-                        action = verbAction;
-                        method = verb;
-                        break;
-                    }
-                }
-            }
-            if (this.__isBoosted(elt)) {
-                action ||= evt.submitter?.getAttribute?.("formAction") || elt.getAttribute(elt.matches("a") ? "href" : "action");
-            }
-            method ||= evt.submitter?.getAttribute?.("formmethod") || elt.getAttribute("method") || "GET";
-            return {action, method: method.toUpperCase()};
+            let hxMethod = this.__attributeValue(elt, "hx-method");
+            let hxAction = this.__attributeValue(elt, "hx-action");
+
+            let hxGet = this.__attributeValue(elt, "hx-get");
+            let hxPost = this.__attributeValue(elt, "hx-post");
+            let hxPut = this.__attributeValue(elt, "hx-put");
+            let hxPatch = this.__attributeValue(elt, "hx-patch");
+            let hxDelete = this.__attributeValue(elt, "hx-delete");
+
+            let formMethod = evt.submitter?.getAttribute?.("formmethod") || elt.getAttribute("method");
+            let formAction = evt.submitter?.getAttribute?.("formAction") || elt.getAttribute("action");
+            let anchorHref = elt.getAttribute("href");
+
+            return {
+                action:
+                    hxAction ||
+                    (
+                        hxGet ??
+                        hxPost ??
+                        hxPut ??
+                        hxPatch ??
+                        hxDelete
+                    ) ||
+                    this.__isBoosted(elt) && (anchorHref || formAction),
+
+                method: (
+                    hxMethod ||
+                    (hxGet != null ? "GET" :
+                    hxPost != null ? "POST" :
+                    hxPut != null ? "PUT" :
+                    hxPatch != null ? "PATCH" :
+                    hxDelete != null && "DELETE") ||
+                    formMethod ||
+                    "GET"
+                ).toUpperCase()
+            };
         }
 
         __htmxProp(elt) {
