@@ -692,6 +692,36 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    it('hx-sse:connect respects hx-select', async function() {
+        const stream = mockStreamResponse('/select-test');
+        createProcessedHTML('<div hx-sse:connect="/select-test" hx-select=".message">Waiting</div>');
+
+        await htmx.timeout(1);
+
+        stream.send('<p>Ignored</p><p class="message">Selected</p>');
+        await waitForEvent('htmx:after:sse:message');
+
+        assertTextContentIs('div', 'Selected');
+        assert.isUndefined(find('div > p:not(.message)'));
+
+        stream.close();
+    });
+
+    it('hx-sse:connect respects hx-select-oob', async function() {
+        const stream = mockStreamResponse('/select-oob-test');
+        createProcessedHTML('<div id="stream" hx-sse:connect="/select-oob-test" hx-select-oob="#status">Waiting</div><div id="status">Offline</div>');
+
+        await htmx.timeout(1);
+
+        stream.send('<p>Message</p><div id="status">Online</div>');
+        await waitForEvent('htmx:after:sse:message');
+
+        assertTextContentIs('#stream', 'Message');
+        assertTextContentIs('#status', 'Online');
+
+        stream.close();
+    });
+
     it('hx-sse:connect respects hx-swap style', async function() {
         const stream = mockStreamResponse('/append-test');
         createProcessedHTML('<div hx-sse:connect="/append-test" hx-swap="beforeend">start</div>');
@@ -1056,6 +1086,21 @@ describe('hx-sse SSE extension', function() {
         await htmx.timeout(1);
 
         assert.equal(fetchMock.getLastCall().request.headers['Accept'], 'text/html, text/event-stream');
+
+        stream.close();
+    });
+
+    it('preserves existing Accept values', async function() {
+        const stream = mockStreamResponse('/accept-header-existing');
+        createProcessedHTML('<button hx-get="/accept-header-existing" hx-headers=\'"Accept":"text/html, multipart/mixed"\'>Go</button>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        assert.equal(
+            fetchMock.getLastCall().request.headers.Accept,
+            'text/html, multipart/mixed, text/event-stream'
+        );
 
         stream.close();
     });
