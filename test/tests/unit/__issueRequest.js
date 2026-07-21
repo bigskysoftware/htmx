@@ -190,24 +190,6 @@ describe('__issueRequest unit tests', function() {
         assert.isTrue(finallyFired)
     })
 
-    it('updates ctx.status through request lifecycle', async function () {
-        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
-        let ctx = htmx.__createRequestContext(div, new Event('click'))
-
-        let statuses = []
-        div.addEventListener('htmx:before:request', () => statuses.push(ctx.status))
-
-        ctx.fetch = async () => {
-            statuses.push(ctx.status)
-            return { status: 200, headers: new Headers(), text: async () => '' }
-        }
-
-        await htmx.__issueRequest(ctx)
-        statuses.push(ctx.status)
-
-        assert.include(statuses, 'issuing')
-        assert.include(statuses, 'swapped')
-    })
 
     it('processes next queued request after completion', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none" hx-sync="queue all"></div>')
