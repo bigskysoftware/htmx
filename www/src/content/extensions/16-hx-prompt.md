@@ -1,6 +1,6 @@
 ---
 title: "hx-prompt"
-description: "Prompt before a request, send the answer as a header"
+description: "Prompt before requests with `hx-prompt='Reason?'`"
 category: "UX"
 icon: "icon-[mdi--comment-question-outline]"
 keywords: ["prompt", "input", "header", "hx-prompt", "htmx2"]

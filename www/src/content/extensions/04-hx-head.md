@@ -1,6 +1,6 @@
 ---
 title: "hx-head"
-description: "Merge head tags (styles, scripts) into htmx responses"
+description: "Merge `<head>` tags with `hx-head='merge'`"
 category: "Swaps"
 icon: "icon-[mdi--page-layout-header]"
 keywords: ["head", "styles", "scripts", "merge", "append"]

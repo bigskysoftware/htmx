@@ -1,6 +1,6 @@
 ---
 title: "hx-history-cache"
-description: "Cache pages in sessionStorage for instant back/forward"
+description: "Restore back/forward pages from `sessionStorage`"
 category: "Performance"
 icon: "icon-[mdi--history]"
 keywords: ["history", "cache", "sessionStorage", "back", "forward", "navigation"]

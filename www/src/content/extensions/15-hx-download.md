@@ -1,7 +1,7 @@
 ---
 title: "hx-download"
-description: "Save responses as file downloads with progress events"
-category: "UX"
+description: "Download files with `hx-swap='download'`"
+category: "Swaps"
 icon: "icon-[mdi--download-outline]"
 keywords: ["download", "file", "save", "progress", "streaming"]
 ---

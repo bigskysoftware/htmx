@@ -52,7 +52,7 @@ const isHomePage = isCollectionRootPage && collection === 'home';
 const page = isCollectionRootPage ? folder! : isSubfolderIndexPage ? subfolder! : file;
 
 const {Content, headings: pageHeadings} = await render(page);
-const {title, description, keywords} = page.frontmatter;
+const {title, description, keywords, icon} = page.frontmatter;
 
 // Display flags
 const isReference = collection === 'reference';
@@ -108,7 +108,7 @@ const editPageUrl = `https://github.com/bigskysoftware/htmx/edit/four-dev/www/sr
                 <div class:list={["pt-6 sm:pt-8 lg:pt-12 flex-1 w-full relative starting:opacity-0 transition", useWideLayout ? 'max-w-4xl' : 'max-w-prose']}>
                     <Breadcrumbs breadcrumbs={page.breadcrumbs} />
 
-                    {includeHeader && <PageHeader {title} {description} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
+                    {includeHeader && <PageHeader {title} {description} {icon} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
 
                     <article class:list={["prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none", (isDocsRoot || isReferenceIndex || isEssaysIndex || isPatternsIndex || isExtensionsIndex) && "sticky-headers"]}>
                         {includeMockServer && <script is:inline set:html={mockServerScript}></script>}

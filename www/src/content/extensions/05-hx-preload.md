@@ -1,6 +1,6 @@
 ---
 title: "hx-preload"
-description: "Preload content on hover for instant page loads"
+description: "Preload on hover with `hx-preload='mouseover'`"
 category: "Performance"
 icon: "icon-[mdi--rocket-launch-outline]"
 keywords: ["preload", "prefetch", "performance", "hover", "mousedown"]
