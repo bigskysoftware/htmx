@@ -1,9 +1,41 @@
 describe('hx-live extension', function () {
 
     let extBackup;
+    let liveConfigBackup;
+
+    async function flushMicrotasks() {
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+    }
+
+    function installFakeTimeouts() {
+        let setTimeout = window.setTimeout;
+        let clearTimeout = window.clearTimeout;
+        let timers = [];
+        window.setTimeout = (fn, delay = 0, ...args) => {
+            let timer = { delay, run: () => fn(...args) };
+            timers.push(timer);
+            return timer;
+        };
+        window.clearTimeout = timer => {
+            let index = timers.indexOf(timer);
+            if (index >= 0) timers.splice(index, 1);
+        };
+        return {
+            timers: () => timers,
+            run: () => timers.splice(0).forEach(timer => timer.run()),
+            restore: () => {
+                window.setTimeout = setTimeout;
+                window.clearTimeout = clearTimeout;
+            }
+        };
+    }
 
     before(async () => {
         extBackup = backupExtensions();
+        liveConfigBackup = htmx.config.live;
+        htmx.config.live = { ...liveConfigBackup, inputDebounce: 0 };
         clearExtensions();
         htmx.config.extensions = 'hx-live';
         htmx.__approvedExt = 'hx-live';
@@ -18,6 +50,8 @@ describe('hx-live extension', function () {
 
     after(() => {
         restoreExtensions(extBackup);
+        if (liveConfigBackup === undefined) delete htmx.config.live;
+        else htmx.config.live = liveConfigBackup;
     });
 
     beforeEach(() => { setupTest(this.currentTest); });
@@ -61,6 +95,72 @@ describe('hx-live extension', function () {
         sel.dispatchEvent(new Event('change', { bubbles: true }));
         await htmx.timeout(5);
         out.dataset.v.should.equal('b');
+    });
+
+    it('debounces input and cleans up its listener and timer', async function() {
+        htmx.live.refresh();
+        await flushMicrotasks();
+        let clock = installFakeTimeouts();
+        let removeEventListener = document.removeEventListener;
+        let removed = false;
+        delete htmx.config.live.inputDebounce;
+        window.__liveInputCount = 0;
+        try {
+            let input = createProcessedHTML(`
+                <input>
+                <output hx-live="window.__liveInputCount++"></output>
+            `);
+            await flushMicrotasks();
+            let initial = window.__liveInputCount;
+
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            await flushMicrotasks();
+            window.__liveInputCount.should.equal(initial);
+            clock.timers().length.should.equal(1);
+            clock.timers()[0].delay.should.equal(100);
+            clock.run();
+            await flushMicrotasks();
+            window.__liveInputCount.should.equal(initial + 1);
+
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+
+            document.removeEventListener = function(type, ...args) {
+                if (type === 'input') removed = true;
+                return removeEventListener.call(this, type, ...args);
+            };
+            htmx.__cleanup(playground());
+            htmx.live.refresh();
+            await flushMicrotasks();
+            removed.should.equal(true);
+            clock.timers().length.should.equal(0);
+            clock.run();
+            await flushMicrotasks();
+            window.__liveInputCount.should.equal(initial + 1);
+        } finally {
+            htmx.config.live.inputDebounce = 0;
+            document.removeEventListener = removeEventListener;
+            clock.restore();
+            delete window.__liveInputCount;
+        }
+    });
+
+    it('parses the configured input debounce', async function() {
+        htmx.live.refresh();
+        await flushMicrotasks();
+        let clock = installFakeTimeouts();
+        htmx.config.live.inputDebounce = '20ms';
+        try {
+            let input = createProcessedHTML('<input><output hx-live=""></output>');
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            clock.timers()[0].delay.should.equal(20);
+            clock.run();
+            await flushMicrotasks();
+        } finally {
+            htmx.config.live.inputDebounce = 0;
+            clock.restore();
+        }
     });
 
     it('recomputes on DOM mutation (attribute change)', async function() {
@@ -704,6 +804,20 @@ describe('hx-live extension', function () {
         tabs[2].getAttribute('aria-selected').should.equal('true');
     });
 
+    it('take() moves a property-backed attribute without changing its property', function() {
+        playground().innerHTML = '<input value="source"><input>';
+        let [source, target] = playground().querySelectorAll('input');
+        source.value = 'edited';
+        target.value = 'keep';
+
+        htmx.live.q(target).take('value');
+
+        assert.isNull(source.getAttribute('value'));
+        source.value.should.equal('edited');
+        target.getAttribute('value').should.equal('');
+        target.value.should.equal('keep');
+    });
+
     it('toggle() is available at top-level in hx-on expressions and applies to current element', function() {
         playground().innerHTML = `
             <button aria-pressed="false" hx-on:click="toggle('.active'); toggle('aria-pressed')">x</button>
@@ -1174,26 +1288,33 @@ describe('hx-live extension', function () {
         div.classList.contains('baz').should.equal(false);
     });
 
-    it('attr() setter: checked syncs property and attribute', function() {
-        playground().innerHTML = '<input id="a" type="checkbox">';
-        let inp = playground().querySelector('#a');
-        htmx.live.attr('#a', 'checked', true);
-        inp.checked.should.equal(true);
-        inp.hasAttribute('checked').should.equal(true);
-        htmx.live.attr('#a', 'checked', false);
-        inp.checked.should.equal(false);
-        inp.hasAttribute('checked').should.equal(false);
+    it('attr() setter: boolean properties sync with attribute presence', function() {
+        playground().innerHTML = '<input type="checkbox"><option></option>';
+        for (let [elt, name] of [[playground().querySelector('input'), 'checked'], [playground().querySelector('option'), 'selected']]) {
+            for (let value of [true, 1, 'yes']) {
+                htmx.live.attr(elt, name, value);
+                elt[name].should.equal(true);
+                elt.hasAttribute(name).should.equal(true);
+            }
+            for (let value of [false, null, 0, '']) {
+                htmx.live.attr(elt, name, value);
+                elt[name].should.equal(false);
+                elt.hasAttribute(name).should.equal(false);
+            }
+        }
     });
 
-    it('attr() setter: value syncs property and attribute', function() {
-        playground().innerHTML = '<input id="a" type="text">';
-        let inp = playground().querySelector('#a');
-        htmx.live.attr('#a', 'value', 'hello');
-        inp.value.should.equal('hello');
-        inp.getAttribute('value').should.equal('hello');
-        htmx.live.attr('#a', 'value', null);
-        inp.value.should.equal('');
-        inp.hasAttribute('value').should.equal(false);
+    it('attr() setter: value syncs normalized property and attribute values', function() {
+        playground().innerHTML = '<input type="text">';
+        let input = playground().querySelector('input');
+        for (let value of ['hello', 42, true, false]) {
+            htmx.live.attr(input, 'value', value);
+            input.value.should.equal(String(value));
+            input.getAttribute('value').should.equal(String(value));
+        }
+        htmx.live.attr(input, 'value', null);
+        input.value.should.equal('');
+        input.hasAttribute('value').should.equal(false);
     });
 
     it('attr() setter: regular attr null removes', function() {
@@ -1667,6 +1788,125 @@ describe('hx-live extension', function () {
     // Simple form: :attr / hx-live:attr
     // -------------------------------------------------------------------------
 
+    it('does not rewrite unchanged typed attribute results', async function() {
+        playground().innerHTML = `
+            <section id="state" data-shift-key="false" data-open="false" data-value="5">
+                <div id="items"><i class="item"></i></div>
+                <div id="drag" :draggable="!data.shiftKey"></div>
+                <output id="count" :data-count="q('.item').count"></output>
+                <button :aria-expanded="data.open"></button>
+                <div role="slider" :aria-valuenow="data.value"></div>
+            </section>
+            <i id="unrelated"></i>
+        `;
+        htmx.process(playground());
+        let state = playground().querySelector('#state');
+        let records = [];
+        let observer = new MutationObserver(mutations => records.push(...mutations));
+        observer.observe(playground(), {
+            attributes: true,
+            subtree: true,
+            attributeFilter: ['draggable', 'data-count', 'aria-expanded', 'aria-valuenow']
+        });
+
+        playground().querySelector('#unrelated').setAttribute('data-tick', '1');
+        await htmx.timeout(5);
+        records.push(...observer.takeRecords());
+        records.length.should.equal(0);
+
+        state.dataset.shiftKey = 'true';
+        state.dataset.open = 'true';
+        state.dataset.value = '6';
+        let item = document.createElement('i');
+        item.className = 'item';
+        playground().querySelector('#items').appendChild(item);
+        await htmx.timeout(5);
+        records.push(...observer.takeRecords());
+
+        records.length.should.equal(4);
+        playground().querySelector('#drag').getAttribute('draggable').should.equal('false');
+        playground().querySelector('#count').dataset.count.should.equal('2');
+        playground().querySelector('button').getAttribute('aria-expanded').should.equal('true');
+        playground().querySelector('[role="slider"]').getAttribute('aria-valuenow').should.equal('6');
+        observer.disconnect();
+    });
+
+    it('does not rewrite unchanged value, style, text, or HTML results', async function() {
+        playground().innerHTML = `
+            <section id="state" data-label="hello">
+                <input id="source" value="hello">
+                <input id="value" :value="q('#source').value">
+                <input id="range" type="range" value="50">
+                <div id="style" :style="{ width: q('#range').value + '%', opacity: '0.5' }"></div>
+                <div id="class" class="external active" :class="{ active: data.label === 'hello' }"></div>
+                <output id="text" :text="data.label"></output>
+                <output id="html" :html="'<span>' + data.label + '</span>'"></output>
+            </section>
+            <i id="unrelated"></i>
+        `;
+        htmx.process(playground());
+        let state = playground().querySelector('#state');
+        let source = playground().querySelector('#source');
+        let value = playground().querySelector('#value');
+        let range = playground().querySelector('#range');
+        let style = playground().querySelector('#style').style;
+        let classOutput = playground().querySelector('#class');
+        let textOutput = playground().querySelector('#text');
+        let htmlOutput = playground().querySelector('#html');
+        let child = htmlOutput.firstElementChild;
+        let descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+        let propertyWrites = 0;
+        Object.defineProperty(value, 'value', {
+            configurable: true,
+            get: () => descriptor.get.call(value),
+            set: result => { propertyWrites++; descriptor.set.call(value, result); }
+        });
+        let styleWrites = [];
+        let setProperty = CSSStyleDeclaration.prototype.setProperty;
+        CSSStyleDeclaration.prototype.setProperty = function(name, ...args) {
+            if (this === style) styleWrites.push(name);
+            return setProperty.call(this, name, ...args);
+        };
+        let records = [];
+        let observer = new MutationObserver(mutations => records.push(...mutations));
+        observer.observe(value, { attributes: true, attributeFilter: ['value'] });
+        observer.observe(classOutput, { attributes: true, attributeFilter: ['class'] });
+        observer.observe(textOutput, { childList: true, characterData: true, subtree: true });
+        observer.observe(htmlOutput, { childList: true, subtree: true });
+
+        try {
+            playground().querySelector('#unrelated').setAttribute('data-tick', '1');
+            await htmx.timeout(5);
+            records.push(...observer.takeRecords());
+            records.length.should.equal(0);
+            propertyWrites.should.equal(0);
+            styleWrites.should.deep.equal([]);
+            htmlOutput.firstElementChild.should.equal(child);
+
+            source.value = 'world';
+            range.value = '60';
+            state.dataset.label = 'world';
+            source.dispatchEvent(new Event('change', { bubbles: true }));
+            await htmx.timeout(5);
+            records.push(...observer.takeRecords());
+
+            assert.isAtLeast(records.length, 3);
+            propertyWrites.should.equal(1);
+            styleWrites.should.deep.equal(['width']);
+            value.value.should.equal('world');
+            value.getAttribute('value').should.equal('world');
+            style.width.should.equal('60%');
+            style.opacity.should.equal('0.5');
+            classOutput.className.should.equal('external');
+            textOutput.textContent.should.equal('world');
+            htmlOutput.firstElementChild.should.not.equal(child);
+            htmlOutput.innerHTML.should.equal('<span>world</span>');
+        } finally {
+            observer.disconnect();
+            CSSStyleDeclaration.prototype.setProperty = setProperty;
+        }
+    });
+
     it(':hidden truthy sets attribute, falsy removes', async function() {
         playground().innerHTML = `
             <input id="src" type="checkbox">
@@ -1864,6 +2104,57 @@ describe('hx-live extension', function () {
         pr.style.getPropertyValue('--pct').should.equal('0.7');
     });
 
+    it(':style applies declarations in order without replaying an unchanged result', async function() {
+        playground().innerHTML = `
+            <div style="color: blue !important"
+                 :style="'color: red; color: invalid; border: 1px solid red; border-left-color: blue'"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        let style = div.style;
+        style.color.should.equal('red');
+        style.getPropertyPriority('color').should.equal('');
+        style.borderTop.should.equal('1px solid red');
+        style.borderLeft.should.equal('1px solid blue');
+
+        let writes = [];
+        let setProperty = CSSStyleDeclaration.prototype.setProperty;
+        CSSStyleDeclaration.prototype.setProperty = function(name, ...args) {
+            if (this === style) writes.push(name);
+            return setProperty.call(this, name, ...args);
+        };
+        let records = [];
+        let observer = new MutationObserver(mutations => records.push(...mutations));
+        observer.observe(div, { attributes: true, attributeFilter: ['style'] });
+
+        try {
+            htmx.live.refresh();
+            await htmx.timeout(5);
+            records.push(...observer.takeRecords());
+            writes.should.deep.equal([]);
+            records.should.deep.equal([]);
+        } finally {
+            observer.disconnect();
+            CSSStyleDeclaration.prototype.setProperty = setProperty;
+        }
+    });
+
+    it(':style reads object values once', function() {
+        let reads = 0;
+        window.__styles = {};
+        Object.defineProperty(window.__styles, 'color', {
+            enumerable: true,
+            get: () => { reads++; return 'red'; }
+        });
+        try {
+            playground().innerHTML = '<div :style="window.__styles"></div>';
+            htmx.process(playground());
+            reads.should.equal(1);
+        } finally {
+            delete window.__styles;
+        }
+    });
+
     it(':style re-renders drop managed properties no longer in expression', async function() {
         playground().innerHTML = `
             <input id="src" value="a">
@@ -1880,6 +2171,34 @@ describe('hx-live extension', function () {
         await htmx.timeout(5);
         div.style.width.should.equal('');
         div.style.height.should.equal('20px');
+    });
+
+    it(':style replaces overlapping shorthand and longhand properties', async function() {
+        playground().innerHTML = `
+            <input id="src" value="a">
+            <div :style="q('#src').value === 'a'
+                ? 'border: 1px solid red; border-left-color: blue'
+                : q('#src').value === 'b'
+                    ? 'border-left-color: green'
+                    : 'border: 1px solid red'"></div>
+        `;
+        htmx.process(playground());
+        let input = playground().querySelector('#src');
+        let style = playground().querySelector('div').style;
+        style.borderTop.should.equal('1px solid red');
+        style.borderLeft.should.equal('1px solid blue');
+
+        input.value = 'b';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        await htmx.timeout(5);
+        style.borderTop.should.equal('');
+        style.borderLeftColor.should.equal('green');
+
+        input.value = 'c';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        await htmx.timeout(5);
+        style.borderTop.should.equal('1px solid red');
+        style.borderLeft.should.equal('1px solid red');
     });
 
     it(':style overlap: binding overwrites matching static property', async function() {

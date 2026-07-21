@@ -535,11 +535,12 @@ Client state:
 
 A single document-wide `MutationObserver` and `input` / `change` listeners trigger a recompute of every live expression. Any of these schedule one:
 
-- DOM additions, removals, attribute changes, text changes
-- `input` or `change` events from any control
+- DOM additions, removals, attribute changes, and text changes, immediately
+- `change` events from any control, immediately
+- `input` events from any control, after [`config.live.inputDebounce`](#configliveinputdebounce)
 - completion of an htmx swap (recomputes pause mid-swap, run once at the end)
 
-All expressions run in a single microtask, so multiple synchronous mutations coalesce into one recompute.
+All expressions run in a single microtask, so multiple synchronous mutations coalesce into one recompute. Multiple input events within the debounce window also coalesce.
 
 ### Self-mutation is safe
 
@@ -634,6 +635,16 @@ htmx.live.refresh();
 Selector directionals (`next`, `previous`, `closest`) need an anchor and only work inside `hx-live` / `hx-on`, not from `htmx.live.q`.
 
 ## Configuration
+
+### `config.live.inputDebounce`
+
+Debounces recomputes from `input` events. Defaults to `100ms`.
+
+```html
+<meta name="htmx-config" content="live.inputDebounce:20ms">
+```
+
+Accepts an interval (`20ms`, `0.5s`) or a number of milliseconds. Set `0` to recompute on the next task. Other triggers remain immediate.
 
 ### `config.live.bindPrefix`
 
