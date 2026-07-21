@@ -288,8 +288,8 @@
         if (!connectUrl) return;
         if (element._htmx?.sse) return; // already set up
 
-        let specString = api.attributeValue(element, 'hx-trigger') || 'load';
-        api.onTrigger(element, specString, () => {
+        let hxTrigger = api.attributeValue(element, 'hx-trigger') || 'load';
+        api.onTrigger(element, hxTrigger, () => {
             if (element._htmx?.sse) return; // prevent duplicate connections
             htmx.ajax('GET', connectUrl, {source: element});
         });
@@ -341,8 +341,9 @@
             api = internalAPI;
         },
 
-        htmx_config_request: (element, detail) => {
-            detail.ctx.request.headers['Accept'] = 'text/html, text/event-stream';
+        htmx_config_request: (element, {ctx: {request}}) => {
+            request.headers.Accept =
+                `${request.headers.Accept ?? request.headers.accept ?? 'text/html'}, text/event-stream`;
         },
 
         // Intercept SSE responses before core consumes the body
