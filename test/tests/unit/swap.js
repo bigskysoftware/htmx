@@ -511,6 +511,30 @@ describe('swap() unit tests', function() {
         document.activeElement.selectionEnd.should.equal(2)
     })
 
+    it('focusScroll:true scrolls the restored focused element into view', async function () {
+        createProcessedHTML("<input id='focused-input' value='test'>")
+        let input = find('#focused-input')
+        input.focus()
+
+        let focusOptions
+        let originalFocus = HTMLElement.prototype.focus
+        HTMLElement.prototype.focus = function(options) {
+            focusOptions = options
+            originalFocus.call(this, options)
+        }
+
+        try {
+            await htmx.swap({
+                target: '#test-playground',
+                text: "<input id='focused-input' value='test'>",
+                swap: 'innerHTML focusScroll:true'
+            })
+            focusOptions.preventScroll.should.equal(false)
+        } finally {
+            HTMLElement.prototype.focus = originalFocus
+        }
+    })
+
     it('restores focus after outerHTML swap when element has same id', async function () {
         createProcessedHTML("<div id='container'><input id='focused-input' value='test'></div>")
         let input = find('#focused-input')

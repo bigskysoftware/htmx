@@ -138,7 +138,7 @@ Controls how response content is placed relative to the target. Default: `innerH
 | `scroll:top/bottom` | Scroll target after swap                     |
 | `show:top/bottom`   | Scroll target into viewport                  |
 | `strip:true`        | Remove outer wrapper element before swapping |
-| `focus-scroll:true` | Scroll to focused element                    |
+| `focusScroll:true`  | Scroll to focused element                    |
 | `target:<selector>` | Retarget the swap                            |
 
 ## Attribute Inheritance (CRITICAL htmx 4 change)

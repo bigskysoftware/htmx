@@ -37,9 +37,9 @@ describe('__parseSwapSpec unit tests', function() {
         assert.equal(htmx.__parseSwapSpec('innerHTML strip:false').strip, false)
     })
 
-    it('parses focus-scroll modifier', function () {
-        assert.equal(htmx.__parseSwapSpec('innerHTML focus-scroll:true')['focus-scroll'], true)
-        assert.equal(htmx.__parseSwapSpec('innerHTML focus-scroll:false')['focus-scroll'], false)
+    it('parses focusScroll modifier', function () {
+        assert.equal(htmx.__parseSwapSpec('innerHTML focusScroll:true').focusScroll, true)
+        assert.equal(htmx.__parseSwapSpec('innerHTML focusScroll:false').focusScroll, false)
     })
 
     it('parses scroll modifier', function () {
