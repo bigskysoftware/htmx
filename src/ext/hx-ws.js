@@ -96,7 +96,8 @@
             socket: null,
             attempt: 0,
             timer: null,
-            pendingRequests: new Map(),       //            abortController: null,
+            pendingRequests: new Map(),
+            abortController: null,
             visibilityHandler: null,
             cancelled: false
         };
@@ -511,7 +512,7 @@
         let specString = api.attributeValue(element, 'hx-trigger');
         if (!specString) {
             specString = element.matches('form') ? 'submit' :
-                         element.matches('input:not([type=button]),select,textarea') ? 'change' :
+                         element.matches('input:not([type=button]):not([type=submit]),select,textarea') ? 'change' :
                          'click';
         }
 

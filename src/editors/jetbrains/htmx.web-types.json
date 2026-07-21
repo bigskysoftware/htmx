@@ -271,12 +271,12 @@
         {
           "name": "hx-ws:connect",
           "description": "Establishes a WebSocket connection to the specified URL. Requires the WebSocket extension.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#usage"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#hx-wsconnect"
         },
         {
           "name": "hx-ws:send",
           "description": "Sends form data and `hx-vals` to a WebSocket when the element is triggered. Requires the WebSocket extension.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#sending-messages"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#hx-wssend"
         },
         {
           "name": "hx-head",
@@ -568,42 +568,42 @@
         {
           "name": "before:ws:connection",
           "description": "Fires before a WebSocket connection attempt. `detail.connection` can be modified; set `cancelled` or cancel the event to stop connecting.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#connection-lifecycle"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxbeforewsconnection"
         },
         {
           "name": "after:ws:connection",
           "description": "Fires after a successful WebSocket connection. `detail.connection` describes the connection.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#connection-lifecycle"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxafterwsconnection"
         },
         {
           "name": "ws:close",
           "description": "Fires when a WebSocket connection closes. `detail.connection`, `detail.reason`, and `detail.code` describe the close.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#connection-lifecycle"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsclose"
         },
         {
           "name": "ws:error",
           "description": "Fires on WebSocket connection or send errors. `detail.url` and `detail.error` describe the failure.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#connection-lifecycle"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwserror"
         },
         {
           "name": "before:ws:request",
           "description": "Fires before sending a WebSocket message. `detail.headers` and `detail.body` are modifiable. Cancel to skip sending.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#request-events"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxbeforewsrequest"
         },
         {
           "name": "after:ws:request",
           "description": "Fires after a WebSocket message is sent. `detail.headers` and `detail.body` contain the sent payload.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#request-events"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxafterwsrequest"
         },
         {
           "name": "before:ws:message",
           "description": "Fires before a WebSocket message is processed. `detail.message.text`, `detail.message.json`, and `detail.message.cancelled` are available.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#message-events"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxbeforewsmessage"
         },
         {
           "name": "after:ws:message",
           "description": "Fires after a WebSocket message is processed. `detail.message.text` and `detail.message.json` are available.",
-          "doc-url": "https://four.htmx.org/extensions/hx-ws#message-events"
+          "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxafterwsmessage"
         },
         {
           "name": "download:start",
