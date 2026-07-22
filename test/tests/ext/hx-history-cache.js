@@ -49,6 +49,21 @@ describe('hx-history-cache extension', function () {
     // saveCurrentPage / basic read-back
     // -------------------------------------------------------------------------
 
+    it('does not cache a page when history is disabled', async function () {
+        let originalHistory = htmx.config.history;
+        htmx.config.history = false;
+        mockResponse('GET', '/page2', '<p>page 2</p>');
+        let button = createProcessedHTML('<button hx-get="/page2" hx-push-url="/page2">go</button>');
+
+        try {
+            button.click();
+            await forRequest();
+            assert.deepEqual(readCache(), []);
+        } finally {
+            htmx.config.history = originalHistory;
+        }
+    });
+
     it('saves current page on htmx:before:history:update', async function () {
         let savedDetail = null;
         document.addEventListener('htmx:history:cache:after:save', e => { savedDetail = e.detail; }, { once: true });

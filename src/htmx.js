@@ -1697,6 +1697,7 @@ var htmx = (() => {
         }
 
         __handleHistoryUpdate(ctx) {
+            if (!this.config.history) return;
             let action = this.__resolveHistoryAction(ctx);
             if (!action) return;
 
