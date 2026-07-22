@@ -174,8 +174,7 @@
             target: restoreSwapTarget,
             swap: restoreSwapStyle,
             text: cachedHTML,
-            transition: false,
-            _deferredHeadScripts: detail._deferredHeadScripts
+            transition: false
         };
         await htmx.swap(ctx);
 
@@ -183,7 +182,8 @@
         requestAnimationFrame(() => {
             window.scrollTo(0, item.scroll || 0);
             restoreAnnotations(getHistoryTarget());
-            api.triggerHtmxEvent(document, 'htmx:history:cache:after:restore', { item });
+            detail.item = item;
+            api.triggerHtmxEvent(document, 'htmx:history:cache:after:restore', detail);
         });
     }
 
