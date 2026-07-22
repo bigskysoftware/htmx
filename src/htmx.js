@@ -644,6 +644,9 @@ var htmx = (() => {
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
                 clearTimeout(ctx.requestTimeout);
+                if (ctx.hx?.trigger) { // HX-Trigger
+                    this.__handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
+                }
                 this.__trigger(elt, "htmx:finally:request", {ctx})
                 if (!ctx.keepIndicators) {
                     this.__hideIndicators(indicators);
@@ -672,9 +675,6 @@ var htmx = (() => {
         // Handle response headers that abort normal swap processing.
         // Returns true if the response was fully handled by a header.
         __handleHeadersAndMaybeReturnEarly(ctx) {
-            if (ctx.hx.trigger) { // HX-Trigger
-                this.__handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
-            }
             if (ctx.hx.refresh === 'true') { // HX-Refresh
                 location.reload();
                 return true
