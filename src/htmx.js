@@ -1616,16 +1616,19 @@ var htmx = (() => {
             if (!history.state) {
                 history.replaceState({htmx: true}, '', location.href);
             }
-            window.addEventListener('popstate', (event) => {
-                if (event.state && event.state.htmx) {
-                    this.#historyAbort?.abort();
-                    this.__restoreHistory();
-                }
-            });
+            if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
+                navigation.addEventListener('navigate', (event) => {
+                    if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
+                        event.intercept({handler: () => this.__restoreHistory()});
+                });
+            } else {
+                window.addEventListener('popstate', (event) => this.__restoreHistory(event.state));
+            }
         }
 
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
+            if (!history.state) history.replaceState({htmx: true}, '', location.href);
             history.pushState({htmx: true}, '', path);
             this.__trigger(document, "htmx:after:history:push", {path});
         }
@@ -1636,7 +1639,11 @@ var htmx = (() => {
             this.__trigger(document, "htmx:after:history:replace", {path});
         }
 
-        __restoreHistory(path) {
+        async __restoreHistory(state, path) {
+            await this.timeout(1);
+            state ??= history.state;
+            if (!state?.htmx) return;
+            this.#historyAbort?.abort();
             path = path || location.pathname + location.search;
             let historyElt = document.querySelector(this.__prefixSelector('[hx-history-elt]')) || document.body;
             if (this.__trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
@@ -1644,7 +1651,7 @@ var htmx = (() => {
                     location.reload();
                 } else {
                     this.#historyAbort = new AbortController();
-                    this.ajax('GET', path, {
+                    return this.ajax('GET', path, {
                         target: historyElt,
                         swap: 'outerSync',
                         select: historyElt !== document.body ? this.__prefixSelector('[hx-history-elt]') : undefined,

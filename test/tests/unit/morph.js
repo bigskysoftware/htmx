@@ -661,7 +661,7 @@ describe('Morph Swap Styles Tests', function() {
                 'new form root must be processed so hx-post works');
 
             mockResponse('POST', '/submit', 'Submitted!');
-            newForm.dispatchEvent(new Event('submit', {bubbles: true}));
+            newForm.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
             await waitForEvent('htmx:after:swap', 100);
 
             assert.equal(container.querySelector('#result') ??

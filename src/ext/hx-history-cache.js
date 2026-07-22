@@ -201,7 +201,7 @@
         // Before core pushes/replaces, save the outgoing page
         htmx_before_history_update: (elt, detail) => {
             if (cfg().disable) return;
-            if (!_currentId) stampCurrentEntry();
+            stampCurrentEntry();
             saveCurrentPage();
         },
 
