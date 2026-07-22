@@ -370,7 +370,7 @@
         }
     });
 
-// BEGIN vendored fetch-multipart parser from https://github.com/scriptogre/fetch-multipart
+// BEGIN vendored fetch-multipart parser from https://github.com/scriptogre/fetch-multipart @ e08a100de2
 // Copied so this extension can parse multipart responses without requiring core htmx changes.
 // @ts-self-types="./fetch-multipart.d.ts"
 // Streaming multipart parser for the browser.
@@ -461,8 +461,10 @@ const State = Object.freeze({
   READING_BODY_UNTIL_BOUNDARY: 3,
   // Read exactly the declared Content-Length bytes.
   READING_BODY_WITH_CONTENT_LENGTH: 4,
+  // Content-Length body is complete. Validate the following boundary.
+  EXPECTING_BOUNDARY: 5,
   // Final "--" after a boundary was read.
-  DONE: 5,
+  DONE: 6,
 })
 
 const findDoubleNewline = createSearch('\r\n\r\n')
@@ -629,7 +631,7 @@ class MultipartParser {
       }
 
       // Fast path: the part declared its size, so read exactly that many
-      // body bytes, then expect the boundary to immediately follow.
+      // body bytes and close its stream without waiting for more wire data.
       if (this.#state === State.READING_BODY_WITH_CONTENT_LENGTH) {
         const bodyBytes = Math.min(this.#remainingBodyBytes, chunkLength - index)
         if (bodyBytes > 0) this.#routeBody(chunk.subarray(index, index + bodyBytes))
@@ -640,21 +642,23 @@ class MultipartParser {
           this.#buffer = chunk.subarray(index)
           break
         }
+        this.#finalizeActivePart()
+        this.#state = State.EXPECTING_BOUNDARY
+      }
+
+      if (this.#state === State.EXPECTING_BOUNDARY) {
         if (chunkLength - index < this.#boundaryLength) {
           this.#buffer = chunk.subarray(index)
           break
         }
         for (let i = 0; i < this.#boundaryLength; i++) {
           if (chunk[index + i] !== this.#boundaryBytes[i]) {
-            const err = new MultipartParseError(
-              'Content-Length does not match actual body length',
+            throw new MultipartParseError(
+              'Content-Length body is not followed by boundary',
             )
-            this.abortActive(err)
-            throw err
           }
         }
 
-        this.#finalizeActivePart()
         index += this.#boundaryLength
         this.#state = State.READING_BOUNDARY_SUFFIX
       }
@@ -684,7 +688,10 @@ class MultipartParser {
       this.#buffer = null
     }
     if (this.#state !== State.DONE) {
-      const err = new MultipartParseError('Stream ended before final boundary')
+      const message = this.#state === State.READING_BODY_WITH_CONTENT_LENGTH
+        ? 'Stream ended before Content-Length body completed'
+        : 'Stream ended before final boundary'
+      const err = new MultipartParseError(message)
       this.abortActive(err)
       throw err
     }
@@ -1117,6 +1124,5 @@ if (typeof Response !== 'undefined' && typeof Response.prototype.parts !== 'func
     configurable: true,
   })
 }
-
 // END vendored fetch-multipart parser
 })();

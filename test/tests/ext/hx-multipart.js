@@ -47,6 +47,32 @@ describe('hx-multipart extension', function() {
         assert.equal(typeof Response.prototype.parts, 'function');
     });
 
+    it('closes Content-Length bodies before the next boundary arrives', async function() {
+        let controller;
+        let response = new Response(new ReadableStream({
+            start(value) {
+                controller = value;
+            }
+        }), {
+            headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+        });
+        let encode = value => new TextEncoder().encode(value);
+
+        controller.enqueue(encode('--updates\r\nContent-Length: 5\r\n\r\nhello'));
+        let iterator = response.parts()[Symbol.asyncIterator]();
+        let {value: part} = await iterator.next();
+        let result = await Promise.race([
+            part.text().then(value => ({value})),
+            htmx.timeout(20).then(() => ({pending: true}))
+        ]);
+
+        controller.enqueue(encode('\r\n--updates--'));
+        controller.close();
+        await iterator.next();
+
+        assert.deepEqual(result, {value: 'hello'});
+    });
+
     it('appends multipart types to an existing Accept header', async function() {
         mockResponse('GET', '/test', 'OK');
         let button = createProcessedHTML('<button hx-get="/test" hx-swap="none" hx-headers=\'"Accept":"text/html, text/event-stream"\'>Go</button>');
