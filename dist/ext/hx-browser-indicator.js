@@ -9,7 +9,8 @@
     let cleanupNavigation = null;
 
     function shouldShowIndicator(elt) {
-        if (api.attributeValue(elt, 'hx-browser-indicator') === 'true') return true;
+        let val = api.attributeValue(elt, 'hx-browser-indicator');
+        if (val != null && val !== 'false') return true;
         if (htmx.config.boostBrowserIndicator && elt._htmx?.boosted) return true;
         return false;
     }
