@@ -27,6 +27,36 @@ const routes = {
     '/ios-sse':        serve('test/manual/ios-sse.html'),
     '/htmx.js':        serve('src/htmx.js', 'application/javascript'),
     '/ext/hx-sse.js':  serve('src/ext/hx-sse.js', 'application/javascript'),
+    '/htmax.js':       serve('dist/htmax.js', 'application/javascript'),
+    '/htmax':          serve('test/manual/htmax.html'),
+
+    // htmax test endpoints
+    '/htmax/clicked':       (req, res) => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<span class="text-green-600 font-semibold">✓ SSE extension loaded (hx-sse registered)</span>'); },
+    '/htmax/ws-status':     (req, res) => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<span class="text-green-600 font-semibold">✓ WS extension loaded (hx-ws registered)</span>'); },
+    '/htmax/preload-target':(req, res) => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<span class="text-green-600 font-semibold">✓ Preloaded and swapped!</span>'); },
+    '/htmax/download':      (req, res) => { res.writeHead(200, {'Content-Type': 'text/plain', 'Content-Disposition': 'attachment; filename="htmax-test.txt"'}); res.end('htmax download test'); },
+    '/htmax/optimistic':    (req, res) => { setTimeout(() => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<span class="text-green-600 font-semibold">✓ Server confirmed</span>'); }, 1500); },
+    '/htmax/targets':       (req, res) => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<span class="text-green-600 font-semibold">✓ hx-targets swapped both elements</span>'); },
+    '/htmax/upsert':        (req, res) => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<template hx type="upsert" hx-target="#upsert-list"><div id="item-1" class="p-2 bg-green-100 rounded">Item 1 (updated)</div><div id="item-3" class="p-2 bg-blue-100 rounded">Item 3 (new)</div></template>'); },
+    '/htmax/page2':         (req, res) => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<div id="history-content" hx-push-url="/htmax/page2"><p>Page 2 content — hit back to test history cache restore.</p><a hx-get="/htmax/page1" hx-target="#history-content" hx-push-url="/htmax/page1" href="/htmax/page1">Back to page 1</a></div>'); },
+    '/htmax/page1':         (req, res) => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<div id="history-content" hx-push-url="/htmax/page1"><p>Page 1 content — restored from cache!</p><a hx-get="/htmax/page2" hx-target="#history-content" hx-push-url="/htmax/page2" href="/htmax/page2">Go to page 2</a></div>'); },
+    '/htmax/indicator':     (req, res) => { setTimeout(() => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<span class="text-green-600 font-semibold">✓ Request complete</span>'); }, 1500); },
+    '/htmax/live-count':    (req, res) => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<span id="live-count">0</span>'); },
+
+    '/htmax/sse-stream': sse((req, res) => {
+        let n = 0;
+        const send = () => {
+            if (n++ < 5) {
+                res.write(`data: <span>SSE message #${n}</span>\n\n`);
+                setTimeout(send, 800);
+            } else {
+                res.write(`event: close\ndata: <span class="text-green-600 font-semibold">✓ Stream complete</span>\n\n`);
+            }
+        };
+        send();
+    }),
+
+    '/htmax/ws': (req, res) => { res.writeHead(200, {'Content-Type': 'text/html'}); res.end('<span class="text-green-600 font-semibold">✓ WS extension present (full WS test requires ws-server.js)</span>'); },
 
     '/heartbeat': sse((req, res) => {
         let count = 0;
