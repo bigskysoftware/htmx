@@ -244,6 +244,200 @@ describe('hx-multipart extension', function() {
         assert.equal(closeReason, 'removed');
     });
 
+    it('sends the last completed part ID on reconnect and supports reset', async function() {
+        let requestHeaders = [];
+        let requestCount = 0;
+        fetchMock.mockResponse('GET', '/resume', () => {
+            requestHeaders.push({...fetchMock.getLastCall().request.headers});
+            requestCount++;
+
+            if (requestCount === 1) {
+                return new Response([
+                    '--updates\r\n',
+                    'Content-Type: text/html\r\n',
+                    'HX-Part-ID: part-1\r\n',
+                    '\r\n',
+                    'First',
+                    '\r\n--updates--\r\n'
+                ].join(''), {
+                    headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+                });
+            }
+            if (requestCount === 2) {
+                return new Response([
+                    '--updates\r\n',
+                    'Content-Type: text/html\r\n',
+                    'HX-Part-ID:\r\n',
+                    '\r\n',
+                    'Reset',
+                    '\r\n--updates--\r\n'
+                ].join(''), {
+                    headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+                });
+            }
+            return new Response(new ReadableStream(), {
+                headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+            });
+        });
+
+        let source = createProcessedHTML([
+            '<div id="resume-source" hx-multipart:connect="/resume" hx-trigger="click" ',
+            'hx-config="multipart.reconnectDelay:1ms multipart.reconnectMaxDelay:1ms multipart.reconnectJitter:0"></div>'
+        ].join(''));
+        source.click();
+
+        assert.isTrue(await waitUntil(() => requestCount >= 3, 500));
+        assert.equal(requestHeaders[1]['HX-Last-Part-ID'], 'part-1');
+        assert.isUndefined(requestHeaders[2]['HX-Last-Part-ID']);
+        assert.equal(source._htmx.multipart.lastPartId, '');
+        await deleteWithSwap('#resume-source');
+    });
+
+    it('keeps the previous part ID when a reset part fails', async function() {
+        let requestHeaders = [];
+        let requestCount = 0;
+        fetchMock.mockResponse('GET', '/failed-reset', () => {
+            requestHeaders.push({...fetchMock.getLastCall().request.headers});
+            requestCount++;
+
+            if (requestCount === 1) {
+                return new Response([
+                    '--updates\r\n',
+                    'Content-Type: text/html\r\n',
+                    'HX-Part-ID: part-1\r\n',
+                    '\r\n',
+                    'First',
+                    '\r\n--updates--\r\n'
+                ].join(''), {
+                    headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+                });
+            }
+            if (requestCount === 2) {
+                return new Response([
+                    '--updates\r\n',
+                    'Content-Type: text/html\r\n',
+                    'HX-Part-ID:\r\n',
+                    '\r\n',
+                    'Reset',
+                    '\r\n--updates--\r\n'
+                ].join(''), {
+                    headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+                });
+            }
+            return new Response(new ReadableStream(), {
+                headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+            });
+        });
+
+        let source = createProcessedHTML([
+            '<div id="failed-reset-source" hx-multipart:connect="/failed-reset" hx-trigger="click" ',
+            'hx-config="multipart.reconnectDelay:1ms multipart.reconnectMaxDelay:1ms multipart.reconnectJitter:0"></div>'
+        ].join(''));
+        source.addEventListener('htmx:multipart:before:part', event => {
+            if (requestCount === 2) event.detail.waitUntil(Promise.reject(new Error('part failed')));
+        });
+        source.click();
+
+        assert.isTrue(await waitUntil(() => requestCount >= 3, 500));
+        assert.equal(requestHeaders[2]['HX-Last-Part-ID'], 'part-1');
+        assert.equal(source._htmx.multipart.lastPartId, 'part-1');
+        await deleteWithSwap('#failed-reset-source');
+    });
+
+    it('does not record a cancelled part ID', async function() {
+        let requestHeaders = [];
+        let requestCount = 0;
+        fetchMock.mockResponse('GET', '/cancelled-part', () => {
+            requestHeaders.push({...fetchMock.getLastCall().request.headers});
+            requestCount++;
+
+            if (requestCount === 1) {
+                return new Response([
+                    '--updates\r\n',
+                    'Content-Type: text/html\r\n',
+                    'HX-Part-ID: skipped\r\n',
+                    '\r\n',
+                    'Skipped',
+                    '\r\n--updates--\r\n'
+                ].join(''), {
+                    headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+                });
+            }
+            return new Response(new ReadableStream(), {
+                headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+            });
+        });
+
+        let source = createProcessedHTML([
+            '<div id="cancelled-part-source" hx-multipart:connect="/cancelled-part" hx-trigger="click" ',
+            'hx-config="multipart.reconnectDelay:1ms multipart.reconnectMaxDelay:1ms multipart.reconnectJitter:0"></div>'
+        ].join(''));
+        source.addEventListener('htmx:multipart:before:part', event => event.preventDefault());
+        source.click();
+
+        assert.isTrue(await waitUntil(() => requestCount >= 2, 500));
+        assert.isUndefined(requestHeaders[1]['HX-Last-Part-ID']);
+        assert.isNull(source._htmx.multipart.lastPartId);
+        await deleteWithSwap('#cancelled-part-source');
+    });
+
+    it('records parallel part IDs in wire order', async function() {
+        let requestHeaders = [];
+        let requestCount = 0;
+        fetchMock.mockResponse('GET', '/parallel-resume', () => {
+            requestHeaders.push({...fetchMock.getLastCall().request.headers});
+            requestCount++;
+
+            if (requestCount === 1) {
+                return new Response([
+                    '--updates\r\n',
+                    'Content-Type: text/html\r\n',
+                    'HX-Target: #parallel-resume-one\r\n',
+                    'HX-Swap: innerHTML swap:100ms settle:0\r\n',
+                    'HX-Part-ID: part-1\r\n',
+                    '\r\n',
+                    'First',
+                    '\r\n--updates\r\n',
+                    'Content-Type: text/html\r\n',
+                    'HX-Target: #parallel-resume-two\r\n',
+                    'HX-Swap: innerHTML settle:0\r\n',
+                    'HX-Part-ID: part-2\r\n',
+                    '\r\n',
+                    'Second',
+                    '\r\n--updates--\r\n'
+                ].join(''), {
+                    headers: {'Content-Type': 'multipart/parallel; boundary=updates'}
+                });
+            }
+            return new Response(new ReadableStream(), {
+                headers: {'Content-Type': 'multipart/parallel; boundary=updates'}
+            });
+        });
+
+        let source = createProcessedHTML([
+            '<div id="parallel-resume-source" hx-multipart:connect="/parallel-resume" hx-trigger="click" ',
+            'hx-config="multipart.reconnectDelay:1ms multipart.reconnectMaxDelay:1ms multipart.reconnectJitter:0"></div>',
+            '<div id="parallel-resume-one"></div>',
+            '<div id="parallel-resume-two"></div>'
+        ].join(''));
+        let completed = [];
+        source.addEventListener('htmx:multipart:after:part', event => {
+            completed.push({
+                id: event.detail.part.headers.get('HX-Part-ID'),
+                lastPartId: source._htmx.multipart.lastPartId
+            });
+        });
+        source.click();
+
+        assert.isTrue(await waitUntil(() => requestCount >= 2, 500));
+        assert.deepEqual(completed, [
+            {id: 'part-2', lastPartId: null},
+            {id: 'part-1', lastPartId: 'part-2'}
+        ]);
+        assert.equal(requestHeaders[1]['HX-Last-Part-ID'], 'part-2');
+        await deleteWithSwap('#parallel-resume-source');
+    });
+
     it('reconnects hx-multipart:connect after a broken stream', async function() {
         let requestCount = 0;
         let encoder = new TextEncoder();
