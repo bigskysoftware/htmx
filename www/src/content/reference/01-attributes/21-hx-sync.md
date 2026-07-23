@@ -71,7 +71,7 @@ Drop form submission while validation is running:
 Put `replace` on the form to cancel running validation before submission:
 
 ```html
-<form hx-post="/store" hx-sync="this:replace">
+<form hx-post="/store" hx-sync:inherited="this:replace">
   <input name="title" hx-post="/validate" hx-trigger="change">
   <button type="submit">Submit</button>
 </form>
