@@ -193,7 +193,7 @@
             htmx.config.historyCache            ??= {};
             htmx.config.historyCache.size          ??= 10;
             htmx.config.historyCache.refreshOnMiss ??= false;
-            htmx.config.historyCache.disable       ??= htmx.version.endsWith('-htmax');
+            htmx.config.historyCache.disable       ??= false;
             htmx.config.historyCache.swapStyle     ??= 'outerSync';
             stampCurrentEntry();
         },
