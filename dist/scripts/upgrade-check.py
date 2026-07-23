@@ -27,7 +27,6 @@ REMOVED_ATTRS = {
     "hx-inherit": "not needed (inheritance is explicit in v4)",
     "hx-request": "use hx-config",
     "hx-history": "removed (no localStorage cache in v4)",
-    "hx-history-elt": "removed",
 }
 
 RENAMED_ATTRS = {

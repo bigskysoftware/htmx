@@ -249,22 +249,28 @@ export interface HtmxLive {
 export interface HtmxRequestOptions {
   /** Whether to validate the form before sending */
   validate: boolean;
-  /** Request URL */
+  /** Request URL without its fragment */
   action: string;
+  /** URL fragment used for history and scrolling */
+  anchor?: string;
   /** HTTP method */
   method: string;
   /** Request headers */
   headers: Record<string, string>;
-  /** Request body */
-  body: FormData;
+  /** Request body. FormData during htmx:config:request, then encoded for Fetch */
+  body?: BodyInit | null;
+  /** Abort htmx's request controller */
+  abort: () => void;
+  /** Signal passed to fetch() */
+  signal: AbortSignal;
   /** Fetch credentials mode */
   credentials: RequestCredentials;
   /** Fetch mode */
   mode: RequestMode;
   /** Fetch cache mode */
-  cache: RequestCache;
-  /** Timeout in milliseconds */
-  timeout: number;
+  cache?: RequestCache;
+  /** Per-request htmx timeout */
+  timeout?: number | string | null;
   [key: string]: any;
 }
 
@@ -300,10 +306,10 @@ export interface HtmxRequestCtx {
   transition: boolean;
   /** Fetch request options — modify here in htmx:config:request */
   request: HtmxRequestOptions;
-  /** Response object, available after htmx:after:request */
-  response: HtmxResponse;
-  /** Response body text, available after htmx:after:request */
-  text: string;
+  /** Response object, available after fetch resolves */
+  response?: HtmxResponse;
+  /** Response body text, available during htmx:after:request */
+  text?: string;
 }
 
 /** History detail shared by htmx:before:history:update and htmx:after:history:update */
@@ -316,7 +322,7 @@ export interface HtmxHistoryDetail {
 
 export interface HtmxEventMap {
   /**
-   * Fires after request parameters are built but before validation and sending.
+   * Fires after request values are collected and validated, but before encoding and sending.
    * Modify `ctx.request` to change headers, timeout, credentials, etc.
    * Call `evt.preventDefault()` to cancel the request.
    */
@@ -335,8 +341,8 @@ export interface HtmxEventMap {
   'htmx:after:request': { ctx: HtmxRequestCtx };
 
   /**
-   * Fires at the end of the request lifecycle whether successful or failed.
-   * Equivalent to a `finally` block — always runs.
+   * Fires when request completes, fails, or is cancelled.
+   * Does not run if processing stops before the request begins issuing.
    */
   'htmx:finally:request': { ctx: HtmxRequestCtx };
 

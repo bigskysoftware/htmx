@@ -122,6 +122,10 @@
             let counter = 0;
             let NativeFunction = Function;
             let NativeAsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+            // Cache compiled script-injected functions by "keys|body" so each unique
+            // expression is only injected once — critical for hx-live which re-evaluates
+            // the same expressions on every DOM/input tick.
+            let safeEvalCache = new Map();
 
             function makeGatedConstructor(isAsync) {
                 return function(...keys) {
@@ -136,15 +140,20 @@
                                 return;
                             }
                             if (htmx.config.safeEval) {
-                                let fn = `__htmx_eval_${++counter}`;
-                                let script = document.createElement('script');
-                                script.nonce = pageNonce;
-                                script.textContent = ttPolicy.createScript(`window.${fn} = ${isAsync ? 'async ' : ''}function(${keys.join(',')}) { ${body} }`);
-                                document.head.appendChild(script);
-                                script.remove();
-                                let r = window[fn].call(thisArg, ...values);
-                                delete window[fn];
-                                return r;
+                                let cacheKey = keys.join(',') + '|' + body;
+                                let compiled = safeEvalCache.get(cacheKey);
+                                if (!compiled) {
+                                    let fn = `__htmx_eval_${++counter}`;
+                                    let script = document.createElement('script');
+                                    script.nonce = pageNonce;
+                                    script.textContent = ttPolicy.createScript(`window.${fn} = ${isAsync ? 'async ' : ''}function(${keys.join(',')}) { ${body} }`);
+                                    document.head.appendChild(script);
+                                    script.remove();
+                                    compiled = window[fn];
+                                    delete window[fn];
+                                    safeEvalCache.set(cacheKey, compiled);
+                                }
+                                return compiled.call(thisArg, ...values);
                             }
                             let Ctor = isAsync ? NativeAsyncFunction : NativeFunction;
                             return new Ctor(...keys, body).call(thisArg, ...values);
