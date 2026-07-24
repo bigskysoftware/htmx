@@ -43,7 +43,7 @@ Pong
 <details>
 <summary>Backend libraries</summary>
 
-- **Python:** <i class="icon-[mdi--github] mx-1 inline-block size-4 -translate-y-px align-text-bottom" aria-hidden="true"></i> [`scriptogre/multipart-response`](https://github.com/scriptogre/multipart-response) for [FastAPI](https://fastapi.tiangolo.com/) and [Starlette](https://www.starlette.io/)
+- **Python:** <i class="icon-[mdi--github] mx-1 inline-block size-4 -translate-y-px align-text-bottom" aria-hidden="true"></i> [`scriptogre/multipart-response`](https://github.com/scriptogre/multipart-response) for [Django](https://www.djangoproject.com/), [FastAPI](https://fastapi.tiangolo.com/), [FastHTML](https://fastht.ml/), and [Starlette](https://www.starlette.io/)
 
 Example:
 
