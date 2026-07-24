@@ -97,6 +97,7 @@
             abort: ctx.request.abort,
             abortController: null,
             iterator: null,
+            lastPartId: null,
             delayCanceller: null,
             visibilityHandler: null,
             unpauseResolver: null,
@@ -171,8 +172,16 @@
                     let ac = new AbortController();
                     connection.abortController = ac;
                     try {
+                        let headers = {...ctx.request.headers};
+                        if (connection.lastPartId != null) {
+                            for (let name in headers) {
+                                if (name.toLowerCase() === 'hx-last-part-id') delete headers[name];
+                            }
+                            if (connection.lastPartId) headers['HX-Last-Part-ID'] = connection.lastPartId;
+                        }
                         currentResponse = await fetch(ctx.request.action, {
                             ...ctx.request,
+                            headers,
                             signal: ac.signal
                         });
                     } catch (error) {
@@ -215,6 +224,8 @@
                 }
 
                 let pending = new Set();
+                let checkpoints = [];
+                let checkpointIndex = 0;
                 let iterator = currentResponse.parts()[Symbol.asyncIterator]();
                 connection.iterator = iterator;
 
@@ -246,8 +257,11 @@
                             reswap,   // HX-Reswap
                             retarget, // HX-Retarget
                             reselect, // HX-Reselect
+                            partId,   // HX-Part-ID
                             ...actions // other HX-* headers in camelCase
                         } = extractPartActions(part.headers);
+                        let checkpoint = {id: partId, completed: false};
+                        checkpoints.push(checkpoint);
 
                         // Let part headers override envelope and request defaults.
                         swap = reswap ?? swap ?? defaultSwap;
@@ -272,6 +286,16 @@
                                 });
                             }
 
+                            checkpoint.completed = true;
+                            while (checkpoints[checkpointIndex]?.completed) {
+                                let completed = checkpoints[checkpointIndex++];
+                                if (completed.id !== undefined) connection.lastPartId = completed.id;
+                            }
+                            if (checkpointIndex === checkpoints.length) {
+                                checkpoints.length = 0;
+                                checkpointIndex = 0;
+                            }
+
                             api.triggerHtmxEvent(ctx.sourceElement, 'htmx:multipart:after:part', {ctx, part});
                         })();
 
@@ -287,6 +311,7 @@
                     }
                     await Promise.all(pending);
                 } catch (error) {
+                    await Promise.allSettled(pending);
                     if (!connection.cancelled) {
                         api.triggerHtmxEvent(element, 'htmx:multipart:error', {
                             error,

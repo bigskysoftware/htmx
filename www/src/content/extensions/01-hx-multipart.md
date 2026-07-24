@@ -273,6 +273,34 @@ The part still swaps, then the connection stops:
 <div id="status">Complete</div>
 ```
 
+#### Resume Connections
+
+Identify each part so a reconnect can start after the last successful update:
+
+```http
+--...
+Content-Type: text/html
+HX-Part-ID: event-42
+
+<p>New message</p>
+```
+
+After the part's actions and swap finish, the next reconnect includes:
+
+```http
+HX-Last-Part-ID: event-42
+```
+
+The server should return parts after that ID. The client processes every returned part without deduplicating IDs.
+
+Reset the cursor with an empty header:
+
+```http
+HX-Part-ID:
+```
+
+A missing `HX-Part-ID` leaves the cursor unchanged. A failed or cancelled part does not update it.
+
 #### Configure Connections
 
 You can configure `hx-multipart` in three places:
@@ -427,6 +455,28 @@ Closes a connection after a part fires the named [`HX-Trigger`](/reference/heade
 
 ## Headers
 
+### `HX-Part-ID`
+
+Identifies a response part for reconnecting:
+
+```http
+HX-Part-ID: event-42
+```
+
+The extension records the value after the part's actions and swap finish. A missing header leaves the current ID unchanged. An empty value resets it.
+
+With `multipart/parallel`, the recorded ID advances only after that part and every earlier accepted part finishes successfully.
+
+### `HX-Last-Part-ID`
+
+Identifies the last completed part in a reconnect request:
+
+```http
+HX-Last-Part-ID: event-42
+```
+
+The server decides how to resume after that ID. The header is omitted after [`HX-Part-ID`](#hx-part-id) resets the cursor.
+
 ### `HX-*` Headers
 
 The envelope is a normal HTTP response. It may include ordinary HTTP headers and any htmx response header.
@@ -540,6 +590,8 @@ Part 2                       [read][actions][swap][finished]
 
 `multipart/mixed` waits for each part's swap to finish before reading the next body. `multipart/parallel` runs each part's actions in arrival order, starts its swap, then reads the next body without waiting for that swap to finish.
 
+The [`HX-Part-ID`](#hx-part-id) cursor still advances in wire order. A later completed part waits for every earlier accepted part to finish successfully.
+
 When every swap finishes immediately, both formats usually look the same. See [Overlap Swaps](#overlap-swaps) for a visible comparison.
 
 Use `multipart/parallel` when:
@@ -568,6 +620,7 @@ Connection events expose:
 event.detail.connection = {
   url,
   config,
+  lastPartId,
   attempt,
   status,
   cancelled
@@ -717,7 +770,7 @@ Close the request while the page is hidden and reconnect when it becomes visible
 <meta name="htmx-config" content="multipart.pauseOnBackground:false">
 ```
 
-Defaults to `true` for `hx-multipart:connect` and `false` for normal htmx requests.
+Defaults to `true` for `hx-multipart:connect` and `false` for normal htmx requests. Use [`HX-Part-ID`](#hx-part-id) and server-side replay to recover parts sent while disconnected.
 
 ## How `multipart/mixed` Works
 
