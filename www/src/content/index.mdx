@@ -7,6 +7,7 @@ import CDNGenerator from "../components/CDNGenerator.astro";
 import EasterEggs from "../components/EasterEggs.astro";
 import Sponsors from "../components/Sponsors.astro";
 import Hero from "../components/Hero.astro";
+import GameboyAnnounce from "../components/GameboyAnnounce.astro";
 import { Image } from 'astro:assets';
 import bookCoverHard from '../assets/img/cover.png';
 import bookCoverSoft from '../assets/img/cover2.png';
@@ -21,6 +22,8 @@ export const sponsors = (sponsorsFile?.frontmatter || []).map(s => ({
 <div class="not-prose">
 
 <EasterEggs/>
+
+<GameboyAnnounce/>
 
 <Hero/>
 
