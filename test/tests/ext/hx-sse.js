@@ -125,6 +125,182 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    it('events without id inherit the buffered event ID', async function() {
+        const stream = mockStreamResponse('/inherited-id');
+        createProcessedHTML('<button hx-get="/inherited-id" hx-swap="innerHTML">Connect</button>');
+
+        let ids = [];
+        onDoc('htmx:before:sse:message', (e) => {
+            ids.push(e.detail.message.id);
+        });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.sendRaw('id: 42\ndata: first\n\n');
+        await waitForEvent('htmx:after:sse:message');
+        stream.sendRaw('data: second\n\n');
+        await waitForEvent('htmx:after:sse:message');
+
+        assert.deepEqual(ids, ['42', '42']);
+        stream.close();
+    });
+
+    it('empty id clears the connection cursor', async function() {
+        const stream = mockStreamResponse('/clear-id');
+        createProcessedHTML('<button hx-get="/clear-id" hx-swap="innerHTML">Connect</button>');
+
+        let lastMessageId = null;
+        onDoc('htmx:before:sse:message', (e) => {
+            lastMessageId = e.detail.message.id;
+        });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.sendRaw('id: 42\ndata: first\n\n');
+        await waitForEvent('htmx:after:sse:message');
+        stream.sendRaw('id:\ndata: reset\n\n');
+        await waitForEvent('htmx:after:sse:message');
+
+        assert.equal(lastMessageId, '');
+        assert.equal(find('button')._htmx.sse.lastEventId, '');
+        stream.close();
+    });
+
+    it('clearing the event ID removes a stale reconnect header', async function() {
+        this.timeout(5000);
+        const stream = mockStreamResponse('/clear-reconnect-id');
+        createProcessedHTML('<button hx-get="/clear-reconnect-id" hx-config="sse.reconnect:true sse.reconnectDelay:10ms sse.reconnectMaxAttempts:2 sse.reconnectJitter:0" hx-swap="innerHTML">Connect</button>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.sendRaw('id: 42\ndata: first\n\n');
+        await waitForEvent('htmx:after:sse:message');
+        stream.close();
+        await waitForEvent('htmx:after:sse:connection', 1000);
+
+        let reconnectCall = fetchMock.getLastCall();
+        assert.equal(reconnectCall.request.headers['Last-Event-ID'], '42');
+
+        stream.sendRaw('id:\ndata: reset\n\n');
+        await waitForEvent('htmx:after:sse:message');
+        stream.close();
+        await waitForEvent('htmx:after:sse:connection', 1000);
+
+        reconnectCall = fetchMock.getLastCall();
+        assert.isFalse(
+            Object.keys(reconnectCall.request.headers).some(name => name.toLowerCase() === 'last-event-id'),
+            'Cleared Last-Event-ID header should not be sent'
+        );
+    });
+
+    it('id-only blocks update the reconnect cursor without message events', async function() {
+        this.timeout(5000);
+        const stream = mockStreamResponse('/id-only');
+        createProcessedHTML('<button hx-get="/id-only" hx-config="sse.reconnect:true sse.reconnectDelay:10ms sse.reconnectMaxAttempts:1 sse.reconnectJitter:0" hx-swap="innerHTML">Connect</button>');
+
+        let beforeMessages = 0;
+        let afterMessages = 0;
+        onDoc('htmx:before:sse:message', () => { beforeMessages++; });
+        onDoc('htmx:after:sse:message', () => { afterMessages++; });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.sendRaw('id: cursor-7\n\n');
+        await htmx.timeout(20);
+
+        assert.equal(find('button')._htmx.sse.lastEventId, 'cursor-7');
+        assert.equal(beforeMessages, 0);
+        assert.equal(afterMessages, 0);
+        assertTextContentIs('button', 'Connect');
+
+        stream.close();
+        await waitForEvent('htmx:after:sse:connection', 1000);
+
+        assert.equal(fetchMock.getLastCall().request.headers['Last-Event-ID'], 'cursor-7');
+    });
+
+    it('empty id-only blocks clear the reconnect cursor', async function() {
+        this.timeout(5000);
+        const stream = mockStreamResponse('/empty-id-only');
+        createProcessedHTML('<button hx-get="/empty-id-only" hx-config="sse.reconnect:true sse.reconnectDelay:10ms sse.reconnectMaxAttempts:1 sse.reconnectJitter:0" hx-swap="innerHTML">Connect</button>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.sendRaw('id: 42\ndata: first\n\n');
+        await waitForEvent('htmx:after:sse:message');
+
+        let beforeMessages = 0;
+        let afterMessages = 0;
+        onDoc('htmx:before:sse:message', () => { beforeMessages++; });
+        onDoc('htmx:after:sse:message', () => { afterMessages++; });
+
+        stream.sendRaw('id:\n\n');
+        await htmx.timeout(20);
+
+        assert.equal(find('button')._htmx.sse.lastEventId, '');
+        assert.equal(beforeMessages, 0);
+        assert.equal(afterMessages, 0);
+
+        stream.close();
+        await waitForEvent('htmx:after:sse:connection', 1000);
+
+        assert.isFalse(
+            Object.keys(fetchMock.getLastCall().request.headers).some(name => name.toLowerCase() === 'last-event-id'),
+            'Empty ID-only block should clear Last-Event-ID header'
+        );
+    });
+
+    it('event IDs containing NULL remain ignored', async function() {
+        const stream = mockStreamResponse('/null-id');
+        createProcessedHTML('<button hx-get="/null-id" hx-swap="innerHTML">Connect</button>');
+
+        let ids = [];
+        onDoc('htmx:before:sse:message', (e) => {
+            ids.push(e.detail.message.id);
+        });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.sendRaw('id: 42\ndata: first\n\n');
+        await waitForEvent('htmx:after:sse:message');
+        stream.sendRaw('id: bad\0id\ndata: second\n\n');
+        await waitForEvent('htmx:after:sse:message');
+
+        assert.deepEqual(ids, ['42', '42']);
+        assert.equal(find('button')._htmx.sse.lastEventId, '42');
+        stream.close();
+    });
+
+    it('cancelled messages do not advance or clear the connection cursor', async function() {
+        const stream = mockStreamResponse('/cancelled-id');
+        createProcessedHTML('<button hx-get="/cancelled-id" hx-swap="innerHTML">Connect</button>');
+
+        onDoc('htmx:before:sse:message', (e) => {
+            if (e.detail.message.data !== 'first') e.detail.message.cancelled = true;
+        });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.sendRaw('id: 42\ndata: first\n\n');
+        await waitForEvent('htmx:after:sse:message');
+        stream.sendRaw('id: 43\ndata: advance\n\n');
+        await htmx.timeout(20);
+        assert.equal(find('button')._htmx.sse.lastEventId, '42');
+
+        stream.sendRaw('id:\ndata: clear\n\n');
+        await htmx.timeout(20);
+        assert.equal(find('button')._htmx.sse.lastEventId, '42');
+
+        stream.close();
+    });
+
     it('events fire correctly and can cancel operations', async function() {
         const stream = mockStreamResponse('/cancelable');
         createProcessedHTML('<button hx-get="/cancelable" hx-swap="innerHTML">Go</button>');

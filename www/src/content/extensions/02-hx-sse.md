@@ -278,7 +278,13 @@ data: <p>New message</p>
 
 ```
 
-On reconnect, `hx-sse` automatically includes the [`Last-Event-ID`](#last-event-id) header:
+The stream keeps the current event ID:
+
+- An event without `id` inherits the current ID.
+- An empty `id:` clears the ID.
+- An ID-only block ending with a blank line updates or clears the ID without dispatching a message.
+
+On reconnect, `hx-sse` includes [`Last-Event-ID`](#last-event-id) when the current ID is not empty:
 
 ```http
 Last-Event-ID: event-42
@@ -294,6 +300,8 @@ event-43  --------X             disconnected
           <-------------------  Last-Event-ID: event-42
 event-43  ------------------->  replayed
 ```
+
+The server decides which messages to replay. `hx-sse` processes every event it receives and does not deduplicate replays.
 
 ### Trigger Client Events
 
@@ -407,7 +415,9 @@ Identifies the last received SSE event during reconnection.
 Last-Event-ID: event-42
 ```
 
-The extension sends this header after a message supplies an `id` field. The server decides how to replay later messages.
+The extension sends this header while the current event ID is not empty. Events without `id` inherit that ID, while an empty `id:` removes the header from later reconnects.
+
+The server decides how to replay later messages. The client does not deduplicate them.
 
 ## Events
 

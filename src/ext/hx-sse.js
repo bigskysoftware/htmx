@@ -22,15 +22,22 @@
         return {...defaults, ...global, ...perElement};
     }
 
+    function clearLastEventIdHeader(headers) {
+        for (let name of Object.keys(headers)) {
+            if (name.toLowerCase() === 'last-event-id') delete headers[name];
+        }
+    }
+
     // ========================================
     // SSE PARSER
     // ========================================
 
-    async function* parseSSE(reader) {
+    async function* parseSSE(reader, lastEventId = '') {
         let decoder = new TextDecoder();
         let buffer = '';
         let hasData = false;
-        let message = {data: '', event: '', id: '', retry: null};
+        let hasId = false;
+        let message = {data: '', event: '', retry: null};
         let firstChunk = true;
 
         try {
@@ -52,11 +59,12 @@
 
                 for (let line of lines) {
                     if (!line) {
-                        if (hasData) {
-                            yield message;
-                            hasData = false;
-                            message = {data: '', event: '', id: '', retry: null};
+                        if (hasData || hasId) {
+                            yield {...message, id: lastEventId, hasData};
                         }
+                        hasData = false;
+                        hasId = false;
+                        message = {data: '', event: '', retry: null};
                         continue;
                     }
 
@@ -80,7 +88,10 @@
                     } else if (field === 'event') {
                         message.event = value;
                     } else if (field === 'id') {
-                        if (!value.includes('\0')) message.id = value;
+                        if (!value.includes('\0')) {
+                            lastEventId = value;
+                            hasId = true;
+                        }
                     } else if (field === 'retry') {
                         let retryValue = parseInt(value, 10);
                         if (!isNaN(retryValue)) message.retry = retryValue;
@@ -108,7 +119,7 @@
             config: config,
             abortController: null,
             reader: null,
-            lastEventId: null,
+            lastEventId: '',
             delayCanceller: null,
             visibilityHandler: null,
             attempt: 0,
@@ -194,6 +205,7 @@
                     let ac = new AbortController();
                     connection.abortController = ac;
                     try {
+                        clearLastEventIdHeader(ctx.request.headers);
                         if (connection.lastEventId) ctx.request.headers['Last-Event-ID'] = connection.lastEventId;
                         currentResponse = await fetch(ctx.request.action, {
                             ...ctx.request,
@@ -229,17 +241,22 @@
                 try {
                     connection.reader = currentResponse.body.getReader();
 
-                    for await (let msg of parseSSE(connection.reader)) {
+                    for await (let msg of parseSSE(connection.reader, connection.lastEventId)) {
                         if (!element.isConnected || reconnectRequested) break;
+
+                        if (!msg.hasData) {
+                            connection.lastEventId = msg.id;
+                            if (!msg.id) clearLastEventIdHeader(ctx.request.headers);
+                            continue;
+                        }
 
                         let detail = {
                             message: {data: msg.data, event: msg.event, id: msg.id, cancelled: false}
                         };
                         if (!api.triggerHtmxEvent(element, 'htmx:before:sse:message', detail) || detail.message.cancelled) continue;
 
-                        if (msg.id) {
-                            connection.lastEventId = msg.id;
-                        }
+                        connection.lastEventId = msg.id;
+                        if (!msg.id) clearLastEventIdHeader(ctx.request.headers);
                         if (msg.retry != null) config.reconnectDelay = msg.retry;
 
                         if (detail.message.event) {
