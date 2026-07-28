@@ -683,6 +683,16 @@ describe('swap() unit tests', function() {
         target.textContent.should.equal('response')
     })
 
+    it('hx-partial hx-target resolves closest relative to sourceElement', async function () {
+        createProcessedHTML("<ul><li id='item-1'>Item 1 <button id='btn'>Edit</button></li></ul>")
+        await htmx.swap({
+            target: find('#btn'),
+            sourceElement: find('#btn'),
+            text: "<hx-partial hx-target='closest li' hx-swap='innerHTML'>Updated</hx-partial>"
+        })
+        find('#item-1').innerText.should.equal('Updated')
+    })
+
     it('swaps partial to all elements matching a class selector', async function () {
         createProcessedHTML("<div class='target'>A</div><div class='target'>B</div>")
         await htmx.swap({"target":"#test-playground", "text":"<hx-partial hx-target='.target' hx-swap='innerHTML'>Updated</hx-partial>"})
