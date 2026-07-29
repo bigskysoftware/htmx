@@ -1176,7 +1176,8 @@ var htmx = (() => {
                     if (targetSelector) {
                         this.__processScripts(templateElt.content);
                         let swapSpec = this.__parseSwapSpec(this.__attr(templateElt, 'hx-swap') || this.config.defaultSwap);
-                        for (let target of this.__findAllExt(ctx.sourceElement, targetSelector)) {
+                        let targets = this.__findAllExt(ctx.sourceElement, targetSelector);
+                        for (let target of targets.length ? targets : [null]) {
                             tasks.push({
                                 type: 'partial',
                                 fragment: templateElt.content.cloneNode(true),

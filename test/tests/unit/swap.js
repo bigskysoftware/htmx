@@ -468,6 +468,15 @@ describe('swap() unit tests', function() {
         find('#target_oob').textContent.should.equal("OOB Updated");
     })
 
+    it('does not swap main target when partial target is not found', async function () {
+        createProcessedHTML("<div id='target'>Original</div>")
+        await htmx.swap({
+            "target":"#target",
+            "text":"<hx-partial hx-target='#nonexistent' hx-swap='innerHTML'><div>Should Not Appear</div></hx-partial>"
+        })
+        find('#target').textContent.should.equal("Original");
+    })
+
     it('does not swap main target when only whitespace and partial present', async function () {
         createProcessedHTML("<div id='target'>Original</div><div id='target_oob'>OOB</div>")
         await htmx.swap({
