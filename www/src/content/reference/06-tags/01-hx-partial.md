@@ -28,7 +28,7 @@ Either `hx-target` or `id` is required. If both are present, `hx-target` takes p
 
 ## Responses Without Main Content
 
-When a response contains only `<hx-partial>` tags (no main content), the main target is left untouched. See [Multi-Target Updates](/docs#choosing-between-them) for details.
+When a response contains only `<hx-partial>` tags, htmx performs the normal swap with an empty fragment. Set [`swapEmpty:false`](/reference/attributes/hx-swap#swapempty) to leave the normal target unchanged.
 
 ## Alternative Syntax
 

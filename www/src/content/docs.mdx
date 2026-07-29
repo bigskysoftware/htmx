@@ -1845,13 +1845,10 @@ You can use the equivalent <code>&lt;template&gt;</code> form: <code>&lt;templat
 
 #### Empty Response Behaviour
 
-When a response contains only `<hx-partial>` elements and no main content, htmx will **not** perform the main swap.
-This is the opposite default to [`hx-swap-oob`](/reference/attributes/hx-swap-oob): with partials, an
-all-partial response signals intent — the server is explicitly routing multiple targeted updates and there is no main
-content to swap.
+When a response contains only `<hx-partial>` elements, htmx performs the main swap with an empty fragment. This matches [`hx-swap-oob`](/reference/attributes/hx-swap-oob).
 
 ```html
-<!-- Server returns only partials — main target is left untouched -->
+<!-- Server returns only partials -->
 <hx-partial hx-target="#notifications">
     <span class="badge">5</span>
 </hx-partial>
@@ -1860,10 +1857,10 @@ content to swap.
 </hx-partial>
 ```
 
-If you also want the main target cleared, add `swapEmpty:true` to `hx-swap` on the triggering element:
+To leave the main target unchanged, add `swapEmpty:false` to `hx-swap` on the triggering element:
 
 ```html
-<button hx-post="/submit" hx-swap="outerHTML swapEmpty:true">Submit</button>
+<button hx-post="/submit" hx-swap="outerHTML swapEmpty:false">Submit</button>
 ```
 
 Or set the global default via [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).

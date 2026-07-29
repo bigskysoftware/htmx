@@ -7,7 +7,7 @@ The `htmx.config.defaultSwapEmpty` option controls the main swap when the respon
 
 Override it per element with [`swapEmpty`](/reference/attributes/hx-swap#swapempty).
 
-**Default:** unset. When unset, htmx performs the main swap on an empty response except when the response contained only `<hx-partial>` elements.
+**Default:** `true`
 
 ## Values
 

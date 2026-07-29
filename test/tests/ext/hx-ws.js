@@ -553,7 +553,7 @@ describe('hx-ws WebSocket extension', function() {
         
         it('respects hx-swap attribute on partial', async function() {
             let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/test" hx-target="#list">
+                <div hx-ws:connect="/ws/test" hx-target="#list" hx-swap="innerHTML swapEmpty:false">
                     <div id="list"><p>Item 1</p></div>
                 </div>
             `);
@@ -1603,7 +1603,7 @@ describe('hx-ws WebSocket extension', function() {
         
         it('handles live notifications pattern', async function() {
             let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/notifications" hx-target="#notifications">
+                <div hx-ws:connect="/ws/notifications" hx-target="#notifications" hx-swap="innerHTML swapEmpty:false">
                     <div id="notifications"></div>
                 </div>
             `);

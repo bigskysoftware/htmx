@@ -162,7 +162,7 @@ describe('hx-upsert extension', function() {
 
     it('works with hx-partial', async function () {
         mockResponse('GET', '/test', '<hx-partial hx-target="#list1" hx-swap="upsert"><div id="item-2">Two</div></hx-partial><hx-partial hx-target="#list2" hx-swap="upsert"><div id="item-b">B</div></hx-partial>')
-        let container = createProcessedHTML('<div hx-get="/test"><div id="list1"><div id="item-1">One</div></div><div id="list2"><div id="item-a">A</div></div></div>');
+        let container = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML swapEmpty:false"><div id="list1"><div id="item-1">One</div></div><div id="list2"><div id="item-a">A</div></div></div>');
         container.click()
         await htmx.timeout(20)
         let list1 = container.querySelector('#list1')
@@ -189,7 +189,7 @@ describe('hx-upsert extension', function() {
 
     it('hx-upsert tag with basic upsert', async function () {
         mockResponse('GET', '/test', '<hx-upsert hx-target="#list"><div id="item-2">Two</div></hx-upsert>')
-        let container = createProcessedHTML('<div hx-get="/test"><div id="list"><div id="item-1">One</div></div></div>');
+        let container = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML swapEmpty:false"><div id="list"><div id="item-1">One</div></div></div>');
         container.click()
         await htmx.timeout(20)
         let list = container.querySelector('#list')
@@ -200,7 +200,7 @@ describe('hx-upsert extension', function() {
 
     it('hx-upsert tag with sort attribute', async function () {
         mockResponse('GET', '/test', '<hx-upsert hx-target="#list" sort><div id="item-2">Two</div></hx-upsert>')
-        let container = createProcessedHTML('<div hx-get="/test"><div id="list"><div id="item-1">One</div><div id="item-3">Three</div></div></div>');
+        let container = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML swapEmpty:false"><div id="list"><div id="item-1">One</div><div id="item-3">Three</div></div></div>');
         container.click()
         await htmx.timeout(20)
         let list = container.querySelector('#list')
@@ -211,7 +211,7 @@ describe('hx-upsert extension', function() {
 
     it('hx-upsert tag with sort="desc"', async function () {
         mockResponse('GET', '/test', '<hx-upsert hx-target="#list" sort="desc"><div id="item-2">Two</div></hx-upsert>')
-        let container = createProcessedHTML('<div hx-get="/test"><div id="list"><div id="item-3">Three</div><div id="item-1">One</div></div></div>');
+        let container = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML swapEmpty:false"><div id="list"><div id="item-3">Three</div><div id="item-1">One</div></div></div>');
         container.click()
         await htmx.timeout(20)
         let list = container.querySelector('#list')
@@ -222,7 +222,7 @@ describe('hx-upsert extension', function() {
 
     it('hx-upsert tag with key attribute', async function () {
         mockResponse('GET', '/test', '<hx-upsert hx-target="#list" key="data-priority" sort><div id="task-2" data-priority="2">Medium</div></hx-upsert>')
-        let container = createProcessedHTML('<div hx-get="/test"><div id="list"><div id="task-3" data-priority="1">High</div><div id="task-1" data-priority="3">Low</div></div></div>');
+        let container = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML swapEmpty:false"><div id="list"><div id="task-3" data-priority="1">High</div><div id="task-1" data-priority="3">Low</div></div></div>');
         container.click()
         await htmx.timeout(20)
         let list = container.querySelector('#list')
@@ -233,7 +233,7 @@ describe('hx-upsert extension', function() {
 
     it('hx-upsert tag with prepend attribute', async function () {
         mockResponse('GET', '/test', '<hx-upsert hx-target="#list" prepend><div>No Key</div></hx-upsert>')
-        let container = createProcessedHTML('<div hx-get="/test"><div id="list"><div id="item-1">One</div></div></div>');
+        let container = createProcessedHTML('<div hx-get="/test" hx-swap="innerHTML swapEmpty:false"><div id="list"><div id="item-1">One</div></div></div>');
         container.click()
         await htmx.timeout(20)
         let list = container.querySelector('#list')

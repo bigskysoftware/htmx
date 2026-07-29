@@ -162,9 +162,7 @@ If you want to prevent the empty main swap, use the [`swapEmpty`](/reference/att
 
 Or set the global default via [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).
 
-[`<hx-partial>`](/reference/tags/hx-partial) uses the opposite default. Partial-only responses skip the empty main swap.
-
-A partial-only response explicitly routes targeted updates, so htmx assumes no main swap is needed. Set `swapEmpty:true` to run it.
+[`<hx-partial>`](/reference/tags/hx-partial) follows the same `swapEmpty` behavior.
 
 ## See Also
 

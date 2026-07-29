@@ -206,6 +206,7 @@ var htmx = (() => {
                 history: true,
                 mode: 'same-origin',
                 defaultSwap: "innerHTML",
+                defaultSwapEmpty: true,
                 defaultFocusScroll: false,
                 indicatorClass: "htmx-indicator",
                 requestClass: "htmx-request",
@@ -1268,7 +1269,7 @@ var htmx = (() => {
                 tasks.push(...oobTasks, ...partialTasks);
 
                 // Process main swap first
-                let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
+                let mainSwap = this.__processMainSwap(ctx, fragment);
                 if (mainSwap) {
                     tasks.unshift(mainSwap);
                 }
@@ -1311,15 +1312,14 @@ var htmx = (() => {
             }
         }
 
-        __processMainSwap(ctx, fragment, partialTasks) {
+        __processMainSwap(ctx, fragment) {
             // Create main task if needed
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
-            // skip main swap if fragment is empty after hx-partial removal but respect empty modifier
             if (
                 swapSpec.style === 'delete' ||    // delete always runs regardless of content
                 fragment.childElementCount > 0 || // or fragment has elements
                 fragment.textContent.trim() ||    // or fragment has text
-                (swapSpec.swapEmpty ?? this.config.defaultSwapEmpty ?? !partialTasks.length) // swapEmpty:true/false overrides, default: allow if no partials
+                (swapSpec.swapEmpty ?? this.config.defaultSwapEmpty)
             ) {
                 if (ctx.select) {
                     let selected = fragment.querySelectorAll(ctx.select);
