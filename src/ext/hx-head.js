@@ -182,6 +182,9 @@
                     detail._deferredHeadScripts = deferred;
                 });
             }
+        },
+        htmx_history_cache_after_restore: (elt, detail) => {
+            for (const node of detail._deferredHeadScripts || []) appendNode(node)
         }
     })
 

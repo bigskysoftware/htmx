@@ -216,3 +216,78 @@ describe('hx-head extension', function() {
         if (addedLink) addedHeadElts.push(addedLink);
     });
 });
+
+describe('hx-head + hx-history-cache integration', function () {
+
+    let extBackup;
+
+    before(async () => {
+        extBackup = backupExtensions();
+        clearExtensions();
+        htmx.config.extensions = 'history-cache,hx-head';
+        htmx.__approvedExt = 'history-cache,hx-head';
+
+        for (const src of ['../src/ext/hx-history-cache.js', '../src/ext/hx-head.js']) {
+            let script = document.createElement('script');
+            script.src = src;
+            await new Promise(resolve => {
+                script.onload = resolve;
+                document.head.appendChild(script);
+            });
+        }
+    });
+
+    after(() => {
+        restoreExtensions(extBackup);
+    });
+
+    beforeEach(() => {
+        setupTest();
+        sessionStorage.clear();
+        htmx.config.historyCache = {size: 10, refreshOnMiss: false, disable: false, swapStyle: 'outerSync'};
+    });
+
+    afterEach(() => {
+        document.getElementById('cached-deferred-script')?.remove();
+        delete window.cachedInputValueSeenByDeferred;
+        cleanupTest();
+        sessionStorage.clear();
+    });
+
+    it('runs deferred scripts after cached form state is restored', async function () {
+        let cachedPath = location.pathname + location.search;
+        createProcessedHTML(`
+            <div hx-history-elt><input id="cached-input"></div>
+            <button hx-get="/page2" hx-push-url="/page2">go</button>
+        `);
+        let historyElt = playground().querySelector('[hx-history-elt]');
+        historyElt.querySelector('input').value = 'restored value';
+
+        mockResponse('GET', '/page2', '<p>page 2</p>');
+        playground().querySelector('button').click();
+        await forRequest();
+
+        let index = JSON.parse(sessionStorage.getItem('htmx-history-index') || '[]');
+        let htmxId = index[index.length - 1];
+        history.replaceState({htmx: true, htmxId}, '', cachedPath);
+        historyElt.innerHTML = '<p>current page</p>';
+
+        document.addEventListener('htmx:history:cache:hit', event => {
+            let script = `<script id="cached-deferred-script" defer>
+                window.cachedInputValueSeenByDeferred = document.getElementById('cached-input').value;
+            <\/script>`;
+            event.detail.item.head = event.detail.item.head.replace('</head>', script + '</head>');
+        }, {once: true});
+
+        await new Promise(resolve => {
+            document.addEventListener('htmx:history:cache:after:restore', resolve, {once: true});
+            htmx.__restoreHistory(null, cachedPath);
+        });
+
+        assert.equal(
+            window.cachedInputValueSeenByDeferred,
+            'restored value',
+            'deferred cached head script must see restored input value'
+        );
+    });
+});
