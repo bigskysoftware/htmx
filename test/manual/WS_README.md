@@ -82,18 +82,18 @@ Client sends:
 ```json
 {
   "headers": {
-    "HX-Request-ID": "uuid-here"
+    "HX-Message-ID": "uuid-here"
   },
   "message": "Hello!"
 }
 ```
 
-The server copies `HX-Request-ID` into the incoming message:
+The server copies `HX-Message-ID` into the incoming message:
 
 ```json
 {
   "headers": {
-    "HX-Request-ID": "uuid-here"
+    "HX-Message-ID": "uuid-here"
   },
   "content": "<p>Saved</p>"
 }
@@ -121,7 +121,7 @@ htmx.config.ws = {
     reconnectMaxAttempts: Infinity,// Max reconnect attempts
     reconnectJitter: 0.3,         // Jitter factor (0-1)
     pauseOnBackground: true,      // Pause connection when tab is backgrounded
-    pendingRequestTTL: 30000,     // Discard unmatched requests after this many ms
+    pendingMessageTTL: 30000,     // Discard unmatched messages after this many ms
     protocols: null               // Optional WebSocket subprotocols
 };
 ```

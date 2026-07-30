@@ -179,7 +179,7 @@ The outgoing message is:
 {
   "headers": {
     "HX-Request": "true",
-    "HX-Request-ID": "550e8400-e29b-41d4-a716-446655440000",
+    "HX-Message-ID": "550e8400-e29b-41d4-a716-446655440000",
     "HX-Request-Type": "partial",
     "HX-Source": "input",
     "HX-Target": "div#messages",
@@ -236,7 +236,7 @@ Use JSON to override the connection's swap:
 }
 ```
 
-- `headers`: metadata such as `HX-Request-ID`
+- `headers`: metadata such as `HX-Message-ID`
 - `content`: the HTML to swap
 - `target`: where to swap it
 - `swap`: a serialized [`hx-swap`](/reference/attributes/hx-swap) specification
@@ -266,7 +266,7 @@ JSON swap    -->  hx-swap    -->  defaultSwap
 SELECT
 JSON select  -->  hx-select  -->  all content
 
-* incoming messages with a matching HX-Request-ID use the sending element
+* incoming messages with a matching HX-Message-ID use the sending element
 ```
 
 `hx-select-oob` remains an element setting. A server can use `hx-swap-oob` or `<hx-partial>` inside `content` instead.
@@ -364,12 +364,12 @@ Both buttons use the same WebSocket connection, but each incoming message needs 
 
 **Route Incoming Messages**
 
-Copy an outgoing [`HX-Request-ID`](#hx-request-id) into the incoming message:
+Copy an outgoing [`HX-Message-ID`](#hx-message-id) into the incoming message:
 
 ```json
 {
   "headers": {
-    "HX-Request-ID": "550e8400-e29b-41d4-a716-446655440000"
+    "HX-Message-ID": "550e8400-e29b-41d4-a716-446655440000"
   },
   "content": "<p>Saved</p>"
 }
@@ -483,16 +483,16 @@ Default [`hx-trigger`](/reference/attributes/hx-trigger):
 
 ## Headers
 
-### `HX-Request-ID`
+### `HX-Message-ID`
 
 Associates an incoming message with its outgoing sender.
 
 ```jsonc
 // Browser → server
-{ "headers": { "HX-Request-ID": "abc123" }, "message": "Save" }
+{ "headers": { "HX-Message-ID": "abc123" }, "message": "Save" }
 
 // Server → browser
-{ "headers": { "HX-Request-ID": "abc123" }, "content": "<p>Saved</p>" }
+{ "headers": { "HX-Message-ID": "abc123" }, "content": "<p>Saved</p>" }
 ```
 
 `hx-ws` adds a unique ID to every outgoing message. Copy it into the incoming message's `headers` to [use the sender](#use-shared-connections).
@@ -545,7 +545,7 @@ event.detail = {
 }
 ```
 
-Message events dispatch from a live connection element. [An incoming message with a matching `HX-Request-ID`](#use-shared-connections) dispatches from the sending element.
+Message events dispatch from a live connection element. [An incoming message with a matching `HX-Message-ID`](#use-shared-connections) dispatches from the sending element.
 
 ### `htmx:ws:before:connection`
 
@@ -747,12 +747,12 @@ Close connections while the page is hidden and reconnect when it becomes visible
 
 Defaults to `true`.
 
-### `ws.pendingRequestTTL`
+### `ws.pendingMessageTTL`
 
 Set how long `hx-ws` remembers an outgoing message so an [incoming message can use its sender](#use-shared-connections).
 
 ```html
-<meta name="htmx-config" content="ws.pendingRequestTTL:60000">
+<meta name="htmx-config" content="ws.pendingMessageTTL:60000">
 ```
 
 Defaults to `30000` milliseconds. After it expires, the incoming message uses the connection element.
@@ -803,7 +803,7 @@ htmx 4.0 requires explicit syntax for each extra swap:
 
 - [`hx-swap-oob`](/reference/attributes/hx-swap-oob) or [`<hx-partial>`](/reference/tags/hx-partial) for extra swaps
 - [JSON](#override-an-incoming-swap) to choose the connection's target and swap
-- [`HX-Request-ID`](#hx-request-id) to route incoming messages through the sending element
+- [`HX-Message-ID`](#hx-message-id) to route incoming messages through the sending element
 
 #### Outgoing Messages
 
@@ -872,7 +872,7 @@ Event detail changed from `{headers, body}` to `{message: {headers, values, data
 
 #### Incoming Messages
 
-Request correlation moved from top-level `HX-Request-ID` or `request_id` to `headers["HX-Request-ID"]`.
+Message correlation moved from top-level `HX-Request-ID` or `request_id` to `headers["HX-Message-ID"]`.
 
 Event detail changed from `{message: {text, json, cancelled}}` to `{message: {data, type, text(), json(), blob(), arrayBuffer()}, waitUntil, cancelled}`. The conversion fields are now methods. Cancel with `event.preventDefault()` or `event.detail.cancelled = true`.
 

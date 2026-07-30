@@ -346,7 +346,7 @@ describe('hx-ws WebSocket extension', function() {
             assert.isDefined(ws.lastSent);
             
             let sent = JSON.parse(ws.lastSent);
-            assert.isDefined(sent.headers['HX-Request-ID']);
+            assert.isDefined(sent.headers['HX-Message-ID']);
             assert.equal(sent.message, 'hello');
             assert.notProperty(sent, 'body');
             assert.isDefined(sent.headers['HX-Source']);
@@ -483,7 +483,7 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(sent.headers['HX-Source'], 'button#my-button');
         });
         
-        it('generates a unique HX-Request-ID for each message', async function() {
+        it('generates a unique HX-Message-ID for each message', async function() {
             let div = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test">
                     <button hx-ws:send hx-trigger="click">Send</button>
@@ -494,11 +494,11 @@ describe('hx-ws WebSocket extension', function() {
             let button = div.querySelector('button');
             button.click();
             await htmx.timeout(20);
-            let firstId = JSON.parse(mockWebSocketInstances[0].lastSent).headers['HX-Request-ID'];
+            let firstId = JSON.parse(mockWebSocketInstances[0].lastSent).headers['HX-Message-ID'];
 
             button.click();
             await htmx.timeout(20);
-            let secondId = JSON.parse(mockWebSocketInstances[0].lastSent).headers['HX-Request-ID'];
+            let secondId = JSON.parse(mockWebSocketInstances[0].lastSent).headers['HX-Message-ID'];
 
             assert.notEqual(firstId, secondId);
         });
@@ -725,7 +725,7 @@ describe('hx-ws WebSocket extension', function() {
             ws.simulateMessage({
                 content: '<p id="response">Response</p>',
                 swap: 'beforeend swap:10ms settle:0',
-                headers: { 'HX-Request-ID': sent.headers['HX-Request-ID'] }
+                headers: { 'HX-Message-ID': sent.headers['HX-Message-ID'] }
             });
             await htmx.timeout(30);
 
@@ -2327,24 +2327,24 @@ describe('hx-ws WebSocket extension', function() {
 
             let ws = mockWebSocketInstances[0];
             let sent = JSON.parse(ws.lastSent);
-            let requestId = sent.headers['HX-Request-ID'];
+            let messageId = sent.headers['HX-Message-ID'];
 
-            // Remove the form that sent the request (simulates swap replacing the form)
+            // Remove the form that sent the message (simulates swap replacing the form)
             form.remove();
             await htmx.timeout(20);
 
-            // Server sends the request ID — should fall back to live connect element
+            // Server sends the message ID — should fall back to live connect element
             ws.simulateMessage({
                 content: '<hx-partial id="result">Response</hx-partial>',
-                headers: { 'HX-Request-ID': requestId }
+                headers: { 'HX-Message-ID': messageId }
             });
             await htmx.timeout(20);
 
             assert.include(document.getElementById('result').innerHTML, 'Response');
         });
 
-        it('cleans up expired pending requests on message receive', async function() {
-            htmx.config.ws = { pendingRequestTTL: 50 };
+        it('cleans up expired pending messages on message receive', async function() {
+            htmx.config.ws = { pendingMessageTTL: 50 };
 
             let container = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test">
@@ -2360,7 +2360,7 @@ describe('hx-ws WebSocket extension', function() {
             let ws = mockWebSocketInstances[0];
             let registry = htmx.ext.ws.getRegistry();
             let conn = registry.get('/ws/test');
-            assert.equal(conn.pendingRequests.size, 1, 'Should have 1 pending request');
+            assert.equal(conn.pendingMessages.size, 1, 'Should have 1 pending message');
 
             // Wait for TTL to expire
             await htmx.timeout(100);
@@ -2369,7 +2369,7 @@ describe('hx-ws WebSocket extension', function() {
             ws.simulateMessage({ type: 'ping' });
             await htmx.timeout(20);
 
-            assert.equal(conn.pendingRequests.size, 0, 'Expired pending request should be cleaned up');
+            assert.equal(conn.pendingMessages.size, 0, 'Expired pending message should be cleaned up');
         });
 
         it('closeConnection aborts the AbortController', async function() {

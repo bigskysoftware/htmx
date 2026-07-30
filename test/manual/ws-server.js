@@ -240,7 +240,7 @@ function handleMessage(ws, data) {
             
             // Echo back to sender
             ws.send(JSON.stringify({
-                headers: { 'HX-Request-ID': data.headers?.['HX-Request-ID'] },
+                headers: { 'HX-Message-ID': data.headers?.['HX-Message-ID'] },
                 content: html
             }));
 
@@ -277,7 +277,7 @@ function handleMessage(ws, data) {
 
         // Broadcast new counter value to all clients
         broadcast('counter', {
-            headers: { 'HX-Request-ID': data.headers?.['HX-Request-ID'] },
+            headers: { 'HX-Message-ID': data.headers?.['HX-Message-ID'] },
             content: `<hx-partial id="counter">${counter}</hx-partial>`
         });
     }

@@ -25,7 +25,7 @@
             reconnectMaxAttempts: Infinity,
             reconnectJitter: 0.3,
             pauseOnBackground: true,
-            pendingRequestTTL: 30000,
+            pendingMessageTTL: 30000,
             ...htmx.config.ws, // global defaults
             ...hxConfig // hx-config overrides
         };
@@ -87,7 +87,7 @@
             socket: null,
             attempt: 0,
             timer: null,
-            pendingRequests: new Map(),
+            pendingMessages: new Map(),
             queue: [],
             abortController: null,
             visibilityHandler: null,
@@ -140,7 +140,7 @@
         if (connection.abortController) {
             connection.abortController.abort();
         }
-        connection.pendingRequests.clear();
+        connection.pendingMessages.clear();
         connection.queue.length = 0;
         if (connection.socket) {
             try {
@@ -289,7 +289,7 @@
         if (connection.abortController) {
             connection.abortController.abort();
         }
-        connection.pendingRequests.clear();
+        connection.pendingMessages.clear();
         connection.queue.length = 0;
         api.triggerHtmxEvent(element, 'htmx:ws:close', {
             connection, reason: 'removed', code: null
@@ -301,28 +301,28 @@
     }
     
     // ========================================
-    // PENDING REQUEST MANAGEMENT    // ========================================
+    // PENDING MESSAGE MANAGEMENT    // ========================================
     
-    function cleanupExpiredRequests(connection) {
+    function cleanupExpiredMessages(connection) {
         let config = connection.config;
         let now = Date.now();
-        let timeout = config.pendingRequestTTL || 30000;
+        let timeout = config.pendingMessageTTL || 30000;
 
-        for (let [requestId, pending] of connection.pendingRequests) {
+        for (let [messageId, pending] of connection.pendingMessages) {
             if (now - pending.timestamp > timeout) {
-                connection.pendingRequests.delete(requestId);
+                connection.pendingMessages.delete(messageId);
             }
         }
     }
     
     // ========================================
-    // REQUESTS
+    // MESSAGES
     // ========================================
 
-    function sendMessage(connection, element, message, requestId) {
+    function transmitMessage(connection, element, message, messageId) {
         try {
             connection.socket.send(message.data);
-            connection.pendingRequests.set(requestId, { element, timestamp: Date.now() });
+            connection.pendingMessages.set(messageId, { element, timestamp: Date.now() });
             api.triggerHtmxEvent(element, 'htmx:ws:after:message:outgoing', {message});
         } catch (error) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', { url: connection.url, error });
@@ -332,11 +332,11 @@
     function flushQueue(connection) {
         while (connection.queue.length && connection.socket?.readyState === WebSocket.OPEN) {
             let queuedMessage = connection.queue.shift();
-            sendMessage(connection, queuedMessage.element, queuedMessage.message, queuedMessage.requestId);
+            transmitMessage(connection, queuedMessage.element, queuedMessage.message, queuedMessage.messageId);
         }
     }
 
-    async function sendRequest(element, event) {
+    async function sendMessage(element, event) {
         // hx-ws:send="/url" creates its own connection; hx-ws:send (no value) uses ancestor's
         let sendAttr = api.attributeValue(element, 'hx-ws:send');
         let url = (sendAttr && sendAttr !== 'true') ? sendAttr : null;
@@ -362,17 +362,17 @@
             return;
         }
 
-        // [Correlation] Cleanup expired pending requests periodically
-        cleanupExpiredRequests(connection);
+        // [Correlation] Cleanup expired pending messages periodically
+        cleanupExpiredMessages(connection);
 
         // Build headers using core's request context (same as HTTP requests)
         let ctx = api.createRequestContext(element, event);
         let headers = {...ctx.request.headers};
         delete headers['Accept'];
 
-        // [Correlation] Add request ID as a header
-        let requestId = crypto.randomUUID();
-        headers['HX-Request-ID'] = requestId;
+        // [Correlation] Add message ID as a header
+        let messageId = crypto.randomUUID();
+        headers['HX-Message-ID'] = messageId;
 
         // Build outgoing values from form data.
         let form = element.form || element.closest('form');
@@ -419,9 +419,9 @@
             }
 
             if (connection.socket?.readyState === WebSocket.OPEN) {
-                sendMessage(connection, element, message, requestId);
+                transmitMessage(connection, element, message, messageId);
             } else {
-                connection.queue.push({element, message, requestId});
+                connection.queue.push({element, message, messageId});
             }
         } catch (error) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error });
@@ -475,12 +475,12 @@
             }
         }
 
-        // [Correlation] Cleanup expired pending requests on every message
-        cleanupExpiredRequests(connection);
+        // [Correlation] Cleanup expired pending messages on every message
+        cleanupExpiredMessages(connection);
 
-        let requestId = json?.headers?.['HX-Request-ID'];
-        let pending = connection.pendingRequests.get(requestId);
-        if (pending) connection.pendingRequests.delete(requestId);
+        let messageId = json?.headers?.['HX-Message-ID'];
+        let pending = connection.pendingMessages.get(messageId);
+        if (pending) connection.pendingMessages.delete(messageId);
 
         // Route associated incoming messages through their sender.
         let element = pending?.element;
@@ -586,7 +586,7 @@
                     element._htmx.ws.url = connection.url;
                 }
             }
-            await sendRequest(element, evt);
+            await sendMessage(element, evt);
         });
         element._htmx.ws.sendInitialized = true;
     }
@@ -696,7 +696,7 @@
                         if (connection.socket) {
                             connection.socket.close();
                         }
-                        connection.pendingRequests.clear();
+                        connection.pendingMessages.clear();
                         connection.queue.length = 0;
                     });
                 },
