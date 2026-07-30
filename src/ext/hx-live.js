@@ -134,7 +134,11 @@
                     : (value ? 'true' : 'false');
                 e.setAttribute(name, attrVal);
             } else if (isPropAttr) {
-                if (value === false || value == null) {
+                if (name === 'checked' || name === 'selected') {
+                    let present = !!value;
+                    e[name] = present;
+                    e.toggleAttribute(name, present);
+                } else if (value === false || value == null) {
                     e[name] = (typeof e[name] === 'boolean') ? false : '';
                     e.removeAttribute(name);
                 } else if (value === true) {
