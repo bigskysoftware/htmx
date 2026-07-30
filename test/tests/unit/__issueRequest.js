@@ -194,6 +194,28 @@ describe('__issueRequest unit tests', function() {
         assert.isTrue(triggerFired)
     })
 
+    it('fires HX-Trigger on replacement element after outerHTML swap', async function () {
+        let div = createProcessedHTML('<div id="source" hx-get="/test" hx-swap="outerHTML"></div>')
+        let source = find('#source')
+        let ctx = htmx.__createRequestContext(source, new Event('click'))
+
+        let triggerTarget = null
+        document.addEventListener('myEvent', (e) => triggerTarget = e.target)
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers({ 'HX-Trigger': 'myEvent' }),
+            text: async () => '<span id="replacement">New</span>'
+        })
+
+        await htmx.__issueRequest(ctx)
+
+        let replacement = find('#replacement')
+        assert.isNotNull(replacement)
+        assert.isFalse(source.isConnected)
+        assert.equal(triggerTarget, replacement)
+    })
+
     it('always triggers htmx:finally:request', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
