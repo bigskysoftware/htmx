@@ -667,7 +667,7 @@
         },
         {
           "name": "history:cache:after:restore",
-          "description": "Fires after cached content is restored. `detail.item` is the restored cache item.",
+          "description": "Fires after cached content is restored. `detail.item` is the restored cache item; the `before:restore` detail fields are carried through.",
           "doc-url": "https://four.htmx.org/extensions/hx-history-cache#events"
         },
         {

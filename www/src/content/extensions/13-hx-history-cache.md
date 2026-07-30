@@ -65,7 +65,7 @@ The extension fires the following events on `document`:
 | `htmx:history:cache:miss`           | `{ path, refreshOnMiss }`          | Fired when the requested history entry is not in the cache. Set `detail.refreshOnMiss = true` to force a reload.                                      |
 | `htmx:history:cache:hit`            | `{ path, item }`                   | Fired when a cache entry is found. Cancel the event to bypass the cache and let htmx fetch from the server.                                           |
 | `htmx:history:cache:before:restore` | `{ head, ready }`                  | Fired before cached content is restored. Set `detail.ready` to a promise to delay the body restore.                                                   |
-| `htmx:history:cache:after:restore`  | `{ item }`                         | Fired after cached content, title, scroll, and annotated state are restored.                                                                          |
+| `htmx:history:cache:after:restore`  | `{ item, head, ready }`            | Fired after cached content, title, scroll, and annotated state are restored. Receives the `before:restore` detail with `item` added.                  |
 
 ### Example: Skipping the cache for specific paths
 
