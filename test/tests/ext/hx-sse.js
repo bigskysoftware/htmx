@@ -277,30 +277,6 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
-    it('cancelled messages do not advance or clear the connection cursor', async function() {
-        const stream = mockStreamResponse('/cancelled-id');
-        createProcessedHTML('<button hx-get="/cancelled-id" hx-swap="innerHTML">Connect</button>');
-
-        onDoc('htmx:before:sse:message', (e) => {
-            if (e.detail.message.data !== 'first') e.detail.message.cancelled = true;
-        });
-
-        find('button').click();
-        await htmx.timeout(1);
-
-        stream.sendRaw('id: 42\ndata: first\n\n');
-        await waitForEvent('htmx:after:sse:message');
-        stream.sendRaw('id: 43\ndata: advance\n\n');
-        await htmx.timeout(20);
-        assert.equal(find('button')._htmx.sse.lastEventId, '42');
-
-        stream.sendRaw('id:\ndata: clear\n\n');
-        await htmx.timeout(20);
-        assert.equal(find('button')._htmx.sse.lastEventId, '42');
-
-        stream.close();
-    });
-
     it('events fire correctly and can cancel operations', async function() {
         const stream = mockStreamResponse('/cancelable');
         createProcessedHTML('<button hx-get="/cancelable" hx-swap="innerHTML">Go</button>');
@@ -947,8 +923,6 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
-    // --- New tests ---
-
     it('htmx:sse:error fires on stream errors', async function() {
         let fetchCount = 0;
         fetchMock.mockResponse('GET', '/error-test', () => {
@@ -1107,6 +1081,30 @@ describe('hx-sse SSE extension', function() {
 
         await htmx.timeout(100);
         assert.isFalse(reconnectFired, 'Should NOT attempt reconnect after hx-sse:close');
+    });
+
+    it('hx-sse:close closes connection on matching event with no data', async function() {
+        const stream = mockStreamResponse('/close-nodata');
+        createProcessedHTML('<div hx-sse:connect="/close-nodata" hx-sse:close="done" hx-swap="innerHTML">Waiting</div>');
+
+        await htmx.timeout(1);
+
+        stream.send('message 1');
+        await waitForEvent('htmx:after:sse:message');
+
+        let closeFired = false;
+        let beforeMessageFired = false;
+        let afterMessageFired = false;
+        onDoc('htmx:sse:close', (e) => { closeFired = true; });
+        onDoc('htmx:before:sse:message', (e) => { if (e.detail.message.event === 'done') beforeMessageFired = true; });
+        onDoc('htmx:after:sse:message', (e) => { if (e.detail.message.event === 'done') afterMessageFired = true; });
+
+        stream.sendRaw('event: done\n\n');
+        await waitForEvent('htmx:sse:close');
+
+        assert.isTrue(closeFired);
+        assert.isTrue(beforeMessageFired, 'htmx:before:sse:message should fire for data-less named event');
+        assert.isTrue(afterMessageFired, 'htmx:after:sse:message should fire for data-less named event');
     });
 
     it('hx-sse:close does not close on non-matching events', async function() {

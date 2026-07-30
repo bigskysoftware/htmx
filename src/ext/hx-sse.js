@@ -59,8 +59,8 @@
 
                 for (let line of lines) {
                     if (!line) {
-                        if (hasData || hasId) {
-                            yield {...message, id: lastEventId, hasData};
+                        if (hasData || hasId || message.event) {
+                            yield {...message, id: lastEventId, hasData, hasId};
                         }
                         hasData = false;
                         hasId = false;
@@ -244,19 +244,18 @@
                     for await (let msg of parseSSE(connection.reader, connection.lastEventId)) {
                         if (!element.isConnected || reconnectRequested) break;
 
-                        if (!msg.hasData) {
+                        if (msg.hasId) {
                             connection.lastEventId = msg.id;
                             if (!msg.id) clearLastEventIdHeader(ctx.request.headers);
-                            continue;
                         }
+
+                        if (!msg.hasData && !msg.event) continue;
 
                         let detail = {
                             message: {data: msg.data, event: msg.event, id: msg.id, cancelled: false}
                         };
                         if (!api.triggerHtmxEvent(element, 'htmx:before:sse:message', detail) || detail.message.cancelled) continue;
 
-                        connection.lastEventId = msg.id;
-                        if (!msg.id) clearLastEventIdHeader(ctx.request.headers);
                         if (msg.retry != null) config.reconnectDelay = msg.retry;
 
                         if (detail.message.event) {
