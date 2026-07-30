@@ -101,8 +101,14 @@ describe('hx-live extension', function () {
         htmx.live.refresh();
         await flushMicrotasks();
         let clock = installFakeTimeouts();
+        let addEventListener = document.addEventListener;
         let removeEventListener = document.removeEventListener;
-        let removed = false;
+        let addedListeners = {};
+        let removedListeners = {};
+        document.addEventListener = function(type, listener, ...args) {
+            if (type === 'input' || type === 'change') addedListeners[type] = listener;
+            return addEventListener.call(this, type, listener, ...args);
+        };
         delete htmx.config.live.inputDebounce;
         window.__liveInputCount = 0;
         try {
@@ -126,20 +132,22 @@ describe('hx-live extension', function () {
 
             input.dispatchEvent(new Event('input', { bubbles: true }));
 
-            document.removeEventListener = function(type, ...args) {
-                if (type === 'input') removed = true;
-                return removeEventListener.call(this, type, ...args);
+            document.removeEventListener = function(type, listener, ...args) {
+                if (type === 'input' || type === 'change') removedListeners[type] = listener;
+                return removeEventListener.call(this, type, listener, ...args);
             };
             htmx.__cleanup(playground());
             htmx.live.refresh();
             await flushMicrotasks();
-            removed.should.equal(true);
+            removedListeners.input.should.equal(addedListeners.input);
+            removedListeners.change.should.equal(addedListeners.change);
             clock.timers().length.should.equal(0);
             clock.run();
             await flushMicrotasks();
             window.__liveInputCount.should.equal(initial + 1);
         } finally {
             htmx.config.live.inputDebounce = 0;
+            document.addEventListener = addEventListener;
             document.removeEventListener = removeEventListener;
             clock.restore();
             delete window.__liveInputCount;

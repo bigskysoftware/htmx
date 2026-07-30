@@ -10,10 +10,9 @@
     let pending = false;
     let dbSym = Symbol();
     let observer = null;
-    let recomputeBound = null;
-    let inputBound = null;
+    let inputListener = null;
     let swaps = 0;
-    let recomputeMonitor = null;
+    let recomputeWarned = false;
 
     const OBSERVE_OPTIONS = { childList: true, subtree: true, attributes: true, characterData: true };
     const RECOMPUTE_WARN_MS = 16;
@@ -22,41 +21,38 @@
 
     function ensureActive() {
         if (observer) return;
-        recomputeMonitor = makeRecomputeMonitor();
-        recomputeBound = () => schedule();
-        let inputDelay = htmx.parseInterval(htmx.config.live?.inputDebounce ?? 100) ?? 100;
-        inputBound = () => {
+        recomputeWarned = false;
+        let inputDebounceMs = htmx.parseInterval(htmx.config.live?.inputDebounce) ?? 100;
+        inputListener = () => {
             clearTimeout(inputDebounceId);
-            inputDebounceId = setTimeout(schedule, inputDelay);
+            inputDebounceId = setTimeout(schedule, inputDebounceMs);
         };
-        document.addEventListener('input', inputBound, true);
-        document.addEventListener('change', recomputeBound, true);
-        observer = new MutationObserver(recomputeBound);
+        document.addEventListener('input', inputListener, true);
+        document.addEventListener('change', schedule, true);
+        observer = new MutationObserver(schedule);
         observer.observe(document.documentElement, OBSERVE_OPTIONS);
     }
 
-    function makeRecomputeMonitor() {
-        let hasWarned = false;
-
-        return (startedAt, expressionCount) => {
-            let elapsed = performance.now() - startedAt;
-            if (hasWarned || elapsed <= RECOMPUTE_WARN_MS) return;
-            console.warn(`htmx: hx-live overloaded: ${elapsed.toFixed(1)}ms pass; ${expressionCount} expr/pass`);
-            hasWarned = true;
-        };
+    function runRecomputePass() {
+        let expressionCount = liveExpressions.size;
+        if (expressionCount === 0) return;
+        let startedAt = performance.now();
+        liveExpressions.forEach(run => run());
+        let elapsed = performance.now() - startedAt;
+        if (recomputeWarned || elapsed <= RECOMPUTE_WARN_MS) return;
+        console.warn(`htmx: hx-live overloaded: ${elapsed.toFixed(1)}ms pass; ${expressionCount} expr/pass`);
+        recomputeWarned = true;
     }
 
     function deactivate() {
         if (!observer) return;
         clearTimeout(inputDebounceId);
         inputDebounceId = null;
-        document.removeEventListener('input', inputBound, true);
-        inputBound = null;
-        document.removeEventListener('change', recomputeBound, true);
+        document.removeEventListener('input', inputListener, true);
+        inputListener = null;
+        document.removeEventListener('change', schedule, true);
         observer.disconnect();
         observer = null;
-        recomputeBound = null;
-        recomputeMonitor = null;
     }
 
     function schedule() {
@@ -65,10 +61,7 @@
         queueMicrotask(() => {
             // Detach observer while writing so our own writes don't queue records.
             observer?.disconnect();
-            let expressionCount = liveExpressions.size;
-            let startedAt = expressionCount > 0 ? performance.now() : 0;
-            liveExpressions.forEach(run => run());
-            if (expressionCount > 0) recomputeMonitor(startedAt, expressionCount);
+            runRecomputePass();
             if (liveExpressions.size === 0) {
                 deactivate();
             } else {
