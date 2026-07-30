@@ -1,28 +1,28 @@
 // hx-live extension: reactive live expressions + q() proxy + scope helpers.
 // Hooks:
 //   htmx:after:process  find new [hx-live] elements and register them
-//   htmx:before:swap    increment swap depth (defer recomputes)
-//   htmx:finally:swap   decrement, fire one consolidated recompute
+//   htmx:before:swap    increment swap depth (defer recompute passes)
+//   htmx:finally:swap   decrement, fire one consolidated recompute pass
 //   htmx:scope          inject q, wait, trigger, debounce into JS expression scopes
 (() => {
     let api;
-    let fns = new Set();
+    let liveExpressions = new Set();
     let pending = false;
     let dbSym = Symbol();
     let observer = null;
     let recomputeBound = null;
     let inputBound = null;
     let swaps = 0;
-    let i = 0;
-    let start = 0;
-    let warned = false;
+    let recomputeMonitor = null;
 
     const OBSERVE_OPTIONS = { childList: true, subtree: true, attributes: true, characterData: true };
+    const RECOMPUTE_WARN_MS = 16;
 
     let inputDebounceId = null;
 
     function ensureActive() {
         if (observer) return;
+        recomputeMonitor = makeRecomputeMonitor();
         recomputeBound = () => schedule();
         let inputDelay = htmx.parseInterval(htmx.config.live?.inputDebounce ?? 100) ?? 100;
         inputBound = () => {
@@ -35,6 +35,17 @@
         observer.observe(document.documentElement, OBSERVE_OPTIONS);
     }
 
+    function makeRecomputeMonitor() {
+        let hasWarned = false;
+
+        return (startedAt, expressionCount) => {
+            let elapsed = performance.now() - startedAt;
+            if (hasWarned || elapsed <= RECOMPUTE_WARN_MS) return;
+            console.warn(`htmx: hx-live overloaded: ${elapsed.toFixed(1)}ms pass; ${expressionCount} expr/pass`);
+            hasWarned = true;
+        };
+    }
+
     function deactivate() {
         if (!observer) return;
         clearTimeout(inputDebounceId);
@@ -45,27 +56,20 @@
         observer.disconnect();
         observer = null;
         recomputeBound = null;
+        recomputeMonitor = null;
     }
 
     function schedule() {
-        if (pending) return;
-        if (swaps > 0) return;
-        let now = Date.now();
-        if (now - start > 1000) {
-            start = now;
-            i = 0;
-            warned = false;
-        }
-        if (++i > 50 && !warned) {
-            console.warn('htmx: hx-live recompute exceeded 50/sec.');
-            warned = true;
-        }
+        if (pending || swaps > 0) return;
         pending = true;
         queueMicrotask(() => {
             // Detach observer while writing so our own writes don't queue records.
             observer?.disconnect();
-            fns.forEach(f => f());
-            if (fns.size === 0) {
+            let expressionCount = liveExpressions.size;
+            let startedAt = expressionCount > 0 ? performance.now() : 0;
+            liveExpressions.forEach(run => run());
+            if (expressionCount > 0) recomputeMonitor(startedAt, expressionCount);
+            if (liveExpressions.size === 0) {
                 deactivate();
             } else {
                 observer.observe(document.documentElement, OBSERVE_OPTIONS);
@@ -522,7 +526,7 @@
     function cleanupLive(elt) {
         let prop = elt._htmx;
         if (!prop?.liveRuns) return;
-        for (let run of prop.liveRuns) fns.delete(run);
+        for (let run of prop.liveRuns) liveExpressions.delete(run);
         delete prop.liveRuns;
         delete prop.liveRegistered;
         delete prop.liveAttrs;
@@ -540,7 +544,7 @@
                 let debounce = getDebounce(elt);
                 let run = async () => {
                     if (!elt.isConnected) {
-                        fns.delete(run);
+                        liveExpressions.delete(run);
                         return;
                     }
                     try {
@@ -549,7 +553,7 @@
                         if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt });
                     }
                 };
-                fns.add(run);
+                liveExpressions.add(run);
                 prop.liveRuns = prop.liveRuns || new Set();
                 prop.liveRuns.add(run);
                 run();
@@ -578,7 +582,7 @@
         let isAsync = /\bawait\b/.test(code);
         let run = isAsync ? async () => {
             if (!elt.isConnected) {
-                fns.delete(run);
+                liveExpressions.delete(run);
                 return;
             }
             try {
@@ -590,7 +594,7 @@
             }
         } : () => {
             if (!elt.isConnected) {
-                fns.delete(run);
+                liveExpressions.delete(run);
                 return;
             }
             try {
@@ -600,7 +604,7 @@
                 if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt, attr: bindingName });
             }
         };
-        fns.add(run);
+        liveExpressions.add(run);
         let prop = api.htmxProp(elt);
         prop.liveRuns = prop.liveRuns || new Set();
         prop.liveRuns.add(run);
@@ -659,7 +663,7 @@
             swaps++;
         },
         htmx_finally_swap: () => {
-            if (--swaps === 0 && fns.size > 0) schedule();
+            if (--swaps === 0 && liveExpressions.size > 0) schedule();
         },
         htmx_scope: (elt, detail) => {
             Object.assign(detail.scope, {

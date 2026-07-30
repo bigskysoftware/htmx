@@ -533,26 +533,32 @@ Client state:
 
 ### Re-run triggers
 
-A single document-wide `MutationObserver` and `input` / `change` listeners trigger a recompute of every live expression. Any of these schedule one:
+A single document-wide `MutationObserver` and `input` / `change` listeners trigger a recompute pass. Each pass runs every live expression. Any of these schedule one:
 
 - DOM additions, removals, attribute changes, and text changes, immediately
 - `change` events from any control, immediately
 - `input` events from any control, after [`config.live.inputDebounce`](#configliveinputdebounce)
-- completion of an htmx swap (recomputes pause mid-swap, run once at the end)
+- completion of an htmx swap (recompute passes pause mid-swap, then run once at the end)
 
-All expressions run in a single microtask, so multiple synchronous mutations coalesce into one recompute. Multiple input events within the debounce window also coalesce.
+All expressions run in a single microtask, so multiple synchronous mutations coalesce into one recompute pass. Multiple input events within the debounce window also coalesce.
 
 ### Self-mutation is safe
 
 When an expression writes to the DOM, the observer drains its own pending records inside the same microtask. Writes made by `hx-live` cannot trigger a feedback loop.
 
-### Runaway cap
+### Diagnose slow updates
 
-If recomputes exceed 50/sec, the extension logs a warning. Bindings continue running. Tune your expression or add `debounce`.
+hx-live warns when one recompute pass exceeds 16 ms:
 
-### Coordinating with htmx swaps
+```text
+htmx: hx-live overloaded: 17.0ms pass; 50 expr/pass
+```
 
-Recomputes are deferred between [`htmx:before:swap`](/reference/events/htmx-before-swap) and [`htmx:finally:swap`](/reference/events/htmx-finally-swap). One consolidated recompute runs when the swap finishes, regardless of how much markup changed.
+The timing covers synchronous work in the page-wide recompute pass.
+
+### Coordinate with htmx swaps
+
+Recompute passes are deferred between [`htmx:before:swap`](/reference/events/htmx-before-swap) and [`htmx:finally:swap`](/reference/events/htmx-finally-swap). One consolidated pass runs when the swap finishes, regardless of how much markup changed.
 
 ### Cleanup
 
@@ -625,7 +631,7 @@ htmx.live.attr('.row', 'hidden', true)
 htmx.live.take('.tab.active', '.active', '.tab')
 ```
 
-`htmx.live.refresh()` forces a recompute. Use it when an expression reads from a source the observer cannot see (a JS variable, a getter, an external store) and you've just mutated it.
+`htmx.live.refresh()` forces a recompute pass. Use it when an expression reads from a source the observer cannot see (a JS variable, a getter, an external store) and you've just mutated it.
 
 ```js
 window.appState = 'loading';

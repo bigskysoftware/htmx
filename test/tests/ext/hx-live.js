@@ -197,7 +197,7 @@ describe('hx-live extension', function () {
         assert.isUndefined(out.dataset.v);
     });
 
-    it('coalesces multiple sync mutations into one recompute', async function() {
+    it('coalesces multiple sync mutations into one recompute pass', async function() {
         window.__liveCount = 0;
         let elt = createProcessedHTML('<output hx-live="window.__liveCount++"></output>');
         let initial = window.__liveCount;
@@ -210,14 +210,14 @@ describe('hx-live extension', function () {
         document.body.removeAttribute('data-c');
         await htmx.timeout(5);
         let added = window.__liveCount - initial;
-        assert.isAtMost(added, 2, 'expected at most 2 coalesced recomputes');
+        assert.isAtMost(added, 2, 'expected at most 2 coalesced recompute passes');
         delete window.__liveCount;
     });
 
     it('does not re-recompute when a binding writes its own attribute', async function() {
         // A :hidden binding writing the hidden attribute would, if MutationObserver
-        // were active during the write, queue a record and trigger another recompute.
-        // Verify the change-event causes exactly one recompute, not two.
+        // were active during the write, queue a record and trigger another recompute pass.
+        // Verify the change-event causes exactly one recompute pass, not two.
         window.__selfWriteCount = 0;
         playground().innerHTML = `
             <input id="src" type="checkbox">
@@ -231,7 +231,7 @@ describe('hx-live extension', function () {
         inp.dispatchEvent(new Event('change', { bubbles: true }));
         await htmx.timeout(20);
         let added = window.__selfWriteCount - initial;
-        assert.equal(added, 1, 'expected 1 recompute, got ' + added);
+        assert.equal(added, 1, 'expected 1 recompute pass, got ' + added);
         delete window.__selfWriteCount;
     });
 
@@ -421,7 +421,7 @@ describe('hx-live extension', function () {
         div.querySelector('output').dataset.v.should.equal('dynamic');
     });
 
-    it('coalesces recomputes during a swap', async function() {
+    it('coalesces recompute passes during a swap', async function() {
         window.__swapCountLive = 0;
         playground().innerHTML = `
             <div id="content"><span data-id="1"></span></div>
@@ -437,34 +437,100 @@ describe('hx-live extension', function () {
 
         let added = window.__swapCountLive - beforeSwap;
         // During-swap mutations are coalesced (swaps>0 guard). Pre/post-swap mutations
-        // (e.g. htmx-request indicator class) legitimately trigger a recompute each.
-        assert.isAtMost(added, 3, 'expected at most a few recomputes, got ' + added);
+        // (e.g. htmx-request indicator class) legitimately trigger a recompute pass each.
+        assert.isAtMost(added, 3, 'expected at most a few recompute passes, got ' + added);
         delete window.__swapCountLive;
     });
 
-    it.skip('iteration cap warns on runaway', async function() {
-        let warned = false;
-        let originalWarn = console.warn;
-        console.warn = (...args) => {
-            if (typeof args[0] === 'string' && args[0].includes('hx-live recompute exceeded')) warned = true;
-            originalWarn.apply(console, args);
-        };
-        try {
-            window.__runawayCountLive = 0;
-            playground().innerHTML = '<output hx-live="window.__runawayCountLive++"></output>';
-            htmx.process(playground());
+    describe('recompute pass diagnostics', function() {
+        let originalNow, originalWarn, now, cost, performanceCalls, warnings;
 
-            for (let i = 0; i < 100; i++) {
-                document.body.setAttribute('data-runaway-test-live', String(i));
-                await htmx.timeout(5);
-            }
+        beforeEach(async function() {
+            htmx.live.refresh();
+            await Promise.resolve();
 
-            warned.should.equal(true);
-            document.body.removeAttribute('data-runaway-test-live');
-            delete window.__runawayCountLive;
-        } finally {
+            originalNow = Object.getOwnPropertyDescriptor(performance, 'now');
+            now = 1;
+            cost = 0;
+            performanceCalls = 0;
+            Object.defineProperty(performance, 'now', {
+                configurable: true,
+                value: () => performanceCalls++ % 2 === 0 ? now : now += cost
+            });
+            originalWarn = console.warn;
+            warnings = [];
+            console.warn = message => warnings.push(message);
+        });
+
+        afterEach(function() {
+            if (originalNow) Object.defineProperty(performance, 'now', originalNow);
+            else delete performance.now;
             console.warn = originalWarn;
+            delete window.__diagnosticRunsLive;
+        });
+
+        function addExpressions(count = 1) {
+            window.__diagnosticRunsLive = 0;
+            playground().innerHTML = Array.from({ length: count }, () =>
+                '<output hx-live="window.__diagnosticRunsLive++"></output>'
+            ).join('');
+            htmx.process(playground());
         }
+
+        async function recompute(elapsed) {
+            cost = elapsed;
+            let callsBefore = performanceCalls;
+            htmx.live.refresh();
+            await Promise.resolve();
+            (performanceCalls - callsBefore).should.equal(2);
+        }
+
+        it('coalesces refresh calls into one recompute pass', async function() {
+            addExpressions();
+            let initial = window.__diagnosticRunsLive;
+
+            for (let i = 0; i < 10; i++) htmx.live.refresh();
+            await Promise.resolve();
+
+            window.__diagnosticRunsLive.should.equal(initial + 1);
+        });
+
+        it('does not warn when every pass stays within the limit', async function() {
+            addExpressions();
+
+            for (let i = 0; i < 20; i++) await recompute(10);
+
+            warnings.should.deep.equal([]);
+        });
+
+        it('warns once when a pass exceeds 16ms', async function() {
+            addExpressions(2);
+
+            await recompute(16);
+            warnings.should.deep.equal([]);
+            await recompute(16.1);
+
+            warnings.length.should.equal(1);
+            warnings[0].should.include('htmx: hx-live overloaded');
+            warnings[0].should.include('16.1ms pass');
+            warnings[0].should.include('2 expr/pass');
+
+            await recompute(50);
+            warnings.length.should.equal(1);
+        });
+
+        it('warns again after reactivation', async function() {
+            addExpressions();
+            await recompute(17);
+            warnings.length.should.equal(1);
+
+            playground().querySelector('output').remove();
+            await recompute(0);
+
+            addExpressions();
+            await recompute(17);
+            warnings.length.should.equal(2);
+        });
     });
 
     // -------------------------------------------------------------------------
@@ -832,8 +898,8 @@ describe('hx-live extension', function () {
         btn.getAttribute('aria-pressed').should.equal('false');
     });
 
-    it('toggle() in hx-live applies to the current element on each recompute', async function() {
-        // Use a one-shot recompute to flip a class once and confirm targeting.
+    it('toggle() in hx-live applies to the current element on each recompute pass', async function() {
+        // Use a one-shot recompute pass to flip a class once and confirm targeting.
         let elt = createProcessedHTML(
             `<output hx-live="!this.dataset.s && (this.dataset.s='1', toggle('.flipped'))"></output>`
         );
@@ -1048,7 +1114,7 @@ describe('hx-live extension', function () {
         assert.isFunction(htmx.live.q);
     });
 
-    it('htmx.live namespace exposes q, debounce, and refresh', function() {
+    it('htmx.live namespace exposes its public helpers', function() {
         assert.isObject(htmx.live);
         assert.isFunction(htmx.live.q);
         assert.isFunction(htmx.live.debounce);
@@ -2384,7 +2450,7 @@ describe('hx-live extension', function () {
             });
 
             let countAfterMorph = window.__morphRemovedCount;
-            // Trigger a recompute cycle — the old fn should no longer be in fns.
+            // Trigger a recompute pass. The old expression should no longer run.
             document.body.setAttribute('data-morph-test-trigger', '1');
             await htmx.timeout(5);
             document.body.removeAttribute('data-morph-test-trigger');
@@ -2450,7 +2516,7 @@ describe('hx-live extension', function () {
             delete window.__morphAttrCount;
         });
 
-        it('morph cycle does not accumulate duplicate fns across multiple morphs', async function() {
+        it('morph cycle does not accumulate duplicate expressions', async function() {
             window.__morphMultiCount = 0;
             playground().innerHTML = '<div id="wrap"><output id="o" :data-v="(window.__morphMultiCount++, \'x\')"></output></div>';
             htmx.process(playground());
@@ -2475,7 +2541,7 @@ describe('hx-live extension', function () {
 
             // Should only fire once per binding, not once per morph cycle.
             let delta = window.__morphMultiCount - baseline;
-            assert.isAtMost(delta, 2, 'should not accumulate duplicate fns across morph cycles');
+            assert.isAtMost(delta, 2, 'should not accumulate duplicate expressions across morph cycles');
             delete window.__morphMultiCount;
         });
 

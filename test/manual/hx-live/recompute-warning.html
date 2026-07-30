@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>hx-live recompute warning</title>
+<script src="../../../src/htmx.js"></script>
+<script src="../../../src/ext/hx-live.js"></script>
+<style>
+  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+  body { max-width: 760px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+  button { margin: 0 0.35rem 0.5rem 0; padding: 0.4rem 0.7rem; font: inherit; }
+  code, pre { padding: 0.15rem 0.35rem; border-radius: 4px; background: color-mix(in srgb, CanvasText 8%, Canvas); }
+  pre { min-height: 4.5rem; padding: 0.75rem; overflow-wrap: anywhere; white-space: pre-wrap; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 0.4rem; border-bottom: 1px solid color-mix(in srgb, CanvasText 20%, Canvas); text-align: left; }
+  canvas { width: 100%; height: 60px; border: 1px solid color-mix(in srgb, CanvasText 25%, Canvas); }
+  #stress-bindings { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; max-height: 130px; overflow: hidden; }
+  #stress-bindings output { padding: 2px; background: color-mix(in srgb, CanvasText 6%, Canvas); font: 11px monospace; }
+  .status { font-weight: 700; }
+  .note { color: color-mix(in srgb, CanvasText 70%, Canvas); }
+</style>
+</head>
+<body hx-ext="hx-live">
+
+<h1>hx-live recompute warning</h1>
+
+<p>Open DevTools Console, keep this tab visible, then run one scenario. The page also copies the latest hx-live warning below.</p>
+
+<table>
+  <thead>
+    <tr><th>Trigger</th><th>Warning</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>One recompute pass above 16ms</td><td>Immediate</td></tr>
+    <tr><td>Above 100ms total synchronous time in a period</td><td>After two consecutive periods</td></tr>
+  </tbody>
+</table>
+
+<p>A measurement period starts with its first recompute pass and closes on the first pass more than one second later. One high period arms the warning. A second consecutive high period emits it.</p>
+
+<p>hx-live warns once per high-load period. <strong>Stop and reset</strong> removes every binding, deactivates hx-live, and clears that warning state.</p>
+
+<h2>Run a scenario</h2>
+
+<p>
+  <button id="long-pass">Run one long pass</button>
+  <button id="heavy-jank">Start heavy binding jank</button>
+  <button id="sustained-work">Start sustained work</button>
+  <button id="stop">Stop and reset</button>
+</p>
+
+<p id="status" class="status">Stopped. No live expressions are registered.</p>
+
+<canvas id="fps" width="720" height="60" aria-label="Frames per second"></canvas>
+<p class="note">The meter shows frame rate. Heavy binding jank should push it well below 60 FPS.</p>
+
+<h2>Latest warning</h2>
+<pre id="warning">No warning yet.</pre>
+
+<h2>Live binding output</h2>
+<div id="stress-bindings"></div>
+
+<h2>What each scenario does</h2>
+<ul>
+  <li><strong>One long pass:</strong> 200 bindings do about 0.12ms each, once. Expect an immediate warning.</li>
+  <li><strong>Heavy binding jank:</strong> 200 bindings do about 0.15ms each, every frame. Expect an immediate warning and visible frame loss.</li>
+  <li><strong>Sustained work:</strong> 50 bindings do about 0.05ms each, every frame. Each pass stays below 16ms, but total work exceeds 100ms per period. Expect a warning after about two seconds.</li>
+</ul>
+
+<p class="note">Timings vary by browser and machine. Reload if a preset lands close to a threshold.</p>
+
+<p class="note">From the repository root, run <code>bunx http-server -c-1 .</code>, then open <code>/test/manual/hx-live/recompute-warning.html</code>.</p>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    let tick = 0;
+    let workPerBinding = 0;
+    let animationFrame = null;
+    let warningCount = 0;
+
+    const bindings = document.querySelector('#stress-bindings');
+    const status = document.querySelector('#status');
+    const warning = document.querySelector('#warning');
+    const context = document.querySelector('#fps').getContext('2d');
+    const originalWarn = console.warn.bind(console);
+
+    console.warn = (...args) => {
+        originalWarn(...args);
+        if (String(args[0]).startsWith('warning: hx-live overloaded')) {
+            warningCount++;
+            warning.textContent = `Warning ${warningCount}\n${args[0]}`;
+        }
+    };
+
+    window.stressBinding = index => {
+        let value = tick + index;
+        let end = performance.now() + workPerBinding;
+        while (performance.now() < end) value = Math.sqrt(value * value + 1);
+        return `${index}: ${tick}`;
+    };
+
+    function stop() {
+        if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
+
+    async function reset() {
+        stop();
+        bindings.replaceChildren();
+        htmx.live.refresh();
+        await Promise.resolve();
+        status.textContent = 'Stopped. No live expressions are registered.';
+    }
+
+    function build(bindingCount, bindingWork) {
+        workPerBinding = bindingWork;
+        let fragment = document.createDocumentFragment();
+        for (let index = 0; index < bindingCount; index++) {
+            let output = document.createElement('output');
+            output.setAttribute(':text', `stressBinding(${index})`);
+            fragment.append(output);
+        }
+        bindings.replaceChildren(fragment);
+        htmx.process(bindings);
+    }
+
+    function startFrames() {
+        let run = () => {
+            tick++;
+            htmx.live.refresh();
+            animationFrame = requestAnimationFrame(run);
+        };
+        animationFrame = requestAnimationFrame(run);
+    }
+
+    document.querySelector('#long-pass').addEventListener('click', async () => {
+        await reset();
+        build(200, 0.12);
+        status.textContent = 'Running one pass with 200 expensive bindings.';
+        htmx.live.refresh();
+    });
+
+    document.querySelector('#heavy-jank').addEventListener('click', async () => {
+        await reset();
+        build(200, 0.15);
+        status.textContent = 'Running 200 expensive bindings every frame.';
+        startFrames();
+    });
+
+    document.querySelector('#sustained-work').addEventListener('click', async () => {
+        await reset();
+        build(50, 0.05);
+        status.textContent = 'Running 50 moderate bindings every frame.';
+        startFrames();
+    });
+
+    document.querySelector('#stop').addEventListener('click', reset);
+
+    let frames = 0;
+    let measuredAt = performance.now();
+    function drawFps(now) {
+        frames++;
+        if (now - measuredAt >= 500) {
+            let fps = Math.round(frames * 1000 / (now - measuredAt));
+            context.clearRect(0, 0, 720, 60);
+            context.font = 'bold 30px system-ui';
+            context.fillStyle = fps < 40 ? '#d33' : '#2a6';
+            context.fillText(`${fps} FPS`, 12, 40);
+            frames = 0;
+            measuredAt = now;
+        }
+        requestAnimationFrame(drawFps);
+    }
+    requestAnimationFrame(drawFps);
+});
+</script>
+
+</body>
+</html>
