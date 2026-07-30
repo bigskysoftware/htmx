@@ -377,6 +377,79 @@ describe('hx-live extension', function () {
         proxy.count.should.equal(2);
     });
 
+    it('htmx.live.$ aliases htmx.live.q', function() {
+        htmx.live.$.should.equal(htmx.live.q);
+        playground().innerHTML = '<div class="x"></div><div class="x"></div>';
+        htmx.live.$('.x').count.should.equal(2);
+    });
+
+    it('leaves global $ available in expressions by default', function() {
+        let oldLive = htmx.config.live;
+        let oldDollar = window.$;
+        htmx.config.live = { ...oldLive };
+        delete htmx.config.live.useDollar;
+        window.$ = value => 'global:' + value;
+        try {
+            playground().innerHTML = '<output :text="$(\'value\')"></output>';
+            htmx.process(playground());
+            playground().querySelector('output').textContent.should.equal('global:value');
+        } finally {
+            htmx.config.live = oldLive;
+            if (oldDollar === undefined) delete window.$;
+            else window.$ = oldDollar;
+        }
+    });
+
+    it('useDollar shadows global $ in hx-live, bindings, and hx-on', function() {
+        let oldLive = htmx.config.live;
+        let oldDollar = window.$;
+        let globalCalls = 0;
+        let globalDollar = () => globalCalls++;
+        htmx.config.live = { ...oldLive, useDollar: true };
+        window.$ = globalDollar;
+        try {
+            playground().innerHTML = `
+                <div class="x"></div>
+                <output id="body" hx-live="this.dataset.count = $('.x').count"></output>
+                <output id="binding" :text="$('.x').count"></output>
+                <button hx-on:click="$('.x').attr('data-hit', 'yes')">change</button>
+            `;
+            htmx.process(playground());
+
+            playground().querySelector('#body').dataset.count.should.equal('1');
+            playground().querySelector('#binding').textContent.should.equal('1');
+            playground().querySelector('button').click();
+            playground().querySelector('.x').dataset.hit.should.equal('yes');
+            globalCalls.should.equal(0);
+            window.$.should.equal(globalDollar);
+        } finally {
+            htmx.config.live = oldLive;
+            if (oldDollar === undefined) delete window.$;
+            else window.$ = oldDollar;
+        }
+    });
+
+    it('useDollar works in js attributes and hx-trigger filters', async function() {
+        let oldLive = htmx.config.live;
+        htmx.config.live = { ...oldLive, useDollar: true };
+        try {
+            mockResponse('POST', '/dollar-scope', 'OK');
+            playground().innerHTML = `
+                <div class="allowed"></div>
+                <button hx-post="/dollar-scope"
+                        hx-trigger="click[$('.allowed').count === 1]"
+                        hx-vals="js:{ count: $('.allowed').count }">send</button>
+            `;
+            htmx.process(playground());
+            playground().querySelector('button').click();
+            await forRequest();
+
+            fetchMock.calls[0].request.body.get('count').should.equal('1');
+        } finally {
+            htmx.config.live = oldLive;
+        }
+    });
+
     it('q returns 0-count proxy when no match', function() {
         let proxy = htmx.live.q('.does-not-exist-anywhere');
         proxy.count.should.equal(0);

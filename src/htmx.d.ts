@@ -1,3 +1,23 @@
+/** Configures the hx-live extension. */
+export interface HtmxLiveConfig {
+  /**
+   * Debounces `input` events in milliseconds.
+   * @default 100
+   */
+  inputDebounceMs?: number;
+  /**
+   * Sets the short binding prefix (`':'` -> `:text`, `'hx:'` -> `hx:text`, `''`/`false` -> disabled).
+   * Alpine.js detection disables the default.
+   * @default ":"
+   */
+  bindPrefix?: string | false;
+  /**
+   * Adds `$()` as a `q()` alias in `hx-live`, `:attr`, `hx-on`, `js:` attributes, and `hx-trigger` filters.
+   * @default false
+   */
+  useDollar?: boolean;
+}
+
 export interface HtmxConfig {
   /**
    * Log all htmx events to the console.
@@ -118,6 +138,8 @@ export interface HtmxConfig {
    * @default undefined
    */
   defaultSwapEmpty?: boolean;
+  /** Requires hx-live. */
+  live?: HtmxLiveConfig;
 }
 
 /** Context object passed to `htmx.swap()` */
@@ -213,6 +235,10 @@ export interface HtmxLive {
   q(selector: string): QProxy;
   q(element: Element): QProxy;
   q(elements: Iterable<Element>): QProxy;
+  /** Aliases `q()`. */
+  $(selector: string): QProxy;
+  $(element: Element): QProxy;
+  $(elements: Iterable<Element>): QProxy;
   /**
    * Awaitable debounce — resolves after `ms` ms. Cancels any pending call on the same element.
    */

@@ -619,6 +619,7 @@ All [helpers](#helpers) are exposed under `htmx.live.*` for use from regular Jav
 
 ```js
 htmx.live.q('.row')
+htmx.live.$('.row')
 htmx.live.attr('.row', 'hidden', true)
 htmx.live.take('.tab.active', '.active', '.tab')
 ```
@@ -686,6 +687,28 @@ With `bindPrefix: 'hx:'`:
 <!-- Alpine handles :class, hx-live handles hx:text -->
 <p :class="alpineVar" hx:text="q('#name').value"></p>
 ```
+
+### `config.live.useDollar`
+
+Enable `$()` as an alias for [`q()`](#q):
+
+```html
+<!-- Because jQuery rocks -->
+<meta name="htmx-config" content="live.useDollar:true">
+
+<input id="name">
+<p :text="$('#name').value"></p>
+```
+
+The alias works in:
+
+- [`hx-live`](#hx-live)
+- [`:attr` bindings](#attributes)
+- [`hx-on`](/reference/attributes/hx-on)
+- `js:` attributes
+- [`hx-trigger` filters](/reference/attributes/hx-trigger)
+
+Defaults to `false`.
 
 ## Notes
 

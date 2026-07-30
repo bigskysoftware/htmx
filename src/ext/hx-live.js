@@ -635,6 +635,7 @@
         forEvent: (...args) => forEvent(null, ...args),
         nextFrame: () => new Promise(r => requestAnimationFrame(r))
     };
+    htmx.live.$ = htmx.live.q;
 
     htmx.registerExtension('hx-live', {
         init: (internalAPI) => {
@@ -671,6 +672,7 @@
                 classList: elt.classList,
                 data: makeDataProxy(elt)
             });
+            if (htmx.config.live?.useDollar) detail.scope.$ = detail.scope.q;
         }
     });
 })();
