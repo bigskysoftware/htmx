@@ -242,10 +242,14 @@ attr('.active')                             // has class .active?
 attr('.active', q('#src').checked)          // add/remove class
 attr('class', 'foo bar')                    // multi-class string
 attr('class', { active: matches('.tab') })  // multi-class object
-attr('aria-expanded', matches('.open'))     // any aria-*: writes "true"/"false"
+attr('aria-expanded')                       // raw string or null
+attr('aria-expanded', false)                // write "false"
+attr('aria-expanded', null)                 // remove
 attr('value', 'hello')                      // value/checked/selected: syncs property + attribute
 attr('data-x', null)                        // remove
 ```
+
+Use [`aria.*`](#aria) to read booleans, numbers, and lists.
 
 ### `toggle(name, values?)`
 
@@ -271,6 +275,126 @@ take('.selected', '.tab')              // become the selected tab among .tab
 take('aria-current', 'nav a')          // become the current nav item
 take('.active')                        // implicit scope: parent element's subtree
 ```
+
+### `aria`
+
+Read and write ARIA attributes on this element or an ancestor:
+
+```html
+<div aria-busy="false">
+    <button hx-on:click="aria.busy = !aria.busy">Toggle</button>
+    <output :hidden="!aria.busy">Busy</output>
+</div>
+```
+
+Both `aria.busy` expressions use `aria-busy` on the div. If no element has the attribute, a write adds it to the current element:
+
+```html
+<!-- This... -->
+<button hx-on:click="aria.pressed = true">Like</button>
+
+<!-- ...becomes this after click -->
+<button hx-on:click="aria.pressed = true" aria-pressed="true">Like</button>
+```
+
+Access ARIA attributes in three ways:
+
+```js
+aria.busy            // closest aria-busy, starting at this
+this.aria.busy       // aria-busy on this
+q('#form').aria.busy // aria-busy on the selected form
+```
+
+All three forms use the same value rules. You can use these values as booleans, numbers, and arrays:
+
+```html
+<button aria-busy="false"
+        aria-controls="panel status"
+        hx-on:click="
+            aria.busy = !aria.busy;
+            aria.controls = [...aria.controls, 'help'];
+            q('#progress').aria.valueNow++
+        ">
+    Update
+</button>
+
+<section id="panel">...</section>
+<p id="help">...</p>
+<output id="status"></output>
+<div id="progress" role="progressbar"
+     aria-valuemin="0" aria-valuemax="100" aria-valuenow="51"></div>
+```
+
+After one click:
+
+```html
+<button aria-busy="true" aria-controls="panel status help">Update</button>
+<div id="progress" role="progressbar"
+     aria-valuemin="0" aria-valuemax="100" aria-valuenow="52"></div>
+```
+
+Use either form to remove an attribute:
+
+```js
+aria.current = null
+delete aria.current
+```
+
+#### Value types
+
+hx-live uses the value types from [WAI-ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/).
+
+**Boolean**
+
+- `aria-atomic`
+- `aria-busy`
+- `aria-checked`
+- `aria-current`
+- `aria-disabled`
+- `aria-expanded`
+- `aria-grabbed`
+- `aria-haspopup`
+- `aria-hidden`
+- `aria-invalid`
+- `aria-modal`
+- `aria-multiline`
+- `aria-multiselectable`
+- `aria-pressed`
+- `aria-readonly`
+- `aria-required`
+- `aria-selected`
+
+**Number**
+
+- `aria-colcount`
+- `aria-colindex`
+- `aria-colspan`
+- `aria-level`
+- `aria-posinset`
+- `aria-rowcount`
+- `aria-rowindex`
+- `aria-rowspan`
+- `aria-setsize`
+- `aria-valuemax`
+- `aria-valuemin`
+- `aria-valuenow`
+
+**Token list (`string[]`)**
+
+- `aria-dropeffect`
+- `aria-relevant`
+
+**ID reference list (`string[]`)**
+
+- `aria-controls`
+- `aria-describedby`
+- `aria-flowto`
+- `aria-labelledby`
+- `aria-owns`
+
+All other `aria-*` attributes remain strings.
+
+You can use `aria.*` in `hx-live`, bindings, `hx-on`, `js:` attribute values, and `hx-trigger` filters.
 
 ### `data`
 
@@ -455,7 +579,7 @@ For a single inline section, native [`<details>`](https://developer.mozilla.org/
 <header>
     <button hx-on:click="toggle('aria-expanded')" aria-expanded="false">Menu</button>
 </header>
-<aside :hidden="!q('header button').attr('aria-expanded')">...</aside>
+<aside :hidden="!q('header button').aria.expanded">...</aside>
 ```
 
 **Toggle button.**

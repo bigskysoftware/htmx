@@ -96,7 +96,7 @@
      * attr('.active', cond)           // add/remove class
      * attr('class', 'foo bar')        // multi-class string
      * attr('class', { active: cond }) // multi-class object
-     * attr('aria-expanded', open)     // ARIA: always "true"/"false"
+     * attr('aria-expanded', open)     // ARIA: raw string value
      * attr('value', 'hello')          // sync DOM property + attribute
      * attr('contenteditable', false)  // "false", not removed
      * attr('data-x', null)            // remove attribute
@@ -112,7 +112,7 @@
             if (!e) return undefined;
             if (isClass) return e.classList.contains(name.slice(1));
             if (isMultiClass) return e.getAttribute('class');
-            if (isAria) return e.getAttribute(name) === 'true';
+            if (isAria) return e.getAttribute(name);
             if (BOOLEAN_ATTRS.has(name)) return e.hasAttribute(name);
             if (isPropAttr) return e[name];
             return e.getAttribute(name);
@@ -126,13 +126,8 @@
             } else if (isMultiClass) {
                 applyMultiClass(e, value);
             } else if (isAria) {
-                // Strings and numbers pass through (e.g. aria-current="page",
-                // aria-pressed="mixed", aria-valuenow="50"). Other values coerce
-                // to "true"/"false". Never removed.
-                let attrVal = (typeof value === 'string' || typeof value === 'number')
-                    ? String(value)
-                    : (value ? 'true' : 'false');
-                e.setAttribute(name, attrVal);
+                if (value == null) e.removeAttribute(name);
+                else e.setAttribute(name, String(value));
             } else if (isPropAttr) {
                 if (value === false || value == null) {
                     e[name] = (typeof e[name] === 'boolean') ? false : '';
@@ -190,6 +185,86 @@
 
     function camelToKebab(s) {
         return s.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
+    }
+
+    let booleanAria = new Set([
+        'atomic',
+        'busy',
+        'checked',
+        'current',
+        'disabled',
+        'expanded',
+        'grabbed',
+        'haspopup',
+        'hidden',
+        'invalid',
+        'modal',
+        'multiline',
+        'multiselectable',
+        'pressed',
+        'readonly',
+        'required',
+        'selected'
+    ]);
+    let integerAria = new Set([
+        'colcount',
+        'colindex',
+        'colspan',
+        'level',
+        'posinset',
+        'rowcount',
+        'rowindex',
+        'rowspan',
+        'setsize'
+    ]);
+    let numberAria = new Set([
+        'valuemax',
+        'valuemin',
+        'valuenow'
+    ]);
+    let listAria = new Set([
+        'controls',
+        'describedby',
+        'dropeffect',
+        'flowto',
+        'labelledby',
+        'owns',
+        'relevant'
+    ]);
+
+    function makeAriaProxy(elt, cascades = true) {
+        let findOwner = name => cascades
+            ? elt.closest('[' + name + ']')
+            : elt.hasAttribute(name) ? elt : null;
+        return new Proxy({}, {
+            get: (_, prop) => {
+                if (typeof prop !== 'string') return undefined;
+                let key = prop.toLowerCase();
+                let name = 'aria-' + key;
+                let value = findOwner(name)?.getAttribute(name);
+                if (booleanAria.has(key) && (value === 'true' || value === 'false')) return value === 'true';
+                let number = Number(value);
+                let validNumber = numberAria.has(key) || (integerAria.has(key) && Number.isInteger(number));
+                if (validNumber && value?.trim() && Number.isFinite(number)) return number;
+                if (listAria.has(key) && value != null) return value.trim() ? value.trim().split(/\s+/) : [];
+                return value;
+            },
+            set: (_, prop, value) => {
+                if (typeof prop !== 'string') return false;
+                let key = prop.toLowerCase();
+                let name = 'aria-' + key;
+                let target = findOwner(name) || elt;
+                if (value == null) target.removeAttribute(name);
+                else target.setAttribute(name, listAria.has(key) && Array.isArray(value) ? value.join(' ') : String(value));
+                return true;
+            },
+            deleteProperty: (_, prop) => {
+                if (typeof prop !== 'string') return false;
+                let name = 'aria-' + prop.toLowerCase();
+                findOwner(name)?.removeAttribute(name);
+                return true;
+            }
+        });
     }
 
     // `data.foo` reads/writes to closest ancestor with `data-foo`.
@@ -470,6 +545,7 @@
                 };
                 if (p === 'data') return elts[0] ? makeDataProxy(elts[0]) : undefined;
                 if (arrayMethods.has(p)) return elts[p].bind(elts);
+                if (p === 'aria') return elts[0] ? makeAriaProxy(elts[0], false) : undefined;
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));
@@ -657,6 +733,7 @@
             if (--swaps === 0 && fns.size > 0) schedule();
         },
         htmx_scope: (elt, detail) => {
+            elt.aria = makeAriaProxy(elt, false);
             Object.assign(detail.scope, {
                 q: makeQ(elt),
                 forEvent: (...args) => forEvent(elt, ...args),
@@ -670,7 +747,8 @@
                 matches: (sel) => elt.matches(sel),
                 style: elt.style,
                 classList: elt.classList,
-                data: makeDataProxy(elt)
+                data: makeDataProxy(elt),
+                aria: makeAriaProxy(elt)
             });
             if (htmx.config.live?.useDollar) detail.scope.$ = detail.scope.q;
         }

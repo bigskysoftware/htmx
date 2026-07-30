@@ -453,6 +453,7 @@ describe('hx-live extension', function () {
     it('q returns 0-count proxy when no match', function() {
         let proxy = htmx.live.q('.does-not-exist-anywhere');
         proxy.count.should.equal(0);
+        assert.isUndefined(proxy.aria);
     });
 
     it('q(element) wraps a single element', function() {
@@ -1057,10 +1058,21 @@ describe('hx-live extension', function () {
         htmx.live.attr('#b', 'disabled').should.equal(false);
     });
 
-    it('attr() getter: ARIA returns boolean from "true"/"false"', function() {
-        playground().innerHTML = '<div id="a" aria-expanded="true"></div><div id="b" aria-expanded="false"></div>';
-        htmx.live.attr('#a', 'aria-expanded').should.equal(true);
-        htmx.live.attr('#b', 'aria-expanded').should.equal(false);
+    it('attr() getter: ARIA returns raw strings or null', function() {
+        playground().innerHTML = `
+            <div id="a" aria-expanded="true"></div>
+            <div id="b" aria-expanded="false"></div>
+            <div id="c" aria-current="page"></div>
+            <div id="d" aria-valuenow="50"></div>
+            <div id="e" aria-controls="menu help"></div>
+            <div id="f"></div>
+        `;
+        htmx.live.attr('#a', 'aria-expanded').should.equal('true');
+        htmx.live.attr('#b', 'aria-expanded').should.equal('false');
+        htmx.live.attr('#c', 'aria-current').should.equal('page');
+        htmx.live.attr('#d', 'aria-valuenow').should.equal('50');
+        htmx.live.attr('#e', 'aria-controls').should.equal('menu help');
+        assert.isNull(htmx.live.attr('#f', 'aria-label'));
     });
 
     it('attr() getter: .class returns boolean (has class)', function() {
@@ -1102,16 +1114,15 @@ describe('hx-live extension', function () {
         playground().querySelector('#a').hasAttribute('disabled').should.equal(false);
     });
 
-    it('attr() setter: ARIA writes "true"/"false", never removes', function() {
+    it('attr() setter: ARIA stringifies values and null removes', function() {
         playground().innerHTML = '<div id="a"></div>';
         let div = playground().querySelector('#a');
         htmx.live.attr('#a', 'aria-expanded', true);
         div.getAttribute('aria-expanded').should.equal('true');
         htmx.live.attr('#a', 'aria-expanded', false);
         div.getAttribute('aria-expanded').should.equal('false');
-        // null/undefined also writes "false". ARIA is never removed.
         htmx.live.attr('#a', 'aria-expanded', null);
-        div.getAttribute('aria-expanded').should.equal('false');
+        div.hasAttribute('aria-expanded').should.equal(false);
     });
 
     it('attr() setter: aria-* strings and numbers pass through', function() {
@@ -1296,6 +1307,245 @@ describe('hx-live extension', function () {
 
     it('htmx.live.attr is exposed on public API', function() {
         assert.isFunction(htmx.live.attr);
+    });
+
+    // -------------------------------------------------------------------------
+    // cascading ARIA proxy
+    // -------------------------------------------------------------------------
+
+    it('aria.foo reacts to the closest ARIA state', async function() {
+        playground().innerHTML = `
+            <section aria-busy="true">
+                <form aria-busy="false">
+                    <button :disabled="aria.busy" hx-on:click="aria.busy = !aria.busy">Save</button>
+                </form>
+            </section>
+        `;
+        htmx.process(playground());
+        let button = playground().querySelector('button');
+        button.disabled.should.equal(false);
+        button.click();
+        await htmx.timeout(5);
+        button.disabled.should.equal(true);
+        playground().querySelector('form').getAttribute('aria-busy').should.equal('true');
+        playground().querySelector('section').getAttribute('aria-busy').should.equal('true');
+    });
+
+    it('q().aria uses only its first match', function() {
+        playground().innerHTML = `
+            <section aria-busy="false">
+                <form id="form" aria-checked="false"></form>
+            </section>
+        `;
+        let aria = htmx.live.q('#form').aria;
+        aria.checked.should.equal(false);
+        assert.isUndefined(aria.busy);
+        assert.isUndefined(aria.controls);
+        assert.isTrue(delete aria.label);
+
+        let ownerAria = htmx.live.q('#form').q('closest [aria-busy]').aria;
+        ownerAria.busy.should.equal(false);
+        ownerAria.busy = true;
+        aria.checked = true;
+        aria.busy = false;
+
+        playground().querySelector('form').getAttribute('aria-checked').should.equal('true');
+        playground().querySelector('form').getAttribute('aria-busy').should.equal('false');
+        playground().querySelector('section').getAttribute('aria-busy').should.equal('true');
+
+        aria.checked = null;
+        delete ownerAria.busy;
+        playground().querySelector('form').hasAttribute('aria-checked').should.equal(false);
+        playground().querySelector('section').hasAttribute('aria-busy').should.equal(false);
+    });
+
+    it('returns every boolean-like ARIA attribute as a boolean', function() {
+        playground().innerHTML = '<div id="booleans"></div>';
+        let values = {
+            atomic: true,
+            busy: false,
+            checked: true,
+            current: false,
+            disabled: true,
+            expanded: false,
+            grabbed: true,
+            hasPopup: false,
+            hidden: true,
+            invalid: false,
+            modal: true,
+            multiline: false,
+            multiselectable: true,
+            pressed: false,
+            readonly: true,
+            required: false,
+            selected: true
+        };
+        let state = playground().querySelector('#booleans');
+        for (let [name, value] of Object.entries(values)) {
+            state.setAttribute('aria-' + name.toLowerCase(), String(value));
+        }
+        let aria = htmx.live.q(state).aria;
+        for (let [name, value] of Object.entries(values)) {
+            aria[name].should.equal(value);
+        }
+    });
+
+    it('returns every numeric ARIA attribute as a number', function() {
+        playground().innerHTML = '<div id="state"></div>';
+        let values = {
+            colCount: 3,
+            colIndex: 2,
+            colSpan: 1,
+            level: 4,
+            posInSet: 5,
+            rowCount: 6,
+            rowIndex: 7,
+            rowSpan: 2,
+            setSize: 8,
+            valueMax: 100,
+            valueMin: 0,
+            valueNow: 51.5
+        };
+        let state = playground().querySelector('#state');
+        for (let [name, value] of Object.entries(values)) {
+            let attributeValue = name === 'valueNow' ? ' 51.5 ' : String(value);
+            state.setAttribute('aria-' + name.toLowerCase(), attributeValue);
+        }
+        let aria = htmx.live.q(state).aria;
+        for (let [name, value] of Object.entries(values)) {
+            aria[name].should.equal(value);
+        }
+    });
+
+    it('preserves missing and invalid numeric ARIA values', function() {
+        playground().innerHTML = `
+            <div id="invalid-numbers" aria-colspan="1.5" aria-level="many"
+                 aria-valuemax="" aria-valuemin="Infinity" aria-valuenow="unknown">
+            </div>
+        `;
+        let aria = htmx.live.q('#invalid-numbers').aria;
+        aria.colSpan.should.equal('1.5');
+        aria.level.should.equal('many');
+        aria.valueMax.should.equal('');
+        aria.valueMin.should.equal('Infinity');
+        aria.valueNow.should.equal('unknown');
+        assert.isUndefined(aria.rowCount);
+    });
+
+    it('does not coerce string ARIA attributes that look typed', function() {
+        playground().innerHTML = `
+            <div id="strings"
+                 aria-description="true" aria-label="false" aria-valuetext="51"
+                 aria-activedescendant="item" aria-details="details" aria-errormessage="error">
+            </div>
+        `;
+        let aria = htmx.live.q('#strings').aria;
+        aria.description.should.equal('true');
+        aria.label.should.equal('false');
+        aria.valueText.should.equal('51');
+        aria.activeDescendant.should.equal('item');
+        aria.details.should.equal('details');
+        aria.errorMessage.should.equal('error');
+    });
+
+    it('preserves non-boolean ARIA tokens', function() {
+        playground().innerHTML = '<div id="tokens" aria-checked="mixed" aria-current="page" aria-invalid="spelling"></div>';
+        let aria = htmx.live.q('#tokens').aria;
+        aria.checked.should.equal('mixed');
+        aria.current.should.equal('page');
+        aria.invalid.should.equal('spelling');
+    });
+
+    it('returns ARIA list attributes as arrays and joins array writes', function() {
+        playground().innerHTML = '<div id="lists"></div>';
+        let values = {
+            controls: ['menu', 'help'],
+            describedBy: ['hint', 'error'],
+            dropEffect: ['copy', 'move'],
+            flowTo: ['next', 'later'],
+            labelledBy: ['title', 'subtitle'],
+            owns: ['item-1', 'item-2'],
+            relevant: ['additions', 'text']
+        };
+        let state = playground().querySelector('#lists');
+        for (let [name, value] of Object.entries(values)) {
+            state.setAttribute('aria-' + name.toLowerCase(), value.join(' '));
+        }
+        state.setAttribute('aria-controls', '  menu   help  ');
+        let aria = htmx.live.q(state).aria;
+        for (let [name, value] of Object.entries(values)) {
+            aria[name].should.deep.equal(value);
+        }
+
+        aria.controls = ['dialog', 'help'];
+        aria.relevant = [];
+        aria.owns = 'item-3 item-4';
+        state.getAttribute('aria-controls').should.equal('dialog help');
+        state.getAttribute('aria-relevant').should.equal('');
+        state.getAttribute('aria-owns').should.equal('item-3 item-4');
+        aria.relevant.should.deep.equal([]);
+        aria.owns.should.deep.equal(['item-3', 'item-4']);
+    });
+
+    it('writes missing ARIA attributes on this and deletes the closest match', function() {
+        playground().innerHTML = `
+            <div aria-valuenow="50" aria-current="page">
+                <button hx-on:click="
+                    aria.valueNow = 51;
+                    aria.label = 'Save';
+                    delete aria.current
+                ">change</button>
+            </div>
+        `;
+        htmx.process(playground());
+        let button = playground().querySelector('button');
+        button.click();
+        playground().querySelector('div').getAttribute('aria-valuenow').should.equal('51');
+        playground().querySelector('div').hasAttribute('aria-current').should.equal(false);
+        button.getAttribute('aria-label').should.equal('Save');
+    });
+
+    it('this.aria only accesses the current element', function() {
+        playground().innerHTML = `
+            <section aria-busy="true">
+                <button type="button" hx-on:click="
+                    window.__localState = [this.aria.busy, aria.busy];
+                    this.aria.busy = false;
+                    window.__localAfter = this.aria.busy
+                ">change</button>
+            </section>
+        `;
+        htmx.process(playground());
+        let button = playground().querySelector('button');
+        button.click();
+        window.__localState.should.deep.equal([undefined, true]);
+        window.__localAfter.should.equal(false);
+        button.getAttribute('aria-busy').should.equal('false');
+        playground().querySelector('section').getAttribute('aria-busy').should.equal('true');
+        delete window.__localState;
+        delete window.__localAfter;
+    });
+
+    it('this stays the real element across async expressions', async function() {
+        playground().innerHTML = `
+            <section id="owner">
+                <button type="button" hx-on:click="
+                    window.__sameThis = this === event.currentTarget;
+                    window.__closestId = this.closest('section').id;
+                    await timeout(5);
+                    this.aria.busy = true
+                ">change</button>
+            </section>
+        `;
+        htmx.process(playground());
+        let button = playground().querySelector('button');
+        button.click();
+        await htmx.timeout(10);
+        window.__sameThis.should.equal(true);
+        window.__closestId.should.equal('owner');
+        button.getAttribute('aria-busy').should.equal('true');
+        delete window.__sameThis;
+        delete window.__closestId;
     });
 
     // -------------------------------------------------------------------------
@@ -1704,7 +1954,7 @@ describe('hx-live extension', function () {
         btn.hasAttribute('disabled').should.equal(true);
     });
 
-    it(':aria-expanded writes "true"/"false", never removes', async function() {
+    it(':aria-expanded writes boolean strings', async function() {
         playground().innerHTML = `
             <input id="src" type="checkbox">
             <button :aria-expanded="q('#src').checked">x</button>
