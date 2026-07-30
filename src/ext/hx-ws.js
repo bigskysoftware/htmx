@@ -301,7 +301,8 @@
     }
     
     // ========================================
-    // PENDING MESSAGE MANAGEMENT    // ========================================
+    // PENDING MESSAGE MANAGEMENT
+    // ========================================
     
     function cleanupExpiredMessages(connection) {
         let config = connection.config;
@@ -319,10 +320,11 @@
     // MESSAGES
     // ========================================
 
-    function transmitMessage(connection, element, message, messageId) {
+    function transmitMessage(connection, element, message) {
         try {
             connection.socket.send(message.data);
-            connection.pendingMessages.set(messageId, { element, timestamp: Date.now() });
+            let messageId = message.headers['HX-Message-ID'];
+            if (messageId) connection.pendingMessages.set(messageId, { element, timestamp: Date.now() });
             api.triggerHtmxEvent(element, 'htmx:ws:after:message:outgoing', {message});
         } catch (error) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', { url: connection.url, error });
@@ -332,7 +334,7 @@
     function flushQueue(connection) {
         while (connection.queue.length && connection.socket?.readyState === WebSocket.OPEN) {
             let queuedMessage = connection.queue.shift();
-            transmitMessage(connection, queuedMessage.element, queuedMessage.message, queuedMessage.messageId);
+            transmitMessage(connection, queuedMessage.element, queuedMessage.message);
         }
     }
 
@@ -371,8 +373,7 @@
         delete headers['Accept'];
 
         // [Correlation] Add message ID as a header
-        let messageId = crypto.randomUUID();
-        headers['HX-Message-ID'] = messageId;
+        headers['HX-Message-ID'] = crypto.randomUUID();
 
         // Build outgoing values from form data.
         let form = element.form || element.closest('form');
@@ -419,9 +420,9 @@
             }
 
             if (connection.socket?.readyState === WebSocket.OPEN) {
-                transmitMessage(connection, element, message, messageId);
+                transmitMessage(connection, element, message);
             } else {
-                connection.queue.push({element, message, messageId});
+                connection.queue.push({element, message});
             }
         } catch (error) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error });

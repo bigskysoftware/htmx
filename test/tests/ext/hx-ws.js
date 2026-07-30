@@ -715,12 +715,16 @@ describe('hx-ws WebSocket extension', function() {
                 finalContext = event.detail.ctx;
                 mainTask = event.detail.tasks.find(task => task.type === 'main');
             });
+            button.addEventListener('htmx:ws:before:message:outgoing', event => {
+                event.detail.message.headers['HX-Message-ID'] = 'custom-message-id';
+            }, { once: true });
 
             button.click();
             await htmx.timeout(20);
 
             let ws = mockWebSocketInstances[0];
             let sent = JSON.parse(ws.lastSent);
+            assert.equal(sent.headers['HX-Message-ID'], 'custom-message-id');
 
             ws.simulateMessage({
                 content: '<p id="response">Response</p>',

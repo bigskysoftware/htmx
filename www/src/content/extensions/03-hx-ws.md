@@ -497,6 +497,8 @@ Associates an incoming message with its outgoing sender.
 
 `hx-ws` adds a unique ID to every outgoing message. Copy it into the incoming message's `headers` to [use the sender](#use-shared-connections).
 
+The first matching incoming message consumes the association. Later messages with the same ID use the connection element.
+
 ## Events
 
 Event data is available on `event.detail`.
@@ -602,6 +604,8 @@ document.addEventListener('htmx:ws:before:message:outgoing', event => {
   })
 })
 ```
+
+Include `message.headers` in replacement data to preserve sender correlation.
 
 ### `htmx:ws:after:message:outgoing`
 
