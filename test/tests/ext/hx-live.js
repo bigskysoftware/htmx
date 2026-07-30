@@ -1070,20 +1070,6 @@ describe('hx-live extension', function () {
         div.getAttribute('data-mode').should.equal('light');
     });
 
-    it('toggle(".class", "a|b|c") cycles through classes (only one at a time)', function() {
-        playground().innerHTML = '<div></div>';
-        let div = playground().querySelector('div');
-        let p = htmx.live.q('div');
-        p.toggle('.size', 'sm|md|lg');
-        div.classList.contains('sm').should.equal(true);
-        p.toggle('.size', 'sm|md|lg');
-        div.classList.contains('md').should.equal(true);
-        div.classList.contains('sm').should.equal(false);
-        p.toggle('.size', 'sm|md|lg');
-        div.classList.contains('lg').should.equal(true);
-        div.classList.contains('md').should.equal(false);
-    });
-
     it('toggle is chainable', function() {
         playground().innerHTML = '<button></button>';
         let r = htmx.live.q('button').toggle('.active').toggle('aria-pressed').trigger('changed');

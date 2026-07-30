@@ -249,14 +249,13 @@ attr('data-x', null)                        // remove
 
 ### `toggle(name, values?)`
 
-Toggle (no `values`) or cycle (with `values`) a class or attribute on this element.
+Toggle a class or attribute on this element. Pass `values` to cycle an attribute.
 
 ```js
 toggle('.active')                      // toggle class
 toggle('aria-expanded')                // flip "true" ↔ "false"
 toggle('hidden')                       // toggle attribute presence
 toggle('data-view', 'grid|list|table') // cycle attribute through values
-toggle('.size', 'sm|md|lg')            // cycle classes (only one at a time)
 toggle('data-open', 'on|')             // cycle: 'on' ↔ absent
 ```
 

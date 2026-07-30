@@ -315,16 +315,18 @@
     }
 
     function toggle(elt, name, values) {
-        let isClass = name.startsWith('.');
-        let key = isClass ? name.slice(1) : name;
+        if (name.startsWith('.')) {
+            elt.classList.toggle(name.slice(1));
+            return;
+        }
+
         let isAria = name.startsWith('aria-');
         let asArray = values && (typeof values === 'string'
             ? values.split('|').map(v => v.trim())
             : values);
 
         if (!asArray) {
-            if (isClass) elt.classList.toggle(key);
-            else if (isAria) {
+            if (isAria) {
                 let cur = elt.getAttribute(name);
                 elt.setAttribute(name, cur === 'true' ? 'false' : 'true');
             } else {
@@ -332,18 +334,12 @@
             }
             return;
         }
-        if (isClass) {
-            let cur = asArray.findIndex(v => v && elt.classList.contains(v));
-            if (cur >= 0) elt.classList.remove(asArray[cur]);
-            let next = asArray[(cur + 1) % asArray.length];
-            if (next) elt.classList.add(next);
-        } else {
-            let curVal = elt.getAttribute(name) ?? '';
-            let cur = asArray.indexOf(curVal);
-            let next = asArray[(cur + 1) % asArray.length];
-            if (next === '') elt.removeAttribute(name);
-            else elt.setAttribute(name, next);
-        }
+
+        let curVal = elt.getAttribute(name) ?? '';
+        let cur = asArray.indexOf(curVal);
+        let next = asArray[(cur + 1) % asArray.length];
+        if (next === '') elt.removeAttribute(name);
+        else elt.setAttribute(name, next);
     }
 
     function makeDebounce() {
