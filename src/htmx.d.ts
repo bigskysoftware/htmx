@@ -178,21 +178,29 @@ export interface QProxy {
   q(selector: string): QProxy;
   /**
    * Get an attribute, class, or property from the first matched element.
-   * - `.foo` — class presence as `true`/`false`
-   * - `aria-*` — coerces `"true"`/`"false"` to boolean
-   * - boolean attrs (`hidden`, `disabled`, etc.) — `true`/`false`
-   * - `value`, `checked`, `selected` — DOM property
-   * - anything else — `getAttribute(name)`
+   *
+   * @example
+   * q('#selector').attr('hidden')     // boolean: is hidden present?
+   * q('#selector').attr('.active')    // boolean: has class .active?
+   * q('#selector').attr('value')      // DOM property
+   * q('#selector').attr('data-x')     // attribute string or null
    */
   attr(name: string): any;
   /**
-   * Set an attribute, class, or property on all matched elements. Returns the proxy for chaining.
-   * - `.foo` — adds/removes class by truthiness
-   * - `'class'` — space-separated string or `{ className: condition }` object
-   * - `aria-*` — strings/numbers pass through; others coerce to `"true"`/`"false"`
-   * - `value`, `checked`, `selected` — syncs DOM property and HTML attribute
-   * - boolean attrs — truthy adds, falsy removes
-   * - anything else — `null`/`undefined`/`false` removes; otherwise sets as string
+   * Set an attribute, class, or property on every matched element.
+   *
+   * @param value - Value to set.
+   * @returns The proxy, for chaining.
+   *
+   * @example
+   * q('.selector').attr('hidden', true)              // add hidden (falsy removes)
+   * q('.selector').attr('.active', cond)             // add/remove class
+   * q('.selector').attr('class', 'foo bar')          // multi-class string
+   * q('.selector').attr('class', { active: cond })   // multi-class object
+   * q('.selector').attr('aria-expanded', open)       // ARIA: writes "true"/"false"
+   * q('.selector').attr('value', 'hello')            // sync property + attribute
+   * q('.selector').attr('contenteditable', false)    // "false", not removed
+   * q('.selector').attr('data-x', null)              // remove attribute
    */
   attr(name: string, value: any): QProxy;
   /**
@@ -201,8 +209,17 @@ export interface QProxy {
    */
   take(name: string, scope?: string | Node | { from: string }): QProxy;
   /**
-   * Toggle (binary flip) or cycle (with `values`) a class or attribute on all matched elements.
-   * @param values - Pipe-delimited string (`'grid|list'`) or array to cycle through.
+   * Toggle a class or attribute, or cycle through attribute values, on every matched element.
+   *
+   * @param values - Attribute values as a pipe-delimited string or array. Omit for a binary toggle.
+   * @returns The proxy, for chaining.
+   *
+   * @example
+   * q('.selector').toggle('.active')                      // toggle class
+   * q('.selector').toggle('aria-expanded')               // flip "true" ↔ "false"
+   * q('.selector').toggle('hidden')                      // toggle attribute presence
+   * q('.selector').toggle('data-view', 'grid|list|table') // cycle attribute values
+   * q('.selector').toggle('data-open', 'on|')            // "on" ↔ absent
    */
   toggle(name: string, values?: string | string[]): QProxy;
   /**
@@ -252,11 +269,11 @@ export interface HtmxLive {
   refresh(): void;
   /** Move a class or attribute from sibling/scoped elements to the target. */
   take(target: string | Element | NodeList, name: string, scope?: string | Node | { from: string }): void;
-  /** Toggle or cycle a class or attribute on the target. */
+  /** Toggle a class or attribute, or cycle through attribute values. See {@link QProxy.toggle}. */
   toggle(target: string | Element | NodeList, name: string, values?: string | string[]): void;
-  /** Get an attribute, class, or property from the first matched element. See `QProxy.attr`. */
+  /** Get an attribute, class, or property from the first matched element. See {@link QProxy.attr}. */
   attr(target: string | Element | NodeList, name: string): any;
-  /** Set an attribute, class, or property on all matched elements. See `QProxy.attr`. */
+  /** Set an attribute, class, or property on all matched elements. See {@link QProxy.attr}. */
   attr(target: string | Element | NodeList, name: string, value: any): void;
   /**
    * Resolves on the next matching event, timeout, or interval — whichever fires first.

@@ -314,21 +314,6 @@
         });
     }
 
-    /**
-     * Toggle or cycle a class, ARIA attribute, or attribute on an element.
-     *
-     * @param {Element} elt - DOM element to mutate.
-     * @param {string} name - Class (`.foo`) or attribute name.
-     * @param {string|string[]} [values] - Cycle list (pipe-delimited string or array). Omit for binary flip.
-     *
-     * @example
-     * toggle('.active')                      // toggle class
-     * toggle('aria-expanded')                // flip "true" ↔ "false"
-     * toggle('hidden')                       // toggle attribute presence
-     * toggle('data-view', 'grid|list|table') // cycle attribute through values
-     * toggle('.size', 'sm|md|lg')            // cycle classes (one at a time)
-     * toggle('data-open', 'on|')             // 'on' ↔ absent slot
-     */
     function toggle(elt, name, values) {
         let isClass = name.startsWith('.');
         let key = isClass ? name.slice(1) : name;
