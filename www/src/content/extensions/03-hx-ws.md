@@ -898,6 +898,7 @@ Code `1000` stops reconnecting by default. Messages created while a connection o
 | Beta | RC1 | Compatibility |
 |------|-----|---------------|
 | `htmx.config.websockets` | [`htmx.config.ws`](#config) | Removed |
+| `ws.pendingRequestTTL` | [`ws.pendingMessageTTL`](#wspendingmessagettl) | Removed |
 | `ws.reconnectJitter:true/false` | [`ws.reconnectJitter:0.3/0`](#wsreconnectjitter) | Removed |
 | `payload` | [`content`](#override-an-incoming-swap) | Works with a warning |
 
