@@ -58,18 +58,18 @@ describe('htmx events', function() {
         assert.isFalse(firedOnSource)
     })
 
-    it('htmx:after:swap triggers on document when element is removed from DOM by swap', async function () {
-        mockResponse('GET', '/test', 'Response')
+    it('htmx:after:swap triggers on replacement element when source is removed by outerHTML swap', async function () {
+        mockResponse('GET', '/test', '<span id="replacement">Response</span>')
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="outerHTML"></div>')
-        let firedOnDocument = false
+        let swapTarget = null
         document.addEventListener('htmx:after:swap', (e) => {
-            if (e.target === document) {
-                firedOnDocument = true
-            }
+            swapTarget = e.target
         }, {once: true})
         div.click()
         await forRequest()
-        assert.isTrue(firedOnDocument)
+        let replacement = find('#replacement')
+        assert.isNotNull(replacement)
+        assert.equal(swapTarget, replacement)
     })
 
 

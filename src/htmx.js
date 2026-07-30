@@ -1299,6 +1299,10 @@ var htmx = (() => {
 
                 await Promise.all(swapPromises);
 
+                if (!ctx.sourceElement?.isConnected && mainSwap?.target?.isConnected) {
+                    ctx.sourceElement = mainSwap.target;
+                }
+
                 this.__trigger(ctx.sourceElement, "htmx:after:swap", {ctx});
                 if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
                 this.__handleAnchorScroll(ctx);
@@ -1451,6 +1455,7 @@ var htmx = (() => {
             } finally {
                 this.__removeClass(target, "htmx-swapping")
             }
+            task.target = target;
             this.__restorePreservedElements(pantry);
             if (focusInfo && !focusInfo.elt.matches(':focus')) {
                 let newElt = document.getElementById(focusInfo.elt.id);
