@@ -1294,7 +1294,7 @@ var htmx = (() => {
                             await this.__insertContent(task, false)
                         }
                     }
-                    swapPromises.push(this.__submitTransitionTask(tasksWrapper));
+                    swapPromises.push(this.__submitTransitionTask(tasksWrapper, ctx));
                 }
 
                 await Promise.all(swapPromises);
@@ -2272,10 +2272,10 @@ var htmx = (() => {
             }
         }
 
-        __submitTransitionTask(task) {
+        __submitTransitionTask(task, ctx) {
             return new Promise((resolve) => {
                 this.#transitionQueue ||= [];
-                this.#transitionQueue.push({ task, resolve });
+                this.#transitionQueue.push({ task, resolve, ctx });
                 if (!this.#processingTransition) {
                     this.__processTransitionQueue();
                 }
@@ -2288,13 +2288,14 @@ var htmx = (() => {
             }
 
             this.#processingTransition = true;
-            let { task, resolve } = this.#transitionQueue.shift();
+            let { task, resolve, ctx } = this.#transitionQueue.shift();
 
             try {
                 if (document.startViewTransition) {
-                    this.__trigger(document, "htmx:before:viewTransition", {task})
-                    await document.startViewTransition(task).finished;
-                    this.__trigger(document, "htmx:after:viewTransition", {task})
+                    let detail = {task, ctx};
+                    this.__trigger(ctx.sourceElement, "htmx:before:viewTransition", detail)
+                    await document.startViewTransition(detail.task).finished;
+                    this.__trigger(ctx.sourceElement, "htmx:after:viewTransition", detail)
                 } else {
                     await task();
                 }
