@@ -533,13 +533,14 @@
                 ensureActive();
                 let code = elt.getAttribute(bodyAttr)
                 let debounce = getDebounce(elt);
-                let exec = api.executeJavaScript(elt, { debounce }, code, false, true);
+                let exec;
                 let run = async () => {
                     if (!elt.isConnected) {
                         fns.delete(run);
                         return;
                     }
                     try {
+                        exec ||= api.executeJavaScript(elt, { debounce }, code, false, true, true);
                         await exec();
                     } catch (e) {
                         if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt });
@@ -572,13 +573,14 @@
         ensureActive();
         let debounce = getDebounce(elt);
         let isAsync = /\bawait\b/.test(code);
-        let exec = api.executeJavaScript(elt, { debounce }, code, true, isAsync);
+        let exec;
         let run = async () => {
             if (!elt.isConnected) {
                 fns.delete(run);
                 return;
             }
             try {
+                exec ||= api.executeJavaScript(elt, { debounce }, code, true, isAsync, true);
                 let value = isAsync ? await exec() : exec();
                 writeAttrBinding(elt, attrName, value);
                 if (isAsync) observer?.takeRecords();

@@ -32,6 +32,18 @@ describe('hx-live extension', function () {
         elt.dataset.v.should.equal('init');
     });
 
+    it('continues after an invalid expression', function() {
+        let error = console.error;
+        console.error = () => {};
+        try {
+            playground().innerHTML = '<output :text="("></output><output id="valid" :text="\'ok\'"></output>';
+            assert.doesNotThrow(() => htmx.process(playground()));
+            playground().querySelector('#valid').textContent.should.equal('ok');
+        } finally {
+            console.error = error;
+        }
+    });
+
     it('recomputes on input event', async function() {
         playground().innerHTML = `
             <input id="src" value="hello">

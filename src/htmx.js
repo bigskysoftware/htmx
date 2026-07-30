@@ -550,7 +550,7 @@ var htmx = (() => {
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
             if (javascriptContent != null) {
                 let data = Object.fromEntries(ctx.request.body);
-                await this.__executeJavaScript(ctx.sourceElement, data, javascriptContent, false)();
+                await this.__executeJavaScript(ctx.sourceElement, data, javascriptContent, false);
                 return
             } else if (usesQueryParams) {
                 let url = new URL(ctx.request.action, document.baseURI);
@@ -594,7 +594,7 @@ var htmx = (() => {
                         let detail = {ctx, issueRequest: () => resolve(true), dropRequest: () => resolve(false)};
                         if (this.__trigger(elt, "htmx:confirm", detail)) {
                             let js = this.__extractJavascriptContent(ctx.confirm);
-                            resolve(js ? this.__executeJavaScript(elt, {ctx}, js, true)() : window.confirm(ctx.confirm));
+                            resolve(js ? this.__executeJavaScript(elt, {ctx}, js, true) : window.confirm(ctx.confirm));
                         }
                     });
                     if (!confirmed) return;
@@ -830,7 +830,7 @@ var htmx = (() => {
                     if (filter) {
                         if (this.__shouldCancel(evt)) evt.preventDefault();
                         let evtArgs = {}; for (let k in evt) evtArgs[k] = evt[k];
-                        if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)()) return;
+                        if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)) return;
                     }
                     timed(evt);
                 };
@@ -923,7 +923,7 @@ var htmx = (() => {
             return bound;
         }
 
-        __executeJavaScript(thisArg, obj, code, expression = true, isAsync = true) {
+        __executeJavaScript(thisArg, obj, code, expression = true, isAsync = true, compile = false) {
             let args = {}
             Object.assign(args, this.__apiMethods(thisArg))
             let scope = {};
@@ -934,7 +934,7 @@ var htmx = (() => {
             let values = Object.values(args);
             let FunctionConstructor = isAsync ? this.#AsyncFunction : this.#Function;
             let func = new FunctionConstructor(...keys, expression ? `return (${code})` : code);
-            return () => func.call(thisArg, ...values);
+            return compile ? () => func.call(thisArg, ...values) : func.call(thisArg, ...values);
         }
 
         /**
@@ -1723,7 +1723,7 @@ var htmx = (() => {
             let handler = (code) => async (evt) => {
                 try {
                     await this.__executeJavaScript(node, { event: evt },
-                        `with(event?.detail||{}){${code}}`, false)();
+                        `with(event?.detail||{}){${code}}`, false);
                 } catch (e) {
                     if (typeof e !== 'symbol') this.__trigger(node, 'htmx:error', { error: e });
                 }
@@ -1872,7 +1872,7 @@ var htmx = (() => {
                     javascriptContent = '{' + javascriptContent + '}';
                 }
                 // Return promise for async evaluation
-                return this.__executeJavaScript(elt, scope, javascriptContent, true)().then(obj => {
+                return this.__executeJavaScript(elt, scope, javascriptContent, true).then(obj => {
                     callback(obj);
                 });
             } else {
