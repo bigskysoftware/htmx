@@ -527,12 +527,12 @@
         },
         {
           "name": "before:viewTransition",
-          "description": "Fires before a View Transition API swap task starts. `detail.task` is the swap task.",
+          "description": "Fires before a View Transition API swap task starts. `detail.task` is the swap task and can be replaced to wrap it; `detail.ctx` is the request context. Fires on the element that triggered the swap.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-before-viewTransition"
         },
         {
           "name": "after:viewTransition",
-          "description": "Fires after a View Transition API swap task completes. `detail.task` is the swap task.",
+          "description": "Fires after a View Transition API swap task completes. `detail.task` is the swap task; `detail.ctx` is the request context. Fires on the element that triggered the swap.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-after-viewTransition"
         },
         {
