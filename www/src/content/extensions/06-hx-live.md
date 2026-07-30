@@ -274,7 +274,7 @@ take('.active')                        // implicit scope: parent element's subtr
 
 ### `data`
 
-Read or write `data-*` attributes on the closest ancestor that has them. Lets components share state up the tree.
+Read and write `data-*` attributes as JSON or plain text.
 
 ```html
 <div data-size="medium">
@@ -285,9 +285,17 @@ Read or write `data-*` attributes on the closest ancestor that has them. Lets co
 </div>
 ```
 
-`data.foo` reads from the closest `[data-foo]` ancestor. Writing assigns to that ancestor too. 
+Access data state in three ways:
 
-Values are automatically JSON-serialized on write and parsed on read. Booleans, numbers, arrays, and objects round-trip transparently:
+```js
+data.count            // closest data-count, starting at this
+this.data.count       // data-count on this
+q('#cart').data.count // data-count on the selected cart
+```
+
+`data.*` checks the current element, then each ancestor. `this.data` and `q(...).data` check one element only.
+
+On write, hx-live converts booleans, numbers, arrays, and objects to JSON. On read, it converts the JSON back to JavaScript values:
 
 ```html
 <div data-count="1" data-active="false" data-cart="[]">
@@ -316,14 +324,22 @@ The `data` proxy is enumerable. Object spread, rest destructuring, and `Object.k
 
 Here, `hx-vals` receives `{ x: 1, y: 3 }`.
 
-`data` is also available on `q()` proxies via `q(selector).data`. It cascades from the first matched element:
+Delete state to remove its attribute:
 
 ```js
-q('#cart-panel').data.items              // read: JSON-parsed value from closest [data-items] ancestor
-q('#cart-panel').data.items = [{id: 1}]  // write: JSON-stringified to that ancestor
+delete data.count            // remove the closest data-count
+delete this.data.count       // remove data-count from this
+delete q('#cart').data.count // remove data-count from the selected cart
 ```
 
-For direct, this-only access, use `this.dataset` instead (note: `this.dataset` is always strings). For per-element writes across a set, use `q('.row').dataset.state = 'on'`.
+`data.count = null` writes `data-count="null"`. Use `delete` to remove the attribute.
+
+Use `dataset` when you need raw strings:
+
+```js
+this.dataset.count
+q('#cart').dataset.count
+```
 
 Because `:<attr>` works on `data-*`, you can also store derived values in the DOM:
 

@@ -1302,6 +1302,127 @@ describe('hx-live extension', function () {
     // cascading data proxy
     // -------------------------------------------------------------------------
 
+    it('reads valid JSON values and preserves other data attribute text', function() {
+        playground().innerHTML = '<div id="state"></div>';
+        let state = playground().querySelector('#state');
+        let data = htmx.live.q(state).data;
+        let values = [
+            { label: 'empty string', attribute: '', value: '' },
+            { label: 'true', attribute: 'true', value: true },
+            { label: 'false', attribute: 'false', value: false },
+            { label: 'null', attribute: 'null', value: null },
+            { label: 'integer', attribute: '42', value: 42 },
+            { label: 'float', attribute: '3.14', value: 3.14 },
+            { label: 'negative', attribute: '-0.5', value: -0.5 },
+            { label: 'exponent', attribute: '1e3', value: 1000 },
+            { label: 'whitespace', attribute: ' 42 ', value: 42 },
+            { label: 'object', attribute: '{"count":1}', value: { count: 1 } },
+            { label: 'array', attribute: '["one"]', value: ['one'] },
+            { label: 'JSON string', attribute: '"hello"', value: 'hello' },
+            { label: 'plain string', attribute: 'hello', value: 'hello' },
+            { label: 'leading zero', attribute: '01', value: '01' },
+            { label: 'leading decimal point', attribute: '.5', value: '.5' },
+            { label: 'NaN text', attribute: 'NaN', value: 'NaN' },
+            { label: 'Infinity text', attribute: 'Infinity', value: 'Infinity' }
+        ];
+
+        assert.isUndefined(data.value);
+        for (let { label, attribute, value } of values) {
+            state.setAttribute('data-value', attribute);
+            state.dataset.value.should.equal(attribute, label + ' raw value');
+            assert.deepEqual(data.value, value, label + ' normalized value');
+        }
+    });
+
+    it('serializes assigned values before reading them back', function() {
+        playground().innerHTML = '<div id="state"></div>';
+        let state = playground().querySelector('#state');
+        let data = htmx.live.q(state).data;
+        let values = [
+            { label: 'empty string', input: '', attribute: '', value: '' },
+            { label: 'plain string', input: 'hello', attribute: 'hello', value: 'hello' },
+            { label: 'true string', input: 'true', attribute: 'true', value: true },
+            { label: 'true', input: true, attribute: 'true', value: true },
+            { label: 'false string', input: 'false', attribute: 'false', value: false },
+            { label: 'false', input: false, attribute: 'false', value: false },
+            { label: 'number string', input: '42', attribute: '42', value: 42 },
+            { label: 'number', input: 42, attribute: '42', value: 42 },
+            { label: 'float', input: 3.14, attribute: '3.14', value: 3.14 },
+            { label: 'negative', input: -0.5, attribute: '-0.5', value: -0.5 },
+            { label: 'null string', input: 'null', attribute: 'null', value: null },
+            { label: 'null', input: null, attribute: 'null', value: null },
+            { label: 'object string', input: '{"count":1}', attribute: '{"count":1}', value: { count: 1 } },
+            { label: 'object', input: { count: 1 }, attribute: '{"count":1}', value: { count: 1 } },
+            { label: 'array string', input: '["one"]', attribute: '["one"]', value: ['one'] },
+            { label: 'array', input: ['one'], attribute: '["one"]', value: ['one'] },
+            { label: 'JSON string', input: '"hello"', attribute: '"hello"', value: 'hello' }
+        ];
+
+        for (let { label, input, attribute, value } of values) {
+            data.value = input;
+            state.dataset.value.should.equal(attribute, label + ' stored value');
+            assert.deepEqual(data.value, value, label + ' normalized value');
+        }
+    });
+
+    it('q().data only accesses the selected element', function() {
+        playground().innerHTML = `
+            <section data-count="1">
+                <form id="form" data-ready="false"></form>
+            </section>
+        `;
+        let data = htmx.live.q('#form').data;
+        data.ready.should.equal(false);
+        assert.isUndefined(data.count);
+        ({ ...data }).should.deep.equal({ ready: false });
+
+        let ownerData = htmx.live.q('#form').q('closest [data-count]').data;
+        ownerData.count.should.equal(1);
+        ownerData.count = 2;
+        data.ready = true;
+        data.count = 3;
+
+        playground().querySelector('form').dataset.ready.should.equal('true');
+        playground().querySelector('form').dataset.count.should.equal('3');
+        playground().querySelector('section').dataset.count.should.equal('2');
+
+        delete data.ready;
+        delete ownerData.count;
+        playground().querySelector('form').hasAttribute('data-ready').should.equal(false);
+        playground().querySelector('section').hasAttribute('data-count').should.equal(false);
+    });
+
+    it('this.data only accesses the current element after await', async function() {
+        playground().innerHTML = `
+            <section data-count="1">
+                <button hx-on:click="
+                    window.__dataState = [this.data.count, data.count];
+                    await timeout(5);
+                    this.data.count = 2
+                ">change</button>
+            </section>
+        `;
+        htmx.process(playground());
+        let button = playground().querySelector('button');
+        button.click();
+        await htmx.timeout(10);
+        window.__dataState.should.deep.equal([undefined, 1]);
+        button.dataset.count.should.equal('2');
+        playground().querySelector('section').dataset.count.should.equal('1');
+        delete window.__dataState;
+    });
+
+    it('delete data.foo removes the closest matching attribute', function() {
+        playground().innerHTML = `
+            <section data-state="active">
+                <button hx-on:click="delete data.state">clear</button>
+            </section>
+        `;
+        htmx.process(playground());
+        playground().querySelector('button').click();
+        playground().querySelector('section').hasAttribute('data-state').should.equal(false);
+    });
+
     it('data.foo reads this.dataset.foo when present locally', async function() {
         playground().innerHTML = `
             <div id="me" data-foo="local"

@@ -195,12 +195,15 @@
     // `data.foo` reads/writes to closest ancestor with `data-foo`.
     // `has` trap lets `hx-on:click="with (data) { x++; y-- }"` work: data-* keys
     // bind to the proxy, all other identifiers fall through to outer scope.
-    function makeDataProxy(elt) {
+    function makeDataProxy(elt, cascades = true) {
+        let findOwner = kebab => cascades
+            ? elt.closest('[data-' + kebab + ']')
+            : elt.hasAttribute('data-' + kebab) ? elt : null;
         return new Proxy({}, {
             get: (_, prop) => {
                 if (typeof prop !== 'string') return undefined;
                 let kebab = camelToKebab(prop);
-                let ancestor = elt.closest('[data-' + kebab + ']');
+                let ancestor = findOwner(kebab);
                 if (!ancestor) return undefined;
                 let raw = ancestor.dataset[prop];
                 try { return JSON.parse(raw); } catch { return raw; }
@@ -208,19 +211,25 @@
             set: (_, prop, val) => {
                 if (typeof prop !== 'string') return false;
                 let kebab = camelToKebab(prop);
-                let target = elt.closest('[data-' + kebab + ']') || elt;
+                let target = findOwner(kebab) || elt;
                 target.dataset[prop] = typeof val === 'string' ? val : JSON.stringify(val);
+                return true;
+            },
+            deleteProperty: (_, prop) => {
+                if (typeof prop !== 'string') return false;
+                let kebab = camelToKebab(prop);
+                findOwner(kebab)?.removeAttribute('data-' + kebab);
                 return true;
             },
             has: (_, prop) => {
                 if (typeof prop !== 'string') return false;
                 let kebab = camelToKebab(prop);
-                return !!elt.closest('[data-' + kebab + ']');
+                return !!findOwner(kebab);
             },
             ownKeys: () => {
                 let result = [];
                 let seen = new Set();
-                for (let node = elt; node; node = node.parentElement) {
+                for (let node = elt; node; node = cascades ? node.parentElement : null) {
                     for (let key of Object.keys(node.dataset)) {
                         if (key !== 'htmxPowered' && !seen.has(key)) {
                             seen.add(key);
@@ -233,7 +242,7 @@
             getOwnPropertyDescriptor: (_, prop) => {
                 if (typeof prop !== 'string' || prop === 'htmxPowered') return;
                 let kebab = camelToKebab(prop);
-                if (elt.closest('[data-' + kebab + ']')) return { enumerable: true, configurable: true };
+                if (findOwner(kebab)) return { enumerable: true, configurable: true };
             }
         });
     }
@@ -468,7 +477,7 @@
                     applyAttr(elts, name, ...rest);
                     return proxy;
                 };
-                if (p === 'data') return elts[0] ? makeDataProxy(elts[0]) : undefined;
+                if (p === 'data') return elts[0] ? makeDataProxy(elts[0], false) : undefined;
                 if (arrayMethods.has(p)) return elts[p].bind(elts);
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
@@ -672,6 +681,7 @@
                 classList: elt.classList,
                 data: makeDataProxy(elt)
             });
+            elt.data = makeDataProxy(elt, false);
             if (htmx.config.live?.useDollar) detail.scope.$ = detail.scope.q;
         }
     });
