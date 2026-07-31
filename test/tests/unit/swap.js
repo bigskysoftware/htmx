@@ -468,6 +468,15 @@ describe('swap() unit tests', function() {
         find('#target_oob').textContent.should.equal("OOB Updated");
     })
 
+    it('does not swap main target when partial target is not found', async function () {
+        createProcessedHTML("<div id='target'>Original</div>")
+        await htmx.swap({
+            "target":"#target",
+            "text":"<hx-partial hx-target='#nonexistent' hx-swap='innerHTML'><div>Should Not Appear</div></hx-partial>"
+        })
+        find('#target').textContent.should.equal("Original");
+    })
+
     it('does not swap main target when only whitespace and partial present', async function () {
         createProcessedHTML("<div id='target'>Original</div><div id='target_oob'>OOB</div>")
         await htmx.swap({
@@ -681,6 +690,16 @@ describe('swap() unit tests', function() {
         target.dispatchEvent(new MouseEvent('mousedown', {bubbles: true}))
         await forRequest()
         target.textContent.should.equal('response')
+    })
+
+    it('hx-partial hx-target resolves closest relative to sourceElement', async function () {
+        createProcessedHTML("<ul><li id='item-1'>Item 1 <button id='btn'>Edit</button></li></ul>")
+        await htmx.swap({
+            target: find('#btn'),
+            sourceElement: find('#btn'),
+            text: "<hx-partial hx-target='closest li' hx-swap='innerHTML'>Updated</hx-partial>"
+        })
+        find('#item-1').innerText.should.equal('Updated')
     })
 
     it('swaps partial to all elements matching a class selector', async function () {

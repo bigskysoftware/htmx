@@ -1176,7 +1176,8 @@ var htmx = (() => {
                     if (targetSelector) {
                         this.__processScripts(templateElt.content);
                         let swapSpec = this.__parseSwapSpec(this.__attr(templateElt, 'hx-swap') || this.config.defaultSwap);
-                        for (let target of document.querySelectorAll(targetSelector)) {
+                        let targets = this.__findAllExt(ctx.sourceElement, targetSelector);
+                        for (let target of targets.length ? targets : [null]) {
                             tasks.push({
                                 type: 'partial',
                                 fragment: templateElt.content.cloneNode(true),
@@ -1894,7 +1895,7 @@ var htmx = (() => {
 
         __findAllExt(eltOrSelector, maybeSelector, thisAttr, global) {
             let selector = maybeSelector ?? eltOrSelector;
-            let elt = maybeSelector ? this.__normalizeElement(eltOrSelector) : document;
+            let elt = maybeSelector ? (this.__normalizeElement(eltOrSelector) || document.body) : document;
             if (selector.startsWith('global ')) {
                 return this.__findAllExt(elt, selector.slice(7), thisAttr, true);
             }
