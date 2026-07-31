@@ -1,9 +1,17 @@
 describe('hx-live extension', function () {
 
     let extBackup;
+    let liveConfigBackup;
+
+    async function flushMicrotasks() {
+        await Promise.resolve();
+        await Promise.resolve();
+    }
 
     before(async () => {
         extBackup = backupExtensions();
+        liveConfigBackup = htmx.config.live;
+        htmx.config.live = { ...liveConfigBackup, inputDebounce: 0 };
         clearExtensions();
         htmx.config.extensions = 'hx-live';
         htmx.__approvedExt = 'hx-live';
@@ -18,6 +26,8 @@ describe('hx-live extension', function () {
 
     after(() => {
         restoreExtensions(extBackup);
+        if (liveConfigBackup === undefined) delete htmx.config.live;
+        else htmx.config.live = liveConfigBackup;
     });
 
     beforeEach(() => { setupTest(this.currentTest); });
@@ -61,6 +71,26 @@ describe('hx-live extension', function () {
         sel.dispatchEvent(new Event('change', { bubbles: true }));
         await htmx.timeout(5);
         out.dataset.v.should.equal('b');
+    });
+
+    it('parses the configured input debounce', async function() {
+        htmx.live.refresh();
+        await flushMicrotasks();
+        let setTimeout = window.setTimeout;
+        let delay;
+        htmx.config.live.inputDebounce = '20ms';
+        window.setTimeout = (_fn, value) => {
+            delay = value;
+            return 0;
+        };
+        try {
+            let input = createProcessedHTML('<input><output hx-live=""></output>');
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            delay.should.equal(20);
+        } finally {
+            htmx.config.live.inputDebounce = 0;
+            window.setTimeout = setTimeout;
+        }
     });
 
     it('recomputes on DOM mutation (attribute change)', async function() {

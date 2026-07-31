@@ -1,10 +1,10 @@
 /** Configures the hx-live extension. */
 export interface HtmxLiveConfig {
   /**
-   * Debounces `input` events in milliseconds.
+   * Debounces `input` events by a number of milliseconds or an interval string.
    * @default 100
    */
-  inputDebounceMs?: number;
+  inputDebounce?: number | string;
   /**
    * Sets the short binding prefix (`':'` -> `:text`, `'hx:'` -> `hx:text`, `''`/`false` -> disabled).
    * Alpine.js detection disables the default.

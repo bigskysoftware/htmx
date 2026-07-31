@@ -18,12 +18,15 @@
     const OBSERVE_OPTIONS = { childList: true, subtree: true, attributes: true, characterData: true };
 
     let inputDebounceId = null;
-    const INPUT_DEBOUNCE_MS = htmx.config.live?.inputDebounceMs ?? 100;
 
     function ensureActive() {
         if (observer) return;
         recomputeBound = () => schedule();
-        inputBound = () => { clearTimeout(inputDebounceId); inputDebounceId = setTimeout(schedule, INPUT_DEBOUNCE_MS); };
+        let inputDelay = htmx.parseInterval(htmx.config.live?.inputDebounce ?? 100) ?? 100;
+        inputBound = () => {
+            clearTimeout(inputDebounceId);
+            inputDebounceId = setTimeout(schedule, inputDelay);
+        };
         document.addEventListener('input', inputBound, true);
         document.addEventListener('change', recomputeBound, true);
         observer = new MutationObserver(recomputeBound);

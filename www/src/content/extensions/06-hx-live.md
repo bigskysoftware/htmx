@@ -641,6 +641,14 @@ Selector directionals (`next`, `previous`, `closest`) need an anchor and only wo
 
 ## Configuration
 
+### `config.live.inputDebounce`
+
+Set how long hx-live waits after an `input` event. Use a number of milliseconds or an interval string. The default is `100ms`.
+
+```html
+<meta name="htmx-config" content="live.inputDebounce:20ms">
+```
+
 ### `config.live.bindPrefix`
 
 Controls the short-form prefix for binding attributes. Defaults to `':'` (or disabled automatically if Alpine.js is detected).
