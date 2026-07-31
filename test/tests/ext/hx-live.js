@@ -1927,6 +1927,19 @@ describe('hx-live extension', function () {
         mirror.hasAttribute('checked').should.equal(true);
     });
 
+    it('keeps checked and selected false after form reset when the result is zero', function() {
+        playground().innerHTML = `
+            <form>
+                <input type="checkbox" :checked="0">
+                <select multiple><option :selected="0">One</option></select>
+            </form>
+        `;
+        htmx.process(playground());
+        playground().querySelector('form').reset();
+        playground().querySelector('input').checked.should.equal(false);
+        playground().querySelector('option').selected.should.equal(false);
+    });
+
     it(':value syncs property and attribute', async function() {
         playground().innerHTML = `
             <input id="src" value="hello">
