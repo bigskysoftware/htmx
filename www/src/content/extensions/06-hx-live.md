@@ -539,7 +539,7 @@ A single document-wide `MutationObserver` and `input` / `change` listeners trigg
 - `input` or `change` events from any control
 - completion of an htmx swap (recomputes pause mid-swap, run once at the end)
 
-All expressions run in a single microtask, so multiple synchronous mutations coalesce into one recompute.
+Each expression is pre-compiled once when registered. All pre-compiled expressions then run in a single microtask, so multiple synchronous mutations coalesce into one recompute.
 
 ### Self-mutation is safe
 

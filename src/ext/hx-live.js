@@ -535,13 +535,15 @@
                 ensureActive();
                 let code = elt.getAttribute(bodyAttr)
                 let debounce = getDebounce(elt);
+                let exec;
                 let run = async () => {
                     if (!elt.isConnected) {
                         fns.delete(run);
                         return;
                     }
                     try {
-                        await api.executeJavaScript(elt, { debounce }, code, false);
+                        exec ||= api.executeJavaScript(elt, { debounce }, code, false, true, true);
+                        await exec();
                     } catch (e) {
                         if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt });
                     }
@@ -573,26 +575,17 @@
         ensureActive();
         let debounce = getDebounce(elt);
         let isAsync = /\bawait\b/.test(code);
-        let run = isAsync ? async () => {
+        let exec;
+        let run = async () => {
             if (!elt.isConnected) {
                 fns.delete(run);
                 return;
             }
             try {
-                let value = await api.executeJavaScript(elt, { debounce }, code, true);
+                exec ||= api.executeJavaScript(elt, { debounce }, code, true, isAsync, true);
+                let value = isAsync ? await exec() : exec();
                 writeAttrBinding(elt, attrName, value);
-                observer?.takeRecords();
-            } catch (e) {
-                if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt, attr: attrName });
-            }
-        } : () => {
-            if (!elt.isConnected) {
-                fns.delete(run);
-                return;
-            }
-            try {
-                let value = api.executeJavaScript(elt, { debounce }, code, true, false);
-                writeAttrBinding(elt, attrName, value);
+                if (isAsync) observer?.takeRecords();
             } catch (e) {
                 if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt, attr: attrName });
             }

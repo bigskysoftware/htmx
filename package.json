@@ -38,6 +38,7 @@
     "check:content": "python3 src/scripts/content/check.py",
     "upgrade-check": "python3 src/scripts/upgrade-check.py",
     "upgrade-check:test": "python3 src/scripts/upgrade-check.py test/manual/upgrade/",
+    "benchmark:hx-live": "node test/benchmarks/hx-live.mjs",
     "test": "npm run test:chrome",
     "test:chrome": "web-test-runner --browsers chromium --config test/web-test-runner.config.mjs --playwright",
     "test:firefox": "web-test-runner --browsers firefox --config test/web-test-runner.config.mjs --playwright",

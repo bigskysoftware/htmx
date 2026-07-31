@@ -923,7 +923,7 @@ var htmx = (() => {
             return bound;
         }
 
-        __executeJavaScript(thisArg, obj, code, expression = true, isAsync = true) {
+        __executeJavaScript(thisArg, obj, code, expression = true, isAsync = true, compile = false) {
             let args = {}
             Object.assign(args, this.__apiMethods(thisArg))
             let scope = {};
@@ -934,7 +934,7 @@ var htmx = (() => {
             let values = Object.values(args);
             let FunctionConstructor = isAsync ? this.#AsyncFunction : this.#Function;
             let func = new FunctionConstructor(...keys, expression ? `return (${code})` : code);
-            return func.call(thisArg, ...values);
+            return compile ? () => func.call(thisArg, ...values) : func.call(thisArg, ...values);
         }
 
         /**
