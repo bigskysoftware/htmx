@@ -196,6 +196,16 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 </div>
 </div>
 
+<h1 style="margin-top:12px;text-align:center">Gold Sponsor</h1>
+<div style="display: grid;grid-template-columns: 1fr; justify-items: center; margin-bottom:40px">
+<div>
+        <a href="https://serpapi.com/?utm_source=bigsky_software&utm_campaign=os_sponsorship">
+        <img class="dark-hidden" src="/img/serpapi.svg" alt="Web Search API" style="width:100%;max-width:320px"/>
+        <img class="dark-visible" src="/img/serpapi-dark.svg" alt="Web Search API" style="width:100%;max-width:320px"/>
+        </a>
+</div>
+</div>
+
 ## Silver Sponsors
 <style>
 #silver-sponsors div {
