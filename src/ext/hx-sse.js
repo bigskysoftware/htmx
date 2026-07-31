@@ -32,7 +32,9 @@
     // SSE PARSER
     // ========================================
 
-    async function* parseSSE(reader, lastEventId = '') {
+    async function* parseSSE(connection) {
+        let reader = connection.reader;
+        let lastEventId = connection.lastEventId;
         let decoder = new TextDecoder();
         let buffer = '';
         let hasData = false;
@@ -100,6 +102,9 @@
             }
         } finally {
             reader.releaseLock();
+            // On the same tick as releaseLock(), so cleanup() or visibilityHandler 
+            // calling connection.reader?.cancel() can't hit a released reader.
+            connection.reader = null;
         }
     }
 
@@ -241,7 +246,7 @@
                 try {
                     connection.reader = currentResponse.body.getReader();
 
-                    for await (let msg of parseSSE(connection.reader, connection.lastEventId)) {
+                    for await (let msg of parseSSE(connection)) {
                         if (!element.isConnected || reconnectRequested) break;
 
                         if (msg.hasId) {
@@ -285,7 +290,6 @@
                     }
                 }
 
-                connection.reader = null;
                 if (!element.isConnected) break;
 
                 connection.attempt++;

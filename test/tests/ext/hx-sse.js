@@ -591,6 +591,52 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    it('cancelling an already-released reader does not produce an unhandled rejection', async function() {
+        // Hand-rolled reader so the test can fire visibilitychange (→ cancel()) off the same
+        // promise the extension's `await reader.read()` is waiting on, landing it deterministically
+        // in the same tick the stream closes on.
+        let resolveRead;
+        let released = false;
+        const pendingRead = new Promise(resolve => { resolveRead = resolve; });
+        const reader = {
+            read: () => pendingRead,
+            releaseLock() { released = true; },
+            cancel() {
+                if (released) return Promise.reject(new TypeError('Cannot cancel a stream using a released reader'));
+                released = true;
+                return Promise.resolve();
+            }
+        };
+
+        fetchMock.mockResponse('GET', '/reader-cancel-race', () => {
+            const response = new MockResponse({getReader: () => reader}, {
+                headers: {'Content-Type': 'text/event-stream'}
+            });
+            response.body = {getReader: () => reader};
+            return response;
+        });
+
+        createProcessedHTML('<button hx-get="/reader-cancel-race" hx-config="sse.pauseOnBackground:true" hx-swap="innerHTML">Connect</button>');
+
+        let rejections = [];
+        let onRejection = e => rejections.push(e.reason);
+        window.addEventListener('unhandledrejection', onRejection);
+
+        find('button').click();
+        await waitForEvent('htmx:after:sse:connection');
+
+        pendingRead.then(() => {
+            Object.defineProperty(document, 'hidden', {value: true, configurable: true});
+            document.dispatchEvent(new Event('visibilitychange'));
+        });
+        resolveRead({done: true, value: undefined});
+
+        await htmx.timeout(20);
+        window.removeEventListener('unhandledrejection', onRejection);
+
+        assert.deepEqual(rejections, [], 'Attempting to cancel an already-released reader must not produce an unhandled rejection');
+    });
+
     it('custom events trigger on element and bubble', async function() {
         const stream = mockStreamResponse('/custom-events');
         createProcessedHTML('<button hx-get="/custom-events" hx-swap="innerHTML">Connect</button>');
