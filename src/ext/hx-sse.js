@@ -1,25 +1,25 @@
 (() => {
     let api;
+    let warnedLegacyAttributes = new Set();
 
     // ========================================
     // HELPERS
     // ========================================
 
-    function getConfig(ctx) {
-        let isConnect = api.attributeValue(ctx.sourceElement, 'hx-sse:connect') != null;
-        let defaults = {
-            reconnect: isConnect,
+    function getConfig(element) {
+        let hasHxSseConnect = api.attributeValue(element, 'hx-sse:connect') != null;
+        let hxConfig = api.HCON.parse(api.attributeValue(element, 'hx-config')).sse || {};
+
+        return {
+            reconnect: hasHxSseConnect,
             reconnectDelay: 500,
             reconnectMaxDelay: 60000,
             reconnectMaxAttempts: Infinity,
             reconnectJitter: 0.3,
-            pauseOnBackground: isConnect
+            pauseOnBackground: hasHxSseConnect,
+            ...htmx.config.sse,
+            ...hxConfig
         };
-        let global = htmx.config.sse || {};
-        // hx-config="sse.reconnect:true sse.reconnectDelay:50ms" is parsed by
-        // core's __mergeConfig into ctx.request.sse during createRequestContext
-        let perElement = ctx.request.sse || {};
-        return {...defaults, ...global, ...perElement};
     }
 
     function clearLastEventIdHeader(headers) {
@@ -116,7 +116,7 @@
     // with the saved request context (no full pipeline re-run).
     async function handleSSEResponse(ctx) {
         let element = ctx.sourceElement;
-        let config = getConfig(ctx);
+        let config = getConfig(element);
         let reconnectRequested = false;
 
         let connection = {
@@ -158,13 +158,13 @@
         }
 
         connection.cancelled = false;
-        if (!api.triggerHtmxEvent(element, 'htmx:before:sse:connection', {connection}) || connection.cancelled) {
+        if (!api.triggerHtmxEvent(element, 'htmx:sse:before:connection', {connection}) || connection.cancelled) {
             cleanup(element, 'cancelled');
             return;
         }
 
         connection.status = ctx.response.status;
-        api.triggerHtmxEvent(element, 'htmx:after:sse:connection', {connection});
+        api.triggerHtmxEvent(element, 'htmx:sse:after:connection', {connection});
 
         let currentResponse = ctx.response.raw;
 
@@ -197,7 +197,7 @@
                     }
 
                     connection.cancelled = false;
-                    if (!api.triggerHtmxEvent(element, 'htmx:before:sse:connection', {connection}) || connection.cancelled) break;
+                    if (!api.triggerHtmxEvent(element, 'htmx:sse:before:connection', {connection}) || connection.cancelled) break;
 
                     await new Promise(r => {
                         connection.delayCanceller = r;
@@ -236,7 +236,7 @@
                     }
 
                     connection.status = currentResponse.status;
-                    api.triggerHtmxEvent(element, 'htmx:after:sse:connection', {connection});
+                    api.triggerHtmxEvent(element, 'htmx:sse:after:connection', {connection});
                     connection.attempt = 0;
                 }
 
@@ -259,14 +259,14 @@
                         let detail = {
                             message: {data: msg.data, event: msg.event, id: msg.id, cancelled: false}
                         };
-                        if (!api.triggerHtmxEvent(element, 'htmx:before:sse:message', detail) || detail.message.cancelled) continue;
+                        if (!api.triggerHtmxEvent(element, 'htmx:sse:before:message', detail) || detail.message.cancelled) continue;
 
                         if (msg.retry != null) config.reconnectDelay = msg.retry;
 
                         if (detail.message.event) {
                             htmx.trigger(element, detail.message.event, {data: detail.message.data, id: detail.message.id});
                             delete detail.message.cancelled;
-                            api.triggerHtmxEvent(element, 'htmx:after:sse:message', detail);
+                            api.triggerHtmxEvent(element, 'htmx:sse:after:message', detail);
 
                             // hx-sse:close="eventname" — close connection on matching event
                             let closeEvent = api.attributeValue(element, 'hx-sse:close');
@@ -282,7 +282,7 @@
                         if (!ctx.swap.includes('swapEmpty')) ctx.swap += ' swapEmpty:false';
                         await htmx.swap(ctx);
                         delete detail.message.cancelled;
-                        api.triggerHtmxEvent(element, 'htmx:after:sse:message', detail);
+                        api.triggerHtmxEvent(element, 'htmx:sse:after:message', detail);
                     }
                 } catch (e) {
                     if (!connection.abortController?.signal?.aborted) {
@@ -338,17 +338,15 @@
     // ========================================
 
     function checkLegacyAttributes(element) {
-        if (element.hasAttribute('sse-connect')) {
-            console.warn('htmx: [hx-sse] legacy attribute sse-connect is deprecated; use hx-sse:connect instead');
+        for (let attribute of ['sse-connect', 'sse-close', 'sse-swap']) {
+            if (!element.hasAttribute(attribute) || warnedLegacyAttributes.has(attribute)) continue;
 
-            let url = element.getAttribute('sse-connect');
-            let attr = (htmx.config.prefix || 'hx-') + 'sse' + (htmx.config.metaCharacter || ':') + 'connect';
-            if (!element.hasAttribute(attr)) {
-                element.setAttribute(attr, url);
+            if (attribute === 'sse-swap') {
+                console.warn('htmx: [hx-sse] sse-swap is removed in htmx 4. Unnamed SSE messages are swapped automatically. Named events are dispatched as DOM events.');
+            } else {
+                console.warn(`htmx: [hx-sse] legacy attribute ${attribute} is deprecated; use hx-sse:${attribute.slice(4)} instead`);
             }
-        }
-        if (element.hasAttribute('sse-swap')) {
-            console.warn('htmx: [hx-sse] sse-swap is removed in htmx 4. Unnamed SSE messages are swapped automatically. Named events are dispatched as DOM events.');
+            warnedLegacyAttributes.add(attribute);
         }
     }
 
@@ -381,16 +379,24 @@
         },
 
         htmx_after_process: (element) => {
-            checkLegacyAttributes(element);
-            processElement(element);
             let mc = htmx.config.metaCharacter || ':';
+            let processSSEElement = (element) => {
+                checkLegacyAttributes(element);
+                for (let name of ['connect', 'close']) {
+                    let legacyAttr = `sse-${name}`;
+                    if (!element.hasAttribute(legacyAttr)) continue;
+
+                    let attr = (htmx.config.prefix || 'hx-') + 'sse' + mc + name;
+                    if (!element.hasAttribute(attr)) element.setAttribute(attr, element.getAttribute(legacyAttr));
+                }
+                processElement(element);
+            };
+
+            processSSEElement(element);
             let sseAttr = CSS.escape('hx-sse' + mc + 'connect');
             let sseSelector = `[${sseAttr}]`;
             if (htmx.config.prefix) sseSelector += `,[${CSS.escape(htmx.config.prefix + 'sse' + mc + 'connect')}]`;
-            element.querySelectorAll(`${sseSelector},[sse-connect]`).forEach((el) => {
-                checkLegacyAttributes(el);
-                processElement(el);
-            });
+            element.querySelectorAll(`${sseSelector},[sse-connect],[sse-close],[sse-swap]`).forEach(processSSEElement);
         },
 
         htmx_before_cleanup: (element) => {

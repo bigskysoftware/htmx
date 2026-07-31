@@ -536,14 +536,14 @@
           "doc-url": "https://four.htmx.org/reference/events/htmx-after-viewTransition"
         },
         {
-          "name": "before:sse:connection",
+          "name": "sse:before:connection",
           "description": "Fires before an SSE connection attempt. `detail.connection` can be modified; set `cancelled` or cancel the event to stop connecting.",
-          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxbeforesseconnection"
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxssebeforeconnection"
         },
         {
-          "name": "after:sse:connection",
+          "name": "sse:after:connection",
           "description": "Fires after a successful SSE connection or reconnection. `detail.connection` describes the connection.",
-          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxaftersseconnection"
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxsseafterconnection"
         },
         {
           "name": "sse:close",
@@ -556,14 +556,14 @@
           "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxsseerror"
         },
         {
-          "name": "before:sse:message",
+          "name": "sse:before:message",
           "description": "Fires before an SSE message is processed. `detail.message` contains `data`, `event`, `id`, and `cancelled`.",
-          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxbeforessemessage"
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxssebeforemessage"
         },
         {
-          "name": "after:sse:message",
+          "name": "sse:after:message",
           "description": "Fires after an SSE message is processed. `detail.message` contains `data`, `event`, and `id`.",
-          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxafterssemessage"
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxsseaftermessage"
         },
         {
           "name": "before:ws:connection",
