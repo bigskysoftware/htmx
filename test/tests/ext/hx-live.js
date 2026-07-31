@@ -342,27 +342,42 @@ describe('hx-live extension', function () {
         delete window.__swapCountLive;
     });
 
-    it.skip('iteration cap warns on runaway', async function() {
-        let warned = false;
+    it('warns once when live expressions take more than 16ms', async function() {
+        htmx.live.refresh();
+        await Promise.resolve();
+
+        let originalNow = Object.getOwnPropertyDescriptor(performance, 'now');
         let originalWarn = console.warn;
-        console.warn = (...args) => {
-            if (typeof args[0] === 'string' && args[0].includes('hx-live recompute exceeded')) warned = true;
-            originalWarn.apply(console, args);
-        };
+        let now = 0;
+        let elapsed = 0;
+        let calls = 0;
+        let warnings = [];
+        Object.defineProperty(performance, 'now', {
+            configurable: true,
+            value: () => calls++ % 2 === 0 ? now : now += elapsed
+        });
+        console.warn = message => warnings.push(message);
+
         try {
-            window.__runawayCountLive = 0;
-            playground().innerHTML = '<output hx-live="window.__runawayCountLive++"></output>';
-            htmx.process(playground());
+            createProcessedHTML('<output hx-live=""></output>');
 
-            for (let i = 0; i < 100; i++) {
-                document.body.setAttribute('data-runaway-test-live', String(i));
-                await htmx.timeout(5);
-            }
+            elapsed = 16;
+            htmx.live.refresh();
+            await Promise.resolve();
+            warnings.should.deep.equal([]);
 
-            warned.should.equal(true);
-            document.body.removeAttribute('data-runaway-test-live');
-            delete window.__runawayCountLive;
+            elapsed = 16.1;
+            htmx.live.refresh();
+            await Promise.resolve();
+            warnings.should.deep.equal(['htmx: hx-live expressions took 16.1ms.']);
+
+            elapsed = 50;
+            htmx.live.refresh();
+            await Promise.resolve();
+            warnings.length.should.equal(1);
         } finally {
+            if (originalNow) Object.defineProperty(performance, 'now', originalNow);
+            else delete performance.now;
             console.warn = originalWarn;
         }
     });

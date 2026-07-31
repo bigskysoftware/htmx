@@ -545,9 +545,15 @@ All expressions run in a single microtask, so multiple synchronous mutations coa
 
 When an expression writes to the DOM, the observer drains its own pending records inside the same microtask. Writes made by `hx-live` cannot trigger a feedback loop.
 
-### Runaway cap
+### Slow expressions
 
-If recomputes exceed 50/sec, the extension logs a warning. Bindings continue running. Tune your expression or add `debounce`.
+After a change, hx-live runs every live expression once. If this takes more than `16ms`, hx-live logs one warning:
+
+```text
+htmx: hx-live expressions took 18.4ms.
+```
+
+The warning does not stop the expressions.
 
 ### Coordinating with htmx swaps
 

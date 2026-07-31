@@ -13,8 +13,6 @@
     let recomputeBound = null;
     let inputBound = null;
     let swaps = 0;
-    let i = 0;
-    let start = 0;
     let warned = false;
 
     const OBSERVE_OPTIONS = { childList: true, subtree: true, attributes: true, characterData: true };
@@ -42,26 +40,23 @@
         observer.disconnect();
         observer = null;
         recomputeBound = null;
+        warned = false;
     }
 
     function schedule() {
         if (pending) return;
         if (swaps > 0) return;
-        let now = Date.now();
-        if (now - start > 1000) {
-            start = now;
-            i = 0;
-            warned = false;
-        }
-        if (++i > 50 && !warned) {
-            console.warn('htmx: hx-live recompute exceeded 50/sec.');
-            warned = true;
-        }
         pending = true;
         queueMicrotask(() => {
             // Detach observer while writing so our own writes don't queue records.
             observer?.disconnect();
+            let startedAt = performance.now();
             fns.forEach(f => f());
+            let elapsed = performance.now() - startedAt;
+            if (!warned && elapsed > 16) {
+                console.warn(`htmx: hx-live expressions took ${elapsed.toFixed(1)}ms.`);
+                warned = true;
+            }
             if (fns.size === 0) {
                 deactivate();
             } else {
