@@ -162,7 +162,7 @@
     function applyStyleBinding(elt, value) {
         let prop = api.htmxProp(elt);
         let oldManaged = prop.liveStyles || new Set();
-        let newManaged = new Set();
+        let styles = [];
 
         if (typeof value === 'string') {
             for (let decl of value.split(';')) {
@@ -170,20 +170,20 @@
                 if (idx < 0) continue;
                 let k = decl.slice(0, idx).trim();
                 let v = decl.slice(idx + 1).trim();
-                if (k) {
-                    newManaged.add(k);
-                    elt.style.setProperty(k, v);
-                }
+                if (k) styles.push([k, v]);
             }
         } else if (value && typeof value === 'object') {
             for (let [k, v] of Object.entries(value)) {
-                let cssProp = camelToKebab(k);
-                newManaged.add(cssProp);
-                if (v == null || v === '') elt.style.removeProperty(cssProp);
-                else elt.style.setProperty(cssProp, String(v));
+                styles.push([camelToKebab(k), v == null || v === '' ? null : String(v)]);
             }
         }
+
+        let newManaged = new Set(styles.map(([k]) => k));
         for (let k of oldManaged) if (!newManaged.has(k)) elt.style.removeProperty(k);
+        for (let [k, v] of styles) {
+            if (v == null) elt.style.removeProperty(k);
+            else elt.style.setProperty(k, v);
+        }
         if (elt.style.length === 0) elt.removeAttribute('style');
         prop.liveStyles = newManaged;
     }

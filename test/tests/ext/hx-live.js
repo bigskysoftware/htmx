@@ -1882,6 +1882,20 @@ describe('hx-live extension', function () {
         div.style.height.should.equal('20px');
     });
 
+    it(':style replaces an old shorthand with a new longhand', async function() {
+        playground().innerHTML = `
+            <div data-all="true" :style="data.all
+                ? 'border: 1px solid red'
+                : 'border-left-color: green'"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.dataset.all = 'false';
+        await htmx.timeout(5);
+        div.style.borderTop.should.equal('');
+        div.style.borderLeftColor.should.equal('green');
+    });
+
     it(':style overlap: binding overwrites matching static property', async function() {
         playground().innerHTML = `
             <input id="color" value="blue">
