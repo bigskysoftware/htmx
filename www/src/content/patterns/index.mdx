@@ -60,17 +60,17 @@ export const getPageHeadings = () => groupedPatterns.map(group => ({
 
 <IndexTable>
     {group.items.map(item => (
-        <tr class={item.badge ? 'opacity-50' : undefined}>
+        <tr aria-disabled={item.badge ? "true" : undefined}>
             <th scope="row">
-                <span class="flex items-center gap-5">
-                    {item.icon ? <i class={`${item.icon} icon size-5 shrink-0`} aria-hidden="true"></i> : <span class="size-5 shrink-0"></span>}
+                <span>
+                    {item.icon ? <i class={`${item.icon} icon`} aria-hidden="true"></i> : <span class="icon"></span>}
                     <span>
                         {item.url ? <a href={item.url}>{item.title}</a> : item.title}
                         {item.badge && <span class="sm:hidden text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">{item.badge}</span>}
                     </span>
                 </span>
             </th>
-            <td class="text-neutral-650 dark:text-neutral-350">
+            <td>
                 {item.description || ''}
                 {item.badge && <span class="hidden sm:inline text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">{item.badge}</span>}
             </td>

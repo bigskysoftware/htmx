@@ -39,6 +39,23 @@
             gap: 1.5rem;
         }
 
+        & :global(th[scope="row"] > span:has(> .icon)) {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        & :global(.icon) {
+            display: inline-block;
+            inline-size: 1.25rem;
+            block-size: 1.25rem;
+            flex: none;
+        }
+
+        & :global(tr[aria-disabled="true"]) {
+            opacity: 0.5;
+        }
+
         & :global(time) {
             white-space: nowrap;
             font-variant-numeric: tabular-nums;
@@ -126,6 +143,12 @@
             & :global(tr:hover > :is(th, td)) {
                 color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
             }
+        }
+    }
+
+    @media (width < 40rem) {
+        table :global(tr:has(.icon) > th[scope="row"]:has(code) + td) {
+            padding-inline-start: 3.625rem;
         }
     }
 </style>
