@@ -1,0 +1,131 @@
+<table>
+    <tbody>
+        <slot />
+    </tbody>
+</table>
+
+<style>
+    table {
+        border-collapse: separate;
+        border-spacing: 0;
+
+        & :global(tr) {
+            position: relative;
+            /* WebKit only honors tr as abspos containing block with a transform. */
+            transform: translate(0);
+        }
+
+        & :global(th[scope="row"], td) {
+            padding-block: 0.75rem;
+        }
+
+        & :global(th[scope="row"]) {
+            padding-inline-start: 0.75rem;
+            font-weight: inherit;
+            text-align: start;
+        }
+
+        & :global(td:last-child) {
+            padding-inline-end: 0.75rem;
+        }
+
+        & :global(td:not(:first-child)) {
+            color: light-dark(var(--color-neutral-650), var(--color-neutral-350));
+        }
+
+        & :global(td > span:has(> time)) {
+            display: flex;
+            justify-content: space-between;
+            gap: 1.5rem;
+        }
+
+        & :global(time) {
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Make the row header's link cover its whole row. */
+        & :global(th[scope="row"] a) {
+            position: static;
+        }
+
+        & :global(th[scope="row"] a::after) {
+            content: '';
+            position: absolute;
+            inset: 0;
+        }
+
+        @media (width < 40rem) {
+            display: table;
+            overflow: visible;
+
+            & :global(tr) {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                border-bottom: 0;
+            }
+
+            & :global(th[scope="row"], td) {
+                display: block;
+                white-space: normal;
+            }
+
+            & :global(td) {
+                padding-block: 0.375rem 0;
+                padding-inline: 1.125rem 0.75rem;
+                font-size: 0.8125rem;
+            }
+
+            & :global(th[scope="row"]) {
+                padding-block: 1rem 0;
+                padding-inline-start: 0.75rem;
+                font-size: 0.875rem;
+            }
+
+            & :global(th[scope="row"] a > code) {
+                font-size: 0.875rem;
+            }
+
+            & :global(th[scope="row"] a) {
+                display: block;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            & :global(td:last-child) {
+                padding-bottom: 1rem;
+            }
+
+            & :global(tr:has(.icon) > :is(th[scope="row"], td)) {
+                padding-inline-start: 3.25rem;
+            }
+
+            & :global(.icon) {
+                position: absolute;
+                inset-inline-start: 0.75rem;
+                inset-block-start: 50%;
+                transform: translateY(-50%);
+            }
+
+            & :global(td:has(time)) {
+                padding-inline-start: 0.75rem;
+            }
+
+            & :global(td:empty) {
+                display: none;
+            }
+
+            & :global(tr:has(td:last-child:empty) th[scope="row"]),
+            & :global(tr:has(> th[scope="row"]:only-child) > th[scope="row"]) {
+                padding-bottom: 1rem;
+            }
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            & :global(tr:hover > :is(th, td)) {
+                color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
+            }
+        }
+    }
+</style>

@@ -240,66 +240,6 @@
     display: none;
 }
 
-/* ─── Stretched link (unlayered to override prose table padding) ───────── */
-table:has(.stretch-link) {
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-tr.stretch-link {
-    position: relative;
-    /* WebKit only honors tr as abspos containing block with a transform. */
-    transform: translate(0);
-
-    & td {
-        padding-block: 0.75rem;
-    }
-
-    & td:first-child {
-        padding-inline-start: 0.75rem;
-    }
-
-    & td:last-child {
-        padding-inline-end: 0.75rem;
-    }
-
-    /* Whole row is the tap target. */
-    & td:first-child a {
-        position: static;
-
-        &::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-        }
-    }
-
-    /* One place for index-table mobile type; keep the .mdx tables size-free. */
-    @media (width < 40rem) {
-        /* Items stack two lines here; extra padding keeps rows distinct. */
-        & td {
-            padding-block: 1rem;
-        }
-
-        & td,
-        & td a > code {
-            font-size: 0.875rem;
-        }
-
-        /* Stacked description lines. Their inline code scales with them. */
-        & td .block {
-            font-size: 0.8125rem;
-            margin-top: 0.375rem;
-        }
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-        &:hover td {
-            color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
-        }
-    }
-}
-
 /* ─── Docs full-page sticky section headers (unlayered) ────────────────── */
 
 /* Skip rendering offscreen sections; /docs alone is ~10k elements.

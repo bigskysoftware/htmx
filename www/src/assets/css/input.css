@@ -178,16 +178,16 @@
     padding: 0 !important;
 }
 
-/* Wide markdown tables scroll sideways; single-line cells keep columns readable.
-   Index tables (stretch-link) never overflow and stay real tables. */
+/* Wide markdown tables scroll sideways; component styles can override
+   these low-specificity defaults. */
 @media (width < 40rem) {
-    .prose table:not(:has(tr.stretch-link)) {
+    .prose :where(table) {
         display: block;
         overflow-x: auto;
+    }
 
-        & th, & td {
-            white-space: nowrap;
-        }
+    .prose :where(th, td) {
+        white-space: nowrap;
     }
 }
 

@@ -6,6 +6,7 @@ description: "Patterns, recipes, and working examples."
 import { getFolder } from '../../lib/content';
 import { PATTERN_CATEGORIES, groupFilesByCategory } from '../../lib/content-groups';
 import JumpTo from '../../components/JumpTo.astro';
+import IndexTable from '../../components/IndexTable.astro';
 
 export const folder = await getFolder('patterns');
 export const groupedPatterns = groupFilesByCategory(folder.files, PATTERN_CATEGORIES).map(group => ({
@@ -13,10 +14,10 @@ export const groupedPatterns = groupFilesByCategory(folder.files, PATTERN_CATEGO
     label: group.category,
     items: group.files.map(f => ({
         title: f.frontmatter.title,
-        url: f.url,
+        url: f.frontmatter.soon ? undefined : f.url,
         description: f.frontmatter.description,
         icon: f.frontmatter.icon || '',
-        soon: f.frontmatter.soon || false,
+        badge: f.frontmatter.soon ? 'Soon' : undefined,
     })),
 }));
 
@@ -57,30 +58,25 @@ export const getPageHeadings = () => groupedPatterns.map(group => ({
     </span>
 </h2>
 
-<table>
-    <tbody>
-        {group.items.map(item => (
-            <tr class={`stretch-link ${item.soon ? 'opacity-50' : ''}`}>
-                <td>
-                    <div class="flex items-center gap-4 sm:gap-7">
-                        {item.icon && <i class={`${item.icon} size-5 shrink-0`}></i>}
-                        <span class="min-w-0">
-                            {item.soon
-                                ? <span>{item.title}</span>
-                                : <a href={item.url}>{item.title}</a>}
-                            {item.soon && <span class="sm:hidden text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">Soon</span>}
-                            {item.description && <span class="block sm:hidden text-neutral-650 dark:text-neutral-350">{item.description}</span>}
-                        </span>
-                    </div>
-                </td>
-                <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350">
-                    {item.description || ''}
-                    {item.soon && <span class="text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">Soon</span>}
-                </td>
-            </tr>
-        ))}
-    </tbody>
-</table>
+<IndexTable>
+    {group.items.map(item => (
+        <tr class={item.badge ? 'opacity-50' : undefined}>
+            <th scope="row">
+                <span class="flex items-center gap-5">
+                    {item.icon ? <i class={`${item.icon} icon size-5 shrink-0`} aria-hidden="true"></i> : <span class="size-5 shrink-0"></span>}
+                    <span>
+                        {item.url ? <a href={item.url}>{item.title}</a> : item.title}
+                        {item.badge && <span class="sm:hidden text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">{item.badge}</span>}
+                    </span>
+                </span>
+            </th>
+            <td class="text-neutral-650 dark:text-neutral-350">
+                {item.description || ''}
+                {item.badge && <span class="hidden sm:inline text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">{item.badge}</span>}
+            </td>
+        </tr>
+    ))}
+</IndexTable>
 
 </section>
 ))}
