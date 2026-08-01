@@ -124,7 +124,7 @@ export const getPageHeadings = () => groups.map(group => ({depth: 2, slug: group
                 <span hidden>{group.label} {subgroup.label}</span>
                 <a href={item.url}><code set:html={item.title} /></a>
             </th>
-            <td class="text-neutral-650 dark:text-neutral-350" set:html={item.description ? item.description.replace(/`([^`]+)`/g, '<code>$1</code>') : ''} />
+            <td set:html={item.description ? item.description.replace(/`([^`]+)`/g, '<code>$1</code>') : ''} />
         </tr>
     ))}
 </IndexTable>

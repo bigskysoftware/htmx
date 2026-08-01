@@ -62,12 +62,12 @@ export const getPageHeadings = () => grouped.map(group => ({
     {group.items.map(item => (
         <tr>
             <th scope="row">
-                <span class="flex items-center gap-5">
-                    {item.icon ? <i class={`${item.icon} icon size-5 shrink-0`} aria-hidden="true"></i> : <span class="size-5 shrink-0"></span>}
+                <span>
+                    {item.icon ? <i class={`${item.icon} icon`} aria-hidden="true"></i> : <span class="icon"></span>}
                     <a href={item.url}><code>{item.title}</code></a>
                 </span>
             </th>
-            <td class="text-neutral-650 dark:text-neutral-350" set:html={item.description ? item.description.replace(/`([^`]+)`/g, '<code>$1</code>') : ''} />
+            <td set:html={item.description ? item.description.replace(/`([^`]+)`/g, '<code>$1</code>') : ''} />
         </tr>
     ))}
 </IndexTable>
