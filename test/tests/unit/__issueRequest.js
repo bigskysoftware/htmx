@@ -85,6 +85,48 @@ describe('__issueRequest unit tests', function() {
         assert.isFalse(fetchCalled)
     })
 
+    it('replace aborts the active request and runs the replacement', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none" hx-sync="replace"></div>')
+        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
+        ctx1.fetch = (url, options) => new Promise((resolve, reject) => {
+            options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')))
+        })
+        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
+        let replacementRan = false
+        ctx2.fetch = async () => {
+            replacementRan = true
+            return {status: 200, headers: new Headers(), text: async () => ''}
+        }
+
+        let request1 = htmx.__issueRequest(ctx1)
+        let request2 = htmx.__issueRequest(ctx2)
+        await Promise.all([request1, request2])
+
+        assert.isTrue(ctx1.request.signal.aborted)
+        assert.isTrue(replacementRan)
+    })
+
+    it('a later request aborts an active abort request', async function () {
+        let parent = createProcessedHTML('<div id="sync"><div id="first" hx-get="/first" hx-swap="none" hx-sync="#sync:abort"></div><div id="second" hx-get="/second" hx-swap="none" hx-sync="#sync:drop"></div></div>')
+        let ctx1 = htmx.__createRequestContext(parent.querySelector('#first'), new Event('click'))
+        ctx1.fetch = (url, options) => new Promise((resolve, reject) => {
+            options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')))
+        })
+        let ctx2 = htmx.__createRequestContext(parent.querySelector('#second'), new Event('click'))
+        let secondRan = false
+        ctx2.fetch = async () => {
+            secondRan = true
+            return {status: 200, headers: new Headers(), text: async () => ''}
+        }
+
+        let request1 = htmx.__issueRequest(ctx1)
+        let request2 = htmx.__issueRequest(ctx2)
+        await Promise.all([request1, request2])
+
+        assert.isTrue(ctx1.request.signal.aborted)
+        assert.isTrue(secondRan)
+    })
+
     it('returns early if htmx:before:request is cancelled', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
