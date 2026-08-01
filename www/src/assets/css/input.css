@@ -178,8 +178,7 @@
     padding: 0 !important;
 }
 
-/* Wide markdown tables scroll sideways; component styles can override
-   these low-specificity defaults. */
+/* Let wide Markdown tables scroll; :where() keeps this overridable. */
 @media (width < 40rem) {
     .prose :where(table) {
         display: block;
