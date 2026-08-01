@@ -1392,13 +1392,13 @@ describe('hx-live extension', function () {
         playground().querySelector('section').hasAttribute('data-count').should.equal(false);
     });
 
-    it('this.data only accesses the current element after await', async function() {
+    it('q(this).data only accesses the current element after await', async function() {
         playground().innerHTML = `
             <section data-count="1">
                 <button hx-on:click="
-                    window.__dataState = [this.data.count, data.count];
+                    window.__dataState = [q(this).data.count, data.count];
                     await timeout(5);
-                    this.data.count = 2
+                    q(this).data.count = 2
                 ">change</button>
             </section>
         `;
@@ -1410,6 +1410,17 @@ describe('hx-live extension', function () {
         button.dataset.count.should.equal('2');
         playground().querySelector('section').dataset.count.should.equal('1');
         delete window.__dataState;
+    });
+
+    it('q(this).data preserves native element data properties', function() {
+        playground().innerHTML = `
+            <object data="/chart.svg" hx-on:click="q(this).data.ready = true"></object>
+        `;
+        htmx.process(playground());
+        let object = playground().querySelector('object');
+        object.click();
+        object.getAttribute('data').should.equal('/chart.svg');
+        object.dataset.ready.should.equal('true');
     });
 
     it('delete data.foo removes the closest matching attribute', function() {

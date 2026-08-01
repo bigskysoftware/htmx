@@ -285,15 +285,15 @@ Read and write `data-*` attributes as JSON or plain text.
 </div>
 ```
 
-Access data state in three ways:
+Use bare `data` for shared state. Use `q()` for one element:
 
 ```js
 data.count            // closest data-count, starting at this
-this.data.count       // data-count on this
+q(this).data.count    // data-count on this
 q('#cart').data.count // data-count on the selected cart
 ```
 
-`data.*` checks the current element, then each ancestor. `this.data` and `q(...).data` check one element only.
+`data.*` checks the current element, then each ancestor. `q(...).data` checks the selected element only.
 
 On write, hx-live converts booleans, numbers, arrays, and objects to JSON. On read, it converts the JSON back to JavaScript values:
 
@@ -328,7 +328,7 @@ Delete state to remove its attribute:
 
 ```js
 delete data.count            // remove the closest data-count
-delete this.data.count       // remove data-count from this
+delete q(this).data.count    // remove data-count from this
 delete q('#cart').data.count // remove data-count from the selected cart
 ```
 

@@ -681,7 +681,6 @@
                 classList: elt.classList,
                 data: makeDataProxy(elt)
             });
-            elt.data = makeDataProxy(elt, false);
             if (htmx.config.live?.useDollar) detail.scope.$ = detail.scope.q;
         }
     });
