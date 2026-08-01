@@ -7,6 +7,7 @@ thumbnail: "docs/extensions.svg"
 import { getFolder } from '../../lib/content';
 import { EXTENSION_CATEGORIES, groupFilesByCategory } from '../../lib/content-groups';
 import JumpTo from '../../components/JumpTo.astro';
+import IndexTable from '../../components/IndexTable.astro';
 
 export const folder = await getFolder('extensions');
 export const grouped = groupFilesByCategory(folder.files, EXTENSION_CATEGORIES).map(group => ({
@@ -15,7 +16,7 @@ export const grouped = groupFilesByCategory(folder.files, EXTENSION_CATEGORIES).
     items: group.files.map(f => ({
         title: f.frontmatter.title,
         url: f.url,
-        descriptionParts: f.frontmatter.description?.split(/(`[^`]+`)/g),
+        description: f.frontmatter.description,
         icon: f.frontmatter.icon,
     })),
 }));
@@ -57,21 +58,19 @@ export const getPageHeadings = () => grouped.map(group => ({
     </span>
 </h2>
 
-<table>
-    <tbody>
-        {group.items.map(item => (
-            <tr class="stretch-link">
-                <td>
-                    <div class="grid grid-cols-[1.25rem_minmax(0,1fr)] sm:grid-cols-[1.25rem_12rem_minmax(0,1fr)] gap-x-5 items-center">
-                        {item.icon ? <i class={`${item.icon} size-5 row-span-2 sm:row-span-1 self-start sm:self-center mt-1 sm:mt-0`}></i> : <span></span>}
-                        <a href={item.url}><code>{item.title}</code></a>
-                        <span class="col-start-2 sm:col-start-3 sm:row-start-1 text-[0.8125em] sm:text-[1em] text-neutral-650 dark:text-neutral-350 mt-0.5 sm:mt-0">{item.descriptionParts?.map(part => part.startsWith('`') ? <code>{part.slice(1, -1)}</code> : part)}</span>
-                    </div>
-                </td>
-            </tr>
-        ))}
-    </tbody>
-</table>
+<IndexTable>
+    {group.items.map(item => (
+        <tr>
+            <th scope="row">
+                <span class="flex items-center gap-5">
+                    {item.icon ? <i class={`${item.icon} icon size-5 shrink-0`} aria-hidden="true"></i> : <span class="size-5 shrink-0"></span>}
+                    <a href={item.url}><code>{item.title}</code></a>
+                </span>
+            </th>
+            <td class="text-neutral-650 dark:text-neutral-350" set:html={item.description ? item.description.replace(/`([^`]+)`/g, '<code>$1</code>') : ''} />
+        </tr>
+    ))}
+</IndexTable>
 
 </section>
 ))}
