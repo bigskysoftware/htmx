@@ -733,7 +733,6 @@
             if (--swaps === 0 && fns.size > 0) schedule();
         },
         htmx_scope: (elt, detail) => {
-            elt.aria = makeAriaProxy(elt, false);
             Object.assign(detail.scope, {
                 q: makeQ(elt),
                 forEvent: (...args) => forEvent(elt, ...args),

@@ -297,15 +297,15 @@ Both `aria.busy` expressions use `aria-busy` on the div. If no element has the a
 <button hx-on:click="aria.pressed = true" aria-pressed="true">Like</button>
 ```
 
-Access ARIA attributes in three ways:
+Use bare `aria` for shared state. Use `q()` for one element:
 
 ```js
 aria.busy            // closest aria-busy, starting at this
-this.aria.busy       // aria-busy on this
+q(this).aria.busy    // aria-busy on this
 q('#form').aria.busy // aria-busy on the selected form
 ```
 
-All three forms use the same value rules. You can use these values as booleans, numbers, and arrays:
+Each form uses the same value rules. You can use these values as booleans, numbers, and arrays:
 
 ```html
 <button aria-busy="false"

@@ -1505,13 +1505,13 @@ describe('hx-live extension', function () {
         button.getAttribute('aria-label').should.equal('Save');
     });
 
-    it('this.aria only accesses the current element', function() {
+    it('q(this).aria only accesses the current element', function() {
         playground().innerHTML = `
             <section aria-busy="true">
                 <button type="button" hx-on:click="
-                    window.__localState = [this.aria.busy, aria.busy];
-                    this.aria.busy = false;
-                    window.__localAfter = this.aria.busy
+                    window.__localState = [q(this).aria.busy, aria.busy];
+                    q(this).aria.busy = false;
+                    window.__localAfter = q(this).aria.busy
                 ">change</button>
             </section>
         `;
@@ -1526,23 +1526,26 @@ describe('hx-live extension', function () {
         delete window.__localAfter;
     });
 
-    it('this stays the real element across async expressions', async function() {
+    it('q(this).aria preserves application element properties after await', async function() {
         playground().innerHTML = `
             <section id="owner">
                 <button type="button" hx-on:click="
                     window.__sameThis = this === event.currentTarget;
                     window.__closestId = this.closest('section').id;
                     await timeout(5);
-                    this.aria.busy = true
+                    q(this).aria.busy = true
                 ">change</button>
             </section>
         `;
         htmx.process(playground());
         let button = playground().querySelector('button');
+        let applicationState = { owner: 'app' };
+        button.aria = applicationState;
         button.click();
         await htmx.timeout(10);
         window.__sameThis.should.equal(true);
         window.__closestId.should.equal('owner');
+        button.aria.should.equal(applicationState);
         button.getAttribute('aria-busy').should.equal('true');
         delete window.__sameThis;
         delete window.__closestId;
