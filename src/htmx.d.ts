@@ -536,8 +536,8 @@ export interface HtmxEventMap {
 
 export type HtmxEvent<K extends keyof HtmxEventMap> = CustomEvent<HtmxEventMap[K]>;
 
-/** Context object accepted by `htmx.ajax()` */
-export interface HtmxAjaxContext {
+/** Options accepted by `htmx.ajax()` */
+export interface HtmxAjaxOptions {
   /** Element to use as the request source (for headers, inheritance, etc.) */
   source?: Element | string;
   /** Event that triggered the request */
@@ -572,12 +572,12 @@ export interface Htmx {
    * Returns a Promise that resolves after the response has been swapped into the DOM.
    * @param verb - HTTP method (GET, POST, PUT, PATCH, DELETE)
    * @param path - URL to request
-   * @param context - Swap target element, CSS selector, or full context object
+   * @param options - Swap target element, CSS selector, or full request context object
    * @example
    * htmx.ajax('GET', '/items', '#list')
    * htmx.ajax('POST', '/save', { target: '#result', swap: 'outerHTML' })
    */
-  ajax(verb: string, path: string, context?: Element | string | HtmxAjaxContext): Promise<void>;
+  ajax(verb: string, path: string, options?: Element | string | HtmxAjaxOptions): Promise<void>;
   /**
    * Find the first element matching `selector` in the document.
    */

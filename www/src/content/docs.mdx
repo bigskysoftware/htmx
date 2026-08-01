@@ -528,7 +528,7 @@ Internally-dispatched events route to the console as follows:
 
 This restores the htmx 2.x convention: if you want an internal failure path to show up in the console, fire an event with `detail.error` (or `detail.warn`); no per-site `console.error` needed.
 
-#### Request context
+#### Request Context in Events
 
 All events provide a consistent `ctx` object with request/response information.
 
