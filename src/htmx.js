@@ -398,7 +398,6 @@ var htmx = (() => {
                 htmxProp.initialized = true;
                 htmxProp.eventHandler = this.__createHtmxEventHandler(elt);
                 this.__initializeTriggers(elt);
-                this.__initializeAbortListener(elt)
                 this.__trigger(elt, "htmx:after:init", {}, true)
             }
         }
@@ -580,6 +579,7 @@ var htmx = (() => {
             let elt = ctx.sourceElement
             let syncStrategy = this.__determineSyncStrategy(elt);
             let requestQueue = this.__getRequestQueue(elt);
+            this.__initializeAbortListener(elt);
 
             if (!requestQueue.issue(ctx, syncStrategy)) return
 
@@ -2000,12 +2000,15 @@ var htmx = (() => {
         }
 
         __initializeAbortListener(elt) {
+            let htmxProp = this.__htmxProp(elt);
+            if (htmxProp.abortInitialized) return;
+            htmxProp.abortInitialized = true;
             let handler = () => {
                 let requestQueue = this.__getRequestQueue(elt);
                 requestQueue.abort();
             };
             elt.addEventListener("htmx:abort", handler);
-            elt._htmx.listeners.push({fromElt: elt, eventName: "htmx:abort", handler});
+            htmxProp.listeners.push({fromElt: elt, eventName: "htmx:abort", handler});
         }
 
         __morph(oldNode, fragment, innerHTML) {
