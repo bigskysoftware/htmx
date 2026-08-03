@@ -230,4 +230,39 @@ describe('__findAllExt unit tests', function() {
         assert.include(results[0].className, 'outer')
     })
 
+    // Gap #19: 'this' selector without thisAttr
+    it('handles "this" selector returning the element itself', function() {
+        let div = createProcessedHTML('<div id="target"></div>');
+        let results = htmx.__findAllExt(div, 'this');
+        assert.equal(results.length, 1);
+        assert.equal(results[0], div);
+    })
+
+    // Gap #20: getRootNode document fallback for disconnected element
+    it('falls back to document for disconnected element', function() {
+        let detached = document.createElement('div');
+        createProcessedHTML('<span class="doc-span"></span>');
+        let results = htmx.__findAllExt(detached, '.doc-span');
+        assert.equal(results.length, 1);
+    })
+
+    // Gap #18: Shadow DOM host resolution
+    it('handles "host" selector returning shadow host', function() {
+        let host = createProcessedHTML('<div id="shadow-host"></div>');
+        let shadow = host.attachShadow({ mode: 'open' });
+        let inner = document.createElement('div');
+        shadow.appendChild(inner);
+        
+        let results = htmx.__findAllExt(inner, 'host');
+        assert.equal(results.length, 1);
+        assert.equal(results[0], host);
+    })
+
+    // Public findAll method
+    it('htmx.findAll delegates to __findAllExt', function() {
+        createProcessedHTML('<div class="foo"></div><div class="foo"></div>');
+        let results = htmx.findAll(document, '.foo');
+        assert.equal(results.length, 2);
+    })
+
 });

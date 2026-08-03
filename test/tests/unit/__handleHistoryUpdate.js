@@ -90,4 +90,54 @@ describe('__handleHistoryUpdate unit tests', function() {
         assert.include(window.location.href, '/redirected-path?foo=bar')
     })
 
+    it('restores history via popstate event when Navigation API unavailable', async function() {
+        let savedNavigation = window.navigation;
+        delete window.navigation;
+        htmx.__initHistoryHandling();
+        try {
+            playground().innerHTML = '<main hx-history-elt><p>current</p></main>';
+            htmx.process(playground());
+            history.replaceState({ htmx: true }, '', '/popstate-test-a');
+            htmx.__pushUrlIntoHistory('/popstate-test-b');
+            playground().innerHTML = '<main hx-history-elt><p>page B</p></main>';
+            mockResponse('GET', '/popstate-test-a', '<html><body><main hx-history-elt><p>restored via popstate</p></main></body></html>');
+            history.back();
+            await forRequest();
+            playground().textContent.should.include('restored via popstate');
+        } finally {
+            if (savedNavigation) window.navigation = savedNavigation;
+        }
+    })
+
+    it('returns early when config.history is false', function() {
+        let savedHistory = htmx.config.history;
+        htmx.config.history = false;
+        try {
+            htmx.__initHistoryHandling();
+            assert.equal(htmx.config.history, false);
+        } finally {
+            htmx.config.history = savedHistory;
+        }
+    })
+
+    it('reloads page on history restore when config.history is "reload"', async function() {
+        let originalLocation = htmx.__location;
+        let originalHistoryConfig = htmx.config.history;
+        let reloadCalled = false;
+        htmx.__location = { 
+            reload: function() { reloadCalled = true; },
+            pathname: '/test', search: '', href: 'http://localhost/test'
+        };
+        htmx.config.history = 'reload';
+        try {
+            history.replaceState({ htmx: true }, '', '/test');
+            htmx.__restoreHistory({ htmx: true });
+            await htmx.timeout(10);
+            assert.isTrue(reloadCalled);
+        } finally {
+            htmx.__location = originalLocation;
+            htmx.config.history = originalHistoryConfig;
+        }
+    })
+
 });

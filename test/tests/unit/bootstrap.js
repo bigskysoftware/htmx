@@ -227,4 +227,25 @@ describe('bootstrap unit tests', function() {
             'Public properties have changed. Expected: ' + JSON.stringify(expectedPublicProperties) +
             ', Got: ' + JSON.stringify(ownProperties));
     })
+
+    it('constructor uses setTimeout when document is already loaded', async function() {
+        assert.notEqual(document.readyState, 'loading', 'document should already be loaded')
+        let HtmxClass = Object.getPrototypeOf(htmx).constructor
+        let setTimeoutCalled = false
+        let originalSetTimeout = window.setTimeout
+        window.setTimeout = function(fn, ...args) {
+            if (fn.name === 'init' || (fn.toString && fn.toString().includes('__initHistoryHandling'))) {
+                setTimeoutCalled = true
+            }
+            return originalSetTimeout.call(this, fn, ...args)
+        }
+        try {
+            let newInstance = new HtmxClass()
+            await new Promise(r => originalSetTimeout(r, 100))
+            assert.isTrue(setTimeoutCalled, 'setTimeout should have been called for init')
+            assert.isDefined(newInstance.config)
+        } finally {
+            window.setTimeout = originalSetTimeout
+        }
+    })
 })
