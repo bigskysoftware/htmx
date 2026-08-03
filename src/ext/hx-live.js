@@ -323,11 +323,11 @@
      *
      * @example
      * toggle('.active')                      // toggle class
-     * toggle('aria-expanded')                // flip "true" ↔ "false"
+     * toggle('aria-expanded')                // flip "true" <-> "false"
      * toggle('hidden')                       // toggle attribute presence
      * toggle('data-view', 'grid|list|table') // cycle attribute through values
      * toggle('.size', 'sm|md|lg')            // cycle classes (one at a time)
-     * toggle('data-open', 'on|')             // 'on' ↔ absent slot
+     * toggle('data-open', 'on|')             // 'on' <-> absent slot
      */
     function applyToggle(name, values, element) {
         let isClass = name.startsWith('.');
@@ -497,7 +497,7 @@
         if (extra === undefined) {
             if (window.Alpine) {
                 extra = '';
-                console.warn('hx-live: Alpine.js detected — ":" short-form bindings disabled. Set htmx.config.live.bindPrefix to configure.');
+                console.warn('hx-live: Alpine.js detected; ":" short-form bindings disabled. Set htmx.config.live.bindPrefix to configure.');
             } else {
                 extra = ':';
             }

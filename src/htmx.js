@@ -655,14 +655,14 @@ var htmx = (() => {
 
                 requestQueue.finish()
                 if (requestQueue.more()) {
-                    // intentionally not awaited — __issueRequest has its own try/catch
+                    // intentionally not awaited; __issueRequest has its own try/catch
                     this.__issueRequest(requestQueue.next())
                 }
             }
         }
 
         // Extract HX-* response headers into ctx.hx
-        // Maps: HX-Trigger → ctx.hx.trigger, HX-Push-Url → ctx.hx.pushurl, etc.
+        // Maps: HX-Trigger -> ctx.hx.trigger, HX-Push-Url -> ctx.hx.pushurl, etc.
         __extractHxHeaders(ctx) {
             ctx.hx = {}
             for (let [k, v] of ctx.response.raw.headers) {
@@ -1353,7 +1353,7 @@ var htmx = (() => {
             }
             let swapStyle = swapSpec.style;
             if (swapStyle === 'none') return;
-            // full-page response: fragment has a <body> wrapper — upgrade outerHTML to outerSync, strip for everything else
+            // full-page response: fragment has a <body> wrapper, so upgrade outerHTML to outerSync, strip for everything else
             if (fragment.firstElementChild?.tagName === 'BODY') {
                 if (swapStyle === 'outerHTML') swapStyle = 'outerSync';
                 else if (!swapStyle.startsWith('outer')) swapSpec.strip = true;
@@ -1839,7 +1839,7 @@ var htmx = (() => {
             } else if (['INPUT', 'SELECT', 'TEXTAREA', 'FIELDSET'].includes(tag) || !isGet) {
                 inputs = this.__queryEltAndDescendants(elt, '[name]:not(button)');
             }
-            // GET on non-form-control containers (div, etc.) sends nothing — use hx-include for explicit inclusion
+            // GET on non-form-control containers (div, etc.) sends nothing; use hx-include for explicit inclusion
 
             for (let input of inputs) {
                 let name = input.name || input.getAttribute?.('name');
@@ -2109,7 +2109,7 @@ var htmx = (() => {
         }
 
         __findBestMatch(ctx, node, startPoint, endPoint) {
-            // text nodes match positionally — patch in place via __morphNode, 3 = TEXT_NODE
+            // text nodes match positionally (patch in place via __morphNode), 3 = TEXT_NODE
             if (node.nodeType === 3) return startPoint?.nodeType === 3 ? startPoint : null;
             if (!(node instanceof Element)) return null;
             let softMatch = null, displaceMatchCount = 0, scanLimit = this.config.morphScanLimit;

@@ -14,7 +14,7 @@
         for (const attr of newNode.attributes) newElt.setAttribute(attr.name, attr.value)
         newElt.textContent = newNode.textContent
 
-        // stylesheet — await CSSOM or content will flash unstyled
+        // stylesheet: await CSSOM or content will flash unstyled
         if (newNode.tagName === "LINK" && newNode.rel === "stylesheet") {
             return new Promise(resolve => {
                 newElt.onload = resolve
@@ -23,7 +23,7 @@
             })
         }
 
-        // blocking external script (no async/defer) — must init before swap
+        // blocking external script (no async/defer): must init before swap
         if (newNode.tagName === "SCRIPT" && newNode.src && !newNode.async && !newNode.defer) {
             return new Promise((resolve, reject) => {
                 newElt.onload = resolve
@@ -32,7 +32,7 @@
             })
         }
 
-        // meta, title, base, preload/prefetch/icon links, async scripts — fire-and-forget
+        // meta, title, base, preload/prefetch/icon links, async scripts: fire-and-forget
         document.head.appendChild(newElt)
         if (newNode._preloadHint) newElt.addEventListener("load", () => newNode._preloadHint.remove(), {once: true})
         return null
@@ -111,7 +111,7 @@
                 // nodes to append to the head tag
                 nodesToAppend.push(...srcToNewHeadNodes.values())
 
-                // defer scripts need the swapped DOM to exist — split them out
+                // defer scripts need the swapped DOM to exist, so split them out
                 for (const newNode of nodesToAppend) {
                     if (newNode.tagName === "SCRIPT" && newNode.defer) {
                         deferred.push(newNode)
@@ -176,7 +176,7 @@
             if (detail.head) {
                 // mergeHead awaits stylesheets/blocking scripts, returns deferred scripts.
                 // Set detail.ready so history-cache awaits before swapping body.
-                // Stash deferred scripts on detail — history-cache copies them onto the swap ctx
+                // Stash deferred scripts on detail so history-cache copies them onto the swap ctx
                 // so htmx_after_swap picks them up.
                 detail.ready = mergeHead(detail.head, 'merge').then(deferred => {
                     detail._deferredHeadScripts = deferred;
