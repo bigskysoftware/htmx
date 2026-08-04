@@ -984,24 +984,26 @@ describe('hx-ws WebSocket extension', function() {
             assert.isTrue(closeFired);
         });
         
-        it('defaults to the htmx 2 reconnect codes', async function() {
+        it('uses transient close codes by default', async function() {
             createProcessedHTML('<div hx-ws:connect="/ws/test"></div>');
             await htmx.timeout(20);
 
             let connection = htmx.ext.ws.getRegistry().get('/ws/test');
-            assert.deepEqual(connection.config.reconnectCodes, [1006, 1011, 1012, 1013]);
+            assert.deepEqual(connection.config.reconnectCodes, [1001, 1005, 1006, 1011, 1012, 1013, 1014]);
         });
 
-        it('reconnects after an allowed close code', async function() {
-            htmx.config.ws = { reconnect: true, reconnectDelay: 50 };
+        it('reconnects after every default close code', async function() {
+            htmx.config.ws = { reconnectDelay: 5, reconnectJitter: 0 };
 
             createProcessedHTML('<div hx-ws:connect="/ws/test"></div>');
-            await htmx.timeout(50);
+            await htmx.timeout(20);
 
-            mockWebSocketInstances[0].close(1006);
-            await htmx.timeout(100);
-
-            assert.isTrue(mockWebSocketInstances.length > 1);
+            for (let code of [1001, 1005, 1006, 1011, 1012, 1013, 1014]) {
+                let count = mockWebSocketInstances.length;
+                mockWebSocketInstances[count - 1].close(code);
+                await htmx.timeout(20);
+                assert.equal(mockWebSocketInstances.length, count + 1, `close code ${code}`);
+            }
         });
 
         it('does not reconnect after a normal close', async function() {

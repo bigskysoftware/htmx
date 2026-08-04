@@ -692,14 +692,24 @@ Defaults to `true`.
 
 ### `ws.reconnectCodes`
 
-Choose which [WebSocket close codes](https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent/code) reconnect:
+Choose which WebSocket close codes reconnect:
 
 ```html
 <meta name="htmx-config"
-      content='{"ws":{"reconnectCodes":[1006,1011,1012,1013]}}'>
+      content='{"ws":{"reconnectCodes":[1001,1005,1006,1011,1012,1013,1014]}}'>
 ```
 
-Defaults to `[1006, 1011, 1012, 1013]`: abnormal closure, internal error, service restart, and try again later.
+Defaults to:
+
+- `1001`: Going Away
+- `1005`: No Status Received
+- `1006`: Abnormal Closure
+- `1011`: Internal Error
+- `1012`: Service Restart
+- `1013`: Try Again Later
+- `1014`: Bad Gateway
+
+See [MDN's close code descriptions](https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent/code#value) and the [IANA close code registry](https://www.iana.org/assignments/websocket/websocket.xml#close-code-number).
 
 ### `ws.reconnectDelay`
 

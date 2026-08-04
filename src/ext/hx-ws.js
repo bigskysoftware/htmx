@@ -19,7 +19,15 @@
 
         return {
             reconnect: true,
-            reconnectCodes: [1006, 1011, 1012, 1013],
+            reconnectCodes: [
+                1001, // Going Away
+                1005, // No Status Received
+                1006, // Abnormal Closure
+                1011, // Internal Error
+                1012, // Service Restart
+                1013, // Try Again Later
+                1014  // Bad Gateway
+            ],
             reconnectDelay: 500,
             reconnectMaxDelay: 60000,
             reconnectMaxAttempts: Infinity,
