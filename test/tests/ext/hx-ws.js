@@ -285,12 +285,12 @@ describe('hx-ws WebSocket extension', function() {
 
             let ws = mockWebSocketInstances[0];
             let connection = htmx.ext.ws.getRegistry().get('/ws/test');
-            assert.equal(connection.outgoingMessagesQueue.length, 1);
+            assert.equal(connection.queue.length, 1);
             assert.isUndefined(ws.lastSent);
 
             await htmx.timeout(30);
 
-            assert.equal(connection.outgoingMessagesQueue.length, 0);
+            assert.equal(connection.queue.length, 0);
             assert.equal(JSON.parse(ws.lastSent).test, 'load');
         });
 
@@ -316,7 +316,7 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(10);
 
             let connection = htmx.ext.ws.getRegistry().get('/ws/test');
-            assert.equal(connection.outgoingMessagesQueue.length, 2);
+            assert.equal(connection.queue.length, 2);
             assert.deepEqual(sentOrders, []);
 
             await htmx.timeout(70);
@@ -324,7 +324,7 @@ describe('hx-ws WebSocket extension', function() {
             let sent = mockWebSocketInstances[1].sentMessages.map(JSON.parse);
             assert.deepEqual(sent.map(message => message.order), ['first', 'second']);
             assert.deepEqual(sentOrders, ['first', 'second']);
-            assert.equal(connection.outgoingMessagesQueue.length, 0);
+            assert.equal(connection.queue.length, 0);
         });
 
         it('rejects messages when the outgoing queue is full', async function() {
@@ -350,7 +350,7 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(10);
 
             let connection = htmx.ext.ws.getRegistry().get('/ws/test');
-            assert.equal(connection.outgoingMessagesQueue.length, 1);
+            assert.equal(connection.queue.length, 1);
             assert.deepEqual(errors, ['Outgoing messages queue is full']);
 
             await htmx.timeout(70);

@@ -97,7 +97,7 @@
             attempt: 0,
             timer: null,
             pendingMessages: new Map(),
-            outgoingMessagesQueue: [],
+            queue: [],
             receiving: Promise.resolve(),
             sending: Promise.resolve(),
             abortController: null,
@@ -152,7 +152,7 @@
             connection.abortController.abort();
         }
         connection.pendingMessages.clear();
-        connection.outgoingMessagesQueue.length = 0;
+        connection.queue.length = 0;
         if (connection.socket) {
             try {
                 if (connection.socket.readyState === WebSocket.OPEN || connection.socket.readyState === WebSocket.CONNECTING) {
@@ -198,7 +198,7 @@
                     return;
                 }
                 connection.attempt = 0;
-                flushOutgoingMessagesQueue(connection);
+                flushQueue(connection);
             }, opts);
 
             connection.socket.addEventListener('message', (event) => {
@@ -303,7 +303,7 @@
             connection.abortController.abort();
         }
         connection.pendingMessages.clear();
-        connection.outgoingMessagesQueue.length = 0;
+        connection.queue.length = 0;
         api.triggerHtmxEvent(element, 'htmx:ws:close', {
             connection, reason: 'removed', code: null
         });
@@ -342,9 +342,9 @@
         }
     }
 
-    function flushOutgoingMessagesQueue(connection) {
-        while (connection.outgoingMessagesQueue.length && connection.socket?.readyState === WebSocket.OPEN) {
-            let queuedMessage = connection.outgoingMessagesQueue.shift();
+    function flushQueue(connection) {
+        while (connection.queue.length && connection.socket?.readyState === WebSocket.OPEN) {
+            let queuedMessage = connection.queue.shift();
             transmitMessage(connection, queuedMessage.element, queuedMessage.message);
         }
     }
@@ -434,13 +434,13 @@
 
                 if (connection.socket?.readyState === WebSocket.OPEN) {
                     transmitMessage(connection, element, message);
-                } else if (connection.outgoingMessagesQueue.length >= connection.config.maxOutgoingMessagesQueueSize) {
+                } else if (connection.queue.length >= connection.config.maxOutgoingMessagesQueueSize) {
                     api.triggerHtmxEvent(element, 'htmx:ws:error', {
                         url: normalizedUrl,
                         error: 'Outgoing messages queue is full'
                     });
                 } else {
-                    connection.outgoingMessagesQueue.push({element, message});
+                    connection.queue.push({element, message});
                 }
             } catch (error) {
                 api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error });
@@ -719,7 +719,7 @@
                             connection.socket.close();
                         }
                         connection.pendingMessages.clear();
-                        connection.outgoingMessagesQueue.length = 0;
+                        connection.queue.length = 0;
                     });
                 },
                 get: (key) => connections.get(normalizeWebSocketUrl(key)),

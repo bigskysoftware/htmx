@@ -343,6 +343,27 @@ Give `hx-ws:send` a URL to open a connection:
 
 Clicking the button opens `/actions` and sends `action=refresh` over that connection.
 
+##### Send During Reconnect
+
+A user can trigger messages while a connection is reconnecting:
+
+```html
+<div hx-ws:connect="/actions">
+  <button hx-ws:send name="action" value="save">Save</button>
+  <button hx-ws:send name="action" value="refresh">Refresh</button>
+</div>
+```
+
+If the user clicks **Save**, then **Refresh**, htmx sends both when the connection opens:
+
+```jsonc
+// First
+{ "headers": { /* ... */ }, "action": "save" }
+
+// Then
+{ "headers": { /* ... */ }, "action": "refresh" }
+```
+
 ##### Use Shared Connections
 
 Put several [`hx-ws:send`](#hx-wssend) elements inside one [`hx-ws:connect`](#hx-wsconnect):
@@ -753,7 +774,7 @@ Defaults to `0.3`, which randomizes each delay by up to ±30%. Use `0` for exact
 
 ### `ws.maxOutgoingMessagesQueueSize`
 
-Limit how many outgoing messages wait while a connection opens or reconnects.
+Limit how many [outgoing messages can wait during reconnect](#send-during-reconnect).
 
 ```html
 <meta name="htmx-config" content="ws.maxOutgoingMessagesQueueSize:20">
@@ -928,7 +949,6 @@ Code `1000` stops reconnecting by default. Messages created while a connection o
   HTTP(S) URLs are converted to their WebSocket equivalents.
 
 - Each connection processes incoming and outgoing messages in order. Incoming processing waits for each swap to finish.
-- Up to [`ws.maxOutgoingMessagesQueueSize`](#wsmaxoutgoingmessagesqueuesize) messages wait while a connection opens or reconnects. htmx sends them in order when it opens.
 - All WebSocket swaps use [`htmx.swap()`](/reference/methods/htmx-swap).
 - Use `hx-ws-connect` and `hx-ws-send` when colons are not supported, such as in JSX.
 
