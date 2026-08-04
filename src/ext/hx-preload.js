@@ -78,7 +78,7 @@
         htmx_before_request: (elt, detail) => {
             let {ctx} = detail;
             if (elt._htmx?.preload &&
-                elt._htmx.preload.action === ctx.request.action &&
+                elt._htmx.preload.action === new URL(ctx.request.action, location.href).href &&
                 Date.now() < elt._htmx.preload.expiresAt) {
                 let prefetch = elt._htmx.preload.prefetch;
                 ctx.fetch = () => prefetch;
