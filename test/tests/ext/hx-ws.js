@@ -862,6 +862,43 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(document.getElementById('content').textContent, 'Original');
         });
 
+        it('processes incoming messages in arrival order', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-target="#value">
+                    <div id="value">initial</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            let messageNumber = 0;
+            container.addEventListener('htmx:ws:before:message:incoming', (event) => {
+                if (++messageNumber === 1) event.detail.waitUntil(htmx.timeout(30));
+            });
+
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({ content: 'first' });
+            ws.simulateMessage({ content: 'second' });
+            await htmx.timeout(60);
+
+            assert.equal(document.getElementById('value').textContent, 'second');
+        });
+
+        it('waits for an incoming swap before processing the next message', async function() {
+            createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-target="#value">
+                    <div id="value">initial</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            let ws = mockWebSocketInstances[0];
+            ws.simulateMessage({ content: 'first', swap: 'innerHTML swap:30ms' });
+            ws.simulateMessage({ content: 'second' });
+            await htmx.timeout(60);
+
+            assert.equal(document.getElementById('value').textContent, 'second');
+        });
+
         it('swaps raw HTML into the connection element by default', async function() {
             let container = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test">Original</div>
@@ -1668,16 +1705,18 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(sent.custom, 'added');
         });
         
-        it('waits for outgoing message work before sending', async function() {
+        it('waits for async authorization before sending', async function() {
             let div = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test">
                     <button hx-ws:send hx-trigger="click">Send</button>
                 </div>
             `);
+            let resolveToken;
+            let token = new Promise(resolve => resolveToken = resolve);
 
             div.addEventListener('htmx:ws:before:message:outgoing', (event) => {
-                event.detail.waitUntil(htmx.timeout(20).then(() => {
-                    event.detail.message.values.delayed = true;
+                event.detail.waitUntil(token.then(value => {
+                    event.detail.message.headers.Authorization = `Bearer ${value}`;
                 }));
             });
 
@@ -1688,8 +1727,32 @@ describe('hx-ws WebSocket extension', function() {
             let ws = mockWebSocketInstances[0];
             assert.isUndefined(ws.lastSent);
 
-            await htmx.timeout(30);
-            assert.isTrue(JSON.parse(ws.lastSent).delayed);
+            resolveToken('abc123');
+            await htmx.timeout(10);
+            assert.equal(JSON.parse(ws.lastSent).headers.Authorization, 'Bearer abc123');
+        });
+
+        it('sends outgoing messages in trigger order', async function() {
+            let div = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test">
+                    <button hx-ws:send hx-trigger="click">Send</button>
+                </div>
+            `);
+            let messageNumber = 0;
+
+            div.addEventListener('htmx:ws:before:message:outgoing', (event) => {
+                event.detail.message.values.messageNumber = ++messageNumber;
+                if (messageNumber === 1) event.detail.waitUntil(htmx.timeout(30));
+            });
+
+            await htmx.timeout(50);
+            let button = div.querySelector('button');
+            button.click();
+            button.click();
+            await htmx.timeout(60);
+
+            let sent = mockWebSocketInstances[0].sentMessages.map(JSON.parse);
+            assert.deepEqual(sent.map(message => message.messageNumber), [1, 2]);
         });
 
         it('sends replacement WebSocket data', async function() {

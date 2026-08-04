@@ -917,6 +917,7 @@ Code `1000` stops reconnecting by default. Messages created while a connection o
 
   HTTP(S) URLs are converted to their WebSocket equivalents.
 
+- Each connection processes incoming and outgoing messages in order. Incoming processing waits for each swap to finish.
 - Messages sent before the connection opens or while it reconnects are queued and sent in order when it opens.
 - All WebSocket swaps use [`htmx.swap()`](/reference/methods/htmx-swap).
 - Use `hx-ws-connect` and `hx-ws-send` when colons are not supported, such as in JSX.

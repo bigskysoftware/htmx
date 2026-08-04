@@ -89,6 +89,8 @@
             timer: null,
             pendingMessages: new Map(),
             queue: [],
+            receiving: Promise.resolve(),
+            sending: Promise.resolve(),
             abortController: null,
             visibilityHandler: null,
             cancelled: false
@@ -191,10 +193,12 @@
             }, opts);
 
             connection.socket.addEventListener('message', (event) => {
-                handleMessage(connection, event).catch(error => {
-                    let elt = findConnectedElement(connection.url);
-                    if (elt) api.triggerHtmxEvent(elt, 'htmx:ws:error', { url: connection.url, error });
-                });
+                connection.receiving = connection.receiving
+                    .then(() => handleMessage(connection, event))
+                    .catch(error => {
+                        let elt = findConnectedElement(connection.url);
+                        if (elt) api.triggerHtmxEvent(elt, 'htmx:ws:error', { url: connection.url, error });
+                    });
             }, opts);
 
             connection.socket.addEventListener('close', (event) => {
@@ -391,42 +395,47 @@
 
         // Merge hx-vals after serialization to preserve JS types (numbers, booleans)
         let hxValsResult = api.getAttributeObject(element, 'hx-vals', obj => Object.assign(values, obj));
-        if (hxValsResult) await hxValsResult;
-        delete values.headers;
 
-        let pendingWork = [];
-        let message = {
-            headers,
-            values,
-            data: undefined
-        };
-        let detail = {
-            message,
-            cancelled: false,
-            waitUntil(promise) {
-                pendingWork.push(Promise.resolve(promise));
+        let outgoingMessage = connection.sending.then(async () => {
+            if (hxValsResult) await hxValsResult;
+            delete values.headers;
+
+            let pendingWork = [];
+            let message = {
+                headers,
+                values,
+                data: undefined
+            };
+            let detail = {
+                message,
+                cancelled: false,
+                waitUntil(promise) {
+                    pendingWork.push(Promise.resolve(promise));
+                }
+            };
+            let shouldSend = api.triggerHtmxEvent(element, 'htmx:ws:before:message:outgoing', detail);
+
+            try {
+                await Promise.all(pendingWork);
+                if (!shouldSend || detail.cancelled) return;
+
+                message.data ??= JSON.stringify({ ...message.values, headers: message.headers });
+                if (connections.get(normalizedUrl) !== connection) {
+                    api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error: 'Connection closed' });
+                    return;
+                }
+
+                if (connection.socket?.readyState === WebSocket.OPEN) {
+                    transmitMessage(connection, element, message);
+                } else {
+                    connection.queue.push({element, message});
+                }
+            } catch (error) {
+                api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error });
             }
-        };
-        let shouldSend = api.triggerHtmxEvent(element, 'htmx:ws:before:message:outgoing', detail);
-
-        try {
-            await Promise.all(pendingWork);
-            if (!shouldSend || detail.cancelled) return;
-
-            message.data ??= JSON.stringify({ ...message.values, headers: message.headers });
-            if (connections.get(normalizedUrl) !== connection) {
-                api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error: 'Connection closed' });
-                return;
-            }
-
-            if (connection.socket?.readyState === WebSocket.OPEN) {
-                transmitMessage(connection, element, message);
-            } else {
-                connection.queue.push({element, message});
-            }
-        } catch (error) {
-            api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error });
-        }
+        });
+        connection.sending = outgoingMessage.catch(() => {});
+        await outgoingMessage;
     }
     
     // ========================================
@@ -528,7 +537,7 @@
             let swap = json?.swap || api.attributeValue(element, 'hx-swap') || htmx.config.defaultSwap;
             if (!/(?:^|\s)swapEmpty(?::(?:true|false))?(?=\s|$)/.test(swap)) swap += ' swapEmpty:false';
 
-            htmx.swap({
+            await htmx.swap({
                 sourceElement: element,
                 target: target || element,
                 swap,
