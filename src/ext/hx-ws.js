@@ -33,6 +33,7 @@
             reconnectMaxAttempts: Infinity,
             reconnectJitter: 0.3,
             pauseOnBackground: true,
+            maxOutgoingMessagesQueueSize: 100,
             pendingMessageTTL: 30000,
             ...htmx.config.ws, // global defaults
             ...hxConfig // hx-config overrides
@@ -96,7 +97,7 @@
             attempt: 0,
             timer: null,
             pendingMessages: new Map(),
-            queue: [],
+            outgoingMessagesQueue: [],
             receiving: Promise.resolve(),
             sending: Promise.resolve(),
             abortController: null,
@@ -151,7 +152,7 @@
             connection.abortController.abort();
         }
         connection.pendingMessages.clear();
-        connection.queue.length = 0;
+        connection.outgoingMessagesQueue.length = 0;
         if (connection.socket) {
             try {
                 if (connection.socket.readyState === WebSocket.OPEN || connection.socket.readyState === WebSocket.CONNECTING) {
@@ -197,7 +198,7 @@
                     return;
                 }
                 connection.attempt = 0;
-                flushQueue(connection);
+                flushOutgoingMessagesQueue(connection);
             }, opts);
 
             connection.socket.addEventListener('message', (event) => {
@@ -302,7 +303,7 @@
             connection.abortController.abort();
         }
         connection.pendingMessages.clear();
-        connection.queue.length = 0;
+        connection.outgoingMessagesQueue.length = 0;
         api.triggerHtmxEvent(element, 'htmx:ws:close', {
             connection, reason: 'removed', code: null
         });
@@ -343,9 +344,9 @@
         }
     }
 
-    function flushQueue(connection) {
-        while (connection.queue.length && connection.socket?.readyState === WebSocket.OPEN) {
-            let queuedMessage = connection.queue.shift();
+    function flushOutgoingMessagesQueue(connection) {
+        while (connection.outgoingMessagesQueue.length && connection.socket?.readyState === WebSocket.OPEN) {
+            let queuedMessage = connection.outgoingMessagesQueue.shift();
             transmitMessage(connection, queuedMessage.element, queuedMessage.message);
         }
     }
@@ -435,8 +436,13 @@
 
                 if (connection.socket?.readyState === WebSocket.OPEN) {
                     transmitMessage(connection, element, message);
+                } else if (connection.outgoingMessagesQueue.length >= connection.config.maxOutgoingMessagesQueueSize) {
+                    api.triggerHtmxEvent(element, 'htmx:ws:error', {
+                        url: normalizedUrl,
+                        error: 'Outgoing messages queue is full'
+                    });
                 } else {
-                    connection.queue.push({element, message});
+                    connection.outgoingMessagesQueue.push({element, message});
                 }
             } catch (error) {
                 api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error });
@@ -715,7 +721,7 @@
                             connection.socket.close();
                         }
                         connection.pendingMessages.clear();
-                        connection.queue.length = 0;
+                        connection.outgoingMessagesQueue.length = 0;
                     });
                 },
                 get: (key) => connections.get(normalizeWebSocketUrl(key)),

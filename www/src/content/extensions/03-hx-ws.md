@@ -751,6 +751,16 @@ Spread reconnect attempts so many clients do not retry at once.
 
 Defaults to `0.3`, which randomizes each delay by up to ±30%. Use `0` for exact delays.
 
+### `ws.maxOutgoingMessagesQueueSize`
+
+Limit how many outgoing messages wait while a connection opens or reconnects.
+
+```html
+<meta name="htmx-config" content="ws.maxOutgoingMessagesQueueSize:20">
+```
+
+Defaults to `100`. Further messages fire `htmx:ws:error` and are not sent. Use `0` to disable queuing.
+
 ### `ws.pauseOnBackground`
 
 Close connections while the page is hidden and reconnect when it becomes visible.
@@ -928,7 +938,7 @@ Code `1000` stops reconnecting by default. Messages created while a connection o
   HTTP(S) URLs are converted to their WebSocket equivalents.
 
 - Each connection processes incoming and outgoing messages in order. Incoming processing waits for each swap to finish.
-- Messages sent before the connection opens or while it reconnects are queued and sent in order when it opens.
+- Up to [`ws.maxOutgoingMessagesQueueSize`](#wsmaxoutgoingmessagesqueuesize) messages wait while a connection opens or reconnects. htmx sends them in order when it opens.
 - All WebSocket swaps use [`htmx.swap()`](/reference/methods/htmx-swap).
 - Use `hx-ws-connect` and `hx-ws-send` when colons are not supported, such as in JSX.
 
