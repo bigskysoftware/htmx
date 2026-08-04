@@ -121,7 +121,6 @@ htmx.config.ws = {
     reconnectMaxAttempts: Infinity,// Max reconnect attempts
     reconnectJitter: 0.3,         // Jitter factor (0-1)
     pauseOnBackground: true,      // Pause connection when tab is backgrounded
-    pendingMessageTTL: 30000,     // Discard unmatched messages after this many ms
     protocols: null               // Optional WebSocket subprotocols
 };
 ```

@@ -771,16 +771,6 @@ Close connections while the page is hidden and reconnect when it becomes visible
 
 Defaults to `true`.
 
-### `ws.pendingMessageTTL`
-
-Set how long `hx-ws` remembers an outgoing message so an [incoming message can use its sender](#use-shared-connections).
-
-```html
-<meta name="htmx-config" content="ws.pendingMessageTTL:60000">
-```
-
-Defaults to `30000` milliseconds. After it expires, the incoming message uses the connection element.
-
 ### `ws.protocols`
 
 Set [WebSocket subprotocols](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket#protocols) for the handshake.
@@ -922,7 +912,7 @@ Code `1000` stops reconnecting by default. Messages created while a connection o
 | Beta | RC1 | Compatibility |
 |------|-----|---------------|
 | `htmx.config.websockets` | [`htmx.config.ws`](#config) | Removed |
-| `ws.pendingRequestTTL` | [`ws.pendingMessageTTL`](#wspendingmessagettl) | Removed |
+| `ws.pendingRequestTTL` | Removed | Removed |
 | `ws.reconnectJitter:true/false` | [`ws.reconnectJitter:0.3/0`](#wsreconnectjitter) | Removed |
 | `payload` | [`content`](#override-an-incoming-swap) | Works with a warning |
 

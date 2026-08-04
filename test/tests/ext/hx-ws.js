@@ -2445,8 +2445,6 @@ describe('hx-ws WebSocket extension', function() {
         });
 
         it('cleans up expired pending messages on message receive', async function() {
-            htmx.config.ws = { pendingMessageTTL: 50 };
-
             let container = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test">
                     <button hx-ws:send hx-trigger="click">Send</button>
@@ -2462,9 +2460,7 @@ describe('hx-ws WebSocket extension', function() {
             let registry = htmx.ext.ws.getRegistry();
             let conn = registry.get('/ws/test');
             assert.equal(conn.pendingMessages.size, 1, 'Should have 1 pending message');
-
-            // Wait for TTL to expire
-            await htmx.timeout(100);
+            conn.pendingMessages.values().next().value.timestamp -= 30001;
 
             // Receive any message — should trigger cleanup
             ws.simulateMessage({ type: 'ping' });

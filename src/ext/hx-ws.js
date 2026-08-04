@@ -1,4 +1,5 @@
 (() => {
+    const MESSAGE_ID_MAX_AGE = 30000;
     let api;
     
     // Build a CSS selector for querySelectorAll, respecting prefix + metaCharacter
@@ -34,7 +35,6 @@
             reconnectJitter: 0.3,
             pauseOnBackground: true,
             maxOutgoingMessagesQueueSize: 100,
-            pendingMessageTTL: 30000,
             ...htmx.config.ws, // global defaults
             ...hxConfig // hx-config overrides
         };
@@ -318,12 +318,10 @@
     // ========================================
     
     function cleanupExpiredMessages(connection) {
-        let config = connection.config;
         let now = Date.now();
-        let timeout = config.pendingMessageTTL || 30000;
 
         for (let [messageId, pending] of connection.pendingMessages) {
-            if (now - pending.timestamp > timeout) {
+            if (now - pending.timestamp > MESSAGE_ID_MAX_AGE) {
                 connection.pendingMessages.delete(messageId);
             }
         }
