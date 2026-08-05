@@ -26,6 +26,7 @@
         "@iconify-json/bitcoin-icons": "^1.2.5",
         "@iconify-json/cil": "^1.2.3",
         "@iconify-json/circum": "^1.2.2",
+        "@iconify-json/devicon": "^1.2.62",
         "@iconify-json/mdi": "^1.2.3",
         "@iconify-json/radix-icons": "^1.2.6",
         "@iconify-json/simple-icons": "^1.2.86",
@@ -132,6 +133,8 @@
     "@iconify-json/cil": ["@iconify-json/cil@1.2.3", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-byZH2wJeow6DO/+mYGwjlG5Gm2ZARJ1Rpr7Ryh4EcAFU0rH+AWoKbAUrBZMh1EU7jsVI4bKM95SLSsrWQ44sEw=="],
 
     "@iconify-json/circum": ["@iconify-json/circum@1.2.2", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-lIC4xg4p62SValfSiUnrcuLKYf2rpgDydlGu9V3PwO7rVfNB4P1gMgt/Hqs7M0ttDEBC6hSxxMlXDfQGNXmVqA=="],
+
+    "@iconify-json/devicon": ["@iconify-json/devicon@1.2.62", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-X0o0+fOJL2t5JTbDCGLRzrmvf8Pv5q8dr86+fW+F/VJ9qvXTtny6lqGIwjE9AY4VTLm3i8f/N+VtRheSW6OkEg=="],
 
     "@iconify-json/mdi": ["@iconify-json/mdi@1.2.3", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-O3cLwbDOK7NNDf2ihaQOH5F9JglnulNDFV7WprU2dSoZu3h3cWH//h74uQAB87brHmvFVxIOkuBX2sZSzYhScg=="],
 
