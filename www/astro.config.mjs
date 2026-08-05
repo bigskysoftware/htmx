@@ -6,6 +6,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeExternalLinks from "rehype-external-links";
 import {rehypeSections} from "./src/lib/rehype-sections.js";
 import {remarkCdnVersion} from "./src/lib/remark-cdn-version.js";
+import remarkCodeTabs from "./src/lib/remark-code-tabs.js";
 import {codeBlockTransformer, multipartHttpTransformer} from "./src/lib/shiki-transformers.js";
 import {readdirSync, readFileSync} from "node:fs";
 
@@ -86,6 +87,7 @@ export default defineConfig({
     markdown: {
         remarkPlugins: [
             [remarkCdnVersion, {version}],
+            remarkCodeTabs,
         ],
         rehypePlugins: [
             // Assign and collect heading ids before the plugins below run.
