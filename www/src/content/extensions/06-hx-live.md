@@ -649,6 +649,31 @@ this.dataset.count
 q('#cart').dataset.count
 ```
 
+#### Assign a Function
+
+Assign a function when the next value depends on the current value:
+
+```html
+<section data-cart='[{"id":"1"}]'>
+    <button value="2" hx-on:click="
+        data.cart = cart => [...cart, { id: this.value }]
+    ">
+        Add
+    </button>
+</section>
+```
+
+```text
+[{"id":"1"}]  →  [{"id":"1"},{"id":"2"}]
+```
+
+The function must return a value synchronously. It also works with DOM properties and `attr.*`:
+
+```js
+q('#panel').hidden = hidden => !hidden
+attr.hidden = hidden => !hidden
+```
+
 Because `:<attr>` works on `data-*`, you can also store derived values in the DOM:
 
 ```html

@@ -120,8 +120,8 @@
             return raw;
         }
 
-        let value = rest[0];
         for (let e of elts) {
+            let value = maybeCall(rest[0], applyAttr([e], name));
             let attrName = normalizeAttrName(e, name);
             let isAria = attrName.startsWith('aria-');
             if (isAria) {
@@ -212,6 +212,18 @@
         return s.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
     }
 
+    function maybeCall(value, current) {
+        if (typeof value !== 'function') return value;
+        let next = value(current);
+        if (typeof next?.then === 'function') throw new TypeError('assigned function must return a value, not a promise');
+        return next;
+    }
+
+    function readData(elt, prop) {
+        let raw = elt.dataset[prop];
+        try { return JSON.parse(raw); } catch { return raw; }
+    }
+
     let booleanAria = new Set([
         'atomic',
         'busy',
@@ -288,7 +300,9 @@
             },
             set: (_, name, value) => {
                 if (typeof name !== 'string') return false;
-                write(name, value);
+                for (let e of elts) {
+                    writeClass(e, name, maybeCall(value, e.classList.contains(name)));
+                }
                 return true;
             },
             deleteProperty: (_, name) => {
@@ -391,14 +405,15 @@
                 let kebab = camelToKebab(prop);
                 let ancestor = elts[0] && findOwner(elts[0], kebab);
                 if (!ancestor) return undefined;
-                let raw = ancestor.dataset[prop];
-                try { return JSON.parse(raw); } catch { return raw; }
+                return readData(ancestor, prop);
             },
             set: (_, prop, val) => {
                 if (typeof prop !== 'string') return false;
                 let kebab = camelToKebab(prop);
                 let name = 'data-' + kebab;
-                eachTarget(elts, elt => findOwner(elt, kebab), true, elt => writeData(elt, name, val));
+                eachTarget(elts, elt => findOwner(elt, kebab), true, elt => {
+                    writeData(elt, name, maybeCall(val, readData(elt, prop)));
+                });
                 return true;
             },
             deleteProperty: (_, prop) => {
@@ -701,8 +716,12 @@
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));
                 return v;
             },
-            set: (_, p, v) => {
-                elts.forEach(e => e[p] = v);
+            set: (_, prop, value) => {
+                elts.forEach(elt => {
+                    let current = elt[prop];
+                    if (current == null || typeof current === 'function') elt[prop] = value;
+                    else elt[prop] = maybeCall(value, current);
+                });
                 schedule();
                 return true;
             }

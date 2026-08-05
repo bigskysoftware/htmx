@@ -2314,6 +2314,90 @@ describe('hx-live extension', function () {
         section.dataset.counter.should.equal('2');
     });
 
+    it('functional data assignment updates a selected owner', function() {
+        playground().innerHTML = `
+            <section data-cart='[{"id":"1"}]'>
+                <div>
+                    <button value="2" hx-on:click="
+                        q('closest [data-cart]').data.cart = cart =>
+                            [...cart, { id: this.value }]
+                    ">Add</button>
+                </div>
+            </section>
+        `;
+        htmx.process(playground());
+        playground().querySelector('button').click();
+        JSON.parse(playground().querySelector('section').dataset.cart).should.deep.equal([
+            { id: '1' },
+            { id: '2' }
+        ]);
+    });
+
+    it('functional data assignment can initialize a missing value', function() {
+        playground().innerHTML = '<button id="item"></button>';
+        let button = playground().querySelector('button');
+        htmx.live.q(button).data.items = items => [...(items || []), 'one'];
+        button.dataset.items.should.equal('["one"]');
+    });
+
+    it('functional data assignment runs once and leaves the value when it throws', function() {
+        playground().innerHTML = '<div id="state" data-count="1"></div>';
+        let data = htmx.live.q('#state').data;
+        let calls = 0;
+        data.count = count => { calls++; return count + 1; };
+        calls.should.equal(1);
+        data.count.should.equal(2);
+
+        let fail = () => { throw new Error('no update'); };
+        assert.throws(() => { data.count = fail; }, 'no update');
+        data.count.should.equal(2);
+
+        assert.throws(() => { data.count = async count => count + 1; }, 'assigned function must return a value, not a promise');
+        data.count.should.equal(2);
+    });
+
+    it('functional property assignment via q() updates a DOM property', function() {
+        playground().innerHTML = '<div id="panel" hidden></div>';
+        let q = htmx.live.q('#panel');
+        q.hidden = hidden => !hidden;
+        playground().querySelector('#panel').hidden.should.equal(false);
+    });
+
+    it('functional property assignment passes the current typed value', function() {
+        playground().innerHTML = '<input id="name" value="hello">';
+        let q = htmx.live.q('#name');
+        let seen;
+        q.value = v => { seen = v; return v + ' world'; };
+        seen.should.equal('hello');
+        playground().querySelector('#name').value.should.equal('hello world');
+    });
+
+    it('q() property setter stores an on* handler as a literal function', function() {
+        playground().innerHTML = '<button id="btn"></button>';
+        let handler = () => 42;
+        htmx.live.q('#btn').onclick = handler;
+        playground().querySelector('#btn').onclick.should.equal(handler);
+    });
+
+    it('functional attr assignment via applyAttr updates an attribute', function() {
+        playground().innerHTML = '<div id="box" hidden></div>';
+        htmx.live.attr('#box', 'hidden', hidden => !hidden);
+        playground().querySelector('#box').hasAttribute('hidden').should.equal(false);
+    });
+
+    it('functional attr assignment reads the current typed value', function() {
+        playground().innerHTML = '<div id="box" hidden></div>';
+        let seen;
+        htmx.live.attr('#box', 'hidden', h => { seen = h; return h; });
+        seen.should.equal(true);
+    });
+
+    it('functional class assignment toggles correctly', function() {
+        playground().innerHTML = '<div id="box" class="on"></div>';
+        htmx.live.q('#box').class.on = on => !on;
+        playground().querySelector('#box').classList.contains('on').should.equal(false);
+    });
+
     it('data.foo = "x" writes to this when no ancestor has data-foo', async function() {
         playground().innerHTML = `
             <button id="me" hx-on:click="closest.data.fresh = 'created'">x</button>
@@ -3131,6 +3215,55 @@ describe('hx-live extension', function () {
             let delta = window.__morphMultiCount - baseline;
             assert.isAtMost(delta, 2, 'should not accumulate duplicate fns across morph cycles');
             delete window.__morphMultiCount;
+        });
+
+    });
+
+    // -------------------------------------------------------------------------
+    // q() property setter. Never assert against a function value directly: the
+    // test runner cannot serialize a function in a failure message and the
+    // session hangs. Compare identity as a boolean instead.
+    // -------------------------------------------------------------------------
+
+    describe('q() property setter', function() {
+
+        it('q() setter stores a function on a property that already holds one', function() {
+            playground().innerHTML = '<div id="grid"></div>';
+            let grid = playground().querySelector('#grid');
+            grid.rowRenderer = () => 'old';
+            let next = () => 'new';
+            htmx.live.q('#grid').rowRenderer = next;
+            (grid.rowRenderer === next).should.equal(true, 'stored the function, not its return value');
+        });
+
+        it('q() setter stores a function on an unset custom property', function() {
+            playground().innerHTML = '<div id="grid"></div>';
+            let grid = playground().querySelector('#grid');
+            let fn = () => 'cell';
+            htmx.live.q('#grid').renderCell = fn;
+            (grid.renderCell === fn).should.equal(true, 'stored the function, not its return value');
+        });
+
+        it('writing .value leaves defaultValue intact for dirty tracking', function() {
+            playground().innerHTML = '<input id="i" value="original">';
+            let input = playground().querySelector('#i');
+            htmx.live.q('#i').value = 'edited';
+            input.value.should.equal('edited');
+            input.defaultValue.should.equal('original');
+        });
+
+        it('morph preserves a JS-written value when the server attribute is unchanged', async function() {
+            playground().innerHTML = '<div id="wrap"><input id="i" value="a"></div>';
+            htmx.process(playground());
+            htmx.live.q('#i').value = 'typed by user';
+            await htmx.swap({
+                target: '#wrap',
+                text: '<div id="wrap"><input id="i" value="a"></div>',
+                swap: 'outerMorph',
+                sourceElement: playground()
+            });
+            await htmx.timeout(5);
+            playground().querySelector('#i').value.should.equal('typed by user');
         });
 
     });
