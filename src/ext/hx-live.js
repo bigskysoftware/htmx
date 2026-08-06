@@ -232,16 +232,13 @@
         'relevant'
     ]);
 
-    function makeAriaProxy(elt, cascades = true) {
-        let findOwner = name => cascades
-            ? elt.closest('[' + name + ']')
-            : elt.hasAttribute(name) ? elt : null;
+    function makeAriaProxy(elt) {
         return new Proxy({}, {
             get: (_, prop) => {
                 if (typeof prop !== 'string') return undefined;
                 let key = prop.toLowerCase();
                 let name = 'aria-' + key;
-                let value = findOwner(name)?.getAttribute(name);
+                let value = elt.hasAttribute(name) ? elt.getAttribute(name) : undefined;
                 if (booleanAria.has(key) && (value === 'true' || value === 'false')) return value === 'true';
                 let number = Number(value);
                 let validNumber = numberAria.has(key) || (integerAria.has(key) && Number.isInteger(number));
@@ -253,15 +250,13 @@
                 if (typeof prop !== 'string') return false;
                 let key = prop.toLowerCase();
                 let name = 'aria-' + key;
-                let target = findOwner(name) || elt;
-                if (value == null) target.removeAttribute(name);
-                else target.setAttribute(name, listAria.has(key) && Array.isArray(value) ? value.join(' ') : String(value));
+                if (value == null) elt.removeAttribute(name);
+                else elt.setAttribute(name, listAria.has(key) && Array.isArray(value) ? value.join(' ') : String(value));
                 return true;
             },
             deleteProperty: (_, prop) => {
                 if (typeof prop !== 'string') return false;
-                let name = 'aria-' + prop.toLowerCase();
-                findOwner(name)?.removeAttribute(name);
+                elt.removeAttribute('aria-' + prop.toLowerCase());
                 return true;
             }
         });
@@ -545,7 +540,7 @@
                 };
                 if (p === 'data') return elts[0] ? makeDataProxy(elts[0]) : undefined;
                 if (arrayMethods.has(p)) return elts[p].bind(elts);
-                if (p === 'aria') return elts[0] ? makeAriaProxy(elts[0], false) : undefined;
+                if (p === 'aria') return elts[0] ? makeAriaProxy(elts[0]) : undefined;
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));

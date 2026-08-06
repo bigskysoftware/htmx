@@ -278,31 +278,33 @@ take('.active')                        // implicit scope: parent element's subtr
 
 ### `aria`
 
-Read and write ARIA attributes on this element or an ancestor:
+Read and write ARIA attributes on this element:
 
 ```html
-<div aria-busy="false">
-    <button hx-on:click="aria.busy = !aria.busy">Toggle</button>
-    <output :hidden="!aria.busy">Busy</output>
-</div>
+<button aria-pressed="false" hx-on:click="aria.pressed = !aria.pressed">Like</button>
 ```
 
-Both `aria.busy` expressions use `aria-busy` on the div. If no element has the attribute, a write adds it to the current element:
+Writing an attribute the element doesn't have yet adds it:
 
 ```html
 <!-- This... -->
-<button hx-on:click="aria.pressed = true">Like</button>
+<button hx-on:click="aria.busy = true">Load</button>
 
 <!-- ...becomes this after click -->
-<button hx-on:click="aria.pressed = true" aria-pressed="true">Like</button>
+<button hx-on:click="aria.busy = true" aria-busy="true">Load</button>
 ```
 
-Use bare `aria` for shared state. Use `q()` for one element:
+Use `q()` to reach another element:
 
 ```js
-aria.busy            // closest aria-busy, starting at this
-q(this).aria.busy    // aria-busy on this
+aria.busy            // aria-busy on this element
 q('#form').aria.busy // aria-busy on the selected form
+```
+
+Shared state on an ancestor is a query away:
+
+```js
+q('closest [aria-busy]').aria.busy
 ```
 
 Each form uses the same value rules. You can use these values as booleans, numbers, and arrays:

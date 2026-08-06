@@ -1313,13 +1313,10 @@ describe('hx-live extension', function () {
     // cascading ARIA proxy
     // -------------------------------------------------------------------------
 
-    it('aria.foo reacts to the closest ARIA state', async function() {
+    it('aria.foo drives a binding on the same element', async function() {
         playground().innerHTML = `
-            <section aria-busy="true">
-                <form aria-busy="false">
-                    <button :disabled="aria.busy" hx-on:click="aria.busy = !aria.busy">Save</button>
-                </form>
-            </section>
+            <button aria-busy="false" :disabled="aria.busy"
+                    hx-on:click="aria.busy = !aria.busy">Save</button>
         `;
         htmx.process(playground());
         let button = playground().querySelector('button');
@@ -1327,8 +1324,18 @@ describe('hx-live extension', function () {
         button.click();
         await htmx.timeout(5);
         button.disabled.should.equal(true);
-        playground().querySelector('form').getAttribute('aria-busy').should.equal('true');
-        playground().querySelector('section').getAttribute('aria-busy').should.equal('true');
+        button.getAttribute('aria-busy').should.equal('true');
+    });
+
+    it('q("closest [aria-*]") shares ARIA state with an ancestor', function() {
+        playground().innerHTML = `
+            <section aria-busy="true">
+                <button hx-on:click="q('closest [aria-busy]').aria.busy = false">go</button>
+            </section>
+        `;
+        htmx.process(playground());
+        playground().querySelector('button').click();
+        playground().querySelector('section').getAttribute('aria-busy').should.equal('false');
     });
 
     it('q().aria uses only its first match', function() {
@@ -1487,43 +1494,35 @@ describe('hx-live extension', function () {
         aria.owns.should.deep.equal(['item-3', 'item-4']);
     });
 
-    it('writes missing ARIA attributes on this and deletes the closest match', function() {
+    it('writes, adds, and deletes ARIA attributes on this element', function() {
         playground().innerHTML = `
-            <div aria-valuenow="50" aria-current="page">
-                <button hx-on:click="
-                    aria.valueNow = 51;
-                    aria.label = 'Save';
-                    delete aria.current
-                ">change</button>
-            </div>
+            <button aria-valuenow="50" aria-current="page" hx-on:click="
+                aria.valueNow = 51;
+                aria.label = 'Save';
+                delete aria.current
+            ">change</button>
         `;
         htmx.process(playground());
         let button = playground().querySelector('button');
         button.click();
-        playground().querySelector('div').getAttribute('aria-valuenow').should.equal('51');
-        playground().querySelector('div').hasAttribute('aria-current').should.equal(false);
+        button.getAttribute('aria-valuenow').should.equal('51');
+        button.hasAttribute('aria-current').should.equal(false);
         button.getAttribute('aria-label').should.equal('Save');
     });
 
-    it('q(this).aria only accesses the current element', function() {
+    it('q(this).aria and bare aria are the same proxy target', function() {
         playground().innerHTML = `
-            <section aria-busy="true">
-                <button type="button" hx-on:click="
-                    window.__localState = [q(this).aria.busy, aria.busy];
-                    q(this).aria.busy = false;
-                    window.__localAfter = q(this).aria.busy
-                ">change</button>
-            </section>
+            <button type="button" aria-busy="true" hx-on:click="
+                q(this).aria.busy = false;
+                window.__ariaPair = [q(this).aria.busy, aria.busy]
+            ">change</button>
         `;
         htmx.process(playground());
         let button = playground().querySelector('button');
         button.click();
-        window.__localState.should.deep.equal([undefined, true]);
-        window.__localAfter.should.equal(false);
+        window.__ariaPair.should.deep.equal([false, false]);
         button.getAttribute('aria-busy').should.equal('false');
-        playground().querySelector('section').getAttribute('aria-busy').should.equal('true');
-        delete window.__localState;
-        delete window.__localAfter;
+        delete window.__ariaPair;
     });
 
     it('q(this).aria preserves application element properties after await', async function() {
