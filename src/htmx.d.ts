@@ -613,6 +613,13 @@ export interface Htmx {
    */
   onLoad(callback: (elt: Element) => void): void;
   /**
+   * Sets up history handling and processes `document.body`.
+   * Called automatically on `DOMContentLoaded` (or next tick if the document is already loaded).
+   * Safe to call multiple times — history listeners are only registered once.
+   * Call manually when loading htmx asynchronously or after a streaming response delivers the full page.
+   */
+  initialize(): void;
+  /**
    * Initialize htmx attributes on `root` and all its descendants.
    * When `force` is `true`, tears down and re-initializes already-processed elements —
    * use this after manually mutating `hx-*` attributes on a live element.

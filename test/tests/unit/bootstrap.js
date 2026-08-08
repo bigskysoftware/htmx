@@ -192,6 +192,7 @@ describe('bootstrap unit tests', function() {
             'ajax',
             'find',
             'findAll',
+            'initialize',
             'on',
             'onLoad',
             'parseInterval',
