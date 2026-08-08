@@ -419,6 +419,46 @@ var htmx = (function() {
   }
 
   /**
+   * Checks whether an attribute name appears in the space separated list of an
+   * hx- attribute ('*' matches all attributes)
+   *
+   * @param {string} attributeName the attribute name to check for
+   * @param {string|null} attributeList the space separated list of attribute names, or '*'
+   * @returns {boolean}
+   */
+  function isAttributeInList(attributeName, attributeList) {
+    return !!attributeList && (attributeList === '*' || attributeList.split(' ').indexOf(attributeName) >= 0)
+  }
+
+  /**
+   * Check for and respect disinheritance in getAttributeValue
+   *
+   * @param {Element} initialElement
+   * @param {Element} ancestor
+   * @param {string} attributeName
+   * @returns {string|null}
+   */
+  function getAttributeValueWithDisinheritance(initialElement, ancestor, attributeName) {
+    const attributeValue = getAttributeValue(ancestor, attributeName)
+    // the element's own attribute is always applied; disinheritance only affects inherited values
+    if (initialElement === ancestor) {
+      return attributeValue
+    }
+    const inherit = getAttributeValue(ancestor, 'hx-inherit')
+    const disinherit = getAttributeValue(ancestor, 'hx-disinherit')
+
+    // when inheritance is globally disabled, only attributes re-enabled via hx-inherit are inherited
+    if (htmx.config.disableInheritance) {
+      return isAttributeInList(attributeName, inherit) ? attributeValue : null
+    }
+    // hx-disinherit stops inheritance of this attribute from this element upwards
+    if (isAttributeInList(attributeName, disinherit)) {
+      return 'unset'
+    }
+    return attributeValue
+  }
+
+  /**
    * @param {Node} elt
    * @returns {Node | null}
    */
@@ -455,31 +495,6 @@ var htmx = (function() {
     }
 
     return elt || null
-  }
-
-  /**
-   * @param {Element} initialElement
-   * @param {Element} ancestor
-   * @param {string} attributeName
-   * @returns {string|null}
-   */
-  function getAttributeValueWithDisinheritance(initialElement, ancestor, attributeName) {
-    const attributeValue = getAttributeValue(ancestor, attributeName)
-    const disinherit = getAttributeValue(ancestor, 'hx-disinherit')
-    var inherit = getAttributeValue(ancestor, 'hx-inherit')
-    if (initialElement !== ancestor) {
-      if (htmx.config.disableInheritance) {
-        if (inherit && (inherit === '*' || inherit.split(' ').indexOf(attributeName) >= 0)) {
-          return attributeValue
-        } else {
-          return null
-        }
-      }
-      if (disinherit && (disinherit === '*' || disinherit.split(' ').indexOf(attributeName) >= 0)) {
-        return 'unset'
-      }
-    }
-    return attributeValue
   }
 
   /**
@@ -3912,22 +3927,24 @@ var htmx = (function() {
  * @param {boolean=} evalAsDefault
  * @param {Object=} values
  * @param {Event=} event
+ * @param {Element=} initialElement
  * @returns {Object}
  */
-  function getValuesForElement(elt, attr, evalAsDefault, values, event) {
+  function getValuesForElement(elt, attr, evalAsDefault, values, event, initialElement) {
     if (values == null) {
       values = {}
     }
     if (elt == null) {
       return values
     }
-    const attributeValue = getAttributeValue(elt, attr)
+    const initialElt = initialElement || elt
+    const attributeValue = getAttributeValueWithDisinheritance(initialElt, elt, attr)
+    if (attributeValue && attributeValue.trim() === 'unset') {
+      return values
+    }
     if (attributeValue) {
       let str = attributeValue.trim()
       let evaluateValue = evalAsDefault
-      if (str === 'unset') {
-        return null
-      }
       if (str.indexOf('javascript:') === 0) {
         str = str.slice(11)
         evaluateValue = true
@@ -3958,7 +3975,7 @@ var htmx = (function() {
         }
       }
     }
-    return getValuesForElement(asElement(parentElt(elt)), attr, evalAsDefault, values, event)
+    return getValuesForElement(asElement(parentElt(elt)), attr, evalAsDefault, values, event, initialElt)
   }
 
   /**
