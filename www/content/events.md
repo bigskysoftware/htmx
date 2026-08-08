@@ -282,7 +282,7 @@ You can also override the details of the history restoration request in this eve
 This event is triggered when a cache miss occurs when restoring history
 
 You can prevent the history restoration via `preventDefault()` to allow alternative restore handling.
-You can also modify the xhr request or other details before it makes the the request to restore history
+You can also modify the xhr request or other details before it makes the request to restore history
 
 ##### Details
 
