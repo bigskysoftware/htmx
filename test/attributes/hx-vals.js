@@ -376,4 +376,131 @@ describe('hx-vals attribute', function() {
     this.server.respond()
     div.innerHTML.should.equal('Clicked!')
   })
+  it('hx-vals can be disinherited from parent', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.should.be.empty
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make("<div hx-vals='\"i1\":\"test\"' hx-disinherit='hx-vals'><div id='d1' hx-post='/vars'></div></div>")
+    var div = byId('d1')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('hx-vals can be disinherited by an intermediate ancestor', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.should.be.empty
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make(
+      "<div hx-vals='\"i1\":\"test\"'>\
+                <div hx-disinherit='hx-vals'>\
+                  <div id='d1' hx-post='/vars'></div>\
+                </div>\
+              </div>"
+    )
+    var div = byId('d1')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('hx-vals can be disinherited with asterisk', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.should.be.empty
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make("<div hx-vals='\"i1\":\"test\"' hx-disinherit='*'><div id='d1' hx-post='/vars'></div></div>")
+    var div = byId('d1')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('hx-vals can be disinherited but own value is used', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.size.should.equal('small')
+      should.not.exist(params.color)
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make("<form hx-vals='\"size\":\"large\",\"color\":\"blue\"' hx-disinherit='hx-vals'>\
+            <button id='d1' hx-vals='\"size\":\"small\"' hx-post='/vars'>Click Me!</button>\
+          </form>")
+    var btn = byId('d1')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('hx-vals disinheritance keeps values of intermediate ancestors', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.inner.should.equal('2')
+      should.not.exist(params.outer)
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make("<div hx-vals='\"outer\":\"1\"' hx-disinherit='hx-vals'>\
+            <div hx-vals='\"inner\":\"2\"'>\
+              <button id='d1' hx-post='/vars'>Click Me!</button>\
+            </div>\
+          </div>")
+    var btn = byId('d1')
+    btn.click()
+    this.server.respond()
+    btn.innerHTML.should.equal('Clicked!')
+  })
+
+  it('hx-vals can be disinherited from parent with javascript', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var params = getParameters(xhr)
+      params.should.be.empty
+      xhr.respond(200, {}, 'Clicked!')
+    })
+    make("<div hx-vals=\"javascript:i1:'test'\" hx-disinherit='hx-vals'><div id='d1' hx-post='/vars'></div></div>")
+    var div = byId('d1')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('hx-vals is not inherited when disableInheritance is set', function() {
+    try {
+      htmx.config.disableInheritance = true
+      this.server.respondWith('POST', '/vars', function(xhr) {
+        var params = getParameters(xhr)
+        params.should.be.empty
+        xhr.respond(200, {}, 'Clicked!')
+      })
+      make("<div hx-vals='\"i1\":\"test\"'><div id='d1' hx-post='/vars'></div></div>")
+      var div = byId('d1')
+      div.click()
+      this.server.respond()
+      div.innerHTML.should.equal('Clicked!')
+    } finally {
+      htmx.config.disableInheritance = false
+    }
+  })
+
+  it('hx-vals can be inherited when disableInheritance is set and hx-inherit is used', function() {
+    try {
+      htmx.config.disableInheritance = true
+      this.server.respondWith('POST', '/vars', function(xhr) {
+        var params = getParameters(xhr)
+        params.i1.should.equal('test')
+        xhr.respond(200, {}, 'Clicked!')
+      })
+      make("<div hx-vals='\"i1\":\"test\"' hx-inherit='hx-vals'><div id='d1' hx-post='/vars'></div></div>")
+      var div = byId('d1')
+      div.click()
+      this.server.respond()
+      div.innerHTML.should.equal('Clicked!')
+    } finally {
+      htmx.config.disableInheritance = false
+    }
+  })
 })
