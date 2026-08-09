@@ -9,13 +9,13 @@
 
     let api;
 
-    function insertOptimisticContent(ctx) {
-        ctx.optimistic = api.attributeValue(ctx.sourceElement, "hx-optimistic");
-        if (!ctx.optimistic) {
+    function insertPendingContent(ctx) {
+        ctx.pending = api.attributeValue(ctx.sourceElement, "hx-pending");
+        if (!ctx.pending) {
             return
         }
 
-        let sourceElt = document.querySelector(ctx.optimistic);
+        let sourceElt = document.querySelector(ctx.pending);
         if (!sourceElt) return;
 
         let target = ctx.target;
@@ -25,78 +25,78 @@
         }
         if (!target) return;
 
-        // Create optimistic div with reset styling
-        let optimisticDiv = document.createElement('div');
-        optimisticDiv.style.cssText = 'all: initial';
-        optimisticDiv.classList.add('hx-optimistic');
+        // Create pending div with reset styling
+        let pendingDiv = document.createElement('div');
+        pendingDiv.style.cssText = 'all: initial';
+        pendingDiv.classList.add('hx-pending');
         let sourceNodes = sourceElt instanceof HTMLTemplateElement ? sourceElt.content.childNodes : sourceElt.childNodes;
-        for (let child of sourceNodes) optimisticDiv.appendChild(child.cloneNode(true));
+        for (let child of sourceNodes) pendingDiv.appendChild(child.cloneNode(true));
 
         // Set data-* for each request param
-        if (ctx.optimisticBody) {
-            let keys = new Set(ctx.optimisticBody.keys());
+        if (ctx.pendingBody) {
+            let keys = new Set(ctx.pendingBody.keys());
             for (let k of keys) {
-                let values = ctx.optimisticBody.getAll(k).filter(v => typeof v === 'string');
+                let values = ctx.pendingBody.getAll(k).filter(v => typeof v === 'string');
                 if (!values.length) continue;
                 let val = values.length === 1 ? values[0] : JSON.stringify(values);
                 try {
-                    optimisticDiv.dataset[k] = val;
+                    pendingDiv.dataset[k] = val;
                 } catch (e) {
                     try {
-                        optimisticDiv.setAttribute('data-' + k, val);
+                        pendingDiv.setAttribute('data-' + k, val);
                     } catch (e2) { /* truly invalid name, skip */ }
                 }
             }
         }
 
         let swapStyle = normalizeSwapStyle(ctx.swap);
-        ctx.optHidden = [];
+        ctx.pendingHidden = [];
 
         if (swapStyle === 'innerHTML') {
             // Hide children of target
             for (let child of target.children) {
                 child.style.display = 'none';
-                ctx.optHidden.push(child);
+                ctx.pendingHidden.push(child);
             }
-            target.appendChild(optimisticDiv);
+            target.appendChild(pendingDiv);
         } else if (['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(swapStyle)) {
-            target.insertAdjacentElement(swapStyle, optimisticDiv);
+            target.insertAdjacentElement(swapStyle, pendingDiv);
         } else {
             // Assume outerHTML-like behavior, Hide target and insert div after it
             target.style.display = 'none';
-            ctx.optHidden.push(target);
-            target.after(optimisticDiv);
+            ctx.pendingHidden.push(target);
+            target.after(pendingDiv);
         }
-        ctx.optimisticDiv = optimisticDiv;
-        htmx.process(optimisticDiv);
+        ctx.pendingDiv = pendingDiv;
+        htmx.process(pendingDiv);
     }
 
-    function removeOptimisticContent(ctx) {
-        if (!ctx.optimisticDiv) return;
+    function removePendingContent(ctx) {
+        if (!ctx.pendingDiv) return;
 
-        // Remove optimistic div
-        ctx.optimisticDiv.remove();
+        // Remove pending div
+        ctx.pendingDiv.remove();
 
         // Unhide any hidden elements
-        for (let elt of ctx.optHidden) {
+        for (let elt of ctx.pendingHidden) {
             elt.style.display = '';
         }
     }
 
-    htmx.registerExtension('hx-optimistic', {
+    htmx.registerExtension('hx-pending', {
         init: (internalAPI) => { api = internalAPI; },
         htmx_config_request: (elt, detail) => {
             let body = detail.ctx.request.body;
-            if (body?.entries) detail.ctx.optimisticBody = body;
+            if (body?.entries) detail.ctx.pendingBody = body;
         },
         htmx_before_request: (elt, detail) => {
-            insertOptimisticContent(detail.ctx);
+            insertPendingContent(detail.ctx);
         },
         htmx_error : (elt, detail) => {
-            removeOptimisticContent(detail.ctx)
+            removePendingContent(detail.ctx)
         },
         htmx_before_swap : (elt, detail) => {
-            removeOptimisticContent(detail.ctx)
+            removePendingContent(detail.ctx)
         }
     });
 })();
