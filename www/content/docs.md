@@ -824,6 +824,19 @@ Other patterns can be adapted similarly to achieve the progressive enhancement n
 As you can see, this requires more thought and more work.  It also rules some functionality entirely out of bounds.
 These tradeoffs must be made by you, the developer, with respect to your projects goals and audience.
 
+
+The `HX-Request` header is automatically included by htmx requests. 
+Servers can use this header to determine whether a request was initiated by htmx and decide whether to return a full page or only a partial HTML fragment.
+
+For example:
+
+```javascript
+if (request.headers["HX-Request"]) {
+    // Return HTML fragment for an htmx request
+} else {
+    // Return complete page for a normal request
+}
+
 [Accessibility](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/What_is_accessibility) is a concept
 closely related to progressive enhancement.  Using progressive enhancement techniques such as `hx-boost` will make your
 htmx application more accessible to a wide array of users.
