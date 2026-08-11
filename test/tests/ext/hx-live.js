@@ -1484,31 +1484,61 @@ describe('hx-live extension', function () {
         playground().querySelector('.x').hasAttribute('role').should.equal(false);
     });
 
-    it('q().attr normalizes DOM-style names for HTML attributes', function() {
+    it('q().attr uses lowercase HTML attribute names', function() {
+        playground().innerHTML = '<input id="input" readonly tabindex="2" maxlength="10">';
+        let attr = htmx.live.q('#input').attr;
+
+        attr.readonly.should.equal(true);
+        attr.tabindex.should.equal(2);
+        attr.maxlength.should.equal(10);
+
+        attr.readonly = false;
+        attr.tabindex = 3;
+        attr.maxlength = 20;
+
+        let input = playground().querySelector('#input');
+        input.hasAttribute('readonly').should.equal(false);
+        attr.tabindex.should.equal(3);
+        attr.maxlength.should.equal(20);
+    });
+
+    it('q().attr accepts mixed-case HTML attribute names', function() {
         playground().innerHTML = '<input id="input" readonly tabindex="2" maxlength="10">';
         let attr = htmx.live.q('#input').attr;
 
         attr.readOnly.should.equal(true);
-        attr.tabIndex.should.equal(2);
-        attr.maxLength.should.equal(10);
+        attr.TABINDEX.should.equal(2);
+        attr.MaxLength.should.equal(10);
 
-        attr.readOnly = false;
-        attr.tabIndex = 3;
-        attr.maxLength = 20;
+        attr.READONLY = false;
+        attr.TabIndex = 3;
+        attr.MAXLENGTH = 20;
 
         let input = playground().querySelector('#input');
         input.hasAttribute('readonly').should.equal(false);
-        attr.tabIndex.should.equal(3);
-        attr.maxLength.should.equal(20);
+        input.getAttribute('tabindex').should.equal('3');
+        input.getAttribute('maxlength').should.equal('20');
     });
 
-    it('q().closest.attr normalizes DOM-style names before resolving HTML owners', function() {
+    it('q() keeps native DOM property spelling separate from attr names', function() {
+        playground().innerHTML = '<input id="input" readonly tabindex="2" maxlength="10">';
+        let input = htmx.live.q('#input');
+
+        input.readOnly.should.equal(true);
+        input.tabIndex.should.equal(2);
+        input.maxLength.should.equal(10);
+        input.attr.readonly.should.equal(true);
+        input.attr.tabindex.should.equal(2);
+        input.attr.maxlength.should.equal(10);
+    });
+
+    it('q().closest.attr normalizes HTML names before resolving owners', function() {
         playground().innerHTML = '<fieldset readonly tabindex="2"><input id="input"></fieldset>';
         let attr = htmx.live.q('#input').closest.attr;
 
-        attr.readOnly.should.equal(true);
-        attr.tabIndex.should.equal(2);
-        attr.readOnly = false;
+        attr.readonly.should.equal(true);
+        attr.TABINDEX.should.equal(2);
+        attr.READONLY = false;
         attr.tabIndex = 3;
 
         let fieldset = playground().querySelector('fieldset');
@@ -1516,14 +1546,19 @@ describe('hx-live extension', function () {
         fieldset.getAttribute('tabindex').should.equal('3');
     });
 
-    it('q().attr preserves case-sensitive SVG attribute names', function() {
-        playground().innerHTML = '<svg id="svg" viewBox="0 0 10 10"></svg>';
-        let attr = htmx.live.q('#svg').attr;
+    it('q().attr preserves distinct SVG attribute casing', function() {
+        let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 10 10');
+        playground().appendChild(svg);
+        let attr = htmx.live.q(svg).attr;
 
         attr.viewBox.should.equal('0 0 10 10');
-        attr.viewBox = '0 0 20 20';
+        assert.isNull(attr.viewbox);
 
-        playground().querySelector('#svg').getAttribute('viewBox').should.equal('0 0 20 20');
+        attr.viewbox = '0 0 20 20';
+
+        svg.getAttribute('viewBox').should.equal('0 0 10 10');
+        svg.getAttribute('viewbox').should.equal('0 0 20 20');
     });
 
     it('q().attr.data and q().data share the local data view', function() {
