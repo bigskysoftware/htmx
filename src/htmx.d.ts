@@ -26,7 +26,7 @@ export interface HtmxConfig {
   logAll: boolean;
   /**
    * Secondary attribute prefix alongside `hx-`. Set to `""` to disable.
-   * Must be set via `<meta name="htmx-config">` — changing after page load has no effect.
+   * Must be set via `<meta name="htmx-config">`. Changing after page load has no effect.
    * @default "data-hx-"
    */
   prefix: string;
@@ -37,9 +37,9 @@ export interface HtmxConfig {
   transitions: boolean;
   /**
    * Controls browser history management.
-   * - `true` — push URLs and restore via AJAX on back/forward
-   * - `false` — disable history entirely
-   * - `"reload"` — push URLs but use `location.reload()` on back/forward
+   * - `true`: push URLs and restore via AJAX on back/forward
+   * - `false`: disable history entirely
+   * - `"reload"`: push URLs but use `location.reload()` on back/forward
    * @default true
    */
   history: boolean | 'reload';
@@ -131,9 +131,9 @@ export interface HtmxConfig {
   metaCharacter?: string;
   /**
    * Whether an empty response body performs the main swap.
-   * - `true` — swap (clears target)
-   * - `false` — skip swap
-   * - `undefined` — swap unless response contained only `<hx-partial>` elements
+   * - `true`: swap (clears target)
+   * - `false`: skip swap
+   * - `undefined`: swap unless response contained only `<hx-partial>` elements
    * Overridable per element via the `swapEmpty` modifier on `hx-swap`.
    * @default undefined
    */
@@ -146,7 +146,7 @@ export interface HtmxConfig {
 export interface HtmxSwapContext {
   /** HTML string to swap into the DOM */
   text: string;
-  /** Element that triggered the swap — used for history and event firing */
+  /** Element that triggered the swap, used for history and event firing */
   sourceElement?: Element;
   /** Swap style (e.g. `'innerHTML'`, `'outerHTML'`). Defaults to `htmx.config.defaultSwap` */
   swap?: string;
@@ -158,9 +158,9 @@ export interface HtmxSwapContext {
   target?: Element;
   /** Whether to use the View Transitions API for this swap */
   transition?: boolean;
-  /** `hx-push-url` value — push a URL into history after the swap */
+  /** `hx-push-url` value: push a URL into history after the swap */
   push?: string | boolean;
-  /** `hx-replace-url` value — replace the current history entry after the swap */
+  /** `hx-replace-url` value: replace the current history entry after the swap */
   replace?: string | boolean;
   /** URL fragment to scroll into view after the swap */
   anchor?: string;
@@ -178,21 +178,21 @@ export interface QProxy {
   q(selector: string): QProxy;
   /**
    * Get an attribute, class, or property from the first matched element.
-   * - `.foo` — class presence as `true`/`false`
-   * - `aria-*` — coerces `"true"`/`"false"` to boolean
-   * - boolean attrs (`hidden`, `disabled`, etc.) — `true`/`false`
-   * - `value`, `checked`, `selected` — DOM property
-   * - anything else — `getAttribute(name)`
+   * - `.foo`: class presence as `true`/`false`
+   * - `aria-*`: coerces `"true"`/`"false"` to boolean
+   * - boolean attrs (`hidden`, `disabled`, etc.): `true`/`false`
+   * - `value`, `checked`, `selected`: DOM property
+   * - anything else: `getAttribute(name)`
    */
   attr(name: string): any;
   /**
    * Set an attribute, class, or property on all matched elements. Returns the proxy for chaining.
-   * - `.foo` — adds/removes class by truthiness
-   * - `'class'` — space-separated string or `{ className: condition }` object
-   * - `aria-*` — strings/numbers pass through; others coerce to `"true"`/`"false"`
-   * - `value`, `checked`, `selected` — syncs DOM property and HTML attribute
-   * - boolean attrs — truthy adds, falsy removes
-   * - anything else — `null`/`undefined`/`false` removes; otherwise sets as string
+   * - `.foo`: adds/removes class by truthiness
+   * - `'class'`: space-separated string or `{ className: condition }` object
+   * - `aria-*`: strings/numbers pass through; others coerce to `"true"`/`"false"`
+   * - `value`, `checked`, `selected`: syncs DOM property and HTML attribute
+   * - boolean attrs: truthy adds, falsy removes
+   * - anything else: `null`/`undefined`/`false` removes; otherwise sets as string
    */
   attr(name: string, value: any): QProxy;
   /**
@@ -212,8 +212,8 @@ export interface QProxy {
   trigger(type: string, detail?: any, bubbles?: boolean): QProxy;
   /**
    * Insert HTML relative to all matched elements.
-   * - `'before'`/`'after'` — sibling before/after
-   * - `'start'`/`'end'` — first/last child
+   * - `'before'`/`'after'`: sibling before/after
+   * - `'start'`/`'end'`: first/last child
    */
   insert(pos: 'before' | 'after' | 'start' | 'end', html: string): QProxy;
   /**
@@ -223,7 +223,7 @@ export interface QProxy {
   data?: Record<string, any>;
   /** Iterate over matched elements. */
   [Symbol.iterator](): IterableIterator<Element>;
-  /** DOM property passthrough — reads from first element, writes to all. */
+  /** DOM property passthrough: reads from first element, writes to all. */
   [key: string]: any;
 }
 
@@ -240,10 +240,10 @@ export interface HtmxLive {
   $(element: Element): QProxy;
   $(elements: Iterable<Element>): QProxy;
   /**
-   * Awaitable debounce — resolves after `ms` ms. Cancels any pending call on the same element.
+   * Awaitable debounce: resolves after `ms` ms. Cancels any pending call on the same element.
    */
   debounce(ms: number): Promise<void>;
-  /** Callback debounce — calls `fn` after `ms` ms, cancelling any pending call. */
+  /** Callback debounce: calls `fn` after `ms` ms, cancelling any pending call. */
   debounce(ms: number, fn: () => void): void;
   /**
    * Force a recompute of all live expressions.
@@ -259,10 +259,10 @@ export interface HtmxLive {
   /** Set an attribute, class, or property on all matched elements. See `QProxy.attr`. */
   attr(target: string | Element | NodeList, name: string, value: any): void;
   /**
-   * Resolves on the next matching event, timeout, or interval — whichever fires first.
-   * - `string` — event name on the current element
-   * - `number` — timeout in ms
-   * - `EventTarget` — redirects listeners to that target
+   * Resolves on the next matching event, timeout, or interval, whichever fires first.
+   * - `string`: event name on the current element
+   * - `number`: timeout in ms
+   * - `EventTarget`: redirects listeners to that target
    */
   forEvent(...args: (string | number | EventTarget)[]): Promise<Event | null>;
   /**
@@ -330,7 +330,7 @@ export interface HtmxRequestCtx {
   replace: string | boolean;
   /** Whether to use view transitions */
   transition: boolean;
-  /** Fetch request options — modify here in htmx:config:request */
+  /** Fetch request options: modify here in htmx:config:request */
   request: HtmxRequestOptions;
   /** Response object, available after fetch resolves */
   response?: HtmxResponse;
@@ -422,7 +422,7 @@ export interface HtmxEventMap {
   /**
    * Fires when an element with `hx-confirm` is triggered, before the request is sent.
    * Call `evt.preventDefault()` to replace the default `window.confirm()` dialog,
-   * then call either `issueRequest()` or `dropRequest()` — failing to call one
+   * then call either `issueRequest()` or `dropRequest()`. Failing to call one
    * will leave the request pending indefinitely.
    */
   'htmx:confirm': {
@@ -435,19 +435,19 @@ export interface HtmxEventMap {
 
   /**
    * Fires when an exception occurs during the request or swap process.
-   * Does NOT fire for HTTP 4xx/5xx — use htmx:response:error for those.
+   * Does NOT fire for HTTP 4xx/5xx. Use htmx:response:error for those.
    * Note: `ctx` is absent when the error occurs before the request context is established.
    */
   'htmx:error': { ctx?: HtmxRequestCtx; error: unknown };
 
   /**
    * Fires when the server responds with HTTP 400 or higher.
-   * Does NOT fire for network errors — use htmx:error for those.
+   * Does NOT fire for network errors. Use htmx:error for those.
    */
   'htmx:response:error': { ctx: HtmxRequestCtx };
 
   /**
-   * Control event — fire this on an element to abort its ongoing request.
+   * Control event: fire this on an element to abort its ongoing request.
    * @example htmx.trigger('#myElement', 'htmx:abort')
    */
   'htmx:abort': Record<string, never>;
@@ -481,7 +481,7 @@ export interface HtmxEventMap {
 
   /**
    * Fires when htmx encounters an `<hx-partial>` element in a response.
-   * Built-in instance of the `htmx:process:{type}` pattern — extensions can handle
+   * Built-in instance of the `htmx:process:{type}` pattern. Extensions can handle
    * custom types via `htmx.on('htmx:process:mytype', ...)` (not statically typed).
    */
   'htmx:process:partial': { ctx: any; tasks: any[] };
@@ -614,8 +614,8 @@ export interface Htmx {
   onLoad(callback: (elt: Element) => void): void;
   /**
    * Initialize htmx attributes on `root` and all its descendants.
-   * When `force` is `true`, tears down and re-initializes already-processed elements —
-   * use this after manually mutating `hx-*` attributes on a live element.
+   * When `force` is `true`, tears down and re-initializes already-processed elements.
+   * Use this after manually mutating `hx-*` attributes on a live element.
    */
   process(root: Element | ShadowRoot, force?: boolean): void;
   /**
@@ -646,7 +646,7 @@ export interface Htmx {
   parseInterval(str: string | number): number | undefined;
   /**
    * Perform an HTML content swap into the DOM.
-   * Primarily used by extensions and advanced integrations — prefer `htmx.ajax()` for most use cases.
+   * Primarily used by extensions and advanced integrations. Prefer `htmx.ajax()` for most use cases.
    */
   swap(ctx: HtmxSwapContext): Promise<void>;
 }
