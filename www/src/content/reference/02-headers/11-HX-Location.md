@@ -19,7 +19,7 @@ HX-Location: /dashboard
 htmx.ajax('GET', '/dashboard', { push: 'true' })
 ```
 
-Use any serializable [`htmx.ajax()` option](/reference/methods/htmx-ajax#context). Include `path`:
+Use any serializable [`htmx.ajax()` option](/reference/methods/htmx-ajax#options). Include `path`:
 
 ```text
 # HCON
