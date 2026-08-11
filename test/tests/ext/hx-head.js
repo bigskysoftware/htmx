@@ -40,7 +40,7 @@ describe('hx-head extension', function() {
 
     // Wait for head merge to complete
     async function afterMerge() {
-        await waitForEvent('htmx:after:head:merge', 500)
+        await waitForEvent('htmx:head:after:merge', 500)
             .catch(() => {}); // no head = no event, that's fine
         await forRequest();
     }
@@ -109,14 +109,14 @@ describe('hx-head extension', function() {
         assert.isNotNull(added, 'new element should be added');
     });
 
-    it('fires htmx:before:head:merge and htmx:after:head:merge events', async function() {
+    it('fires htmx:head:before:merge and htmx:head:after:merge events', async function() {
         let beforeFired = false;
         let afterFired = false;
 
         let onBefore = () => { beforeFired = true; };
         let onAfter = () => { afterFired = true; };
-        document.body.addEventListener('htmx:before:head:merge', onBefore);
-        document.body.addEventListener('htmx:after:head:merge', onAfter);
+        document.body.addEventListener('htmx:head:before:merge', onBefore);
+        document.body.addEventListener('htmx:head:after:merge', onAfter);
 
         mockResponse('GET', '/page', headResponse('<meta name="hx-head-test-evt" content="val">', '<div>content</div>'));
         let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
@@ -124,19 +124,19 @@ describe('hx-head extension', function() {
         div.click();
         await afterMerge();
 
-        document.body.removeEventListener('htmx:before:head:merge', onBefore);
-        document.body.removeEventListener('htmx:after:head:merge', onAfter);
+        document.body.removeEventListener('htmx:head:before:merge', onBefore);
+        document.body.removeEventListener('htmx:head:after:merge', onAfter);
 
         let added = document.head.querySelector('meta[name="hx-head-test-evt"]');
         if (added) addedHeadElts.push(added);
 
-        assert.isTrue(beforeFired, 'htmx:before:head:merge should fire');
-        assert.isTrue(afterFired, 'htmx:after:head:merge should fire');
+        assert.isTrue(beforeFired, 'htmx:head:before:merge should fire');
+        assert.isTrue(afterFired, 'htmx:head:after:merge should fire');
     });
 
-    it('htmx:before:head:merge cancellation prevents merge', async function() {
+    it('htmx:head:before:merge cancellation prevents merge', async function() {
         let onBefore = (e) => { e.preventDefault(); };
-        document.body.addEventListener('htmx:before:head:merge', onBefore, {once: true});
+        document.body.addEventListener('htmx:head:before:merge', onBefore, {once: true});
 
         mockResponse('GET', '/page', headResponse('<meta name="hx-head-test-cancel" content="val">', '<div>content</div>'));
         let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
@@ -181,7 +181,7 @@ describe('hx-head extension', function() {
 
         let onMerge = () => { headMergeTime = Date.now(); };
         let onSwap = () => { swapTime = Date.now(); };
-        document.body.addEventListener('htmx:after:head:merge', onMerge);
+        document.body.addEventListener('htmx:head:after:merge', onMerge);
         document.body.addEventListener('htmx:after:swap', onSwap);
 
         mockResponse('GET', '/page', headResponse('<meta name="hx-head-test-timing" content="val">', '<div>swapped</div>'));
@@ -190,7 +190,7 @@ describe('hx-head extension', function() {
         div.click();
         await afterMerge();
 
-        document.body.removeEventListener('htmx:after:head:merge', onMerge);
+        document.body.removeEventListener('htmx:head:after:merge', onMerge);
         document.body.removeEventListener('htmx:after:swap', onSwap);
 
         let added = document.head.querySelector('meta[name="hx-head-test-timing"]');

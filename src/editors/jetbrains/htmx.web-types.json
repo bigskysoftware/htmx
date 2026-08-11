@@ -621,24 +621,24 @@
           "doc-url": "https://four.htmx.org/extensions/hx-download#events"
         },
         {
-          "name": "before:head:merge",
+          "name": "head:before:merge",
           "description": "Fires before the hx-head extension processes response `<head>` content. `detail.ctx` is the request context.",
-          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxbeforeheadmerge"
+          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxheadbeforemerge"
         },
         {
-          "name": "before:head:add",
+          "name": "head:before:add",
           "description": "Fires before the hx-head extension adds a new head element. `detail.headElement` is the element. Cancel to skip it.",
-          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxbeforeheadadd"
+          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxheadbeforeadd"
         },
         {
-          "name": "before:head:remove",
+          "name": "head:before:remove",
           "description": "Fires before the hx-head extension removes a head element. `detail.headElement` is the element. Cancel to keep it.",
-          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxbeforeheadremove"
+          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxheadbeforeremove"
         },
         {
-          "name": "after:head:merge",
+          "name": "head:after:merge",
           "description": "Fires after the hx-head extension merges head content. `detail.added`, `detail.kept`, and `detail.removed` list affected elements.",
-          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxafterheadmerge"
+          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxheadaftermerge"
         },
         {
           "name": "history:cache:before:save",
