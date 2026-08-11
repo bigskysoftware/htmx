@@ -1484,6 +1484,48 @@ describe('hx-live extension', function () {
         playground().querySelector('.x').hasAttribute('role').should.equal(false);
     });
 
+    it('q().attr normalizes DOM-style names for HTML attributes', function() {
+        playground().innerHTML = '<input id="input" readonly tabindex="2" maxlength="10">';
+        let attr = htmx.live.q('#input').attr;
+
+        attr.readOnly.should.equal(true);
+        attr.tabIndex.should.equal(2);
+        attr.maxLength.should.equal(10);
+
+        attr.readOnly = false;
+        attr.tabIndex = 3;
+        attr.maxLength = 20;
+
+        let input = playground().querySelector('#input');
+        input.hasAttribute('readonly').should.equal(false);
+        attr.tabIndex.should.equal(3);
+        attr.maxLength.should.equal(20);
+    });
+
+    it('q().closest.attr normalizes DOM-style names before resolving HTML owners', function() {
+        playground().innerHTML = '<fieldset readonly tabindex="2"><input id="input"></fieldset>';
+        let attr = htmx.live.q('#input').closest.attr;
+
+        attr.readOnly.should.equal(true);
+        attr.tabIndex.should.equal(2);
+        attr.readOnly = false;
+        attr.tabIndex = 3;
+
+        let fieldset = playground().querySelector('fieldset');
+        fieldset.hasAttribute('readonly').should.equal(false);
+        fieldset.getAttribute('tabindex').should.equal('3');
+    });
+
+    it('q().attr preserves case-sensitive SVG attribute names', function() {
+        playground().innerHTML = '<svg id="svg" viewBox="0 0 10 10"></svg>';
+        let attr = htmx.live.q('#svg').attr;
+
+        attr.viewBox.should.equal('0 0 10 10');
+        attr.viewBox = '0 0 20 20';
+
+        playground().querySelector('#svg').getAttribute('viewBox').should.equal('0 0 20 20');
+    });
+
     it('q().attr.data and q().data share the local data view', function() {
         playground().innerHTML = `
             <div class="x" data-count="1"></div>

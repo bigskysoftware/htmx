@@ -84,6 +84,10 @@
         'size','span','start','rows','cols','width','height'
     ]);
 
+    function normalizeAttrName(elt, name) {
+        return elt instanceof HTMLElement ? name.toLowerCase() : name;
+    }
+
     /**
      * Get or set an attribute or property-backed value on one or more elements.
      *
@@ -102,11 +106,10 @@
      * attr('data-x', null)            // remove attribute
      */
     function applyAttr(elts, name, ...rest) {
-        let isAria = name.startsWith('aria-');
-
         if (rest.length === 0) {
             let e = elts[0];
             if (!e) return undefined;
+            name = normalizeAttrName(e, name);
             if (name === 'value' && NUMERIC_INPUT_TYPES.has(e.type)) {
                 return e.value === '' ? null : e.valueAsNumber;
             }
@@ -119,22 +122,24 @@
 
         let value = rest[0];
         for (let e of elts) {
+            let attrName = normalizeAttrName(e, name);
+            let isAria = attrName.startsWith('aria-');
             if (isAria) {
-                if (value == null) e.removeAttribute(name);
-                else e.setAttribute(name, String(value));
-            } else if (PROPERTY_BINDING_ATTRS.has(name)) {
-                applyPropertyBinding(e, name, value);
-            } else if (BOOLEAN_ATTRS.has(name)) {
-                if (value) e.setAttribute(name, '');
-                else e.removeAttribute(name);
-            } else if (STRINGY_BOOLEAN_ATTRS.has(name)) {
-                if (value === null || value === undefined) e.removeAttribute(name);
-                else if (value === true) e.setAttribute(name, 'true');
-                else if (value === false) e.setAttribute(name, 'false');
-                else e.setAttribute(name, String(value));
+                if (value == null) e.removeAttribute(attrName);
+                else e.setAttribute(attrName, String(value));
+            } else if (PROPERTY_BINDING_ATTRS.has(attrName)) {
+                applyPropertyBinding(e, attrName, value);
+            } else if (BOOLEAN_ATTRS.has(attrName)) {
+                if (value) e.setAttribute(attrName, '');
+                else e.removeAttribute(attrName);
+            } else if (STRINGY_BOOLEAN_ATTRS.has(attrName)) {
+                if (value === null || value === undefined) e.removeAttribute(attrName);
+                else if (value === true) e.setAttribute(attrName, 'true');
+                else if (value === false) e.setAttribute(attrName, 'false');
+                else e.setAttribute(attrName, String(value));
             } else {
-                if (value === null || value === undefined) e.removeAttribute(name);
-                else e.setAttribute(name, value === true ? '' : String(value));
+                if (value === null || value === undefined) e.removeAttribute(attrName);
+                else e.setAttribute(attrName, value === true ? '' : String(value));
             }
         }
     }
@@ -152,7 +157,7 @@
 
     function makeAttrProxy(elts, cascades, scope) {
         let findOwner = (elt, name) => cascades
-            ? elt.closest('[' + CSS.escape(name) + ']')
+            ? elt.closest('[' + CSS.escape(normalizeAttrName(elt, name)) + ']')
             : elt;
         return new Proxy({}, {
             get: (_, name) => {
