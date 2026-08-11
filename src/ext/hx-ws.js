@@ -509,7 +509,7 @@
         if (!element?.isConnected) element = findConnectedElement(connection.url);
 
         if (!element) {
-            // No element in DOM for this connection — orphan cleanup
+            // No element in DOM for this connection (orphan cleanup)
             cleanupOrphanedConnection(connection.url, connection);
             return;
         }
