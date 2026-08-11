@@ -74,78 +74,56 @@
         'multiple','autofocus','novalidate','default','reversed',
         'loop','muted','controls','autoplay','playsinline',
         'formnovalidate','async','defer','ismap','typemustmatch',
-        'allowfullscreen','itemscope','nomodule'
+        'allowfullscreen','itemscope','nomodule','checked','selected'
     ]);
-    let PROPERTY_ATTRS = new Set(['checked','value','selected']);
+    let PROPERTY_BINDING_ATTRS = new Set(['checked','value','selected']);
     let STRINGY_BOOLEAN_ATTRS = new Set(['contenteditable','draggable','spellcheck']);
+    let NUMERIC_INPUT_TYPES = new Set(['number', 'range']);
+    let NUMERIC_ATTRS = new Set([
+        'tabindex','colspan','rowspan','maxlength','minlength',
+        'size','span','start','rows','cols','width','height'
+    ]);
 
     /**
-     * Get or set an attribute, class, or property-backed value on one or more elements.
+     * Get or set an attribute or property-backed value on one or more elements.
      *
      * @param {Element[]} elts - Target elements.
-     * @param {string} name - Class (`.foo`), `'class'`, or attribute name.
+     * @param {string} name - Attribute name.
      * @param {*} [value] - Value to set. Omit for getter (reads from first element).
      * @returns {*} Getter result; setter returns nothing.
      *
      * @example
      * attr('hidden')                  // boolean: is hidden present?
      * attr('hidden', true)            // set hidden=""
-     * attr('.active')                 // boolean: has class .active?
-     * attr('.active', cond)           // add/remove class
-     * attr('class', 'foo bar')        // multi-class string
-     * attr('class', { active: cond }) // multi-class object
-     * attr('aria-expanded', open)     // ARIA: always "true"/"false"
-     * attr('value', 'hello')          // sync DOM property + attribute
+     * attr('class', 'foo bar')        // raw class attribute
+     * attr('aria-expanded', open)     // ARIA: raw string value
+     * attr('value', 'hello')          // set the value attribute
      * attr('contenteditable', false)  // "false", not removed
      * attr('data-x', null)            // remove attribute
      */
     function applyAttr(elts, name, ...rest) {
-        let isClass = name.startsWith('.');
-        let isMultiClass = name === 'class';
         let isAria = name.startsWith('aria-');
-        let isPropAttr = PROPERTY_ATTRS.has(name);
 
         if (rest.length === 0) {
             let e = elts[0];
             if (!e) return undefined;
-            if (isClass) return e.classList.contains(name.slice(1));
-            if (isMultiClass) return e.getAttribute('class');
-            if (isAria) return e.getAttribute(name) === 'true';
+            if (name === 'value' && NUMERIC_INPUT_TYPES.has(e.type)) {
+                return e.value === '' ? null : e.valueAsNumber;
+            }
+            if (PROPERTY_BINDING_ATTRS.has(name)) return e[name];
             if (BOOLEAN_ATTRS.has(name)) return e.hasAttribute(name);
-            if (isPropAttr) return e[name];
-            return e.getAttribute(name);
+            let raw = e.getAttribute(name);
+            if (NUMERIC_ATTRS.has(name) && raw?.trim() && Number.isFinite(Number(raw))) return Number(raw);
+            return raw;
         }
 
         let value = rest[0];
         for (let e of elts) {
-            if (isClass) {
-                e.classList.toggle(name.slice(1), !!value);
-                if (e.classList.length === 0) e.removeAttribute('class');
-            } else if (isMultiClass) {
-                applyMultiClass(e, value);
-            } else if (isAria) {
-                // Strings and numbers pass through (e.g. aria-current="page",
-                // aria-pressed="mixed", aria-valuenow="50"). Other values coerce
-                // to "true"/"false". Never removed.
-                let attrVal = (typeof value === 'string' || typeof value === 'number')
-                    ? String(value)
-                    : (value ? 'true' : 'false');
-                e.setAttribute(name, attrVal);
-            } else if (isPropAttr) {
-                if (name === 'checked' || name === 'selected') {
-                    let present = !!value;
-                    e[name] = present;
-                    e.toggleAttribute(name, present);
-                } else if (value === false || value == null) {
-                    e[name] = (typeof e[name] === 'boolean') ? false : '';
-                    e.removeAttribute(name);
-                } else if (value === true) {
-                    e[name] = true;
-                    e.setAttribute(name, '');
-                } else {
-                    e[name] = value;
-                    e.setAttribute(name, String(value));
-                }
+            if (isAria) {
+                if (value == null) e.removeAttribute(name);
+                else e.setAttribute(name, String(value));
+            } else if (PROPERTY_BINDING_ATTRS.has(name)) {
+                applyPropertyBinding(e, name, value);
             } else if (BOOLEAN_ATTRS.has(name)) {
                 if (value) e.setAttribute(name, '');
                 else e.removeAttribute(name);
@@ -155,10 +133,45 @@
                 else if (value === false) e.setAttribute(name, 'false');
                 else e.setAttribute(name, String(value));
             } else {
-                if (value === null || value === undefined || value === false) e.removeAttribute(name);
+                if (value === null || value === undefined) e.removeAttribute(name);
                 else e.setAttribute(name, value === true ? '' : String(value));
             }
         }
+    }
+
+    function eachTarget(elts, findOwner, fallback, fn) {
+        let seen = new Set();
+        for (let elt of elts) {
+            let target = findOwner(elt) || (fallback ? elt : null);
+            if (target && !seen.has(target)) {
+                seen.add(target);
+                fn(target);
+            }
+        }
+    }
+
+    function makeAttrProxy(elts, cascades, scope) {
+        let findOwner = (elt, name) => cascades
+            ? elt.closest('[' + CSS.escape(name) + ']')
+            : elt;
+        return new Proxy({}, {
+            get: (_, name) => {
+                if (name === 'data' || name === 'aria' || name === 'class') return scope[name];
+                if (typeof name !== 'string') return undefined;
+                let owner = elts[0] && findOwner(elts[0], name);
+                return owner ? applyAttr([owner], name) : undefined;
+            },
+            set: (_, name, value) => {
+                if (typeof name !== 'string') return false;
+                eachTarget(elts, elt => findOwner(elt, name), true, elt => applyAttr([elt], name, value));
+                return true;
+            },
+            deleteProperty: (_, name) => {
+                if (typeof name !== 'string') return false;
+                eachTarget(elts, elt => findOwner(elt, name), false, elt => applyAttr([elt], name, null));
+                return true;
+            }
+        });
     }
 
     function applyStyleBinding(elt, value) {
@@ -194,15 +207,184 @@
         return s.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
     }
 
+    let booleanAria = new Set([
+        'atomic',
+        'busy',
+        'checked',
+        'current',
+        'disabled',
+        'expanded',
+        'grabbed',
+        'haspopup',
+        'hidden',
+        'invalid',
+        'modal',
+        'multiline',
+        'multiselectable',
+        'pressed',
+        'readonly',
+        'required',
+        'selected'
+    ]);
+    let integerAria = new Set([
+        'colcount',
+        'colindex',
+        'colspan',
+        'level',
+        'posinset',
+        'rowcount',
+        'rowindex',
+        'rowspan',
+        'setsize'
+    ]);
+    let numberAria = new Set([
+        'valuemax',
+        'valuemin',
+        'valuenow'
+    ]);
+    let listAria = new Set([
+        'controls',
+        'describedby',
+        'dropeffect',
+        'flowto',
+        'labelledby',
+        'owns',
+        'relevant'
+    ]);
+    function writeClass(elt, name, value) {
+        elt.classList.toggle(name, !!value);
+        if (!elt.classList.length) elt.removeAttribute('class');
+    }
+
+    let CLASS_WRITE_METHODS = new Set(['add', 'remove', 'toggle', 'replace']);
+
+    function makeClassProxy(elts) {
+        let first = elts[0];
+        let write = (name, value) => { for (let e of elts) writeClass(e, name, value); };
+        return new Proxy({}, {
+            get: (_, name) => {
+                if (typeof name !== 'string' || !first) return undefined;
+                if (name === 'assign') {
+                    return value => {
+                        if (!value || typeof value !== 'object' || Array.isArray(value)) {
+                            console.warn(`htmx: class.assign expects an object, got ${Array.isArray(value) ? 'array' : typeof value}.`, { elts });
+                            return;
+                        }
+                        for (let e of elts) writeClasses(e, value);
+                    };
+                }
+                let m = first.classList[name];
+                if (typeof m === 'function') {
+                    return elts.length === 1 || !CLASS_WRITE_METHODS.has(name)
+                        ? m.bind(first.classList)
+                        : (...args) => { for (let e of elts) e.classList[name](...args); };
+                }
+                return first.classList.contains(name);
+            },
+            set: (_, name, value) => {
+                if (typeof name !== 'string') return false;
+                write(name, value);
+                return true;
+            },
+            deleteProperty: (_, name) => {
+                if (typeof name !== 'string') return false;
+                write(name, false);
+                return true;
+            },
+            has: (_, name) => typeof name === 'string' && !!first && first.classList.contains(name),
+            ownKeys: () => first ? [...first.classList] : [],
+            getOwnPropertyDescriptor: (_, name) => first && first.classList.contains(name)
+                ? { enumerable: true, configurable: true }
+                : undefined
+        });
+    }
+
+    function makeClosestClassProxy(elts) {
+        let owner = (elt, name) => elt.closest('.' + CSS.escape(name));
+        return new Proxy({}, {
+            get: (_, name) => typeof name === 'string' && !!elts[0] ? !!owner(elts[0], name) : undefined,
+            set: (_, name, value) => {
+                if (typeof name !== 'string') return false;
+                eachTarget(elts, elt => owner(elt, name), true, elt => writeClass(elt, name, value));
+                return true;
+            },
+            deleteProperty: (_, name) => {
+                if (typeof name !== 'string') return false;
+                eachTarget(elts, elt => owner(elt, name), false, elt => writeClass(elt, name, false));
+                return true;
+            }
+        });
+    }
+
+    function makeStateScope(elts, cascades) {
+        let data, aria, classes, attr;
+        let scope = {
+            get data() { return data ||= makeDataProxy(elts, cascades); },
+            get aria() { return aria ||= makeAriaProxy(elts, cascades); },
+            get class() { return classes ||= cascades ? makeClosestClassProxy(elts) : makeClassProxy(elts); },
+            get attr() { return attr ||= makeAttrProxy(elts, cascades, scope); }
+        };
+        return scope;
+    }
+
+    function writeAria(elt, key, value) {
+        let name = 'aria-' + key;
+        if (value == null) elt.removeAttribute(name);
+        else elt.setAttribute(name, listAria.has(key) && Array.isArray(value) ? value.join(' ') : String(value));
+    }
+
+    function makeAriaProxy(elts, cascades = true) {
+        let findOwner = (elt, name) => cascades
+            ? elt.closest('[' + name + ']')
+            : elt.hasAttribute(name) ? elt : null;
+        return new Proxy({}, {
+            get: (_, prop) => {
+                if (typeof prop !== 'string') return undefined;
+                let key = prop.toLowerCase();
+                let name = 'aria-' + key;
+                let owner = elts[0] && findOwner(elts[0], name);
+                let value = owner?.getAttribute(name);
+                if (booleanAria.has(key) && (value === 'true' || value === 'false')) return value === 'true';
+                let number = Number(value);
+                let validNumber = numberAria.has(key) || (integerAria.has(key) && Number.isInteger(number));
+                if (validNumber && value?.trim() && Number.isFinite(number)) return number;
+                if (listAria.has(key) && value != null) return value.trim() ? value.trim().split(/\s+/) : [];
+                return value;
+            },
+            set: (_, prop, value) => {
+                if (typeof prop !== 'string') return false;
+                let key = prop.toLowerCase();
+                let name = 'aria-' + key;
+                eachTarget(elts, elt => findOwner(elt, name), true, elt => writeAria(elt, key, value));
+                return true;
+            },
+            deleteProperty: (_, prop) => {
+                if (typeof prop !== 'string') return false;
+                let key = prop.toLowerCase();
+                let name = 'aria-' + key;
+                eachTarget(elts, elt => findOwner(elt, name), false, elt => elt.removeAttribute(name));
+                return true;
+            }
+        });
+    }
+
+    function writeData(elt, name, value) {
+        if (value === undefined) elt.removeAttribute(name);
+        else elt.setAttribute(name, typeof value === 'string' ? value : JSON.stringify(value));
+    }
+
     // `data.foo` reads/writes to closest ancestor with `data-foo`.
     // `has` trap lets `hx-on:click="with (data) { x++; y-- }"` work: data-* keys
     // bind to the proxy, all other identifiers fall through to outer scope.
-    function makeDataProxy(elt) {
+    function makeDataProxy(elts, cascades = true) {
+        let findOwner = (elt, kebab) => cascades
+            ? elt.closest('[data-' + kebab + ']')
+            : elt.hasAttribute('data-' + kebab) ? elt : null;
         return new Proxy({}, {
             get: (_, prop) => {
                 if (typeof prop !== 'string') return undefined;
                 let kebab = camelToKebab(prop);
-                let ancestor = elt.closest('[data-' + kebab + ']');
+                let ancestor = elts[0] && findOwner(elts[0], kebab);
                 if (!ancestor) return undefined;
                 let raw = ancestor.dataset[prop];
                 try { return JSON.parse(raw); } catch { return raw; }
@@ -210,19 +392,26 @@
             set: (_, prop, val) => {
                 if (typeof prop !== 'string') return false;
                 let kebab = camelToKebab(prop);
-                let target = elt.closest('[data-' + kebab + ']') || elt;
-                target.dataset[prop] = typeof val === 'string' ? val : JSON.stringify(val);
+                let name = 'data-' + kebab;
+                eachTarget(elts, elt => findOwner(elt, kebab), true, elt => writeData(elt, name, val));
+                return true;
+            },
+            deleteProperty: (_, prop) => {
+                if (typeof prop !== 'string') return false;
+                let kebab = camelToKebab(prop);
+                let name = 'data-' + kebab;
+                eachTarget(elts, elt => findOwner(elt, kebab), false, elt => elt.removeAttribute(name));
                 return true;
             },
             has: (_, prop) => {
                 if (typeof prop !== 'string') return false;
                 let kebab = camelToKebab(prop);
-                return !!elt.closest('[data-' + kebab + ']');
+                return !!elts[0] && !!findOwner(elts[0], kebab);
             },
             ownKeys: () => {
                 let result = [];
                 let seen = new Set();
-                for (let node = elt; node; node = node.parentElement) {
+                for (let node = elts[0]; node; node = cascades ? node.parentElement : null) {
                     for (let key of Object.keys(node.dataset)) {
                         if (key !== 'htmxPowered' && !seen.has(key)) {
                             seen.add(key);
@@ -235,31 +424,59 @@
             getOwnPropertyDescriptor: (_, prop) => {
                 if (typeof prop !== 'string' || prop === 'htmxPowered') return;
                 let kebab = camelToKebab(prop);
-                if (elt.closest('[data-' + kebab + ']')) return { enumerable: true, configurable: true };
+                if (elts[0] && findOwner(elts[0], kebab)) return { enumerable: true, configurable: true };
             }
         });
+    }
+
+    function applyPropertyBinding(elt, name, value) {
+        if (name === 'checked' || name === 'selected') {
+            let present = !!value;
+            elt[name] = present;
+            elt.toggleAttribute(name, present);
+        } else if (value === false || value == null) {
+            elt[name] = typeof elt[name] === 'boolean' ? false : '';
+            elt.removeAttribute(name);
+        } else if (value === true) {
+            elt[name] = true;
+            elt.setAttribute(name, '');
+        } else {
+            elt[name] = value;
+            elt.setAttribute(name, String(value));
+        }
+    }
+
+    function applyClassBinding(elt, name, value) {
+        if (name === 'class') {
+            applyMultiClass(elt, value);
+        } else {
+            writeClass(elt, name.slice(1), value);
+        }
+    }
+
+    function writeClasses(elt, value) {
+        let written = [];
+        if (typeof value === 'string') {
+            for (let c of value.trim().split(/\s+/).filter(Boolean)) {
+                written.push(c);
+                writeClass(elt, c, true);
+            }
+        } else if (value && typeof value === 'object') {
+            for (let [key, cond] of Object.entries(value)) {
+                for (let c of key.trim().split(/\s+/).filter(Boolean)) {
+                    written.push(c);
+                    writeClass(elt, c, cond);
+                }
+            }
+        }
+        return written;
     }
 
     function applyMultiClass(elt, value) {
         let prop = api.htmxProp(elt);
         let oldManaged = prop.liveClasses || new Set();
-        let newManaged = new Set();
-
-        if (typeof value === 'string') {
-            for (let c of value.trim().split(/\s+/).filter(Boolean)) {
-                newManaged.add(c);
-                elt.classList.add(c);
-            }
-        } else if (value && typeof value === 'object') {
-            for (let [key, cond] of Object.entries(value)) {
-                for (let c of key.trim().split(/\s+/).filter(Boolean)) {
-                    newManaged.add(c);
-                    elt.classList.toggle(c, !!cond);
-                }
-            }
-        }
-        for (let c of oldManaged) if (!newManaged.has(c)) elt.classList.remove(c);
-        if (elt.classList.length === 0) elt.removeAttribute('class');
+        let newManaged = new Set(writeClasses(elt, value));
+        for (let c of oldManaged) if (!newManaged.has(c)) writeClass(elt, c, false);
         prop.liveClasses = newManaged;
     }
 
@@ -317,25 +534,27 @@
     /**
      * Toggle or cycle a class, ARIA attribute, or attribute on an element.
      *
-     * @param {string} name - Class (`.foo`) or attribute name.
-     * @param {string|string[]} [values] - Cycle list (pipe-delimited string or array). Omit for binary flip.
      * @param {Element} element - DOM element to mutate.
+     * @param {string} name - Class (`.foo`) or attribute name.
+     * @param {...(string|string[])} values - Cycle list, as separate arguments, a pipe-delimited string, or an array. Omit for binary flip.
      *
      * @example
      * toggle('.active')                      // toggle class
      * toggle('aria-expanded')                // flip "true" <-> "false"
      * toggle('hidden')                       // toggle attribute presence
-     * toggle('data-view', 'grid|list|table') // cycle attribute through values
+     * toggle('data-view', 'grid', 'list')    // cycle attribute through values
+     * toggle('data-view', 'grid|list|table') // same, pipe-delimited
      * toggle('.size', 'sm|md|lg')            // cycle classes (one at a time)
      * toggle('data-open', 'on|')             // 'on' <-> absent slot
      */
-    function applyToggle(name, values, element) {
+    function applyToggle(element, name, ...values) {
         let isClass = name.startsWith('.');
         let key = isClass ? name.slice(1) : name;
         let isAria = name.startsWith('aria-');
-        let asArray = values && (typeof values === 'string'
-            ? values.split('|').map(v => v.trim())
-            : values);
+        let list = values.length > 1 ? values : values[0];
+        let asArray = list && (typeof list === 'string'
+            ? list.split('|').map(v => v.trim())
+            : list);
 
         if (!asArray) {
             if (isClass) element.classList.toggle(key);
@@ -451,6 +670,7 @@
     let positions = { before: 'beforebegin', after: 'afterend', start: 'afterbegin', end: 'beforeend' };
 
     function qProxy(elts) {
+        let local, closest;
         let proxy = new Proxy({}, {
             get: (_, p) => {
                 if (p === 'count') return elts.length;
@@ -464,14 +684,13 @@
                 if (p === 'trigger') return (t, d, b) => { elts.forEach(e => htmx.trigger(e, t, d, b)); return proxy; };
                 if (p === 'insert') return (pos, s) => { elts.forEach(e => e.insertAdjacentHTML(positions[pos], s)); return proxy; };
                 if (p === 'take') return (name, scope) => { applyTake(elts, name, scope); return proxy; };
-                if (p === 'toggle') return (name, values) => { elts.forEach(e => applyToggle(name, values, e)); return proxy; };
-                if (p === 'attr') return (name, ...rest) => {
-                    if (rest.length === 0) return applyAttr(elts, name);
-                    applyAttr(elts, name, ...rest);
-                    return proxy;
-                };
-                if (p === 'data') return elts[0] ? makeDataProxy(elts[0]) : undefined;
+                if (p === 'toggle') return (name, ...values) => { elts.forEach(e => applyToggle(e, name, ...values)); return proxy; };
+                if (p === 'attr') return (local ||= makeStateScope(elts, false)).attr;
+                if (p === 'data') return elts[0] ? (local ||= makeStateScope(elts, false)).data : undefined;
+                if (p === 'class') return (local ||= makeStateScope(elts, false)).class;
+                if (p === 'closest') return elts[0] ? closest ||= makeStateScope(elts, true) : undefined;
                 if (arrayMethods.has(p)) return elts[p].bind(elts);
+                if (p === 'aria') return elts[0] ? (local ||= makeStateScope(elts, false)).aria : undefined;
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));
@@ -609,9 +828,16 @@
             return;
         }
         if (attrName === 'style') { applyStyleBinding(elt, value); return; }
-        // Always write aria-* and property-backed attrs (getter type differs from setter).
-        // For everything else skip if unchanged.
-        if (!attrName.startsWith('aria-') && !PROPERTY_ATTRS.has(attrName) && applyAttr([elt], attrName) === value) return;
+        if (attrName === 'class' || attrName.startsWith('.')) {
+            applyClassBinding(elt, attrName, value);
+            return;
+        }
+        if (PROPERTY_BINDING_ATTRS.has(attrName)) {
+            applyPropertyBinding(elt, attrName, value);
+            return;
+        }
+        // Always write aria-* attrs because their getter and setter types differ.
+        if (!attrName.startsWith('aria-') && applyAttr([elt], attrName) === value) return;
         applyAttr([elt], attrName, value);
     }
 
@@ -625,7 +851,7 @@
         debounce: makeDebounce(),
         refresh: () => schedule(),
         take: (target, name, scope) => applyTake([...asTargets(target)], name, scope),
-        toggle: (target, name, values) => [...asTargets(target)].forEach(e => applyToggle(name, values, e)),
+        toggle: (target, name, ...values) => [...asTargets(target)].forEach(e => applyToggle(e, name, ...values)),
         attr: (target, name, ...rest) => applyAttr([...asTargets(target)], name, ...rest),
         forEvent: (...args) => forEvent(null, ...args),
         nextFrame: () => new Promise(r => requestAnimationFrame(r))
@@ -652,6 +878,8 @@
             if (--swaps === 0 && fns.size > 0) schedule();
         },
         htmx_scope: (elt, detail) => {
+            let local = makeStateScope([elt], false);
+            let closest = makeStateScope([elt], true);
             Object.assign(detail.scope, {
                 q: makeQ(elt),
                 forEvent: (...args) => forEvent(elt, ...args),
@@ -659,13 +887,14 @@
                 trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
                 debounce: getDebounce(elt),
                 take: (name, scope) => applyTake([elt], name, scope),
-                toggle: (name, values) => applyToggle(name, values, elt),
-                attr: (name, ...rest) => applyAttr([elt], name, ...rest),
+                toggle: (name, ...values) => applyToggle(elt, name, ...values),
+                attr: local.attr,
                 insert: (pos, html) => elt.insertAdjacentHTML(positions[pos], html),
                 matches: (sel) => elt.matches(sel),
                 style: elt.style,
-                classList: elt.classList,
-                data: makeDataProxy(elt)
+                data: closest.data,
+                aria: local.aria,
+                closest
             });
             if (htmx.config.live?.useDollar) detail.scope.$ = detail.scope.q;
         }
