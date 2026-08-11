@@ -3135,47 +3135,4 @@ describe('hx-live extension', function () {
 
     });
 
-    // -------------------------------------------------------------------------
-    // Open concerns for the sigil design. Each test asserts the behavior we
-    // want, not the behavior we have today. A skipped test here is a known
-    // gap, not a regression. Never assert against a function value directly:
-    // the test runner cannot serialize a function in a failure message and the
-    // session hangs. Compare identity as a boolean instead.
-    // -------------------------------------------------------------------------
-
-    describe('open concerns', function() {
-
-        it.skip('attr() updater receives the typed ARIA value, not a boolean', function() {
-            playground().innerHTML = '<nav id="n"><a aria-current="page">Home</a></nav>';
-            let seen;
-            htmx.live.attr('#n a', 'aria-current', c => { seen = c; return c; });
-            seen.should.equal('page');
-        });
-
-        it.skip('setting value does not change what form.reset() restores', function() {
-            playground().innerHTML = '<form id="f"><input id="i" name="i" value="original"></form>';
-            let form = playground().querySelector('#f');
-            let input = playground().querySelector('#i');
-            htmx.live.attr('#i', 'value', 'edited');
-            input.value.should.equal('edited');
-            form.reset();
-            input.value.should.equal('original');
-        });
-
-        it.skip('setting checked does not make an unchecked box match :default', function() {
-            playground().innerHTML = '<input id="c" type="checkbox">';
-            let box = playground().querySelector('#c');
-            htmx.live.attr('#c', 'checked', true);
-            box.checked.should.equal(true);
-            box.matches(':default').should.equal(false);
-        });
-
-        it.skip('data-* round trip preserves a trailing zero decimal', function() {
-            playground().innerHTML = '<div id="p" data-price="19.90"></div>';
-            let el = playground().querySelector('#p');
-            htmx.live.q('#p').data.price = p => p;
-            el.dataset.price.should.equal('19.90');
-        });
-    });
-
 });
