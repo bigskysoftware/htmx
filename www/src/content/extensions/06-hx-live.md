@@ -30,7 +30,7 @@ Can HTML provide the behavior?
 
 ### Bind an Attribute
 
-Prefix a binding target with `:`:
+Prefix an attribute with `:`:
 
 ```html
 <input value="Ada">
