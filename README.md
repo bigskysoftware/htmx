@@ -32,8 +32,8 @@ By removing these arbitrary constraints htmx completes HTML as a
 ## quick start
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta5/dist/htmx.min.js"
-          integrity="sha384-Oy2c9csBEA+9v16GUyopnXJLPb4gkvyTURnEnThDuxz8iQHiSwNAZduw0dMGmB/b"
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0-beta6/dist/htmx.min.js"
+          integrity="sha384-6lyVbhrs13b9z7mLOpt/N6R76rtkEBWgCjAXRs/DSWyi2AMnQSs10ijWk+PI8n7W"
           crossorigin="anonymous"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">

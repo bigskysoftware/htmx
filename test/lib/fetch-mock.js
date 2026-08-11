@@ -207,7 +207,8 @@ class FetchMock {
         options.method = options.method.toUpperCase()
         const response = this.findResponse(options.method, url);
 
-        // Create an AbortController for this request
+        // Use the caller's signal if provided, otherwise create our own
+        const callerSignal = options.signal;
         const controller = new AbortController();
 
         // Create a tracking object for this request
@@ -215,13 +216,24 @@ class FetchMock {
 
         // Create a promise to track this request
         const requestPromise = new Promise((resolve, reject) => {
-            // Check if already aborted
+            // Check if already aborted (caller's signal)
+            if (callerSignal?.aborted) {
+                reject(new DOMException('The operation was aborted', 'AbortError'));
+                return;
+            }
+
+            // Check if already aborted (our controller)
             if (controller.signal.aborted) {
                 reject(new DOMException('The operation was aborted', 'AbortError'));
                 return;
             }
 
-            // Listen for abort
+            // Listen for abort from caller's signal
+            callerSignal?.addEventListener('abort', () => {
+                reject(new DOMException('The operation was aborted', 'AbortError'));
+            });
+
+            // Listen for abort from our controller
             controller.signal.addEventListener('abort', () => {
                 reject(new DOMException('The operation was aborted', 'AbortError'));
             });
@@ -230,12 +242,12 @@ class FetchMock {
             Promise.resolve(response)
                 .then(result => {
                     if (typeof result === 'string') result = new MockResponse(result);
-                    if (!controller.signal.aborted) {
+                    if (!callerSignal?.aborted && !controller.signal.aborted) {
                         resolve(result);
                     }
                 })
                 .catch(error => {
-                    if (!controller.signal.aborted) {
+                    if (!callerSignal?.aborted && !controller.signal.aborted) {
                         reject(error);
                     }
                 });

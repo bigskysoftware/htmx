@@ -80,11 +80,20 @@ The `htmax.js` file bundles htmx with the most popular extensions in a single fi
 * [`hx-optimistic`](/extensions/hx-optimistic)
 * [`hx-targets`](/extensions/hx-targets)
 * [`hx-live`](/extensions/hx-live)
+* [`hx-upsert`](/extensions/hx-upsert)
+* [`hx-alpine-compat`](/extensions/hx-alpine-compat)
+* [`hx-history-cache`](/extensions/hx-history-cache) _(included but disabled by default)_
 
 The extensions are automatically available, you can just use their attributes directly (e.g. `hx-sse:connect`, `hx-ws:connect`).
 
 ```html
 <script src="/js/htmax.min.js"></script>
+```
+
+To enable history caching, opt in via the meta tag:
+
+```html
+<meta name="htmx-config" content='{"historyCache": {"disable": false}}'>
 ```
 
 ## Migration
@@ -519,7 +528,7 @@ Internally-dispatched events route to the console as follows:
 
 This restores the htmx 2.x convention: if you want an internal failure path to show up in the console, fire an event with `detail.error` (or `detail.warn`); no per-site `console.error` needed.
 
-#### Request context
+#### Request Context in Events
 
 All events provide a consistent `ctx` object with request/response information.
 
@@ -533,7 +542,7 @@ All events provide a consistent `ctx` object with request/response information.
 | [`htmx:before:response`](/reference/events/htmx-before-response)             | Before response body is read (cancellable)        |
 | [`htmx:before:settle`](/reference/events/htmx-before-settle)                 | Before settle phase                               |
 | [`htmx:after:settle`](/reference/events/htmx-after-settle)                   | After settle phase                                |
-| [`htmx:before:viewTransition`](/reference/events/htmx-before-viewTransition) | Before a view transition starts (cancellable)     |
+| [`htmx:before:viewTransition`](/reference/events/htmx-before-viewTransition) | Before a view transition starts                   |
 | [`htmx:after:viewTransition`](/reference/events/htmx-after-viewTransition)   | After a view transition completes                 |
 | [`htmx:finally:request`](/reference/events/htmx-finally-request)             | When request completes, fails, or is cancelled |
 
@@ -1401,7 +1410,7 @@ The modifiers available on `hx-swap` are (parsed as [HCON](#hcon)):
 | ignoreTitle  | If set to true, any title found in the new content will be ignored and not update the document title |
 | strip        | true or false, whether to strip the outer element when swapping (unwrap the content)                 |
 | focusScroll  | true or false, whether to scroll focused elements into view                                          |
-| swapEmpty    | true or false, whether to perform the main swap when the response body is empty (`false` skips it). Defaults to [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty) |
+| swapEmpty    | true or false, whether to perform the main swap when the response body is empty (`false` skips it). Default behavior: skip if partials or OOB swaps were extracted (unless [`htmx.config.allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB) is `true`) |
 | scroll       | top or bottom, will scroll the target element to its top or bottom                                   |
 | show         | top or bottom, will scroll the target element's top or bottom into view                              |
 | target       | A selector to retarget the swap to a different element                                               |
@@ -1836,10 +1845,7 @@ You can use the equivalent <code>&lt;template&gt;</code> form: <code>&lt;templat
 
 #### Empty Response Behaviour
 
-When a response contains only `<hx-partial>` elements and no main content, htmx will **not** perform the main swap.
-This is the opposite default to [`hx-swap-oob`](/reference/attributes/hx-swap-oob): with partials, an
-all-partial response signals intent — the server is explicitly routing multiple targeted updates and there is no main
-content to swap.
+When a response contains only `<hx-partial>` elements and no main content, htmx will **not** perform the main swap. Partials are designed as true response separators — each partial is a self-contained section, giving the server explicit control over multi-target updates.
 
 ```html
 <!-- Server returns only partials — main target is left untouched -->
@@ -1851,13 +1857,13 @@ content to swap.
 </hx-partial>
 ```
 
-If you also want the main target cleared, add `swapEmpty:true` to `hx-swap` on the triggering element:
+If you want the main target cleared, add `swapEmpty:true` to `hx-swap` on the triggering element:
 
 ```html
 <button hx-post="/submit" hx-swap="outerHTML swapEmpty:true">Submit</button>
 ```
 
-Or set the global default via [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).
+[`hx-swap-oob`](/reference/attributes/hx-swap-oob) also prevents empty main swaps by default, but this can be changed globally via [`htmx.config.allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB). Partials always prevent empty swaps regardless of that setting.
 
 #### When to Use Partials
 

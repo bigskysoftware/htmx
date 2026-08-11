@@ -63,7 +63,14 @@ function cleanupTest() {
         }
         fetchMock.reset()
     }
-    history.replaceState(null, '', savedUrl);
+    let saved = new URL(savedUrl);
+    if (location.pathname !== saved.pathname || location.search !== saved.search) {
+        // Use location.replace() instead of history.replaceState() to avoid
+        // the browser's 100 replaceState/10s rate limit across large test suites.
+        // location.replace() navigates to the URL without adding a history entry
+        // and is not subject to the replaceState rate limit.
+        history.replaceState(null, '', savedUrl);
+    }
 }
 
 //================================================================================

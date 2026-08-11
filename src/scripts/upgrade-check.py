@@ -82,10 +82,10 @@ REMOVED_EVENTS = {
 }
 
 SSE_EVENT_RENAMES = {
-    "htmx:sseOpen": "htmx:after:sse:connection",
+    "htmx:sseOpen": "htmx:sse:after:connection",
     "htmx:sseError": "htmx:sse:error",
-    "htmx:sseBeforeMessage": "htmx:before:sse:message",
-    "htmx:sseMessage": "htmx:after:sse:message",
+    "htmx:sseBeforeMessage": "htmx:sse:before:message",
+    "htmx:sseMessage": "htmx:sse:after:message",
     "htmx:sseClose": "htmx:sse:close",
 }
 
@@ -102,6 +102,7 @@ WS_EVENT_RENAMES = {
 # Extension attribute renames
 EXT_ATTR_RENAMES = {
     "sse-connect": "rename to hx-sse:connect",
+    "sse-close": "rename to hx-sse:close",
     "sse-swap": "removed — SSE now integrates with standard htmx request pipeline",
     "ws-connect": "rename to hx-ws:connect",
     "ws-send": "rename to hx-ws:send",

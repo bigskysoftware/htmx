@@ -351,7 +351,7 @@ Use `swapEmpty` to keep the target or clear it:
 <div hx-swap="innerHTML swapEmpty">Original</div>
 ```
 
-Default: [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty)
+Default behavior: skip if partials or OOB swaps were extracted (unless [`htmx.config.allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB) is `true`)
 
 ## Caveats
 

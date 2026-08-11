@@ -38,12 +38,12 @@ Here is an example that includes a separate input value:
 This is a little contrived as you would typically enclose both of these elements in a `form` and submit
 the value automatically, but it demonstrates the concept.
 
-Note that you can also use the `inherit` keyword to inherit parent values for inclusion and add additional values:
+Note that you can use the `:append` modifier to inherit parent values for inclusion and add additional values (the parent must expose its value with `:inherited`):
 
 ```html
-<main hx-include="#hidden-input">
+<main hx-include:inherited="#hidden-input">
     ...
-    <button hx-post="/example" hx-include="inherit, [name='email']">
+    <button hx-post="/example" hx-include:append="[name='email']">
         Post It!
     </button>
     Enter email: <input name="email" type="email"/>
@@ -57,7 +57,7 @@ Finally, note that if you include a non-input element, all input elements enclos
 when working with the extended selectors such as `find` and `closest`.
 
   ```html
-  <div hx-include="find input">
+  <div hx-include:inherited="find input">
       <button hx-post="/register">
           Register!
       </button>

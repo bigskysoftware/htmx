@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-types",
   "name": "htmx",
-  "version": "4.0.0-beta5",
+  "version": "4.0.0-beta6",
   "default-icon": "./htmx.svg",
   "js-types-syntax": "typescript",
   "description-markup": "markdown",
@@ -527,23 +527,23 @@
         },
         {
           "name": "before:viewTransition",
-          "description": "Fires before a View Transition API swap task starts. `detail.task` is the swap task.",
+          "description": "Fires before a View Transition API swap task starts. `detail.task` is the swap task and can be replaced to wrap it; `detail.ctx` is the request context. Fires on the element that triggered the swap.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-before-viewTransition"
         },
         {
           "name": "after:viewTransition",
-          "description": "Fires after a View Transition API swap task completes. `detail.task` is the swap task.",
+          "description": "Fires after a View Transition API swap task completes. `detail.task` is the swap task; `detail.ctx` is the request context. Fires on the element that triggered the swap.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-after-viewTransition"
         },
         {
-          "name": "before:sse:connection",
+          "name": "sse:before:connection",
           "description": "Fires before an SSE connection attempt. `detail.connection` can be modified; set `cancelled` or cancel the event to stop connecting.",
-          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxbeforesseconnection"
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxssebeforeconnection"
         },
         {
-          "name": "after:sse:connection",
+          "name": "sse:after:connection",
           "description": "Fires after a successful SSE connection or reconnection. `detail.connection` describes the connection.",
-          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxaftersseconnection"
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxsseafterconnection"
         },
         {
           "name": "sse:close",
@@ -556,14 +556,14 @@
           "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxsseerror"
         },
         {
-          "name": "before:sse:message",
+          "name": "sse:before:message",
           "description": "Fires before an SSE message is processed. `detail.message` contains `data`, `event`, `id`, and `cancelled`.",
-          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxbeforessemessage"
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxssebeforemessage"
         },
         {
-          "name": "after:sse:message",
+          "name": "sse:after:message",
           "description": "Fires after an SSE message is processed. `detail.message` contains `data`, `event`, and `id`.",
-          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxafterssemessage"
+          "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxsseaftermessage"
         },
         {
           "name": "ws:before:connection",
@@ -621,24 +621,24 @@
           "doc-url": "https://four.htmx.org/extensions/hx-download#events"
         },
         {
-          "name": "before:head:merge",
+          "name": "head:before:merge",
           "description": "Fires before the hx-head extension processes response `<head>` content. `detail.ctx` is the request context.",
-          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxbeforeheadmerge"
+          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxheadbeforemerge"
         },
         {
-          "name": "before:head:add",
+          "name": "head:before:add",
           "description": "Fires before the hx-head extension adds a new head element. `detail.headElement` is the element. Cancel to skip it.",
-          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxbeforeheadadd"
+          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxheadbeforeadd"
         },
         {
-          "name": "before:head:remove",
+          "name": "head:before:remove",
           "description": "Fires before the hx-head extension removes a head element. `detail.headElement` is the element. Cancel to keep it.",
-          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxbeforeheadremove"
+          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxheadbeforeremove"
         },
         {
-          "name": "after:head:merge",
+          "name": "head:after:merge",
           "description": "Fires after the hx-head extension merges head content. `detail.added`, `detail.kept`, and `detail.removed` list affected elements.",
-          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxafterheadmerge"
+          "doc-url": "https://four.htmx.org/extensions/hx-head#htmxheadaftermerge"
         },
         {
           "name": "history:cache:before:save",
@@ -667,7 +667,7 @@
         },
         {
           "name": "history:cache:after:restore",
-          "description": "Fires after cached content is restored. `detail.item` is the restored cache item.",
+          "description": "Fires after cached content is restored. `detail.item` is the restored cache item; the `before:restore` detail fields are carried through.",
           "doc-url": "https://four.htmx.org/extensions/hx-history-cache#events"
         },
         {

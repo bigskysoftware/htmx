@@ -74,8 +74,8 @@ var htmx = (() => {
             for (let [key, val] of Object.entries(source)) {
                 if (['__proto__', 'constructor', 'prototype'].includes(key)) continue;
 
-                let sourceIsObject = val && typeof val === 'object' && !Array.isArray(val);
-                let targetIsObject = target[key] && typeof target[key] === 'object' && !Array.isArray(target[key]);
+                let sourceIsObject = val?.constructor === Object;
+                let targetIsObject = target[key]?.constructor === Object;
 
                 if (sourceIsObject && targetIsObject) {
                     HCON.merge(val, target[key]);
@@ -154,7 +154,6 @@ var htmx = (() => {
         #ttPolicy = { createHTML: s => s, createScript: s => s };
         #actionSelector
         #boostSelector = "a,form";
-        #verbs = ["get", "post", "put", "patch", "delete"];
         #hxOnQuery
         #transitionQueue
         #historyAbort
@@ -166,6 +165,7 @@ var htmx = (() => {
             this.#actionSelector = this.#prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete]');
             this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.#prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
             this.#internalAPI = {
+                HCON,
                 attributeValue: this.#attributeValue.bind(this),
                 parseTriggerSpecs: this.#parseTriggerSpecs.bind(this),
                 determineMethodAndAction: this.#determineMethodAndAction.bind(this),
@@ -198,7 +198,7 @@ var htmx = (() => {
         }
 
         #initHtmxConfig() {
-            this.version = '4.0.0-beta5'
+            this.version = '4.0.0-beta6'
             this.config = {
                 logAll: false,
                 prefix: "data-hx-",
@@ -342,34 +342,42 @@ var htmx = (() => {
         }
 
         #determineMethodAndAction(elt, evt) {
-            if (this.#isBoosted(elt)) {
-                return this.#boostedMethodAndAction(elt, evt)
-            } else {
-                let method = this.#attributeValue(elt, "hx-method") || "GET"
-                let action = this.#attributeValue(elt, "hx-action");
-                if (!action) {
-                    for (let verb of this.#verbs) {
-                        let verbAction = this.#attributeValue(elt, "hx-" + verb);
-                        if (verbAction != null) {
-                            action = verbAction;
-                            method = verb;
-                            break;
-                        }
-                    }
-                }
-                method = method.toUpperCase()
-                return {action, method}
-            }
-        }
+            let hxMethod = this.#attributeValue(elt, "hx-method");
+            let hxAction = this.#attributeValue(elt, "hx-action");
 
-        #boostedMethodAndAction(elt, evt) {
-            if (elt.matches("a")) {
-                return {action: elt.getAttribute("href"), method: "GET"}
-            } else {
-                let action = evt.submitter?.getAttribute?.("formAction") || elt.getAttribute("action");
-                let method = evt.submitter?.getAttribute?.("formMethod") || elt.getAttribute("method") || "GET";
-                return {action, method: method.toUpperCase()}
-            }
+            let hxGet = this.#attributeValue(elt, "hx-get");
+            let hxPost = this.#attributeValue(elt, "hx-post");
+            let hxPut = this.#attributeValue(elt, "hx-put");
+            let hxPatch = this.#attributeValue(elt, "hx-patch");
+            let hxDelete = this.#attributeValue(elt, "hx-delete");
+
+            let formMethod = evt.submitter?.getAttribute?.("formmethod") || elt.getAttribute("method");
+            let formAction = evt.submitter?.getAttribute?.("formAction") || elt.getAttribute("action");
+            let anchorHref = elt.getAttribute("href");
+
+            return {
+                action:
+                    hxAction ||
+                    (
+                        hxGet ??
+                        hxPost ??
+                        hxPut ??
+                        hxPatch ??
+                        hxDelete
+                    ) ||
+                    this.#isBoosted(elt) && (anchorHref || formAction),
+
+                method: (
+                    hxMethod ||
+                    (hxGet != null ? "GET" :
+                    hxPost != null ? "POST" :
+                    hxPut != null ? "PUT" :
+                    hxPatch != null ? "PATCH" :
+                    hxDelete != null && "DELETE") ||
+                    formMethod ||
+                    "GET"
+                ).toUpperCase()
+            };
         }
 
         #htmxProp(elt) {
@@ -445,9 +453,9 @@ var htmx = (() => {
             }
 
             // Apply hx-config overrides
-            let configAttr = this.#attributeValue(sourceElement, "hx-config");
-            if (configAttr) {
-                HCON.merge(configAttr, ctx.request);
+            let hxConfig = this.#attributeValue(sourceElement, "hx-config");
+            if (hxConfig) {
+                HCON.merge(hxConfig, ctx.request);
                 ctx.request.mode = this.config.mode;  // mode is security-sensitive, never allow per-element override
             }
             return ctx;
@@ -537,7 +545,7 @@ var htmx = (() => {
             })
 
             if (!this.#trigger(elt, "htmx:config:request", {ctx: ctx})) return
-            if (!this.#verbs.includes(ctx.request.method.toLowerCase())) return
+            if (ctx.request.method === 'DIALOG') return
 
             let javascriptContent = this.#extractJavascriptContent(ctx.request.action);
             if (javascriptContent != null) {
@@ -636,6 +644,9 @@ var htmx = (() => {
                 this.#trigger(elt, "htmx:error", {ctx, error})
             } finally {
                 clearTimeout(ctx.requestTimeout);
+                if (ctx.hx?.trigger) { // HX-Trigger
+                    this.#handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
+                }
                 this.#trigger(elt, "htmx:finally:request", {ctx})
                 if (!ctx.keepIndicators) {
                     this.#hideIndicators(indicators);
@@ -664,9 +675,6 @@ var htmx = (() => {
         // Handle response headers that abort normal swap processing.
         // Returns true if the response was fully handled by a header.
         #handleHeadersAndMaybeReturnEarly(ctx) {
-            if (ctx.hx.trigger) { // HX-Trigger
-                this.#handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
-            }
             if (ctx.hx.refresh === 'true') { // HX-Refresh
                 location.reload();
                 return true
@@ -698,19 +706,19 @@ var htmx = (() => {
         }
 
         #determineSyncStrategy(elt) {
-            let syncValue = this.#attributeValue(elt, "hx-sync");
-            if (!syncValue) return "queue first";
-            let strategy = syncValue.split(":").pop().trim();
+            let hxSync = this.#attributeValue(elt, "hx-sync");
+            if (!hxSync) return "queue first";
+            let strategy = hxSync.split(":").pop().trim();
             return /^(drop|abort|replace|queue)/.test(strategy) ? strategy : "queue first";
         }
 
         #getRequestQueue(elt) {
-            let syncValue = this.#attributeValue(elt, "hx-sync");
+            let hxSync = this.#attributeValue(elt, "hx-sync");
             let syncElt = elt
-            if (syncValue) {
-                let selector = syncValue.includes(":")
-                    ? syncValue.slice(0, syncValue.lastIndexOf(":")).trim()
-                    : (/^(drop|abort|replace|queue)/.test(syncValue) ? null : syncValue);
+            if (hxSync) {
+                let selector = hxSync.includes(":")
+                    ? hxSync.slice(0, hxSync.lastIndexOf(":")).trim()
+                    : (/^(drop|abort|replace|queue)/.test(hxSync) ? null : hxSync);
                 if (selector) syncElt = this.#findOrWarn(elt, selector, "hx-sync") || elt;
             }
             return this.#htmxState(syncElt).rq ||= new ReqQ()
@@ -744,13 +752,11 @@ var htmx = (() => {
         }
 
         #initializeTriggers(elt, initialHandler = elt._htmx.eventHandler) {
-            let specString = this.#attributeValue(elt, "hx-trigger");
-            if (!specString) {
-                specString = elt.matches("form") ? "submit" :
-                    elt.matches("input:not([type=button]):not([type=submit]),select,textarea") ? "change" :
-                        "click";
-            }
-            this.#onTrigger(elt, specString, initialHandler)
+            let hxTrigger = this.#attributeValue(elt, "hx-trigger");
+            let trigger = hxTrigger || (elt.matches("form") ? "submit" :
+                elt.matches("input:not([type=button]):not([type=submit]),select,textarea") ? "change" :
+                    "click");
+            this.#onTrigger(elt, trigger, initialHandler)
         }
 
         // Wire up event listeners with full modifier support (once, prevent, stop,
@@ -967,12 +973,12 @@ var htmx = (() => {
         }
 
         #maybeBoost(elt) {
-            let boostValue = this.#attributeValue(elt, "hx-boost");
-            if (boostValue && boostValue !== "false" && this.#shouldBoost(elt) && this.#trigger(elt, "htmx:before:init", {}, true)) {
+            let hxBoost = this.#attributeValue(elt, "hx-boost");
+            if (hxBoost && hxBoost !== "false" && this.#shouldBoost(elt) && this.#trigger(elt, "htmx:before:init", {}, true)) {
                 let htmxProp = this.#htmxProp(elt);
                 htmxProp.initialized = true;
                 htmxProp.eventHandler = this.#createHtmxEventHandler(elt);
-                htmxProp.boosted = boostValue;
+                htmxProp.boosted = hxBoost;
                 let eventName = elt.matches('a') ? 'click' : 'submit';
                 elt._htmx.listeners.push({fromElt: elt, eventName, handler: elt._htmx.eventHandler});
                 elt.addEventListener(eventName, elt._htmx.eventHandler);
@@ -1220,7 +1226,7 @@ var htmx = (() => {
             }
             if (swapSpec.show === 'top' || swapSpec.show === 'bottom') {
                 let showTarget = swapSpec.showTarget ? this.#findExt(swapSpec.showTarget) : target;
-                showTarget?.scrollIntoView(swapSpec.show === 'top')
+                showTarget?.scrollIntoView?.(swapSpec.show === 'top')
             }
         }
 
@@ -1297,7 +1303,7 @@ var htmx = (() => {
                 if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
                 this.#handleAnchorScroll(ctx);
             } finally {
-                this.#trigger(ctx.sourceElement, "htmx:swap:finally", {ctx});
+                this.#trigger(ctx.sourceElement, "htmx:finally:swap", {ctx});
             }
         }
 
@@ -1610,16 +1616,19 @@ var htmx = (() => {
             if (!history.state) {
                 history.replaceState({htmx: true}, '', location.href);
             }
-            window.addEventListener('popstate', (event) => {
-                if (event.state && event.state.htmx) {
-                    this.#historyAbort?.abort();
-                    this.#restoreHistory();
-                }
-            });
+            if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
+                navigation.addEventListener('navigate', (event) => {
+                    if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
+                        event.intercept({handler: () => this.#restoreHistory()});
+                });
+            } else {
+                window.addEventListener('popstate', (event) => this.#restoreHistory(event.state));
+            }
         }
 
         #pushUrlIntoHistory(path) {
             if (!this.config.history) return;
+            if (!history.state) history.replaceState({htmx: true}, '', location.href);
             history.pushState({htmx: true}, '', path);
             this.#trigger(document, "htmx:after:history:push", {path});
         }
@@ -1630,7 +1639,11 @@ var htmx = (() => {
             this.#trigger(document, "htmx:after:history:replace", {path});
         }
 
-        #restoreHistory(path) {
+        async #restoreHistory(state, path) {
+            await this.timeout(1);
+            state ??= history.state;
+            if (!state?.htmx) return;
+            this.#historyAbort?.abort();
             path = path || location.pathname + location.search;
             let historyElt = document.querySelector(this.#prefixSelector('[hx-history-elt]')) || document.body;
             if (this.#trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
@@ -1638,7 +1651,7 @@ var htmx = (() => {
                     location.reload();
                 } else {
                     this.#historyAbort = new AbortController();
-                    this.ajax('GET', path, {
+                    return this.ajax('GET', path, {
                         target: historyElt,
                         swap: 'outerSync',
                         select: historyElt !== document.body ? this.#prefixSelector('[hx-history-elt]') : undefined,
@@ -1738,12 +1751,13 @@ var htmx = (() => {
         }
 
         #showIndicators(elt) {
-            let indicatorsSelector = this.#attributeValue(elt, "hx-indicator");
+            let hxIndicator = this.#attributeValue(elt, "hx-indicator");
             let indicatorElements;
-            if (!indicatorsSelector) {
+            if (!hxIndicator) {
+                if (elt === document.body) return [];
                 indicatorElements = [elt]
             } else {
-                indicatorElements = this.#findAllExt(elt, indicatorsSelector, "hx-indicator");
+                indicatorElements = this.#findAllExt(elt, hxIndicator, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
                 let s = this.#htmxState(indicator);
@@ -1764,10 +1778,10 @@ var htmx = (() => {
         }
 
         #disableElements(elt) {
-            let disabledSelector = this.#attributeValue(elt, "hx-disable");
+            let hxDisable = this.#attributeValue(elt, "hx-disable");
             let disabledElements = []
-            if (disabledSelector) {
-                disabledElements = this.#findAllExt(elt, disabledSelector, "hx-disable");
+            if (hxDisable) {
+                disabledElements = this.#findAllExt(elt, hxDisable, "hx-disable");
                 for (let indicator of disabledElements) {
                     let s = this.#htmxState(indicator);
                     s.dc = (s.dc || 0) + 1;
@@ -1800,9 +1814,9 @@ var htmx = (() => {
                 formData.append(submitter.name, submitter.value)
                 included.add(submitter);
             }
-            let includeSelector = this.#attributeValue(elt, "hx-include");
-            if (includeSelector) {
-                for (let node of this.#findAllExt(elt, includeSelector)) {
+            let hxInclude = this.#attributeValue(elt, "hx-include");
+            if (hxInclude) {
+                for (let node of this.#findAllExt(elt, hxInclude)) {
                     if (validate && node.reportValidity && !node.reportValidity()) return
                     this.#addInputValues(node, included, formData);
                 }
@@ -1813,44 +1827,45 @@ var htmx = (() => {
         #addInputValues(elt, included, formData, isGet) {
             let tag = elt.tagName;
             let inputs = [];
-            if (tag === 'BUTTON') {
-                inputs = [elt]; // buttons only send own value, never collect children
+            if (tag === 'BUTTON' || tag.includes('-')) {
+                inputs = [elt]; // send own value only, never collect children
             } else if (['INPUT', 'SELECT', 'TEXTAREA', 'FIELDSET'].includes(tag) || !isGet) {
-                inputs = this.#queryEltAndDescendants(elt, 'input, select, textarea');
+                inputs = this.#queryEltAndDescendants(elt, '[name]:not(button)');
             }
             // GET on non-form-control containers (div, etc.) sends nothing — use hx-include for explicit inclusion
 
             for (let input of inputs) {
-                if (!input.name || input.matches(':disabled') || included.has(input)) continue;
+                let name = input.name || input.getAttribute?.('name');
+                if (!name || input.matches(':disabled') || included.has(input)) continue;
                 included.add(input);
 
                 let type = input.type;
-                if (type === 'checkbox' || type === 'radio') {
+                if (type === 'checkbox' || type === 'radio' || (input.tagName !== 'INPUT' && 'checked' in input)) {
                     // Only add if checked
                     if (input.checked) {
-                        formData.append(input.name, input.value);
+                        formData.append(name, input.value);
                     }
                 } else if (type === 'file') {
                     // Add all selected files
                     for (let file of input.files) {
-                        formData.append(input.name, file);
+                        formData.append(name, file);
                     }
                 } else if (type === 'select-multiple') {
                     // Add all selected options
                     for (let option of input.selectedOptions) {
-                        formData.append(input.name, option.value);
+                        formData.append(name, option.value);
                     }
                 } else {
-                    formData.append(input.name, input.value);
+                    formData.append(name, input.value);
                 }
             }
         }
 
         #getAttributeObject(elt, attrName, callback, scope = {}) {
-            let attrValue = this.#attributeValue(elt, attrName);
-            if (!attrValue) return null;
+            let hxAttr = this.#attributeValue(elt, attrName);
+            if (!hxAttr) return null;
 
-            let javascriptContent = this.#extractJavascriptContent(attrValue);
+            let javascriptContent = this.#extractJavascriptContent(hxAttr);
             if (javascriptContent) {
                 // Wrap in braces if not already wrapped (for htmx 2.x compatibility)
                 if (javascriptContent.indexOf('{') !== 0) {
@@ -1862,7 +1877,7 @@ var htmx = (() => {
                 });
             } else {
                 // Synchronous path - return the parsed object directly
-                callback(HCON.parse(attrValue));
+                callback(HCON.parse(hxAttr));
             }
         }
 
@@ -2059,6 +2074,7 @@ var htmx = (() => {
                     let placeholder = document.createElement(newChild.tagName);
                     oldParent.insertBefore(placeholder, insertionPoint);
                     this.#morphNode(placeholder, newChild, ctx);
+                    this.process(placeholder);
                     insertionPoint = placeholder.nextSibling;
                 } else {
                     oldParent.insertBefore(newChild, insertionPoint);
@@ -2126,10 +2142,6 @@ var htmx = (() => {
             }
             // Script tags must be identical to match - never patch a script with different content
             if (oldNode.tagName === 'SCRIPT' && !oldNode.isEqualNode(newNode)) return false;
-            // If both have Alpine reactive ID bindings, ignore ID mismatch
-            if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
-                return true;
-            }
             return !oldNode.id || oldNode.id === newNode.id;
         }
 
@@ -2343,6 +2355,9 @@ var htmx = (() => {
 })()
 
 ;
+
+htmx.version += "-htmax";
+htmx.config.historyCache ??= { disable: true };
 (() => {
     let api;
 
@@ -2633,8 +2648,8 @@ var htmx = (() => {
         if (!connectUrl) return;
         if (element._htmx?.sse) return; // already set up
 
-        let specString = api.attributeValue(element, 'hx-trigger') || 'load';
-        api.onTrigger(element, specString, () => {
+        let hxTrigger = api.attributeValue(element, 'hx-trigger') || 'load';
+        api.onTrigger(element, hxTrigger, () => {
             if (element._htmx?.sse) return; // prevent duplicate connections
             htmx.ajax('GET', connectUrl, {source: element});
         });
@@ -2686,8 +2701,9 @@ var htmx = (() => {
             api = internalAPI;
         },
 
-        htmx_config_request: (element, detail) => {
-            detail.ctx.request.headers['Accept'] = 'text/html, text/event-stream';
+        htmx_config_request: (element, {ctx: {request}}) => {
+            request.headers.Accept =
+                `${request.headers.Accept ?? request.headers.accept ?? 'text/html'}, text/event-stream`;
         },
 
         // Intercept SSE responses before core consumes the body
@@ -2820,7 +2836,8 @@ var htmx = (() => {
             socket: null,
             attempt: 0,
             timer: null,
-            pendingRequests: new Map(),       //            abortController: null,
+            pendingRequests: new Map(),
+            abortController: null,
             visibilityHandler: null,
             cancelled: false
         };
@@ -2902,7 +2919,7 @@ var htmx = (() => {
         }
 
         try {
-            connection.socket = new WebSocket(url);
+            connection.socket = new WebSocket(url, connection.config?.protocols);
             let ac = new AbortController();
             connection.abortController = ac;
             let opts = { signal: ac.signal };
@@ -3235,7 +3252,7 @@ var htmx = (() => {
         let specString = api.attributeValue(element, 'hx-trigger');
         if (!specString) {
             specString = element.matches('form') ? 'submit' :
-                         element.matches('input:not([type=button]),select,textarea') ? 'change' :
+                         element.matches('input:not([type=button]):not([type=submit]),select,textarea') ? 'change' :
                          'click';
         }
 
@@ -3334,7 +3351,7 @@ var htmx = (() => {
         window.addEventListener('pagehide', () => {
             connections.forEach((connection) => {
                 if (connection.socket) {
-                    connection.socket.close(1001, 'page navigating away');
+                    connection.socket.close(1000, 'page navigating away');
                 }
             });
         });
@@ -3476,35 +3493,20 @@ var htmx = (() => {
     let activeCount = 0;
     let activeAborts = new Set();
 
-    // FIX: removed `historyUpdating` flag. The original used this to distinguish
-    // between the intercept being aborted by htmx's pushState vs the user clicking
-    // the stop button, and would re-hijack listenForNavigate() on history updates.
-    // This was fragile — the abort from navigation.navigate() fires asynchronously
-    // (as a microtask), so the flag was already reset to false by the time the abort
-    // handler ran. Instead we now call stopIndicator() pre-emptively in
-    // htmx_before_history_update before the pushState abort can fire, making the
-    // flag unnecessary entirely.
-
     let cleanupNavigation = null;
 
     function shouldShowIndicator(elt) {
-        if (api.attributeValue(elt, 'hx-browser-indicator') === 'true') return true;
+        let val = api.attributeValue(elt, 'hx-browser-indicator');
+        if (val != null && val !== 'false') return true;
         if (htmx.config.boostBrowserIndicator && elt._htmx?.boosted) return true;
         return false;
     }
 
     function listenForNavigate() {
         navigation.addEventListener('navigate', (event) => {
-            // FIX: added canIntercept guard. Without this, calling event.intercept()
-            // on a non-interceptable navigation (e.g. cross-origin) throws an error.
             if (!event.canIntercept) return;
 
-            // FIX: capture history.state before the intercept. navigation.navigate()
-            // with {history:'replace'} wipes history.state to null on the replaced
-            // entry. This meant that when the user pressed Back, popstate fired with
-            // event.state === null, htmx's check `event.state.htmx` failed, and
-            // __restoreHistory() was never called — leaving stale page content.
-            // We save it here so we can restore it in cleanupNavigation.
+            // save state before intercept — navigation.navigate() with {history:'replace'} wipes it
             let savedState = history.state;
 
             let hideBrowserIndicator;
@@ -3514,32 +3516,18 @@ var htmx = (() => {
                 focusReset: 'manual'
             });
 
-            let abortHandler = () => {
-                // FIX: simplified abort handler — no more historyUpdating branch.
-                // The only time we reach here now is if the user clicks the browser
-                // stop button, because htmx_before_history_update calls stopIndicator()
-                // (which nulls cleanupNavigation and resolves the indicator) before
-                // htmx's pushState fires its own navigate event that would abort this
-                // signal. So if we get here with activeCount > 0, it's a genuine stop.
+            event.signal.addEventListener('abort', () => {
                 if (activeCount > 0) {
                     activeAborts.forEach(abort => abort());
                     activeAborts.clear();
                     activeCount = 0;
                 }
-                // FIX: always null cleanupNavigation on abort regardless of activeCount,
-                // so stopIndicator() doesn't try to call an already-aborted handler.
                 cleanupNavigation = null;
-            };
-            event.signal.addEventListener('abort', abortHandler);
+            });
 
             cleanupNavigation = () => {
                 hideBrowserIndicator();
-                // FIX: restore the saved history.state after resolving the intercept.
-                // We do this AFTER calling hideBrowserIndicator() because calling
-                // history.replaceState() while the Navigation API intercept is still
-                // pending immediately aborts the intercept signal — killing the browser
-                // loading indicator prematurely. By resolving first then restoring,
-                // the indicator completes its full lifecycle before we touch history.
+                // restore after resolving — replaceState during a pending intercept aborts the signal early
                 history.replaceState(savedState, '');
             };
         }, {once: true});
@@ -3563,34 +3551,16 @@ var htmx = (() => {
         },
 
         htmx_before_history_update: () => {
-            // FIX: replaced historyUpdating=true with a direct stopIndicator() call.
-            // htmx is about to call history.pushState() for the new URL. That pushState
-            // fires a navigate event of type 'push' which aborts our current replace
-            // intercept's signal. If we let that abort fire naturally, the abort handler
-            // would see activeCount > 0 and incorrectly treat it as a stop-button press,
-            // aborting all in-flight requests. By calling stopIndicator() here first we:
-            //   1. Resolve hideBrowserIndicator() — stops the browser spinner cleanly
-            //   2. Restore history.state on the current entry BEFORE htmx pushes the
-            //      new entry, so the current entry retains {htmx:true} and Back works
-            //   3. Null cleanupNavigation so the subsequent abort is a no-op
+            // stop indicator before htmx pushState fires a navigate event that would abort it
             stopIndicator();
         },
-
-        // FIX: removed htmx_after_history_update entirely — it only reset historyUpdating
-        // to false which is no longer needed.
 
         htmx_before_request: (elt, detail) => {
             if (!shouldShowIndicator(elt)) return;
             detail.ctx._browserIndicator = true;
             activeCount++;
             if (activeCount === 1) startIndicator();
-            // FIX: moved activeAborts.add to AFTER startIndicator(). Previously it was
-            // before startIndicator(), which meant when navigation.navigate() fired its
-            // navigate event synchronously and then aborted the previous intercept, the
-            // abort handler would find the new request's abort already in activeAborts
-            // and call it immediately — cancelling the request before it even started.
-            // Adding it after startIndicator() means activeAborts is empty when the
-            // abort fires during navigation.navigate(), so nothing gets incorrectly cancelled.
+            // add abort after startIndicator() so it isn't present when navigate fires during navigation.navigate()
             if (detail.ctx.request?.abort) activeAborts.add(detail.ctx.request.abort);
         },
 
@@ -3712,7 +3682,8 @@ var htmx = (() => {
         let optimisticDiv = document.createElement('div');
         optimisticDiv.style.cssText = 'all: initial';
         optimisticDiv.classList.add('hx-optimistic');
-        optimisticDiv.innerHTML = sourceElt.innerHTML;
+        let sourceNodes = sourceElt instanceof HTMLTemplateElement ? sourceElt.content.childNodes : sourceElt.childNodes;
+        for (let child of sourceNodes) optimisticDiv.appendChild(child.cloneNode(true));
 
         // Set data-* for each request param
         if (ctx.optimisticBody) {
@@ -3831,7 +3802,7 @@ var htmx = (() => {
 // Hooks:
 //   htmx:after:process  find new [hx-live] elements and register them
 //   htmx:before:swap    increment swap depth (defer recomputes)
-//   htmx:swap:finally   decrement, fire one consolidated recompute
+//   htmx:finally:swap   decrement, fire one consolidated recompute
 //   htmx:scope          inject q, wait, trigger, debounce into JS expression scopes
 (() => {
     let api;
@@ -3840,6 +3811,7 @@ var htmx = (() => {
     let dbSym = Symbol();
     let observer = null;
     let recomputeBound = null;
+    let inputBound = null;
     let swaps = 0;
     let i = 0;
     let start = 0;
@@ -3847,10 +3819,14 @@ var htmx = (() => {
 
     const OBSERVE_OPTIONS = { childList: true, subtree: true, attributes: true, characterData: true };
 
+    let inputDebounceId = null;
+    const INPUT_DEBOUNCE_MS = htmx.config.live?.inputDebounceMs ?? 100;
+
     function ensureActive() {
         if (observer) return;
         recomputeBound = () => schedule();
-        document.addEventListener('input', recomputeBound, true);
+        inputBound = () => { clearTimeout(inputDebounceId); inputDebounceId = setTimeout(schedule, INPUT_DEBOUNCE_MS); };
+        document.addEventListener('input', inputBound, true);
         document.addEventListener('change', recomputeBound, true);
         observer = new MutationObserver(recomputeBound);
         observer.observe(document.documentElement, OBSERVE_OPTIONS);
@@ -3858,7 +3834,10 @@ var htmx = (() => {
 
     function deactivate() {
         if (!observer) return;
-        document.removeEventListener('input', recomputeBound, true);
+        clearTimeout(inputDebounceId);
+        inputDebounceId = null;
+        document.removeEventListener('input', inputBound, true);
+        inputBound = null;
         document.removeEventListener('change', recomputeBound, true);
         observer.disconnect();
         observer = null;
@@ -4424,10 +4403,20 @@ var htmx = (() => {
     }
 
     function writeAttrBinding(elt, attrName, value) {
-        if (attrName === 'text') { elt.textContent = value == null ? '' : String(value); return; }
-        if (attrName === 'html') { elt.innerHTML = value == null ? '' : String(value); return; }
+        if (attrName === 'text') {
+            let s = value == null ? '' : String(value);
+            if (elt.textContent !== s) elt.textContent = s;
+            return;
+        }
+        if (attrName === 'html') {
+            let s = value == null ? '' : String(value);
+            if (elt.innerHTML !== s) elt.innerHTML = s;
+            return;
+        }
         if (attrName === 'style') { applyStyleBinding(elt, value); return; }
-        // Everything else (class, .class, aria-*, boolean, property-sync, regular) → applyAttr.
+        // Always write aria-* and property-backed attrs (getter type differs from setter).
+        // For everything else skip if unchanged.
+        if (!attrName.startsWith('aria-') && !PROPERTY_ATTRS.has(attrName) && applyAttr([elt], attrName) === value) return;
         applyAttr([elt], attrName, value);
     }
 
@@ -4463,7 +4452,7 @@ var htmx = (() => {
         htmx_before_swap: () => {
             swaps++;
         },
-        htmx_swap_finally: () => {
+        htmx_finally_swap: () => {
             if (--swaps === 0 && fns.size > 0) schedule();
         },
         htmx_scope: (elt, detail) => {
@@ -4482,6 +4471,451 @@ var htmx = (() => {
                 classList: elt.classList,
                 data: makeDataProxy(elt)
             });
+        }
+    });
+})();
+(() => {
+    let api;
+    let _currentId = null;
+
+    const INDEX_KEY = 'htmx-history-index';
+
+    function cfg() {
+        return htmx.config.historyCache;
+    }
+
+    function prefixSelector(s) {
+        let result = [s];
+        if (htmx.config.prefix) result.push(s.replaceAll('hx-', htmx.config.prefix));
+        return result.join(',');
+    }
+
+    function canUseStorage() {
+        try {
+            sessionStorage.setItem('__htmx_test__', '1');
+            sessionStorage.removeItem('__htmx_test__');
+            return true;
+        } catch (_) { return false; }
+    }
+
+    function genId() {
+        return crypto.randomUUID?.() ?? Math.random().toString(36).slice(2);
+    }
+
+    function getHistoryTarget() {
+        return htmx.find(prefixSelector('[hx-history-elt]')) || document.body;
+    }
+
+    const ATTR_VALUE   = 'data-htmx-history-value';
+    const ATTR_CHECKED = 'data-htmx-history-checked';
+    const ATTR_SCROLL  = 'data-htmx-history-scroll';
+
+    function annotateState(root) {
+        root.querySelectorAll('input, textarea, select').forEach(el => {
+            let type = el.type?.toLowerCase();
+            if (type === 'file' || type === 'password') return;
+            if (type === 'checkbox' || type === 'radio') {
+                if (el.checked) el.setAttribute(ATTR_CHECKED, '1');
+            } else if (el.tagName === 'SELECT' && el.multiple) {
+                let selected = Array.from(el.options).filter(o => o.selected).map(o => o.value);
+                if (selected.length) el.setAttribute(ATTR_VALUE, JSON.stringify(selected));
+            } else if (el.value) {
+                el.setAttribute(ATTR_VALUE, el.value);
+            }
+        });
+        root.querySelectorAll('*').forEach(el => {
+            if (el.scrollTop > 0 || el.scrollLeft > 0)
+                el.setAttribute(ATTR_SCROLL, `${el.scrollTop},${el.scrollLeft}`);
+        });
+    }
+
+    function restoreAnnotations(root) {
+        root.querySelectorAll(`[${ATTR_CHECKED}]`).forEach(el => {
+            el.checked = true;
+            el.removeAttribute(ATTR_CHECKED);
+        });
+        root.querySelectorAll(`[${ATTR_VALUE}]`).forEach(el => {
+            let raw = el.getAttribute(ATTR_VALUE);
+            if (el.tagName === 'SELECT' && el.multiple) {
+                let values = JSON.parse(raw);
+                Array.from(el.options).forEach(o => { o.selected = values.includes(o.value); });
+            } else {
+                el.value = raw;
+            }
+            el.removeAttribute(ATTR_VALUE);
+        });
+        root.querySelectorAll(`[${ATTR_SCROLL}]`).forEach(el => {
+            let [top, left] = el.getAttribute(ATTR_SCROLL).split(',').map(Number);
+            el.scrollTop = top;
+            el.scrollLeft = left;
+            el.removeAttribute(ATTR_SCROLL);
+        });
+    }
+
+    function cleanContent(elt) {
+        let clone = elt.cloneNode(true);
+        clone.querySelectorAll('.htmx-request').forEach(el => el.classList.remove('htmx-request'));
+        clone.querySelectorAll('[disabled][data-disabled-by-htmx]').forEach(el => {
+            el.removeAttribute('disabled');
+            el.removeAttribute('data-disabled-by-htmx');
+        });
+        return clone.outerHTML;
+    }
+
+    // --- Stamp the current history entry with an htmxId and track it ---
+
+    function stampCurrentEntry() {
+        let state = history.state || { htmx: true };
+        let id = state.htmxId;
+        if (!id) {
+            id = genId();
+            history.replaceState({ ...state, htmxId: id }, '', location.href);
+        }
+        _currentId = id;
+    }
+
+    // --- sessionStorage (LRU index of htmxIds) ---
+
+    function readIndex() {
+        try { return JSON.parse(sessionStorage.getItem(INDEX_KEY)) || []; } catch { return []; }
+    }
+
+    function writeIndex(index) {
+        sessionStorage.setItem(INDEX_KEY, JSON.stringify(index));
+    }
+
+    function saveToStorage(htmxId, entry) {
+        if (!canUseStorage() || cfg().size <= 0) return false;
+        let index = readIndex().filter(id => id !== htmxId);
+        while (index.length >= cfg().size) {
+            sessionStorage.removeItem('htmx-history-' + index.shift());
+        }
+        let data = JSON.stringify(entry);
+        while (true) {
+            try {
+                sessionStorage.setItem('htmx-history-' + htmxId, data);
+                index.push(htmxId);
+                writeIndex(index);
+                return true;
+            } catch (e) {
+                if (index.length === 0) return false;
+                sessionStorage.removeItem('htmx-history-' + index.shift());
+            }
+        }
+    }
+
+    function getFromStorage(htmxId) {
+        try { return JSON.parse(sessionStorage.getItem('htmx-history-' + htmxId)); } catch { return null; }
+    }
+
+    // --- save / get ---
+
+
+    function saveCurrentPage(targetId) {
+        targetId = targetId || _currentId;
+        if (!targetId) return;
+        if (htmx.find(prefixSelector('[hx-history="false"]'))) return;
+
+        let target = getHistoryTarget();
+        annotateState(target);
+        let head = document.head.outerHTML;
+        let scroll = window.scrollY;
+        let title = document.title;
+
+        let detail = { target, head };
+        if (api.triggerHtmxEvent(document, 'htmx:history:cache:before:save', detail) === false) return;
+        let content = cleanContent(target);
+        head = detail.head;
+
+        saveToStorage(targetId, { content, head, scroll, title });
+        api.triggerHtmxEvent(document, 'htmx:history:cache:after:save', { content, head, scroll, title });
+    }
+
+    function getCachedContent() {
+        let id = history.state?.htmxId;
+        if (!id) return null;
+        return canUseStorage() ? getFromStorage(id) : null;
+    }
+
+    async function restoreFromCache(item) {
+        let detail = { head: item.head, ready: null };
+        api.triggerHtmxEvent(document, 'htmx:history:cache:before:restore', detail);
+        if (detail.ready) await detail.ready;
+
+        let cachedHTML = item.content;
+        let restoreSwapTarget = getHistoryTarget();
+        let restoreSwapStyle = cfg().swapStyle;
+        let ctx = {
+            sourceElement: document.body,
+            target: restoreSwapTarget,
+            swap: restoreSwapStyle,
+            text: cachedHTML,
+            transition: false,
+            _deferredHeadScripts: detail._deferredHeadScripts
+        };
+        await htmx.swap(ctx);
+
+        document.title = item.title || document.title;
+        requestAnimationFrame(() => {
+            window.scrollTo(0, item.scroll || 0);
+            restoreAnnotations(getHistoryTarget());
+            api.triggerHtmxEvent(document, 'htmx:history:cache:after:restore', { item });
+        });
+    }
+
+    htmx.registerExtension('history-cache', {
+        init: (internalAPI) => {
+            api = internalAPI;
+            htmx.config.historyCache            ??= {};
+            htmx.config.historyCache.size          ??= 10;
+            htmx.config.historyCache.refreshOnMiss ??= false;
+            htmx.config.historyCache.disable       ??= false;
+            htmx.config.historyCache.swapStyle     ??= 'outerSync';
+            stampCurrentEntry();
+        },
+
+        // Before core pushes/replaces, save the outgoing page
+        htmx_before_history_update: (elt, detail) => {
+            if (cfg().disable) return;
+            stampCurrentEntry();
+            saveCurrentPage();
+        },
+
+        // After core pushes/replaces, stamp the new entry and track it
+        htmx_after_history_update: () => {
+            if (cfg().disable) return;
+            stampCurrentEntry();
+        },
+
+        htmx_before_history_restore: (elt, detail) => {
+            if (cfg().disable) return;
+
+            let outgoingId = _currentId;
+            let destinationId = history.state?.htmxId;
+
+            if (outgoingId && outgoingId !== destinationId) {
+                saveCurrentPage(outgoingId);
+            }
+
+            if (!destinationId) {
+                stampCurrentEntry();
+            } else {
+                _currentId = destinationId;
+            }
+
+            let item = getCachedContent();
+            if (!item) {
+                let missDetail = { path: detail.path, refreshOnMiss: cfg().refreshOnMiss };
+                api.triggerHtmxEvent(document, 'htmx:history:cache:miss', missDetail);
+                if (missDetail.refreshOnMiss) { location.reload(); return false; }
+                return;
+            }
+
+            let hitDetail = { path: detail.path, item };
+            if (api.triggerHtmxEvent(document, 'htmx:history:cache:hit', hitDetail) === false) return;
+
+            detail.cancelled = true;
+            restoreFromCache(hitDetail.item);
+            return false;
+        }
+    });
+})();
+//==========================================================
+// hx-upsert.js
+//
+// An extension to add 'upsert' swap style that updates
+// existing elements by ID and inserts new ones.
+//
+// Modifiers:
+//   key:attr - attribute name for sorting (default: id)
+//   sort - sort ascending
+//   sort:desc - sort descending
+//   prepend - prepend elements without keys (default: append)
+//==========================================================
+(() => {
+    let api;
+    
+    htmx.registerExtension('upsert', {
+        init: (internalAPI) => {
+            api = internalAPI;
+        },
+        htmx_process_upsert: (templateElt, detail) => {
+            let {ctx, tasks} = detail;
+            let swapSpec = {style: 'upsert'};
+            let key = templateElt.getAttribute('key');
+            let sort = templateElt.getAttribute('sort');
+            let prepend = templateElt.hasAttribute('prepend');
+            if (key) swapSpec.key = key;
+            if (sort !== null) swapSpec.sort = sort || true;
+            if (prepend) swapSpec.prepend = true;
+            tasks.push({
+                type: 'partial',
+                fragment: templateElt.content.cloneNode(true),
+                target: api.attributeValue(templateElt, 'hx-target'),
+                swapSpec,
+                sourceElement: ctx.sourceElement
+            });
+        },
+        handle_swap: (style, target, fragment, swapSpec) => {
+            if (style === 'upsert') {
+                let keyAttr = swapSpec.key || 'id';
+                let desc = swapSpec.sort === 'desc';
+                let firstChild = target.firstChild;
+                
+                let getKey = (el) => el.getAttribute(keyAttr) || el.id;
+                
+                let compare = (a, b) => {
+                    let result = a.localeCompare(b, undefined, {numeric: true});
+                    return desc ? -result : result;
+                };
+                
+                for (let newEl of Array.from(fragment.children)) {
+                    let id = newEl.id;
+                    if (id) {
+                        let existing = document.getElementById(id);
+                        if (existing) {
+                            existing.replaceWith(newEl);
+                            continue;
+                        }
+                    }
+                    
+                    let newKey = getKey(newEl);
+                    if (!newKey) {
+                        if (swapSpec.prepend) {
+                            target.insertBefore(newEl, firstChild);
+                        } else {
+                            target.appendChild(newEl);
+                        }
+                        continue;
+                    }
+                    
+                    let inserted = false;
+                    for (let child of target.children) {
+                        let childKey = getKey(child);
+                        if (childKey && compare(newKey, childKey) < 0) {
+                            target.insertBefore(newEl, child);
+                            inserted = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!inserted) {
+                        target.appendChild(newEl);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+    });
+})();
+//==========================================================
+// hx-alpine-compat.js
+//
+// Alpine.js compatibility extension for htmx
+// Initializes Alpine on fragments before swap
+// and preserves Alpine state during morph operations
+//==========================================================
+(() => {
+    let api;
+    let deferCount = 0;
+
+    function maybeFlush() {
+        if (deferCount > 0) deferCount--;
+        if (deferCount === 0 && window.Alpine?.flushAndStopDeferringMutations) {
+            window.Alpine.flushAndStopDeferringMutations();
+        }
+    }
+
+    htmx.registerExtension('alpine-compat', {
+        init: (internalAPI) => {
+            api = internalAPI;
+            
+            // Override isSoftMatch to handle Alpine reactive IDs
+            let originalIsSoftMatch = api.isSoftMatch;
+            api.isSoftMatch = function(oldNode, newNode) {
+                // If both have Alpine reactive ID bindings, ignore ID mismatch
+                if (oldNode._x_bindings?.id && newNode.matches?.('[\\:id], [x-bind\\:id]')) {
+                    return oldNode instanceof Element && oldNode.tagName === newNode.tagName;
+                }
+                return originalIsSoftMatch(oldNode, newNode);
+            };
+        },
+        
+        htmx_before_swap: (elt, detail) => {
+            if (!window.Alpine?.closestDataStack || !window.Alpine?.cloneNode || !window.Alpine?.deferMutations) {
+                return;
+            }
+            if (deferCount === 0) {
+                window.Alpine.deferMutations();
+            }
+            deferCount++;
+            
+            let {tasks} = detail;
+            for (let task of tasks) {
+                if (task.swapSpec.style === 'innerMorph' || task.swapSpec.style === 'outerMorph') {
+                    if (!task.fragment || !task.target) continue;
+                    
+                    let target = typeof task.target === 'string' 
+                        ? document.querySelector(task.target) 
+                        : task.target;
+                    if (!target) continue;
+                }
+            }
+        },
+        
+        htmx_before_morph_node: (elt, detail) => {
+            if (!window.Alpine?.closestDataStack || !window.Alpine?.cloneNode) {
+                return;
+            }
+            let {oldNode, newNode} = detail;
+            
+            let oldDataStack = window.Alpine.closestDataStack(oldNode);
+            newNode._x_dataStack = oldDataStack;
+            
+            // skip cloneNode for template children that will have errors as they can not have reactive content 
+            if (!oldNode.isConnected) return;
+            
+            window.Alpine.cloneNode(oldNode, newNode);
+            
+            // If both have _x_teleport, morph the teleport target
+            if (oldNode._x_teleport && newNode._x_teleport) {
+                let fragment = document.createDocumentFragment();
+                fragment.append(newNode._x_teleport);
+                api.morph(oldNode._x_teleport, fragment, false);
+            }
+        },
+
+        htmx_history_cache_before_save: (elt, detail) => {
+            if (!window.Alpine?.destroyTree) return;
+            detail.target.querySelectorAll('[x-data]').forEach(el => {
+                if (el._x_dataStack) {
+                    el.setAttribute('data-alpine-state', JSON.stringify(el._x_dataStack[0]));
+                }
+            });
+            window.Alpine.destroyTree(detail.target);
+        },
+
+        htmx_history_cache_after_restore: (elt, detail) => {
+            if (!window.Alpine) return;
+            document.querySelectorAll('[data-alpine-state]').forEach(el => {
+                let saved = JSON.parse(el.getAttribute('data-alpine-state'));
+                el.removeAttribute('data-alpine-state');
+                if (el._x_dataStack) {
+                    for (let key in saved) {
+                        try { el._x_dataStack[0][key] = saved[key]; } catch {}
+                    }
+                }
+            });
+        },
+
+        htmx_after_swap: (elt, detail) => {
+            detail.ctx._alpineFlushed = true;
+            maybeFlush();
+        },
+
+        htmx_finally_request: (elt, detail) => {
+            if (!detail.ctx._alpineFlushed) maybeFlush();
         }
     });
 })();

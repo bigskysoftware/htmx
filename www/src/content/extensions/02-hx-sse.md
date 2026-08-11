@@ -278,7 +278,13 @@ data: <p>New message</p>
 
 ```
 
-On reconnect, `hx-sse` automatically includes the [`Last-Event-ID`](#last-event-id) header:
+The stream keeps the current event ID:
+
+- An event without `id` inherits the current ID.
+- An empty `id:` clears the ID.
+- An ID-only block ending with a blank line updates or clears the ID without dispatching a message.
+
+On reconnect, `hx-sse` includes [`Last-Event-ID`](#last-event-id) when the current ID is not empty:
 
 ```http
 Last-Event-ID: event-42
@@ -294,6 +300,8 @@ event-43  --------X             disconnected
           <-------------------  Last-Event-ID: event-42
 event-43  ------------------->  replayed
 ```
+
+The server decides which messages to replay. `hx-sse` processes every event it receives and does not deduplicate replays.
 
 ### Trigger Client Events
 
@@ -407,7 +415,9 @@ Identifies the last received SSE event during reconnection.
 Last-Event-ID: event-42
 ```
 
-The extension sends this header after a message supplies an `id` field. The server decides how to replay later messages.
+The extension sends this header while the current event ID is not empty. Events without `id` inherit that ID, while an empty `id:` removes the header from later reconnects.
+
+The server decides how to replay later messages. The client does not deduplicate them.
 
 ## Events
 
@@ -437,12 +447,12 @@ event.detail.message = {
 }
 ```
 
-### `htmx:before:sse:connection`
+### `htmx:sse:before:connection`
 
 Fires before htmx starts the initial stream or schedules a reconnect.
 
 ```js
-document.addEventListener('htmx:before:sse:connection', event => {
+document.addEventListener('htmx:sse:before:connection', event => {
   if (event.detail.connection.attempt > 5) event.preventDefault()
 })
 ```
@@ -452,24 +462,24 @@ The initial HTTP response has already arrived. Cancel either way:
 - call `event.preventDefault()`
 - set `event.detail.connection.cancelled` to `true`
 
-### `htmx:after:sse:connection`
+### `htmx:sse:after:connection`
 
 Fires after the initial response or a reconnect is ready to stream.
 
 ```js
-document.addEventListener('htmx:after:sse:connection', event => {
+document.addEventListener('htmx:sse:after:connection', event => {
   console.log('Connected:', event.detail.connection.url)
 })
 ```
 
 `connection.status` contains the HTTP status.
 
-### `htmx:before:sse:message`
+### `htmx:sse:before:message`
 
 Fires before processing an SSE message.
 
 ```js
-document.addEventListener('htmx:before:sse:message', event => {
+document.addEventListener('htmx:sse:before:message', event => {
   let message = event.detail.message
   if (message.event === 'heartbeat') event.preventDefault()
   else message.data = sanitize(message.data)
@@ -478,12 +488,12 @@ document.addEventListener('htmx:before:sse:message', event => {
 
 Changing `message.data` changes the swap or named event data. Changing `message.event` changes whether the message swaps or dispatches a DOM event.
 
-### `htmx:after:sse:message`
+### `htmx:sse:after:message`
 
 Fires after htmx swaps or dispatches an SSE message.
 
 ```js
-document.addEventListener('htmx:after:sse:message', event => {
+document.addEventListener('htmx:sse:after:message', event => {
   console.log('Received:', event.detail.message.data)
 })
 ```
@@ -652,7 +662,7 @@ These attributes changed:
 |----------|----------|---------------|
 | [`sse-connect`](https://htmx.org/extensions/sse/#connecting-to-an-sse-server) | [`hx-sse:connect`](#hx-sseconnect) | Works with a warning |
 | [`sse-swap`](https://htmx.org/extensions/sse/#receiving-named-events) | Unnamed messages swap automatically | Removed; warns |
-| [`sse-close`](https://htmx.org/extensions/sse/) | [`hx-sse:close`](#hx-sseclose) | Removed |
+| [`sse-close`](https://htmx.org/extensions/sse/) | [`hx-sse:close`](#hx-sseclose) | Works with a warning |
 
 #### Events
 
@@ -660,10 +670,21 @@ These events changed:
 
 | htmx 2.x | htmx 4.x |
 |----------|----------|
-| [`htmx:sseOpen`](https://htmx.org/extensions/sse/#htmxsseopen) | [`htmx:after:sse:connection`](#htmxaftersseconnection) |
+| [`htmx:sseOpen`](https://htmx.org/extensions/sse/#htmxsseopen) | [`htmx:sse:after:connection`](#htmxsseafterconnection) |
 | [`htmx:sseError`](https://htmx.org/extensions/sse/#htmxsseerror) | [`htmx:sse:error`](#htmxsseerror) |
-| [`htmx:sseBeforeMessage`](https://htmx.org/extensions/sse/#htmxssebeforemessage) | [`htmx:before:sse:message`](#htmxbeforessemessage) |
-| [`htmx:sseMessage`](https://htmx.org/extensions/sse/#htmxssemessage) | [`htmx:after:sse:message`](#htmxafterssemessage) |
+| [`htmx:sseBeforeMessage`](https://htmx.org/extensions/sse/#htmxssebeforemessage) | [`htmx:sse:before:message`](#htmxssebeforemessage) |
+| [`htmx:sseMessage`](https://htmx.org/extensions/sse/#htmxssemessage) | [`htmx:sse:after:message`](#htmxsseaftermessage) |
 | [`htmx:sseClose`](https://htmx.org/extensions/sse/#htmxsseclose) | [`htmx:sse:close`](#htmxsseclose) |
 
 htmx 4 uses [`fetch()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) and [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream) instead of [`EventSource`](https://developer.mozilla.org/en-US/docs/Web/API/EventSource). SSE responses can therefore use any htmx HTTP method, request values, and headers.
+
+### Beta to RC1
+
+RC1 namespaces SSE lifecycle events:
+
+| Beta | RC1 |
+|------|-----|
+| `htmx:before:sse:connection` | [`htmx:sse:before:connection`](#htmxssebeforeconnection) |
+| `htmx:after:sse:connection` | [`htmx:sse:after:connection`](#htmxsseafterconnection) |
+| `htmx:before:sse:message` | [`htmx:sse:before:message`](#htmxssebeforemessage) |
+| `htmx:after:sse:message` | [`htmx:sse:after:message`](#htmxsseaftermessage) |

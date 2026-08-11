@@ -29,7 +29,8 @@
         let optimisticDiv = document.createElement('div');
         optimisticDiv.style.cssText = 'all: initial';
         optimisticDiv.classList.add('hx-optimistic');
-        optimisticDiv.innerHTML = sourceElt.innerHTML;
+        let sourceNodes = sourceElt instanceof HTMLTemplateElement ? sourceElt.content.childNodes : sourceElt.childNodes;
+        for (let child of sourceNodes) optimisticDiv.appendChild(child.cloneNode(true));
 
         // Set data-* for each request param
         if (ctx.optimisticBody) {

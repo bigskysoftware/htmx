@@ -40,7 +40,7 @@ Use `js:` prefix to evaluate JavaScript:
 By default, a child element's `hx-vals` declaration completely replaces the parent's value for any shared key. Use the `:append` modifier to merge the child's values into the parent's instead:
 
 ```html
-<div hx-vals='{"category": "books", "lang": "en"}'>
+<div hx-vals:inherited='{"category": "books", "lang": "en"}'>
   <!-- Replaces parent entirely for shared keys -->
   <button hx-get="/search" hx-vals='{"category": "fiction"}'>Fiction</button>
 

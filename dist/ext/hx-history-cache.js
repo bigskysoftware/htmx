@@ -166,11 +166,14 @@
         api.triggerHtmxEvent(document, 'htmx:history:cache:before:restore', detail);
         if (detail.ready) await detail.ready;
 
+        let cachedHTML = item.content;
+        let restoreSwapTarget = getHistoryTarget();
+        let restoreSwapStyle = cfg().swapStyle;
         let ctx = {
             sourceElement: document.body,
-            target: getHistoryTarget(),
-            swap: cfg().swapStyle,
-            text: item.content,
+            target: restoreSwapTarget,
+            swap: restoreSwapStyle,
+            text: cachedHTML,
             transition: false,
             _deferredHeadScripts: detail._deferredHeadScripts
         };
@@ -198,7 +201,7 @@
         // Before core pushes/replaces, save the outgoing page
         htmx_before_history_update: (elt, detail) => {
             if (cfg().disable) return;
-            if (!_currentId) stampCurrentEntry();
+            stampCurrentEntry();
             saveCurrentPage();
         },
 

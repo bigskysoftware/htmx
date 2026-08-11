@@ -190,3 +190,36 @@ describe('process() unit tests', function() {
     })
 
 });
+
+describe('initialize() unit tests', function() {
+
+    beforeEach(function() {
+        setupTest();
+    });
+
+    afterEach(function() {
+        cleanupTest();
+    });
+
+    it('initialize() processes document.body', function() {
+        let btn = createProcessedHTML('<button hx-get="/test"></button>')
+        btn.removeAttribute('data-htmx-powered')
+        delete btn._htmx
+        htmx.initialize()
+        assert.isTrue(btn.hasAttribute('data-htmx-powered'))
+    })
+
+    it('initialize() is idempotent - calling twice does not double-register history listeners', function() {
+        let count = 0
+        let orig = window.addEventListener
+        window.addEventListener = function(type, ...args) {
+            if (type === 'popstate') count++
+            return orig.call(this, type, ...args)
+        }
+        htmx.initialize()
+        htmx.initialize()
+        window.addEventListener = orig
+        assert.isAtMost(count, 1, 'popstate listener registered more than once')
+    })
+
+});

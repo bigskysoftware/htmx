@@ -28,12 +28,12 @@ Here is an example with a spinner adjacent to the button:
 </div>
 ```
 
-Use `inherit` to keep parent indicators and add more selectors:
+Use the `:append` modifier to keep parent indicators and add more selectors (the parent must expose its value with `:inherited`):
 
 ```html
-<main hx-indicator="#global-indicator">
+<main hx-indicator:inherited="#global-indicator">
     ...
-    <button hx-post="/example" hx-indicator="inherit, #spinner">
+    <button hx-post="/example" hx-indicator:append="#spinner">
         Post It!
     </button>
     <img  id="spinner" class="htmx-indicator" src="/img/bars.svg" alt="Loading..."/>

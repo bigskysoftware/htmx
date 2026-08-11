@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.0.0-beta6] - 2026-07-22
+
+* New `hx-multipart` extension: stream `multipart/mixed` and `multipart/parallel` responses, with per-part `HX-*` action headers
+* History scroll restoration via the Navigation API, with a Firefox fallback ([#3905](https://github.com/bigskysoftware/htmx/pull/3905))
+* `HCON` is now exposed to extensions ([#3879](https://github.com/bigskysoftware/htmx/pull/3879))
+* Support for custom request methods like `query` ([#3892](https://github.com/bigskysoftware/htmx/pull/3892), [#3883](https://github.com/bigskysoftware/htmx/pull/3883))
+* **Breaking:** renamed event `htmx:swap:finally` to `htmx:finally:swap` ([#3873](https://github.com/bigskysoftware/htmx/pull/3873))
+* `HX-Trigger` response-header events now fire after swap ([#3900](https://github.com/bigskysoftware/htmx/pull/3900))
+* `hx-live` performance: skip no-change updates ([#3891](https://github.com/bigskysoftware/htmx/pull/3891)), cache compiled `safeEval` tags ([#3888](https://github.com/bigskysoftware/htmx/pull/3888))
+* `hx-ws`: forward `protocols` to the `WebSocket` constructor ([#3874](https://github.com/bigskysoftware/htmx/pull/3874)); rewritten/refined implementation
+* `optimistic` extension handles trusted-type policies via `cloneNode` ([#3887](https://github.com/bigskysoftware/htmx/pull/3887))
+* Custom-element manual input value collection ([#3872](https://github.com/bigskysoftware/htmx/pull/3872))
+* Many smaller fixes and a website overhaul
+
 ## [4.0.0-beta5] - 2026-06-26
 
 * New `hx-prompt` extension, restoring the htmx 2 `hx-prompt` attribute ([#3828](https://github.com/bigskysoftware/htmx/pull/3828))

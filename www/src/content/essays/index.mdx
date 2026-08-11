@@ -5,6 +5,7 @@ description: "On hypermedia and building for the web."
 
 import { getFolder } from '../../lib/content';
 import JumpTo from '../../components/JumpTo.astro';
+import IndexTable from '../../components/IndexTable.astro';
 
 export const essayFolder = await getFolder('essays');
 export const localEssays = essayFolder.files;
@@ -110,17 +111,19 @@ export const getPageHeadings = () => [
     </span>
 </h2>
 
-<table>
-    <tbody>
-        {recentEssays.map(essay => (
-            <tr class="stretch-link">
-                <td><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></td>
-                <td class="whitespace-nowrap text-neutral-650 dark:text-neutral-350">{essay.author || ''}</td>
-                <td class="whitespace-nowrap tabular-nums text-neutral-650 dark:text-neutral-350">{essay.date}</td>
-            </tr>
-        ))}
-    </tbody>
-</table>
+<IndexTable>
+    {recentEssays.map(essay => (
+        <tr>
+            <th scope="row"><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></th>
+            <td>
+                <span>
+                    <span>{essay.author || ''}</span>
+                    <time>{essay.date}</time>
+                </span>
+            </td>
+        </tr>
+    ))}
+</IndexTable>
 
 </section>
 
@@ -135,17 +138,19 @@ export const getPageHeadings = () => [
     </span>
 </h2>
 
-<table>
-    <tbody>
-        {group.essays.map(essay => (
-            <tr class="stretch-link">
-                <td><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></td>
-                <td class="whitespace-nowrap text-neutral-650 dark:text-neutral-350">{essay.author || ''}</td>
-                <td class="whitespace-nowrap tabular-nums text-neutral-650 dark:text-neutral-350">{essay.date || ''}</td>
-            </tr>
-        ))}
-    </tbody>
-</table>
+<IndexTable>
+    {group.essays.map(essay => (
+        <tr>
+            <th scope="row"><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></th>
+            <td>
+                <span>
+                    <span>{essay.author || ''}</span>
+                    <time>{essay.date || ''}</time>
+                </span>
+            </td>
+        </tr>
+    ))}
+</IndexTable>
 
 </section>
 ))}

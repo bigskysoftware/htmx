@@ -9,9 +9,12 @@ The `htmx:after:viewTransition` event fires after a View Transition animation co
 
 After the View Transition API finishes animating the swap operation.
 
+Fires on the element that triggered the swap, or on `document` when there is none.
+
 ## Event Detail
 
 - `task` - Transition callback information
+- `ctx` - The request context driving the swap
 
 ## Example
 

@@ -539,15 +539,21 @@ A single document-wide `MutationObserver` and `input` / `change` listeners trigg
 - `input` or `change` events from any control
 - completion of an htmx swap (recomputes pause mid-swap, run once at the end)
 
-All expressions run in a single microtask, so multiple synchronous mutations coalesce into one recompute.
+Each expression is pre-compiled once when registered. All pre-compiled expressions then run in a single microtask, so multiple synchronous mutations coalesce into one recompute.
 
 ### Self-mutation is safe
 
 When an expression writes to the DOM, the observer drains its own pending records inside the same microtask. Writes made by `hx-live` cannot trigger a feedback loop.
 
-### Runaway cap
+### Slow expressions
 
-If recomputes exceed 50/sec, the extension logs a warning. Bindings continue running. Tune your expression or add `debounce`.
+After a change, hx-live runs every live expression once. If this takes more than `16ms`, hx-live logs one warning:
+
+```text
+htmx: hx-live expressions took 18.4ms.
+```
+
+The warning does not stop the expressions.
 
 ### Coordinating with htmx swaps
 
@@ -619,6 +625,7 @@ All [helpers](#helpers) are exposed under `htmx.live.*` for use from regular Jav
 
 ```js
 htmx.live.q('.row')
+htmx.live.$('.row')
 htmx.live.attr('.row', 'hidden', true)
 htmx.live.take('.tab.active', '.active', '.tab')
 ```
@@ -633,6 +640,14 @@ htmx.live.refresh();
 Selector directionals (`next`, `previous`, `closest`) need an anchor and only work inside `hx-live` / `hx-on`, not from `htmx.live.q`.
 
 ## Configuration
+
+### `config.live.inputDebounce`
+
+Set how long hx-live waits after an `input` event. Use a number of milliseconds or an interval string. The default is `100ms`.
+
+```html
+<meta name="htmx-config" content="live.inputDebounce:20ms">
+```
 
 ### `config.live.bindPrefix`
 
@@ -686,6 +701,28 @@ With `bindPrefix: 'hx:'`:
 <!-- Alpine handles :class, hx-live handles hx:text -->
 <p :class="alpineVar" hx:text="q('#name').value"></p>
 ```
+
+### `config.live.useDollar`
+
+Enable `$()` as an alias for [`q()`](#q):
+
+```html
+<!-- Because jQuery rocks -->
+<meta name="htmx-config" content="live.useDollar:true">
+
+<input id="name">
+<p :text="$('#name').value"></p>
+```
+
+The alias works in:
+
+- [`hx-live`](#hx-live)
+- [`:attr` bindings](#attributes)
+- [`hx-on`](/reference/attributes/hx-on)
+- `js:` attributes
+- [`hx-trigger` filters](/reference/attributes/hx-trigger)
+
+Defaults to `false`.
 
 ## Notes
 

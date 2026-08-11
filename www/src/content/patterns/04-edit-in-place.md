@@ -28,7 +28,7 @@ function viewHTML() {
 server.get("/users/1", () => viewHTML());
 
 server.get("/users/1/edit", () => `
-<form id="user-view" class="p-5 border border-neutral-200 dark:border-neutral-800 rounded-lg max-w-sm" hx-put="/users/1" hx-target="this" hx-swap="outerHTML">
+<form id="user-view" class="p-5 border border-neutral-200 dark:border-neutral-800 rounded-lg max-w-sm" hx-put="/users/1" hx-target:inherited="this" hx-swap:inherited="outerHTML">
     <div class="mb-3">
         <label class="block text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-1">Name
             <input class="mt-1 w-full px-2.5 py-1.5 text-sm border border-neutral-300 dark:border-neutral-700 rounded-md bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-400/30 focus:border-neutral-400 dark:focus:border-neutral-500" name="name" value="${_user.name}" autofocus>
@@ -61,7 +61,7 @@ server.start("/users/1");
 On the client, display the current values with a button that fetches the edit form.
 
 ```html
-<div hx-target="this" hx-swap="outerHTML">
+<div hx-target:inherited="this" hx-swap:inherited="outerHTML">
     <p>Name: Joe Smith</p>
     <p>Email: joe@smith.org</p>
     <button hx-get="/users/1/edit">Edit</button>
@@ -75,7 +75,7 @@ On the client, display the current values with a button that fetches the edit fo
 On the server, respond with a form pre-filled with the current values.
 
 ```html
-<form hx-put="/users/1" hx-target="this" hx-swap="outerHTML">
+<form hx-put="/users/1" hx-target:inherited="this" hx-swap:inherited="outerHTML">
     <label>Name <input name="name" value="Joe Smith"></label>
     <label>Email <input name="email" value="joe@smith.org"></label>
     <button type="submit">Save</button>

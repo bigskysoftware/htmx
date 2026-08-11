@@ -96,7 +96,8 @@
             socket: null,
             attempt: 0,
             timer: null,
-            pendingRequests: new Map(),       //            abortController: null,
+            pendingRequests: new Map(),
+            abortController: null,
             visibilityHandler: null,
             cancelled: false
         };
@@ -178,7 +179,7 @@
         }
 
         try {
-            connection.socket = new WebSocket(url);
+            connection.socket = new WebSocket(url, connection.config?.protocols);
             let ac = new AbortController();
             connection.abortController = ac;
             let opts = { signal: ac.signal };
@@ -511,7 +512,7 @@
         let specString = api.attributeValue(element, 'hx-trigger');
         if (!specString) {
             specString = element.matches('form') ? 'submit' :
-                         element.matches('input:not([type=button]),select,textarea') ? 'change' :
+                         element.matches('input:not([type=button]):not([type=submit]),select,textarea') ? 'change' :
                          'click';
         }
 
@@ -610,7 +611,7 @@
         window.addEventListener('pagehide', () => {
             connections.forEach((connection) => {
                 if (connection.socket) {
-                    connection.socket.close(1001, 'page navigating away');
+                    connection.socket.close(1000, 'page navigating away');
                 }
             });
         });

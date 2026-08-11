@@ -468,6 +468,15 @@ describe('swap() unit tests', function() {
         find('#target_oob').textContent.should.equal("OOB Updated");
     })
 
+    it('does not swap main target when partial target is not found', async function () {
+        createProcessedHTML("<div id='target'>Original</div>")
+        await htmx.swap({
+            "target":"#target",
+            "text":"<hx-partial hx-target='#nonexistent' hx-swap='innerHTML'><div>Should Not Appear</div></hx-partial>"
+        })
+        find('#target').textContent.should.equal("Original");
+    })
+
     it('does not swap main target when only whitespace and partial present', async function () {
         createProcessedHTML("<div id='target'>Original</div><div id='target_oob'>OOB</div>")
         await htmx.swap({
@@ -683,6 +692,16 @@ describe('swap() unit tests', function() {
         target.textContent.should.equal('response')
     })
 
+    it('hx-partial hx-target resolves closest relative to sourceElement', async function () {
+        createProcessedHTML("<ul><li id='item-1'>Item 1 <button id='btn'>Edit</button></li></ul>")
+        await htmx.swap({
+            target: find('#btn'),
+            sourceElement: find('#btn'),
+            text: "<hx-partial hx-target='closest li' hx-swap='innerHTML'>Updated</hx-partial>"
+        })
+        find('#item-1').innerText.should.equal('Updated')
+    })
+
     it('swaps partial to all elements matching a class selector', async function () {
         createProcessedHTML("<div class='target'>A</div><div class='target'>B</div>")
         await htmx.swap({"target":"#test-playground", "text":"<hx-partial hx-target='.target' hx-swap='innerHTML'>Updated</hx-partial>"})
@@ -715,6 +734,58 @@ describe('swap() unit tests', function() {
         await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:false", "text":"<div>New Content</div><div id='oob' hx-swap-oob='true'>Updated</div>"})
         find('#target').innerText.trim().should.equal('New Content');
         find('#oob').innerText.should.equal('Updated');
+    })
+
+    it('by default (allowEmptySwapAfterOOB:false), oob-only response prevents main swap', async function () {
+        let original = htmx.config.allowEmptySwapAfterOOB;
+        htmx.config.allowEmptySwapAfterOOB = false;
+        try {
+            createProcessedHTML("<div id='target'>Original</div><div id='oob'>OOB</div>")
+            await htmx.swap({"target":"#target", "swap":"innerHTML", "text":"<div id='oob' hx-swap-oob='true'>Updated</div>"})
+            find('#target').innerText.should.equal('Original');
+            find('#oob').innerText.should.equal('Updated');
+        } finally {
+            htmx.config.allowEmptySwapAfterOOB = original;
+        }
+    })
+
+    it('allowEmptySwapAfterOOB:true allows empty main swap after oob extraction', async function () {
+        let original = htmx.config.allowEmptySwapAfterOOB;
+        htmx.config.allowEmptySwapAfterOOB = true;
+        try {
+            createProcessedHTML("<div id='target'>Original</div><div id='oob'>OOB</div>")
+            await htmx.swap({"target":"#target", "swap":"innerHTML", "text":"<div id='oob' hx-swap-oob='true'>Updated</div>"})
+            find('#target').innerText.should.equal('');
+            find('#oob').innerText.should.equal('Updated');
+        } finally {
+            htmx.config.allowEmptySwapAfterOOB = original;
+        }
+    })
+
+    it('partials always prevent empty main swap regardless of allowEmptySwapAfterOOB', async function () {
+        let original = htmx.config.allowEmptySwapAfterOOB;
+        htmx.config.allowEmptySwapAfterOOB = true;
+        try {
+            createProcessedHTML("<div id='target'>Original</div><div id='partial'>Partial</div>")
+            await htmx.swap({"target":"#target", "swap":"innerHTML", "text":"<hx-partial hx-target='#partial'>Updated</hx-partial>"})
+            find('#target').innerText.should.equal('Original');
+            find('#partial').innerText.should.equal('Updated');
+        } finally {
+            htmx.config.allowEmptySwapAfterOOB = original;
+        }
+    })
+
+    it('swapEmpty modifier overrides allowEmptySwapAfterOOB config', async function () {
+        let original = htmx.config.allowEmptySwapAfterOOB;
+        htmx.config.allowEmptySwapAfterOOB = true;
+        try {
+            createProcessedHTML("<div id='target'>Original</div><div id='oob'>OOB</div>")
+            await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:false", "text":"<div id='oob' hx-swap-oob='true'>Updated</div>"})
+            find('#target').innerText.should.equal('Original');
+            find('#oob').innerText.should.equal('Updated');
+        } finally {
+            htmx.config.allowEmptySwapAfterOOB = original;
+        }
     })
 
     it('restores focus to textarea after innerHTML swap', async function () {

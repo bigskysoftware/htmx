@@ -1,5 +1,7 @@
 describe('__getRequestQueue / RequestQueue unit tests', function() {
 
+    const noop = () => {}
+
     beforeEach(function() {
         setupTest();
     });
@@ -10,171 +12,118 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
 
     it('allows first request when queue is empty', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
-        let ctx = htmx.__createRequestContext(div, new Event('click'))
         let queue = htmx.__getRequestQueue(div)
 
-        let result = queue.issue(ctx, 'queue first')
-
-        assert.isTrue(result)
+        assert.equal(queue.admit('queue first', noop, noop), 'run')
     })
 
     it('queues request with "queue all" strategy', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
 
-        // Issue first request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx1, 'queue all')
+        queue.admit('queue all', noop, noop)
+        let result = queue.admit('queue all', noop, noop)
 
-        // Queue second request
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.issue(ctx2, 'queue all')
-
-        assert.isFalse(result)
-        assert.equal(ctx2.status, 'queued')
+        assert.equal(result, 'queued')
     })
 
     it('drops request with "drop" strategy', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
 
-        // Issue first request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx1, 'drop')
+        queue.admit('drop', noop, noop)
+        let result = queue.admit('drop', noop, noop)
 
-        // Drop second request
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.issue(ctx2, 'drop')
-
-        assert.isFalse(result)
-        assert.equal(ctx2.status, 'dropped')
+        assert.equal(result, 'dropped')
     })
 
     it('queues only last with "queue last" strategy', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let started = []
 
-        // Issue first request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx1, 'queue last')
+        queue.admit('queue last', () => started.push(1), noop)
+        queue.admit('queue last', () => started.push(2), noop)
+        let result = queue.admit('queue last', () => started.push(3), noop)
 
-        // Queue second request
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx2, 'queue last')
+        assert.equal(result, 'queued')
 
-        // Queue third request (should drop ctx2)
-        let ctx3 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.issue(ctx3, 'queue last')
+        queue.continue()
+        queue.continue()
 
-        assert.isFalse(result)
-        assert.equal(ctx2.status, 'dropped')
-        assert.equal(ctx3.status, 'queued')
+        assert.deepEqual(started, [3])
     })
 
     it('replaces current request with "replace" strategy', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let aborted = false
 
-        // Issue first request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        ctx1.request = {abort: () => { ctx1.aborted = true }}
-        queue.issue(ctx1, 'replace')
+        queue.admit('replace', noop, () => { aborted = true })
+        let result = queue.admit('replace', noop, noop)
 
-        // Replace with second request
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.issue(ctx2, 'replace')
-
-        assert.isTrue(result)
-        assert.isTrue(ctx1.aborted)
+        assert.equal(result, 'run')
+        assert.isTrue(aborted)
     })
 
     it('defaults to "queue first" when strategy not specified', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let started = []
 
-        // Issue first request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx1, 'queue first')
+        queue.admit('queue first', () => started.push(1), noop)
+        let second = queue.admit('queue first', () => started.push(2), noop)
+        let third = queue.admit('queue first', () => started.push(3), noop)
 
-        // Queue second request
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx2, 'queue first')
+        assert.equal(second, 'queued')
+        assert.equal(third, 'dropped')
 
-        // Third request should be dropped (not queued)
-        let ctx3 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.issue(ctx3, 'queue first')
+        queue.continue()
+        queue.continue()
 
-        assert.isFalse(result)
-        assert.equal(ctx2.status, 'queued')
-        assert.equal(ctx3.status, 'dropped')
+        assert.deepEqual(started, [2])
     })
 
-    it('hasMore returns truthy when queue has requests', function () {
+    it('continue runs the next queued request once', function () {
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let queue = htmx.__getRequestQueue(div)
+        let started = []
+
+        queue.admit('queue all', () => started.push(1), noop)
+        queue.admit('queue all', () => started.push(2), noop)
+        queue.admit('queue all', () => started.push(3), noop)
+
+        queue.continue()
+
+        assert.deepEqual(started, [2])
+    })
+
+    it('continue does nothing when the queue is empty', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
 
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx1, 'queue all')
-
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx2, 'queue all')
-
-        assert.isOk(queue.more())
+        queue.continue()
     })
 
-    it('hasMore returns falsey when queue is empty', function () {
+    it('continue clears the current request', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
 
-        assert.isNotOk(queue.more())
+        queue.admit('queue first', noop, noop)
+        queue.continue()
+
+        assert.equal(queue.admit('queue first', noop, noop), 'run')
     })
 
-    it('finish returns next queued request', function () {
+    it('abort calls abort on the current request', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let aborted = false
 
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx1, 'queue all')
-
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx2, 'queue all')
-
-        queue.finish(ctx1)
-        let next = queue.next()
-
-        assert.equal(next, ctx2)
-    })
-
-    it('nextRequest clears current request', function () {
-        let div = createProcessedHTML('<div hx-get="/test"></div>')
-        let queue = htmx.__getRequestQueue(div)
-
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx1, 'queue all')
-
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx2, 'queue all')
-
-        queue.finish(ctx1)
-        queue.next()
-
-        // Should now allow a new request
-        let ctx3 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.issue(ctx3, 'queue first')
-
-        assert.isTrue(result)
-    })
-
-    it('abortCurrentRequest calls abort on current request', function () {
-        let div = createProcessedHTML('<div hx-get="/test"></div>')
-        let queue = htmx.__getRequestQueue(div)
-
-        let ctx = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx, 'queue first')
-
+        queue.admit('queue first', noop, () => { aborted = true })
         queue.abort()
 
-        assert.isTrue(ctx.request.signal.aborted)
+        assert.isTrue(aborted)
     })
 
     it('returns same queue for same element', function () {
@@ -199,28 +148,23 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
     it('hx-sync="drop" without selector uses drop strategy', function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-sync="drop"></div>')
         let queue = htmx.__getRequestQueue(div)
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx1, htmx.__determineSyncStrategy(div))
 
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.issue(ctx2, htmx.__determineSyncStrategy(div))
+        queue.admit(htmx.__determineSyncStrategy(div), noop, noop)
+        let result = queue.admit(htmx.__determineSyncStrategy(div), noop, noop)
 
-        assert.isFalse(result)
-        assert.equal(ctx2.status, 'dropped')
+        assert.equal(result, 'dropped')
     })
 
     it('hx-sync="abort" without selector uses abort strategy', function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-sync="abort"></div>')
         let queue = htmx.__getRequestQueue(div)
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        ctx1.request = {abort: () => { ctx1.aborted = true }}
-        queue.issue(ctx1, htmx.__determineSyncStrategy(div))
+        let aborted = false
 
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        let result = queue.issue(ctx2, htmx.__determineSyncStrategy(div))
+        queue.admit(htmx.__determineSyncStrategy(div), noop, () => { aborted = true })
+        let result = queue.admit(htmx.__determineSyncStrategy(div), noop, noop)
 
-        assert.isFalse(result)
-        assert.equal(ctx2.status, 'dropped')
+        assert.equal(result, 'dropped')
+        assert.isFalse(aborted)
     })
 
     it('hx-sync="selector:drop" uses drop strategy', function () {
@@ -258,150 +202,91 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
 
-        let ctx = htmx.__createRequestContext(div, new Event('click'))
-        ctx.request = {abort: () => { ctx.aborted = true }}
-        let result = queue.issue(ctx, 'abort')
-
-        assert.isTrue(result)
-        assert.equal(ctx.queueStrategy, 'abort')
+        assert.equal(queue.admit('abort', noop, noop), 'run')
     })
 
     it('abort strategy: any request can abort an abortable request', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let aborted = false
 
-        // Issue abort request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        ctx1.request = {abort: () => { ctx1.aborted = true }}
-        queue.issue(ctx1, 'abort')
+        queue.admit('abort', noop, () => { aborted = true })
+        let result = queue.admit('drop', noop, noop)
 
-        // Issue drop request - should abort the abort request
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        ctx2.request = {abort: () => { ctx2.aborted = true }}
-        let result = queue.issue(ctx2, 'drop')
-
-        assert.isTrue(result)
-        assert.isTrue(ctx1.aborted)
+        assert.equal(result, 'run')
+        assert.isTrue(aborted)
     })
 
     it('abort strategy: another abort request drops when abort request is in flight', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let aborted = false
 
-        // Issue abort request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        ctx1.aborted = false
-        ctx1.request = {abort: () => { ctx1.aborted = true }}
-        queue.issue(ctx1, 'abort')
+        queue.admit('abort', noop, () => { aborted = true })
+        let result = queue.admit('abort', noop, noop)
 
-        // Issue another abort request - should be dropped
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        ctx2.aborted = false
-        ctx2.request = {abort: () => { ctx2.aborted = true }}
-        let result = queue.issue(ctx2, 'abort')
-
-        assert.isFalse(result)
-        assert.equal(ctx2.status, 'dropped')
-        assert.isFalse(ctx1.aborted)
+        assert.equal(result, 'dropped')
+        assert.isFalse(aborted)
     })
 
     it('abort strategy: abort request drops itself if non-abortable request is in flight', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let aborted = false
 
-        // Issue drop request (not abortable)
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        ctx1.aborted = false
-        ctx1.request = {abort: () => { ctx1.aborted = true }}
-        queue.issue(ctx1, 'drop')
+        queue.admit('drop', noop, () => { aborted = true })
+        let result = queue.admit('abort', noop, noop)
 
-        // Issue abort request - should be dropped
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        ctx2.aborted = false
-        ctx2.request = {abort: () => { ctx2.aborted = true }}
-        let result = queue.issue(ctx2, 'abort')
-
-        assert.isFalse(result)
-        assert.equal(ctx2.status, 'dropped')
-        assert.isFalse(ctx1.aborted)
+        assert.equal(result, 'dropped')
+        assert.isFalse(aborted)
     })
 
     it('abort strategy: replace request can abort an abortable request', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let aborted = false
 
-        // Issue abort request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        ctx1.request = {abort: () => { ctx1.aborted = true }}
-        queue.issue(ctx1, 'abort')
+        queue.admit('abort', noop, () => { aborted = true })
+        let result = queue.admit('replace', noop, noop)
 
-        // Issue replace request - should abort the abort request
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        ctx2.request = {abort: () => { ctx2.aborted = true }}
-        let result = queue.issue(ctx2, 'replace')
-
-        assert.isTrue(result)
-        assert.isTrue(ctx1.aborted)
+        assert.equal(result, 'run')
+        assert.isTrue(aborted)
     })
 
     it('abort strategy: queue-all request can abort an abortable request', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let aborted = false
 
-        // Issue abort request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        ctx1.request = {abort: () => { ctx1.aborted = true }}
-        queue.issue(ctx1, 'abort')
+        queue.admit('abort', noop, () => { aborted = true })
+        let result = queue.admit('queue all', noop, noop)
 
-        // Issue queue-all request - should abort the abort request
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        ctx2.request = {abort: () => { ctx2.aborted = true }}
-        let result = queue.issue(ctx2, 'queue all')
-
-        assert.isTrue(result)
-        assert.isTrue(ctx1.aborted)
+        assert.equal(result, 'run')
+        assert.isTrue(aborted)
     })
 
     it('abort strategy: abort request drops itself when replace request is in flight', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let aborted = false
 
-        // Issue replace request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        ctx1.aborted = false
-        ctx1.request = {abort: () => { ctx1.aborted = true }}
-        queue.issue(ctx1, 'replace')
+        queue.admit('replace', noop, () => { aborted = true })
+        let result = queue.admit('abort', noop, noop)
 
-        // Issue abort request - should be dropped
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        ctx2.aborted = false
-        ctx2.request = {abort: () => { ctx2.aborted = true }}
-        let result = queue.issue(ctx2, 'abort')
-
-        assert.isFalse(result)
-        assert.equal(ctx2.status, 'dropped')
-        assert.isFalse(ctx1.aborted)
+        assert.equal(result, 'dropped')
+        assert.isFalse(aborted)
     })
 
     it('abort strategy: abort request drops itself when queue-first request is in flight', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let aborted = false
 
-        // Issue queue-first request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        ctx1.aborted = false
-        ctx1.request = {abort: () => { ctx1.aborted = true }}
-        queue.issue(ctx1, 'queue first')
+        queue.admit('queue first', noop, () => { aborted = true })
+        let result = queue.admit('abort', noop, noop)
 
-        // Issue abort request - should be dropped
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        ctx2.aborted = false
-        ctx2.request = {abort: () => { ctx2.aborted = true }}
-        let result = queue.issue(ctx2, 'abort')
-
-        assert.isFalse(result)
-        assert.equal(ctx2.status, 'dropped')
-        assert.isFalse(ctx1.aborted)
+        assert.equal(result, 'dropped')
+        assert.isFalse(aborted)
     })
 
     // hx-sync value parsing tests
@@ -456,34 +341,24 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         assert.equal(htmx.__getRequestQueue(a), htmx.__getRequestQueue(b))
     })
 
-    it('abort strategy: clears queue when aborting current request', function () {
+    it('replace strategy clears queued requests when aborting current', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let aborted = false
+        let started = []
 
-        // Issue non-abortable request
-        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
-        ctx1.aborted = false
-        ctx1.request = {abort: () => { ctx1.aborted = true }}
-        queue.issue(ctx1, 'drop')
+        queue.admit('drop', noop, () => { aborted = true })
+        queue.admit('queue all', () => started.push(2), noop)
+        queue.admit('queue all', () => started.push(3), noop)
 
-        // Queue some requests
-        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx2, 'queue all')
+        let result = queue.admit('replace', noop, noop)
 
-        let ctx3 = htmx.__createRequestContext(div, new Event('click'))
-        queue.issue(ctx3, 'queue all')
+        assert.equal(result, 'run')
+        assert.isTrue(aborted)
 
-        // Issue replace request - should clear queue
-        let ctx4 = htmx.__createRequestContext(div, new Event('click'))
-        ctx4.aborted = false
-        ctx4.request = {abort: () => { ctx4.aborted = true }}
-        let result = queue.issue(ctx4, 'replace')
+        queue.continue()
 
-        assert.isTrue(result)
-        assert.isTrue(ctx1.aborted)
-        assert.equal(ctx2.status, 'dropped')
-        assert.equal(ctx3.status, 'dropped')
-        assert.isNotOk(queue.more())
+        assert.deepEqual(started, [])
     })
 
 });
