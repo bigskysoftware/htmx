@@ -1116,6 +1116,26 @@ describe('hx-live extension', function () {
         delete window.__bareClassSyntax;
     });
 
+    it('bare class works between division operators', function() {
+        let button = createProcessedHTML(`
+            <button class="active" hx-on:click="window.__bareClassDivision = 8 / class.active / 2"></button>
+        `);
+        button.click();
+        window.__bareClassDivision.should.equal(4);
+        delete window.__bareClassDivision;
+    });
+
+    it('bare class works in deeply nested template expressions', function() {
+        let button = createProcessedHTML(`
+            <button class="active" hx-on:click="
+                window.__bareClassTemplate = \`value:\${class.active ? { outer: { value: 'yes' } }.outer.value : 'no'}\`
+            "></button>
+        `);
+        button.click();
+        window.__bareClassTemplate.should.equal('value:yes');
+        delete window.__bareClassTemplate;
+    });
+
     it("toggle('.name') toggles membership", function() {
         let button = createProcessedHTML(`
             <button hx-on:click="toggle('.active')">Go</button>
