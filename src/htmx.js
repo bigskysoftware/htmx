@@ -87,58 +87,42 @@ var htmx = (() => {
         },
     };
 
-    class ReqQ {
-        #c = null
-        #q = []
+    class RequestQueue {
+        #current = null
+        #queue = []
 
-        issue(ctx, queueStrategy) {
-            ctx.queueStrategy = queueStrategy
-            if (!this.#c) {
-                this.#c = ctx
-                return true
-            } else {
-                // Replace strategy OR current is abortable: abort current and issue new
-                if (queueStrategy === "replace" || (queueStrategy !== "abort" && this.#c.queueStrategy === "abort")) {
-                    this.#q.forEach(value => value.status = "dropped");
-                    this.#q = []
-                    this.#c.request?.abort?.();
-                    this.#c = ctx
-                    return true
-                } else if (queueStrategy === "queue all") {
-                    this.#q.push(ctx)
-                    ctx.status = "queued";
-                } else if (queueStrategy === "drop") {
-                    // ignore the request
-                    ctx.status = "dropped";
-                } else if (queueStrategy === "queue last") {
-                    this.#q.forEach(value => value.status = "dropped");
-                    this.#q = [ctx]
-                    ctx.status = "queued";
-                } else if (this.#q.length === 0 && queueStrategy !== "abort") {
-                    // default queue first
-                    this.#q.push(ctx)
-                    ctx.status = "queued";
-                } else {
-                    ctx.status = "dropped";
-                }
-                return false
+        /** Returns "run", "queued", or "dropped" */
+        admit(strategy, runRequest, abortRequest) {
+            if (!this.#current) {
+                this.#current = {strategy, abort: abortRequest}
+                return "run"
             }
+            if (strategy === "replace" || (strategy !== "abort" && this.#current.strategy === "abort")) {
+                this.#queue = []
+                this.#current.abort?.()
+                this.#current = {strategy, abort: abortRequest}
+                return "run"
+            }
+            if (strategy === "queue all") {
+                this.#queue.push(runRequest)
+            } else if (strategy === "queue last") {
+                this.#queue = [runRequest]
+            } else if (strategy !== "abort" && strategy !== "drop" && this.#queue.length === 0) {
+                // default queue first
+                this.#queue.push(runRequest)
+            } else {
+                return "dropped"
+            }
+            return "queued"
         }
 
-        finish() {
-            this.#c = null
-        }
-
-        next() {
-            return this.#q.shift()
+        continue() {
+            this.#current = null    // free current slot
+            this.#queue.shift()?.() // run next request
         }
 
         abort() {
-            this.#c?.request?.abort?.()
-        }
-
-        more() {
-            return this.#q?.length
+            this.#current?.abort?.()
         }
     }
 
@@ -579,7 +563,11 @@ var htmx = (() => {
             let requestQueue = this.__getRequestQueue(elt);
             this.__initializeAbortListener(elt);
 
-            if (!requestQueue.issue(ctx, syncStrategy)) return
+            if (requestQueue.admit(
+                syncStrategy,
+                () => this.__issueRequest(ctx), // run when ready
+                () => ctx.request?.abort?.()    // abort if replaced
+            ) !== "run") return
 
             ctx.status = "issuing"
 
@@ -651,11 +639,7 @@ var htmx = (() => {
                     this.__enableElements(disableElements);
                 }
 
-                requestQueue.finish()
-                if (requestQueue.more()) {
-                    // intentionally not awaited; __issueRequest has its own try/catch
-                    this.__issueRequest(requestQueue.next())
-                }
+                requestQueue.continue()
             }
         }
 
@@ -720,7 +704,7 @@ var htmx = (() => {
                     : (/^(drop|abort|replace|queue)/.test(hxSync) ? null : hxSync);
                 if (selector) syncElt = this.__findOrWarn(elt, selector, "hx-sync") || elt;
             }
-            return this.__htmxState(syncElt).rq ||= new ReqQ()
+            return this.__htmxState(syncElt).rq ||= new RequestQueue()
         }
 
         __isModifierKeyClick(evt) {
