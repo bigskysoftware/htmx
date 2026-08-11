@@ -254,10 +254,6 @@ export interface HtmxLive {
   take(target: string | Element | NodeList, name: string, scope?: string | Node | { from: string }): void;
   /** Toggle or cycle a class or attribute on the target. */
   toggle(target: string | Element | NodeList, name: string, values?: string | string[]): void;
-  /** Get an attribute, class, or property from the first matched element. See `QProxy.attr`. */
-  attr(target: string | Element | NodeList, name: string): any;
-  /** Set an attribute, class, or property on all matched elements. See `QProxy.attr`. */
-  attr(target: string | Element | NodeList, name: string, value: any): void;
   /**
    * Resolves on the next matching event, timeout, or interval, whichever fires first.
    * - `string`: event name on the current element

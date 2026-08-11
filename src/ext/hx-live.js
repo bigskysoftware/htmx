@@ -876,7 +876,6 @@
         refresh: () => schedule(),
         take: (target, name, scope) => applyTake([...asTargets(target)], name, scope),
         toggle: (target, name, ...values) => [...asTargets(target)].forEach(e => applyToggle(e, name, ...values)),
-        attr: (target, name, ...rest) => applyAttr([...asTargets(target)], name, ...rest),
         forEvent: (...args) => forEvent(null, ...args),
         nextFrame: () => new Promise(r => requestAnimationFrame(r))
     };

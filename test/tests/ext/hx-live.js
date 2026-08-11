@@ -1320,16 +1320,16 @@ describe('hx-live extension', function () {
     });
 
     // -------------------------------------------------------------------------
-    // attr() scope helper
+    // attr proxy
     // -------------------------------------------------------------------------
 
-    it('attr() getter: boolean attr returns boolean', function() {
+    it('attr proxy getter: boolean attr returns boolean', function() {
         playground().innerHTML = '<input id="a" disabled><input id="b">';
-        htmx.live.attr('#a', 'disabled').should.equal(true);
-        htmx.live.attr('#b', 'disabled').should.equal(false);
+        htmx.live.q('#a').attr.disabled.should.equal(true);
+        htmx.live.q('#b').attr.disabled.should.equal(false);
     });
 
-    it('attr() getter: ARIA returns raw strings or null', function() {
+    it('attr proxy getter: ARIA returns raw strings or null', function() {
         playground().innerHTML = `
             <div id="a" aria-expanded="true"></div>
             <div id="b" aria-expanded="false"></div>
@@ -1338,131 +1338,119 @@ describe('hx-live extension', function () {
             <div id="e" aria-controls="menu help"></div>
             <div id="f"></div>
         `;
-        htmx.live.attr('#a', 'aria-expanded').should.equal('true');
-        htmx.live.attr('#b', 'aria-expanded').should.equal('false');
-        htmx.live.attr('#c', 'aria-current').should.equal('page');
-        htmx.live.attr('#d', 'aria-valuenow').should.equal('50');
-        htmx.live.attr('#e', 'aria-controls').should.equal('menu help');
-        assert.isNull(htmx.live.attr('#f', 'aria-label'));
+        htmx.live.q('#a').attr['aria-expanded'].should.equal('true');
+        htmx.live.q('#b').attr['aria-expanded'].should.equal('false');
+        htmx.live.q('#c').attr['aria-current'].should.equal('page');
+        htmx.live.q('#d').attr['aria-valuenow'].should.equal('50');
+        htmx.live.q('#e').attr['aria-controls'].should.equal('menu help');
+        assert.isNull(htmx.live.q('#f').attr['aria-label']);
     });
 
-    it('attr() getter: class returns full class string', function() {
-        playground().innerHTML = '<div id="a" class="foo bar baz"></div>';
-        htmx.live.attr('#a', 'class').should.equal('foo bar baz');
-    });
-
-    it('attr() getter: regular attr returns string or null', function() {
+    it('attr proxy getter: regular attr returns string or null', function() {
         playground().innerHTML = '<div id="a" data-x="hello"></div><div id="b"></div>';
-        htmx.live.attr('#a', 'data-x').should.equal('hello');
-        assert.isNull(htmx.live.attr('#b', 'data-x'));
+        htmx.live.q('#a').attr['data-x'].should.equal('hello');
+        assert.isNull(htmx.live.q('#b').attr['data-x']);
     });
 
-    it('attr() getter: checked returns live state', function() {
+    it('attr proxy getter: checked returns live state', function() {
         playground().innerHTML = '<input id="a" type="checkbox">';
         let inp = playground().querySelector('#a');
         inp.checked = true;
-        htmx.live.attr('#a', 'checked').should.equal(true);
+        htmx.live.q('#a').attr.checked.should.equal(true);
     });
 
-    it('attr() getter: value returns live state', function() {
+    it('attr proxy getter: value returns live state', function() {
         playground().innerHTML = '<input id="a" value="hello">';
         let inp = playground().querySelector('#a');
         inp.value = 'world';
-        htmx.live.attr('#a', 'value').should.equal('world');
+        htmx.live.q('#a').attr.value.should.equal('world');
     });
 
-    it('attr() setter: boolean attr truthy sets, falsy removes', function() {
+    it('attr proxy setter: boolean attr truthy sets, falsy removes', function() {
         playground().innerHTML = '<input id="a">';
-        htmx.live.attr('#a', 'disabled', true);
+        htmx.live.q('#a').attr.disabled = true;
         playground().querySelector('#a').hasAttribute('disabled').should.equal(true);
-        htmx.live.attr('#a', 'disabled', false);
+        htmx.live.q('#a').attr.disabled = false;
         playground().querySelector('#a').hasAttribute('disabled').should.equal(false);
     });
 
-    it('attr() setter: ARIA stringifies values and null removes', function() {
+    it('attr proxy setter: ARIA stringifies values and null removes', function() {
         playground().innerHTML = '<div id="a"></div>';
         let div = playground().querySelector('#a');
-        htmx.live.attr('#a', 'aria-expanded', true);
+        htmx.live.q('#a').attr['aria-expanded'] = true;
         div.getAttribute('aria-expanded').should.equal('true');
-        htmx.live.attr('#a', 'aria-expanded', false);
+        htmx.live.q('#a').attr['aria-expanded'] = false;
         div.getAttribute('aria-expanded').should.equal('false');
-        htmx.live.attr('#a', 'aria-expanded', null);
+        htmx.live.q('#a').attr['aria-expanded'] = null;
         div.hasAttribute('aria-expanded').should.equal(false);
     });
 
-    it('attr() setter: aria-* strings and numbers pass through', function() {
+    it('attr proxy setter: aria-* strings and numbers pass through', function() {
         playground().innerHTML = '<div id="a"></div><div id="b"></div><div id="c"></div>';
         // String values (tristate, tokens) pass through unchanged.
-        htmx.live.attr('#a', 'aria-pressed', 'mixed');
+        htmx.live.q('#a').attr['aria-pressed'] = 'mixed';
         playground().querySelector('#a').getAttribute('aria-pressed').should.equal('mixed');
-        htmx.live.attr('#b', 'aria-current', 'page');
+        htmx.live.q('#b').attr['aria-current'] = 'page';
         playground().querySelector('#b').getAttribute('aria-current').should.equal('page');
         // Numbers stringify (e.g. aria-valuenow).
-        htmx.live.attr('#c', 'aria-valuenow', 50);
+        htmx.live.q('#c').attr['aria-valuenow'] = 50;
         playground().querySelector('#c').getAttribute('aria-valuenow').should.equal('50');
     });
 
-    it('attr() treats class as a raw attribute', function() {
-        playground().innerHTML = '<div id="a" class="external"></div>';
-        let div = playground().querySelector('#a');
-        htmx.live.attr('#a', 'class', 'foo bar');
-        div.getAttribute('class').should.equal('foo bar');
-    });
-
-    it('attr() setter: checked changes attribute and live state together', function() {
+    it('attr proxy setter: checked changes attribute and live state together', function() {
         playground().innerHTML = '<input id="a" type="checkbox">';
         let inp = playground().querySelector('#a');
         inp.checked = false;
-        htmx.live.attr('#a', 'checked', true);
+        htmx.live.q('#a').attr.checked = true;
         inp.hasAttribute('checked').should.equal(true);
         inp.checked.should.equal(true);
     });
 
-    it('attr() setter: value changes the attribute and live state together', function() {
+    it('attr proxy setter: value changes the attribute and live state together', function() {
         playground().innerHTML = '<input id="a" type="text" value="initial">';
         let inp = playground().querySelector('#a');
         inp.value = 'live';
-        htmx.live.attr('#a', 'value', 'set');
+        htmx.live.q('#a').attr.value = 'set';
         inp.getAttribute('value').should.equal('set');
         inp.value.should.equal('set');
-        htmx.live.attr('#a', 'value', null);
+        htmx.live.q('#a').attr.value = null;
         inp.hasAttribute('value').should.equal(false);
         inp.value.should.equal('');
     });
 
-    it('attr() setter: regular attr null removes', function() {
+    it('attr proxy setter: regular attr null removes', function() {
         playground().innerHTML = '<div id="a" data-x="hello"></div>';
-        htmx.live.attr('#a', 'data-x', null);
+        htmx.live.q('#a').attr['data-x'] = null;
         playground().querySelector('#a').hasAttribute('data-x').should.equal(false);
     });
 
-    it('attr() setter: regular attr stringifies non-string values', function() {
+    it('attr proxy setter: regular attr stringifies non-string values', function() {
         playground().innerHTML = '<div id="a"></div>';
-        htmx.live.attr('#a', 'data-x', 42);
+        htmx.live.q('#a').attr['data-x'] = 42;
         playground().querySelector('#a').getAttribute('data-x').should.equal('42');
     });
 
-    it('attr() setter: contenteditable false writes "false" string, not removes', function() {
+    it('attr proxy setter: contenteditable false writes "false" string, not removes', function() {
         playground().innerHTML = '<div id="a"></div>';
-        htmx.live.attr('#a', 'contenteditable', false);
+        htmx.live.q('#a').attr.contenteditable = false;
         playground().querySelector('#a').getAttribute('contenteditable').should.equal('false');
     });
 
-    it('attr() setter: draggable false writes "false" string', function() {
+    it('attr proxy setter: draggable false writes "false" string', function() {
         playground().innerHTML = '<div id="a"></div>';
-        htmx.live.attr('#a', 'draggable', false);
+        htmx.live.q('#a').attr.draggable = false;
         playground().querySelector('#a').getAttribute('draggable').should.equal('false');
     });
 
-    it('attr() setter: spellcheck false writes "false" string', function() {
+    it('attr proxy setter: spellcheck false writes "false" string', function() {
         playground().innerHTML = '<div id="a"></div>';
-        htmx.live.attr('#a', 'spellcheck', false);
+        htmx.live.q('#a').attr.spellcheck = false;
         playground().querySelector('#a').getAttribute('spellcheck').should.equal('false');
     });
 
-    it('attr() setter: contenteditable null removes attribute', function() {
+    it('attr proxy setter: contenteditable null removes attribute', function() {
         playground().innerHTML = '<div id="a" contenteditable="true"></div>';
-        htmx.live.attr('#a', 'contenteditable', null);
+        htmx.live.q('#a').attr.contenteditable = null;
         playground().querySelector('#a').hasAttribute('contenteditable').should.equal(false);
     });
 
@@ -1799,8 +1787,8 @@ describe('hx-live extension', function () {
         div.dataset.has.should.equal('true');
     });
 
-    it('htmx.live.attr is exposed on public API', function() {
-        assert.isFunction(htmx.live.attr);
+    it('htmx.live.attr is not exposed on the public API', function() {
+        assert.isUndefined(htmx.live.attr);
     });
 
     // -------------------------------------------------------------------------
@@ -2414,16 +2402,16 @@ describe('hx-live extension', function () {
         playground().querySelector('#btn').onclick.should.equal(handler);
     });
 
-    it('functional attr assignment via applyAttr updates an attribute', function() {
+    it('functional attr assignment updates an attribute', function() {
         playground().innerHTML = '<div id="box" hidden></div>';
-        htmx.live.attr('#box', 'hidden', hidden => !hidden);
+        htmx.live.q('#box').attr.hidden = hidden => !hidden;
         playground().querySelector('#box').hasAttribute('hidden').should.equal(false);
     });
 
     it('functional attr assignment reads the current typed value', function() {
         playground().innerHTML = '<div id="box" hidden></div>';
         let seen;
-        htmx.live.attr('#box', 'hidden', h => { seen = h; return h; });
+        htmx.live.q('#box').attr.hidden = h => { seen = h; return h; };
         seen.should.equal(true);
     });
 

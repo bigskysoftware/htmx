@@ -325,7 +325,7 @@ attr['data-x'] = null
 ```
 
 Use [`class.*`](#class) and [`aria.*`](#aria) for the typed aliases. Use native
-DOM methods or `htmx.live.attr()` when you need exact raw attribute text.
+DOM methods when you need exact raw attribute text.
 
 ### `toggle(name, values?)`
 
@@ -975,7 +975,6 @@ All [helpers](#helpers) are exposed under `htmx.live.*` for use from regular Jav
 ```js
 htmx.live.q('.row')
 htmx.live.$('.row')
-htmx.live.attr('.row', 'hidden', true)
 htmx.live.take('.tab.active', '.active', '.tab')
 htmx.live.toggle('.tab', 'data-view', 'grid', 'list')
 ```
