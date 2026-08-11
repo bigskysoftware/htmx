@@ -553,7 +553,7 @@ class MultipartParser {
   onPull = null
 
   constructor(boundary) {
-    // RFC 2046 §5.1.1 limits the boundary to 1-70 ASCII characters from a
+    // RFC 2046 S5.1.1 limits the boundary to 1-70 ASCII characters from a
     // small subset. Real-world implementations stick to printable ASCII; we
     // enforce that broader range so non-ASCII boundaries fail loudly instead
     // of silently misaligning the parser's char-length arithmetic.
@@ -587,7 +587,7 @@ class MultipartParser {
    * @param {((part: BodyPart) => void) | null} [onPart]
    */
   write(chunk, onPart = null) {
-    // Discard epilogue bytes after the closing boundary (RFC 2046 §5.1.1).
+    // Discard epilogue bytes after the closing boundary (RFC 2046 S5.1.1).
     if (this.#state === State.DONE) return
 
     let index = 0
@@ -723,7 +723,7 @@ class MultipartParser {
           this.#buffer = chunk
           break
         }
-        // Discard preamble bytes before the opening boundary (RFC 2046 §5.1.1).
+        // Discard preamble bytes before the opening boundary (RFC 2046 S5.1.1).
         const openingIndex = this.#findOpeningBoundary(chunk)
         if (openingIndex === -1) {
           const tailStart = chunkLength - (this.#openingBoundaryLength - 1)

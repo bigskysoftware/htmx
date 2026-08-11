@@ -5,7 +5,7 @@
 //
 // Provides three layers of Content Security Policy integration:
 //
-// 1. Nonce gating — gates htmx attribute processing behind CSP
+// 1. Nonce gating: gates htmx attribute processing behind CSP
 //    nonces to prevent HTML injection attacks. Every htmx element
 //    must carry an hx-nonce attribute matching the page nonce or
 //    its htmx attributes are stripped. Fail closed if no page
@@ -13,12 +13,12 @@
 //    to also cover extension eval use like hx-live.
 //    Nonce source: script[nonce].nonce property on page load.
 //
-// 2. Trusted Types — creates an 'htmx' TT policy (passthrough —
+// 2. Trusted Types: creates an 'htmx' TT policy (passthrough;
 //    trust established by the nonce gate). Add trusted-types htmx
 //    to your CSP to enforce that only htmx touches DOM sinks.
 //    Fail closed if policy creation is blocked by CSP.
 //
-// 3. Safe eval — set config.safeEval:true to replace htmx's
+// 3. Safe eval: set config.safeEval:true to replace htmx's
 //    Function/AsyncFunction with nonce-based script injection,
 //    enabling hx-on:/hx-vals js:/hx-confirm js: without
 //    unsafe-eval in your CSP.
@@ -64,7 +64,7 @@
         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    // Rewrites responseNonce → replacement in raw HTML before DOM parsing,
+    // Rewrites responseNonce -> replacement in raw HTML before DOM parsing,
     // covering hx-nonce and script nonce attributes in one pass.
     // Pass replacement='' to strip nonce attributes entirely (stolen-nonce scrub).
     function rewriteNoncesInText(text, responseNonce, replacement = pageNonce) {
@@ -88,7 +88,7 @@
         let tag = elt.tagName?.toLowerCase();
         let id = elt.id ? `#${elt.id}` : '';
         let reason = eltNonce == null ? 'missing-nonce' : 'nonce-mismatch';
-        console.error(`htmx: [hx-csp] blocked <${tag}${id}> — ${eltNonce == null ? 'no hx-nonce attribute' : 'nonce mismatch (possible injection)'}`, { elt, reason });
+        console.error(`htmx: [hx-csp] blocked <${tag}${id}>: ${eltNonce == null ? 'no hx-nonce attribute' : 'nonce mismatch (possible injection)'}`, { elt, reason });
         htmx.trigger(elt, 'htmx:security:strip', { reason, stripped });
         return true;
     }
@@ -103,18 +103,18 @@
             pageNonce = document.querySelector('script[nonce]')?.nonce || null;
 
             if (!pageNonce) {
-                console.error('htmx: [hx-csp] no page nonce found — blocking all htmx. Add a nonce to your script tags.');
+                console.error('htmx: [hx-csp] no page nonce found, blocking all htmx. Add a nonce to your script tags.');
                 return;
             }
 
-            // Passthrough TT policy — trust established by nonce gate.
+            // Passthrough TT policy (trust established by nonce gate).
             // Fail closed if 'htmx' is not in the trusted-types CSP whitelist.
             try {
                 ttPolicy = typeof trustedTypes !== 'undefined'
                     ? trustedTypes.createPolicy('htmx', { createHTML: s => s, createScript: s => s })
                     : { createHTML: s => s, createScript: s => s };
             } catch (e) {
-                console.error("htmx: [hx-csp] TrustedTypes policy 'htmx' blocked — add 'htmx' to trusted-types CSP directive. Blocking all htmx.");
+                console.error("htmx: [hx-csp] TrustedTypes policy 'htmx' blocked, add 'htmx' to trusted-types CSP directive. Blocking all htmx.");
                 pageNonce = null;
                 return;
             }
@@ -123,7 +123,7 @@
             let NativeFunction = Function;
             let NativeAsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
             // Cache compiled script-injected functions by "keys|body" so each unique
-            // expression is only injected once — critical for hx-live which re-evaluates
+            // expression is only injected once (critical for hx-live which re-evaluates
             // the same expressions on every DOM/input tick.
             let safeEvalCache = new Map();
 
@@ -135,7 +135,7 @@
                             if (getNonce(thisArg) !== pageNonce) {
                                 let tag = thisArg?.tagName?.toLowerCase();
                                 let id = thisArg?.id ? `#${thisArg.id}` : '';
-                                console.error(`htmx: [hx-csp] blocked eval on <${tag}${id}> — nonce mismatch`, { elt: thisArg });
+                                console.error(`htmx: [hx-csp] blocked eval on <${tag}${id}>: nonce mismatch`, { elt: thisArg });
                                 htmx.trigger(thisArg, 'htmx:security:violation', { reason: 'nonce-mismatch-at-eval' });
                                 return;
                             }
@@ -175,13 +175,13 @@
             if (!pageNonce) return false;
             let ctx = detail.ctx;
 
-            // Always scrub stolen pageNonce from any response — the server cannot know the
+            // Always scrub stolen pageNonce from any response. The server cannot know the
             // page nonce, so its presence indicates a stolen-nonce injection attempt.
             ctx.text = rewriteNoncesInText(ctx.text, pageNonce, '');
 
             // Only promote response nonce for verified same-origin responses
             let responseURL = ctx?.response?.raw?.url;
-            if (!responseURL) return;  // can't verify origin — scrub only, no promotion
+            if (!responseURL) return;  // can't verify origin; scrub only, no promotion
             try { if (new URL(responseURL).origin !== location.origin) return; }
             catch (_) { return; }
 
@@ -193,7 +193,7 @@
         },
 
         // Blocks boosted form submissions where an unnonced submitter overrides formaction.
-        // Also blocks js:/javascript: action URLs — entity encoding doesn't neutralise these
+        // Also blocks js:/javascript: action URLs (entity encoding doesn't neutralise these
         // so they may survive template rendering and execute unexpectedly.
         htmx_config_request: (elt, detail) => {
             if (!pageNonce) return false;
@@ -208,7 +208,7 @@
             if (!elt._htmx?.boosted || !submitter?.getAttribute('formaction')) return;
             if (getNonce(submitter) !== pageNonce) {
                 let id = submitter?.id ? `#${submitter.id}` : '';
-                console.error(`htmx: [hx-csp] blocked boosted form — unnonced submitter${id} overrode formaction`);
+                console.error(`htmx: [hx-csp] blocked boosted form: unnonced submitter${id} overrode formaction`);
                 htmx.trigger(elt, 'htmx:security:violation', { reason: 'unnonced-submitter', submitter, ctx: detail.ctx });
                 detail.cancelled = true;
                 return false;

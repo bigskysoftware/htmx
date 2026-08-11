@@ -170,7 +170,7 @@
 
         try {
             while (element.isConnected) {
-                // Reconnection (not on first iteration — we already have the response)
+                // Reconnection (not on first iteration, we already have the response)
                 if (connection.attempt > 0) {
                     // Wait while paused (tab backgrounded with pauseOnBackground)
                     if (paused) {
@@ -268,7 +268,7 @@
                             delete detail.message.cancelled;
                             api.triggerHtmxEvent(element, 'htmx:sse:after:message', detail);
 
-                            // hx-sse:close="eventname" — close connection on matching event
+                            // hx-sse:close="eventname": close connection on matching event
                             let closeEvent = api.attributeValue(element, 'hx-sse:close');
                             if (closeEvent && detail.message.event === closeEvent) {
                                 cleanup(element, 'message');
@@ -370,7 +370,7 @@
             let contentType = ctx.response.raw.headers.get('Content-Type');
             if (!contentType?.includes('text/event-stream')) return;
 
-            // Take over — core will return without calling response.text()
+            // Take over; core will return without calling response.text()
             handleSSEResponse(ctx).catch(e => {
                 api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
                 cleanup(element);
