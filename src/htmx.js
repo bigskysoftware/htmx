@@ -157,6 +157,7 @@ var htmx = (() => {
         #hxOnQuery
         #transitionQueue
         #historyAbort
+        #historyInitialized
         #processingTransition
 
         constructor() {
@@ -185,14 +186,10 @@ var htmx = (() => {
                 triggerHtmxEvent: this.__trigger.bind(this),
                 executeJavaScript: this.__executeJavaScript.bind(this)
             };
-            let init = () => {
-                this.__initHistoryHandling()
-                this.process(document.body)
-            };
+            let init = () => this.initialize();
             if (document.readyState === 'loading') {
                 document.addEventListener("DOMContentLoaded", init)
             } else {
-                // wait a tick so extensions can register
                 setTimeout(init)
             }
         }
@@ -1257,6 +1254,22 @@ var htmx = (() => {
         // Public JS API
         //============================================================================================
 
+        initialize() {
+            if (this.config.history && !this.#historyInitialized) {
+                this.#historyInitialized = true;
+                if (!history.state) history.replaceState({htmx: true}, '', location.href);
+                if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
+                    navigation.addEventListener('navigate', (event) => {
+                        if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
+                            event.intercept({handler: () => this.__restoreHistory()});
+                    });
+                } else {
+                    window.addEventListener('popstate', (event) => this.__restoreHistory(event.state));
+                }
+            }
+            this.process(document.body);
+        }
+
         async swap(ctx) {
             try {
                 this.__handleHistoryUpdate(ctx);
@@ -1622,21 +1635,6 @@ var htmx = (() => {
         //============================================================================================
         // History Support
         //============================================================================================
-
-        __initHistoryHandling() {
-            if (!this.config.history) return;
-            if (!history.state) {
-                history.replaceState({htmx: true}, '', location.href);
-            }
-            if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
-                navigation.addEventListener('navigate', (event) => {
-                    if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
-                        event.intercept({handler: () => this.__restoreHistory()});
-                });
-            } else {
-                window.addEventListener('popstate', (event) => this.__restoreHistory(event.state));
-            }
-        }
 
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
