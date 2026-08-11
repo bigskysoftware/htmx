@@ -615,7 +615,7 @@ export interface Htmx {
   /**
    * Sets up history handling and processes `document.body`.
    * Called automatically on `DOMContentLoaded` (or next tick if the document is already loaded).
-   * Safe to call multiple times — history listeners are only registered once.
+   * Safe to call multiple times. History listeners are only registered once.
    * Call manually when loading htmx asynchronously or after a streaming response delivers the full page.
    */
   initialize(): void;
