@@ -692,14 +692,6 @@ Shorthand for `this.style`.
 <button hx-on:click="style.setProperty('--accent', q('previous input').value)">Apply</button>
 ```
 
-### `classList`
-
-Shorthand for `this.classList`.
-
-```html
-<button hx-on:click="classList.add('shake')">Wiggle</button>
-```
-
 ### `matches(selector)`
 
 Shorthand for `this.matches(selector)`.
@@ -802,7 +794,7 @@ For a single inline section, native [`<details>`](https://developer.mozilla.org/
 
 ```html
 <header>
-    <button hx-on:click="toggle('aria-expanded')" aria-expanded="false">Menu</button>
+    <button hx-on:click="aria.expanded = !aria.expanded" aria-expanded="false">Menu</button>
 </header>
 <aside :hidden="!q('header button').aria.expanded">...</aside>
 ```
@@ -810,7 +802,7 @@ For a single inline section, native [`<details>`](https://developer.mozilla.org/
 **Toggle button.**
 
 ```html
-<button hx-on:click="toggle('aria-pressed')" aria-pressed="false">Bold</button>
+<button hx-on:click="aria.pressed = !aria.pressed" aria-pressed="false">Bold</button>
 ```
 
 ```css
