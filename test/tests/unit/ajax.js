@@ -309,4 +309,32 @@ describe('ajax() unit Tests', function() {
         assert.include(div.innerHTML, '<p>old</p>');
         assert.include(div.innerHTML, '<span>new</span>');
     });
+
+    it('ajax request can be aborted via htmx:abort event', async function() {
+        const seq = mockSequentialResponses('GET', '/test', 'should not appear');
+        const div = createProcessedHTML('<div id="source"></div>');
+        
+        let errorFired = false;
+        div.addEventListener('htmx:error', () => {
+            errorFired = true;
+        });
+        
+        const promise = htmx.ajax('GET', '/test', {
+            source: '#source',
+            target: '#source',
+            swap: 'innerHTML'
+        });
+        
+        // Wait for request to be issued, then abort before releasing response
+        await htmx.timeout(1);
+        htmx.trigger('#source', 'htmx:abort');
+        
+        // Release the response (should be ignored since aborted)
+        seq.next();
+        await promise;
+        
+        // Content should not have been swapped
+        assert.equal(div.innerHTML, '');
+        assert.isTrue(errorFired);
+    });
 });
