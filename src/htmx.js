@@ -1598,24 +1598,24 @@ var htmx = (() => {
             let result = !detail.cancelled && target.dispatchEvent(evt);
             return result
         }
-        ajax(verb, path, context) {
-            // Normalize context to object
-            if (!context || context instanceof Element || typeof context === 'string') {
-                context = {target: context};
+        ajax(verb, path, options) {
+            // Normalize options to object
+            if (!options || options instanceof Element || typeof options === 'string') {
+                options = {target: options};
             }
 
-            let sourceElt = typeof context.source === 'string' ?
-                document.querySelector(context.source) : context.source;
+            let sourceElt = typeof options.source === 'string' ?
+                document.querySelector(options.source) : options.source;
 
             // If source selector was provided but didn't match, reject
-            if (typeof context.source === 'string' && !sourceElt) {
+            if (typeof options.source === 'string' && !sourceElt) {
                 return Promise.reject(new Error('Source not found'));
             }
 
             // Resolve explicit target if provided; otherwise __createRequestContext
             // will resolve from hx-target on the source element
-            if (context.target) {
-                let target = this.__resolveTarget(document.body, context.target);
+            if (options.target) {
+                let target = this.__resolveTarget(document.body, options.target);
                 if (!target) {
                     return Promise.reject(new Error('Target not found'));
                 }
@@ -1623,11 +1623,11 @@ var htmx = (() => {
             }
             sourceElt ||= document.body;
 
-            let ctx = this.__createRequestContext(sourceElt, context.event || {});
-            Object.assign(ctx, context);
-            if (context.target) ctx.target = this.__resolveTarget(document.body, context.target);
+            let ctx = this.__createRequestContext(sourceElt, options.event || {});
+            Object.assign(ctx, options);
+            if (options.target) ctx.target = this.__resolveTarget(document.body, options.target);
             Object.assign(ctx.request, {action: path, method: verb.toUpperCase()});
-            if (context.headers) Object.assign(ctx.request.headers, context.headers);
+            if (options.headers) Object.assign(ctx.request.headers, options.headers);
 
             return this.__handleTriggerEvent(ctx);
         }

@@ -204,7 +204,7 @@ describe('ajax() unit Tests', function() {
         assert.equal(div.innerHTML, 'content!');
     });
 
-    it('ajax works with no context (defaults to body)', async function() {
+    it('ajax works with no options (defaults to body)', async function() {
         this.skip() // We can't test this as it will replace the body and nuke the test UI lol
         return;
         mockResponse('GET', '/test', '<div id="ajax-result">body content</div>');
@@ -235,7 +235,7 @@ describe('ajax() unit Tests', function() {
         assert.equal(div.innerHTML, 'deleted!');
     });
 
-    it('ajax with event context', async function() {
+    it('ajax with event option', async function() {
         mockResponse('POST', '/test', 'clicked!');
         createProcessedHTML('<button id="btn">Click</button><div id="result"></div>');
         const div = find('#result');

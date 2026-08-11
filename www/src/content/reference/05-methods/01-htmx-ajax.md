@@ -16,7 +16,7 @@ htmx swaps the response into `#messages` and resolves the promise after the requ
 ```javascript
 htmx.ajax(method, url)
 htmx.ajax(method, url, target)
-htmx.ajax(method, url, context)
+htmx.ajax(method, url, options)
 ```
 
 Pass a selector or element as the target:
@@ -31,7 +31,7 @@ await htmx.ajax(
 )
 ```
 
-Use a context object to configure the request and swap:
+Use an options object to configure the request and swap:
 
 ```javascript
 await htmx.ajax('POST', '/messages', {
@@ -73,9 +73,9 @@ await htmx.ajax('GET', '/messages', '#messages')
 
 An unmatched target selector rejects the returned promise.
 
-### `context`
+### `options`
 
-Use a context object for more control:
+Use an options object for more control. It accepts [request context](/docs#request-context) fields:
 
 ```javascript
 await htmx.ajax('POST', '/messages', {
