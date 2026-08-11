@@ -279,6 +279,8 @@
 
                         // Swap content using the ctx from core (target/swap already resolved)
                         ctx.text = detail.message.data;
+                        // Always prevent empty swap for SSE - protects against empty data and
+                        // ensures OOB-only messages don't clear target (regardless of allowEmptySwapAfterOOB)
                         if (!ctx.swap.includes('swapEmpty')) ctx.swap += ' swapEmpty:false';
                         await htmx.swap(ctx);
                         delete detail.message.cancelled;

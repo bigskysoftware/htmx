@@ -218,7 +218,8 @@ var htmx = (() => {
                 morphScanLimit: 10,
                 noSwap: [204, 304],
                 implicitInheritance: false,
-                defaultSettleDelay: 1
+                defaultSettleDelay: 1,
+                allowEmptySwapAfterOOB: false
             }
             let metaConfig = document.querySelector('meta[name="htmx-config"]');
             if (metaConfig) {
@@ -1268,8 +1269,12 @@ var htmx = (() => {
                 let partialTasks = this.__processPartials(fragment, ctx);
                 tasks.push(...oobTasks, ...partialTasks);
 
-                // Process main swap first
-                let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
+                // Determine if empty swap should be prevented
+                // partials always prevent; oob prevents by default unless config.allowEmptySwapAfterOOB is true
+                let hasPartials = partialTasks.length || (oobTasks.length && !this.config.allowEmptySwapAfterOOB);
+
+                // Process main swap
+                let mainSwap = this.__processMainSwap(ctx, fragment, hasPartials);
                 if (mainSwap) {
                     tasks.unshift(mainSwap);
                 }
@@ -1312,15 +1317,16 @@ var htmx = (() => {
             }
         }
 
-        __processMainSwap(ctx, fragment, partialTasks) {
+        __processMainSwap(ctx, fragment, hasPartials) {
             // Create main task if needed
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
-            // skip main swap if fragment is empty after hx-partial removal but respect empty modifier
+            // skip main swap if fragment is empty after partial/oob removal
+            // swapEmpty modifier can override; default: skip if hasPartials
             if (
                 swapSpec.style === 'delete' ||    // delete always runs regardless of content
                 fragment.childElementCount > 0 || // or fragment has elements
                 fragment.textContent.trim() ||    // or fragment has text
-                (swapSpec.swapEmpty ?? this.config.defaultSwapEmpty ?? !partialTasks.length) // swapEmpty:true/false overrides, default: allow if no partials
+                (swapSpec.swapEmpty ?? !hasPartials)
             ) {
                 if (ctx.select) {
                     let selected = fragment.querySelectorAll(ctx.select);
