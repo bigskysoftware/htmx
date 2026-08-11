@@ -6,14 +6,18 @@ icon: "icon-[mdi--lightning-bolt]"
 keywords: ["live", "reactive", "bind", "q", "selector"]
 ---
 
-Expressions live in HTML attributes. They read from the page, write to it, and re-run as it changes.
+The `hx-live` extension binds DOM state with inline expressions.
 
-```html
-<input type="text">
-<p :text="'Hello, ' + q('previous input').value"></p>
+## Mental Model
+
+```text
+Can HTML provide the behavior?
+├─ yes → use HTML
+└─ no
+   Can CSS derive the presentation?
+   ├─ yes → use HTML + CSS
+   └─ no  → use hx-live
 ```
-
-The paragraph updates as you type.
 
 ## Installing
 
@@ -22,68 +26,124 @@ The paragraph updates as you type.
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/ext/hx-live.min.js"></script>
 ```
 
-## Core state access
+## Usage
 
-The core API uses `q()` and its state namespaces.
+### Bind an Attribute
 
-```js
-q('.item').data.open = true
-q('.item').class.selected = true
-q('.item').aria.busy = false
-q('.item').attr.disabled = true
-```
-
-`q()` reads from the first match and writes to every match. Its `data`, `class`,
-`aria`, and `attr` aliases are local and share the same typed state views:
-
-```js
-q('.item').data === q('.item').attr.data
-q('.item').class === q('.item').attr.class
-q('.item').aria === q('.item').attr.aria
-```
-
-Use `.closest` for explicit owner lookup:
-
-```js
-q('.item').closest.data.open = true
-q('.item').closest.aria.busy = true
-q('.item').closest.attr.role = 'tab'
-q('.item').closest.class.selected = true
-```
-
-Closest reads use the first selected element. Closest writes resolve one owner
-per selected element, deduplicate shared owners, and fall back to the selected
-element when no owner exists. Deletes remove an owner and otherwise do nothing.
-
-Bare `data` in an expression uses the nearest data owner. Reads return
-`undefined` when no owner exists. Writes create local state in that case.
-
-## Idiomatic hx-live
-
-Keep local UI state in the DOM, close to the elements that use it:
+Prefix a binding target with `:`:
 
 ```html
-<button aria-pressed="false"
-        hx-on:click="aria.pressed = !aria.pressed">
-    Mute
-</button>
+<input value="Ada">
 
-<style>
-[aria-pressed="true"] { background: lightblue }
-</style>
+<output :text="'Hello, ' + q('previous input').value"></output>
+<button :disabled="!q('previous input').value">Continue</button>
 ```
 
-Use these principles:
+```text
+Ada    → Hello, Ada  → Continue enabled
+empty  → Hello,      → Continue disabled
+```
 
-1. **Start with the browser.** Prefer native HTML behavior, native DOM properties, and CSS before adding hx-live.
-2. **Choose one state owner.** Store each value in one native property, ARIA attribute, `data-*` attribute, or form control. Derive everything else from it.
-3. **Use the narrowest shared scope.** Put shared `data-*` state on the nearest common ancestor, then reach it with `data.*` or `.closest.data.*`.
-4. **Read state directly.** Prefer native properties, `aria.*`, and `data.*` over selectors and raw attribute access. Use `q()` when the source is outside the current scope.
-5. **Bind derived state.** Use `:<attr>` for values that follow other DOM state. Use [`hx-on`](/reference/attributes/hx-on) for user actions.
-6. **Let CSS handle presentation.** Style native states and semantic attributes instead of maintaining parallel presentation classes.
-7. **Use `hx-live` last.** Reserve the imperative form for multi-step work, asynchronous work, and side effects that a binding cannot express.
+See [Attributes](#attributes) for every binding target.
 
-Keep every expression safe to run again. DOM changes, input events, and htmx swaps can all recompute live expressions.
+### Find Elements
+
+Use `q()` to reach DOM state outside the current element:
+
+```js
+q('previous input')  // nearby
+q('#name')           // by ID
+q('.item')           // every match
+q('closest .field')  // nearest matching ancestor
+```
+
+Reads use the first match. Writes update every match:
+
+```js
+q('.item').aria.busy = true
+```
+
+See [`q()`](#q) for directional selectors, scoped selectors, and chained queries.
+
+### Handle an Event
+
+Use [`hx-on`](/reference/attributes/hx-on) to change state after an event:
+
+```html tab="HTML"
+<button aria-pressed="false"
+        hx-on:click="aria.pressed = !aria.pressed">
+  Mute
+</button>
+```
+
+```css tab="CSS"
+[aria-pressed="true"] {
+  background: var(--selected);
+}
+```
+
+### Share State
+
+Put shared state on the nearest common ancestor:
+
+```html
+<section data-count="0">
+  <button hx-on:click="data.count++">Add</button>
+  <output :text="data.count"></output>
+</section>
+```
+
+When the next value depends on the current value:
+
+```js
+data.items = items => [...items, next]
+```
+
+See [`data`](#data) for typed values, owner lookup, and functional assignments.
+
+### Run Async Code
+
+A server response can own its transient behavior.
+
+Request:
+
+```html
+<form hx-post="/profile"
+      hx-target="#status"
+      hx-swap="outerHTML">
+  <input name="name">
+  <button>Save</button>
+</form>
+
+<output id="status"></output>
+```
+
+Response:
+
+```html tab="HTML"
+<output id="status"
+        class="notice"
+        hx-on:load="
+          await timeout('3s')
+          class.leaving = true
+          await forEvent('transitionend', 500)
+          this.remove()
+        ">
+  Saved
+</output>
+```
+
+```css tab="CSS"
+.notice {
+  transition: opacity 200ms;
+}
+
+.notice.leaving {
+  opacity: 0;
+}
+```
+
+[`timeout()`](/reference/methods/htmx-timeout) waits before the transition. [`forEvent()`](#foreventargs) waits for the transition or its fallback timeout.
 
 ## Attributes
 
@@ -753,7 +813,7 @@ Typical use: wait for a CSS transition to finish, with a safety timeout.
 
 ```html
 <button hx-on:click="
-    classList.add('fade-out');
+    class.add('fade-out');
     await forEvent('transitionend', 500);
     this.remove();
 ">Dismiss</button>
@@ -765,9 +825,9 @@ Resolve on the next animation frame.
 
 ```html
 <button hx-on:click="
-    classList.remove('shake');
+    class.remove('shake');
     await nextFrame();
-    classList.add('shake');
+    class.add('shake');
 ">Replay shake</button>
 ```
 
