@@ -1091,9 +1091,9 @@ describe('hx-live extension', function () {
             <button class="active" hx-on:click="
                 class Widget {}
                 let object = { class: 'button' };
-                let text = 'class.active';
-                let pattern = /class\\.active/;
-                let template = \`class.active:\${class.active}\`;
+                let text = 'prefix class.active';
+                let pattern = /prefix class\\.active/;
+                let template = \`prefix class.active:\${class.active ? { value: 'yes' }.value : 'no'}\`;
                 q(this).class.qualified = true;
                 window.__bareClassSyntax = [
                     new Widget() instanceof Widget,
@@ -1108,9 +1108,9 @@ describe('hx-live extension', function () {
         window.__bareClassSyntax.should.deep.equal([
             true,
             'button',
-            'class.active',
+            'prefix class.active',
             true,
-            'class.active:true'
+            'prefix class.active:yes'
         ]);
         button.classList.contains('qualified').should.equal(true);
         delete window.__bareClassSyntax;
