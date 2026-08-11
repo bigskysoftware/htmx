@@ -1,51 +1,34 @@
 ---
 title: "HX-Location"
-description: "Navigates with `htmx.ajax()`"
+description: "Redirect without a full page load"
 ---
 
-The `HX-Location` response header navigates to a new URL without a full page reload.
+The `HX-Location` response header redirects without reloading the page.
 
-Like clicking a boosted link—htmx fetches the content and updates the page via AJAX.
+## Usage
 
-## Simple Usage
-
-Redirect to a path:
+Return a path:
 
 ```http
 HX-Location: /dashboard
 ```
 
-## Advanced Usage
+`HX-Location` calls `htmx.ajax()`. The header above is equivalent to:
 
-Specify target and other options:
-
-```http
-HX-Location: {"path":"/search", "target":"#results", "push":"false"}
+```js
+htmx.ajax('GET', '/dashboard', { push: 'true' })
 ```
 
-## Options
+Use any serializable [`htmx.ajax()` option](/reference/methods/htmx-ajax#context). Include `path`:
 
-The JSON value mirrors the htmx ajax API. All fields except `path` are optional.
+```text
+# HCON
+HX-Location: path:/search target:#results select:#matches
 
-- `path` - URL to load the response from (required)
-- `target` - Element to swap the response into (defaults to `document.body`)
-- `source` - The source element of the request
-- `event` - Event that triggered the request
-- `handler` - Callback to handle the response HTML
-- `swap` - How to swap the response relative to the target
-- `values` - Values to submit with the request
-- `headers` - Headers to submit with the request
-- `select` - Selects content from the response to swap
-- `push` - Prevents or overrides the URL pushed to history (`'false'` or a path string)
-- `replace` - Path to replace in browser history instead of pushing
+# JSON
+HX-Location: {"path":"/search","target":"#results","select":"#matches"}
+```
 
 ## Notes
 
-Response headers are not processed on 3xx response codes. Return a 2xx status when using this header.
-
-## Example
-
-```python
-headers = {'HX-Location': '/profile'}
-return Response(content, headers=headers)
-```
+`HX-Location` is not processed on 3xx responses. Return a 2xx response instead.

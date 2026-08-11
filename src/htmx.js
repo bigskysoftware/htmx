@@ -683,12 +683,13 @@ var htmx = (() => {
             }
             if (ctx.hx.location) { // HX-Location
                 let path = ctx.hx.location, opts = {};
-                if (path[0] === '{' || /[\s,]/.test(path)) {
-                    opts = HCON.parse(path);
+                let parsed = HCON.parse(path);
+                if (path[0] === '{' || parsed.path != null) {
+                    opts = parsed;
                     path = opts.path;
                     delete opts.path;
                 }
-                opts.push ??= 'true';
+                if (opts.push == null && opts.replace == null) opts.push = 'true';
                 this.ajax('GET', path, opts);
                 return true
             }
