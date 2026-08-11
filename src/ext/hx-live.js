@@ -224,6 +224,65 @@
         try { return JSON.parse(raw); } catch { return raw; }
     }
 
+    let JS_TOKEN = new RegExp([
+        /\/\/.*/,
+        /\/\*[\s\S]*?\*\//,
+        /'(?:[^'\\]|\\.)*'/,
+        /"(?:[^"\\]|\\.)*"/,
+        /\/(?:\\.|\[(?:\\.|[^\]])*\]|[^\/\\\n[])+\/[a-z]*/,
+        /[\w$]+/,
+        /\S/
+    ].map(part => part.source).join('|'), 'g');
+    let TEMPLATE_TEXT = /(?:\\.|\$(?!\{)|[^`\\$])*(`|\$\{|$)/y;
+    let CLASS_ACCESS = /^\s*[.[]/;
+    let ENDS_VALUE = /^(?:[\w$]+|[)\]}v])$/;
+    let REGEX_WORDS = new Set(['return', 'typeof', 'instanceof', 'in', 'of', 'new', 'delete', 'void', 'throw', 'case', 'do', 'else', 'yield', 'await']);
+
+    function rewriteClass(src) {
+        if (!/\bclass\s*[.[]/.test(src)) return src;
+        let out = '';
+        let stack = [];
+        let prev = '';
+        let i = 0;
+
+        while (i < src.length) {
+            if (stack.at(-1) === '`') {
+                TEMPLATE_TEXT.lastIndex = i;
+                let [text, stop] = TEMPLATE_TEXT.exec(src);
+                out += text;
+                i += text.length;
+                if (stop === '`') stack.pop();
+                else if (stop) stack.push('$');
+                prev = stop === '`' ? 'v' : '{';
+                continue;
+            }
+
+            JS_TOKEN.lastIndex = i;
+            let match = JS_TOKEN.exec(src);
+            if (!match) return out + src.slice(i);
+            let token = match[0];
+            out += src.slice(i, match.index);
+            i = match.index + token.length;
+
+            if (token[0] === '/' && (token[1] === '/' || token[1] === '*')) {
+                out += token;
+            } else if (token[0] === '/' && token.length > 1 && ENDS_VALUE.test(prev) && !REGEX_WORDS.has(prev)) {
+                out += '/';
+                i = match.index + 1;
+                prev = '/';
+            } else if (token === 'class' && prev !== '.' && CLASS_ACCESS.test(src.slice(i))) {
+                out += '__hxLiveClass';
+                prev = 'v';
+            } else {
+                if (token === '`' || token === '{') stack.push(token);
+                else if (token === '}') stack.pop();
+                out += token;
+                prev = /^['"/]/.test(token) ? 'v' : token;
+            }
+        }
+        return out;
+    }
+
     let booleanAria = new Set([
         'atomic',
         'busy',
@@ -919,6 +978,11 @@
                 aria: local.aria,
                 closest
             });
+            let code = rewriteClass(detail.code);
+            if (code !== detail.code) {
+                detail.code = code;
+                detail.scope.__hxLiveClass = local.class;
+            }
             if (htmx.config.live?.useDollar) detail.scope.$ = detail.scope.q;
         }
     });

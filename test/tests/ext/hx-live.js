@@ -1052,6 +1052,70 @@ describe('hx-live extension', function () {
         delete window.__classState;
     });
 
+    it('bare class reads, writes, deletes, updates, and calls methods', function() {
+        let button = createProcessedHTML(`
+            <button class="pending remove-me active" hx-on:click="
+                window.__bareClassState = [class.pending, class.done];
+                class.assign({ pending: false, done: true });
+                class['is-active'] = true;
+                delete class['remove-me'];
+                class.add('spin');
+                class.active = active => !active
+            ">Go</button>
+        `);
+        button.click();
+        window.__bareClassState.should.deep.equal([true, false]);
+        button.classList.contains('pending').should.equal(false);
+        button.classList.contains('done').should.equal(true);
+        button.classList.contains('is-active').should.equal(true);
+        button.classList.contains('remove-me').should.equal(false);
+        button.classList.contains('spin').should.equal(true);
+        button.classList.contains('active').should.equal(false);
+        delete window.__bareClassState;
+    });
+
+    it('bare class works in bindings and hx-live', async function() {
+        let elt = createProcessedHTML(`
+            <div class="selected"
+                 :data-selected="class.selected"
+                 hx-live="class.live = true">
+            </div>
+        `);
+        await htmx.timeout(5);
+        elt.hasAttribute('data-selected').should.equal(true);
+        elt.classList.contains('live').should.equal(true);
+    });
+
+    it('bare class rewriting skips other JavaScript syntax', function() {
+        let button = createProcessedHTML(`
+            <button class="active" hx-on:click="
+                class Widget {}
+                let object = { class: 'button' };
+                let text = 'class.active';
+                let pattern = /class\\.active/;
+                let template = \`class.active:\${class.active}\`;
+                q(this).class.qualified = true;
+                window.__bareClassSyntax = [
+                    new Widget() instanceof Widget,
+                    object.class,
+                    text,
+                    pattern.test(text),
+                    template
+                ]
+            ">Go</button>
+        `);
+        button.click();
+        window.__bareClassSyntax.should.deep.equal([
+            true,
+            'button',
+            'class.active',
+            true,
+            'class.active:true'
+        ]);
+        button.classList.contains('qualified').should.equal(true);
+        delete window.__bareClassSyntax;
+    });
+
     it("toggle('.name') toggles membership", function() {
         let button = createProcessedHTML(`
             <button hx-on:click="toggle('.active')">Go</button>

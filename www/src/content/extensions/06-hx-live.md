@@ -304,7 +304,7 @@ attr.hidden = true              // add hidden
 delete attr.hidden              // remove hidden
 attr['aria-expanded'] = false   // write aria-expanded="false"
 attr.contenteditable = false    // write contenteditable="false"
-attr.class.active = true        // typed class state
+class.active = true             // typed class state
 attr.value = 'hello'            // set the value
 delete attr['data-x']           // remove data-x
 ```
@@ -374,8 +374,8 @@ Read and write class membership on this element:
 ```html
 <button class="pending"
         hx-on:click="
-            q(this).class.pending = false;
-            q(this).class.done = true
+            class.pending = false;
+            class.done = true
         ">
     Finish
 </button>
@@ -384,31 +384,31 @@ Read and write class membership on this element:
 Use bracket notation for class names that are not JavaScript identifiers:
 
 ```js
-q(this).class['is-active'] = true
-delete q(this).class.pending
+class['is-active'] = true
+delete class.pending
 ```
 
-Set several classes at once with `q(this).class.assign({ ... })`. Truthy values add, falsy values remove, unmentioned classes survive:
+Set several classes at once with `class.assign({ ... })`. Truthy values add, falsy values remove, unmentioned classes survive:
 
 ```html
-<button hx-on:click="q(this).class.assign({ active: true, loading: false })">Finish</button>
+<button hx-on:click="class.assign({ active: true, loading: false })">Finish</button>
 ```
 
 Non-object arguments warn and do nothing.
 
-The native `classList` methods work through `q(this).class`:
+The native `classList` methods work through `class`:
 
 ```js
-q(this).class.add('a', 'b')        // add classes
-q(this).class.remove('a', 'b')     // remove classes
-q(this).class.toggle('x', force?)  // toggle, optional force
-q(this).class.replace('a', 'b')    // replace one class with another
-q(this).class.contains('x')        // membership
-q(this).class.assign({...})        // group add/remove by truthiness
-'x' in q(this).class               // membership
+class.add('a', 'b')        // add classes
+class.remove('a', 'b')     // remove classes
+class.toggle('x', force?)  // toggle, optional force
+class.replace('a', 'b')    // replace one class with another
+class.contains('x')        // membership
+class.assign({...})        // group add/remove by truthiness
+'x' in class               // membership
 ```
 
-Method names win on read: `q(this).class.toggle` is the method even when a class named `toggle` exists; key writes still create classes.
+Method names win on read: `class.toggle` is the method even when a class named `toggle` exists; key writes still create classes.
 
 Use `q()` to access another element:
 
