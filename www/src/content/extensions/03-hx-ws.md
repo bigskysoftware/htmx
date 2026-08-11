@@ -179,7 +179,6 @@ The outgoing message is:
 {
   "headers": {
     "HX-Request": "true",
-    "HX-Message-ID": "550e8400-e29b-41d4-a716-446655440000",
     "HX-Request-Type": "partial",
     "HX-Source": "input",
     "HX-Target": "div#messages",
@@ -236,7 +235,6 @@ Use JSON to override the connection's swap:
 }
 ```
 
-- `headers`: metadata such as `HX-Message-ID`
 - `content`: the HTML to swap
 - `target`: where to swap it
 - `swap`: a serialized [`hx-swap`](/reference/attributes/hx-swap) specification
@@ -258,15 +256,13 @@ The JSON fields override the corresponding attributes:
 
 ```text
 TARGET
-JSON target  -->  hx-target  -->  connection element*
+JSON target  -->  hx-target  -->  connection element
 
 SWAP
 JSON swap    -->  hx-swap    -->  defaultSwap
 
 SELECT
 JSON select  -->  hx-select  -->  all content
-
-* incoming messages with a matching HX-Message-ID use the sending element
 ```
 
 `hx-select-oob` remains an element setting. A server can use `hx-swap-oob` or `<hx-partial>` inside `content` instead.
@@ -370,10 +366,8 @@ Put several [`hx-ws:send`](#hx-wssend) elements inside one [`hx-ws:connect`](#hx
 
 ```html
 <div hx-ws:connect="/actions">
-  <button hx-ws:send name="action" value="save"
-          hx-target="#save-result">Save</button>
-  <button hx-ws:send name="action" value="delete"
-          hx-target="#delete-result">Delete</button>
+  <button hx-ws:send name="action" value="save">Save</button>
+  <button hx-ws:send name="action" value="delete">Delete</button>
 </div>
 
 <div id="save-result"></div>
@@ -381,28 +375,20 @@ Put several [`hx-ws:send`](#hx-wssend) elements inside one [`hx-ws:connect`](#hx
 <div id="delete-result"></div>
 ```
 
-Both buttons use the same WebSocket connection, but each incoming message needs the right target.
+Both buttons use the same WebSocket connection. Incoming messages use a live element attached to that connection, not the button that sent the message.
 
 **Route Incoming Messages**
 
-Copy an outgoing [`HX-Message-ID`](#hx-message-id) into the incoming message:
+Set `target` in an incoming JSON message to direct its swap:
 
 ```json
 {
-  "headers": {
-    "HX-Message-ID": "550e8400-e29b-41d4-a716-446655440000"
-  },
-  "content": "<p>Saved</p>"
+  "content": "<p>Saved</p>",
+  "target": "#save-result"
 }
 ```
 
-Without the ID, the connection element handles the message.
-
-With the ID:
-
-- Save uses `#save-result`
-- Delete uses `#delete-result`
-- Relative targets and swap events use the sending button
+Use `hx-swap-oob` or `<hx-partial>` when one message updates several targets.
 
 **Reuse by URL**
 
@@ -502,24 +488,6 @@ Default [`hx-trigger`](/reference/attributes/hx-trigger):
 - `submit` for `<form>`
 - `click` for buttons and other elements
 
-## Headers
-
-### `HX-Message-ID`
-
-Associates an incoming message with its outgoing sender.
-
-```jsonc
-// Browser → server
-{ "headers": { "HX-Message-ID": "abc123" }, "message": "Save" }
-
-// Server → browser
-{ "headers": { "HX-Message-ID": "abc123" }, "content": "<p>Saved</p>" }
-```
-
-`hx-ws` adds a unique ID to every outgoing message. Copy it into the incoming message's `headers` to [use the sender](#use-shared-connections).
-
-The first matching incoming message consumes the association. Later messages with the same ID use the connection element.
-
 ## Events
 
 Event data is available on `event.detail`.
@@ -568,7 +536,7 @@ event.detail = {
 }
 ```
 
-Message events dispatch from a live connection element. [An incoming message with a matching `HX-Message-ID`](#use-shared-connections) dispatches from the sending element.
+Message events dispatch from a live element attached to the connection.
 
 ### `htmx:ws:before:connection`
 
@@ -626,7 +594,7 @@ document.addEventListener('htmx:ws:before:message:outgoing', event => {
 })
 ```
 
-Include `message.headers` in replacement data to preserve sender correlation.
+Include `message.headers` in replacement data when the server needs htmx request metadata.
 
 ### `htmx:ws:after:message:outgoing`
 
@@ -838,7 +806,6 @@ htmx 4.0 requires explicit syntax for each extra swap:
 
 - [`hx-swap-oob`](/reference/attributes/hx-swap-oob) or [`<hx-partial>`](/reference/tags/hx-partial) for extra swaps
 - [JSON](#override-an-incoming-swap) to choose the connection's target and swap
-- [`HX-Message-ID`](#hx-message-id) to route incoming messages through the sending element
 
 #### Outgoing Messages
 
@@ -907,7 +874,7 @@ Event detail changed from `{headers, body}` to `{message: {headers, values, data
 
 #### Incoming Messages
 
-Message correlation moved from top-level `HX-Request-ID` or `request_id` to `headers["HX-Message-ID"]`.
+Top-level `HX-Request-ID` and `request_id` no longer affect incoming messages.
 
 Event detail changed from `{message: {text, json, cancelled}}` to `{message: {data, type, text(), json(), blob(), arrayBuffer()}, waitUntil, cancelled}`. The conversion fields are now methods. Cancel with `event.preventDefault()` or `event.detail.cancelled = true`.
 

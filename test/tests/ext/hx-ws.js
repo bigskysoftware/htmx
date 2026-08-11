@@ -378,7 +378,6 @@ describe('hx-ws WebSocket extension', function() {
             assert.isDefined(ws.lastSent);
             
             let sent = JSON.parse(ws.lastSent);
-            assert.isDefined(sent.headers['HX-Message-ID']);
             assert.equal(sent.message, 'hello');
             assert.notProperty(sent, 'body');
             assert.isDefined(sent.headers['HX-Source']);
@@ -515,26 +514,6 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(sent.headers['HX-Source'], 'button#my-button');
         });
         
-        it('generates a unique HX-Message-ID for each message', async function() {
-            let div = createProcessedHTML(`
-                <div hx-ws:connect="/ws/test">
-                    <button hx-ws:send hx-trigger="click">Send</button>
-                </div>
-            `);
-            await htmx.timeout(50);
-
-            let button = div.querySelector('button');
-            button.click();
-            await htmx.timeout(20);
-            let firstId = JSON.parse(mockWebSocketInstances[0].lastSent).headers['HX-Message-ID'];
-
-            button.click();
-            await htmx.timeout(20);
-            let secondId = JSON.parse(mockWebSocketInstances[0].lastSent).headers['HX-Message-ID'];
-
-            assert.notEqual(firstId, secondId);
-        });
-
         it('includes HX-Target when hx-target is set', async function() {
             let div = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test">
@@ -728,51 +707,6 @@ describe('hx-ws WebSocket extension', function() {
             delete window.wsScriptAttrTest;
         });
 
-        // Incoming messages with matching IDs use their sender for relative targets and swap lifecycle.
-        it('routes incoming messages with matching IDs through the sending element', async function() {
-            let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/test">
-                    <div class="result">
-                        <button id="btn" hx-ws:send hx-trigger="click" hx-target="closest .result">Send</button>
-                    </div>
-                </div>
-            `);
-            await htmx.timeout(50);
-
-            let button = document.getElementById('btn');
-            let result = container.querySelector('.result');
-            let eventSource, finalContext, mainTask;
-            button.addEventListener('htmx:before:swap', event => {
-                eventSource = event.target;
-                finalContext = event.detail.ctx;
-                mainTask = event.detail.tasks.find(task => task.type === 'main');
-            });
-            button.addEventListener('htmx:ws:before:message:outgoing', event => {
-                event.detail.message.headers['HX-Message-ID'] = 'custom-message-id';
-            }, { once: true });
-
-            button.click();
-            await htmx.timeout(20);
-
-            let ws = mockWebSocketInstances[0];
-            let sent = JSON.parse(ws.lastSent);
-            assert.equal(sent.headers['HX-Message-ID'], 'custom-message-id');
-
-            ws.simulateMessage({
-                content: '<p id="response">Response</p>',
-                swap: 'beforeend swap:10ms settle:0',
-                headers: { 'HX-Message-ID': sent.headers['HX-Message-ID'] }
-            });
-            await htmx.timeout(30);
-
-            assert.equal(eventSource, button);
-            assert.equal(finalContext.target, 'closest .result');
-            assert.equal(mainTask.target, result);
-            assert.equal(mainTask.swapSpec.style, 'beforeend');
-            assert.equal(mainTask.swapSpec.swap, '10ms');
-            assert.equal(mainTask.swapSpec.settle, 0);
-            assert.equal(document.getElementById('response').parentElement, result);
-        });
     });
     
     // ========================================
@@ -2410,64 +2344,6 @@ describe('hx-ws WebSocket extension', function() {
     // ========================================
 
     describe('Deep Review Fixes', function() {
-
-        it('falls back to live element when correlated element is removed from DOM', async function() {
-            let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/test">
-                    <form id="form1" hx-ws:send hx-trigger="submit" hx-target="#result">
-                        <input name="msg" value="hello">
-                    </form>
-                    <div id="result"></div>
-                </div>
-            `);
-            await htmx.timeout(50);
-
-            let form = document.getElementById('form1');
-            form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-            await htmx.timeout(20);
-
-            let ws = mockWebSocketInstances[0];
-            let sent = JSON.parse(ws.lastSent);
-            let messageId = sent.headers['HX-Message-ID'];
-
-            // Remove the form that sent the message (simulates swap replacing the form)
-            form.remove();
-            await htmx.timeout(20);
-
-            // Server sends the message ID — should fall back to live connect element
-            ws.simulateMessage({
-                content: '<hx-partial id="result">Response</hx-partial>',
-                headers: { 'HX-Message-ID': messageId }
-            });
-            await htmx.timeout(20);
-
-            assert.include(document.getElementById('result').innerHTML, 'Response');
-        });
-
-        it('cleans up expired pending messages on message receive', async function() {
-            let container = createProcessedHTML(`
-                <div hx-ws:connect="/ws/test">
-                    <button hx-ws:send hx-trigger="click">Send</button>
-                </div>
-            `);
-            await htmx.timeout(50);
-
-            let button = container.querySelector('button');
-            button.click();
-            await htmx.timeout(20);
-
-            let ws = mockWebSocketInstances[0];
-            let registry = htmx.ext.ws.getRegistry();
-            let conn = registry.get('/ws/test');
-            assert.equal(conn.pendingMessages.size, 1, 'Should have 1 pending message');
-            conn.pendingMessages.values().next().value.timestamp -= 30001;
-
-            // Receive any message — should trigger cleanup
-            ws.simulateMessage({ type: 'ping' });
-            await htmx.timeout(20);
-
-            assert.equal(conn.pendingMessages.size, 0, 'Expired pending message should be cleaned up');
-        });
 
         it('closeConnection aborts the AbortController', async function() {
             let container = createProcessedHTML(`

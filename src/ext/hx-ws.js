@@ -1,5 +1,4 @@
 (() => {
-    const MESSAGE_ID_MAX_AGE = 30000;
     let api;
     
     // Build a CSS selector for querySelectorAll, respecting prefix + metaCharacter
@@ -96,7 +95,6 @@
             socket: null,
             attempt: 0,
             timer: null,
-            pendingMessages: new Map(),
             queue: [],
             receiving: Promise.resolve(),
             sending: Promise.resolve(),
@@ -151,7 +149,6 @@
         if (connection.abortController) {
             connection.abortController.abort();
         }
-        connection.pendingMessages.clear();
         connection.queue.length = 0;
         if (connection.socket) {
             try {
@@ -302,7 +299,6 @@
         if (connection.abortController) {
             connection.abortController.abort();
         }
-        connection.pendingMessages.clear();
         connection.queue.length = 0;
         api.triggerHtmxEvent(element, 'htmx:ws:close', {
             connection, reason: 'removed', code: null
@@ -314,28 +310,12 @@
     }
     
     // ========================================
-    // PENDING MESSAGE MANAGEMENT
-    // ========================================
-    
-    function cleanupExpiredMessages(connection) {
-        let now = Date.now();
-
-        for (let [messageId, pending] of connection.pendingMessages) {
-            if (now - pending.timestamp > MESSAGE_ID_MAX_AGE) {
-                connection.pendingMessages.delete(messageId);
-            }
-        }
-    }
-    
-    // ========================================
     // MESSAGES
     // ========================================
 
     function transmitMessage(connection, element, message) {
         try {
             connection.socket.send(message.data);
-            let messageId = message.headers['HX-Message-ID'];
-            if (messageId) connection.pendingMessages.set(messageId, { element, timestamp: Date.now() });
             api.triggerHtmxEvent(element, 'htmx:ws:after:message:outgoing', {message});
         } catch (error) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', { url: connection.url, error });
@@ -375,16 +355,10 @@
             return;
         }
 
-        // [Correlation] Cleanup expired pending messages periodically
-        cleanupExpiredMessages(connection);
-
         // Build headers using core's request context (same as HTTP requests)
         let ctx = api.createRequestContext(element, event);
         let headers = {...ctx.request.headers};
         delete headers['Accept'];
-
-        // [Correlation] Add message ID as a header
-        headers['HX-Message-ID'] = crypto.randomUUID();
 
         // Build outgoing values from form data.
         let form = element.form || element.closest('form');
@@ -497,16 +471,7 @@
             }
         }
 
-        // [Correlation] Cleanup expired pending messages on every message
-        cleanupExpiredMessages(connection);
-
-        let messageId = json?.headers?.['HX-Message-ID'];
-        let pending = connection.pendingMessages.get(messageId);
-        if (pending) connection.pendingMessages.delete(messageId);
-
-        // Route associated incoming messages through their sender.
-        let element = pending?.element;
-        if (!element?.isConnected) element = findConnectedElement(connection.url);
+        let element = findConnectedElement(connection.url);
 
         if (!element) {
             // No element in DOM for this connection (orphan cleanup)
@@ -718,7 +683,6 @@
                         if (connection.socket) {
                             connection.socket.close();
                         }
-                        connection.pendingMessages.clear();
                         connection.queue.length = 0;
                     });
                 },

@@ -81,20 +81,15 @@ Server messages use `content` for HTML and may specify a target and serialized s
 Client sends:
 ```json
 {
-  "headers": {
-    "HX-Message-ID": "uuid-here"
-  },
+  "headers": { "HX-Request": "true" },
   "message": "Hello!"
 }
 ```
 
-The server copies `HX-Message-ID` into the incoming message:
+Server responds:
 
 ```json
 {
-  "headers": {
-    "HX-Message-ID": "uuid-here"
-  },
   "content": "<p>Saved</p>"
 }
 ```
@@ -192,4 +187,3 @@ For full documentation, visit:
 ## 🎉 Have Fun!
 
 Open multiple browser windows to see real-time synchronization in action. The shared counter and chat work across all connected clients!
-
