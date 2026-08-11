@@ -166,6 +166,30 @@ export interface HtmxSwapContext {
   anchor?: string;
 }
 
+export interface LiveClassProxy {
+  assign(classes: Record<string, any>): void;
+  add(...tokens: string[]): void;
+  remove(...tokens: string[]): void;
+  toggle(token: string, force?: boolean): boolean;
+  replace(oldToken: string, newToken: string): boolean;
+  contains(token: string): boolean;
+  [name: string]: any;
+}
+
+export interface LiveAttrProxy {
+  readonly data: Record<string, any>;
+  readonly aria: Record<string, any>;
+  readonly class: LiveClassProxy;
+  [name: string]: any;
+}
+
+export interface LiveStateScope {
+  readonly attr: LiveAttrProxy;
+  readonly data: Record<string, any>;
+  readonly aria: Record<string, any>;
+  readonly class: LiveClassProxy;
+}
+
 export interface QProxy {
   /** Number of matched elements. */
   count: number;
@@ -176,25 +200,16 @@ export interface QProxy {
    * Supports `next`, `previous`, `closest`, `first`, `last`, and `in` scoping.
    */
   q(selector: string): QProxy;
-  /**
-   * Get an attribute, class, or property from the first matched element.
-   * - `.foo`: class presence as `true`/`false`
-   * - `aria-*`: coerces `"true"`/`"false"` to boolean
-   * - boolean attrs (`hidden`, `disabled`, etc.): `true`/`false`
-   * - `value`, `checked`, `selected`: DOM property
-   * - anything else: `getAttribute(name)`
-   */
-  attr(name: string): any;
-  /**
-   * Set an attribute, class, or property on all matched elements. Returns the proxy for chaining.
-   * - `.foo`: adds/removes class by truthiness
-   * - `'class'`: space-separated string or `{ className: condition }` object
-   * - `aria-*`: strings/numbers pass through; others coerce to `"true"`/`"false"`
-   * - `value`, `checked`, `selected`: syncs DOM property and HTML attribute
-   * - boolean attrs: truthy adds, falsy removes
-   * - anything else: `null`/`undefined`/`false` removes; otherwise sets as string
-   */
-  attr(name: string, value: any): QProxy;
+  /** Typed attributes on the selected elements. */
+  readonly attr: LiveAttrProxy;
+  /** Typed `data-*` values on the selected elements. */
+  readonly data?: Record<string, any>;
+  /** Typed `aria-*` values on the selected elements. */
+  readonly aria?: Record<string, any>;
+  /** Class state and `classList` methods on the selected elements. */
+  readonly class: LiveClassProxy;
+  /** Typed state on the nearest owner of each selected element. */
+  readonly closest?: LiveStateScope;
   /**
    * Move a class or attribute from sibling/scoped elements to all matched elements.
    * @param scope - CSS selector, DOM node, or `{ from: string }`. Defaults to parent element.
@@ -204,7 +219,7 @@ export interface QProxy {
    * Toggle (binary flip) or cycle (with `values`) a class or attribute on all matched elements.
    * @param values - Pipe-delimited string (`'grid|list'`) or array to cycle through.
    */
-  toggle(name: string, values?: string | string[]): QProxy;
+  toggle(name: string, ...values: (string | string[])[]): QProxy;
   /**
    * Dispatch a `CustomEvent` from all matched elements.
    * @param bubbles - Defaults to `true`.
@@ -216,11 +231,6 @@ export interface QProxy {
    * - `'start'`/`'end'`: first/last child
    */
   insert(pos: 'before' | 'after' | 'start' | 'end', html: string): QProxy;
-  /**
-   * Cascading `data-*` proxy. Reads/writes the closest ancestor with the matching `data-*` attribute.
-   * Values are JSON-parsed on read and JSON-serialized on write.
-   */
-  data?: Record<string, any>;
   /** Iterate over matched elements. */
   [Symbol.iterator](): IterableIterator<Element>;
   /** DOM property passthrough: reads from first element, writes to all. */
@@ -253,7 +263,7 @@ export interface HtmxLive {
   /** Move a class or attribute from sibling/scoped elements to the target. */
   take(target: string | Element | NodeList, name: string, scope?: string | Node | { from: string }): void;
   /** Toggle or cycle a class or attribute on the target. */
-  toggle(target: string | Element | NodeList, name: string, values?: string | string[]): void;
+  toggle(target: string | Element | NodeList, name: string, ...values: (string | string[])[]): void;
   /**
    * Resolves on the next matching event, timeout, or interval, whichever fires first.
    * - `string`: event name on the current element
