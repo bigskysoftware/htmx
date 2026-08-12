@@ -793,16 +793,22 @@
                 let code = elt.getAttribute(bodyAttr)
                 let debounce = getDebounce(elt);
                 let exec;
+                let isAsync = /\bawait\b/.test(code);
+                let running = false;
                 let run = async () => {
                     if (!elt.isConnected) {
                         fns.delete(run);
                         return;
                     }
+                    if (isAsync && running) return;
+                    running = isAsync;
                     try {
                         exec ||= api.executeJavaScript(elt, { debounce }, code, false, true, true);
                         await exec();
                     } catch (e) {
                         if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt });
+                    } finally {
+                        if (isAsync) queueMicrotask(() => running = false);
                     }
                 };
                 fns.add(run);

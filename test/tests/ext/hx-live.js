@@ -204,6 +204,41 @@ describe('hx-live extension', function () {
         elt.dataset.v.should.equal('done');
     });
 
+    it('does not rerun after an async hx-live body writes to the DOM', async function() {
+        window.__asyncBodyRuns = 0;
+        let elt = createProcessedHTML(`
+            <output hx-live="window.__asyncBodyRuns++; await timeout(1); this.textContent = 'done'"></output>
+        `);
+        await htmx.timeout(30);
+        elt.textContent.should.equal('done');
+        let settledRuns = window.__asyncBodyRuns;
+        await htmx.timeout(20);
+        window.__asyncBodyRuns.should.equal(settledRuns);
+        assert.isAtMost(settledRuns, 2);
+        delete window.__asyncBodyRuns;
+    });
+
+    it('does not rerun after an async hx-live body writes before another await', async function() {
+        window.__multiStepBodyRuns = 0;
+        playground().innerHTML = `
+            <output hx-live="
+                window.__multiStepBodyRuns++;
+                await timeout(1);
+                class.pending = true;
+                await timeout(15);
+                class.done = true
+            "></output>
+        `;
+        await htmx.timeout(1);
+        htmx.process(playground());
+        let elt = playground().querySelector('output');
+        await htmx.timeout(10);
+        window.__multiStepBodyRuns.should.equal(1);
+        await htmx.timeout(20);
+        elt.classList.contains('done').should.equal(true);
+        delete window.__multiStepBodyRuns;
+    });
+
     it('forEvent(event, ms) resolves on event before timeout', async function() {
         let elt = createProcessedHTML('<output hx-live="(async () => { await forEvent(\'go\', 1000); this.dataset.v = \'fired\'; })()"></output>');
         await htmx.timeout(5);
