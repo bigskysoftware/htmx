@@ -201,9 +201,9 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
     })
 
     it('keeps indicators visible when HX-Redirect is received', async function() {
-        let originalLocation = htmx.__location;
+        let originalLocation = htmx._loc;
         let redirectUrl = null;
-        htmx.__location = {
+        htmx._loc = {
             get href() { return window.location.href; },
             set href(val) { redirectUrl = val; }
         };
@@ -219,7 +219,7 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
             assert.equal(redirectUrl, '/other-page');
             assert.isTrue(find('#indicator').classList.contains('htmx-request'));
         } finally {
-            htmx.__location = originalLocation;
+            htmx._loc = originalLocation;
         }
     })
 
