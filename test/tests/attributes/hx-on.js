@@ -653,12 +653,9 @@ describe('hx-on="eventSpec -> code" syntax', function() {
     });
 
     // Gap: hx-on with invalid separator (hyphen instead of colon)
-    it('skips hx-on attributes with wrong separator', async function() {
-        let div = createProcessedHTML('<div hx-on-click="console.log(1)">test</div>');
-        let clicked = false;
-        div.addEventListener('click', () => { clicked = true; });
+    it('skips hx-on attributes with wrong separator', function() {
+        let div = createProcessedHTML('<div hx-on-click="window._hxOnWrongSep = true">test</div>');
         div.click();
-        await htmx.timeout(10);
-        assert.isTrue(clicked);
+        assert.isUndefined(window._hxOnWrongSep, 'hx-on-click should not be processed as an hx-on handler');
     });
 })

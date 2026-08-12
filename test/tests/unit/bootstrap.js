@@ -231,19 +231,22 @@ describe('bootstrap unit tests', function() {
     it('constructor uses setTimeout when document is already loaded', async function() {
         assert.notEqual(document.readyState, 'loading', 'document should already be loaded')
         let HtmxClass = Object.getPrototypeOf(htmx).constructor
-        let setTimeoutCalled = false
+        let initCalls = 0
         let originalSetTimeout = window.setTimeout
         window.setTimeout = function(fn, ...args) {
             if (fn.name === 'init') {
-                setTimeoutCalled = true
+                initCalls++
             }
             return originalSetTimeout.call(this, fn, ...args)
         }
         try {
             let newInstance = new HtmxClass()
             await new Promise(r => originalSetTimeout(r, 100))
-            assert.isTrue(setTimeoutCalled, 'setTimeout should have been called for init')
-            assert.isDefined(newInstance.config)
+            assert.equal(initCalls, 1, 'setTimeout should be called once for init')
+            assert.isDefined(newInstance.config, 'new instance should have config')
+            // Verify initialize is idempotent - calling again should not re-register listeners
+            newInstance.initialize()
+            assert.equal(initCalls, 1, 'initialize should be idempotent')
         } finally {
             window.setTimeout = originalSetTimeout
         }
