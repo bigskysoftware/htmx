@@ -1249,6 +1249,7 @@ var htmx = (() => {
                         if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
                             event.intercept({handler: () => this.__restoreHistory()});
                     });
+                /* c8 ignore next 3 */
                 } else {
                     window.addEventListener('popstate', (event) => this.__restoreHistory(event.state));
                 }

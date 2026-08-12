@@ -234,7 +234,7 @@ describe('bootstrap unit tests', function() {
         let setTimeoutCalled = false
         let originalSetTimeout = window.setTimeout
         window.setTimeout = function(fn, ...args) {
-            if (fn.name === 'init' || (fn.toString && fn.toString().includes('__initHistoryHandling'))) {
+            if (fn.name === 'init') {
                 setTimeoutCalled = true
             }
             return originalSetTimeout.call(this, fn, ...args)
