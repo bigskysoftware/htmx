@@ -41,7 +41,7 @@ htmx.config.defaultTimeout = 5000;
 | [`history`](/reference/config/htmx-config-history) | `true` | Enable history support |
 | [`mode`](/reference/config/htmx-config-mode) | `"same-origin"` | Request mode for `fetch()` |
 | [`defaultSwap`](/reference/config/htmx-config-defaultSwap) | `"innerHTML"` | Default swap style |
-| [`defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty) | `undefined` | Swap empty main content unless an `<hx-partial>` was extracted |
+| [`allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB) | `false` | Allow empty main swap after OOB extraction |
 | [`defaultFocusScroll`](/reference/config/htmx-config-defaultFocusScroll) | `false` | Scroll to a focused element after swapping |
 | [`defaultSettleDelay`](/reference/config/htmx-config-defaultSettleDelay) | `1` | Delay before settling in milliseconds |
 | [`indicatorClass`](/reference/config/htmx-config-indicatorClass) | `"htmx-indicator"` | CSS class for indicators |

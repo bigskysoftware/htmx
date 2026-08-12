@@ -87,58 +87,42 @@ var htmx = (() => {
         },
     };
 
-    class ReqQ {
-        #c = null
-        #q = []
+    class RequestQueue {
+        #current = null
+        #queue = []
 
-        issue(ctx, queueStrategy) {
-            ctx.queueStrategy = queueStrategy
-            if (!this.#c) {
-                this.#c = ctx
-                return true
-            } else {
-                // Replace strategy OR current is abortable: abort current and issue new
-                if (queueStrategy === "replace" || (queueStrategy !== "abort" && this.#c.queueStrategy === "abort")) {
-                    this.#q.forEach(value => value.status = "dropped");
-                    this.#q = []
-                    this.#c.request?.abort?.();
-                    this.#c = ctx
-                    return true
-                } else if (queueStrategy === "queue all") {
-                    this.#q.push(ctx)
-                    ctx.status = "queued";
-                } else if (queueStrategy === "drop") {
-                    // ignore the request
-                    ctx.status = "dropped";
-                } else if (queueStrategy === "queue last") {
-                    this.#q.forEach(value => value.status = "dropped");
-                    this.#q = [ctx]
-                    ctx.status = "queued";
-                } else if (this.#q.length === 0 && queueStrategy !== "abort") {
-                    // default queue first
-                    this.#q.push(ctx)
-                    ctx.status = "queued";
-                } else {
-                    ctx.status = "dropped";
-                }
-                return false
+        /** Returns "run", "queued", or "dropped" */
+        admit(strategy, runRequest, abortRequest) {
+            if (!this.#current) {
+                this.#current = {strategy, abort: abortRequest}
+                return "run"
             }
+            if (strategy === "replace" || (strategy !== "abort" && this.#current.strategy === "abort")) {
+                this.#queue = []
+                this.#current.abort?.()
+                this.#current = {strategy, abort: abortRequest}
+                return "run"
+            }
+            if (strategy === "queue all") {
+                this.#queue.push(runRequest)
+            } else if (strategy === "queue last") {
+                this.#queue = [runRequest]
+            } else if (strategy !== "abort" && strategy !== "drop" && this.#queue.length === 0) {
+                // default queue first
+                this.#queue.push(runRequest)
+            } else {
+                return "dropped"
+            }
+            return "queued"
         }
 
-        finish() {
-            this.#c = null
-        }
-
-        next() {
-            return this.#q.shift()
+        continue() {
+            this.#current = null    // free current slot
+            this.#queue.shift()?.() // run next request
         }
 
         abort() {
-            this.#c?.request?.abort?.()
-        }
-
-        more() {
-            return this.#q?.length
+            this.#current?.abort?.()
         }
     }
 
@@ -157,6 +141,7 @@ var htmx = (() => {
         #hxOnQuery
         #transitionQueue
         #historyAbort
+        #historyInitialized
         #processingTransition
 
         constructor() {
@@ -185,14 +170,10 @@ var htmx = (() => {
                 triggerHtmxEvent: this.__trigger.bind(this),
                 executeJavaScript: this.__executeJavaScript.bind(this)
             };
-            let init = () => {
-                this.__initHistoryHandling()
-                this.process(document.body)
-            };
+            let init = () => this.initialize();
             if (document.readyState === 'loading') {
                 document.addEventListener("DOMContentLoaded", init)
             } else {
-                // wait a tick so extensions can register
                 setTimeout(init)
             }
         }
@@ -218,7 +199,8 @@ var htmx = (() => {
                 morphScanLimit: 10,
                 noSwap: [204, 304],
                 implicitInheritance: false,
-                defaultSettleDelay: 1
+                defaultSettleDelay: 1,
+                allowEmptySwapAfterOOB: false
             }
             let metaConfig = document.querySelector('meta[name="htmx-config"]');
             if (metaConfig) {
@@ -398,7 +380,6 @@ var htmx = (() => {
                 htmxProp.initialized = true;
                 htmxProp.eventHandler = this.__createHtmxEventHandler(elt);
                 this.__initializeTriggers(elt);
-                this.__initializeAbortListener(elt)
                 this.__trigger(elt, "htmx:after:init", {}, true)
             }
         }
@@ -580,8 +561,13 @@ var htmx = (() => {
             let elt = ctx.sourceElement
             let syncStrategy = this.__determineSyncStrategy(elt);
             let requestQueue = this.__getRequestQueue(elt);
+            this.__initializeAbortListener(elt);
 
-            if (!requestQueue.issue(ctx, syncStrategy)) return
+            if (requestQueue.admit(
+                syncStrategy,
+                () => this.__issueRequest(ctx), // run when ready
+                () => ctx.request?.abort?.()    // abort if replaced
+            ) !== "run") return
 
             ctx.status = "issuing"
 
@@ -653,11 +639,7 @@ var htmx = (() => {
                     this.__enableElements(disableElements);
                 }
 
-                requestQueue.finish()
-                if (requestQueue.more()) {
-                    // intentionally not awaited; __issueRequest has its own try/catch
-                    this.__issueRequest(requestQueue.next())
-                }
+                requestQueue.continue()
             }
         }
 
@@ -685,12 +667,13 @@ var htmx = (() => {
             }
             if (ctx.hx.location) { // HX-Location
                 let path = ctx.hx.location, opts = {};
-                if (path[0] === '{' || /[\s,]/.test(path)) {
-                    opts = HCON.parse(path);
+                let parsed = HCON.parse(path);
+                if (path[0] === '{' || parsed.path != null) {
+                    opts = parsed;
                     path = opts.path;
                     delete opts.path;
                 }
-                opts.push ??= 'true';
+                if (opts.push == null && opts.replace == null) opts.push = 'true';
                 this.ajax('GET', path, opts);
                 return true
             }
@@ -721,7 +704,7 @@ var htmx = (() => {
                     : (/^(drop|abort|replace|queue)/.test(hxSync) ? null : hxSync);
                 if (selector) syncElt = this.__findOrWarn(elt, selector, "hx-sync") || elt;
             }
-            return this.__htmxState(syncElt).rq ||= new ReqQ()
+            return this.__htmxState(syncElt).rq ||= new RequestQueue()
         }
 
         __isModifierKeyClick(evt) {
@@ -1258,6 +1241,22 @@ var htmx = (() => {
         // Public JS API
         //============================================================================================
 
+        initialize() {
+            if (this.config.history && !this.#historyInitialized) {
+                this.#historyInitialized = true;
+                if (!history.state) history.replaceState({htmx: true}, '', location.href);
+                if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
+                    navigation.addEventListener('navigate', (event) => {
+                        if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
+                            event.intercept({handler: () => this.__restoreHistory()});
+                    });
+                } else {
+                    window.addEventListener('popstate', (event) => this.__restoreHistory(event.state));
+                }
+            }
+            this.process(document.body);
+        }
+
         async swap(ctx) {
             try {
                 this.__handleHistoryUpdate(ctx);
@@ -1270,8 +1269,12 @@ var htmx = (() => {
                 let partialTasks = this.__processPartials(fragment, ctx);
                 tasks.push(...oobTasks, ...partialTasks);
 
-                // Process main swap first
-                let mainSwap = this.__processMainSwap(ctx, fragment, partialTasks);
+                // Determine if empty swap should be prevented
+                // partials always prevent; oob prevents by default unless config.allowEmptySwapAfterOOB is true
+                let hasPartials = partialTasks.length || (oobTasks.length && !this.config.allowEmptySwapAfterOOB);
+
+                // Process main swap
+                let mainSwap = this.__processMainSwap(ctx, fragment, hasPartials);
                 if (mainSwap) {
                     tasks.unshift(mainSwap);
                 }
@@ -1314,15 +1317,16 @@ var htmx = (() => {
             }
         }
 
-        __processMainSwap(ctx, fragment, partialTasks) {
+        __processMainSwap(ctx, fragment, hasPartials) {
             // Create main task if needed
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
-            // skip main swap if fragment is empty after hx-partial removal but respect empty modifier
+            // skip main swap if fragment is empty after partial/oob removal
+            // swapEmpty modifier can override; default: skip if hasPartials
             if (
                 swapSpec.style === 'delete' ||    // delete always runs regardless of content
                 fragment.childElementCount > 0 || // or fragment has elements
                 fragment.textContent.trim() ||    // or fragment has text
-                (swapSpec.swapEmpty ?? this.config.defaultSwapEmpty ?? !partialTasks.length) // swapEmpty:true/false overrides, default: allow if no partials
+                (swapSpec.swapEmpty ?? !hasPartials)
             ) {
                 if (ctx.select) {
                     let selected = fragment.querySelectorAll(ctx.select);
@@ -1581,24 +1585,24 @@ var htmx = (() => {
             let result = !detail.cancelled && target.dispatchEvent(evt);
             return result
         }
-        ajax(verb, path, context) {
-            // Normalize context to object
-            if (!context || context instanceof Element || typeof context === 'string') {
-                context = {target: context};
+        ajax(verb, path, options) {
+            // Normalize options to object
+            if (!options || options instanceof Element || typeof options === 'string') {
+                options = {target: options};
             }
 
-            let sourceElt = typeof context.source === 'string' ?
-                document.querySelector(context.source) : context.source;
+            let sourceElt = typeof options.source === 'string' ?
+                document.querySelector(options.source) : options.source;
 
             // If source selector was provided but didn't match, reject
-            if (typeof context.source === 'string' && !sourceElt) {
+            if (typeof options.source === 'string' && !sourceElt) {
                 return Promise.reject(new Error('Source not found'));
             }
 
             // Resolve explicit target if provided; otherwise __createRequestContext
             // will resolve from hx-target on the source element
-            if (context.target) {
-                let target = this.__resolveTarget(document.body, context.target);
+            if (options.target) {
+                let target = this.__resolveTarget(document.body, options.target);
                 if (!target) {
                     return Promise.reject(new Error('Target not found'));
                 }
@@ -1606,11 +1610,11 @@ var htmx = (() => {
             }
             sourceElt ||= document.body;
 
-            let ctx = this.__createRequestContext(sourceElt, context.event || {});
-            Object.assign(ctx, context);
-            if (context.target) ctx.target = this.__resolveTarget(document.body, context.target);
+            let ctx = this.__createRequestContext(sourceElt, options.event || {});
+            Object.assign(ctx, options);
+            if (options.target) ctx.target = this.__resolveTarget(document.body, options.target);
             Object.assign(ctx.request, {action: path, method: verb.toUpperCase()});
-            if (context.headers) Object.assign(ctx.request.headers, context.headers);
+            if (options.headers) Object.assign(ctx.request.headers, options.headers);
 
             return this.__handleTriggerEvent(ctx);
         }
@@ -1618,21 +1622,6 @@ var htmx = (() => {
         //============================================================================================
         // History Support
         //============================================================================================
-
-        __initHistoryHandling() {
-            if (!this.config.history) return;
-            if (!history.state) {
-                history.replaceState({htmx: true}, '', location.href);
-            }
-            if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
-                navigation.addEventListener('navigate', (event) => {
-                    if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
-                        event.intercept({handler: () => this.__restoreHistory()});
-                });
-            } else {
-                window.addEventListener('popstate', (event) => this.__restoreHistory(event.state));
-            }
-        }
 
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
@@ -2002,12 +1991,15 @@ var htmx = (() => {
         }
 
         __initializeAbortListener(elt) {
+            let htmxProp = this.__htmxProp(elt);
+            if (htmxProp.abortInitialized) return;
+            htmxProp.abortInitialized = true;
             let handler = () => {
                 let requestQueue = this.__getRequestQueue(elt);
                 requestQueue.abort();
             };
             elt.addEventListener("htmx:abort", handler);
-            elt._htmx.listeners.push({fromElt: elt, eventName: "htmx:abort", handler});
+            htmxProp.listeners.push({fromElt: elt, eventName: "htmx:abort", handler});
         }
 
         __morph(oldNode, fragment, innerHTML) {

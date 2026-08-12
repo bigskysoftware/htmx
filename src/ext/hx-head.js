@@ -100,7 +100,7 @@
                             }
                         } else {
                             // if this is a merge, we remove this content since it is not in the new head
-                            if (htmx.trigger(document.body, "htmx:before:head:remove", {headElement: currentHeadElt}) !== false) {
+                            if (htmx.trigger(document.body, "htmx:head:before:remove", {headElement: currentHeadElt}) !== false) {
                                 removed.push(currentHeadElt)
                             }
                         }
@@ -124,7 +124,7 @@
                             newNode._preloadHint = hint
                         }
                     } else {
-                        if (htmx.trigger(document.body, "htmx:before:head:add", {headElement: newNode}) !== false) {
+                        if (htmx.trigger(document.body, "htmx:head:before:add", {headElement: newNode}) !== false) {
                             await appendNode(newNode)
                             added.push(newNode)
                         }
@@ -134,12 +134,12 @@
                 // remove all removed elements, after we have appended the new elements to avoid
                 // additional network requests for things like style sheets
                 for (const removedElement of removed) {
-                    if (htmx.trigger(document.body, "htmx:before:head:remove", {headElement: removedElement}) !== false) {
+                    if (htmx.trigger(document.body, "htmx:head:before:remove", {headElement: removedElement}) !== false) {
                         currentHead.removeChild(removedElement)
                     }
                 }
 
-                htmx.trigger(document.body, "htmx:after:head:merge", {
+                htmx.trigger(document.body, "htmx:head:after:merge", {
                     added: added,
                     kept: preserved,
                     removed: removed
@@ -160,7 +160,7 @@
             let target = ctx.target
             // TODO - is there a better way to handle this?  it used to be based on if the element was boosted
             let defaultMergeStrategy = target === document.body ? "merge" : "append";
-            if (htmx.trigger(document.body, "htmx:before:head:merge", detail)) {
+            if (htmx.trigger(document.body, "htmx:head:before:merge", detail)) {
                 let realText = ctx.response.raw.text.bind(ctx.response.raw)
                 ctx.response.raw.text = async () => {
                     let text = await realText()

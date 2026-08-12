@@ -301,11 +301,15 @@ delete buttons relied on form data:
 </form>
 ```
 
-## Step 12: Handle OOB Swap Order Change
+## Step 12: Handle OOB Swap Changes
 
 In htmx 2, OOB swaps happened before the main content swap. In htmx 4, main content swaps first,
 then OOB/partial elements swap after. If you have code that depends on OOB elements being present
 when the main content is swapped, you may need to restructure.
+
+Additionally, responses containing only OOB elements no longer perform an empty main swap by default.
+If your code relied on OOB-only responses clearing the main target, set `htmx.config.allowEmptySwapAfterOOB = true`
+or add `swapEmpty:true` to `hx-swap` on specific elements.
 
 ## Step 13: Handle Non-200 Response Swapping
 

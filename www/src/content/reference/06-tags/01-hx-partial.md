@@ -46,7 +46,13 @@ Avoid targeting an ancestor that the main swap is also replacing — the partial
 
 ## Responses Without Main Content
 
-When a response contains only `<hx-partial>` tags (no main content), the main target is left untouched. See [Multi-Target Updates](/docs#choosing-between-them) for details.
+When a response contains only `<hx-partial>` tags (no main content), the main target is left untouched. This is by design — partials are true response separators where each section is self-contained, giving the server explicit control over multi-target updates.
+
+Unlike [`hx-swap-oob`](/reference/attributes/hx-swap-oob), this behavior cannot be changed globally. Use the `swapEmpty:true` modifier on `hx-swap` if you need to clear the main target:
+
+```html
+<button hx-post="/submit" hx-swap="innerHTML swapEmpty:true">Submit</button>
+```
 
 ## Alternative Syntax
 
