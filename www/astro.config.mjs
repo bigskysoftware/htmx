@@ -218,7 +218,8 @@ export default defineConfig({
         "/extensions/preload": "/extensions/hx-preload",
         "/extensions/browser-indicator": "/extensions/hx-browser-indicator",
         "/extensions/alpine-compat": "/extensions/hx-alpine-compat",
-        "/extensions/optimistic": "/extensions/hx-optimistic",
+        "/extensions/optimistic": "/extensions/hx-pending",
+        "/extensions/hx-optimistic": "/extensions/hx-pending",
         "/extensions/upsert": "/extensions/hx-upsert",
         "/extensions/building": "/docs#extension-system",
 
@@ -231,7 +232,7 @@ export default defineConfig({
         "/docs/extensions/ws": "/extensions/hx-ws",
         "/docs/extensions/head-support": "/extensions/hx-head",
         "/docs/extensions/preload": "/extensions/hx-preload",
-        "/docs/extensions/optimistic": "/extensions/hx-optimistic",
+        "/docs/extensions/optimistic": "/extensions/hx-pending",
         "/docs/extensions/download": "/extensions/hx-download",
         "/docs/extensions/upsert": "/extensions/hx-upsert",
         "/docs/extensions/targets": "/extensions/hx-targets",
