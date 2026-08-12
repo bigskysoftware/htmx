@@ -337,4 +337,38 @@ describe('ajax() unit Tests', function() {
         assert.equal(div.innerHTML, '');
         assert.isTrue(errorFired);
     });
+
+    it('sets full URL for cross-origin GET requests with query params', async function() {
+        let capturedAction;
+        document.addEventListener('htmx:before:request', function handler(evt) {
+            capturedAction = evt.detail.ctx.request.action;
+            evt.preventDefault();
+            document.removeEventListener('htmx:before:request', handler);
+        });
+        createProcessedHTML('<button id="btn" hx-get="https://other-domain.com/api" hx-vals=\'{"foo":"bar"}\'>Click</button>');
+        find('#btn').click();
+        await htmx.timeout(50);
+        assert.isTrue(capturedAction.startsWith('https://other-domain.com/api'));
+        assert.include(capturedAction, 'foo=bar');
+    });
+
+    it('triggers htmx:error when __createRequestContext throws', async function() {
+        let errorTriggered = false;
+        let caughtError = null;
+        let btn = createProcessedHTML('<button hx-get="/test">Click</button>');
+        btn.addEventListener('htmx:error', (e) => {
+            errorTriggered = true;
+            caughtError = e.detail.error;
+        }, { once: true });
+        let original = htmx.__createRequestContext;
+        htmx.__createRequestContext = function() { throw new Error('context creation failed'); };
+        try {
+            btn.click();
+            await htmx.timeout(50);
+            assert.isTrue(errorTriggered, 'htmx:error should have been triggered');
+            assert.equal(caughtError.message, 'context creation failed');
+        } finally {
+            htmx.__createRequestContext = original;
+        }
+    });
 });

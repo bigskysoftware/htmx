@@ -132,6 +132,7 @@ var htmx = (() => {
         __extMethods = new Map();
         __approvedExt = '';
         __registeredExt = new Set();
+        _loc = window.location;  // mockable for testing
         #internalAPI;
         #Function = Function;
         #AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
@@ -658,11 +659,11 @@ var htmx = (() => {
         // Returns true if the response was fully handled by a header.
         __handleHeadersAndMaybeReturnEarly(ctx) {
             if (ctx.hx.refresh === 'true') { // HX-Refresh
-                location.reload();
+                this._loc.reload();
                 return true
             }
             if (ctx.hx.redirect) { // HX-Redirect
-                location.href = ctx.hx.redirect;
+                this._loc.href = ctx.hx.redirect;
                 return true
             }
             if (ctx.hx.location) { // HX-Location
@@ -1248,6 +1249,7 @@ var htmx = (() => {
                         if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
                             event.intercept({handler: () => this.__restoreHistory()});
                     });
+                /* c8 ignore next 3 */
                 } else {
                     window.addEventListener('popstate', (event) => this.__restoreHistory(event.state));
                 }
@@ -1643,7 +1645,7 @@ var htmx = (() => {
             let historyElt = document.querySelector(this.__prefixSelector('[hx-history-elt]')) || document.body;
             if (this.__trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
                 if (this.config.history === "reload") {
-                    location.reload();
+                    this._loc.reload();
                 } else {
                     this.#historyAbort = new AbortController();
                     return this.ajax('GET', path, {

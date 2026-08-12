@@ -90,4 +90,24 @@ describe('__handleHistoryUpdate unit tests', function() {
         assert.include(window.location.href, '/redirected-path?foo=bar')
     })
 
+    it('reloads page on history restore when config.history is "reload"', async function() {
+        let originalLocation = htmx._loc;
+        let originalHistoryConfig = htmx.config.history;
+        let reloadCalled = false;
+        htmx._loc = { 
+            reload: function() { reloadCalled = true; },
+            pathname: '/test', search: '', href: 'http://localhost/test'
+        };
+        htmx.config.history = 'reload';
+        try {
+            history.replaceState({ htmx: true }, '', '/test');
+            htmx.__restoreHistory({ htmx: true });
+            await htmx.timeout(10);
+            assert.isTrue(reloadCalled);
+        } finally {
+            htmx._loc = originalLocation;
+            htmx.config.history = originalHistoryConfig;
+        }
+    })
+
 });

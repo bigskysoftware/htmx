@@ -1,10 +1,16 @@
 describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
 
+    let originalLocation;
+
     beforeEach(function() {
         setupTest();
+        // Save original location reference
+        originalLocation = htmx._loc;
     });
 
     afterEach(function() {
+        // Restore original location
+        htmx._loc = originalLocation;
         cleanupTest();
     });
 
@@ -100,6 +106,160 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
         } finally {
             history.pushState = originalPushState
             history.replaceState = originalReplaceState
+        }
+    })
+
+    // HX-Refresh header tests
+    it('calls location.reload() on HX-Refresh: true', function () {
+        let reloadCalled = false;
+        htmx._loc = { reload: function() { reloadCalled = true; } };
+
+        let ctx = {
+            hx: { refresh: 'true' },
+            sourceElement: createProcessedHTML('<div></div>')
+        };
+
+        let result = htmx.__handleHeadersAndMaybeReturnEarly(ctx);
+
+        assert.isTrue(result);
+        assert.isTrue(reloadCalled);
+    })
+
+    it('does not reload on HX-Refresh: false', function () {
+        let reloadCalled = false;
+        htmx._loc = { reload: function() { reloadCalled = true; } };
+
+        let ctx = {
+            hx: { refresh: 'false' },
+            sourceElement: createProcessedHTML('<div></div>')
+        };
+
+        let result = htmx.__handleHeadersAndMaybeReturnEarly(ctx);
+
+        assert.isNotOk(result);
+        assert.isFalse(reloadCalled);
+    })
+
+    // HX-Redirect header tests
+    it('sets location.href on HX-Redirect', function () {
+        let redirectUrl = null;
+        htmx._loc = { 
+            get href() { return window.location.href; },
+            set href(val) { redirectUrl = val; }
+        };
+
+        let ctx = {
+            hx: { redirect: 'https://example.com/new-page' },
+            sourceElement: createProcessedHTML('<div></div>')
+        };
+
+        let result = htmx.__handleHeadersAndMaybeReturnEarly(ctx);
+
+        assert.isTrue(result);
+        assert.equal(redirectUrl, 'https://example.com/new-page');
+    })
+
+    // HX-Location header tests
+    it('calls ajax on HX-Location with simple path', function () {
+        let ajaxCalled = false;
+        let ajaxArgs = null;
+        const originalAjax = htmx.ajax;
+        htmx.ajax = function(method, path, opts) {
+            ajaxCalled = true;
+            ajaxArgs = { method, path, opts };
+        };
+
+        try {
+            let ctx = {
+                hx: { location: '/new-path' },
+                sourceElement: createProcessedHTML('<div></div>')
+            };
+
+            let result = htmx.__handleHeadersAndMaybeReturnEarly(ctx);
+
+            assert.isTrue(result);
+            assert.isTrue(ajaxCalled);
+            assert.equal(ajaxArgs.method, 'GET');
+            assert.equal(ajaxArgs.path, '/new-path');
+            assert.equal(ajaxArgs.opts.push, 'true');
+        } finally {
+            htmx.ajax = originalAjax;
+        }
+    })
+
+    it('calls ajax on HX-Location with JSON config', function () {
+        let ajaxCalled = false;
+        let ajaxArgs = null;
+        const originalAjax = htmx.ajax;
+        htmx.ajax = function(method, path, opts) {
+            ajaxCalled = true;
+            ajaxArgs = { method, path, opts };
+        };
+
+        try {
+            let ctx = {
+                hx: { location: '{"path":"/test", "target":"#result"}' },
+                sourceElement: createProcessedHTML('<div></div>')
+            };
+
+            let result = htmx.__handleHeadersAndMaybeReturnEarly(ctx);
+
+            assert.isTrue(result);
+            assert.isTrue(ajaxCalled);
+            assert.equal(ajaxArgs.method, 'GET');
+            assert.equal(ajaxArgs.path, '/test');
+            assert.equal(ajaxArgs.opts.target, '#result');
+            assert.equal(ajaxArgs.opts.push, 'true');
+        } finally {
+            htmx.ajax = originalAjax;
+        }
+    })
+
+    it('calls ajax on HX-Location with HCON config', function () {
+        let ajaxCalled = false;
+        let ajaxArgs = null;
+        const originalAjax = htmx.ajax;
+        htmx.ajax = function(method, path, opts) {
+            ajaxCalled = true;
+            ajaxArgs = { method, path, opts };
+        };
+
+        try {
+            let ctx = {
+                hx: { location: 'path:/test target:#result' },
+                sourceElement: createProcessedHTML('<div></div>')
+            };
+
+            let result = htmx.__handleHeadersAndMaybeReturnEarly(ctx);
+
+            assert.isTrue(result);
+            assert.isTrue(ajaxCalled);
+            assert.equal(ajaxArgs.method, 'GET');
+            assert.equal(ajaxArgs.path, '/test');
+            assert.equal(ajaxArgs.opts.target, '#result');
+        } finally {
+            htmx.ajax = originalAjax;
+        }
+    })
+
+    it('respects push:false in HX-Location', function () {
+        let ajaxArgs = null;
+        const originalAjax = htmx.ajax;
+        htmx.ajax = function(method, path, opts) {
+            ajaxArgs = { method, path, opts };
+        };
+
+        try {
+            let ctx = {
+                hx: { location: '{"path":"/test", "push":"false"}' },
+                sourceElement: createProcessedHTML('<div></div>')
+            };
+
+            htmx.__handleHeadersAndMaybeReturnEarly(ctx);
+
+            assert.equal(ajaxArgs.opts.push, 'false');
+        } finally {
+            htmx.ajax = originalAjax;
         }
     })
 
