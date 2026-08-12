@@ -57,7 +57,7 @@ The pending element receives an `hx-pending` class for styling:
 }
 ```
 
-This gives users a clear signal that the content is provisional — a good middle ground between a loading spinner and fully optimistic UI.
+This gives users a clear signal that the content is provisional, or you can style it to match your final state for a more optimistic UI.
 
 ## Data-Aware Pending States
 
@@ -81,6 +81,3 @@ Now users see their message immediately — styled as pending — while it's bei
 
 Multi-value fields (checkboxes, multi-selects) are stored as JSON arrays: `data-tags='["js","css"]'`.
 
-## Optimistic Updates
-
-If your template content and styling match the expected server response, you get a fully optimistic UI: users see the "final" state immediately. Since the extension rolls back on error, this works best for low-stakes actions (likes, toggles, comments) where a sudden removal wouldn't be jarring.
