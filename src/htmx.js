@@ -132,7 +132,7 @@ var htmx = (() => {
         __extMethods = new Map();
         __approvedExt = '';
         __registeredExt = new Set();
-        __location = window.location;  // mockable for testing
+        _loc = window.location;  // mockable for testing
         #internalAPI;
         #Function = Function;
         #AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
@@ -659,11 +659,11 @@ var htmx = (() => {
         // Returns true if the response was fully handled by a header.
         __handleHeadersAndMaybeReturnEarly(ctx) {
             if (ctx.hx.refresh === 'true') { // HX-Refresh
-                this.__location.reload();
+                this._loc.reload();
                 return true
             }
             if (ctx.hx.redirect) { // HX-Redirect
-                this.__location.href = ctx.hx.redirect;
+                this._loc.href = ctx.hx.redirect;
                 return true
             }
             if (ctx.hx.location) { // HX-Location
@@ -1645,7 +1645,7 @@ var htmx = (() => {
             let historyElt = document.querySelector(this.__prefixSelector('[hx-history-elt]')) || document.body;
             if (this.__trigger(document, "htmx:before:history:restore", {path, cacheMiss: true})) {
                 if (this.config.history === "reload") {
-                    this.__location.reload();
+                    this._loc.reload();
                 } else {
                     this.#historyAbort = new AbortController();
                     return this.ajax('GET', path, {

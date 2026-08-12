@@ -91,10 +91,10 @@ describe('__handleHistoryUpdate unit tests', function() {
     })
 
     it('reloads page on history restore when config.history is "reload"', async function() {
-        let originalLocation = htmx.__location;
+        let originalLocation = htmx._loc;
         let originalHistoryConfig = htmx.config.history;
         let reloadCalled = false;
-        htmx.__location = { 
+        htmx._loc = { 
             reload: function() { reloadCalled = true; },
             pathname: '/test', search: '', href: 'http://localhost/test'
         };
@@ -105,7 +105,7 @@ describe('__handleHistoryUpdate unit tests', function() {
             await htmx.timeout(10);
             assert.isTrue(reloadCalled);
         } finally {
-            htmx.__location = originalLocation;
+            htmx._loc = originalLocation;
             htmx.config.history = originalHistoryConfig;
         }
     })

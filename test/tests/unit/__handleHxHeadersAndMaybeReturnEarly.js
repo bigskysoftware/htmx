@@ -5,12 +5,12 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
     beforeEach(function() {
         setupTest();
         // Save original location reference
-        originalLocation = htmx.__location;
+        originalLocation = htmx._loc;
     });
 
     afterEach(function() {
         // Restore original location
-        htmx.__location = originalLocation;
+        htmx._loc = originalLocation;
         cleanupTest();
     });
 
@@ -112,7 +112,7 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
     // HX-Refresh header tests
     it('calls location.reload() on HX-Refresh: true', function () {
         let reloadCalled = false;
-        htmx.__location = { reload: function() { reloadCalled = true; } };
+        htmx._loc = { reload: function() { reloadCalled = true; } };
 
         let ctx = {
             hx: { refresh: 'true' },
@@ -127,7 +127,7 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
 
     it('does not reload on HX-Refresh: false', function () {
         let reloadCalled = false;
-        htmx.__location = { reload: function() { reloadCalled = true; } };
+        htmx._loc = { reload: function() { reloadCalled = true; } };
 
         let ctx = {
             hx: { refresh: 'false' },
@@ -143,7 +143,7 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
     // HX-Redirect header tests
     it('sets location.href on HX-Redirect', function () {
         let redirectUrl = null;
-        htmx.__location = { 
+        htmx._loc = { 
             get href() { return window.location.href; },
             set href(val) { redirectUrl = val; }
         };
