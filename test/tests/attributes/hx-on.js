@@ -640,4 +640,22 @@ describe('hx-on="eventSpec -> code" syntax', function() {
         window.fooCount.should.equal(1);
         delete window.fooCount;
     });
+
+    // Gap #16: hx-on error trigger
+    it('triggers htmx:error when hx-on handler throws', function(done) {
+        createProcessedHTML('<button id="btn" hx-on:click="throw new Error(\'test error\')">Click</button>');
+        document.addEventListener('htmx:error', function(evt) {
+            assert.isNotNull(evt.detail.error);
+            assert.equal(evt.detail.error.message, 'test error');
+            done();
+        }, { once: true });
+        find('#btn').click();
+    });
+
+    // Gap: hx-on with invalid separator (hyphen instead of colon)
+    it('skips hx-on attributes with wrong separator', function() {
+        let div = createProcessedHTML('<div hx-on-click="window._hxOnWrongSep = true">test</div>');
+        div.click();
+        assert.isUndefined(window._hxOnWrongSep, 'hx-on-click should not be processed as an hx-on handler');
+    });
 })

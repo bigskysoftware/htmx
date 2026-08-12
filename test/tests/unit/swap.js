@@ -736,6 +736,58 @@ describe('swap() unit tests', function() {
         find('#oob').innerText.should.equal('Updated');
     })
 
+    it('by default (allowEmptySwapAfterOOB:false), oob-only response prevents main swap', async function () {
+        let original = htmx.config.allowEmptySwapAfterOOB;
+        htmx.config.allowEmptySwapAfterOOB = false;
+        try {
+            createProcessedHTML("<div id='target'>Original</div><div id='oob'>OOB</div>")
+            await htmx.swap({"target":"#target", "swap":"innerHTML", "text":"<div id='oob' hx-swap-oob='true'>Updated</div>"})
+            find('#target').innerText.should.equal('Original');
+            find('#oob').innerText.should.equal('Updated');
+        } finally {
+            htmx.config.allowEmptySwapAfterOOB = original;
+        }
+    })
+
+    it('allowEmptySwapAfterOOB:true allows empty main swap after oob extraction', async function () {
+        let original = htmx.config.allowEmptySwapAfterOOB;
+        htmx.config.allowEmptySwapAfterOOB = true;
+        try {
+            createProcessedHTML("<div id='target'>Original</div><div id='oob'>OOB</div>")
+            await htmx.swap({"target":"#target", "swap":"innerHTML", "text":"<div id='oob' hx-swap-oob='true'>Updated</div>"})
+            find('#target').innerText.should.equal('');
+            find('#oob').innerText.should.equal('Updated');
+        } finally {
+            htmx.config.allowEmptySwapAfterOOB = original;
+        }
+    })
+
+    it('partials always prevent empty main swap regardless of allowEmptySwapAfterOOB', async function () {
+        let original = htmx.config.allowEmptySwapAfterOOB;
+        htmx.config.allowEmptySwapAfterOOB = true;
+        try {
+            createProcessedHTML("<div id='target'>Original</div><div id='partial'>Partial</div>")
+            await htmx.swap({"target":"#target", "swap":"innerHTML", "text":"<hx-partial hx-target='#partial'>Updated</hx-partial>"})
+            find('#target').innerText.should.equal('Original');
+            find('#partial').innerText.should.equal('Updated');
+        } finally {
+            htmx.config.allowEmptySwapAfterOOB = original;
+        }
+    })
+
+    it('swapEmpty modifier overrides allowEmptySwapAfterOOB config', async function () {
+        let original = htmx.config.allowEmptySwapAfterOOB;
+        htmx.config.allowEmptySwapAfterOOB = true;
+        try {
+            createProcessedHTML("<div id='target'>Original</div><div id='oob'>OOB</div>")
+            await htmx.swap({"target":"#target", "swap":"innerHTML swapEmpty:false", "text":"<div id='oob' hx-swap-oob='true'>Updated</div>"})
+            find('#target').innerText.should.equal('Original');
+            find('#oob').innerText.should.equal('Updated');
+        } finally {
+            htmx.config.allowEmptySwapAfterOOB = original;
+        }
+    })
+
     it('restores focus to textarea after innerHTML swap', async function () {
         createProcessedHTML("<textarea id='focused-textarea'>hello world</textarea>")
         let textarea = find('#focused-textarea')
@@ -747,6 +799,109 @@ describe('swap() unit tests', function() {
         document.activeElement.id.should.equal('focused-textarea')
         document.activeElement.selectionStart.should.equal(6)
         document.activeElement.selectionEnd.should.equal(11)
+    })
+
+    // Gap #11: textContent swap child cleanup
+    it('cleans up htmx-powered descendants on textContent swap', async function() {
+        mockResponse('GET', '/test', 'Plain text content');
+        
+        createProcessedHTML(
+            '<div id="target">' +
+            '<button id="child1" hx-get="/other">Child 1</button>' +
+            '<button id="child2" hx-post="/other">Child 2</button>' +
+            '</div>' +
+            '<button id="trigger" hx-get="/test" hx-target="#target" hx-swap="textContent">Swap</button>'
+        );
+        
+        assert.isTrue(find('#child1').hasAttribute('data-htmx-powered'));
+        assert.isTrue(find('#child2').hasAttribute('data-htmx-powered'));
+        
+        find('#trigger').click();
+        await forRequest();
+        await htmx.timeout(10);
+        
+        assert.isUndefined(find('#child1'));
+        assert.isUndefined(find('#child2'));
+        assert.equal(find('#target').textContent, 'Plain text content');
+    })
+
+    // Gap #9: __setFocus catch block when focus() throws
+    it('handles web component that throws on focus during restoration', async function() {
+        if (!customElements.get('broken-focus')) {
+            customElements.define('broken-focus', class extends HTMLElement {
+                focus() { throw new Error('focus not supported'); }
+            });
+        }
+        
+        mockResponse('GET', '/test', '<broken-focus id="field">Updated</broken-focus>');
+        createProcessedHTML('<div id="target"><input id="field" value="test"></div>');
+        
+        find('#field').focus();
+        await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerHTML'});
+        
+        let newElt = find('#field');
+        assert.isNotNull(newElt);
+        assert.equal(newElt.tagName, 'BROKEN-FOCUS');
+    })
+
+    // Gap #24: Transition queue task execution when startViewTransition unavailable
+    it('swap works with transition:true when startViewTransition is unavailable', async function() {
+        mockResponse('GET', '/test', '<div id="result">Swapped!</div>');
+        const originalStartViewTransition = document.startViewTransition;
+        document.startViewTransition = undefined;
+        
+        try {
+            createProcessedHTML('<div id="target">Original</div><button id="btn" hx-get="/test" hx-target="#target" hx-swap="innerHTML transition:true">Click</button>');
+            find('#btn').click();
+            await forRequest();
+            await htmx.timeout(50);
+            assert.include(find('#target').innerHTML, 'Swapped!');
+        } finally {
+            document.startViewTransition = originalStartViewTransition;
+        }
+    })
+
+    // Gap #25: view transition catch block when task throws
+    it('catches error when view transition is aborted', async function() {
+        let savedTransitions = htmx.config.transitions;
+        htmx.config.transitions = true;
+        mockResponse('GET', '/test', '<div>response</div>');
+        let btn = createProcessedHTML('<button hx-get="/test">Click</button>');
+
+        document.addEventListener('htmx:before:viewTransition', (e) => {
+            e.detail.task = async () => { throw new Error('transition aborted'); };
+        }, { once: true });
+
+        btn.click();
+        await forRequest();
+        await htmx.timeout(50);
+        htmx.config.transitions = savedTransitions;
+        assert.isTrue(true);
+    })
+
+    // Gap #12: Extension content transformation result
+    it('uses array result from extension handle_swap', async function() {
+        mockResponse('GET', '/test', '<div>Content</div>');
+        htmx.registerExtension('test-swap-ext', {
+            handle_swap: function(swapStyle, target, fragment, swapSpec) {
+                if (swapStyle === 'custom-swap') {
+                    let newEl = document.createElement('span');
+                    newEl.id = 'ext-result';
+                    newEl.textContent = 'Extension swapped';
+                    target.appendChild(newEl);
+                    return [newEl];
+                }
+            }
+        });
+        createProcessedHTML(
+            '<div id="target"></div>' +
+            '<button id="btn" hx-get="/test" hx-target="#target" hx-swap="custom-swap" hx-ext="test-swap-ext">Click</button>'
+        );
+        find('#btn').click();
+        await forRequest();
+        await htmx.timeout(10);
+        assert.isNotNull(find('#ext-result'));
+        assert.equal(find('#ext-result').textContent, 'Extension swapped');
     })
 
 })

@@ -245,4 +245,45 @@ describe('__collectFormData unit tests', function() {
         let formData = htmx.__collectFormData(elt, null, null, false, false);
         assert.equal(formData.get('tenantId'), 'acme');
     });
+
+    it('includes file input via hx-include', async function () {
+        mockResponse('POST', '/upload', 'OK');
+        createProcessedHTML(
+            '<input type="file" name="myfile" id="file-input">' +
+            '<button id="btn" hx-post="/upload" hx-include="#file-input" hx-encoding="multipart/form-data">Upload</button>'
+        );
+        let fileInput = find('#file-input');
+        let file = new File(['test content'], 'test.txt', { type: 'text/plain' });
+        let dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        fileInput.files = dataTransfer.files;
+        find('#btn').click();
+        await forRequest();
+        let lastCall = fetchMock.calls[fetchMock.calls.length - 1];
+        let files = lastCall.request.body.getAll('myfile');
+        assert.equal(files.length, 1);
+        assert.equal(files[0].name, 'test.txt');
+    });
+
+    it('includes multiple files via hx-include', async function () {
+        mockResponse('POST', '/upload', 'OK');
+        createProcessedHTML(
+            '<input type="file" name="files" id="multi-file" multiple>' +
+            '<button id="btn" hx-post="/upload" hx-include="#multi-file" hx-encoding="multipart/form-data">Upload</button>'
+        );
+        let fileInput = find('#multi-file');
+        let file1 = new File(['content1'], 'file1.txt', { type: 'text/plain' });
+        let file2 = new File(['content2'], 'file2.txt', { type: 'text/plain' });
+        let dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file1);
+        dataTransfer.items.add(file2);
+        fileInput.files = dataTransfer.files;
+        find('#btn').click();
+        await forRequest();
+        let lastCall = fetchMock.calls[fetchMock.calls.length - 1];
+        let files = lastCall.request.body.getAll('files');
+        assert.equal(files.length, 2);
+        assert.equal(files[0].name, 'file1.txt');
+        assert.equal(files[1].name, 'file2.txt');
+    });
 });

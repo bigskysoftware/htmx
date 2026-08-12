@@ -171,5 +171,11 @@ describe('__shouldBoost() unit tests', function() {
             const result = htmx.__shouldBoost(input);
             assert.isUndefined(result);
         });
+
+        it('returns false for malformed URLs that cause URL constructor to throw', function() {
+            createProcessedHTML('<div hx-boost:inherited="true"><a id="link" href="http://[invalid">Link</a></div>');
+            let link = find('#link');
+            assert.isUndefined(link._htmx?.boosted);
+        });
     });
 });

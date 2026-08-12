@@ -204,7 +204,7 @@ describe('ajax() unit Tests', function() {
         assert.equal(div.innerHTML, 'content!');
     });
 
-    it('ajax works with no context (defaults to body)', async function() {
+    it('ajax works with no options (defaults to body)', async function() {
         this.skip() // We can't test this as it will replace the body and nuke the test UI lol
         return;
         mockResponse('GET', '/test', '<div id="ajax-result">body content</div>');
@@ -235,7 +235,7 @@ describe('ajax() unit Tests', function() {
         assert.equal(div.innerHTML, 'deleted!');
     });
 
-    it('ajax with event context', async function() {
+    it('ajax with event option', async function() {
         mockResponse('POST', '/test', 'clicked!');
         createProcessedHTML('<button id="btn">Click</button><div id="result"></div>');
         const div = find('#result');
@@ -308,5 +308,67 @@ describe('ajax() unit Tests', function() {
         });
         assert.include(div.innerHTML, '<p>old</p>');
         assert.include(div.innerHTML, '<span>new</span>');
+    });
+
+    it('ajax request can be aborted via htmx:abort event', async function() {
+        const seq = mockSequentialResponses('GET', '/test', 'should not appear');
+        const div = createProcessedHTML('<div id="source"></div>');
+        
+        let errorFired = false;
+        div.addEventListener('htmx:error', () => {
+            errorFired = true;
+        });
+        
+        const promise = htmx.ajax('GET', '/test', {
+            source: '#source',
+            target: '#source',
+            swap: 'innerHTML'
+        });
+        
+        // Wait for request to be issued, then abort before releasing response
+        await htmx.timeout(1);
+        htmx.trigger('#source', 'htmx:abort');
+        
+        // Release the response (should be ignored since aborted)
+        seq.next();
+        await promise;
+        
+        // Content should not have been swapped
+        assert.equal(div.innerHTML, '');
+        assert.isTrue(errorFired);
+    });
+
+    it('sets full URL for cross-origin GET requests with query params', async function() {
+        let capturedAction;
+        document.addEventListener('htmx:before:request', function handler(evt) {
+            capturedAction = evt.detail.ctx.request.action;
+            evt.preventDefault();
+            document.removeEventListener('htmx:before:request', handler);
+        });
+        createProcessedHTML('<button id="btn" hx-get="https://other-domain.com/api" hx-vals=\'{"foo":"bar"}\'>Click</button>');
+        find('#btn').click();
+        await htmx.timeout(50);
+        assert.isTrue(capturedAction.startsWith('https://other-domain.com/api'));
+        assert.include(capturedAction, 'foo=bar');
+    });
+
+    it('triggers htmx:error when __createRequestContext throws', async function() {
+        let errorTriggered = false;
+        let caughtError = null;
+        let btn = createProcessedHTML('<button hx-get="/test">Click</button>');
+        btn.addEventListener('htmx:error', (e) => {
+            errorTriggered = true;
+            caughtError = e.detail.error;
+        }, { once: true });
+        let original = htmx.__createRequestContext;
+        htmx.__createRequestContext = function() { throw new Error('context creation failed'); };
+        try {
+            btn.click();
+            await htmx.timeout(50);
+            assert.isTrue(errorTriggered, 'htmx:error should have been triggered');
+            assert.equal(caughtError.message, 'context creation failed');
+        } finally {
+            htmx.__createRequestContext = original;
+        }
     });
 });

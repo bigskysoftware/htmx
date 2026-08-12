@@ -183,24 +183,24 @@ Element events expose:
 event.detail.headElement // Element being added or removed
 ```
 
-### `htmx:before:head:merge`
+### `htmx:head:before:merge`
 
 Fires before the extension processes a response `<head>`.
 
 ```js
-document.addEventListener('htmx:before:head:merge', event => {
+document.addEventListener('htmx:head:before:merge', event => {
   if (!shouldUpdateHead(event.detail.ctx)) event.preventDefault()
 })
 ```
 
 The event detail includes the request `ctx`. Cancel the event to skip all head processing for the response.
 
-### `htmx:before:head:add`
+### `htmx:head:before:add`
 
 Fires before the extension adds a head element.
 
 ```js
-document.addEventListener('htmx:before:head:add', event => {
+document.addEventListener('htmx:head:before:add', event => {
   if (event.detail.headElement.matches('script[data-untrusted]')) {
     event.preventDefault()
   }
@@ -209,12 +209,12 @@ document.addEventListener('htmx:before:head:add', event => {
 
 Cancel the event to skip that element.
 
-### `htmx:before:head:remove`
+### `htmx:head:before:remove`
 
 Fires before the extension removes a current `<head>` element.
 
 ```js
-document.addEventListener('htmx:before:head:remove', event => {
+document.addEventListener('htmx:head:before:remove', event => {
   if (event.detail.headElement.matches('[data-keep]')) {
     event.preventDefault()
   }
@@ -223,7 +223,7 @@ document.addEventListener('htmx:before:head:remove', event => {
 
 Cancel the event to keep that element.
 
-### `htmx:after:head:merge`
+### `htmx:head:after:merge`
 
 Fires after the extension finishes updating the `<head>`.
 
@@ -236,10 +236,23 @@ event.detail = {
 ```
 
 ```js
-document.addEventListener('htmx:after:head:merge', event => {
+document.addEventListener('htmx:head:after:merge', event => {
   console.log('Head elements added:', event.detail.added.length)
 })
 ```
+
+## Migration
+
+### Beta to RC1
+
+RC1 namespaces `hx-head` lifecycle events:
+
+| Beta | RC1 |
+|------|-----|
+| `htmx:before:head:merge` | [`htmx:head:before:merge`](#htmxheadbeforemerge) |
+| `htmx:before:head:add` | [`htmx:head:before:add`](#htmxheadbeforeadd) |
+| `htmx:before:head:remove` | [`htmx:head:before:remove`](#htmxheadbeforeremove) |
+| `htmx:after:head:merge` | [`htmx:head:after:merge`](#htmxheadaftermerge) |
 
 ## Notes
 

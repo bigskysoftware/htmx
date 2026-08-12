@@ -142,29 +142,15 @@ Nested OOB attributes are stripped without swapping.
 
 ## Empty Response Behaviour
 
-A response containing only OOB elements still performs an empty main swap.
+By default, a response containing only OOB elements will **not** perform an empty main swap.
 
-Use this to remove the main target while updating other elements.
-
-```html
-<!-- Server returns this to remove the form and update the list -->
-<div id="item-list" hx-swap-oob="beforeend">
-    <li>New item</li>
-</div>
-<!-- no main content = form gets swapped with empty fragment, removing it -->
-```
-
-If you want to prevent the empty main swap, use the [`swapEmpty`](/reference/attributes/hx-swap#swapempty) modifier:
+To allow the empty main swap after OOB extraction, set [`htmx.config.allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB) to `true`, or use the [`swapEmpty`](/reference/attributes/hx-swap#swapempty) modifier per-element:
 
 ```html
-<form hx-post="/submit" hx-swap="outerHTML swapEmpty:false">
+<form hx-post="/submit" hx-swap="outerHTML swapEmpty:true">
 ```
 
-Or set the global default via [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).
-
-[`<hx-partial>`](/reference/tags/hx-partial) uses the opposite default. Partial-only responses skip the empty main swap.
-
-A partial-only response explicitly routes targeted updates, so htmx assumes no main swap is needed. Set `swapEmpty:true` to run it.
+[`<hx-partial>`](/reference/tags/hx-partial) always prevents empty main swaps regardless of the `allowEmptySwapAfterOOB` setting. Partials are designed as true response separators where the server has explicit control over what gets swapped where.
 
 ## See Also
 
