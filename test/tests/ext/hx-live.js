@@ -1265,6 +1265,25 @@ describe('hx-live extension', function () {
         item.arr()[0].parentElement.attributes.length.should.equal(0);
     });
 
+    it('attr data deletion removes while null assignment stores null', function() {
+        playground().innerHTML = `
+            <section data-count="1">
+                <button id="item" data-local="true"></button>
+            </section>
+        `;
+        let item = htmx.live.q('#item');
+
+        delete item.attr['data-local'];
+        delete item.closest.attr['data-count'];
+        item.attr['data-value'] = null;
+
+        let element = playground().querySelector('#item');
+        element.hasAttribute('data-local').should.equal(false);
+        element.parentElement.hasAttribute('data-count').should.equal(false);
+        element.getAttribute('data-value').should.equal('null');
+        (item.attr['data-value'] === null).should.equal(true);
+    });
+
     it('string boolean attributes have typed reads and writes', function() {
         playground().innerHTML = '<div id="item" contenteditable="plaintext-only" draggable="TRUE" spellcheck="false" writingsuggestions="123"></div>';
         let attr = htmx.live.q('#item').attr;

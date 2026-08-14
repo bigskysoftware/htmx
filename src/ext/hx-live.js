@@ -143,7 +143,7 @@
             },
             deleteProperty: (_, name) => {
                 if (typeof name !== 'string') return false;
-                eachTarget(elts, elt => findOwner(elt, name), false, elt => writeAttr(elt, name, null));
+                eachTarget(elts, elt => findOwner(elt, name), false, elt => writeAttr(elt, name, undefined));
                 return true;
             }
         });
