@@ -63,7 +63,7 @@ Reads use the first match. Writes update every match:
 q('.item').aria.busy = true
 ```
 
-See [`q()`](#q) for directional selectors, scoped selectors, and chained queries.
+See [`q()`](#q) for its full selector grammar.
 
 ### Handle an Event
 
@@ -278,7 +278,7 @@ An escape hatch. Use it when no single `:<attr>` fits, or for multi-step logic a
 
 ## Helpers
 
-The helpers work inside `hx-live` expressions, inside [`hx-on`](/reference/attributes/hx-on) event handlers, and from regular JavaScript via `htmx.live.*`.
+The helpers work inside `hx-live` expressions and [`hx-on`](/reference/attributes/hx-on) event handlers. The [Public API](#public-api) lists the helpers available to regular JavaScript.
 
 ```js
 htmx.live.q('.row').attr.hidden = true;
@@ -342,9 +342,9 @@ q('.row').q('next .row')          // each row's successor
 
 For plain descendant queries, CSS is shorter: `q('.card .title')` and `q('.card').q('.title')` are equivalent. Use chaining when you need a directional per matched element.
 
-**Built-in methods**
+**State and methods**
 
-The helpers below also work as methods on the proxy, applying across all matched elements:
+State writes and method calls apply to every matched element:
 
 ```js
 q('input').attr.disabled = true          // set attribute on all
@@ -353,6 +353,21 @@ q('.tab.active').take('.active', '.tab') // move a class from peers to self
 q('.tab').trigger('select', { id: 1 })   // CustomEvent on each
 q('.list').insert('end', '<li>new</li>') // before / after / start / end
 ```
+
+### Ownership
+
+Bare `attr.*`, `aria.*`, and `class.*` use the current element. Bare `data.*` uses the nearest element carrying that `data-*` attribute.
+
+`q(...)` makes every state bag local to the selected elements. Add `.closest` to use the nearest owner instead:
+
+| Current expression | Selected elements | Nearest owner |
+|---|---|---|
+| `attr.hidden` | `q('.item').attr.hidden` | `q('.item').closest.attr.hidden` |
+| `data.count` | `q('.item').data.count` | `q('.item').closest.data.count` |
+| `aria.busy` | `q('.item').aria.busy` | `q('.item').closest.aria.busy` |
+| `class.active` | `q('.item').class.active` | `q('.item').closest.class.active` |
+
+A closest write uses the selected element when no owner exists. A closest delete does nothing when no owner exists. When several selected elements share an owner, hx-live updates it once.
 
 ### `attr`
 
@@ -384,8 +399,7 @@ delete attr['data-x']
 attr['data-x'] = null
 ```
 
-Use [`class.*`](#class) and [`aria.*`](#aria) for the typed aliases. Use native
-DOM methods when you need exact raw attribute text.
+Use [`class.*`](#class) and [`aria.*`](#aria) for class and ARIA state.
 
 ### `toggle(name, values?)`
 
@@ -407,11 +421,6 @@ toggle('data-view', 'grid|list|table')
 toggle('data-view', ['grid', 'list', 'table'])
 ```
 
-```js
-toggle('aria-expanded')
-toggle('data-view', 'grid', 'list')
-```
-
 ### `take(name, scope?)`
 
 Move a class or attribute from siblings to this element. Pass a `scope` selector to widen or restrict the source set.
@@ -422,14 +431,9 @@ take('aria-current', 'nav a')          // become the current nav item
 take('.active')                        // implicit scope: parent element's subtree
 ```
 
-```js
-take('aria-selected')
-take('.active')
-```
-
 ### `class`
 
-Read and write class membership on this element:
+`class`, `attr.class`, and `attr['class']` return the same class state. Read and write membership with boolean properties:
 
 ```html
 <button class="pending"
@@ -456,7 +460,7 @@ Set several classes at once with `class.assign({ ... })`. Truthy values add, fal
 
 Non-object arguments warn and do nothing.
 
-The native `classList` methods work through `class`:
+`class` extends the native [`DOMTokenList`](https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList):
 
 ```js
 class.add('a', 'b')        // add classes
@@ -464,11 +468,16 @@ class.remove('a', 'b')     // remove classes
 class.toggle('x', force?)  // toggle, optional force
 class.replace('a', 'b')    // replace one class with another
 class.contains('x')        // membership
+class.value                // complete class attribute
+class.length               // number of classes
+[...class]                 // class names
 class.assign({...})        // group add/remove by truthiness
 'x' in class               // membership
 ```
 
-Method names win on read: `class.toggle` is the method even when a class named `toggle` exists; key writes still create classes.
+Native members win on read. Use `class.contains('toggle')` to read a class whose name collides with a native member. Key writes still change membership, so `class.toggle = false` removes the class named `toggle`.
+
+With multiple selected elements, class writes and mutating `DOMTokenList` methods update every match. Reads and return values use the first match.
 
 Use `q()` to access another element:
 
@@ -564,6 +573,8 @@ delete aria.current
 #### Value types
 
 hx-live uses the value types from [WAI-ARIA 1.2](https://www.w3.org/TR/wai-aria-1.2/).
+
+Numbers use JSON syntax. For example, `aria-valuenow="0.5"` reads as `0.5`, while `aria-valuenow=".5"` remains the string `".5"`.
 
 **Boolean**
 
@@ -923,7 +934,7 @@ Client state:
      data-message=""
      data-level=""
      hx-on="flash -> data.message = message; data.level = level;
-                     await timeout(3000);
+                     await timeout('3s');
                      data.message = ''"
      :text="data.message"
      :.success="data.level === 'success'"
@@ -987,7 +998,7 @@ When an `hx-live` element is removed, its expression drops out on the next sched
 <div     :inert="falsyExpr">       <!-- <div>                 -->
 ```
 
-**ARIA attributes** (`aria-*`). Strings and numbers pass through (`"mixed"`, `"page"`, `50`). Other values coerce to `"true"` or `"false"` per the [WAI-ARIA spec](https://www.w3.org/TR/wai-aria-1.2/). Never removed.
+**ARIA attributes** (`aria-*`). Values are stringified. `null` or `undefined` remove the attribute.
 
 ```html
 <button :aria-expanded="truthyExpr">    <!-- <button aria-expanded="true">  -->
@@ -995,7 +1006,7 @@ When an `hx-live` element is removed, its expression drops out on the next sched
 <button :aria-pressed="'mixed'">        <!-- <button aria-pressed="mixed">  -->
 ```
 
-**Stringy enumerated attributes** (`contenteditable`, `draggable`, `spellcheck`). Stringify the value. Accepts strings beyond `true`/`false` for attributes that support them.
+**String boolean attributes** (`contenteditable`, `draggable`, `spellcheck`, `writingsuggestions`). Parse JSON values and preserve other values as strings.
 
 ```html
 <div :contenteditable="true">                <!-- <div contenteditable="true">           -->
@@ -1022,7 +1033,7 @@ When an `hx-live` element is removed, its expression drops out on the next sched
 
 ## Public API
 
-All [helpers](#helpers) are exposed under `htmx.live.*` for use from regular JavaScript (outside `hx-live` / `hx-on` expressions):
+Use these helpers from regular JavaScript:
 
 ```js
 htmx.live.q('.row')
@@ -1127,7 +1138,6 @@ Defaults to `false`.
 
 ## Notes
 
-- Bare `data.*` uses the nearest owner. `q(...).data`, `q(...).aria`, `q(...).class`, and `q(...).attr` are local; use `.closest` for explicit owner lookup.
 - Expressions run on any DOM mutation. There is no per-variable tracking. The microtask coalescing keeps this cheap, but expensive expressions should `debounce` or guard themselves.
 - The DOM is the source of truth. To share state between expressions, use ARIA attributes, `data-*` attributes (the `data` proxy makes this ergonomic), or hidden inputs.
 - When using morph swap styles (`innerMorph` / `outerMorph`), server responses will overwrite `data-*` attributes by default. To preserve client-side state during morphs, add a prefix to `morphIgnore` — e.g. `morphIgnore:["data-"]` will protect all `data-*` attributes from being overwritten. Non-morph swaps (`innerHTML`, `outerHTML`) replace the DOM entirely, so state should live on an ancestor element that isn't swapped.
@@ -1147,7 +1157,7 @@ Use top-level `await` in `hx-live`. Do not add an async wrapper.
 <div hx-live="(async () => { await update() })()"></div>
 ```
 
-## See also
+## See Also
 
 - [`hx-on`](/reference/attributes/hx-on) (attribute)
 - [Locality of Behaviour](/essays/locality-of-behaviour) (essay)

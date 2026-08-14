@@ -1,21 +1,23 @@
-/** Configures the hx-live extension. */
-export interface HtmxLiveConfig {
-  /**
-   * Debounces `input` events by a number of milliseconds or an interval string.
-   * @default 100
-   */
-  inputDebounce?: number | string;
-  /**
-   * Sets the short binding prefix (`':'` -> `:text`, `'hx:'` -> `hx:text`, `''`/`false` -> disabled).
-   * Alpine.js detection disables the default.
-   * @default ":"
-   */
-  bindPrefix?: string | false;
-  /**
-   * Adds `$()` as a `q()` alias in `hx-live`, `:attr`, `hx-on`, `js:` attributes, and `hx-trigger` filters.
-   * @default false
-   */
-  useDollar?: boolean;
+export namespace HxLive {
+  /** Configures the hx-live extension. */
+  export interface Config {
+    /**
+     * Debounces `input` events by a number of milliseconds or an interval string.
+     * @default 100
+     */
+    inputDebounce?: number | string;
+    /**
+     * Sets the short binding prefix (`':'` -> `:text`, `'hx:'` -> `hx:text`, `''`/`false` -> disabled).
+     * Alpine.js detection disables the default.
+     * @default ":"
+     */
+    bindPrefix?: string | false;
+    /**
+     * Adds `$()` as a `q()` alias in `hx-live`, `:attr`, `hx-on`, `js:` attributes, and `hx-trigger` filters.
+     * @default false
+     */
+    useDollar?: boolean;
+  }
 }
 
 export interface HtmxConfig {
@@ -139,7 +141,7 @@ export interface HtmxConfig {
    */
   defaultSwapEmpty?: boolean;
   /** Requires hx-live. */
-  live?: HtmxLiveConfig;
+  live?: HxLive.Config;
 }
 
 /** Context object passed to `htmx.swap()` */
@@ -166,89 +168,166 @@ export interface HtmxSwapContext {
   anchor?: string;
 }
 
-export interface LiveClassProxy {
-  assign(classes: Record<string, any>): void;
-  add(...tokens: string[]): void;
-  remove(...tokens: string[]): void;
-  toggle(token: string, force?: boolean): boolean;
-  replace(oldToken: string, newToken: string): boolean;
-  contains(token: string): boolean;
-  [name: string]: any;
+export namespace HxLive {
+  /** A `DOMTokenList` with boolean class membership and grouped assignment. */
+  export interface ClassProxy extends DOMTokenList {
+    assign(classes: Record<string, any>): void;
+    [name: string]: any;
+  }
+
+  export type Updater<Current, Next = Current> = (current: Current) => Next;
+  type AriaWrite<T> = T | null | undefined | Updater<T | undefined, T | null | undefined>;
+  type AriaTristate = boolean | 'mixed' | 'undefined';
+  type AriaOptionalBoolean = boolean | 'undefined';
+  type AriaCurrent = boolean | 'page' | 'step' | 'location' | 'date' | 'time';
+  type AriaHasPopup = boolean | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+  type AriaInvalid = boolean | 'grammar' | 'spelling';
+  type AriaDropEffect = Array<'copy' | 'execute' | 'link' | 'move' | 'none' | 'popup'>;
+  type AriaRelevant = Array<'additions' | 'removals' | 'text' | 'all'>;
+
+  /** Typed WAI-ARIA 1.2 state. Assign a function to update the current value. */
+  export interface AriaProxy {
+    /** Strings and ID references. */
+    get activeDescendant(): string | undefined; set activeDescendant(value: AriaWrite<string>);
+    get details(): string | undefined; set details(value: AriaWrite<string>);
+    get errorMessage(): string | undefined; set errorMessage(value: AriaWrite<string>);
+    get keyShortcuts(): string | undefined; set keyShortcuts(value: AriaWrite<string>);
+    get label(): string | undefined; set label(value: AriaWrite<string>);
+    get placeholder(): string | undefined; set placeholder(value: AriaWrite<string>);
+    get roleDescription(): string | undefined; set roleDescription(value: AriaWrite<string>);
+    get valueText(): string | undefined; set valueText(value: AriaWrite<string>);
+
+    /** Booleans and states. */
+    get atomic(): boolean | undefined; set atomic(value: AriaWrite<boolean>);
+    get busy(): boolean | undefined; set busy(value: AriaWrite<boolean>);
+    get checked(): AriaTristate | undefined; set checked(value: AriaWrite<AriaTristate>);
+    get disabled(): boolean | undefined; set disabled(value: AriaWrite<boolean>);
+    get expanded(): AriaOptionalBoolean | undefined; set expanded(value: AriaWrite<AriaOptionalBoolean>);
+    get grabbed(): AriaOptionalBoolean | undefined; set grabbed(value: AriaWrite<AriaOptionalBoolean>);
+    get hidden(): AriaOptionalBoolean | undefined; set hidden(value: AriaWrite<AriaOptionalBoolean>);
+    get modal(): boolean | undefined; set modal(value: AriaWrite<boolean>);
+    get multiLine(): boolean | undefined; set multiLine(value: AriaWrite<boolean>);
+    get multiSelectable(): boolean | undefined; set multiSelectable(value: AriaWrite<boolean>);
+    get pressed(): AriaTristate | undefined; set pressed(value: AriaWrite<AriaTristate>);
+    get readOnly(): boolean | undefined; set readOnly(value: AriaWrite<boolean>);
+    get required(): boolean | undefined; set required(value: AriaWrite<boolean>);
+    get selected(): AriaOptionalBoolean | undefined; set selected(value: AriaWrite<AriaOptionalBoolean>);
+
+    /** Tokens. */
+    get autoComplete(): 'inline' | 'list' | 'both' | 'none' | undefined; set autoComplete(value: AriaWrite<'inline' | 'list' | 'both' | 'none'>);
+    get current(): AriaCurrent | undefined; set current(value: AriaWrite<AriaCurrent>);
+    get hasPopup(): AriaHasPopup | undefined; set hasPopup(value: AriaWrite<AriaHasPopup>);
+    get invalid(): AriaInvalid | undefined; set invalid(value: AriaWrite<AriaInvalid>);
+    get live(): 'assertive' | 'off' | 'polite' | undefined; set live(value: AriaWrite<'assertive' | 'off' | 'polite'>);
+    get orientation(): 'horizontal' | 'undefined' | 'vertical' | undefined; set orientation(value: AriaWrite<'horizontal' | 'undefined' | 'vertical'>);
+    get sort(): 'ascending' | 'descending' | 'none' | 'other' | undefined; set sort(value: AriaWrite<'ascending' | 'descending' | 'none' | 'other'>);
+
+    /** Integers and numbers. */
+    get colCount(): number | undefined; set colCount(value: AriaWrite<number>);
+    get colIndex(): number | undefined; set colIndex(value: AriaWrite<number>);
+    get colSpan(): number | undefined; set colSpan(value: AriaWrite<number>);
+    get level(): number | undefined; set level(value: AriaWrite<number>);
+    get posInSet(): number | undefined; set posInSet(value: AriaWrite<number>);
+    get rowCount(): number | undefined; set rowCount(value: AriaWrite<number>);
+    get rowIndex(): number | undefined; set rowIndex(value: AriaWrite<number>);
+    get rowSpan(): number | undefined; set rowSpan(value: AriaWrite<number>);
+    get setSize(): number | undefined; set setSize(value: AriaWrite<number>);
+    get valueMax(): number | undefined; set valueMax(value: AriaWrite<number>);
+    get valueMin(): number | undefined; set valueMin(value: AriaWrite<number>);
+    get valueNow(): number | undefined; set valueNow(value: AriaWrite<number>);
+
+    /** ID reference lists and token lists. */
+    get controls(): string[] | undefined; set controls(value: AriaWrite<string[]>);
+    get describedBy(): string[] | undefined; set describedBy(value: AriaWrite<string[]>);
+    get flowTo(): string[] | undefined; set flowTo(value: AriaWrite<string[]>);
+    get labelledBy(): string[] | undefined; set labelledBy(value: AriaWrite<string[]>);
+    get owns(): string[] | undefined; set owns(value: AriaWrite<string[]>);
+    get dropEffect(): AriaDropEffect | undefined; set dropEffect(value: AriaWrite<AriaDropEffect>);
+    get relevant(): AriaRelevant | undefined; set relevant(value: AriaWrite<AriaRelevant>);
+  }
+
+  export interface AttrProxy {
+    readonly class: ClassProxy;
+    [name: string]: any;
+  }
+
+  /** Typed application-defined `data-*` state. */
+  export interface DataProxy {
+    [name: string]: any;
+  }
+
+  /** State bags that resolve each key from the nearest owning element. */
+  export interface Scope {
+    /** Typed attributes from the nearest element carrying each attribute. */
+    readonly attr: AttrProxy;
+    /** Typed `data-*` values from the nearest element carrying each key. */
+    readonly data: DataProxy;
+    /** Typed ARIA values from the nearest element carrying each attribute. */
+    readonly aria: AriaProxy;
+    /** Class membership from the nearest element carrying each class. */
+    readonly class: ClassProxy;
+  }
+
+  export interface Query {
+    /** Number of matched elements. */
+    count: number;
+    /** Returns a plain array of the matched elements. */
+    arr(): Element[];
+    /**
+     * Re-runs the selector grammar with each matched element as the anchor.
+     * Supports `next`, `previous`, `closest`, `first`, `last`, and `in` scoping.
+     */
+    q(selector: string): Query;
+    /** Typed attributes on the selected elements themselves. */
+    readonly attr: AttrProxy;
+    /** Typed `data-*` values on the selected elements themselves. */
+    readonly data?: DataProxy;
+    /** Typed `aria-*` values on the selected elements themselves. */
+    readonly aria?: AriaProxy;
+    /** Class state and `classList` methods on the selected elements themselves. */
+    readonly class: ClassProxy;
+    /** Typed state on the nearest owner of each selected element. */
+    readonly closest?: Scope;
+    /**
+     * Move a class or attribute from sibling/scoped elements to all matched elements.
+     * @param scope - CSS selector, DOM node, or `{ from: string }`. Defaults to parent element.
+     */
+    take(name: string, scope?: string | Node | { from: string }): Query;
+    /**
+     * Toggle (binary flip) or cycle (with `values`) a class or attribute on all matched elements.
+     * @param values - Pipe-delimited string (`'grid|list'`) or array to cycle through.
+     */
+    toggle(name: string, ...values: (string | string[])[]): Query;
+    /**
+     * Dispatch a `CustomEvent` from all matched elements.
+     * @param bubbles - Defaults to `true`.
+     */
+    trigger(type: string, detail?: any, bubbles?: boolean): Query;
+    /**
+     * Insert HTML relative to all matched elements.
+     * - `'before'`/`'after'`: sibling before/after
+     * - `'start'`/`'end'`: first/last child
+     */
+    insert(pos: 'before' | 'after' | 'start' | 'end', html: string): Query;
+    /** Iterate over matched elements. */
+    [Symbol.iterator](): IterableIterator<Element>;
+    /** DOM property passthrough: reads from first element, writes to all. */
+    [key: string]: any;
+  }
 }
 
-export interface LiveAttrProxy {
-  readonly data: Record<string, any>;
-  readonly aria: Record<string, any>;
-  readonly class: LiveClassProxy;
-  [name: string]: any;
-}
-
-export interface LiveStateScope {
-  readonly attr: LiveAttrProxy;
-  readonly data: Record<string, any>;
-  readonly aria: Record<string, any>;
-  readonly class: LiveClassProxy;
-}
-
-export interface QProxy {
-  /** Number of matched elements. */
-  count: number;
-  /** Returns a plain array of the matched elements. */
-  arr(): Element[];
+export interface HxLive {
   /**
-   * Re-runs the selector grammar with each matched element as the anchor.
-   * Supports `next`, `previous`, `closest`, `first`, `last`, and `in` scoping.
-   */
-  q(selector: string): QProxy;
-  /** Typed attributes on the selected elements. */
-  readonly attr: LiveAttrProxy;
-  /** Typed `data-*` values on the selected elements. */
-  readonly data?: Record<string, any>;
-  /** Typed `aria-*` values on the selected elements. */
-  readonly aria?: Record<string, any>;
-  /** Class state and `classList` methods on the selected elements. */
-  readonly class: LiveClassProxy;
-  /** Typed state on the nearest owner of each selected element. */
-  readonly closest?: LiveStateScope;
-  /**
-   * Move a class or attribute from sibling/scoped elements to all matched elements.
-   * @param scope - CSS selector, DOM node, or `{ from: string }`. Defaults to parent element.
-   */
-  take(name: string, scope?: string | Node | { from: string }): QProxy;
-  /**
-   * Toggle (binary flip) or cycle (with `values`) a class or attribute on all matched elements.
-   * @param values - Pipe-delimited string (`'grid|list'`) or array to cycle through.
-   */
-  toggle(name: string, ...values: (string | string[])[]): QProxy;
-  /**
-   * Dispatch a `CustomEvent` from all matched elements.
-   * @param bubbles - Defaults to `true`.
-   */
-  trigger(type: string, detail?: any, bubbles?: boolean): QProxy;
-  /**
-   * Insert HTML relative to all matched elements.
-   * - `'before'`/`'after'`: sibling before/after
-   * - `'start'`/`'end'`: first/last child
-   */
-  insert(pos: 'before' | 'after' | 'start' | 'end', html: string): QProxy;
-  /** Iterate over matched elements. */
-  [Symbol.iterator](): IterableIterator<Element>;
-  /** DOM property passthrough: reads from first element, writes to all. */
-  [key: string]: any;
-}
-
-export interface HtmxLive {
-  /**
-   * Returns a `QProxy` over elements matching a selector, element, or collection.
+   * Returns a query proxy over elements matching a selector, element, or collection.
    * Directional keywords (`next`, `previous`, `closest`) only work inside `hx-live`/`hx-on` expressions.
    */
-  q(selector: string): QProxy;
-  q(element: Element): QProxy;
-  q(elements: Iterable<Element>): QProxy;
+  q(selector: string): HxLive.Query;
+  q(element: Element): HxLive.Query;
+  q(elements: Iterable<Element>): HxLive.Query;
   /** Aliases `q()`. */
-  $(selector: string): QProxy;
-  $(element: Element): QProxy;
-  $(elements: Iterable<Element>): QProxy;
+  $(selector: string): HxLive.Query;
+  $(element: Element): HxLive.Query;
+  $(elements: Iterable<Element>): HxLive.Query;
   /**
    * Awaitable debounce: resolves after `ms` ms. Cancels any pending call on the same element.
    */
@@ -572,7 +651,7 @@ export interface Htmx {
   /** Global htmx configuration */
   config: HtmxConfig;
   /** hx-live extension API, available when the extension is loaded */
-  live?: HtmxLive;
+  live?: HxLive;
   /**
    * Issues an htmx-style AJAX request programmatically.
    * Returns a Promise that resolves after the response has been swapped into the DOM.

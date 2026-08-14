@@ -77,82 +77,58 @@
         'allowfullscreen','itemscope','nomodule','checked','selected'
     ]);
     let PROPERTY_BINDING_ATTRS = new Set(['checked','value','selected']);
-    let STRINGY_BOOLEAN_ATTRS = new Set(['contenteditable','draggable','spellcheck']);
-    let NUMERIC_INPUT_TYPES = new Set(['number', 'range']);
-    let NUMERIC_ATTRS = new Set([
-        'tabindex','colspan','rowspan','maxlength','minlength',
-        'size','span','start','rows','cols','width','height'
-    ]);
+    let STRING_BOOLEAN_ATTRS = new Set(['contenteditable','draggable','spellcheck','writingsuggestions']);
+    let NUMERIC_INPUT_TYPES = new Set('number range'.split(' '));
+    let NUMERIC_ATTRS = new Set('tabindex colspan rowspan maxlength minlength size span start rows cols width height'.split(' '));
 
     function normalizeAttrName(elt, name) {
         return elt instanceof HTMLElement ? name.toLowerCase() : name;
     }
 
-    /**
-     * Get or set an attribute or property-backed value on one or more elements.
-     *
-     * @param {Element[]} elts - Target elements.
-     * @param {string} name - Attribute name.
-     * @param {*} [value] - Value to set. Omit for getter (reads from first element).
-     * @returns {*} Getter result; setter returns nothing.
-     *
-     * @example
-     * attr('hidden')                  // boolean: is hidden present?
-     * attr('hidden', true)            // set hidden=""
-     * attr('class', 'foo bar')        // raw class attribute
-     * attr('aria-expanded', open)     // ARIA: raw string value
-     * attr('value', 'hello')          // set the value attribute
-     * attr('contenteditable', false)  // "false", not removed
-     * attr('data-x', null)            // remove attribute
-     */
-    function applyAttr(elts, name, ...rest) {
-        if (rest.length === 0) {
-            let e = elts[0];
-            if (!e) return undefined;
-            name = normalizeAttrName(e, name);
-            if (name === 'value' && NUMERIC_INPUT_TYPES.has(e.type)) {
-                return e.value === '' ? null : e.valueAsNumber;
-            }
-            if (PROPERTY_BINDING_ATTRS.has(name)) return e[name];
-            if (BOOLEAN_ATTRS.has(name)) return e.hasAttribute(name);
-            let raw = e.getAttribute(name);
-            if (NUMERIC_ATTRS.has(name) && raw?.trim() && Number.isFinite(Number(raw))) return Number(raw);
-            return raw;
+    function readAttr(element, name) {
+        name = normalizeAttrName(element, name);
+        if (name.startsWith('aria-')) return readAria(element, name.slice(5));
+        if (name.startsWith('data-')) return readData(element, name);
+        if (name === 'value' && NUMERIC_INPUT_TYPES.has(element.type)) {
+            return element.value === '' ? null : element.valueAsNumber;
         }
+        if (PROPERTY_BINDING_ATTRS.has(name)) return element[name];
+        if (BOOLEAN_ATTRS.has(name)) return element.hasAttribute(name);
+        let value = element.getAttribute(name);
+        if (STRING_BOOLEAN_ATTRS.has(name)) try { return JSON.parse(value.toLowerCase()); } catch {}
+        if (NUMERIC_ATTRS.has(name) && value?.trim() && Number.isFinite(Number(value))) return Number(value);
+        return value;
+    }
 
-        for (let e of elts) {
-            let value = maybeCall(rest[0], applyAttr([e], name));
-            let attrName = normalizeAttrName(e, name);
-            let isAria = attrName.startsWith('aria-');
-            if (isAria) {
-                if (value == null) e.removeAttribute(attrName);
-                else e.setAttribute(attrName, String(value));
-            } else if (PROPERTY_BINDING_ATTRS.has(attrName)) {
-                applyPropertyBinding(e, attrName, value);
-            } else if (BOOLEAN_ATTRS.has(attrName)) {
-                if (value) e.setAttribute(attrName, '');
-                else e.removeAttribute(attrName);
-            } else if (STRINGY_BOOLEAN_ATTRS.has(attrName)) {
-                if (value === null || value === undefined) e.removeAttribute(attrName);
-                else if (value === true) e.setAttribute(attrName, 'true');
-                else if (value === false) e.setAttribute(attrName, 'false');
-                else e.setAttribute(attrName, String(value));
-            } else {
-                if (value === null || value === undefined) e.removeAttribute(attrName);
-                else e.setAttribute(attrName, value === true ? '' : String(value));
-            }
+    function writeAttr(element, name, value) {
+        name = normalizeAttrName(element, name);
+        if (typeof value === 'function') {
+            value = value(readAttr(element, name));
+            if (typeof value?.then === 'function') throw new TypeError('assigned function must return a value, not a promise');
+        }
+        if (name.startsWith('aria-')) {
+            writeAria(element, name.slice(5), value);
+        } else if (name.startsWith('data-')) {
+            writeData(element, name, value);
+        } else if (PROPERTY_BINDING_ATTRS.has(name)) {
+            applyPropertyBinding(element, name, value);
+        } else if (BOOLEAN_ATTRS.has(name)) {
+            if (value) element.setAttribute(name, '');
+            else element.removeAttribute(name);
+        } else if (value === null || value === undefined) {
+            element.removeAttribute(name);
+        } else {
+            element.setAttribute(name, String(value));
         }
     }
 
     function eachTarget(elts, findOwner, fallback, fn) {
-        let seen = new Set();
+        let targets = new Set();
         for (let elt of elts) {
             let target = findOwner(elt) || (fallback ? elt : null);
-            if (target && !seen.has(target)) {
-                seen.add(target);
-                fn(target);
-            }
+            if (target) targets.add(target);
         }
+        for (let target of targets) fn(target);
     }
 
     function makeAttrProxy(elts, cascades, scope) {
@@ -161,19 +137,21 @@
             : elt;
         return new Proxy({}, {
             get: (_, name) => {
-                if (name === 'data' || name === 'aria' || name === 'class') return scope[name];
+                if (name === 'class') return scope.class;
                 if (typeof name !== 'string') return undefined;
                 let owner = elts[0] && findOwner(elts[0], name);
-                return owner ? applyAttr([owner], name) : undefined;
+                return owner ? readAttr(owner, name) : undefined;
             },
             set: (_, name, value) => {
                 if (typeof name !== 'string') return false;
-                eachTarget(elts, elt => findOwner(elt, name), true, elt => applyAttr([elt], name, value));
+                eachTarget(elts, elt => findOwner(elt, name), true, elt => {
+                    writeAttr(elt, name, value);
+                });
                 return true;
             },
             deleteProperty: (_, name) => {
                 if (typeof name !== 'string') return false;
-                eachTarget(elts, elt => findOwner(elt, name), false, elt => applyAttr([elt], name, null));
+                eachTarget(elts, elt => findOwner(elt, name), false, elt => writeAttr(elt, name, null));
                 return true;
             }
         });
@@ -212,15 +190,9 @@
         return s.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
     }
 
-    function maybeCall(value, current) {
-        if (typeof value !== 'function') return value;
-        let next = value(current);
-        if (typeof next?.then === 'function') throw new TypeError('assigned function must return a value, not a promise');
-        return next;
-    }
-
-    function readData(elt, prop) {
-        let raw = elt.dataset[prop];
+    function readData(elt, name) {
+        let raw = elt.getAttribute(name);
+        if (raw === null) return undefined;
         try { return JSON.parse(raw); } catch { return raw; }
     }
 
@@ -238,63 +210,29 @@
         });
     }
 
-    let booleanAria = new Set([
-        'atomic',
-        'busy',
-        'checked',
-        'current',
-        'disabled',
-        'expanded',
-        'grabbed',
-        'haspopup',
-        'hidden',
-        'invalid',
-        'modal',
-        'multiline',
-        'multiselectable',
-        'pressed',
-        'readonly',
-        'required',
-        'selected'
-    ]);
-    let integerAria = new Set([
-        'colcount',
-        'colindex',
-        'colspan',
-        'level',
-        'posinset',
-        'rowcount',
-        'rowindex',
-        'rowspan',
-        'setsize'
-    ]);
-    let numberAria = new Set([
-        'valuemax',
-        'valuemin',
-        'valuenow'
-    ]);
-    let listAria = new Set([
-        'controls',
-        'describedby',
-        'dropeffect',
-        'flowto',
-        'labelledby',
-        'owns',
-        'relevant'
-    ]);
+    let stringAria = new Set('activedescendant details errormessage keyshortcuts label placeholder roledescription valuetext'.split(' '));
+    let listAria = new Set('controls describedby dropeffect flowto labelledby owns relevant'.split(' '));
+    function readClass(element, name) {
+        return element.classList.contains(name);
+    }
+
     function writeClass(elt, name, value) {
+        if (typeof value === 'function') {
+            value = value(readClass(elt, name));
+            if (typeof value?.then === 'function') throw new TypeError('assigned function must return a value, not a promise');
+        }
         elt.classList.toggle(name, !!value);
         if (!elt.classList.length) elt.removeAttribute('class');
     }
 
-    let CLASS_WRITE_METHODS = new Set(['add', 'remove', 'toggle', 'replace']);
+    let CLASS_WRITE_METHODS = new Set('add remove toggle replace'.split(' '));
 
     function makeClassProxy(elts) {
         let first = elts[0];
         let write = (name, value) => { for (let e of elts) writeClass(e, name, value); };
         return new Proxy({}, {
             get: (_, name) => {
-                if (typeof name !== 'string' || !first) return undefined;
+                if (!first) return name === Symbol.iterator ? () => [][Symbol.iterator]() : undefined;
                 if (name === 'assign') {
                     return value => {
                         if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -304,19 +242,31 @@
                         for (let e of elts) writeClasses(e, value);
                     };
                 }
-                let m = first.classList[name];
-                if (typeof m === 'function') {
-                    return elts.length === 1 || !CLASS_WRITE_METHODS.has(name)
-                        ? m.bind(first.classList)
-                        : (...args) => { for (let e of elts) e.classList[name](...args); };
+                if (name in first.classList) {
+                    let member = first.classList[name];
+                    if (typeof member !== 'function') return member;
+                    if (typeof name !== 'string' || elts.length === 1 || !CLASS_WRITE_METHODS.has(name)) {
+                        return member.bind(first.classList);
+                    }
+                    return (...args) => {
+                        let result;
+                        for (let i = 0; i < elts.length; i++) {
+                            let next = elts[i].classList[name](...args);
+                            if (i === 0) result = next;
+                        }
+                        return result;
+                    };
                 }
-                return first.classList.contains(name);
+                if (typeof name !== 'string') return undefined;
+                return readClass(first, name);
             },
             set: (_, name, value) => {
                 if (typeof name !== 'string') return false;
-                for (let e of elts) {
-                    writeClass(e, name, maybeCall(value, e.classList.contains(name)));
+                if (name === 'value') {
+                    for (let elt of elts) elt.classList.value = value;
+                    return true;
                 }
+                for (let elt of elts) writeClass(elt, name, value);
                 return true;
             },
             deleteProperty: (_, name) => {
@@ -324,9 +274,9 @@
                 write(name, false);
                 return true;
             },
-            has: (_, name) => typeof name === 'string' && !!first && first.classList.contains(name),
+            has: (_, name) => typeof name === 'string' && !!first && readClass(first, name),
             ownKeys: () => first ? [...first.classList] : [],
-            getOwnPropertyDescriptor: (_, name) => first && first.classList.contains(name)
+            getOwnPropertyDescriptor: (_, name) => first && readClass(first, name)
                 ? { enumerable: true, configurable: true }
                 : undefined
         });
@@ -338,7 +288,9 @@
             get: (_, name) => typeof name === 'string' && !!elts[0] ? !!owner(elts[0], name) : undefined,
             set: (_, name, value) => {
                 if (typeof name !== 'string') return false;
-                eachTarget(elts, elt => owner(elt, name), true, elt => writeClass(elt, name, value));
+                eachTarget(elts, elt => owner(elt, name), true, elt => {
+                    writeClass(elt, name, value);
+                });
                 return true;
             },
             deleteProperty: (_, name) => {
@@ -366,6 +318,13 @@
         else elt.setAttribute(name, listAria.has(key) && Array.isArray(value) ? value.join(' ') : String(value));
     }
 
+    function readAria(elt, key) {
+        let value = elt?.getAttribute('aria-' + key);
+        if (value == null || stringAria.has(key)) return value;
+        if (listAria.has(key)) return value.trim() ? value.trim().split(/\s+/) : [];
+        try { return JSON.parse(value); } catch { return value; }
+    }
+
     function makeAriaProxy(elts, cascades = true) {
         let findOwner = (elt, name) => cascades
             ? elt.closest('[' + name + ']')
@@ -376,19 +335,15 @@
                 let key = prop.toLowerCase();
                 let name = 'aria-' + key;
                 let owner = elts[0] && findOwner(elts[0], name);
-                let value = owner?.getAttribute(name);
-                if (booleanAria.has(key) && (value === 'true' || value === 'false')) return value === 'true';
-                let number = Number(value);
-                let validNumber = numberAria.has(key) || (integerAria.has(key) && Number.isInteger(number));
-                if (validNumber && value?.trim() && Number.isFinite(number)) return number;
-                if (listAria.has(key) && value != null) return value.trim() ? value.trim().split(/\s+/) : [];
-                return value;
+                return readAria(owner, key);
             },
             set: (_, prop, value) => {
                 if (typeof prop !== 'string') return false;
                 let key = prop.toLowerCase();
                 let name = 'aria-' + key;
-                eachTarget(elts, elt => findOwner(elt, name), true, elt => writeAria(elt, key, value));
+                eachTarget(elts, elt => findOwner(elt, name), true, elt => {
+                    writeAttr(elt, name, value);
+                });
                 return true;
             },
             deleteProperty: (_, prop) => {
@@ -417,16 +372,17 @@
             get: (_, prop) => {
                 if (typeof prop !== 'string') return undefined;
                 let kebab = camelToKebab(prop);
+                let name = 'data-' + kebab;
                 let ancestor = elts[0] && findOwner(elts[0], kebab);
                 if (!ancestor) return undefined;
-                return readData(ancestor, prop);
+                return readData(ancestor, name);
             },
             set: (_, prop, val) => {
                 if (typeof prop !== 'string') return false;
                 let kebab = camelToKebab(prop);
                 let name = 'data-' + kebab;
                 eachTarget(elts, elt => findOwner(elt, kebab), true, elt => {
-                    writeData(elt, name, maybeCall(val, readData(elt, prop)));
+                    writeAttr(elt, name, val);
                 });
                 return true;
             },
@@ -499,7 +455,7 @@
             for (let [key, cond] of Object.entries(value)) {
                 for (let c of key.trim().split(/\s+/).filter(Boolean)) {
                     written.push(c);
-                    writeClass(elt, c, cond);
+                    writeClass(elt, c, !!cond);
                 }
             }
         }
@@ -734,7 +690,13 @@
                 elts.forEach(elt => {
                     let current = elt[prop];
                     if (current == null || typeof current === 'function') elt[prop] = value;
-                    else elt[prop] = maybeCall(value, current);
+                    else if (typeof value === 'function') {
+                        let next = value(current);
+                        if (typeof next?.then === 'function') throw new TypeError('assigned function must return a value, not a promise');
+                        elt[prop] = next;
+                    } else {
+                        elt[prop] = value;
+                    }
                 });
                 schedule();
                 return true;
@@ -855,6 +817,7 @@
     }
 
     function writeAttrBinding(elt, attrName, value) {
+        if (typeof value === 'function') throw new TypeError('binding expression must return a value, not a function');
         if (attrName === 'text') {
             let s = value == null ? '' : String(value);
             if (elt.textContent !== s) elt.textContent = s;
@@ -870,13 +833,8 @@
             applyClassBinding(elt, attrName, value);
             return;
         }
-        if (PROPERTY_BINDING_ATTRS.has(attrName)) {
-            applyPropertyBinding(elt, attrName, value);
-            return;
-        }
-        // Always write aria-* attrs because their getter and setter types differ.
-        if (!attrName.startsWith('aria-') && applyAttr([elt], attrName) === value) return;
-        applyAttr([elt], attrName, value);
+        if (readAttr(elt, attrName) === value) return;
+        writeAttr(elt, attrName, value);
     }
 
     let asTargets = t => t == null ? []
