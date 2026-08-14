@@ -288,27 +288,6 @@
         }, delay);
     }
     
-    function closeConnection(url, element) {
-        let connection = connections.get(url);
-        if (!connection) return;
-
-        if (connection.timer) clearTimeout(connection.timer);
-        if (connection.visibilityHandler) {
-            document.removeEventListener('visibilitychange', connection.visibilityHandler);
-        }
-        if (connection.abortController) {
-            connection.abortController.abort();
-        }
-        connection.queue.length = 0;
-        api.triggerHtmxEvent(element, 'htmx:ws:close', {
-            connection, reason: 'removed', code: null
-        });
-        if (connection.socket && connection.socket.readyState === WebSocket.OPEN) {
-            connection.socket.close();
-        }
-        connections.delete(url);
-    }
-    
     // ========================================
     // MESSAGES
     // ========================================
@@ -582,7 +561,11 @@
         if (!url || !connections.has(url)) return;
         element._htmx.ws.url = null;
         if (!findConnectedElement(url)) {
-            closeConnection(url, element);
+            let connection = connections.get(url);
+            api.triggerHtmxEvent(element, 'htmx:ws:close', {
+                connection, reason: 'removed', code: null
+            });
+            cleanupOrphanedConnection(url, connection);
         }
     }
     

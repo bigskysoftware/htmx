@@ -24,14 +24,19 @@ describe('hx-ws WebSocket extension', function() {
                 
                 // Simulate connection after a short delay
                 setTimeout(() => {
+                    if (this.readyState !== MockWebSocket.CONNECTING) return;
                     this.readyState = MockWebSocket.OPEN;
                     this.triggerEvent('open', {});
                 }, 10);
             }
             
-            addEventListener(event, handler) {
+            addEventListener(event, handler, options) {
+                if (options?.signal?.aborted) return;
                 if (!this.listeners[event]) this.listeners[event] = [];
                 this.listeners[event].push(handler);
+                options?.signal?.addEventListener('abort', () => {
+                    this.removeEventListener(event, handler);
+                }, { once: true });
             }
             
             removeEventListener(event, handler) {
@@ -2184,6 +2189,26 @@ describe('hx-ws WebSocket extension', function() {
 
     describe('Orphaned Connection Cleanup', function() {
 
+        it('closes WebSocket when connect element is removed while connecting', async function() {
+            let container = createProcessedHTML(`
+                <div id="outer">
+                    <div hx-ws:connect="/ws/test"></div>
+                </div>
+            `);
+            let ws = mockWebSocketInstances[0];
+
+            await htmx.swap({
+                text: '',
+                target: document.getElementById('outer'),
+                swap: 'innerHTML',
+                sourceElement: container
+            });
+            await htmx.timeout(20);
+
+            assert.equal(ws.readyState, mockWebSocket.CLOSED);
+            assert.isFalse(htmx.ext.ws.getRegistry().has('/ws/test'));
+        });
+
         it('closes WebSocket when connect element is swapped out mid-connection', async function() {
             let container = createProcessedHTML(`
                 <div id="outer">
@@ -2405,7 +2430,7 @@ describe('hx-ws WebSocket extension', function() {
 
     describe('Deep Review Fixes', function() {
 
-        it('closeConnection aborts the AbortController', async function() {
+        it('aborts socket listeners when the last connection element is removed', async function() {
             let container = createProcessedHTML(`
                 <div id="outer">
                     <div id="ws-host" hx-ws:connect="/ws/test">Content</div>
