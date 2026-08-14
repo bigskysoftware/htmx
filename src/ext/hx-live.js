@@ -72,8 +72,7 @@
     let BOOLEAN_ATTRS = new Set('disabled hidden required readonly open inert multiple autofocus novalidate default reversed loop muted controls autoplay playsinline formnovalidate async defer ismap typemustmatch allowfullscreen itemscope nomodule checked selected'.split(' '));
     let PROPERTY_BINDING_ATTRS = new Set(['checked','value','selected']);
     let STRING_BOOLEAN_ATTRS = new Set(['contenteditable','draggable','spellcheck','writingsuggestions']);
-    let NUMERIC_INPUT_TYPES = new Set('number range'.split(' '));
-    let NUMERIC_ATTRS = new Set('tabindex colspan rowspan maxlength minlength size span start rows cols width height'.split(' '));
+    let NUMERIC_ATTRS = new Set('tabindex colspan rowspan maxlength minlength size span start rows cols width height min max step low high optimum'.split(' '));
 
     function normalizeAttrName(elt, name) {
         return elt instanceof HTMLElement ? name.toLowerCase() : name;
@@ -83,14 +82,14 @@
         name = normalizeAttrName(element, name);
         if (name.startsWith('aria-')) return readAria(element, name.slice(5));
         if (name.startsWith('data-')) return readData(element, name);
-        if (name === 'value' && NUMERIC_INPUT_TYPES.has(element.type)) {
+        if (name === 'value' && (element.type === 'number' || element.type === 'range')) {
             return element.value === '' ? null : element.valueAsNumber;
         }
         if (PROPERTY_BINDING_ATTRS.has(name)) return element[name];
         if (BOOLEAN_ATTRS.has(name)) return element.hasAttribute(name);
         let value = element.getAttribute(name);
         if (STRING_BOOLEAN_ATTRS.has(name)) try { return JSON.parse(value.toLowerCase()); } catch {}
-        if (NUMERIC_ATTRS.has(name) && value?.trim() && Number.isFinite(Number(value))) return Number(value);
+        if (NUMERIC_ATTRS.has(name) && value?.trim() && isFinite(value)) return +value;
         return value;
     }
 

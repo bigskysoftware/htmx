@@ -1261,6 +1261,46 @@ describe('hx-live extension', function () {
         playground().querySelector('#item').hasAttribute('title').should.equal(false);
     });
 
+    it('numeric HTML attributes read numbers', function() {
+        playground().innerHTML = `
+            <div id="global" tabindex="-1"></div>
+            <table><colgroup><col id="column" span="2"></colgroup><tbody><tr><td id="cell" colspan="3" rowspan="4"></td></tr></tbody></table>
+            <input id="input" type="number" maxlength="10" minlength="2" size="20" min="0.5" max="10" step="0.25">
+            <ol id="list" start="-2"></ol>
+            <textarea id="text" rows="5" cols="30"></textarea>
+            <canvas id="canvas" width="640" height="480"></canvas>
+            <meter id="meter" low="0.2" high="0.8" optimum="0.5"></meter>
+        `;
+        let values = [
+            ['#global', 'tabindex', -1],
+            ['#cell', 'colspan', 3], ['#cell', 'rowspan', 4],
+            ['#input', 'maxlength', 10], ['#input', 'minlength', 2], ['#input', 'size', 20],
+            ['#column', 'span', 2], ['#list', 'start', -2],
+            ['#text', 'rows', 5], ['#text', 'cols', 30],
+            ['#canvas', 'width', 640], ['#canvas', 'height', 480],
+            ['#input', 'min', 0.5], ['#input', 'max', 10], ['#input', 'step', 0.25],
+            ['#meter', 'low', 0.2], ['#meter', 'high', 0.8], ['#meter', 'optimum', 0.5]
+        ];
+
+        values.forEach(([selector, name, expected]) => {
+            htmx.live.q(selector).attr[name].should.equal(expected);
+        });
+    });
+
+    it('numeric HTML attributes preserve non-numbers and support updates', function() {
+        playground().innerHTML = '<input id="date" type="date" min="2025-01-01" step="any"><meter id="meter" optimum="0.5"></meter>';
+        let date = htmx.live.q('#date').attr;
+        let meter = htmx.live.q('#meter').attr;
+
+        date.min.should.equal('2025-01-01');
+        date.step.should.equal('any');
+        (date.max === null).should.equal(true);
+
+        meter.optimum = value => value + 0.25;
+        meter.optimum.should.equal(0.75);
+        playground().querySelector('#meter').getAttribute('optimum').should.equal('0.75');
+    });
+
     it('class is the typed class attribute', function() {
         playground().innerHTML = '<button id="item" class="idle"></button>';
         let item = htmx.live.q('#item');

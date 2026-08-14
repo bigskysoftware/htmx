@@ -390,7 +390,7 @@ Use bracket notation for names that are not JavaScript identifiers, and for comp
 
 On `<input type="number">` and `<input type="range">`, `value` reads as a number, and as `null` when the field is empty. Every other control reads as a string, so `<input type="text" value="007">` stays `"007"`.
 
-Numeric attributes (`tabindex`, `colspan`, `rowspan`, `maxlength`, `minlength`, `size`, `span`, `start`, `rows`, `cols`, `width`, `height`) read as numbers.
+Numeric attributes (`tabindex`, `colspan`, `rowspan`, `maxlength`, `minlength`, `size`, `span`, `start`, `rows`, `cols`, `width`, `height`, `min`, `max`, `step`, `low`, `high`, `optimum`) read numeric values as numbers. Values such as dates and `step="any"` remain strings.
 
 Use `delete` to remove an attribute. Assigning `false` writes `"false"`.
 
