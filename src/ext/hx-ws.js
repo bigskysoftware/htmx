@@ -651,22 +651,7 @@
                 clear: () => {
                     let activeConnections = Array.from(connections.values());
                     connections.clear(); // Clear first to prevent reconnects
-
-                    activeConnections.forEach(connection => {
-                        if (connection.timer) {
-                            clearTimeout(connection.timer);
-                        }
-                        if (connection.visibilityHandler) {
-                            document.removeEventListener('visibilitychange', connection.visibilityHandler);
-                        }
-                        if (connection.abortController) {
-                            connection.abortController.abort();
-                        }
-                        if (connection.socket) {
-                            connection.socket.close();
-                        }
-                        connection.queue.length = 0;
-                    });
+                    activeConnections.forEach(connection => cleanupOrphanedConnection(connection.url, connection));
                 },
                 get: (key) => connections.get(normalizeWebSocketUrl(key)),
                 has: (key) => connections.has(normalizeWebSocketUrl(key)),
