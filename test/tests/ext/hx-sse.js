@@ -1116,6 +1116,29 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    it('processes messages in arrival order while waiting', async function() {
+        const stream = mockStreamResponse('/ordered-msg');
+        createProcessedHTML('<button hx-get="/ordered-msg" hx-swap="innerHTML">Original</button>');
+        let messages = [];
+
+        onDoc('htmx:sse:before:message', event => {
+            if (event.detail.message.data === 'first') event.detail.waitUntil(htmx.timeout(20));
+        });
+        onDoc('htmx:sse:after:message', event => messages.push(event.detail.message.data));
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.send('first');
+        stream.send('second');
+        await htmx.timeout(40);
+
+        assert.deepEqual(messages, ['first', 'second']);
+        assertTextContentIs('button', 'second');
+
+        stream.close();
+    });
+
     it('htmx:sse:before:message cancellation via preventDefault', async function() {
         const stream = mockStreamResponse('/cancel-prevent');
         createProcessedHTML('<button hx-get="/cancel-prevent" hx-swap="innerHTML">Original</button>');
