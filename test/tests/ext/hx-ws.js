@@ -866,6 +866,63 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(document.getElementById('content').textContent, 'Original');
         });
 
+        it('processes replaced incoming data', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-target="#content">
+                    <div id="content">Original</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            container.addEventListener('htmx:ws:before:message:incoming', event => {
+                event.detail.message.data = '<p>Replacement</p>';
+            });
+
+            mockWebSocketInstances[0].simulateRawMessage('<p>Ignored</p>');
+            await htmx.timeout(20);
+
+            assert.equal(document.getElementById('content').textContent, 'Replacement');
+        });
+
+        it('converts replaced incoming data', async function() {
+            let container = createProcessedHTML('<div hx-ws:connect="/ws/test"></div>');
+            await htmx.timeout(50);
+            let text;
+
+            container.addEventListener('htmx:ws:before:message:incoming', event => {
+                event.detail.message.data = 'Replacement';
+                event.detail.waitUntil(event.detail.message.text().then(value => text = value));
+                event.detail.cancelled = true;
+            });
+
+            mockWebSocketInstances[0].simulateRawMessage('Ignored');
+            await htmx.timeout(20);
+
+            assert.equal(text, 'Replacement');
+        });
+
+        it('waits for incoming data replacement', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-target="#content">
+                    <div id="content">Original</div>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            container.addEventListener('htmx:ws:before:message:incoming', event => {
+                event.detail.waitUntil(htmx.timeout(20).then(() => {
+                    event.detail.message.data = '<p>Replacement</p>';
+                }));
+            });
+
+            mockWebSocketInstances[0].simulateRawMessage('<p>Ignored</p>');
+            await htmx.timeout(5);
+            assert.equal(document.getElementById('content').textContent, 'Original');
+
+            await htmx.timeout(30);
+            assert.equal(document.getElementById('content').textContent, 'Replacement');
+        });
+
         // Bare connections follow normal target and swap defaults.
         it('waits for incoming message work before processing', async function() {
             let container = createProcessedHTML(`

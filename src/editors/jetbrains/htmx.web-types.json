@@ -597,7 +597,7 @@
         },
         {
           "name": "ws:before:message:incoming",
-          "description": "Fires before an incoming WebSocket message is processed. `detail.connection` identifies the connection. Convert `detail.message`, use `detail.waitUntil()` to delay processing, or set `detail.cancelled` to cancel.",
+          "description": "Fires before an incoming WebSocket message is processed. `detail.connection` identifies the connection. Replace or convert `detail.message.data`, use `detail.waitUntil()` to delay processing, or set `detail.cancelled` to cancel.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsbeforemessageincoming"
         },
         {

@@ -296,9 +296,9 @@ document.addEventListener('htmx:ws:before:message:incoming', async event => {
 })
 ```
 
-`message.data` contains the original string, `Blob`, or `ArrayBuffer`.
+`message.data` starts as the original string, `Blob`, or `ArrayBuffer`.
 
-Conversions are cached:
+Convert its current value:
 
 ```js
 await message.text()
@@ -613,6 +613,8 @@ document.addEventListener('htmx:ws:before:message:incoming', event => {
 
 `detail.waitUntil(promise)` delays built-in processing until asynchronous work finishes.
 
+Set `message.data` to replace the data before built-in processing. Changes made through `waitUntil()` apply too.
+
 Cancel synchronous processing either way:
 
 - call `event.preventDefault()`
@@ -865,7 +867,7 @@ Event detail changed from `{headers, body}` to `{message: {headers, values, data
 
 Message correlation through `HX-Request-ID` and `request_id` was removed.
 
-Event detail changed from `{message: {text, json, cancelled}}` to `{message: {data, text(), json()}, waitUntil, cancelled}`. The conversion fields are now methods. Cancel with `event.preventDefault()` or `event.detail.cancelled = true`.
+Event detail changed from `{message: {text, json, cancelled}}` to `{message: {data, text(), json()}, waitUntil, cancelled}`. The conversion fields are now methods. Set `message.data` to replace incoming data. Cancel with `event.preventDefault()` or `event.detail.cancelled = true`.
 
 #### Events
 

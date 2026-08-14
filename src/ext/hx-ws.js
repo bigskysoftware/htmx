@@ -383,33 +383,21 @@
     // ========================================
     
     async function handleMessage(element, connection, event) {
-        let data = event.data;
-        let textResult;
-        let jsonResult;
         let pendingWork = [];
         let message = {
-            data,
+            data: event.data,
             text() {
-                return textResult ??= typeof data === 'string'
+                let data = message.data;
+                return typeof data === 'string'
                     ? Promise.resolve(data)
                     : data instanceof Blob
                         ? data.text()
                         : Promise.resolve(new TextDecoder().decode(data));
             },
             json() {
-                return jsonResult ??= message.text().then(JSON.parse);
+                return message.text().then(JSON.parse);
             }
         };
-
-        let json = null;
-        let html;
-        if (typeof data === 'string') {
-            try {
-                json = await message.json();
-            } catch (e) {
-                html = await message.text();
-            }
-        }
 
         if (!element.isConnected) {
             cleanupConnection(element, connection);
@@ -428,6 +416,16 @@
 
         await Promise.all(pendingWork);
         if (!shouldProcess || detail.cancelled) return;
+
+        let json = null;
+        let html;
+        if (typeof message.data === 'string') {
+            try {
+                json = await message.json();
+            } catch (e) {
+                html = await message.text();
+            }
+        }
 
         // JSON with 'content' or 'payload' field: swap the HTML
         // Raw (non-JSON) string: swap the entire string as HTML
