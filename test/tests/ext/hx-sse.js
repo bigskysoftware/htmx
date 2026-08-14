@@ -1139,6 +1139,34 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    it('reconnects after waitUntil rejects', async function() {
+        const stream = mockStreamResponse('/rejected-work');
+        createProcessedHTML('<button hx-get="/rejected-work" hx-config="sse.reconnect:true sse.reconnectDelay:1ms" hx-swap="innerHTML">Original</button>');
+        let reject = true;
+
+        onDoc('htmx:sse:before:message', event => {
+            if (reject) {
+                reject = false;
+                event.detail.waitUntil(Promise.reject(new Error('message failed')));
+            }
+        });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        let error = waitForEvent('htmx:sse:error');
+        let reconnected = waitForEvent('htmx:sse:after:connection');
+        stream.send('Rejected');
+        assert.isNotNull(await error);
+        assert.isNotNull(await reconnected);
+
+        stream.send('Recovered');
+        assert.isNotNull(await waitForEvent('htmx:sse:after:message'));
+        assertTextContentIs('button', 'Recovered');
+
+        stream.close();
+    });
+
     it('htmx:sse:before:message cancellation via preventDefault', async function() {
         const stream = mockStreamResponse('/cancel-prevent');
         createProcessedHTML('<button hx-get="/cancel-prevent" hx-swap="innerHTML">Original</button>');
