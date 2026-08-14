@@ -278,7 +278,7 @@ An escape hatch. Use it when no single `:<attr>` fits, or for multi-step logic a
 
 ## Helpers
 
-The helpers work inside `hx-live` expressions and [`hx-on`](/reference/attributes/hx-on) event handlers. The [Public API](#public-api) lists the helpers available to regular JavaScript.
+The helpers work in hx-live bindings and htmx expression scopes. The [Public API](#public-api) lists the helpers available to regular JavaScript.
 
 ```js
 htmx.live.q('.row').attr.hidden = true;
@@ -296,7 +296,7 @@ Inside expressions, `this` is the element, the full htmx API is available unpref
 
 ### `q()`
 
-`q()` returns a proxy over a set of elements. Read from the first match, write to all.
+`q()` returns a proxy over a set of elements.
 
 With no matches, state reads return `undefined` and writes do nothing, including through `.closest`.
 
@@ -330,7 +330,7 @@ q('.foo in #scope')             // restrict to a specific root
 q('.foo in this')               // restrict to the current element
 ```
 
-`next`, `previous`, and `closest` resolve against `this` (the element that owns the expression). They only work inside `hx-live` / `hx-on` scopes.
+`next`, `previous`, and `closest` resolve against `this`. They require an expression scope with a current element.
 
 **Chaining** 
 
@@ -461,8 +461,6 @@ Set several classes at once with `class.assign({ ... })`. Truthy values add, fal
 ```html
 <button hx-on:click="class.assign({ active: true, loading: false })">Finish</button>
 ```
-
-Non-object arguments warn and do nothing.
 
 `class` extends the native [`DOMTokenList`](https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList):
 
@@ -831,6 +829,7 @@ Resolve on the next matching event. Mix event names, milliseconds, intervals, an
 await forEvent('click')                 // next click on this element
 await forEvent('click', 1000)           // click OR 1s timeout
 await forEvent('a', 'b', '5s')          // any number of events / intervals
+await forEvent(window, 'resize', '2s')  // event on an explicit target
 ```
 
 Typical use: wait for a CSS transition to finish, with a safety timeout.
@@ -958,17 +957,17 @@ Client state:
 
 ### Re-run triggers
 
-A single document-wide `MutationObserver` and `input` / `change` listeners trigger a recompute of every live expression. Any of these schedule one:
+These changes rerun every live expression:
 
 - DOM additions, removals, attribute changes, text changes
 - `input` or `change` events from any control
 - completion of an htmx swap (recomputes pause mid-swap, run once at the end)
 
-Each expression is pre-compiled once when registered. All pre-compiled expressions then run in a single microtask, so multiple synchronous mutations coalesce into one recompute.
+Multiple synchronous changes coalesce into one recompute.
 
 ### Self-mutation is safe
 
-When an expression writes to the DOM, the observer drains its own pending records inside the same microtask. Writes made by `hx-live` cannot trigger a feedback loop.
+Writes made by hx-live do not trigger another recompute.
 
 ### Slow expressions
 
@@ -994,7 +993,7 @@ When an `hx-live` element is removed, its expression drops out on the next sched
 
 [`:<attr>`](#attr) writes the value differently depending on the attribute, following HTML conventions.
 
-**Boolean attributes** (`disabled`, `required`, `open`, `readonly`, `inert`, ...). Truthy adds the attribute; falsy removes it. This includes current declarative shadow-root boolean attributes.
+**Boolean attributes** (`disabled`, `required`, `open`, `readonly`, `inert`, ...). Truthy adds the attribute; falsy removes it.
 
 ```html
 <button  :disabled="truthyExpr">   <!-- <button disabled="">  -->
@@ -1051,6 +1050,9 @@ htmx.live.q('.row')
 htmx.live.$('.row')
 htmx.live.take('.tab.active', '.active', '.tab')
 htmx.live.toggle('.tab', 'data-view', 'grid', 'list')
+htmx.live.debounce(200)
+htmx.live.forEvent(window, 'resize', '2s')
+htmx.live.nextFrame()
 ```
 
 `htmx.live.refresh()` forces a recompute. Use it when an expression reads from a source the observer cannot see (a JS variable, a getter, an external store) and you've just mutated it.
@@ -1060,7 +1062,7 @@ window.appState = 'loading';
 htmx.live.refresh();
 ```
 
-Selector directionals (`next`, `previous`, `closest`) need an anchor and only work inside `hx-live` / `hx-on`, not from `htmx.live.q`.
+Selector directionals (`next`, `previous`, `closest`) need a current element, so they do not work from `htmx.live.q`.
 
 ## Configuration
 
@@ -1149,12 +1151,9 @@ Defaults to `false`.
 
 ## Notes
 
-- Expressions run on any DOM mutation. There is no per-variable tracking. The microtask coalescing keeps this cheap, but expensive expressions should `debounce` or guard themselves.
 - The DOM is the source of truth. To share state between expressions, use ARIA attributes, `data-*` attributes (the `data` proxy makes this ergonomic), or hidden inputs.
 - When using morph swap styles (`innerMorph` / `outerMorph`), server responses will overwrite `data-*` attributes by default. To preserve client-side state during morphs, add a prefix to `morphIgnore` — e.g. `morphIgnore:["data-"]` will protect all `data-*` attributes from being overwritten. Non-morph swaps (`innerHTML`, `outerHTML`) replace the DOM entirely, so state should live on an ancestor element that isn't swapped.
 - Expressions must be safe to run repeatedly. Avoid unconditional `fetch()` calls. Use `debounce` or guard on a value change.
-- If your build pipeline strips `:`-prefixed attributes, use the canonical `hx-live:<attr>` form instead. Behavior is identical.
-- If using Alpine.js on the same page, hx-live auto-detects it and disables the `:` short form. See [Configuration](#configuration) for details.
 
 ### Async Code
 
