@@ -521,11 +521,9 @@
         let key = isClass ? name.slice(1) : name;
         let isAria = name.startsWith('aria-');
         let list = values.length > 1 ? values : values[0];
-        let asArray = list && (typeof list === 'string'
-            ? list.split('|').map(v => v.trim())
-            : list);
+        if (typeof list === 'string') list = list.split('|').map(value => value.trim());
 
-        if (!asArray) {
+        if (!list) {
             if (isClass) element.classList.toggle(key);
             else if (isAria) {
                 let cur = element.getAttribute(name);
@@ -536,16 +534,14 @@
             return;
         }
         if (isClass) {
-            let cur = asArray.findIndex(v => v && element.classList.contains(v));
-            if (cur >= 0) element.classList.remove(asArray[cur]);
-            let next = asArray[(cur + 1) % asArray.length];
+            let cur = list.findIndex(v => v && element.classList.contains(v));
+            if (cur >= 0) element.classList.remove(list[cur]);
+            let next = list[(cur + 1) % list.length];
             if (next) element.classList.add(next);
         } else {
-            let curVal = element.getAttribute(name) ?? '';
-            let cur = asArray.indexOf(curVal);
-            let next = asArray[(cur + 1) % asArray.length];
-            if (next === '') element.removeAttribute(name);
-            else element.setAttribute(name, next);
+            let cur = list.indexOf(readAttr(element, name) ?? '');
+            let next = list[(cur + 1) % list.length];
+            writeAttr(element, name, next === '' ? undefined : next);
         }
     }
 

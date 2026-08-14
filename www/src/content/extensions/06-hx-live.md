@@ -423,6 +423,8 @@ toggle('data-view', 'grid|list|table')
 toggle('data-view', ['grid', 'list', 'table'])
 ```
 
+Cycle values keep their types. For example, `'1'` remains a string while `1` remains a number.
+
 ### `take(name, scope?)`
 
 Move a class or attribute from siblings to this element. Pass a `scope` selector to widen or restrict the source set.

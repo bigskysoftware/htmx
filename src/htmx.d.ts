@@ -302,7 +302,7 @@ export namespace HxLive {
      * Toggle (binary flip) or cycle (with `values`) a class or attribute on all matched elements.
      * @param values - Pipe-delimited string (`'grid|list'`) or array to cycle through.
      */
-    toggle(name: string, ...values: (string | string[])[]): Query;
+    toggle(name: string, ...values: any[]): Query;
     /**
      * Dispatch a `CustomEvent` from all matched elements.
      * @param bubbles - Defaults to `true`.
@@ -347,7 +347,7 @@ export interface HxLive {
   /** Move a class or attribute from sibling/scoped elements to the target. */
   take(target: string | Element | NodeList, name: string, scope?: string | Node | { from: string }): void;
   /** Toggle or cycle a class or attribute on the target. */
-  toggle(target: string | Element | NodeList, name: string, ...values: (string | string[])[]): void;
+  toggle(target: string | Element | NodeList, name: string, ...values: any[]): void;
   /**
    * Resolves on the next matching event, timeout, or interval, whichever fires first.
    * - `string`: event name on the current element

@@ -1637,6 +1637,20 @@ describe('hx-live extension', function () {
         playground().querySelector('#item').dataset.view.should.equal('list');
     });
 
+    it('toggle cycles typed attribute values', function() {
+        playground().innerHTML = '<button id="item" data-code=\'"123"\' data-count="1" aria-checked="false"></button>';
+        let item = htmx.live.q('#item');
+
+        item.toggle('data-code', '123', '456');
+        item.toggle('data-count', 1, 2);
+        item.toggle('aria-checked', false, true);
+
+        item.data.code.should.equal('456');
+        item.data.count.should.equal(2);
+        item.aria.checked.should.equal(true);
+        playground().querySelector('#item').getAttribute('data-code').should.equal('"456"');
+    });
+
     it('matches() is available in hx-on scope bound to element', function() {
         playground().innerHTML = '<input id="i" type="text" required hx-on:click="window.__matchesLive = matches(\':required\')">';
         htmx.process(playground());

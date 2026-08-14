@@ -23,6 +23,7 @@ const classes: HxLive.ClassProxy = live.q('#item').class;
 const closest: HxLive.Scope = live.q('#item').closest;
 const classList: DOMTokenList = live.q('#item').class;
 closest.class.toggle('active');
+live.q('#item').toggle('data-count', 1, 2);
 const increment: HxLive.Updater<number> = value => value + 1;
 
 void busy;
