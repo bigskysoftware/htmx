@@ -107,8 +107,7 @@
         } else if (PROPERTY_BINDING_ATTRS.has(name)) {
             applyPropertyBinding(element, name, value);
         } else if (BOOLEAN_ATTRS.has(name)) {
-            if (value) element.setAttribute(name, '');
-            else element.removeAttribute(name);
+            element.toggleAttribute(name, !!value);
         } else if (value === null || value === undefined) {
             element.removeAttribute(name);
         } else {
