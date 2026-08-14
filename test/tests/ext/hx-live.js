@@ -1175,6 +1175,102 @@ describe('hx-live extension', function () {
         button.classList.contains('active').should.equal(true);
     });
 
+    it('bare class supports member access', function() {
+        let button = createProcessedHTML(`<button class="active extra" hx-on:click="
+            class.assign({ ready: true });
+            window.__bareClassMembers = [
+                class.active,
+                class['extra'],
+                class?.active,
+                (() => class.active)()
+            ]
+        "></button>`);
+
+        button.click();
+
+        window.__bareClassMembers.should.deep.equal([true, true, true, true]);
+        button.classList.contains('ready').should.equal(true);
+        delete window.__bareClassMembers;
+    });
+
+    it('attr.class supports first-class value operations', function() {
+        let button = createProcessedHTML(`<button class="active" hx-on:click="
+            let identity = value => value;
+            window.__classValue = [
+                [...attr.class],
+                'active' in attr.class,
+                identity(attr.class) === attr.class,
+                8 / attr.class.active / 2,
+                typeof attr.class
+            ]
+        "></button>`);
+
+        button.click();
+
+        window.__classValue.should.deep.equal([['active'], true, true, 4, 'object']);
+        delete window.__classValue;
+    });
+
+    it('bare class works in nested template expressions', function() {
+        let button = createProcessedHTML(`<button class="active" hx-on:click="
+            window.__bareClassTemplates = [
+                \`simple:\${class.active}\`,
+                \`nested:\${{ state: { value: attr.class.active } }.state.value}\`
+            ]
+        "></button>`);
+
+        button.click();
+
+        window.__bareClassTemplates.should.deep.equal(['simple:true', 'nested:true']);
+        delete window.__bareClassTemplates;
+    });
+
+    it('attr.class works in expression compilation', function() {
+        let button = createProcessedHTML('<button class="active"></button>');
+        let result = htmx.__executeJavaScript(button, {}, `({
+            spread: [...attr.class],
+            contains: 'active' in attr.class,
+            same: attr.class === attr.class
+        })`, true, false);
+
+        result.spread.should.deep.equal(['active']);
+        result.contains.should.equal(true);
+        result.same.should.equal(true);
+    });
+
+    it('bare class rewriting preserves native JavaScript syntax', function() {
+        let button = createProcessedHTML(`<button hx-on:click="
+            class Widget {
+                class = 'field';
+                #class = { active: 'private' };
+                read() { return [this.class, this.#class.active] }
+            }
+            let Anonymous = class { class = 'anonymous' };
+            let object = { class: 'property' };
+            let methods = { class() { return 'method' } };
+            window.__nativeClassSyntax = [
+                new Widget().read(),
+                new Anonymous().class,
+                object.class,
+                methods.class(),
+                'class.active',
+                /class\\.active/.source,
+                \`raw class.active\`,
+                \`multi-line
+                 class.active\`
+            ]
+        "></button>`);
+
+        button.click();
+
+        window.__nativeClassSyntax.should.deep.equal([
+            ['field', 'private'], 'anonymous', 'property', 'method',
+            'class.active', 'class\\.active', 'raw class.active',
+            'multi-line\n                 class.active'
+        ]);
+        delete window.__nativeClassSyntax;
+    });
+
     it('q() reads the first match and writes every match', function() {
         playground().innerHTML = '<button class="item" data-state="first"></button><button class="item" data-state="second"></button>';
         let items = htmx.live.q('.item');

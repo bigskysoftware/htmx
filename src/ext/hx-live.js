@@ -215,12 +215,12 @@
     }
 
     // Protect quoted text and regex literals, then recurse into template expressions.
-    let CLASS_TOKEN = /(['"`\/])(?:\\.|(?!\1)[^\\\n])*\1|(?<![.\w$])class(?=\s*[.[])/g;
+    let CLASS_TOKEN = /(['"`\/])(?:\\.|(?!\1).)*\1|(?<![.\w$#])class(?=\s*[.?[])/gs;
 
     function rewriteClass(src) {
-        return src.replace(CLASS_TOKEN, token => {
-            if (token === 'class') return 'attr.class';
-            if (token[0] === '`') return token.replace(
+        return src.replace(CLASS_TOKEN, (token, quote) => {
+            if (!quote) return 'attr.class';
+            if (quote === '`') return token.replace(
                 /\$\{((?:[^{}]|\{[^{}]*\})*)\}/g,
                 (_, code) => '${' + rewriteClass(code) + '}'
             );

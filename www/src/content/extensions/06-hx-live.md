@@ -472,9 +472,15 @@ class.replace('a', 'b')    // replace one class with another
 class.contains('x')        // membership
 class.value                // complete class attribute
 class.length               // number of classes
-[...class]                 // class names
 class.assign({...})        // group add/remove by truthiness
-'x' in class               // membership
+```
+
+Use the canonical form when the proxy itself is a value:
+
+```js
+[...attr.class]            // class names
+'x' in attr.class          // membership
+use(attr.class)            // function argument
 ```
 
 `closest.class` supports `assign`, `add`, `remove`, `toggle`, `replace`, and `contains`. Aggregate list properties such as `value`, `length`, and iteration remain local because closest ownership resolves separately for each class.
