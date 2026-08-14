@@ -218,7 +218,7 @@
                         });
                     } catch (e) {
                         if (ac.signal.aborted) break;
-                        api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
+                        api.triggerHtmxEvent(element, 'htmx:sse:error', {connection, error: e});
                         reconnectRequested = false;
                         connection.attempt++;
                         continue;
@@ -226,9 +226,9 @@
 
                     if (!currentResponse.ok) {
                         api.triggerHtmxEvent(element, 'htmx:sse:error', {
+                            connection,
                             error: new Error(`SSE reconnect failed with status ${currentResponse.status}`),
-                            status: currentResponse.status,
-                            url: ctx.request.action
+                            status: currentResponse.status
                         });
                         reconnectRequested = false;
                         connection.attempt++;
@@ -289,7 +289,7 @@
                     }
                 } catch (e) {
                     if (!connection.abortController?.signal?.aborted) {
-                        api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
+                        api.triggerHtmxEvent(element, 'htmx:sse:error', {connection, error: e});
                     }
                 }
 

@@ -244,6 +244,39 @@ describe('hx-multipart extension', function() {
         assert.equal(closeReason, 'removed');
     });
 
+    it('includes the connection in reconnect errors', async function() {
+        let requestCount = 0;
+        let connection;
+        let errorDetail;
+        let saveConnection = event => {
+            connection = event.detail.connection;
+        };
+        let saveError = event => {
+            errorDetail = event.detail;
+        };
+        document.addEventListener('htmx:multipart:before:connection', saveConnection);
+        document.addEventListener('htmx:multipart:error', saveError);
+        fetchMock.mockResponse('GET', '/reconnect-error', () => {
+            requestCount++;
+            return new Response(requestCount === 1 ? '--updates--\r\n' : '', {
+                status: requestCount === 1 ? 200 : 500,
+                headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+            });
+        });
+
+        let source = createProcessedHTML([
+            '<div id="reconnect-error-source" hx-multipart:connect="/reconnect-error" ',
+            'hx-config="multipart.reconnectDelay:1ms multipart.reconnectMaxAttempts:1 multipart.reconnectJitter:0"></div>'
+        ].join(''));
+
+        assert.isTrue(await waitUntil(() => errorDetail != null, 500));
+        assert.equal(errorDetail.status, 500);
+        assert.strictEqual(errorDetail.connection, connection);
+        await deleteWithSwap('#reconnect-error-source');
+        document.removeEventListener('htmx:multipart:before:connection', saveConnection);
+        document.removeEventListener('htmx:multipart:error', saveError);
+    });
+
     it('sends the last completed part ID on reconnect and supports reset', async function() {
         let requestHeaders = [];
         let requestCount = 0;

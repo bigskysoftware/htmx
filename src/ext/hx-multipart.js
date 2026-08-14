@@ -187,8 +187,8 @@
                     } catch (error) {
                         if (!ac.signal.aborted) {
                             api.triggerHtmxEvent(element, 'htmx:multipart:error', {
-                                error,
-                                url: ctx.request.action
+                                connection,
+                                error
                             });
                         }
                         connection.attempt++;
@@ -197,9 +197,9 @@
 
                     if (!currentResponse.ok) {
                         api.triggerHtmxEvent(element, 'htmx:multipart:error', {
+                            connection,
                             error: new Error(`Multipart reconnect failed with status ${currentResponse.status}`),
-                            status: currentResponse.status,
-                            url: ctx.request.action
+                            status: currentResponse.status
                         });
                         connection.attempt++;
                         continue;
@@ -209,9 +209,9 @@
                     let nextType = contentType.split(';', 1)[0].trim().toLowerCase();
                     if (nextType !== type) {
                         api.triggerHtmxEvent(element, 'htmx:multipart:error', {
+                            connection,
                             error: new Error(`Multipart reconnect returned ${nextType || 'no Content-Type'}`),
-                            status: currentResponse.status,
-                            url: ctx.request.action
+                            status: currentResponse.status
                         });
                         connection.attempt++;
                         continue;
@@ -315,8 +315,8 @@
                     await Promise.allSettled(pending);
                     if (!connection.cancelled) {
                         api.triggerHtmxEvent(element, 'htmx:multipart:error', {
-                            error,
-                            url: ctx.request.action
+                            connection,
+                            error
                         });
                     }
                 } finally {

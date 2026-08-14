@@ -983,6 +983,7 @@ describe('hx-sse SSE extension', function() {
 
     it('htmx:sse:error fires on stream errors', async function() {
         let fetchCount = 0;
+        let connection;
         fetchMock.mockResponse('GET', '/error-test', () => {
             fetchCount++;
             if (fetchCount === 1) {
@@ -1005,6 +1006,9 @@ describe('hx-sse SSE extension', function() {
 
         let errorFired = false;
         let errorDetail = null;
+        onDoc('htmx:sse:before:connection', (e) => {
+            connection = e.detail.connection;
+        });
         onDoc('htmx:sse:error', (e) => {
             errorFired = true;
             errorDetail = e.detail;
@@ -1015,11 +1019,13 @@ describe('hx-sse SSE extension', function() {
 
         assert.isTrue(errorFired, 'htmx:sse:error should fire on stream error');
         assert.isNotNull(errorDetail.error, 'Error detail should contain error object');
+        assert.strictEqual(errorDetail.connection, connection);
     });
 
     it('htmx:sse:error fires on non-2xx reconnect response', async function() {
         this.timeout(5000);
         let fetchCount = 0;
+        let connection;
         fetchMock.mockResponse('GET', '/status-error', () => {
             fetchCount++;
             if (fetchCount === 1) {
@@ -1046,17 +1052,21 @@ describe('hx-sse SSE extension', function() {
         createProcessedHTML('<button hx-get="/status-error" hx-config="sse.reconnect:true sse.reconnectDelay:20ms sse.reconnectMaxAttempts:1" hx-swap="innerHTML">Go</button>');
 
         let errorFired = false;
-        let errorStatus = null;
+        let errorDetail = null;
+        onDoc('htmx:sse:before:connection', (e) => {
+            connection = e.detail.connection;
+        });
         onDoc('htmx:sse:error', (e) => {
             errorFired = true;
-            errorStatus = e.detail.status;
+            errorDetail = e.detail;
         });
 
         find('button').click();
         await new Promise(r => setTimeout(r, 200));
 
         assert.isTrue(errorFired, 'htmx:sse:error should fire for non-2xx reconnect');
-        assert.equal(errorStatus, 500, 'Error detail should include status code');
+        assert.equal(errorDetail.status, 500, 'Error detail should include status code');
+        assert.strictEqual(errorDetail.connection, connection);
     });
 
     it('htmx:sse:before:message cancellation prevents swap', async function() {

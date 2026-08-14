@@ -709,7 +709,7 @@ document.addEventListener('htmx:multipart:error', event => {
 })
 ```
 
-- `url`: the request URL
+- `connection`: the failed connection
 - `error`: the error value
 - `status`: the HTTP status when available
 

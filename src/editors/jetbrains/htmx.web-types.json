@@ -552,7 +552,7 @@
         },
         {
           "name": "sse:error",
-          "description": "Fires when an SSE stream error occurs. `detail.error`, `detail.url`, and sometimes `detail.status` describe the failure.",
+          "description": "Fires when an SSE stream error occurs. `detail.connection` identifies the failed stream when available; `detail.url` identifies setup failures; `detail.error` and sometimes `detail.status` describe the failure.",
           "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxsseerror"
         },
         {

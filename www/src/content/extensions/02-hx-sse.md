@@ -529,7 +529,8 @@ document.addEventListener('htmx:sse:error', event => {
 })
 ```
 
-- `url`: the SSE URL
+- `connection`: the failed connection, when available
+- `url`: the SSE URL when setup fails before a connection exists
 - `error`: the error value
 - `status`: the HTTP status for a failed reconnect response, when available
 
