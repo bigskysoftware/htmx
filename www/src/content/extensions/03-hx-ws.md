@@ -470,7 +470,7 @@ Sends form data and [`hx-vals`](/reference/attributes/hx-vals) as JSON.
 </div>
 ```
 
-`hx-ws:send` uses the nearest `hx-ws:connect`, including one on the same element. It does not accept a value.
+`hx-ws:send` uses the nearest `hx-ws:connect`, including one on the same element. Its value is ignored.
 
 Default [`hx-trigger`](/reference/attributes/hx-trigger):
 
@@ -890,7 +890,7 @@ Code `1000` stops reconnecting by default. Messages created while a connection o
 
 Each `hx-ws:connect` element owns its connection. Separate elements no longer share a connection by URL.
 
-`hx-ws:send="<url>"` was removed. Put `hx-ws:send` inside an `hx-ws:connect`, or put both attributes on one element.
+An `hx-ws:send` value no longer opens a connection and is ignored. Put `hx-ws:send` inside an `hx-ws:connect`, or put both attributes on one element.
 
 #### Other Changes
 

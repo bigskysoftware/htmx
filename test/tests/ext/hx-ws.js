@@ -485,24 +485,20 @@ describe('hx-ws WebSocket extension', function() {
             assert.isDefined(ws.lastSent);
         });
         
-        it('rejects a URL on hx-ws:send', async function() {
-            let error;
-            let onError = event => error = event.detail.error;
-            document.addEventListener('htmx:ws:error', onError);
+        it('ignores the hx-ws:send value', async function() {
+            let container = createProcessedHTML(`
+                <div hx-ws:connect="/ws/owner">
+                    <button hx-ws:send="/ws/ignored" name="action" value="save">Save</button>
+                </div>
+            `);
+            await htmx.timeout(20);
 
-            let button;
-            try {
-                button = createProcessedHTML('<button hx-ws:send="/ws/direct">Send</button>');
-                await htmx.timeout(20);
-                button.click();
-                await htmx.timeout(20);
-            } finally {
-                document.removeEventListener('htmx:ws:error', onError);
-            }
+            container.querySelector('button').click();
+            await htmx.timeout(20);
 
-            assert.equal(mockWebSocketInstances.length, 0);
-            assert.instanceOf(error, Error);
-            assert.equal(error.message, 'hx-ws:send does not accept a value');
+            assert.equal(mockWebSocketInstances.length, 1);
+            assert.isTrue(urlEndsWith(mockWebSocketInstances[0].url, '/ws/owner'));
+            assert.equal(JSON.parse(mockWebSocketInstances[0].lastSent).action, 'save');
         });
 
         it('creates separate owned connections for separate send elements', async function() {

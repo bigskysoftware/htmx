@@ -275,7 +275,7 @@
         },
         {
           "name": "hx-ws:send",
-          "description": "Sends form data and `hx-vals` through the nearest `hx-ws:connect`, including one on the same element. Does not accept a value. Requires the WebSocket extension.",
+          "description": "Sends form data and `hx-vals` through the nearest `hx-ws:connect`, including one on the same element. Any value is ignored. Requires the WebSocket extension.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#hx-wssend"
         },
         {

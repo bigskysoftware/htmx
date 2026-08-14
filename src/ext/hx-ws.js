@@ -554,14 +554,6 @@
                 checkLegacyAttributes(node);
 
                 let send = api.attributeValue(node, 'hx-ws:send');
-                if (send) {
-                    api.triggerHtmxEvent(node, 'htmx:ws:error', {
-                        url: null,
-                        error: new Error('hx-ws:send does not accept a value')
-                    });
-                    return;
-                }
-
                 if (api.attributeValue(node, 'hx-ws:connect') != null) {
                     initializeElement(node);
                 }
