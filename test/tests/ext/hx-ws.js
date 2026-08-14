@@ -822,9 +822,7 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(document.getElementById('content').textContent, 'Original');
             assert.instanceOf(receivedMessage.data, ArrayBuffer);
             assert.strictEqual(receivedMessage.data, data);
-            assert.strictEqual(await receivedMessage.arrayBuffer(), data);
             assert.equal((await receivedMessage.json()).content, '<p>Not swapped</p>');
-            assert.instanceOf(await receivedMessage.blob(), Blob);
         });
 
         it('fires htmx:ws:before:message:incoming for all messages', async function() {

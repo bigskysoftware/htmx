@@ -386,8 +386,6 @@
         let data = event.data;
         let textResult;
         let jsonResult;
-        let arrayBufferResult;
-        let blobResult;
         let pendingWork = [];
         let message = {
             data,
@@ -400,18 +398,6 @@
             },
             json() {
                 return jsonResult ??= message.text().then(JSON.parse);
-            },
-            arrayBuffer() {
-                return arrayBufferResult ??= data instanceof ArrayBuffer
-                    ? Promise.resolve(data)
-                    : data instanceof Blob
-                        ? data.arrayBuffer()
-                        : Promise.resolve(new TextEncoder().encode(data).buffer);
-            },
-            blob() {
-                return blobResult ??= data instanceof Blob
-                    ? Promise.resolve(data)
-                    : Promise.resolve(new Blob([data]));
             }
         };
 

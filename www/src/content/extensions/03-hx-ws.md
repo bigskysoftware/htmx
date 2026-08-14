@@ -303,8 +303,6 @@ Conversions are cached:
 ```js
 await message.text()
 await message.json()
-await message.blob()
-await message.arrayBuffer()
 ```
 
 Cancel to skip built-in handling. Binary messages are not swapped automatically.
@@ -505,9 +503,7 @@ event.detail = {
   message: {
     data,          // original string, Blob, or ArrayBuffer
     text(),
-    json(),
-    blob(),
-    arrayBuffer()
+    json()
   },
   waitUntil(),     // before processing only
   cancelled        // before processing only
@@ -869,7 +865,7 @@ Event detail changed from `{headers, body}` to `{message: {headers, values, data
 
 Message correlation through `HX-Request-ID` and `request_id` was removed.
 
-Event detail changed from `{message: {text, json, cancelled}}` to `{message: {data, text(), json(), blob(), arrayBuffer()}, waitUntil, cancelled}`. The conversion fields are now methods. Cancel with `event.preventDefault()` or `event.detail.cancelled = true`.
+Event detail changed from `{message: {text, json, cancelled}}` to `{message: {data, text(), json()}, waitUntil, cancelled}`. The conversion fields are now methods. Cancel with `event.preventDefault()` or `event.detail.cancelled = true`.
 
 #### Events
 
