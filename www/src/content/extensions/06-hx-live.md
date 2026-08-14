@@ -832,6 +832,8 @@ await forEvent('a', 'b', '5s')          // any number of events / intervals
 await forEvent(window, 'resize', '2s')  // event on an explicit target
 ```
 
+The result is the winning `Event`, or the original number or interval string when a timeout wins.
+
 Typical use: wait for a CSS transition to finish, with a safety timeout.
 
 ```html

@@ -350,11 +350,11 @@ export interface HxLive {
   toggle(target: string | Element | NodeList, name: string, ...values: any[]): void;
   /**
    * Resolves on the next matching event, timeout, or interval, whichever fires first.
-   * - `string`: event name on the current element
+   * - `string`: event name or interval
    * - `number`: timeout in ms
    * - `EventTarget`: redirects listeners to that target
    */
-  forEvent(...args: (string | number | EventTarget)[]): Promise<Event | null>;
+  forEvent(...args: (string | number | EventTarget)[]): Promise<Event | string | number>;
   /**
    * Resolves on the next animation frame. Useful to force a style recalc between two DOM writes.
    */

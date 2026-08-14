@@ -263,6 +263,18 @@ describe('hx-live extension', function () {
         delete window.__waitResultLive;
     });
 
+    it('forEvent listens on an explicit EventTarget', async function() {
+        window.__waitResultLive = null;
+        createProcessedHTML(
+            `<output hx-live="!this.dataset.s && (this.dataset.s='1', (async()=>{ window.__waitResultLive = await forEvent(window, 'live-resize', 1000) })())"></output>`
+        );
+        await htmx.timeout(5);
+        window.dispatchEvent(new Event('live-resize'));
+        await htmx.timeout(5);
+        window.__waitResultLive.type.should.equal('live-resize');
+        delete window.__waitResultLive;
+    });
+
     it('forEvent races multiple events and timeouts', async function() {
         let elt = createProcessedHTML('<output hx-live="(async () => { await forEvent(\'a\', \'b\', 1000); this.dataset.v = \'fired\'; })()"></output>');
         await htmx.timeout(5);

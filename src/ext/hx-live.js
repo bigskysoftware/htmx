@@ -415,12 +415,12 @@
 
     function forEvent(elt, ...args) {
         let target = elt || document;
-        for (let a of args) if (a?.nodeType) target = a;
+        for (let a of args) if (a?.addEventListener) target = a;
         return new Promise(resolve => {
             let cleanups = [], done = false;
             let fire = v => { if (done) return; done = true; for (let c of cleanups) c(); resolve(v); };
             for (let a of args) {
-                if (a == null || a?.nodeType) continue;
+                if (a == null || a?.addEventListener) continue;
                 let ms = typeof a === 'number' ? a
                     : (typeof a === 'string' ? htmx.parseInterval(a) : undefined);
                 if (ms > 0) {

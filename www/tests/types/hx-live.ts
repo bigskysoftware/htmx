@@ -25,6 +25,7 @@ const classList: DOMTokenList = live.q('#item').class;
 closest.class.toggle('active');
 live.q('#item').toggle('data-count', 1, 2);
 const increment: HxLive.Updater<number> = value => value + 1;
+const eventOrTimeout: Promise<Event | string | number> = live.forEvent(window, 'resize', '2s');
 
 void busy;
 void data;
@@ -32,3 +33,4 @@ void classes;
 void closest;
 void classList;
 void increment;
+void eventOrTimeout;
