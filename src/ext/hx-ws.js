@@ -80,14 +80,11 @@
     // CONNECTIONS
     // ========================================
     
-    const connections = new Map();
+    const connections = new Set();
     
     function getOrCreateConnection(url, element) {
+        if (element._htmx.ws.connection) return element._htmx.ws.connection;
         let normalizedUrl = normalizeWebSocketUrl(url);
-
-        if (connections.has(normalizedUrl)) {
-            return connections.get(normalizedUrl);
-        }
 
         let connection = {
             url: normalizedUrl,
@@ -110,9 +107,9 @@
             return null;
         }
 
-        // Event passed - now store in registry and create socket
-        connections.set(normalizedUrl, connection);
-        createWebSocket(normalizedUrl, connection);
+        element._htmx.ws.connection = connection;
+        connections.add(connection);
+        createWebSocket(element, connection);
 
         let config = connection.config;
         if (config.pauseOnBackground) {
@@ -123,7 +120,7 @@
                     }
                 } else if (!connection.socket || connection.socket.readyState === WebSocket.CLOSED) {
                     connection.attempt = 0;
-                    createWebSocket(normalizedUrl, connection);
+                    createWebSocket(element, connection);
                 }
             };
             document.addEventListener('visibilitychange', connection.visibilityHandler);
@@ -132,16 +129,7 @@
         return connection;
     }
     
-    function findConnectedElement(url) {
-        let sel = wsSelector('connect') + ',' + wsSelector('send');
-        for (let el of document.querySelectorAll(sel)) {
-            if (el._htmx?.ws?.url === url) return el;
-        }
-        return null;
-    }
-
-    // Close and fully clean up an orphaned connection (no owning element in DOM)
-    function cleanupOrphanedConnection(url, connection) {
+    function cleanupConnection(element, connection) {
         if (connection.timer) clearTimeout(connection.timer);
         if (connection.visibilityHandler) {
             document.removeEventListener('visibilitychange', connection.visibilityHandler);
@@ -159,10 +147,12 @@
                 // Socket may already be in an invalid state
             }
         }
-        connections.delete(url);
+        if (element._htmx?.ws?.connection === connection) delete element._htmx.ws.connection;
+        connections.delete(connection);
     }
 
-    function createWebSocket(url, connection) {
+    function createWebSocket(element, connection) {
+        let url = connection.url;
         // Abort old socket's listeners and close it
         if (connection.abortController) {
             connection.abortController.abort();
@@ -186,12 +176,10 @@
             let opts = { signal: ac.signal };
 
             connection.socket.addEventListener('open', () => {
-                let elt = findConnectedElement(url);
-                if (elt) {
-                    api.triggerHtmxEvent(elt, 'htmx:ws:after:connection', {connection});
+                if (element.isConnected) {
+                    api.triggerHtmxEvent(element, 'htmx:ws:after:connection', {connection});
                 } else {
-                    // Element was removed while connecting (orphaned socket)
-                    cleanupOrphanedConnection(url, connection);
+                    cleanupConnection(element, connection);
                     return;
                 }
                 connection.attempt = 0;
@@ -200,53 +188,48 @@
 
             connection.socket.addEventListener('message', (event) => {
                 connection.receiving = connection.receiving
-                    .then(() => handleMessage(connection, event))
+                    .then(() => handleMessage(element, connection, event))
                     .catch(error => {
-                        let elt = findConnectedElement(connection.url);
-                        if (elt) api.triggerHtmxEvent(elt, 'htmx:ws:error', { url: connection.url, error });
+                        if (element.isConnected) api.triggerHtmxEvent(element, 'htmx:ws:error', { url, error });
                     });
             }, opts);
 
             connection.socket.addEventListener('close', (event) => {
                 if (event.target !== connection.socket) return;
 
-                let elt = findConnectedElement(url);
-                if (elt) api.triggerHtmxEvent(elt, 'htmx:ws:close', {
+                if (element.isConnected) api.triggerHtmxEvent(element, 'htmx:ws:close', {
                     connection, reason: 'closed', code: event.code
                 });
 
-                if (!connections.has(url)) return;
+                if (!connections.has(connection)) return;
 
                 let config = connection.config;
                 if (config.pauseOnBackground && document.hidden) return;
 
-                if (config.reconnect && config.reconnectCodes.includes(event.code) && findConnectedElement(url)) {
-                    scheduleReconnect(url, connection);
+                if (config.reconnect && config.reconnectCodes.includes(event.code) && element.isConnected) {
+                    scheduleReconnect(element, connection);
                 } else {
-                    // No element or reconnect disabled: full cleanup
-                    cleanupOrphanedConnection(url, connection);
+                    cleanupConnection(element, connection);
                 }
             }, opts);
 
             connection.socket.addEventListener('error', (error) => {
-                let elt = findConnectedElement(url);
-                if (elt) api.triggerHtmxEvent(elt, 'htmx:ws:error', { url, error });
+                if (element.isConnected) api.triggerHtmxEvent(element, 'htmx:ws:error', { url, error });
             }, opts);
 
         } catch (error) {
-            let elt = findConnectedElement(url);
-            if (elt) api.triggerHtmxEvent(elt, 'htmx:ws:error', { url, error });
+            if (element.isConnected) api.triggerHtmxEvent(element, 'htmx:ws:error', { url, error });
         }
     }
     
-    function scheduleReconnect(url, connection) {
+    function scheduleReconnect(element, connection) {
         let config = connection.config;
 
         connection.attempt++;
         let attempt = connection.attempt;
 
         if (!config.reconnect || attempt > config.reconnectMaxAttempts) {
-            cleanupOrphanedConnection(url, connection);
+            cleanupConnection(element, connection);
             return;
         }
 
@@ -263,27 +246,25 @@
             delay = Math.max(0, delay + (Math.random() * 2 - 1) * jitterRange);
         }
 
-        let elt = findConnectedElement(url);
-        if (elt) {
+        if (element.isConnected) {
             connection.cancelled = false;
-            if (!api.triggerHtmxEvent(elt, 'htmx:ws:before:connection', {connection}) || connection.cancelled) {
-                api.triggerHtmxEvent(elt, 'htmx:ws:close', {
+            if (!api.triggerHtmxEvent(element, 'htmx:ws:before:connection', {connection}) || connection.cancelled) {
+                api.triggerHtmxEvent(element, 'htmx:ws:close', {
                     connection, reason: 'cancelled', code: null
                 });
-                cleanupOrphanedConnection(url, connection);
+                cleanupConnection(element, connection);
                 return;
             }
         } else {
-            // Element gone, no point scheduling reconnect
-            cleanupOrphanedConnection(url, connection);
+            cleanupConnection(element, connection);
             return;
         }
 
         connection.timer = setTimeout(() => {
-            if (findConnectedElement(url)) {
-                createWebSocket(url, connection);
+            if (element.isConnected) {
+                createWebSocket(element, connection);
             } else {
-                cleanupOrphanedConnection(url, connection);
+                cleanupConnection(element, connection);
             }
         }, delay);
     }
@@ -312,10 +293,11 @@
         // hx-ws:send="/url" creates its own connection; hx-ws:send (no value) uses ancestor's
         let sendAttr = api.attributeValue(element, 'hx-ws:send');
         let url = (sendAttr && sendAttr !== 'true') ? sendAttr : null;
+        let owner = element;
         if (!url) {
-            let ancestor = element.closest(wsSelector('connect'));
-            if (ancestor) {
-                url = api.attributeValue(ancestor, 'hx-ws:connect');
+            owner = element.closest(wsSelector('connect'));
+            if (owner) {
+                url = api.attributeValue(owner, 'hx-ws:connect');
             }
         }
 
@@ -327,7 +309,7 @@
         }
 
         let normalizedUrl = normalizeWebSocketUrl(url);
-        let connection = connections.get(normalizedUrl);
+        let connection = owner._htmx?.ws?.connection;
 
         if (!connection) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error: 'Connection not open' });
@@ -381,7 +363,7 @@
                 if (!shouldSend || detail.cancelled) return;
 
                 message.data ??= JSON.stringify({ ...message.values, headers: message.headers });
-                if (connections.get(normalizedUrl) !== connection) {
+                if (!connections.has(connection)) {
                     api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error: 'Connection closed' });
                     return;
                 }
@@ -408,7 +390,7 @@
     // MESSAGE RECEIVING & ROUTING
     // ========================================
     
-    async function handleMessage(connection, event) {
+    async function handleMessage(element, connection, event) {
         let data = event.data;
         let textResult;
         let jsonResult;
@@ -452,11 +434,8 @@
             }
         }
 
-        let element = findConnectedElement(connection.url);
-
-        if (!element) {
-            // No element in DOM for this connection (orphan cleanup)
-            cleanupOrphanedConnection(connection.url, connection);
+        if (!element.isConnected) {
+            cleanupConnection(element, connection);
             return;
         }
 
@@ -520,10 +499,7 @@
 
         let specString = api.attributeValue(element, 'hx-trigger') || 'load';
         api.onTrigger(element, specString, () => {
-            let connection = getOrCreateConnection(connectUrl, element);
-            if (connection) {
-                element._htmx.ws.url = connection.url;
-            }
+            getOrCreateConnection(connectUrl, element);
         });
         element._htmx.ws.initialized = true;
     }
@@ -546,10 +522,7 @@
                 evt.preventDefault();
             }
             if (sendUrl) {
-                let connection = getOrCreateConnection(sendUrl, element);
-                if (connection) {
-                    element._htmx.ws.url = connection.url;
-                }
+                getOrCreateConnection(sendUrl, element);
             }
             await sendMessage(element, evt);
         });
@@ -557,16 +530,12 @@
     }
     
     function cleanupElement(element) {
-        let url = element._htmx?.ws?.url;
-        if (!url || !connections.has(url)) return;
-        element._htmx.ws.url = null;
-        if (!findConnectedElement(url)) {
-            let connection = connections.get(url);
-            api.triggerHtmxEvent(element, 'htmx:ws:close', {
-                connection, reason: 'removed', code: null
-            });
-            cleanupOrphanedConnection(url, connection);
-        }
+        let connection = element._htmx?.ws?.connection;
+        if (!connection) return;
+        api.triggerHtmxEvent(element, 'htmx:ws:close', {
+            connection, reason: 'removed', code: null
+        });
+        cleanupConnection(element, connection);
     }
     
     // ========================================
@@ -634,7 +603,6 @@
         }
     });
     
-    // Expose connections for testing
     if (typeof window !== 'undefined' && window.htmx) {
         // Clean up all WS connections on page navigation to prevent browser errors
         window.addEventListener('pagehide', () => {
@@ -645,18 +613,5 @@
             });
         });
 
-        window.htmx.ext = window.htmx.ext || {};
-        window.htmx.ext.ws = {
-            getRegistry: () => ({
-                clear: () => {
-                    let activeConnections = Array.from(connections.values());
-                    connections.clear(); // Clear first to prevent reconnects
-                    activeConnections.forEach(connection => cleanupOrphanedConnection(connection.url, connection));
-                },
-                get: (key) => connections.get(normalizeWebSocketUrl(key)),
-                has: (key) => connections.has(normalizeWebSocketUrl(key)),
-                get size() { return connections.size; }
-            })
-        };
     }
 })();

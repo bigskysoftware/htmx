@@ -339,6 +339,8 @@ Give `hx-ws:send` a URL to open a connection:
 
 Clicking the button opens `/actions` and sends `action=refresh` over that connection.
 
+The button owns this connection. Another direct send element opens its own connection, even when it uses the same URL.
+
 ##### Send During Reconnect
 
 A user can trigger messages while a connection is reconnecting:
@@ -375,7 +377,7 @@ Put several [`hx-ws:send`](#hx-wssend) elements inside one [`hx-ws:connect`](#hx
 <div id="delete-result"></div>
 ```
 
-Both buttons use the same WebSocket connection. Incoming messages use a live element attached to that connection, not the button that sent the message.
+Both buttons use the connection owned by the `<div>`. Incoming messages use the `<div>`, not the button that sent the message.
 
 **Route Incoming Messages**
 
@@ -389,17 +391,6 @@ Set `target` in an incoming JSON message to direct its swap:
 ```
 
 Use `hx-swap-oob` or `<hx-partial>` when one message updates several targets.
-
-**Reuse by URL**
-
-Separate `hx-ws:connect` elements with the same URL share a connection too:
-
-```html
-<header hx-ws:connect="/actions"></header>
-<main hx-ws:connect="/actions"></main>
-```
-
-Only one connection to `/actions` is opened. It closes when htmx removes its last element.
 
 #### Close Connections
 
@@ -463,7 +454,7 @@ Defaults:
 - [`ws.reconnect:true`](#wsreconnect)
 - [`ws.pauseOnBackground:true`](#wspauseonbackground)
 
-[Elements using the same URL share one connection](#use-shared-connections).
+Each `hx-ws:connect` element owns its connection. Separate elements open separate connections, even when they use the same URL.
 
 ### `hx-ws:send`
 
@@ -480,7 +471,7 @@ Sends form data and [`hx-vals`](/reference/attributes/hx-vals) as JSON.
 ```
 
 - `hx-ws:send`: use the nearest ancestor connection
-- `hx-ws:send="<url>"`: open a direct connection
+- `hx-ws:send="<url>"`: open a direct connection owned by the send element
 
 Default [`hx-trigger`](/reference/attributes/hx-trigger):
 
@@ -538,7 +529,7 @@ event.detail = {
 }
 ```
 
-Message events dispatch from a live element attached to the connection.
+Incoming message events dispatch from the connection-owning element. Outgoing message events dispatch from the sending element.
 
 ### `htmx:ws:before:connection`
 
@@ -896,6 +887,10 @@ Event detail changed from `{message: {text, json, cancelled}}` to `{message: {da
 The beta reconnected after every close. RC1 reconnects only when [`ws.reconnect`](#wsreconnect) is `true`, the close code is in [`ws.reconnectCodes`](#wsreconnectcodes), and a connected element remains.
 
 Code `1000` stops reconnecting by default. Messages created while a connection opens or reconnects are queued and sent in order.
+
+#### Connection Ownership
+
+Separate connection and direct-send elements no longer share a connection by URL. Put send elements inside one `hx-ws:connect` element to share its connection.
 
 #### Other Changes
 

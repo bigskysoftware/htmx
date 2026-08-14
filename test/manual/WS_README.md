@@ -122,7 +122,7 @@ htmx.config.ws = {
 
 ## 🎓 Learning Points
 
-1. **Connection Pooling**: Multiple elements can share the same WebSocket connection
+1. **Connection Ownership**: Each connection element owns its WebSocket
 2. **Bi-directional**: Both client and server can initiate messages
 3. **Event-Driven**: Rich event system for monitoring and debugging
 4. **Swap Strategies**: Flexible content replacement strategies

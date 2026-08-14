@@ -270,12 +270,12 @@
         },
         {
           "name": "hx-ws:connect",
-          "description": "Establishes a WebSocket connection to the specified URL. Requires the WebSocket extension.",
+          "description": "Establishes a WebSocket connection owned by this element. Requires the WebSocket extension.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#hx-wsconnect"
         },
         {
           "name": "hx-ws:send",
-          "description": "Sends form data and `hx-vals` to a WebSocket when the element is triggered. Requires the WebSocket extension.",
+          "description": "Sends form data and `hx-vals` through the nearest ancestor connection, or through a direct connection owned by this element when given a URL. Requires the WebSocket extension.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#hx-wssend"
         },
         {
