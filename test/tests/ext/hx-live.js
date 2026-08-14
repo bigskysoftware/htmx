@@ -1286,6 +1286,17 @@ describe('hx-live extension', function () {
         [...playground().querySelector('#item').classList].should.deep.equal(['one', 'two']);
     });
 
+    it('class supports remove and replace', function() {
+        playground().innerHTML = '<button id="item" class="idle ready"></button>';
+        let classes = htmx.live.q('#item').class;
+
+        classes.remove('idle');
+        classes.replace('ready', 'done').should.equal(true);
+
+        classes.contains('idle').should.equal(false);
+        classes.contains('done').should.equal(true);
+    });
+
     it('class methods write every match and return the first result', function() {
         playground().innerHTML = '<button class="item"></button><button class="item active"></button>';
         let classes = htmx.live.q('.item').class;
