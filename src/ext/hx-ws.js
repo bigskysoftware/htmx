@@ -442,11 +442,12 @@
         };
 
         let json = null;
+        let html;
         if (message.type === 'text') {
             try {
                 json = await message.json();
             } catch (e) {
-                // Non-JSON text is treated as raw HTML.
+                html = await message.text();
             }
         }
 
@@ -473,7 +474,6 @@
         // JSON with 'content' or 'payload' field: swap the HTML
         // Raw (non-JSON) string: swap the entire string as HTML
         // JSON without 'content'/'payload': data-only message, no swap (handle via events)
-        let html;
         if (json) {
             if (json.content !== undefined) {
                 html = json.content;
@@ -485,8 +485,6 @@
                     connection._payloadWarnFired = true;
                 }
             }
-        } else if (message.type === 'text') {
-            html = await message.text();
         }
         if (html != null) {
             let target = json?.target || api.attributeValue(element, 'hx-target');

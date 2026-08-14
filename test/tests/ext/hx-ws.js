@@ -743,6 +743,22 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(eventMessage.type, 'notification');
             assert.equal(document.getElementById('content').textContent, 'Original', 'Data-only messages should not swap');
         });
+
+        it('does not swap JSON primitives or arrays without content', async function() {
+            createProcessedHTML(`
+                <div hx-ws:connect="/ws/test" hx-target="#content">
+                    <div id="content">Original</div>
+                </div>
+            `);
+            await htmx.timeout(20);
+
+            let ws = mockWebSocketInstances[0];
+            for (let value of [false, 0, null, true, 1, 'text', []]) {
+                ws.simulateRawMessage(JSON.stringify(value));
+                await htmx.timeout(10);
+                assert.equal(document.getElementById('content').textContent, 'Original');
+            }
+        });
         
         it('exposes binary messages without swapping them', async function() {
             let container = createProcessedHTML(`
