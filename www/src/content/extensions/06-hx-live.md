@@ -477,6 +477,8 @@ class.assign({...})        // group add/remove by truthiness
 'x' in class               // membership
 ```
 
+`closest.class` supports `assign`, `add`, `remove`, `toggle`, `replace`, and `contains`. Aggregate list properties such as `value`, `length`, and iteration remain local because closest ownership resolves separately for each class.
+
 Native members win on read. Use `class.contains('toggle')` to read a class whose name collides with a native member. Key writes still change membership, so `class.toggle = false` removes the class named `toggle`.
 
 With multiple selected elements, class writes and mutating `DOMTokenList` methods update every match. Reads and return values use the first match.

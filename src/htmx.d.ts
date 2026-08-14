@@ -169,9 +169,14 @@ export interface HtmxSwapContext {
 }
 
 export namespace HxLive {
-  /** A `DOMTokenList` with boolean class membership and grouped assignment. */
-  export interface ClassProxy extends DOMTokenList {
+  /** Boolean class membership and class operations. */
+  export interface ClassProxy {
     assign(classes: Record<string, any>): void;
+    add(...classes: string[]): void;
+    remove(...classes: string[]): void;
+    toggle(className: string, force?: boolean): boolean;
+    replace(oldClass: string, newClass: string): boolean;
+    contains(className: string): boolean;
     [name: string]: any;
   }
 
@@ -247,7 +252,7 @@ export namespace HxLive {
   }
 
   export interface AttrProxy {
-    readonly class: ClassProxy;
+    readonly class: ClassProxy & DOMTokenList;
     [name: string]: any;
   }
 
@@ -285,7 +290,7 @@ export namespace HxLive {
     /** Typed `aria-*` values on the selected elements themselves. */
     readonly aria: AriaProxy;
     /** Class state and `classList` methods on the selected elements themselves. */
-    readonly class: ClassProxy;
+    readonly class: ClassProxy & DOMTokenList;
     /** Typed state on the nearest owner of each selected element. */
     readonly closest: Scope;
     /**

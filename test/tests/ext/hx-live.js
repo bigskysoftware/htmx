@@ -1179,6 +1179,28 @@ describe('hx-live extension', function () {
         item.closest.class.active.should.equal(true);
     });
 
+    it('closest class supports class operations', function() {
+        playground().innerHTML = `
+            <section class="active old">
+                <article class="busy"><button id="item"></button></article>
+            </section>
+        `;
+        let classes = htmx.live.q('#item').closest.class;
+
+        classes.contains('active').should.equal(true);
+        classes.add('selected');
+        classes.remove('busy');
+        classes.toggle('active').should.equal(false);
+        classes.replace('old', 'new').should.equal(true);
+        classes.assign({ new: false, ready: true });
+
+        let item = playground().querySelector('#item');
+        item.classList.contains('selected').should.equal(true);
+        item.classList.contains('ready').should.equal(true);
+        item.parentElement.hasAttribute('class').should.equal(false);
+        item.parentElement.parentElement.hasAttribute('class').should.equal(false);
+    });
+
     it('closest writes to the current element when no owner exists', function() {
         playground().innerHTML = '<button id="item"></button>';
         let closest = htmx.live.q('#item').closest;

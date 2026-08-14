@@ -207,8 +207,8 @@
 
     let stringAria = new Set('activedescendant details errormessage keyshortcuts label placeholder roledescription valuetext'.split(' '));
     let listAria = new Set('controls describedby dropeffect flowto labelledby owns relevant'.split(' '));
-    function readClass(element, name) {
-        return element.classList.contains(name);
+    function readClass(elt, name) {
+        return !!elt?.classList.contains(name);
     }
 
     function writeClass(elt, name, value) {
@@ -220,48 +220,57 @@
         if (!elt.classList.length) elt.removeAttribute('class');
     }
 
-    let CLASS_WRITE_METHODS = new Set('add remove toggle replace'.split(' '));
-
-    function makeClassProxy(elts) {
+    function makeClassProxy(elts, cascades = false) {
         let first = elts[0];
-        let write = (name, value) => { for (let e of elts) writeClass(e, name, value); };
+        let owner = (elt, name) => cascades ? elt.closest('.' + CSS.escape(name)) : elt;
+        let read = name => readClass(first && owner(first, name), name);
+        let write = (name, value) => eachTarget(elts, elt => owner(elt, name), true, elt => writeClass(elt, name, value));
+        let methods = {
+            assign(value) {
+                if (!value || typeof value !== 'object' || Array.isArray(value)) {
+                    console.warn(`htmx: class.assign expects an object, got ${Array.isArray(value) ? 'array' : typeof value}.`, { elts });
+                    return;
+                }
+                writeClasses(write, value);
+            },
+            add: (...classes) => classes.forEach(name => write(name, true)),
+            remove: (...classes) => classes.forEach(name => write(name, false)),
+            contains: read,
+            toggle(name, force) {
+                let result = force ?? !read(name);
+                write(name, current => force ?? !current);
+                return result;
+            },
+            replace(oldClass, newClass) {
+                if (cascades) {
+                    if (!read(oldClass)) return false;
+                    write(oldClass, false);
+                    write(newClass, true);
+                    return true;
+                }
+                let result;
+                for (let i = 0; i < elts.length; i++) {
+                    let next = elts[i].classList.replace(oldClass, newClass);
+                    if (i === 0) result = next;
+                }
+                return result;
+            }
+        };
         return new Proxy({}, {
             get: (_, name) => {
+                if (typeof name === 'string' && methods[name]) return methods[name];
+                let list = !cascades && first?.classList;
+                if (list && name in list) {
+                    let member = list[name];
+                    return typeof member === 'function' ? member.bind(list) : member;
+                }
                 if (!first) return name === Symbol.iterator ? () => [][Symbol.iterator]() : undefined;
-                if (name === 'assign') {
-                    return value => {
-                        if (!value || typeof value !== 'object' || Array.isArray(value)) {
-                            console.warn(`htmx: class.assign expects an object, got ${Array.isArray(value) ? 'array' : typeof value}.`, { elts });
-                            return;
-                        }
-                        for (let e of elts) writeClasses(e, value);
-                    };
-                }
-                if (name in first.classList) {
-                    let member = first.classList[name];
-                    if (typeof member !== 'function') return member;
-                    if (typeof name !== 'string' || elts.length === 1 || !CLASS_WRITE_METHODS.has(name)) {
-                        return member.bind(first.classList);
-                    }
-                    return (...args) => {
-                        let result;
-                        for (let i = 0; i < elts.length; i++) {
-                            let next = elts[i].classList[name](...args);
-                            if (i === 0) result = next;
-                        }
-                        return result;
-                    };
-                }
-                if (typeof name !== 'string') return undefined;
-                return readClass(first, name);
+                return typeof name === 'string' ? read(name) : undefined;
             },
             set: (_, name, value) => {
                 if (typeof name !== 'string') return false;
-                if (name === 'value') {
-                    for (let elt of elts) elt.classList.value = value;
-                    return true;
-                }
-                for (let elt of elts) writeClass(elt, name, value);
+                if (!cascades && name === 'value') for (let elt of elts) elt.classList.value = value;
+                else write(name, value);
                 return true;
             },
             deleteProperty: (_, name) => {
@@ -269,30 +278,11 @@
                 write(name, false);
                 return true;
             },
-            has: (_, name) => typeof name === 'string' && !!first && readClass(first, name),
-            ownKeys: () => first ? [...first.classList] : [],
-            getOwnPropertyDescriptor: (_, name) => first && readClass(first, name)
+            has: (_, name) => typeof name === 'string' && read(name),
+            ownKeys: () => !cascades && first ? [...first.classList] : [],
+            getOwnPropertyDescriptor: (_, name) => !cascades && read(name)
                 ? { enumerable: true, configurable: true }
                 : undefined
-        });
-    }
-
-    function makeClosestClassProxy(elts) {
-        let owner = (elt, name) => elt.closest('.' + CSS.escape(name));
-        return new Proxy({}, {
-            get: (_, name) => typeof name === 'string' && !!elts[0] ? !!owner(elts[0], name) : undefined,
-            set: (_, name, value) => {
-                if (typeof name !== 'string') return false;
-                eachTarget(elts, elt => owner(elt, name), true, elt => {
-                    writeClass(elt, name, value);
-                });
-                return true;
-            },
-            deleteProperty: (_, name) => {
-                if (typeof name !== 'string') return false;
-                eachTarget(elts, elt => owner(elt, name), false, elt => writeClass(elt, name, false));
-                return true;
-            }
         });
     }
 
@@ -301,7 +291,7 @@
         let scope = {
             get data() { return data ||= makeDataProxy(elts, cascades); },
             get aria() { return aria ||= makeAriaProxy(elts, cascades); },
-            get class() { return classes ||= cascades ? makeClosestClassProxy(elts) : makeClassProxy(elts); },
+            get class() { return classes ||= makeClassProxy(elts, cascades); },
             get attr() { return attr ||= makeAttrProxy(elts, cascades, scope); }
         };
         return scope;
@@ -439,19 +429,13 @@
         }
     }
 
-    function writeClasses(elt, value) {
+    function writeClasses(write, value) {
         let written = [];
-        if (typeof value === 'string') {
-            for (let c of value.trim().split(/\s+/).filter(Boolean)) {
-                written.push(c);
-                writeClass(elt, c, true);
-            }
-        } else if (value && typeof value === 'object') {
-            for (let [key, cond] of Object.entries(value)) {
-                for (let c of key.trim().split(/\s+/).filter(Boolean)) {
-                    written.push(c);
-                    writeClass(elt, c, !!cond);
-                }
+        if (typeof value === 'string') value = { [value]: true };
+        if (value && typeof value === 'object') for (let [classes, enabled] of Object.entries(value)) {
+            for (let name of classes.trim().split(/\s+/).filter(Boolean)) {
+                written.push(name);
+                write(name, !!enabled);
             }
         }
         return written;
@@ -460,7 +444,7 @@
     function applyMultiClass(elt, value) {
         let prop = api.htmxProp(elt);
         let oldManaged = prop.liveClasses || new Set();
-        let newManaged = new Set(writeClasses(elt, value));
+        let newManaged = new Set(writeClasses((name, value) => writeClass(elt, name, value), value));
         for (let c of oldManaged) if (!newManaged.has(c)) writeClass(elt, c, false);
         prop.liveClasses = newManaged;
     }
