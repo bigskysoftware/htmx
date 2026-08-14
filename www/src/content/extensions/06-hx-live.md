@@ -665,6 +665,13 @@ On write, hx-live converts booleans, numbers, arrays, and objects to JSON. On re
 
 Plain strings that aren't valid JSON are returned as-is.
 
+Writes preserve strings that look like JSON by quoting them:
+
+```js
+data.code = '123' // data-code='"123"', reads as '123'
+data.code = 123   // data-code="123", reads as 123
+```
+
 Use `toggle()` and `take()` for transitions:
 
 ```html

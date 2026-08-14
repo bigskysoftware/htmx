@@ -1701,6 +1701,23 @@ describe('hx-live extension', function () {
         elt.dataset.v.should.equal('string:hello');
     });
 
+    it('data proxy preserves JSON-looking strings', function() {
+        playground().innerHTML = '<div id="item"></div>';
+        let data = htmx.live.q('#item').data;
+        let element = playground().querySelector('#item');
+        let values = ['123', 'true', 'false', 'null', '[]', '{}', '"text"'];
+
+        values.forEach((value, index) => {
+            data[index] = value;
+            data[index].should.equal(value);
+            element.getAttribute('data-' + index).should.equal(JSON.stringify(value));
+        });
+
+        data.plain = 'ready';
+        data.plain.should.equal('ready');
+        element.getAttribute('data-plain').should.equal('ready');
+    });
+
     it('data proxy: null round-trips through JSON', async function() {
         playground().innerHTML = `
             <section data-val="null">

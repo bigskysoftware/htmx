@@ -69,13 +69,7 @@
         });
     }
 
-    let BOOLEAN_ATTRS = new Set([
-        'disabled','hidden','required','readonly','open','inert',
-        'multiple','autofocus','novalidate','default','reversed',
-        'loop','muted','controls','autoplay','playsinline',
-        'formnovalidate','async','defer','ismap','typemustmatch',
-        'allowfullscreen','itemscope','nomodule','checked','selected'
-    ]);
+    let BOOLEAN_ATTRS = new Set('disabled hidden required readonly open inert multiple autofocus novalidate default reversed loop muted controls autoplay playsinline formnovalidate async defer ismap typemustmatch allowfullscreen itemscope nomodule checked selected'.split(' '));
     let PROPERTY_BINDING_ATTRS = new Set(['checked','value','selected']);
     let STRING_BOOLEAN_ATTRS = new Set(['contenteditable','draggable','spellcheck','writingsuggestions']);
     let NUMERIC_INPUT_TYPES = new Set('number range'.split(' '));
@@ -190,10 +184,13 @@
         return s.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
     }
 
+    function parseJSON(value) {
+        try { return JSON.parse(value); } catch { return value; }
+    }
+
     function readData(elt, name) {
         let raw = elt.getAttribute(name);
-        if (raw === null) return undefined;
-        try { return JSON.parse(raw); } catch { return raw; }
+        return raw === null ? undefined : parseJSON(raw);
     }
 
     // Protect quoted text and regex literals, then recurse into template expressions.
@@ -322,7 +319,7 @@
         let value = elt?.getAttribute('aria-' + key);
         if (value == null || stringAria.has(key)) return value;
         if (listAria.has(key)) return value.trim() ? value.trim().split(/\s+/) : [];
-        try { return JSON.parse(value); } catch { return value; }
+        return parseJSON(value);
     }
 
     function makeAriaProxy(elts, cascades = true) {
@@ -358,7 +355,7 @@
 
     function writeData(elt, name, value) {
         if (value === undefined) elt.removeAttribute(name);
-        else elt.setAttribute(name, typeof value === 'string' ? value : JSON.stringify(value));
+        else elt.setAttribute(name, typeof value === 'object' || parseJSON(value) !== value ? JSON.stringify(value) : value);
     }
 
     // `data.foo` reads/writes to closest ancestor with `data-foo`.
