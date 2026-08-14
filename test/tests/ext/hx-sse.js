@@ -284,10 +284,21 @@ describe('hx-sse SSE extension', function() {
         let beforeConnectFired = false;
         let beforeMessageFired = false;
         let afterMessageFired = false;
+        let connection;
+        let messageConnections = [];
 
-        onDoc('htmx:sse:before:connection', () => { beforeConnectFired = true; });
-        onDoc('htmx:sse:before:message', () => { beforeMessageFired = true; });
-        onDoc('htmx:sse:after:message', () => { afterMessageFired = true; });
+        onDoc('htmx:sse:before:connection', event => {
+            beforeConnectFired = true;
+            connection = event.detail.connection;
+        });
+        onDoc('htmx:sse:before:message', event => {
+            beforeMessageFired = true;
+            messageConnections.push(event.detail.connection);
+        });
+        onDoc('htmx:sse:after:message', event => {
+            afterMessageFired = true;
+            messageConnections.push(event.detail.connection);
+        });
 
         find('button').click();
         await htmx.timeout(1);
@@ -299,6 +310,7 @@ describe('hx-sse SSE extension', function() {
 
         assert.isTrue(beforeMessageFired, 'sse:before:message should fire');
         assert.isTrue(afterMessageFired, 'sse:after:message should fire');
+        assert.isTrue(messageConnections.every(value => value === connection));
         assertTextContentIs('button', 'test');
 
         stream.close();

@@ -557,12 +557,12 @@
         },
         {
           "name": "sse:before:message",
-          "description": "Fires before an SSE message is processed. `detail.message` contains `data`, `event`, `id`, and `cancelled`.",
+          "description": "Fires before an SSE message is processed. `detail.connection` identifies the stream; `detail.message` contains `data`, `event`, `id`, and `cancelled`.",
           "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxssebeforemessage"
         },
         {
           "name": "sse:after:message",
-          "description": "Fires after an SSE message is processed. `detail.message` contains `data`, `event`, and `id`.",
+          "description": "Fires after an SSE message is processed. `detail.connection` identifies the stream; `detail.message` contains `data`, `event`, and `id`.",
           "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxsseaftermessage"
         },
         {

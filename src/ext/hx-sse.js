@@ -257,6 +257,7 @@
                         if (!msg.hasData && !msg.event) continue;
 
                         let detail = {
+                            connection,
                             message: {data: msg.data, event: msg.event, id: msg.id, cancelled: false}
                         };
                         if (!api.triggerHtmxEvent(element, 'htmx:sse:before:message', detail) || detail.message.cancelled) continue;

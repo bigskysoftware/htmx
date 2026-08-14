@@ -439,11 +439,14 @@ event.detail.connection = {
 Message events expose:
 
 ```js
-event.detail.message = {
-  data,
-  event,
-  id,
-  cancelled // before processing only
+event.detail = {
+  connection,
+  message: {
+    data,
+    event,
+    id,
+    cancelled // before processing only
+  }
 }
 ```
 
