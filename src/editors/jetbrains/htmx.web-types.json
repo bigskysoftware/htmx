@@ -587,22 +587,22 @@
         },
         {
           "name": "ws:before:message:outgoing",
-          "description": "Fires before sending a WebSocket message. Modify `detail.message`, use `detail.waitUntil()` to delay sending, or set `detail.cancelled` to cancel.",
+          "description": "Fires before sending a WebSocket message. `detail.connection` identifies the connection. Modify `detail.message`, use `detail.waitUntil()` to delay sending, or set `detail.cancelled` to cancel.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsbeforemessageoutgoing"
         },
         {
           "name": "ws:after:message:outgoing",
-          "description": "Fires after a WebSocket message is sent. `detail.message.data` is the value passed to `WebSocket.send()`.",
+          "description": "Fires after a WebSocket message is sent. `detail.connection` identifies the connection. `detail.message.data` is the value passed to `WebSocket.send()`.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsaftermessageoutgoing"
         },
         {
           "name": "ws:before:message:incoming",
-          "description": "Fires before an incoming WebSocket message is processed. Convert `detail.message`, use `detail.waitUntil()` to delay processing, or set `detail.cancelled` to cancel. Associated messages fire from their sending element.",
+          "description": "Fires before an incoming WebSocket message is processed. `detail.connection` identifies the connection. Convert `detail.message`, use `detail.waitUntil()` to delay processing, or set `detail.cancelled` to cancel.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsbeforemessageincoming"
         },
         {
           "name": "ws:after:message:incoming",
-          "description": "Fires after an incoming WebSocket message is processed. `detail.message.data` preserves the native data; `text()`, `json()`, `blob()`, and `arrayBuffer()` convert it. Associated messages fire from their sending element.",
+          "description": "Fires after an incoming WebSocket message is processed. `detail.connection` identifies the connection. `detail.message.data` preserves the native data; `text()`, `json()`, `blob()`, and `arrayBuffer()` convert it.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsaftermessageincoming"
         },
         {

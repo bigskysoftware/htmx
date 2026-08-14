@@ -509,6 +509,7 @@ Incoming message events:
 
 ```js
 event.detail = {
+  connection,
   message: {
     data,          // original string, Blob, or ArrayBuffer
     type,          // "text" or "binary"
@@ -526,6 +527,7 @@ Outgoing message events expose:
 
 ```js
 event.detail = {
+  connection,
   message: {
     headers,       // htmx metadata
     values,        // form values and hx-vals

@@ -295,7 +295,7 @@
     function transmitMessage(connection, element, message) {
         try {
             connection.socket.send(message.data);
-            api.triggerHtmxEvent(element, 'htmx:ws:after:message:outgoing', {message});
+            api.triggerHtmxEvent(element, 'htmx:ws:after:message:outgoing', {connection, message});
         } catch (error) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', { url: connection.url, error });
         }
@@ -367,6 +367,7 @@
                 data: undefined
             };
             let detail = {
+                connection,
                 message,
                 cancelled: false,
                 waitUntil(promise) {
@@ -460,6 +461,7 @@
         }
 
         let detail = {
+            connection,
             message,
             cancelled: false,
             waitUntil(promise) {
@@ -502,7 +504,7 @@
             });
         }
 
-        api.triggerHtmxEvent(element, 'htmx:ws:after:message:incoming', {message});
+        api.triggerHtmxEvent(element, 'htmx:ws:after:message:incoming', {connection, message});
     }
     
     // ========================================

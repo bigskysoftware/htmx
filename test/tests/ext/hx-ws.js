@@ -745,7 +745,7 @@ describe('hx-ws WebSocket extension', function() {
         });
 
         it('does not swap JSON primitives or arrays without content', async function() {
-            createProcessedHTML(`
+            let container = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test" hx-target="#content">
                     <div id="content">Original</div>
                 </div>
@@ -753,10 +753,15 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(20);
 
             let ws = mockWebSocketInstances[0];
-            for (let value of [false, 0, null, true, 1, 'text', []]) {
+            let received;
+            container.addEventListener('htmx:ws:before:message:incoming', event => {
+                event.detail.waitUntil(event.detail.message.json().then(value => received = value));
+            });
+            for (let value of [false, 0, null, '', true, 1, 'text', []]) {
                 ws.simulateRawMessage(JSON.stringify(value));
                 await htmx.timeout(10);
                 assert.equal(document.getElementById('content').textContent, 'Original');
+                assert.deepEqual(received, value);
             }
         });
         
@@ -1732,6 +1737,34 @@ describe('hx-ws WebSocket extension', function() {
             assert.deepEqual(JSON.parse(afterMessage.data), {
                 headers: afterMessage.headers
             });
+        });
+
+        it('includes the connection in every message event', async function() {
+            let element = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test">
+                    <button hx-ws:send>Send</button>
+                </div>
+            `);
+            let connections = [];
+            for (let name of [
+                'htmx:ws:before:message:outgoing',
+                'htmx:ws:after:message:outgoing',
+                'htmx:ws:before:message:incoming',
+                'htmx:ws:after:message:incoming'
+            ]) {
+                element.addEventListener(name, event => connections.push(event.detail.connection));
+            }
+            await htmx.timeout(20);
+
+            element.querySelector('button').click();
+            await htmx.timeout(10);
+            mockWebSocketInstances[0].simulateMessage({type: 'notification'});
+            await htmx.timeout(10);
+
+            let connection = htmx.ext.ws.getRegistry().get('/ws/test');
+            assert.equal(connections.length, 4);
+            assert.isTrue(connections.every(value => value === connection));
+            assert.equal(connection.url, getNormalizedUrl('/ws/test'));
         });
         
         it('allows modifying message via htmx:ws:before:message:outgoing', async function() {
