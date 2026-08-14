@@ -1302,6 +1302,38 @@ describe('hx-live extension', function () {
         element.hasAttribute('writingsuggestions').should.equal(false);
     });
 
+    it('property-backed attributes preserve native typed state', function() {
+        playground().innerHTML = `
+            <input id="check" type="checkbox" checked>
+            <select multiple><option id="option" selected>x</option></select>
+            <input id="number" type="number" value="3">
+            <div id="hidden" hidden="until-found"></div>
+        `;
+        let check = htmx.live.q('#check').attr;
+        let option = htmx.live.q('#option').attr;
+        let number = htmx.live.q('#number').attr;
+        let hidden = htmx.live.q('#hidden').attr;
+
+        [check.checked, option.selected, number.value, hidden.hidden]
+            .should.deep.equal([true, true, 3, 'until-found']);
+
+        check.checked = value => !value;
+        option.selected = value => !value;
+        number.value = value => value + 1;
+        hidden.hidden = value => value === 'until-found' ? false : 'until-found';
+
+        [check.checked, option.selected, number.value, hidden.hidden]
+            .should.deep.equal([false, false, 4, false]);
+        [['#check', 'checked'], ['#option', 'selected'], ['#hidden', 'hidden']].forEach(([selector, name]) => {
+            playground().querySelector(selector).hasAttribute(name).should.equal(false);
+        });
+        playground().querySelector('#number').getAttribute('value').should.equal('4');
+
+        hidden.hidden = 'until-found';
+        hidden.hidden.should.equal('until-found');
+        playground().querySelector('#hidden').getAttribute('hidden').should.equal('until-found');
+    });
+
     it('generic attributes stringify booleans and remove null', function() {
         playground().innerHTML = '<div id="item"></div>';
         let attr = htmx.live.q('#item').attr;

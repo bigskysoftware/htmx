@@ -69,8 +69,8 @@
         });
     }
 
-    let BOOLEAN_ATTRS = new Set('disabled hidden required readonly open inert multiple autofocus novalidate default reversed loop muted controls autoplay playsinline formnovalidate async defer ismap typemustmatch allowfullscreen itemscope nomodule checked selected'.split(' '));
-    let PROPERTY_BINDING_ATTRS = new Set(['checked','value','selected']);
+    let BOOLEAN_ATTRS = new Set('disabled required readonly open inert multiple autofocus novalidate default reversed loop muted controls autoplay playsinline formnovalidate async defer ismap typemustmatch allowfullscreen itemscope nomodule checked selected'.split(' '));
+    let PROPERTY_BINDING_ATTRS = new Set(['checked','value','selected','hidden']);
     let STRING_BOOLEAN_ATTRS = new Set(['contenteditable','draggable','spellcheck','writingsuggestions']);
     let NUMERIC_ATTRS = new Set('tabindex colspan rowspan maxlength minlength size span start rows cols width height min max step low high optimum'.split(' '));
 

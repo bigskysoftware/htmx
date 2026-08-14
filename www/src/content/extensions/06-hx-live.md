@@ -1027,7 +1027,7 @@ When an `hx-live` element is removed, its expression drops out on the next sched
 <div :contenteditable="'plaintext-only'">    <!-- <div contenteditable="plaintext-only"> -->
 ```
 
-**Property-backed attributes** (`checked`, `value`, `selected`). Sync both the DOM property and the HTML attribute.
+**Property-backed attributes** (`checked`, `value`, `selected`, `hidden`). Sync both the DOM property and the HTML attribute. `hidden` preserves the `"until-found"` state.
 
 ```html
 <input type="checkbox" :checked="true">     <!-- .checked = true,  checked=""        -->
