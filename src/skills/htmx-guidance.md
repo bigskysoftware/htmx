@@ -446,7 +446,7 @@ htmx.findAll(".items")                           // Find all matching
 htmx.trigger(elt, "myEvent", {detail: ...})      // Fire custom event
 htmx.swap(ctx)                                   // Manual swap
 htmx.timeout(1000)                               // Promise that resolves after delay
-htmx.live.take(elt, "active", ".tab")            // Take class — provided by hx-live
+htmx.live.take(elt, ".active", ".tab")           // Take class — provided by hx-live
 htmx.live.forEvent(elt, "click", 5000)           // Race events/timeouts — provided by hx-live
 htmx.live.nextFrame()                            // requestAnimationFrame promise — provided by hx-live
 ```

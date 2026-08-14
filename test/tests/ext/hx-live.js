@@ -1010,6 +1010,18 @@ describe('hx-live extension', function () {
         tabs[1].classList.contains('active').should.equal(false);
     });
 
+    it('htmx.live.take(target, name, scope) moves state to the target', function() {
+        playground().innerHTML = `
+            <button class="tab selected" id="a"></button>
+            <button class="tab" id="b"></button>
+        `;
+
+        htmx.live.take('#b', '.selected', '.tab');
+
+        playground().querySelector('#a').classList.contains('selected').should.equal(false);
+        playground().querySelector('#b').classList.contains('selected').should.equal(true);
+    });
+
     it('htmx.live.refresh() recomputes live expressions even when no DOM event triggered', async function() {
         // Using a non-reactive external value: the expression reads window.__refreshSrcLive.
         // Mutating that value will not trigger any DOM input/change/mutation listener,
