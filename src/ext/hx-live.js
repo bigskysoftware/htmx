@@ -632,9 +632,7 @@
         };
     }
 
-    let arrayMethods = new Set(['map', 'filter', 'reduce', 'reduceRight', 'forEach', 'some', 'every',
-        'find', 'findIndex', 'findLast', 'findLastIndex', 'flatMap', 'flat',
-        'slice', 'indexOf', 'lastIndexOf', 'includes', 'join', 'at']);
+    let arrayMethods = 'map filter reduce reduceRight forEach some every find findIndex findLast findLastIndex flatMap flat slice indexOf lastIndexOf includes join at'.split(' ');
 
     let positions = { before: 'beforebegin', after: 'afterend', start: 'afterbegin', end: 'beforeend' };
 
@@ -658,7 +656,7 @@
                 if (p === 'data') return (local ||= makeStateScope(elts, false)).data;
                 if (p === 'class') return (local ||= makeStateScope(elts, false)).class;
                 if (p === 'closest') return closest ||= makeStateScope(elts, true);
-                if (arrayMethods.has(p)) return elts[p].bind(elts);
+                if (arrayMethods.includes(p)) return elts[p].bind(elts);
                 if (p === 'aria') return (local ||= makeStateScope(elts, false)).aria;
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
