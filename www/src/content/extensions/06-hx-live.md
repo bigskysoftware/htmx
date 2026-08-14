@@ -298,6 +298,8 @@ Inside expressions, `this` is the element, the full htmx API is available unpref
 
 `q()` returns a proxy over a set of elements. Read from the first match, write to all.
 
+With no matches, state reads return `undefined` and writes do nothing, including through `.closest`.
+
 ```js
 q('.row')                       // every .row in the document
 q('#bar')                       // single element by id

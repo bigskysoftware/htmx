@@ -671,11 +671,11 @@
                 if (p === 'take') return (name, scope) => { applyTake(elts, name, scope); return proxy; };
                 if (p === 'toggle') return (name, ...values) => { elts.forEach(e => applyToggle(e, name, ...values)); return proxy; };
                 if (p === 'attr') return (local ||= makeStateScope(elts, false)).attr;
-                if (p === 'data') return elts[0] ? (local ||= makeStateScope(elts, false)).data : undefined;
+                if (p === 'data') return (local ||= makeStateScope(elts, false)).data;
                 if (p === 'class') return (local ||= makeStateScope(elts, false)).class;
-                if (p === 'closest') return elts[0] ? closest ||= makeStateScope(elts, true) : undefined;
+                if (p === 'closest') return closest ||= makeStateScope(elts, true);
                 if (arrayMethods.has(p)) return elts[p].bind(elts);
-                if (p === 'aria') return elts[0] ? (local ||= makeStateScope(elts, false)).aria : undefined;
+                if (p === 'aria') return (local ||= makeStateScope(elts, false)).aria;
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));

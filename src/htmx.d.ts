@@ -281,13 +281,13 @@ export namespace HxLive {
     /** Typed attributes on the selected elements themselves. */
     readonly attr: AttrProxy;
     /** Typed `data-*` values on the selected elements themselves. */
-    readonly data?: DataProxy;
+    readonly data: DataProxy;
     /** Typed `aria-*` values on the selected elements themselves. */
-    readonly aria?: AriaProxy;
+    readonly aria: AriaProxy;
     /** Class state and `classList` methods on the selected elements themselves. */
     readonly class: ClassProxy;
     /** Typed state on the nearest owner of each selected element. */
-    readonly closest?: Scope;
+    readonly closest: Scope;
     /**
      * Move a class or attribute from sibling/scoped elements to all matched elements.
      * @param scope - CSS selector, DOM node, or `{ from: string }`. Defaults to parent element.

@@ -1362,12 +1362,26 @@ describe('hx-live extension', function () {
         classes.contains('toggle').should.equal(false);
     });
 
-    it('class state is empty when q() has no matches', function() {
-        let classes = htmx.live.q('.missing').class;
+    it('state is empty when q() has no matches', function() {
+        let empty = htmx.live.q('.missing');
 
-        assert.isUndefined(classes.active);
-        classes.active = true;
-        [...classes].should.deep.equal([]);
+        assert.isUndefined(empty.attr.hidden);
+        assert.isUndefined(empty.data.count);
+        assert.isUndefined(empty.aria.busy);
+        assert.isUndefined(empty.class.active);
+        assert.isUndefined(empty.closest.attr.hidden);
+        assert.isUndefined(empty.closest.data.count);
+        assert.isUndefined(empty.closest.aria.busy);
+        assert.isUndefined(empty.closest.class.active);
+
+        empty.attr.hidden = true;
+        empty.data.count = 1;
+        empty.aria.busy = true;
+        empty.class.active = true;
+        empty.closest.data.count = 1;
+
+        [...empty.class].should.deep.equal([]);
+        playground().children.length.should.equal(0);
     });
 
     it('state reads typed DOM values', function() {
