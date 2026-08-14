@@ -69,7 +69,7 @@
         });
     }
 
-    let BOOLEAN_ATTRS = new Set('disabled required readonly open inert multiple autofocus novalidate default reversed loop muted controls autoplay playsinline formnovalidate async defer ismap typemustmatch allowfullscreen itemscope nomodule checked selected'.split(' '));
+    let BOOLEAN_ATTRS = new Set('disabled required readonly open inert multiple autofocus novalidate default reversed loop muted controls autoplay playsinline formnovalidate async defer ismap typemustmatch allowfullscreen itemscope nomodule checked selected alpha headingreset'.split(' '));
     let PROPERTY_BINDING_ATTRS = new Set(['checked','value','selected','hidden']);
     let STRING_BOOLEAN_ATTRS = new Set(['contenteditable','draggable','spellcheck','writingsuggestions']);
     let NUMERIC_ATTRS = new Set('tabindex colspan rowspan maxlength minlength size span start rows cols width height min max step low high optimum'.split(' '));
@@ -86,7 +86,7 @@
             return element.value === '' ? null : element.valueAsNumber;
         }
         if (PROPERTY_BINDING_ATTRS.has(name)) return element[name];
-        if (BOOLEAN_ATTRS.has(name)) return element.hasAttribute(name);
+        if (BOOLEAN_ATTRS.has(name) || name.startsWith('shadowroot') && name !== 'shadowrootmode' && name !== 'shadowrootslotassignment') return element.hasAttribute(name);
         let value = element.getAttribute(name);
         if (STRING_BOOLEAN_ATTRS.has(name)) try { return JSON.parse(value.toLowerCase()); } catch {}
         if (NUMERIC_ATTRS.has(name) && value?.trim() && isFinite(value)) return +value;
@@ -105,7 +105,7 @@
             writeData(element, name, value);
         } else if (PROPERTY_BINDING_ATTRS.has(name)) {
             applyPropertyBinding(element, name, value);
-        } else if (BOOLEAN_ATTRS.has(name)) {
+        } else if (BOOLEAN_ATTRS.has(name) || name.startsWith('shadowroot') && name !== 'shadowrootmode' && name !== 'shadowrootslotassignment') {
             element.toggleAttribute(name, !!value);
         } else if (value === null || value === undefined) {
             element.removeAttribute(name);
@@ -810,17 +810,12 @@
         writeAttr(elt, attrName, value);
     }
 
-    let asTargets = t => t == null ? []
-        : typeof t === 'string' ? document.querySelectorAll(t)
-        : t.nodeType ? [t]
-        : t;
-
     htmx.live = {
         q: s => makeQ(document.documentElement)(s),
         debounce: makeDebounce(),
         refresh: () => schedule(),
-        take: (target, name, scope) => applyTake([...asTargets(target)], name, scope),
-        toggle: (target, name, ...values) => [...asTargets(target)].forEach(e => applyToggle(e, name, ...values)),
+        take: (target, name, scope) => applyTake(htmx.live.q(target).arr(), name, scope),
+        toggle: (target, name, ...values) => htmx.live.q(target).forEach(e => applyToggle(e, name, ...values)),
         forEvent: (...args) => forEvent(null, ...args),
         nextFrame: () => new Promise(r => requestAnimationFrame(r))
     };

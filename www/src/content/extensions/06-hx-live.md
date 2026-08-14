@@ -994,13 +994,11 @@ When an `hx-live` element is removed, its expression drops out on the next sched
 
 [`:<attr>`](#attr) writes the value differently depending on the attribute, following HTML conventions.
 
-**Boolean attributes** (`disabled`, `hidden`, `required`, `open`, `readonly`, `inert`, ...). Truthy adds the attribute; falsy removes it.
+**Boolean attributes** (`disabled`, `required`, `open`, `readonly`, `inert`, ...). Truthy adds the attribute; falsy removes it. This includes current declarative shadow-root boolean attributes.
 
 ```html
 <button  :disabled="truthyExpr">   <!-- <button disabled="">  -->
 <button  :disabled="falsyExpr">    <!-- <button>              -->
-<div     :hidden="truthyExpr">     <!-- <div hidden="">       -->
-<div     :hidden="falsyExpr">      <!-- <div>                 -->
 <input   :required="truthyExpr">   <!-- <input required="">   -->
 <input   :required="falsyExpr">    <!-- <input>               -->
 <details :open="truthyExpr">       <!-- <details open="">     -->

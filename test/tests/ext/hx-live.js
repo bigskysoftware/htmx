@@ -1334,6 +1334,34 @@ describe('hx-live extension', function () {
         playground().querySelector('#hidden').getAttribute('hidden').should.equal('until-found');
     });
 
+    it('current HTML boolean attributes use presence semantics', function() {
+        playground().innerHTML = '<input id="color" type="color" alpha><div id="heading" headingreset></div>';
+        let template = document.createElement('template');
+        template.id = 'shadow';
+        template.setAttribute('shadowrootmode', 'open');
+        template.setAttribute('shadowrootslotassignment', 'manual');
+        for (let name of ['shadowrootclonable', 'shadowrootcustomelementregistry', 'shadowrootdelegatesfocus', 'shadowrootserializable']) {
+            template.setAttribute(name, '');
+        }
+        playground().append(template);
+
+        let attributes = [
+            [htmx.live.q('#color').attr, 'alpha'],
+            [htmx.live.q('#heading').attr, 'headingreset'],
+            ...['shadowrootclonable', 'shadowrootcustomelementregistry', 'shadowrootdelegatesfocus', 'shadowrootserializable']
+                .map(name => [htmx.live.q('#shadow').attr, name])
+        ];
+
+        for (let [attr, name] of attributes) {
+            attr[name].should.equal(true);
+            attr[name] = false;
+            attr[name].should.equal(false);
+        }
+        let shadow = htmx.live.q('#shadow').attr;
+        shadow.shadowrootmode.should.equal('open');
+        shadow.shadowrootslotassignment.should.equal('manual');
+    });
+
     it('generic attributes stringify booleans and remove null', function() {
         playground().innerHTML = '<div id="item"></div>';
         let attr = htmx.live.q('#item').attr;
