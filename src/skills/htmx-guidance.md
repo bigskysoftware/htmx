@@ -419,7 +419,7 @@ htmx.config.morphSkipChildren = 'lit-component, .sortable';
 | `hx-ignore`      | Disable htmx processing for element and children                          |
 | `hx-disable`     | Disable specified elements during requests                                |
 | `hx-preload`     | Preload content on trigger events                                         |
-| `hx-optimistic`  | Show optimistic content during request                                    |
+| `hx-pending`     | Show pending content during request                                       |
 | `hx-push-url`    | Push URL to browser history                                               |
 | `hx-replace-url` | Replace URL in browser history                                            |
 | `hx-encoding`    | Change encoding (e.g. `multipart/form-data` for file uploads)             |

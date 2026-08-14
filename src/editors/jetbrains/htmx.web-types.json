@@ -223,9 +223,9 @@
           "doc-url": "https://four.htmx.org/reference/attributes/hx-preload"
         },
         {
-          "name": "hx-optimistic",
-          "description": "Shows optimistic UI content from a template while a request is in flight. Requires the optimistic extension.",
-          "doc-url": "https://four.htmx.org/reference/attributes/hx-optimistic"
+          "name": "hx-pending",
+          "description": "Shows pending content from a template while a request is in flight. Requires the hx-pending extension.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-pending"
         },
         {
           "name": "hx-status",
@@ -362,9 +362,9 @@
           "doc-url": "https://four.htmx.org/reference/attributes/hx-swap#swap"
         },
         {
-          "name": "hx-optimistic",
-          "description": "Applied to optimistic UI content inserted by the hx-optimistic extension.",
-          "doc-url": "https://four.htmx.org/extensions/hx-optimistic#styling"
+          "name": "hx-pending",
+          "description": "Applied to pending content inserted by the hx-pending extension.",
+          "doc-url": "https://four.htmx.org/extensions/hx-pending#styling-pending-content"
         }
       ]
     },

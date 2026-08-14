@@ -200,4 +200,27 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         assert.equal(indicators.length, 2);
     })
 
+    it('keeps indicators visible when HX-Redirect is received', async function() {
+        let originalLocation = htmx._loc;
+        let redirectUrl = null;
+        htmx._loc = {
+            get href() { return window.location.href; },
+            set href(val) { redirectUrl = val; }
+        };
+        try {
+            mockResponse('GET', '/test', '', { headers: { 'HX-Redirect': '/other-page' } });
+            createProcessedHTML(
+                '<div id="indicator" class="htmx-indicator">Loading...</div>' +
+                '<button id="btn" hx-get="/test" hx-indicator="#indicator">Click</button>'
+            );
+            find('#btn').click();
+            await forRequest();
+            await htmx.timeout(10);
+            assert.equal(redirectUrl, '/other-page');
+            assert.isTrue(find('#indicator').classList.contains('htmx-request'));
+        } finally {
+            htmx._loc = originalLocation;
+        }
+    })
+
 });

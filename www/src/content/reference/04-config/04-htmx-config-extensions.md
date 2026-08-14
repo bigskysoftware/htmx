@@ -6,10 +6,10 @@ description: "Restricts extension registration by name"
 The `htmx.config.extensions` option restricts extension registration to listed names.
 
 ```html
-<meta name="htmx-config" content='extensions:"preload,hx-optimistic"'>
+<meta name="htmx-config" content='extensions:"preload,hx-pending"'>
 <script src="/htmx.js"></script>
 <script src="/hx-preload.js"></script>
-<script src="/hx-optimistic.js"></script>
+<script src="/hx-pending.js"></script>
 ```
 
 Both extension scripts still need to be loaded. The config only controls whether their calls to [`htmx.registerExtension()`](/reference/methods/htmx-registerExtension) succeed.
@@ -28,7 +28,7 @@ List names passed to `htmx.registerExtension()`, separated by commas:
 
 ```javascript
 htmx.registerExtension('preload', { /* ... */ })
-htmx.registerExtension('hx-optimistic', { /* ... */ })
+htmx.registerExtension('hx-pending', { /* ... */ })
 ```
 
 ## Configure Before Loading htmx
