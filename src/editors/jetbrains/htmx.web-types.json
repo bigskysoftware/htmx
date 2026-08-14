@@ -562,7 +562,7 @@
         },
         {
           "name": "sse:before:message",
-          "description": "Fires before an SSE message is processed. `detail.connection` identifies the stream; `detail.message` contains `data`, `event`, `id`, and `cancelled`.",
+          "description": "Fires before an SSE message is processed. `detail.connection` identifies the stream; `detail.message` contains `data`, `event`, and `id`. Use `detail.waitUntil()` to delay processing or set `detail.cancelled` to cancel.",
           "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxssebeforemessage"
         },
         {

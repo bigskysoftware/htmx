@@ -1075,7 +1075,7 @@ describe('hx-sse SSE extension', function() {
 
         onDoc('htmx:sse:before:message', (e) => {
             if (e.detail.message.data === 'skip me') {
-                e.detail.message.cancelled = true;
+                e.detail.cancelled = true;
             }
         });
 
@@ -1089,6 +1089,29 @@ describe('hx-sse SSE extension', function() {
         stream.send('keep me');
         await waitForEvent('htmx:sse:after:message');
         assertTextContentIs('button', 'keep me', 'Non-cancelled message should swap');
+
+        stream.close();
+    });
+
+    it('htmx:sse:before:message waits for async work', async function() {
+        const stream = mockStreamResponse('/wait-msg');
+        createProcessedHTML('<button hx-get="/wait-msg" hx-swap="innerHTML">Original</button>');
+
+        onDoc('htmx:sse:before:message', event => {
+            event.detail.waitUntil(htmx.timeout(20).then(() => {
+                event.detail.message.data = 'Changed';
+            }));
+        });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.send('Ignored');
+        await htmx.timeout(5);
+        assertTextContentIs('button', 'Original');
+
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('button', 'Changed');
 
         stream.close();
     });

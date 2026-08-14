@@ -444,9 +444,10 @@ event.detail = {
   message: {
     data,
     event,
-    id,
-    cancelled // before processing only
-  }
+    id
+  },
+  waitUntil(), // before processing only
+  cancelled    // before processing only
 }
 ```
 
@@ -490,6 +491,8 @@ document.addEventListener('htmx:sse:before:message', event => {
 ```
 
 Changing `message.data` changes the swap or named event data. Changing `message.event` changes whether the message swaps or dispatches a DOM event.
+
+`detail.waitUntil(promise)` delays processing until asynchronous work finishes. Cancel with `event.preventDefault()` or `detail.cancelled = true`.
 
 ### `htmx:sse:after:message`
 
@@ -692,3 +695,5 @@ RC1 namespaces SSE lifecycle events:
 | `htmx:after:sse:connection` | [`htmx:sse:after:connection`](#htmxsseafterconnection) |
 | `htmx:before:sse:message` | [`htmx:sse:before:message`](#htmxssebeforemessage) |
 | `htmx:after:sse:message` | [`htmx:sse:after:message`](#htmxsseaftermessage) |
+
+Message cancellation moved from `detail.message.cancelled` to `detail.cancelled`. Before-message hooks can delay processing with `detail.waitUntil(promise)`.
