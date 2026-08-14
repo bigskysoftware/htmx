@@ -290,16 +290,8 @@
     }
 
     async function sendMessage(element, event) {
-        // hx-ws:send="/url" creates its own connection; hx-ws:send (no value) uses ancestor's
-        let sendAttr = api.attributeValue(element, 'hx-ws:send');
-        let url = (sendAttr && sendAttr !== 'true') ? sendAttr : null;
-        let owner = element;
-        if (!url) {
-            owner = element.closest(wsSelector('connect'));
-            if (owner) {
-                url = api.attributeValue(owner, 'hx-ws:connect');
-            }
-        }
+        let owner = element.closest(wsSelector('connect'));
+        let url = owner && api.attributeValue(owner, 'hx-ws:connect');
 
         if (!url) {
             api.triggerHtmxEvent(element, 'htmx:ws:error', {
@@ -508,8 +500,6 @@
         api.htmxProp(element).ws ??= {};
         if (element._htmx.ws.sendInitialized) return;
 
-        let sendAttr = api.attributeValue(element, 'hx-ws:send');
-        let sendUrl = (sendAttr && sendAttr !== 'true') ? sendAttr : null;
         let specString = api.attributeValue(element, 'hx-trigger');
         if (!specString) {
             specString = element.matches('form') ? 'submit' :
@@ -520,9 +510,6 @@
         api.onTrigger(element, specString, async (evt) => {
             if (element.matches('form') && evt.type === 'submit') {
                 evt.preventDefault();
-            }
-            if (sendUrl) {
-                getOrCreateConnection(sendUrl, element);
             }
             await sendMessage(element, evt);
         });
@@ -583,11 +570,20 @@
             const processNode = (node) => {
                 checkLegacyAttributes(node);
 
+                let send = api.attributeValue(node, 'hx-ws:send');
+                if (send && send !== 'true') {
+                    api.triggerHtmxEvent(node, 'htmx:ws:error', {
+                        url: null,
+                        error: new Error('hx-ws:send does not accept a value')
+                    });
+                    return;
+                }
+
                 if (api.attributeValue(node, 'hx-ws:connect') != null) {
                     initializeElement(node);
                 }
 
-                if (api.attributeValue(node, 'hx-ws:send') != null) {
+                if (send != null) {
                     initializeSendElement(node);
                 }
             };

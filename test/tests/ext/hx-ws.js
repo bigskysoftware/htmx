@@ -485,20 +485,31 @@ describe('hx-ws WebSocket extension', function() {
             assert.isDefined(ws.lastSent);
         });
         
-        it('creates own connection if hx-ws:send has path', async function() {
-            let button = createProcessedHTML('<button hx-ws:send="/ws/direct" hx-trigger="click">Send</button>');
-            button.click();
-            await htmx.timeout(50);
-            
-            assert.equal(mockWebSocketInstances.length, 1);
-            assert.isTrue(urlEndsWith(mockWebSocketInstances[0].url, '/ws/direct'), 'URL should end with /ws/direct');
+        it('rejects a URL on hx-ws:send', async function() {
+            let error;
+            let onError = event => error = event.detail.error;
+            document.addEventListener('htmx:ws:error', onError);
+
+            let button;
+            try {
+                button = createProcessedHTML('<button hx-ws:send="/ws/direct">Send</button>');
+                await htmx.timeout(20);
+                button.click();
+                await htmx.timeout(20);
+            } finally {
+                document.removeEventListener('htmx:ws:error', onError);
+            }
+
+            assert.equal(mockWebSocketInstances.length, 0);
+            assert.instanceOf(error, Error);
+            assert.equal(error.message, 'hx-ws:send does not accept a value');
         });
 
-        it('creates separate direct connections for separate send elements', async function() {
+        it('creates separate owned connections for separate send elements', async function() {
             let container = createProcessedHTML(`
                 <div>
-                    <button hx-ws:send="/ws/direct" name="action" value="save">Save</button>
-                    <button hx-ws:send="/ws/direct" name="action" value="delete">Delete</button>
+                    <button hx-ws:connect="/ws/direct" hx-ws:send hx-trigger="click" name="action" value="save">Save</button>
+                    <button hx-ws:connect="/ws/direct" hx-ws:send hx-trigger="click" name="action" value="delete">Delete</button>
                 </div>
             `);
 
@@ -1070,8 +1081,8 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(mockWebSocketInstances.length, 1);
         });
 
-        it('can open a direct send connection again after a normal close', async function() {
-            let button = createProcessedHTML('<button hx-ws:send="/ws/test" name="action" value="save">Save</button>');
+        it('can reopen a sending element connection after a normal close', async function() {
+            let button = createProcessedHTML('<button hx-ws:connect="/ws/test" hx-ws:send hx-trigger="click" name="action" value="save">Save</button>');
 
             button.click();
             await htmx.timeout(20);
@@ -1084,8 +1095,8 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(JSON.parse(mockWebSocketInstances[1].lastSent).action, 'save');
         });
 
-        it('reuses an open direct send connection', async function() {
-            let button = createProcessedHTML('<button hx-ws:send="/ws/test" name="action" value="save">Save</button>');
+        it('reuses an open sending element connection', async function() {
+            let button = createProcessedHTML('<button hx-ws:connect="/ws/test" hx-ws:send hx-trigger="click" name="action" value="save">Save</button>');
 
             button.click();
             await htmx.timeout(20);

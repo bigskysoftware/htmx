@@ -327,19 +327,21 @@ Use [`hx-trigger`](/reference/attributes/hx-trigger) to open a connection later 
 
 All [`hx-trigger` modifiers](/reference/attributes/hx-trigger#event-modifiers) are supported.
 
-##### Open a Connection with `hx-ws:send`
+##### Open When Sending
 
-Give `hx-ws:send` a URL to open a connection:
+Put both attributes on one element to open its connection when it sends:
 
 ```html
-<button hx-ws:send="/actions" name="action" value="refresh">
+<button hx-ws:connect="/actions"
+        hx-ws:send
+        hx-trigger="click"
+        name="action"
+        value="refresh">
   Refresh
 </button>
 ```
 
 Clicking the button opens `/actions` and sends `action=refresh` over that connection.
-
-The button owns this connection. Another direct send element opens its own connection, even when it uses the same URL.
 
 ##### Send During Reconnect
 
@@ -470,8 +472,7 @@ Sends form data and [`hx-vals`](/reference/attributes/hx-vals) as JSON.
 </div>
 ```
 
-- `hx-ws:send`: use the nearest ancestor connection
-- `hx-ws:send="<url>"`: open a direct connection owned by the send element
+`hx-ws:send` uses the nearest `hx-ws:connect`, including one on the same element. It does not accept a value.
 
 Default [`hx-trigger`](/reference/attributes/hx-trigger):
 
@@ -890,7 +891,9 @@ Code `1000` stops reconnecting by default. Messages created while a connection o
 
 #### Connection Ownership
 
-Separate connection and direct-send elements no longer share a connection by URL. Put send elements inside one `hx-ws:connect` element to share its connection.
+Each `hx-ws:connect` element owns its connection. Separate elements no longer share a connection by URL.
+
+`hx-ws:send="<url>"` was removed. Put `hx-ws:send` inside an `hx-ws:connect`, or put both attributes on one element.
 
 #### Other Changes
 
