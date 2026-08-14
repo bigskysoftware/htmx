@@ -97,7 +97,7 @@
         name = normalizeAttrName(element, name);
         if (typeof value === 'function') {
             value = value(readAttr(element, name));
-            if (typeof value?.then === 'function') throw new TypeError('assigned function must return a value, not a promise');
+            if (typeof value?.then === 'function') throw new TypeError('hx-live: assignment returned a promise');
         }
         if (name.startsWith('aria-')) {
             writeAria(element, name.slice(5), value);
@@ -237,7 +237,7 @@
     function writeClass(elt, name, value) {
         if (typeof value === 'function') {
             value = value(readClass(elt, name));
-            if (typeof value?.then === 'function') throw new TypeError('assigned function must return a value, not a promise');
+            if (typeof value?.then === 'function') throw new TypeError('hx-live: assignment returned a promise');
         }
         elt.classList.toggle(name, !!value);
         if (!elt.classList.length) elt.removeAttribute('class');
@@ -251,7 +251,7 @@
         let methods = {
             assign(value) {
                 if (!value || typeof value !== 'object' || Array.isArray(value)) {
-                    console.warn(`htmx: class.assign expects an object, got ${Array.isArray(value) ? 'array' : typeof value}.`, { elts });
+                    console.warn('hx-live: class.assign expects an object.', { elts });
                     return;
                 }
                 writeClasses(write, value);
@@ -600,7 +600,7 @@
                     if (current == null || typeof current === 'function') elt[prop] = value;
                     else if (typeof value === 'function') {
                         let next = value(current);
-                        if (typeof next?.then === 'function') throw new TypeError('assigned function must return a value, not a promise');
+                        if (typeof next?.then === 'function') throw new TypeError('hx-live: assignment returned a promise');
                         elt[prop] = next;
                     } else {
                         elt[prop] = value;
@@ -624,7 +624,7 @@
         if (extra === undefined) {
             if (window.Alpine) {
                 extra = '';
-                console.warn('hx-live: Alpine.js detected; ":" short-form bindings disabled. Set htmx.config.live.bindPrefix to configure.');
+                console.warn('hx-live: Alpine detected; set config.live.bindPrefix.');
             } else {
                 extra = ':';
             }
@@ -672,7 +672,7 @@
                         exec ||= api.executeJavaScript(elt, { debounce }, code, false, true, true);
                         await exec();
                     } catch (e) {
-                        if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt });
+                        if (e !== dbSym) console.error('hx-live expression failed', e, { elt });
                     }
                 };
                 fns.add(run);
@@ -714,7 +714,7 @@
                 writeAttrBinding(elt, attrName, value);
                 if (isAsync) observer?.takeRecords();
             } catch (e) {
-                if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt, attr: attrName });
+                if (e !== dbSym) console.error('hx-live expression failed', e, { elt, attr: attrName });
             }
         };
         fns.add(run);
@@ -725,7 +725,7 @@
     }
 
     function writeAttrBinding(elt, attrName, value) {
-        if (typeof value === 'function') throw new TypeError('binding expression must return a value, not a function');
+        if (typeof value === 'function') throw new TypeError('hx-live: binding returned a function');
         if (attrName === 'text') {
             let s = value == null ? '' : String(value);
             if (elt.textContent !== s) elt.textContent = s;
