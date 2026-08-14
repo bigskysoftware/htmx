@@ -170,7 +170,7 @@ How each attribute is written (booleans, ARIA, property-backed, generic) is desc
 
 ### `hx-live:<attr>`
 
-The full form. Behaves identically to `:<attr>`.
+The long form. Behaves identically to `:<attr>`.
 
 ```html
 <button hx-live:disabled="!q('#name').value">Submit</button>
@@ -918,7 +918,7 @@ For a single inline section, native [`<details>`](https://developer.mozilla.org/
 [aria-busy="true"] { opacity: 0.5; pointer-events: none }
 ```
 
-**Non-boolean ARIA.** Strings pass through, so `aria-current="page"`, `aria-pressed="mixed"`, and numeric ARIA (`aria-valuenow="50"`) work in the simple form:
+**Non-boolean ARIA.** Strings pass through, so `aria-current="page"`, `aria-pressed="mixed"`, and numeric ARIA (`aria-valuenow="50"`) work in bindings:
 
 ```html
 <a :aria-current="location.pathname === '/home' ? 'page' : false" href="/home">Home</a>

@@ -195,13 +195,48 @@ describe('hx-live extension', function () {
         elt.dataset.v.should.equal('done');
     });
 
-    it('hx-live body supports top-level await directly', async function() {
+    it('effect supports top-level await directly', async function() {
         let elt = createProcessedHTML(
             `<output hx-live="!this.dataset.s && (this.dataset.s='1', this.dataset.v = 'pending', await timeout(5), this.dataset.v = 'done')"></output>`
         );
         elt.dataset.v.should.equal('pending');
         await htmx.timeout(30);
         elt.dataset.v.should.equal('done');
+    });
+
+    it('does not rerun after an async effect writes to the DOM', async function() {
+        window.__asyncEffectRuns = 0;
+        let elt = createProcessedHTML(`
+            <output hx-live="window.__asyncEffectRuns++; await timeout(1); this.textContent = 'done'"></output>
+        `);
+        await htmx.timeout(30);
+        elt.textContent.should.equal('done');
+        let settledRuns = window.__asyncEffectRuns;
+        await htmx.timeout(20);
+        window.__asyncEffectRuns.should.equal(settledRuns);
+        assert.isAtMost(settledRuns, 2);
+        delete window.__asyncEffectRuns;
+    });
+
+    it('does not rerun after an async effect writes before another await', async function() {
+        window.__multiStepEffectRuns = 0;
+        playground().innerHTML = `
+            <output hx-live="
+                window.__multiStepEffectRuns++;
+                await timeout(1);
+                class.pending = true;
+                await timeout(15);
+                class.done = true
+            "></output>
+        `;
+        await htmx.timeout(1);
+        htmx.process(playground());
+        let elt = playground().querySelector('output');
+        await htmx.timeout(10);
+        window.__multiStepEffectRuns.should.equal(1);
+        await htmx.timeout(20);
+        elt.classList.contains('done').should.equal(true);
+        delete window.__multiStepEffectRuns;
     });
 
     it('forEvent(event, ms) resolves on event before timeout', async function() {
@@ -2110,7 +2145,7 @@ describe('hx-live extension', function () {
     });
 
     // -------------------------------------------------------------------------
-    // Simple form: :attr / hx-live:attr
+    // Bindings: :attr / hx-live:attr
     // -------------------------------------------------------------------------
 
     it(':hidden truthy sets attribute, falsy removes', async function() {
@@ -2187,7 +2222,7 @@ describe('hx-live extension', function () {
         img.getAttribute('src').should.equal('/avatar/bob');
     });
 
-    it('simple form supports top-level await', async function() {
+    it('binding supports top-level await', async function() {
         playground().innerHTML = `<output :text="await Promise.resolve('hello-async')"></output>`;
         htmx.process(playground());
         await htmx.timeout(20);
@@ -2456,14 +2491,14 @@ describe('hx-live extension', function () {
         div.classList.contains('big').should.equal(true);
     });
 
-    it('simple form: hx-ignore skips :attr discovery', function() {
+    it('binding: hx-ignore skips :attr discovery', function() {
         playground().innerHTML = '<div hx-ignore><span :text="\'should-not-run\'"></span></div>';
         htmx.process(playground());
         let span = playground().querySelector('span');
         span.textContent.should.equal('');
     });
 
-    it('simple form: matches() works in :attr expressions', async function() {
+    it('binding: matches() works in :attr expressions', async function() {
         playground().innerHTML = `
             <fieldset :disabled="matches(':has(input:invalid)')">
                 <input required>
@@ -2482,7 +2517,7 @@ describe('hx-live extension', function () {
         fs.hasAttribute('disabled').should.equal(false);
     });
 
-    it('simple form: registration is idempotent across re-process', function() {
+    it('binding: registration is idempotent across re-process', function() {
         window.__liveCallCountSimple = 0;
         playground().innerHTML = '<output :text="(window.__liveCallCountSimple = (window.__liveCallCountSimple||0) + 1, \'ok\')"></output>';
         htmx.process(playground());
@@ -2499,7 +2534,7 @@ describe('hx-live extension', function () {
 
     describe('morph integration', function() {
 
-        it('hx-live body: morph changing expression adopts new code, does not duplicate', async function() {
+        it('effect: morph changing expression adopts new code, does not duplicate', async function() {
             window.__morphLiveCount = 0;
             playground().innerHTML = '<div id="wrap"><output id="o" hx-live="window.__morphLiveCount++"></output></div>';
             htmx.process(playground());
@@ -2523,7 +2558,7 @@ describe('hx-live extension', function () {
             delete window.__morphLiveCount;
         });
 
-        it('hx-live body: morph removing hx-live stops the fn from running', async function() {
+        it('effect: morph removing hx-live stops the fn from running', async function() {
             window.__morphRemovedCount = 0;
             playground().innerHTML = '<div id="wrap"><output id="o" hx-live="window.__morphRemovedCount++"></output></div>';
             htmx.process(playground());

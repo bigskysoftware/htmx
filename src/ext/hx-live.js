@@ -612,7 +612,7 @@
         return proxy;
     }
 
-    let liveQuery, bindPrefixes, bodyAttrs;
+    let liveQuery, bindPrefixes, hxLiveNames;
 
     function buildLiveQuery() {
         let mc = htmx.config.metaCharacter || ':';
@@ -629,11 +629,11 @@
             }
         }
         if (extra) bindPrefixes.push(extra);
-        bodyAttrs = ['hx-live'];
-        if (p) bodyAttrs.push(p + 'live');
+        hxLiveNames = ['hx-live'];
+        if (p) hxLiveNames.push(p + 'live');
         let bind = bindPrefixes.map(bp => `starts-with(name(), "${bp}")`).join(' or ');
-        let body = bodyAttrs.map(n => `@${n}`).join(' or ');
-        liveQuery = new XPathEvaluator().createExpression(`.//*[@*[${bind}] or ${body}]`);
+        let effect = hxLiveNames.map(n => `@${n}`).join(' or ');
+        liveQuery = new XPathEvaluator().createExpression(`.//*[@*[${bind}] or ${effect}]`);
     }
 
     function extractBindingName(attrName) {
@@ -647,25 +647,25 @@
         if (!prop?.liveRuns) return;
         for (let run of prop.liveRuns) fns.delete(run);
         delete prop.liveRuns;
-        delete prop.liveRegistered;
-        delete prop.liveAttrs;
+        delete prop.effectRegistered;
+        delete prop.bindings;
     }
 
     function processElement(elt) {
         if (elt.closest('[hx-ignore]')) return;
         let prop = api.htmxProp(elt);
-        if (!prop.liveRegistered) {
-            let bodyAttr = bodyAttrs.find(n => elt.hasAttribute(n));
-            if (bodyAttr) {
-                prop.liveRegistered = true;
-                registerLive(elt, elt.getAttribute(bodyAttr));
+        if (!prop.effectRegistered) {
+            let hxLiveName = hxLiveNames.find(n => elt.hasAttribute(n));
+            if (hxLiveName) {
+                prop.effectRegistered = true;
+                registerLive(elt, elt.getAttribute(hxLiveName));
             }
         }
-        prop.liveAttrs ||= new Set();
+        prop.bindings ||= new Set();
         for (let a of elt.attributes) {
             let name = extractBindingName(a.name);
-            if (!name || prop.liveAttrs.has(name)) continue;
-            prop.liveAttrs.add(name);
+            if (!name || prop.bindings.has(name)) continue;
+            prop.bindings.add(name);
             registerLive(elt, a.value, name);
         }
     }
@@ -682,13 +682,18 @@
         ensureActive();
         let binding = attrName !== undefined;
         let debounce = getDebounce(elt);
-        let isAsync = !binding || /\bawait\b/.test(code);
+        let hasAwait = /\bawait\b/.test(code);
+        let overlapping = !binding && hasAwait;
+        let isAsync = !binding || hasAwait;
         let exec;
+        let running = false;
         let run = async () => {
             if (!elt.isConnected) {
                 fns.delete(run);
                 return;
             }
+            if (overlapping && running) return;
+            running = overlapping;
             try {
                 exec ||= api.executeJavaScript(elt, { debounce }, code, binding, isAsync, true);
                 let value = isAsync ? await exec() : exec();
@@ -698,6 +703,8 @@
                 }
             } catch (e) {
                 if (e !== dbSym) console.error('hx-live expression failed', e, binding ? { elt, attr: attrName } : { elt });
+            } finally {
+                if (overlapping) queueMicrotask(() => running = false);
             }
         };
         fns.add(run);
