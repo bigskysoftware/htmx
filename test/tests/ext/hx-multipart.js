@@ -662,14 +662,23 @@ describe('hx-multipart extension', function() {
         let button = createProcessedHTML('<button hx-get="/mixed-data">Go</button><div id="result"></div>');
         let json;
         let handledParts = 0;
+        let connection;
+        let partConnections = [];
 
+        button.addEventListener('htmx:multipart:before:connection', event => {
+            connection = event.detail.connection;
+        });
         button.addEventListener('htmx:multipart:before:part', event => {
+            partConnections.push(event.detail.connection);
             if (event.detail.part.headers.get('Content-Type') !== 'application/json') return;
 
             event.preventDefault();
             event.detail.waitUntil(event.detail.part.json().then(value => json = value));
         });
-        button.addEventListener('htmx:multipart:after:part', () => handledParts++);
+        button.addEventListener('htmx:multipart:after:part', event => {
+            partConnections.push(event.detail.connection);
+            handledParts++;
+        });
 
         fetchMock.mockResponse('GET', '/mixed-data', new Response([
             '--updates\r\n',
@@ -693,6 +702,7 @@ describe('hx-multipart extension', function() {
         assertTextContentIs('#result', 'Done');
         assert.equal(button.textContent, 'Go');
         assert.equal(handledParts, 1);
+        assert.isTrue(partConnections.every(value => value === connection));
     });
 
     it('lets another extension take over a part', async function() {

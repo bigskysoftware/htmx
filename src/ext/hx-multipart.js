@@ -236,6 +236,7 @@
 
                         let pendingWork = [];
                         let detail = {
+                            connection,
                             ctx,
                             part,
                             cancelled: false,
@@ -296,7 +297,7 @@
                                 checkpointIndex = 0;
                             }
 
-                            api.triggerHtmxEvent(ctx.sourceElement, 'htmx:multipart:after:part', {ctx, part});
+                            api.triggerHtmxEvent(ctx.sourceElement, 'htmx:multipart:after:part', {connection, ctx, part});
                         })();
 
                         if (type === 'multipart/parallel') {

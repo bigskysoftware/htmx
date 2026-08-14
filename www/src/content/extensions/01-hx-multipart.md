@@ -669,6 +669,7 @@ Cancel either way:
 
 Event detail includes:
 
+- `connection`: the multipart connection
 - `ctx`: the htmx request context
 - `part`: the [`BodyPart`](#handle-parts-yourself)
 - `cancelled`: set to `true` to cancel without `preventDefault()`
@@ -683,6 +684,8 @@ document.addEventListener('htmx:multipart:after:part', event => {
   console.log('Handled:', event.detail.part.headers)
 })
 ```
+
+Event detail includes `connection`, `ctx`, and `part`.
 
 ### `htmx:multipart:close`
 
