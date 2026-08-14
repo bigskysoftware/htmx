@@ -123,28 +123,51 @@
         for (let target of targets) fn(target);
     }
 
-    function makeAttrProxy(elts, cascades, scope) {
+    function makeAttrProxy(elts, cascades, scope, prefix = '') {
+        let attrName = prop => prefix + (prefix === 'data-' ? camelToKebab(prop) : prefix ? prop.toLowerCase() : prop);
         let findOwner = (elt, name) => cascades
             ? elt.closest('[' + CSS.escape(normalizeAttrName(elt, name)) + ']')
-            : elt;
+            : prefix ? elt.hasAttribute(name) ? elt : null : elt;
         return new Proxy({}, {
-            get: (_, name) => {
-                if (name === 'class') return scope.class;
-                if (typeof name !== 'string') return undefined;
+            get: (_, prop) => {
+                if (!prefix && prop === 'class') return scope.class;
+                if (typeof prop !== 'string') return undefined;
+                let name = attrName(prop);
                 let owner = elts[0] && findOwner(elts[0], name);
                 return owner ? readAttr(owner, name) : undefined;
             },
-            set: (_, name, value) => {
-                if (typeof name !== 'string') return false;
+            set: (_, prop, value) => {
+                if (typeof prop !== 'string') return false;
+                let name = attrName(prop);
                 eachTarget(elts, elt => findOwner(elt, name), true, elt => {
                     writeAttr(elt, name, value);
                 });
                 return true;
             },
-            deleteProperty: (_, name) => {
-                if (typeof name !== 'string') return false;
+            deleteProperty: (_, prop) => {
+                if (typeof prop !== 'string') return false;
+                let name = attrName(prop);
                 eachTarget(elts, elt => findOwner(elt, name), false, elt => writeAttr(elt, name, undefined));
                 return true;
+            },
+            has: (_, prop) => {
+                if (prefix !== 'data-' || typeof prop !== 'string') return false;
+                return !!elts[0] && !!findOwner(elts[0], attrName(prop));
+            },
+            ownKeys: () => {
+                if (prefix !== 'data-') return [];
+                let result = [], seen = new Set();
+                for (let node = elts[0]; node; node = cascades ? node.parentElement : null) {
+                    for (let key of Object.keys(node.dataset)) if (key !== 'htmxPowered' && !seen.has(key)) {
+                        seen.add(key);
+                        result.push(key);
+                    }
+                }
+                return result;
+            },
+            getOwnPropertyDescriptor: (_, prop) => {
+                if (prefix !== 'data-' || typeof prop !== 'string' || prop === 'htmxPowered') return;
+                if (elts[0] && findOwner(elts[0], attrName(prop))) return { enumerable: true, configurable: true };
             }
         });
     }
@@ -289,8 +312,8 @@
     function makeStateScope(elts, cascades) {
         let data, aria, classes, attr;
         let scope = {
-            get data() { return data ||= makeDataProxy(elts, cascades); },
-            get aria() { return aria ||= makeAriaProxy(elts, cascades); },
+            get data() { return data ||= makeAttrProxy(elts, cascades, null, 'data-'); },
+            get aria() { return aria ||= makeAttrProxy(elts, cascades, null, 'aria-'); },
             get class() { return classes ||= makeClassProxy(elts, cascades); },
             get attr() { return attr ||= makeAttrProxy(elts, cascades, scope); }
         };
@@ -305,103 +328,15 @@
 
     function readAria(elt, key) {
         let value = elt?.getAttribute('aria-' + key);
-        if (value == null || stringAria.has(key)) return value;
+        if (value == null) return undefined;
+        if (stringAria.has(key)) return value;
         if (listAria.has(key)) return value.trim() ? value.trim().split(/\s+/) : [];
         return parseJSON(value);
-    }
-
-    function makeAriaProxy(elts, cascades = true) {
-        let findOwner = (elt, name) => cascades
-            ? elt.closest('[' + name + ']')
-            : elt.hasAttribute(name) ? elt : null;
-        return new Proxy({}, {
-            get: (_, prop) => {
-                if (typeof prop !== 'string') return undefined;
-                let key = prop.toLowerCase();
-                let name = 'aria-' + key;
-                let owner = elts[0] && findOwner(elts[0], name);
-                return readAria(owner, key);
-            },
-            set: (_, prop, value) => {
-                if (typeof prop !== 'string') return false;
-                let key = prop.toLowerCase();
-                let name = 'aria-' + key;
-                eachTarget(elts, elt => findOwner(elt, name), true, elt => {
-                    writeAttr(elt, name, value);
-                });
-                return true;
-            },
-            deleteProperty: (_, prop) => {
-                if (typeof prop !== 'string') return false;
-                let key = prop.toLowerCase();
-                let name = 'aria-' + key;
-                eachTarget(elts, elt => findOwner(elt, name), false, elt => elt.removeAttribute(name));
-                return true;
-            }
-        });
     }
 
     function writeData(elt, name, value) {
         if (value === undefined) elt.removeAttribute(name);
         else elt.setAttribute(name, typeof value === 'object' || parseJSON(value) !== value ? JSON.stringify(value) : value);
-    }
-
-    // `data.foo` reads/writes to closest ancestor with `data-foo`.
-    // `has` trap lets `hx-on:click="with (data) { x++; y-- }"` work: data-* keys
-    // bind to the proxy, all other identifiers fall through to outer scope.
-    function makeDataProxy(elts, cascades = true) {
-        let findOwner = (elt, kebab) => cascades
-            ? elt.closest('[data-' + kebab + ']')
-            : elt.hasAttribute('data-' + kebab) ? elt : null;
-        return new Proxy({}, {
-            get: (_, prop) => {
-                if (typeof prop !== 'string') return undefined;
-                let kebab = camelToKebab(prop);
-                let name = 'data-' + kebab;
-                let ancestor = elts[0] && findOwner(elts[0], kebab);
-                if (!ancestor) return undefined;
-                return readData(ancestor, name);
-            },
-            set: (_, prop, val) => {
-                if (typeof prop !== 'string') return false;
-                let kebab = camelToKebab(prop);
-                let name = 'data-' + kebab;
-                eachTarget(elts, elt => findOwner(elt, kebab), true, elt => {
-                    writeAttr(elt, name, val);
-                });
-                return true;
-            },
-            deleteProperty: (_, prop) => {
-                if (typeof prop !== 'string') return false;
-                let kebab = camelToKebab(prop);
-                let name = 'data-' + kebab;
-                eachTarget(elts, elt => findOwner(elt, kebab), false, elt => elt.removeAttribute(name));
-                return true;
-            },
-            has: (_, prop) => {
-                if (typeof prop !== 'string') return false;
-                let kebab = camelToKebab(prop);
-                return !!elts[0] && !!findOwner(elts[0], kebab);
-            },
-            ownKeys: () => {
-                let result = [];
-                let seen = new Set();
-                for (let node = elts[0]; node; node = cascades ? node.parentElement : null) {
-                    for (let key of Object.keys(node.dataset)) {
-                        if (key !== 'htmxPowered' && !seen.has(key)) {
-                            seen.add(key);
-                            result.push(key);
-                        }
-                    }
-                }
-                return result;
-            },
-            getOwnPropertyDescriptor: (_, prop) => {
-                if (typeof prop !== 'string' || prop === 'htmxPowered') return;
-                let kebab = camelToKebab(prop);
-                if (elts[0] && findOwner(elts[0], kebab)) return { enumerable: true, configurable: true };
-            }
-        });
     }
 
     function applyPropertyBinding(elt, name, value) {
