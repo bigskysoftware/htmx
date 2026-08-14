@@ -391,7 +391,6 @@
         let pendingWork = [];
         let message = {
             data,
-            type: typeof data === 'string' ? 'text' : 'binary',
             text() {
                 return textResult ??= typeof data === 'string'
                     ? Promise.resolve(data)
@@ -418,7 +417,7 @@
 
         let json = null;
         let html;
-        if (message.type === 'text') {
+        if (typeof data === 'string') {
             try {
                 json = await message.json();
             } catch (e) {

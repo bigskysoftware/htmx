@@ -820,7 +820,7 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(20);
 
             assert.equal(document.getElementById('content').textContent, 'Original');
-            assert.equal(receivedMessage.type, 'binary');
+            assert.instanceOf(receivedMessage.data, ArrayBuffer);
             assert.strictEqual(receivedMessage.data, data);
             assert.strictEqual(await receivedMessage.arrayBuffer(), data);
             assert.equal((await receivedMessage.json()).content, '<p>Not swapped</p>');
@@ -1316,7 +1316,7 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(50);
 
             container.addEventListener('htmx:ws:before:message:incoming', (e) => {
-                if (e.detail.message.type === 'text') e.detail.cancelled = true;
+                if (typeof e.detail.message.data === 'string') e.detail.cancelled = true;
             });
 
             let ws = mockWebSocketInstances[0];
@@ -1583,7 +1583,6 @@ describe('hx-ws WebSocket extension', function() {
             await htmx.timeout(20);
 
             assert.isNotNull(beforeDetail, 'ws:before:message:incoming should fire for raw messages');
-            assert.equal(beforeDetail.message.type, 'text');
             assert.equal(beforeDetail.message.data, '<hx-partial id="content"><p>Updated</p></hx-partial>');
             assert.equal(await beforeDetail.message.text(), beforeDetail.message.data);
 
