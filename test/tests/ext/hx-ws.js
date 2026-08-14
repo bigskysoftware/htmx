@@ -984,6 +984,33 @@ describe('hx-ws WebSocket extension', function() {
             assert.equal(mockWebSocketInstances.length, 1);
         });
 
+        it('can open a triggered connection again after a normal close', async function() {
+            let element = createProcessedHTML('<div hx-ws:connect="/ws/test" hx-trigger="click"></div>');
+
+            element.click();
+            await htmx.timeout(20);
+            mockWebSocketInstances[0].close(1000);
+
+            element.click();
+            await htmx.timeout(20);
+
+            assert.equal(mockWebSocketInstances.length, 2);
+        });
+
+        it('can open a direct send connection again after a normal close', async function() {
+            let button = createProcessedHTML('<button hx-ws:send="/ws/test" name="action" value="save">Save</button>');
+
+            button.click();
+            await htmx.timeout(20);
+            mockWebSocketInstances[0].close(1000);
+
+            button.click();
+            await htmx.timeout(20);
+
+            assert.equal(mockWebSocketInstances.length, 2);
+            assert.equal(JSON.parse(mockWebSocketInstances[1].lastSent).action, 'save');
+        });
+
         it('uses custom reconnectCodes', async function() {
             htmx.config.ws = { reconnectCodes: [1000], reconnectDelay: 20 };
 

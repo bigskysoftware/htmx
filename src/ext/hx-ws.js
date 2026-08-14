@@ -541,7 +541,6 @@
 
         let specString = api.attributeValue(element, 'hx-trigger') || 'load';
         api.onTrigger(element, specString, () => {
-            if (element._htmx?.ws?.url) return;
             let connection = getOrCreateConnection(connectUrl, element);
             if (connection) {
                 element._htmx.ws.url = connection.url;
@@ -567,7 +566,7 @@
             if (element.matches('form') && evt.type === 'submit') {
                 evt.preventDefault();
             }
-            if (sendUrl && !element._htmx?.ws?.url) {
+            if (sendUrl) {
                 let connection = getOrCreateConnection(sendUrl, element);
                 if (connection) {
                     element._htmx.ws.url = connection.url;
