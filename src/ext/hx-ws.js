@@ -190,7 +190,7 @@
                 connection.receiving = connection.receiving
                     .then(() => handleMessage(element, connection, event))
                     .catch(error => {
-                        if (element.isConnected) api.triggerHtmxEvent(element, 'htmx:ws:error', { url, error });
+                        if (element.isConnected) api.triggerHtmxEvent(element, 'htmx:ws:error', {connection, error});
                     });
             }, opts);
 
@@ -214,11 +214,11 @@
             }, opts);
 
             connection.socket.addEventListener('error', (error) => {
-                if (element.isConnected) api.triggerHtmxEvent(element, 'htmx:ws:error', { url, error });
+                if (element.isConnected) api.triggerHtmxEvent(element, 'htmx:ws:error', {connection, error});
             }, opts);
 
         } catch (error) {
-            if (element.isConnected) api.triggerHtmxEvent(element, 'htmx:ws:error', { url, error });
+            if (element.isConnected) api.triggerHtmxEvent(element, 'htmx:ws:error', {connection, error});
         }
     }
     
@@ -278,7 +278,7 @@
             connection.socket.send(message.data);
             api.triggerHtmxEvent(element, 'htmx:ws:after:message:outgoing', {connection, message});
         } catch (error) {
-            api.triggerHtmxEvent(element, 'htmx:ws:error', { url: connection.url, error });
+            api.triggerHtmxEvent(element, 'htmx:ws:error', {connection, error});
         }
     }
 
@@ -356,7 +356,7 @@
 
                 message.data ??= JSON.stringify({ ...message.values, headers: message.headers });
                 if (!connections.has(connection)) {
-                    api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error: 'Connection closed' });
+                    api.triggerHtmxEvent(element, 'htmx:ws:error', {connection, error: 'Connection closed'});
                     return;
                 }
 
@@ -364,14 +364,14 @@
                     transmitMessage(connection, element, message);
                 } else if (connection.queue.length >= connection.config.maxOutgoingMessagesQueueSize) {
                     api.triggerHtmxEvent(element, 'htmx:ws:error', {
-                        url: normalizedUrl,
+                        connection,
                         error: 'Outgoing messages queue is full'
                     });
                 } else {
                     connection.queue.push({element, message});
                 }
             } catch (error) {
-                api.triggerHtmxEvent(element, 'htmx:ws:error', { url: normalizedUrl, error });
+                api.triggerHtmxEvent(element, 'htmx:ws:error', {connection, error});
             }
         });
         connection.sending = outgoingMessage.catch(() => {});

@@ -582,7 +582,7 @@
         },
         {
           "name": "ws:error",
-          "description": "Fires on WebSocket connection or send errors. `detail.url` and `detail.error` describe the failure.",
+          "description": "Fires on WebSocket connection or send errors. `detail.connection` identifies an existing connection; `detail.url` identifies a request with no connection. `detail.error` describes the failure.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwserror"
         },
         {

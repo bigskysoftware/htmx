@@ -270,15 +270,17 @@ describe('hx-ws WebSocket extension', function() {
             `);
             await htmx.timeout(50);
 
+            let first = document.getElementById('div1');
+            let second = document.getElementById('div2');
             let errors = [];
-            document.getElementById('div1').addEventListener('htmx:ws:error', () => errors.push('one'));
-            document.getElementById('div2').addEventListener('htmx:ws:error', () => errors.push('two'));
+            first.addEventListener('htmx:ws:error', event => errors.push(event.detail.connection));
+            second.addEventListener('htmx:ws:error', event => errors.push(event.detail.connection));
 
             mockWebSocketInstances[0].triggerEvent('error', { message: 'first error' });
             mockWebSocketInstances[1].triggerEvent('error', { message: 'second error' });
             await htmx.timeout(20);
 
-            assert.deepEqual(errors, ['one', 'two']);
+            assert.deepEqual(errors, [getConnection(first), getConnection(second)]);
         });
     });
 

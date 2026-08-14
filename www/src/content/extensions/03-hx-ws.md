@@ -655,7 +655,8 @@ document.addEventListener('htmx:ws:error', event => {
 })
 ```
 
-- `url`: the WebSocket URL, or `null`
+- `connection`: the connection that failed, when available
+- `url`: the requested URL when no connection exists
 - `error`: the error value
 
 ## Config
@@ -879,6 +880,8 @@ Event detail changed from `{message: {text, json, cancelled}}` to `{message: {da
 | `htmx:after:ws:request` | [`htmx:ws:after:message:outgoing`](#htmxwsaftermessageoutgoing) |
 | `htmx:before:ws:message` | [`htmx:ws:before:message:incoming`](#htmxwsbeforemessageincoming) |
 | `htmx:after:ws:message` | [`htmx:ws:after:message:incoming`](#htmxwsaftermessageincoming) |
+
+`htmx:ws:error` exposes `connection` when the failure belongs to one. It exposes `url` when no connection exists.
 
 #### Reconnection
 
