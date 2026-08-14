@@ -423,13 +423,12 @@
                 if (a == null || a?.nodeType) continue;
                 let ms = typeof a === 'number' ? a
                     : (typeof a === 'string' ? htmx.parseInterval(a) : undefined);
-                if (ms !== undefined && ms > 0) {
+                if (ms > 0) {
                     let id = setTimeout(() => fire(a), ms);
                     cleanups.push(() => clearTimeout(id));
                 } else if (typeof a === 'string') {
-                    let h = evt => fire(evt);
-                    target.addEventListener(a, h, { once: true });
-                    cleanups.push(() => target.removeEventListener(a, h));
+                    target.addEventListener(a, fire, { once: true });
+                    cleanups.push(() => target.removeEventListener(a, fire));
                 }
             }
         });
