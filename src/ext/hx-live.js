@@ -474,7 +474,7 @@
             : scope.nodeType ? scope : null;
         let sources = root
             ? [root, ...root.querySelectorAll(auto)]
-            : document.querySelectorAll(typeof scope === 'string' ? scope : scope?.from || auto);
+            : targets.length ? document.querySelectorAll(typeof scope === 'string' ? scope : scope?.from || auto) : [];
         let targetSet = new Set(targets);
         for (let s of sources) {
             if (targetSet.has(s)) continue;

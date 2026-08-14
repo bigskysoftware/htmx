@@ -1384,6 +1384,16 @@ describe('hx-live extension', function () {
         playground().children.length.should.equal(0);
     });
 
+    it('take does nothing when q() has no matches', function() {
+        playground().innerHTML = '<button id="owner" class="active" aria-selected="true"></button>';
+
+        htmx.live.q('.missing').take('.active').take('aria-selected');
+
+        let owner = playground().querySelector('#owner');
+        owner.classList.contains('active').should.equal(true);
+        owner.getAttribute('aria-selected').should.equal('true');
+    });
+
     it('state reads typed DOM values', function() {
         playground().innerHTML = '<input id="item" type="number" value="3" hidden aria-busy="false" aria-valuenow="4" aria-controls="a b">';
         let item = htmx.live.q('#item');
