@@ -602,7 +602,7 @@
         },
         {
           "name": "ws:after:message:incoming",
-          "description": "Fires after an incoming WebSocket message is processed. `detail.connection` identifies the connection. `detail.message.data` preserves the native data; `text()` and `json()` convert it.",
+          "description": "Fires after an incoming WebSocket message is processed. `detail.connection` identifies the connection. `detail.message.data` is the processed value; `text()` and `json()` convert it.",
           "doc-url": "https://four.htmx.org/extensions/hx-ws#htmxwsaftermessageincoming"
         },
         {

@@ -501,7 +501,7 @@ Incoming message events:
 event.detail = {
   connection,
   message: {
-    data,          // original string, Blob, or ArrayBuffer
+    data,          // current string, Blob, or ArrayBuffer
     text(),
     json()
   },
