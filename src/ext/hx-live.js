@@ -659,26 +659,7 @@
             let bodyAttr = bodyAttrs.find(n => elt.hasAttribute(n));
             if (bodyAttr) {
                 prop.liveRegistered = true;
-                ensureActive();
-                let code = elt.getAttribute(bodyAttr)
-                let debounce = getDebounce(elt);
-                let exec;
-                let run = async () => {
-                    if (!elt.isConnected) {
-                        fns.delete(run);
-                        return;
-                    }
-                    try {
-                        exec ||= api.executeJavaScript(elt, { debounce }, code, false, true, true);
-                        await exec();
-                    } catch (e) {
-                        if (e !== dbSym) console.error('hx-live expression failed', e, { elt });
-                    }
-                };
-                fns.add(run);
-                prop.liveRuns = prop.liveRuns || new Set();
-                prop.liveRuns.add(run);
-                run();
+                registerLive(elt, elt.getAttribute(bodyAttr));
             }
         }
         prop.liveAttrs ||= new Set();
@@ -686,7 +667,7 @@
             let name = extractBindingName(a.name);
             if (!name || prop.liveAttrs.has(name)) continue;
             prop.liveAttrs.add(name);
-            registerSimpleLive(elt, name, a.value);
+            registerLive(elt, a.value, name);
         }
     }
 
@@ -698,10 +679,11 @@
         for (node of nodes) processElement(node);
     }
 
-    function registerSimpleLive(elt, attrName, code) {
+    function registerLive(elt, code, attrName) {
         ensureActive();
+        let binding = attrName !== undefined;
         let debounce = getDebounce(elt);
-        let isAsync = /\bawait\b/.test(code);
+        let isAsync = !binding || /\bawait\b/.test(code);
         let exec;
         let run = async () => {
             if (!elt.isConnected) {
@@ -709,12 +691,14 @@
                 return;
             }
             try {
-                exec ||= api.executeJavaScript(elt, { debounce }, code, true, isAsync, true);
+                exec ||= api.executeJavaScript(elt, { debounce }, code, binding, isAsync, true);
                 let value = isAsync ? await exec() : exec();
-                writeAttrBinding(elt, attrName, value);
-                if (isAsync) observer?.takeRecords();
+                if (binding) {
+                    writeAttrBinding(elt, attrName, value);
+                    if (isAsync) observer?.takeRecords();
+                }
             } catch (e) {
-                if (e !== dbSym) console.error('hx-live expression failed', e, { elt, attr: attrName });
+                if (e !== dbSym) console.error('hx-live expression failed', e, binding ? { elt, attr: attrName } : { elt });
             }
         };
         fns.add(run);
