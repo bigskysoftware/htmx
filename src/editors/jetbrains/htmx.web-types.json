@@ -41,6 +41,11 @@
           "doc-url": "https://four.htmx.org/reference/attributes/hx-delete"
         },
         {
+          "name": "hx-query",
+          "description": "Issues a `QUERY` request to the specified URL and swaps the response into the DOM.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-query"
+        },
+        {
           "name": "hx-trigger",
           "description": "Controls which event specifications trigger an element's request. Supports filters and modifiers such as `delay`, `throttle`, `once`, `changed`, `from`, and `target`.",
           "doc-url": "https://four.htmx.org/reference/attributes/hx-trigger"
