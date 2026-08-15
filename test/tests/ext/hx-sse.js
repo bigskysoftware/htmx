@@ -1075,7 +1075,7 @@ describe('hx-sse SSE extension', function() {
 
         onDoc('htmx:sse:before:message', (e) => {
             if (e.detail.message.data === 'skip me') {
-                e.detail.message.cancelled = true;
+                e.detail.cancelled = true;
             }
         });
 
@@ -1089,6 +1089,80 @@ describe('hx-sse SSE extension', function() {
         stream.send('keep me');
         await waitForEvent('htmx:sse:after:message');
         assertTextContentIs('button', 'keep me', 'Non-cancelled message should swap');
+
+        stream.close();
+    });
+
+    it('htmx:sse:before:message waits for async work', async function() {
+        const stream = mockStreamResponse('/wait-msg');
+        createProcessedHTML('<button hx-get="/wait-msg" hx-swap="innerHTML">Original</button>');
+
+        onDoc('htmx:sse:before:message', event => {
+            event.detail.waitUntil(htmx.timeout(20).then(() => {
+                event.detail.message.data = 'Changed';
+            }));
+        });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.send('Ignored');
+        await htmx.timeout(5);
+        assertTextContentIs('button', 'Original');
+
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('button', 'Changed');
+
+        stream.close();
+    });
+
+    it('processes messages in arrival order while waiting', async function() {
+        const stream = mockStreamResponse('/ordered-msg');
+        createProcessedHTML('<button hx-get="/ordered-msg" hx-swap="innerHTML">Original</button>');
+        let messages = [];
+
+        onDoc('htmx:sse:before:message', event => {
+            if (event.detail.message.data === 'first') event.detail.waitUntil(htmx.timeout(20));
+        });
+        onDoc('htmx:sse:after:message', event => messages.push(event.detail.message.data));
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.send('first');
+        stream.send('second');
+        await htmx.timeout(40);
+
+        assert.deepEqual(messages, ['first', 'second']);
+        assertTextContentIs('button', 'second');
+
+        stream.close();
+    });
+
+    it('reconnects after waitUntil rejects', async function() {
+        const stream = mockStreamResponse('/rejected-work');
+        createProcessedHTML('<button hx-get="/rejected-work" hx-config="sse.reconnect:true sse.reconnectDelay:1ms" hx-swap="innerHTML">Original</button>');
+        let reject = true;
+
+        onDoc('htmx:sse:before:message', event => {
+            if (reject) {
+                reject = false;
+                event.detail.waitUntil(Promise.reject(new Error('message failed')));
+            }
+        });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        let error = waitForEvent('htmx:sse:error');
+        let reconnected = waitForEvent('htmx:sse:after:connection');
+        stream.send('Rejected');
+        assert.isNotNull(await error);
+        assert.isNotNull(await reconnected);
+
+        stream.send('Recovered');
+        assert.isNotNull(await waitForEvent('htmx:sse:after:message'));
+        assertTextContentIs('button', 'Recovered');
 
         stream.close();
     });
