@@ -21,6 +21,7 @@ Issue requests with these attributes. Each takes a URL:
 | `hx-put`    | PUT request    |
 | `hx-patch`  | PATCH request  |
 | `hx-delete` | DELETE request |
+| `hx-query`  | QUERY request  |
 
 ### Default Triggers
 

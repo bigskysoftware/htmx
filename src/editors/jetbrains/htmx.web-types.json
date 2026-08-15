@@ -247,7 +247,7 @@
         },
         {
           "name": "hx-method",
-          "description": "Specifies the HTTP method to use with `hx-action`. Valid methods are `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`.",
+          "description": "Specifies the HTTP method to use with `hx-action`. Valid methods are `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, and `QUERY`. A verb-specific attribute such as `hx-post` wins over `hx-method`.",
           "doc-url": "https://four.htmx.org/reference/attributes/hx-method"
         },
         {

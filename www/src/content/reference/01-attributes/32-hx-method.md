@@ -15,7 +15,7 @@ The `hx-method` attribute specifies the HTTP method (verb) to use for the reques
 
 ## Priority
 
-`hx-method` takes the highest priority in the [method resolution chain](/reference/attributes/hx-action#method-resolution). It overrides both `formmethod` on submitter buttons and the native `method` attribute on forms:
+`hx-method` overrides both `formmethod` on submitter buttons and the native `method` attribute on forms:
 
 ```html
 <!-- Always sends PUT regardless of native method or submitter -->
@@ -25,11 +25,18 @@ The `hx-method` attribute specifies the HTTP method (verb) to use for the reques
 </form>
 ```
 
+A shorthand attribute such as [`hx-post`](/reference/attributes/hx-post) sets the URL and the method together, so it wins over `hx-method`:
+
+```html
+<!-- Sends POST. The hx-method value is ignored. -->
+<button hx-post="/items" hx-method="put">Save</button>
+```
+
 When `hx-method` is omitted, htmx falls back to `formmethod`, then native `method`, then `GET`. See [`hx-action` Method Resolution](/reference/attributes/hx-action#method-resolution) for the full chain.
 
 ## Notes
 
-* Valid values: `get`, `post`, `put`, `patch`, `delete` (case-insensitive)
+* Valid values: `get`, `post`, `put`, `patch`, `delete`, `query` (case-insensitive)
 * If no method can be determined from any source, defaults to `GET`
 * The shorthand attributes [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc. combine URL and method into one attribute
 

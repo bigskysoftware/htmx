@@ -39,12 +39,17 @@ Unlike `hx-boost` (which always requests the same URL as the native `href`/`acti
 
 ## Method Resolution
 
-When `hx-action` is used without [`hx-method`](/reference/attributes/hx-method), htmx resolves the HTTP method using the same fallback chain browsers use:
+htmx resolves the HTTP method with this chain:
 
-1. [`hx-method`](/reference/attributes/hx-method) attribute on the element
-2. `formmethod` attribute on the submitter button
-3. Native `method` attribute on the form
-4. Defaults to `GET`
+1. A shorthand attribute on the element ([`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), [`hx-put`](/reference/attributes/hx-put), [`hx-patch`](/reference/attributes/hx-patch), [`hx-delete`](/reference/attributes/hx-delete), [`hx-query`](/reference/attributes/hx-query))
+2. [`hx-method`](/reference/attributes/hx-method) attribute on the element
+3. `formmethod` attribute on the submitter button
+4. Native `method` attribute on the form
+5. Defaults to `GET`
+
+A shorthand attribute sets the URL and the method together, so it wins over `hx-method`. `hx-action` supplies only the URL. If the element has `hx-action`, htmx does not read the shorthand attributes, and `hx-method` applies.
+
+The remaining steps are the same fallback chain browsers use.
 
 This means submitter buttons with `formmethod` work as expected:
 
