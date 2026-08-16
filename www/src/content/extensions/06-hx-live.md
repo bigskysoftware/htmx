@@ -99,7 +99,7 @@ When the next value depends on the current value:
 data.items = items => [...items, next]
 ```
 
-See [`data`](#data) for typed values, owner lookup, and functional assignments.
+See [`data`](#data) for typed values, closest lookup, and functional assignments.
 
 ### Run Async Code
 
@@ -356,20 +356,20 @@ q('.tab').trigger('select', { id: 1 })   // CustomEvent on each
 q('.list').insert('end', '<li>new</li>') // before / after / start / end
 ```
 
-### Ownership
+### Local and Closest State
 
-Bare `attr.*`, `aria.*`, and `class.*` use the current element. Bare `data.*` uses the nearest element carrying that `data-*` attribute.
+Bare `attr.*`, `aria.*`, and `class.*` use the current element. Bare `data.*` uses the closest element carrying that `data-*` attribute.
 
-`q(...)` makes every state bag local to the selected elements. Add `.closest` to use the nearest owner instead:
+`q(...)` makes every state bag local to the selected elements. Add `.closest` to use the closest match instead:
 
-| Current expression | Selected elements | Nearest owner |
+| Current expression | Selected elements | Closest match |
 |---|---|---|
 | `attr.hidden` | `q('.item').attr.hidden` | `q('.item').closest.attr.hidden` |
 | `data.count` | `q('.item').data.count` | `q('.item').closest.data.count` |
 | `aria.busy` | `q('.item').aria.busy` | `q('.item').closest.aria.busy` |
 | `class.active` | `q('.item').class.active` | `q('.item').closest.class.active` |
 
-A closest write uses the selected element when no owner exists. A closest delete does nothing when no owner exists. When several selected elements share an owner, hx-live updates it once.
+A closest write uses the selected element when no match exists. A closest delete does nothing when no match exists. When several selected elements share a match, hx-live updates it once.
 
 ### `attr`
 
@@ -483,7 +483,7 @@ Use the canonical form when the proxy itself is a value:
 use(attr.class)            // function argument
 ```
 
-`closest.class` supports `assign`, `add`, `remove`, `toggle`, `replace`, and `contains`. Aggregate list properties such as `value`, `length`, and iteration remain local because closest ownership resolves separately for each class.
+`closest.class` supports `assign`, `add`, `remove`, `toggle`, `replace`, and `contains`. Aggregate list properties such as `value`, `length`, and iteration remain local because each class can have a different closest match.
 
 Native members win on read. Use `class.contains('toggle')` to read a class whose name collides with a native member. Key writes still change membership, so `class.toggle = false` removes the class named `toggle`.
 
@@ -513,8 +513,8 @@ Read and write typed ARIA state on this element:
 </div>
 ```
 
-Use `closest.aria.*` when you explicitly want the nearest owner. A write with
-no owner adds the state to the current element:
+Use `closest.aria.*` when you explicitly want the closest match. A write with
+no match adds the state to the current element:
 
 ```js
 aria.busy                   // aria-busy on this element
@@ -543,7 +543,7 @@ Use `toggle()` and `take()` for transitions:
 </div>
 ```
 
-`toggle()` flips boolean ARIA between `"true"` and `"false"`. `take()` writes `"false"` on sibling owners, then `"true"` on this owner.
+`toggle()` flips boolean ARIA between `"true"` and `"false"`. `take()` writes `"false"` on the other elements, then `"true"` on this element.
 
 Each form uses the same value rules. You can use these values as booleans, numbers, and arrays:
 

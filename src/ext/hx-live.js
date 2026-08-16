@@ -69,9 +69,9 @@
         });
     }
 
-    let BOOLEAN_ATTRS = new Set('disabled required readonly open inert multiple autofocus novalidate default reversed loop muted controls autoplay playsinline formnovalidate async defer ismap typemustmatch allowfullscreen itemscope nomodule checked selected alpha headingreset'.split(' '));
-    let PROPERTY_BINDING_ATTRS = new Set(['checked','value','selected','hidden']);
-    let STRING_BOOLEAN_ATTRS = new Set(['contenteditable','draggable','spellcheck','writingsuggestions']);
+    let BOOLEAN_ATTRS = new Set('disabled required readonly open inert multiple autofocus novalidate default reversed loop muted controls autoplay playsinline formnovalidate async defer ismap typemustmatch allowfullscreen itemscope nomodule alpha headingreset'.split(' '));
+    let PROPERTY_BINDING_ATTRS = new Set('checked value selected hidden'.split(' '));
+    let STRING_BOOLEAN_ATTRS = new Set('contenteditable draggable spellcheck writingsuggestions'.split(' '));
     let NUMERIC_ATTRS = new Set('tabindex colspan rowspan maxlength minlength size span start rows cols width height min max step low high optimum'.split(' '));
 
     function normalizeAttrName(elt, name) {
@@ -88,7 +88,7 @@
         if (PROPERTY_BINDING_ATTRS.has(name)) return element[name];
         if (BOOLEAN_ATTRS.has(name) || name.startsWith('shadowroot') && name !== 'shadowrootmode' && name !== 'shadowrootslotassignment') return element.hasAttribute(name);
         let value = element.getAttribute(name);
-        if (STRING_BOOLEAN_ATTRS.has(name)) try { return JSON.parse(value.toLowerCase()); } catch {}
+        if (value != null && STRING_BOOLEAN_ATTRS.has(name)) try { return JSON.parse(value.toLowerCase()); } catch {}
         if (NUMERIC_ATTRS.has(name) && value?.trim() && isFinite(value)) return +value;
         return value;
     }
@@ -107,69 +107,69 @@
             applyPropertyBinding(element, name, value);
         } else if (BOOLEAN_ATTRS.has(name) || name.startsWith('shadowroot') && name !== 'shadowrootmode' && name !== 'shadowrootslotassignment') {
             element.toggleAttribute(name, !!value);
-        } else if (value === null || value === undefined) {
+        } else if (value == null) {
             element.removeAttribute(name);
         } else {
             element.setAttribute(name, String(value));
         }
     }
 
-    function eachTarget(elts, findOwner, fallback, fn) {
-        let targets = new Set();
-        for (let elt of elts) {
-            let target = findOwner(elt) || (fallback ? elt : null);
-            if (target) targets.add(target);
-        }
-        for (let target of targets) fn(target);
+    function writeTargets(elts, target) {
+        return target ? new Set(elts.map(target)) : elts;
     }
 
-    function makeAttrProxy(elts, cascades, scope, prefix = '') {
-        let attrName = prop => prefix + (prefix === 'data-' ? camelToKebab(prop) : prefix ? prop.toLowerCase() : prop);
-        let findOwner = (elt, name) => cascades
-            ? elt.closest('[' + CSS.escape(normalizeAttrName(elt, name)) + ']')
-            : prefix ? elt.hasAttribute(name) ? elt : null : elt;
-        return new Proxy({}, {
-            get: (_, prop) => {
-                if (!prefix && prop === 'class') return scope.class;
-                if (typeof prop !== 'string') return undefined;
-                let name = attrName(prop);
-                let owner = elts[0] && findOwner(elts[0], name);
-                return owner ? readAttr(owner, name) : undefined;
-            },
-            set: (_, prop, value) => {
-                if (typeof prop !== 'string') return false;
-                let name = attrName(prop);
-                eachTarget(elts, elt => findOwner(elt, name), true, elt => {
-                    writeAttr(elt, name, value);
-                });
-                return true;
-            },
-            deleteProperty: (_, prop) => {
-                if (typeof prop !== 'string') return false;
-                let name = attrName(prop);
-                eachTarget(elts, elt => findOwner(elt, name), false, elt => writeAttr(elt, name, undefined));
-                return true;
-            },
-            has: (_, prop) => {
-                if (prefix !== 'data-' || typeof prop !== 'string') return false;
-                return !!elts[0] && !!findOwner(elts[0], attrName(prop));
-            },
-            ownKeys: () => {
-                if (prefix !== 'data-') return [];
-                let result = [], seen = new Set();
-                for (let node = elts[0]; node; node = cascades ? node.parentElement : null) {
-                    for (let key of Object.keys(node.dataset)) if (key !== 'htmxPowered' && !seen.has(key)) {
-                        seen.add(key);
-                        result.push(key);
-                    }
+    function attrName(state, prop) {
+        let prefix = state.prefix;
+        return prefix + (prefix === 'data-' ? camelToKebab(prop) : prefix ? prop.toLowerCase() : prop);
+    }
+
+    function targetFor(state, elt, name) {
+        if (!state.cascades) return state.prefix ? elt.hasAttribute(name) && elt : elt;
+        while (elt && !elt.hasAttribute(name)) elt = elt.parentElement;
+        return elt;
+    }
+
+    function writeProxy(state, prop, value, remove) {
+        if (typeof prop !== 'string') return false;
+        let name = attrName(state, prop);
+        writeTargets(state.elts, state.cascades && (elt => targetFor(state, elt, name) || !remove && elt))
+            .forEach(elt => elt && writeAttr(elt, name, value));
+        return true;
+    }
+
+    let attrHandler = {
+        get: (state, prop) => {
+            if (!state.prefix && prop === 'class') return state.scope.class;
+            if (typeof prop !== 'string') return undefined;
+            let name = attrName(state, prop);
+            let target = state.elts[0] && targetFor(state, state.elts[0], name);
+            return target ? readAttr(target, name) : undefined;
+        },
+        set: (state, prop, value) => writeProxy(state, prop, value),
+        deleteProperty: (state, prop) => writeProxy(state, prop, undefined, true),
+        has: (state, prop) => state.prefix === 'data-' && typeof prop === 'string' &&
+            !!state.elts[0] && !!targetFor(state, state.elts[0], attrName(state, prop)),
+        ownKeys: state => {
+            if (state.prefix !== 'data-') return [];
+            let result = [], seen = new Set();
+            for (let node = state.elts[0]; node; node = state.cascades ? node.parentElement : null) {
+                for (let key of Object.keys(node.dataset)) if (key !== 'htmxPowered' && !seen.has(key)) {
+                    seen.add(key);
+                    result.push(key);
                 }
-                return result;
-            },
-            getOwnPropertyDescriptor: (_, prop) => {
-                if (prefix !== 'data-' || typeof prop !== 'string' || prop === 'htmxPowered') return;
-                if (elts[0] && findOwner(elts[0], attrName(prop))) return { enumerable: true, configurable: true };
             }
-        });
+            return result;
+        },
+        getOwnPropertyDescriptor: (state, prop) => {
+            if (state.prefix !== 'data-' || typeof prop !== 'string' || prop === 'htmxPowered') return;
+            if (state.elts[0] && targetFor(state, state.elts[0], attrName(state, prop))) {
+                return { enumerable: true, configurable: true };
+            }
+        }
+    };
+
+    function makeAttrProxy(elts, cascades, scope, prefix = '') {
+        return new Proxy({ elts, cascades, scope, prefix }, attrHandler);
     }
 
     function applyStyleBinding(elt, value) {
@@ -245,9 +245,10 @@
 
     function makeClassProxy(elts, cascades = false) {
         let first = elts[0];
-        let owner = (elt, name) => cascades ? elt.closest('.' + CSS.escape(name)) : elt;
-        let read = name => readClass(first && owner(first, name), name);
-        let write = (name, value) => eachTarget(elts, elt => owner(elt, name), true, elt => writeClass(elt, name, value));
+        let classTarget = (elt, name) => cascades ? elt.closest('.' + CSS.escape(name)) : elt;
+        let read = name => readClass(first && classTarget(first, name), name);
+        let write = (name, value) => writeTargets(elts, elt => classTarget(elt, name) || elt)
+            .forEach(elt => writeClass(elt, name, value));
         let methods = {
             assign(value) {
                 if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -318,6 +319,27 @@
             get attr() { return attr ||= makeAttrProxy(elts, cascades, scope); }
         };
         return scope;
+    }
+
+    function makeExpressionScope(elt) {
+        let local = makeStateScope([elt], false);
+        let closest = makeStateScope([elt], true);
+        return {
+            q: makeQ(elt),
+            forEvent: (...args) => forEvent(elt, ...args),
+            nextFrame: () => new Promise(r => requestAnimationFrame(r)),
+            trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
+            debounce: getDebounce(elt),
+            take: (name, scope) => applyTake([elt], name, scope),
+            toggle: (name, ...values) => applyToggle(elt, name, ...values),
+            attr: local.attr,
+            insert: (pos, html) => elt.insertAdjacentHTML(positions[pos], html),
+            matches: sel => elt.matches(sel),
+            style: elt.style,
+            data: closest.data,
+            aria: local.aria,
+            closest
+        };
     }
 
     function writeAria(elt, key, value) {
@@ -582,12 +604,11 @@
                 if (p === 'insert') return (pos, s) => { elts.forEach(e => e.insertAdjacentHTML(positions[pos], s)); return proxy; };
                 if (p === 'take') return (name, scope) => { applyTake(elts, name, scope); return proxy; };
                 if (p === 'toggle') return (name, ...values) => { elts.forEach(e => applyToggle(e, name, ...values)); return proxy; };
-                if (p === 'attr') return (local ||= makeStateScope(elts, false)).attr;
-                if (p === 'data') return (local ||= makeStateScope(elts, false)).data;
-                if (p === 'class') return (local ||= makeStateScope(elts, false)).class;
+                if (p === 'attr' || p === 'data' || p === 'class' || p === 'aria') {
+                    return (local ||= makeStateScope(elts, false))[p];
+                }
                 if (p === 'closest') return closest ||= makeStateScope(elts, true);
                 if (arrayMethods.includes(p)) return elts[p].bind(elts);
-                if (p === 'aria') return (local ||= makeStateScope(elts, false)).aria;
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));
@@ -766,24 +787,8 @@
             if (--swaps === 0 && fns.size > 0) schedule();
         },
         htmx_scope: (elt, detail) => {
-            let local = makeStateScope([elt], false);
-            let closest = makeStateScope([elt], true);
-            Object.assign(detail.scope, {
-                q: makeQ(elt),
-                forEvent: (...args) => forEvent(elt, ...args),
-                nextFrame: () => new Promise(r => requestAnimationFrame(r)),
-                trigger: (type, detail, bubbles) => htmx.trigger(elt, type, detail, bubbles),
-                debounce: getDebounce(elt),
-                take: (name, scope) => applyTake([elt], name, scope),
-                toggle: (name, ...values) => applyToggle(elt, name, ...values),
-                attr: local.attr,
-                insert: (pos, html) => elt.insertAdjacentHTML(positions[pos], html),
-                matches: (sel) => elt.matches(sel),
-                style: elt.style,
-                data: closest.data,
-                aria: local.aria,
-                closest
-            });
+            let prop = api.htmxProp(elt);
+            Object.assign(detail.scope, prop.liveScope ||= makeExpressionScope(elt));
             detail.code = rewriteClass(detail.code);
             if (htmx.config.live?.useDollar) detail.scope.$ = detail.scope.q;
         }

@@ -1344,7 +1344,7 @@ describe('hx-live extension', function () {
         item.parentElement.parentElement.hasAttribute('class').should.equal(false);
     });
 
-    it('closest writes to the current element when no owner exists', function() {
+    it('closest writes to the current element when no match exists', function() {
         playground().innerHTML = '<button id="item"></button>';
         let closest = htmx.live.q('#item').closest;
 
@@ -1358,7 +1358,7 @@ describe('hx-live extension', function () {
         );
     });
 
-    it('closest updates each shared owner once', function() {
+    it('closest updates each shared match once', function() {
         playground().innerHTML = `
             <section hidden data-count="1" aria-busy="false" class="active">
                 <button class="item"></button><button class="item"></button>
@@ -1641,13 +1641,13 @@ describe('hx-live extension', function () {
     });
 
     it('take does nothing when q() has no matches', function() {
-        playground().innerHTML = '<button id="owner" class="active" aria-selected="true"></button>';
+        playground().innerHTML = '<button id="item" class="active" aria-selected="true"></button>';
 
         htmx.live.q('.missing').take('.active').take('aria-selected');
 
-        let owner = playground().querySelector('#owner');
-        owner.classList.contains('active').should.equal(true);
-        owner.getAttribute('aria-selected').should.equal('true');
+        let item = playground().querySelector('#item');
+        item.classList.contains('active').should.equal(true);
+        item.getAttribute('aria-selected').should.equal('true');
     });
 
     it('state reads typed DOM values', function() {

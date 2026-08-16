@@ -291,7 +291,7 @@ export namespace HxLive {
     readonly aria: AriaProxy;
     /** Class state and `classList` methods on the selected elements themselves. */
     readonly class: ClassProxy & DOMTokenList;
-    /** Typed state on the nearest owner of each selected element. */
+    /** Typed state on the closest match for each selected element. */
     readonly closest: Scope;
     /**
      * Move a class or attribute from sibling/scoped elements to all matched elements.
