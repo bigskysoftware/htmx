@@ -1,12 +1,13 @@
 // @ts-check
 import {defineConfig} from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
-import rehypeSlug from "rehype-slug";
+import {rehypeHeadingIds} from "@astrojs/markdown-remark";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeExternalLinks from "rehype-external-links";
 import {rehypeSections} from "./src/lib/rehype-sections.js";
 import {remarkCdnVersion} from "./src/lib/remark-cdn-version.js";
-import {codeBlockTransformer} from "./src/lib/shiki-transformers.js";
+import remarkCodeTabs from "./src/lib/remark-code-tabs.js";
+import {codeBlockTransformer, multipartHttpTransformer} from "./src/lib/shiki-transformers.js";
 import {readdirSync, readFileSync} from "node:fs";
 
 // Single source of truth for the version shown in CDN/npm snippets.
@@ -86,10 +87,11 @@ export default defineConfig({
     markdown: {
         remarkPlugins: [
             [remarkCdnVersion, {version}],
+            remarkCodeTabs,
         ],
         rehypePlugins: [
-            rehypeSlug,
-            [rehypeSections, {split: 'h2'}], // /docs sticky h2s need containing blocks to unstick naturally
+            // Assign and collect heading ids before the plugins below run.
+            rehypeHeadingIds,
             [
                 rehypeAutolinkHeadings,
                 {
@@ -97,6 +99,7 @@ export default defineConfig({
                     test: (node) => node.tagName !== 'h1',
                 },
             ],
+            [rehypeSections, {split: 'h2'}], // sticky h2s need containing blocks to unstick naturally
             [
                 rehypeExternalLinks,
                 {
@@ -107,7 +110,7 @@ export default defineConfig({
         ],
         shikiConfig: {
             theme: "css-variables",
-            transformers: [codeBlockTransformer]
+            transformers: [multipartHttpTransformer, codeBlockTransformer]
         },
     },
 
@@ -215,7 +218,8 @@ export default defineConfig({
         "/extensions/preload": "/extensions/hx-preload",
         "/extensions/browser-indicator": "/extensions/hx-browser-indicator",
         "/extensions/alpine-compat": "/extensions/hx-alpine-compat",
-        "/extensions/optimistic": "/extensions/hx-optimistic",
+        "/extensions/optimistic": "/extensions/hx-pending",
+        "/extensions/hx-optimistic": "/extensions/hx-pending",
         "/extensions/upsert": "/extensions/hx-upsert",
         "/extensions/building": "/docs#extension-system",
 
@@ -228,7 +232,7 @@ export default defineConfig({
         "/docs/extensions/ws": "/extensions/hx-ws",
         "/docs/extensions/head-support": "/extensions/hx-head",
         "/docs/extensions/preload": "/extensions/hx-preload",
-        "/docs/extensions/optimistic": "/extensions/hx-optimistic",
+        "/docs/extensions/optimistic": "/extensions/hx-pending",
         "/docs/extensions/download": "/extensions/hx-download",
         "/docs/extensions/upsert": "/extensions/hx-upsert",
         "/docs/extensions/targets": "/extensions/hx-targets",

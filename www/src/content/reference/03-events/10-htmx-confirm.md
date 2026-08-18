@@ -1,13 +1,13 @@
 ---
 title: "htmx:confirm"
-description: "Show confirmation dialog before request"
+description: "Fires before handling `hx-confirm`"
 ---
 
-The `htmx:confirm` event is fired on every request trigger, allowing custom confirmation dialogs or request cancellation logic. Elements with [`hx-confirm`](/reference/attributes/hx-confirm) use this event to show a confirmation dialog, but the event fires even on elements without `hx-confirm` — it just isn't cancelled by default.
+The `htmx:confirm` event fires only when an element has an [`hx-confirm`](/reference/attributes/hx-confirm) attribute. It allows you to replace the default `window.confirm()` dialog with a custom confirmation UI.
 
 ## When It Fires
 
-Before a request is sent, on every triggered request.
+After the request context is built, before the request is sent, when the triggering element has `hx-confirm` set.
 
 ## Event Detail
 
@@ -21,13 +21,10 @@ If you call `evt.preventDefault()`, you **must** call either `issueRequest()` or
 
 ```javascript
 htmx.on('htmx:confirm', (evt) => {
-  // Ignore elements that don't use hx-confirm
-  if (!evt.detail.target.hasAttribute('hx-confirm')) return;
-
-  evt.preventDefault(); // Prevent default confirm dialog
+  evt.preventDefault(); // Prevent default window.confirm() dialog
 
   // Show custom modal
-  showCustomModal(evt.detail.ctx.confirmMessage).then((confirmed) => {
+  showCustomModal(evt.detail.ctx.confirm).then((confirmed) => {
     if (confirmed) {
       evt.detail.issueRequest(); // User confirmed — proceed
     } else {

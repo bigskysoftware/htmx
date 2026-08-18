@@ -83,6 +83,19 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         assert.isFalse(span.classList.contains('htmx-request'))
     })
 
+    it('returns empty array and adds no class when elt is document.body', function () {
+        let span = createProcessedHTML('<span class="htmx-indicator"></span>')
+        document.body.appendChild(span)
+
+        let indicators = htmx.__showIndicators(document.body)
+
+        assert.deepEqual(indicators, [])
+        assert.isFalse(document.body.classList.contains('htmx-request'))
+        assert.isFalse(span.classList.contains('htmx-request'))
+
+        span.remove()
+    })
+
     it('includes element itself in indicators', function () {
         let div = createProcessedHTML('<div hx-indicator=".indicator" class="indicator"></div>')
 
@@ -185,6 +198,29 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         assert.isTrue(button.classList.contains('htmx-request'));
         assert.isTrue(container.classList.contains('htmx-request'));
         assert.equal(indicators.length, 2);
+    })
+
+    it('keeps indicators visible when HX-Redirect is received', async function() {
+        let originalLocation = htmx._loc;
+        let redirectUrl = null;
+        htmx._loc = {
+            get href() { return window.location.href; },
+            set href(val) { redirectUrl = val; }
+        };
+        try {
+            mockResponse('GET', '/test', '', { headers: { 'HX-Redirect': '/other-page' } });
+            createProcessedHTML(
+                '<div id="indicator" class="htmx-indicator">Loading...</div>' +
+                '<button id="btn" hx-get="/test" hx-indicator="#indicator">Click</button>'
+            );
+            find('#btn').click();
+            await forRequest();
+            await htmx.timeout(10);
+            assert.equal(redirectUrl, '/other-page');
+            assert.isTrue(find('#indicator').classList.contains('htmx-request'));
+        } finally {
+            htmx._loc = originalLocation;
+        }
     })
 
 });

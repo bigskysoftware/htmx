@@ -1,6 +1,6 @@
 ---
 title: "htmx:before:viewTransition"
-description: "Before View Transition API starts"
+description: "Fires before view transition starts"
 ---
 
 The `htmx:before:viewTransition` event fires before a View Transition starts (if browser supports View Transitions API and `htmx.config.transitions` is
@@ -10,9 +10,12 @@ The `htmx:before:viewTransition` event fires before a View Transition starts (if
 
 Before the swap operation begins its view transition animation.
 
+Fires on the element that triggered the swap, or on `document` when there is none.
+
 ## Event Detail
 
-- `task` - Transition callback function
+- `task` - Transition callback function. Replace it to wrap the transition.
+- `ctx` - The request context driving the swap
 
 ## Example
 
@@ -23,4 +26,15 @@ htmx.on('htmx:before:viewTransition', (evt) => {
 });
 ```
 
-Cancel this event to skip the view transition for this swap.
+Replace `detail.task` to run your own work around the transition. The
+replacement is awaited in place of the original:
+
+```javascript
+htmx.on('htmx:before:viewTransition', (evt) => {
+  let task = evt.detail.task;
+  evt.detail.task = async () => {
+    await prepare(evt.detail.ctx);
+    await task();
+  };
+});
+```

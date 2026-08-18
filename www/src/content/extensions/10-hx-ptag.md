@@ -1,6 +1,6 @@
 ---
 title: "hx-ptag"
-description: "Skip swaps when polled content hasn't changed"
+description: 'Skip unchanged polls with `HX-PTag: "v42"`'
 category: "Performance"
 icon: "icon-[mdi--tag-outline]"
 keywords: ["ptag", "polling", "etag", "conditional", "caching"]

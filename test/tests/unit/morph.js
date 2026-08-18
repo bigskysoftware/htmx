@@ -661,7 +661,7 @@ describe('Morph Swap Styles Tests', function() {
                 'new form root must be processed so hx-post works');
 
             mockResponse('POST', '/submit', 'Submitted!');
-            newForm.dispatchEvent(new Event('submit', {bubbles: true}));
+            newForm.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
             await waitForEvent('htmx:after:swap', 100);
 
             assert.equal(container.querySelector('#result') ??
@@ -987,6 +987,67 @@ describe('Morph Swap Styles Tests', function() {
 
             assert.equal(child.getAttribute('data-keep'), 'old', 'exact name should be preserved');
             assert.equal(child.getAttribute('data-kee'), 'new', 'shorter non-prefixed name should be morphed');
+        });
+    });
+
+    describe('future matches', function() {
+        // Gap #21: __matchesUpcomingSibling returns true when old element matches future sibling
+        it('preserves element that matches upcoming identical sibling during morph reorder', async function() {
+            mockResponse('GET', '/test', '<div class="b">Y</div><div class="a">X</div><div class="a">X</div>');
+            const div = createProcessedHTML('<div id="target"><div class="a">X</div><div class="b">Y</div><div class="a">X</div></div>');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            assert.equal(div.children.length, 3);
+            assert.equal(div.children[0].className, 'b');
+            assert.equal(div.children[1].className, 'a');
+            assert.equal(div.children[2].className, 'a');
+        });
+    });
+
+    describe('pantry move', function() {
+        // Gap #22: ID element moves between DOM branches via pantry
+        it('handles deeply nested ID that moves to different branch', async function() {
+            mockResponse('GET', '/test', '<div id="branch1"></div><div id="branch2"><div id="deep">Deep moved</div></div>');
+            const div = createProcessedHTML('<div id="target"><div id="branch1"><div id="deep">Deep original</div></div><div id="branch2"></div></div>');
+            const deep = div.querySelector('#deep');
+            const branch1 = div.querySelector('#branch1');
+            const branch2 = div.querySelector('#branch2');
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            assert.equal(div.querySelector('#deep'), deep);
+            assert.equal(deep.textContent, 'Deep moved');
+            assert.equal(deep.parentElement, branch2);
+            assert.equal(branch1.children.length, 0);
+        });
+    });
+
+    describe('moveBefore fallback', function() {
+        // Gap #23: moveBefore throws, falls back to insertBefore
+        it('falls back to insertBefore when moveBefore throws', async function() {
+            let originalMoveBefore = Element.prototype.moveBefore;
+            Element.prototype.moveBefore = function() {
+                throw new Error('moveBefore not supported');
+            };
+
+            try {
+                mockResponse('GET', '/morph-test', '<div id="container"><div id="item2">Item 2</div><div id="item1">Item 1</div></div>');
+                createProcessedHTML('<div id="container" hx-get="/morph-test" hx-swap="outerMorph" hx-trigger="click"><div id="item1">Item 1</div><div id="item2">Item 2</div></div>');
+
+                find('#container').click();
+                await forRequest();
+
+                let container = find('#container');
+                assert.isNotNull(container);
+                assert.equal(container.children.length, 2);
+            } finally {
+                if (originalMoveBefore) {
+                    Element.prototype.moveBefore = originalMoveBefore;
+                } else {
+                    delete Element.prototype.moveBefore;
+                }
+            }
         });
     });
 

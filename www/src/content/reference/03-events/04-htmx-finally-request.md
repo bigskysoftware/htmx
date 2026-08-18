@@ -1,13 +1,13 @@
 ---
 title: "htmx:finally:request"
-description: "At the end of request lifecycle"
+description: "Fires after lifecycle ends, including failures"
 ---
 
-The `htmx:finally:request` event fires at the very end of the request cycle, whether successful or failed.
+The `htmx:finally:request` event fires when request completes, fails, or is cancelled.
 
 ## When It Fires
 
-After all request processing completes, similar to a `finally` block in try/catch.
+After request processing ends. It does not fire if processing stops before the request begins issuing, such as after validation failure or cancellation of `htmx:config:request`.
 
 ## Event Detail
 
@@ -22,4 +22,4 @@ htmx.on('htmx:finally:request', (evt) => {
 });
 ```
 
-Useful for cleanup operations that should always run regardless of success or failure.
+Useful for cleanup operations started after the request begins issuing.

@@ -1,6 +1,6 @@
 ---
 title: "hx-preload"
-description: "Preload content on hover for instant page loads"
+description: "Preload on hover with `hx-preload='mouseover'`"
 category: "Performance"
 icon: "icon-[mdi--rocket-launch-outline]"
 keywords: ["preload", "prefetch", "performance", "hover", "mousedown"]
@@ -34,7 +34,7 @@ When the preload extension is loaded, all [`hx-boost`](/reference/attributes/hx-
 
 ```html
 <!-- these are all automatically preloaded when the preload extension is loaded -->
-<nav hx-boost="true">
+<nav hx-boost:inherited="true">
     <a href="/page1">Page 1</a>
     <a href="/page2">Page 2</a>
 </nav>

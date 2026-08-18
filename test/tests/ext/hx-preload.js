@@ -132,11 +132,35 @@ describe('hx-preload attribute', function() {
     })
 
     it('builds URL with form params', async function () {
-        mockResponse('GET', '/test?name=test', 'Response')
+        mockResponse('GET', /\/test\?name=test/, 'Response')
         let form = createProcessedHTML('<form><input name="name" value="test"><button hx-get="/test" hx-preload="mouseenter">Click</button></form>');
         let btn = form.querySelector('button')
         btn.dispatchEvent(new Event('mouseenter'))
         await htmx.timeout(20)
-        assert.equal(btn._htmx.preload.action, '/test?name=test')
+        assert.isTrue(btn._htmx.preload.action.endsWith('/test?name=test'))
+    })
+
+    it('reuses preload with relative URL', async function () {
+        let fetchCount = 0;
+        mockResponse('GET', 'test', () => { fetchCount++; return 'Response'; })
+        let btn = createProcessedHTML('<button hx-get="test" hx-preload="mouseenter">Click</button>');
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(20)
+        assert.equal(fetchCount, 1, 'preload should fetch')
+        btn.click()
+        await htmx.timeout(20)
+        assert.equal(fetchCount, 1, 'click should reuse preload, not fetch again')
+    })
+
+    it('reuses preload with URL containing fragment', async function () {
+        let fetchCount = 0;
+        mockResponse('GET', '/test', () => { fetchCount++; return 'Response'; })
+        let btn = createProcessedHTML('<button hx-get="/test#section" hx-preload="mouseenter">Click</button>');
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(20)
+        assert.equal(fetchCount, 1, 'preload should fetch')
+        btn.click()
+        await htmx.timeout(20)
+        assert.equal(fetchCount, 1, 'click should reuse preload, not fetch again')
     })
 })

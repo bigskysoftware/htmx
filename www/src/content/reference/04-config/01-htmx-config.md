@@ -1,19 +1,27 @@
 ---
 title: "htmx.config"
-description: "Configure htmx behavior globally"
+description: "Configures htmx behavior globally"
 ---
 
 The `htmx.config` object holds the current htmx configuration. You can modify it in JavaScript or set values using a `<meta>` tag.
 
-## Configuration via Meta Tag
+## Configure via Meta Tag
 
-Set config values in your HTML `<head>`:
+Set config values with [HCON](/docs#hcon):
 
 ```html
-<meta name="htmx-config" content='{"defaultSwap":"outerHTML","defaultTimeout":5000}'>
+<meta name="htmx-config"
+      content="defaultSwap:outerHTML defaultTimeout:5000">
 ```
 
-## Configuration via JavaScript
+Or JSON:
+
+```html
+<meta name="htmx-config"
+      content='{"defaultSwap":"outerHTML","defaultTimeout":5000}'>
+```
+
+## Configure via JavaScript
 
 Modify config values directly:
 
@@ -24,20 +32,32 @@ htmx.config.defaultTimeout = 5000;
 
 ## Available Options
 
-- `version` - htmx version (read-only)
-- `logAll` - Log all htmx events (default: `false`)
-- `prefix` - Secondary attribute prefix recognised alongside `hx-` (default: `"data-hx-"`)
-- `transitions` - Enable view transitions (default: `false`)
-- `history` - Enable history support (default: `true`)
-- `mode` - Request mode for fetch (default: `"same-origin"`)
-- `defaultSwap` - Default swap style (default: `"innerHTML"`)
-- `indicatorClass` - CSS class for indicators (default: `"htmx-indicator"`)
-- `requestClass` - CSS class during requests (default: `"htmx-request"`)
-- `includeIndicatorCSS` - Include default indicator CSS (default: `true`)
-- `defaultTimeout` - Request timeout in ms (default: `60000`)
-- `extensions` - Extensions to load (default: `""`)
-- `morphIgnore` - Attributes to ignore during morphing (default: `["data-htmx-powered"]`)
-- `morphSkip` - CSS selector for elements to skip morphing entirely (default: `'[hx-morph-skip]'`)
-- `morphSkipChildren` - CSS selector for elements whose children won't be morphed (default: `'[hx-morph-skip-children]'`)
-- `noSwap` - HTTP status codes that skip swap (default: `[204, 304]`)
-- `implicitInheritance` - Enable implicit attribute inheritance (default: `false`)
+| Option | Default | Description |
+|--------|---------|-------------|
+| [`logAll`](/reference/config/htmx-config-logAll) | `false` | Log all htmx events |
+| [`prefix`](/reference/config/htmx-config-prefix) | `"data-hx-"` | Secondary attribute prefix recognized alongside `hx-` |
+| [`metaCharacter`](/reference/config/htmx-config-metaCharacter) | `undefined` | Character used instead of `:` in attribute names |
+| [`transitions`](/reference/config/htmx-config-transitions) | `false` | Enable view transitions |
+| [`history`](/reference/config/htmx-config-history) | `true` | Enable history support |
+| [`mode`](/reference/config/htmx-config-mode) | `"same-origin"` | Request mode for `fetch()` |
+| [`defaultSwap`](/reference/config/htmx-config-defaultSwap) | `"innerHTML"` | Default swap style |
+| [`allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB) | `false` | Allow empty main swap after OOB extraction |
+| [`defaultFocusScroll`](/reference/config/htmx-config-defaultFocusScroll) | `false` | Scroll to a focused element after swapping |
+| [`defaultSettleDelay`](/reference/config/htmx-config-defaultSettleDelay) | `1` | Delay before settling in milliseconds |
+| [`indicatorClass`](/reference/config/htmx-config-indicatorClass) | `"htmx-indicator"` | CSS class for indicators |
+| [`requestClass`](/reference/config/htmx-config-requestClass) | `"htmx-request"` | CSS class during requests |
+| [`includeIndicatorCSS`](/reference/config/htmx-config-includeIndicatorCSS) | `true` | Include default indicator CSS |
+| [`defaultTimeout`](/reference/config/htmx-config-defaultTimeout) | `60000` | Request timeout in milliseconds |
+| [`extensions`](/reference/config/htmx-config-extensions) | `""` | Extensions to load |
+| [`morphIgnore`](/reference/config/htmx-config-morphIgnore) | `["data-htmx-powered"]` | Attributes to ignore during morphing |
+| [`morphSkip`](/reference/config/htmx-config-morphSkip) | `"[hx-morph-skip]"` | Elements to skip while morphing |
+| [`morphSkipChildren`](/reference/config/htmx-config-morphSkipChildren) | `"[hx-morph-skip-children]"` | Elements whose children are not morphed |
+| [`morphScanLimit`](/reference/config/htmx-config-morphScanLimit) | `10` | Siblings scanned while matching elements |
+| [`noSwap`](/reference/config/htmx-config-noSwap) | `[204, 304]` | HTTP status codes that skip swaps |
+| [`implicitInheritance`](/reference/config/htmx-config-implicitInheritance) | `false` | Enable implicit attribute inheritance |
+| [`inlineScriptNonce`](/reference/config/htmx-config-inlineScriptNonce) | `undefined` | Nonce added to inline scripts |
+
+## See Also
+
+- [HCON](/docs#hcon)
+- [`hx-config`](/reference/attributes/hx-config)

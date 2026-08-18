@@ -49,6 +49,21 @@ describe('hx-history-cache extension', function () {
     // saveCurrentPage / basic read-back
     // -------------------------------------------------------------------------
 
+    it('does not cache a page when history is disabled', async function () {
+        let originalHistory = htmx.config.history;
+        htmx.config.history = false;
+        mockResponse('GET', '/page2', '<p>page 2</p>');
+        let button = createProcessedHTML('<button hx-get="/page2" hx-push-url="/page2">go</button>');
+
+        try {
+            button.click();
+            await forRequest();
+            assert.deepEqual(readCache(), []);
+        } finally {
+            htmx.config.history = originalHistory;
+        }
+    });
+
     it('saves current page on htmx:before:history:update', async function () {
         let savedDetail = null;
         document.addEventListener('htmx:history:cache:after:save', e => { savedDetail = e.detail; }, { once: true });
@@ -267,7 +282,7 @@ describe('hx-history-cache extension', function () {
 
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
-            htmx.__restoreHistory(cachedPath);
+            htmx.__restoreHistory(history.state, cachedPath);
         });
 
         assert.isFalse(serverFetched);
@@ -275,7 +290,6 @@ describe('hx-history-cache extension', function () {
     });
 
     it('cache:hit cancellation falls through to server fetch', async function () {
-        let cachedPath = location.pathname + location.search;
         createProcessedHTML(`
             <div hx-history-elt><p>cached</p></div>
             <button hx-get="/page2" hx-push-url="/page2">go</button>
@@ -288,14 +302,14 @@ describe('hx-history-cache extension', function () {
 
         let index = JSON.parse(sessionStorage.getItem('htmx-history-index') || '[]');
         let htmxId = index[index.length - 1];
-        history.replaceState({ htmx: true, htmxId }, '', cachedPath);
+        history.replaceState({ htmx: true, htmxId }, '', '/page1');
         document.addEventListener('htmx:history:cache:hit', e => e.preventDefault(), { once: true });
         document.addEventListener('htmx:before:swap', e => e.preventDefault(), { once: true });
 
         let serverFetched = false;
-        mockResponse('GET', cachedPath, () => { serverFetched = true; return '<p>from server</p>'; });
+        mockResponse('GET', '/page1', () => { serverFetched = true; return '<p>from server</p>'; });
 
-        htmx.__restoreHistory(cachedPath);
+        htmx.__restoreHistory(history.state, '/page1');
         await forRequest();
 
         assert.isTrue(serverFetched);
@@ -324,7 +338,7 @@ describe('hx-history-cache extension', function () {
 
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
-            htmx.__restoreHistory(cachedPath);
+            htmx.__restoreHistory(history.state, cachedPath);
         });
 
         assert.include(historyElt.innerHTML, 'mutated');
@@ -350,7 +364,7 @@ describe('hx-history-cache extension', function () {
 
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
-            htmx.__restoreHistory(cachedPath);
+            htmx.__restoreHistory(history.state, cachedPath);
         });
 
         assert.equal(document.title, 'My Cached Title');
@@ -365,8 +379,9 @@ describe('hx-history-cache extension', function () {
         document.addEventListener('htmx:history:cache:miss', e => { missDetail = e.detail; }, { once: true });
         document.addEventListener('htmx:before:swap', e => e.preventDefault(), { once: true });
 
+        history.replaceState({ htmx: true }, '', location.href);
         mockResponse('GET', '/missing', '<p>from server</p>');
-        htmx.__restoreHistory('/missing');
+        htmx.__restoreHistory(history.state, '/missing');
         await forRequest();
 
         assert.isNotNull(missDetail);
@@ -383,8 +398,9 @@ describe('hx-history-cache extension', function () {
         }, { once: true });
         document.addEventListener('htmx:before:swap', e => e.preventDefault(), { once: true });
 
+        history.replaceState({ htmx: true }, '', location.href);
         mockResponse('GET', '/missing-reload', '<p>from server</p>');
-        htmx.__restoreHistory('/missing-reload');
+        htmx.__restoreHistory(history.state, '/missing-reload');
         await forRequest();
 
         assert.isTrue(reloadWouldHaveFired);
@@ -421,7 +437,7 @@ describe('hx-history-cache extension', function () {
 
             await new Promise(resolve => {
                 document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
-                htmx.__restoreHistory(cachedPath);
+                htmx.__restoreHistory(history.state, cachedPath);
             });
 
             assert.include(historyElt.innerHTML, 'tier 2 content');
@@ -449,7 +465,7 @@ describe('hx-history-cache extension', function () {
 
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
-            htmx.__restoreHistory(cachedPath);
+            htmx.__restoreHistory(history.state, cachedPath);
         });
 
         assert.include(historyElt.innerHTML, 'swap style test');
@@ -477,7 +493,7 @@ describe('hx-history-cache extension', function () {
         history.replaceState({ htmx: true, htmxId }, '', cachedPath);
         await new Promise(resolve => {
             document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
-            htmx.__restoreHistory(cachedPath);
+            htmx.__restoreHistory(history.state, cachedPath);
         });
         return historyElt;
     }
@@ -589,6 +605,48 @@ describe('hx-history-cache extension', function () {
             div.scrollTop = 80;
         });
         assert.equal(elt.querySelector('div').scrollTop, 80);
+    });
+
+    // -------------------------------------------------------------------------
+    // anchor-jump entry stamping
+    // -------------------------------------------------------------------------
+
+    it('stamps and saves an anchor-jump entry before pushing a new URL', async function () {
+        let cachedPath = location.pathname + location.search;
+        createProcessedHTML(`
+            <div hx-history-elt><p>anchor page</p></div>
+            <button hx-get="/page2" hx-push-url="/page2">go</button>
+        `);
+        historyElt = playground().querySelector('[hx-history-elt]');
+
+        location.hash = '#section';
+        assert.isNull(history.state);
+
+        mockResponse('GET', '/page2', '<p>page 2</p>');
+        playground().querySelector('button').click();
+        await forRequest();
+
+        let index = JSON.parse(sessionStorage.getItem('htmx-history-index') || '[]');
+
+        // the anchor-jump entry must get its own htmxId stamped and saved.
+        // the original entry is never saved (nothing navigated away from it via htmx),
+        // so the index has exactly 1 entry belonging to the anchor-jump entry.
+        assert.equal(index.length, 1, 'expected exactly one cache entry for the anchor-jump entry');
+
+        let anchorHtmxId = index[0];
+        history.replaceState({ htmx: true, htmxId: anchorHtmxId }, '', cachedPath + '#section');
+        historyElt.innerHTML = '<p>current page</p>';
+
+        let serverFetched = false;
+        mockResponse('GET', cachedPath, () => { serverFetched = true; return '<p>server</p>'; });
+
+        await new Promise(resolve => {
+            document.addEventListener('htmx:history:cache:after:restore', resolve, { once: true });
+            htmx.__restoreHistory(history.state, cachedPath);
+        });
+
+        assert.isFalse(serverFetched, 'should have served from cache, not server');
+        assert.include(historyElt.innerHTML, 'anchor page');
     });
 
     // -------------------------------------------------------------------------

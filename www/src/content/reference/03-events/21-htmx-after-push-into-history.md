@@ -1,6 +1,6 @@
 ---
 title: "htmx:after:history:push"
-description: "After a push state action"
+description: "Fires after history push"
 ---
 
 The `htmx:after:history:push` event fires specifically after a `history.pushState()` operation (creates new history entry).

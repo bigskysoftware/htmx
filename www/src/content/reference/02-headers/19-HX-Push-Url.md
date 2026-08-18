@@ -1,9 +1,11 @@
 ---
 title: "HX-Push-Url"
-description: "Push a URL into the browser history stack"
+description: "Pushes URL into browser history stack"
 ---
 
-The `HX-Push-Url` response header pushes a new URL into the browser location history. This creates a new history entry, allowing navigation with the browser's back and forward buttons.
+The `HX-Push-Url` response header pushes a URL into browser history.
+
+It creates a new entry for back and forward navigation.
 
 If present, this header overrides any behavior defined with attributes.
 

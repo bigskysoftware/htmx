@@ -51,8 +51,8 @@ const isSubfolderIndexPage = !!subfolder;
 const isHomePage = isCollectionRootPage && collection === 'home';
 const page = isCollectionRootPage ? folder! : isSubfolderIndexPage ? subfolder! : file;
 
-const {Content} = await render(page);
-const {title, description, keywords} = page.frontmatter;
+const {Content, headings: pageHeadings} = await render(page);
+const {title, description, keywords, icon} = page.frontmatter;
 
 // Display flags
 const isReference = collection === 'reference';
@@ -74,13 +74,9 @@ const includeMockServer = file?.frontmatter?.includeMockServer === true;
 const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
 const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && collection === 'about';
 
-let headings: any[] = [];
+let headings: any[] = isHomePage ? [] : pageHeadings;
 let sidebarFolder = folder!;
-if (file) {
-    headings = (await render(file)).headings;
-} else if (isReferenceIndex) {
-    headings = folder!.folders.map(sub => ({ depth: 2, slug: sub.slug, text: sub.frontmatter.title }));
-} else if (isDocsRoot) {
+if (isDocsRoot) {
     ({headings, sidebar: sidebarFolder} = await buildDocsSidebar(folder));
 }
 
@@ -112,7 +108,7 @@ const editPageUrl = `https://github.com/bigskysoftware/htmx/edit/four-dev/www/sr
                 <div class:list={["pt-6 sm:pt-8 lg:pt-12 flex-1 w-full relative starting:opacity-0 transition", useWideLayout ? 'max-w-4xl' : 'max-w-prose']}>
                     <Breadcrumbs breadcrumbs={page.breadcrumbs} />
 
-                    {includeHeader && <PageHeader {title} {description} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
+                    {includeHeader && <PageHeader {title} {description} {icon} file={file ?? (isDocsRoot ? folder : undefined)} {collection} />}
 
                     <article class:list={["prose prose-htmx prose-sm sm:prose-base dark:prose-invert max-w-none", (isDocsRoot || isReferenceIndex || isEssaysIndex || isPatternsIndex || isExtensionsIndex) && "sticky-headers"]}>
                         {includeMockServer && <script is:inline set:html={mockServerScript}></script>}
@@ -139,7 +135,7 @@ const editPageUrl = `https://github.com/bigskysoftware/htmx/edit/four-dev/www/sr
 
                 {includeTableOfContents && (
                         <aside class:list={[
-                            "hidden xl:flex xl:flex-col xl:w-60 xl:min-w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) h-[calc(100vh-var(--header-height))] pt-27 pb-8 pr-4",
+                            "hidden xl:flex xl:flex-col xl:w-60 xl:min-w-60 shrink-0 xl:ml-16 self-start sticky top-(--header-height) max-h-[calc(100vh-var(--header-height))] pt-27 pb-8 pr-4",
                             includeSidebar ? "xl:-me-16" : "xl:-me-[19rem]",
                         ]}>
                             <div class="shrink-0 mb-4">

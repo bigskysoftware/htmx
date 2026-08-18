@@ -1,6 +1,6 @@
 ---
 title: "HX-Source"
-description: "Identifies the element that triggered the request"
+description: "Identifies element that triggered the request"
 ---
 
 The `HX-Source` request header contains the element that triggered the request. Format is `tag#id` like `button#submit`.

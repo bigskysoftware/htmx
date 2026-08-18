@@ -321,6 +321,26 @@ describe('hx-ws WebSocket extension', function() {
             assert.isDefined(sent.headers['HX-Current-URL']);
         });
         
+        // Submit inputs send through their activation event.
+        it('uses click as the default trigger for submit inputs', async function() {
+            let div = createProcessedHTML(`
+                <div hx-ws:connect="/ws/test">
+                    <input type="submit" hx-ws:send hx-vals='{"action": "send"}'>
+                </div>
+            `);
+            await htmx.timeout(50);
+
+            let input = div.querySelector('input');
+            let ws = mockWebSocketInstances[0];
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            await htmx.timeout(20);
+            assert.isUndefined(ws.lastSent);
+
+            input.click();
+            await htmx.timeout(20);
+            assert.isDefined(ws.lastSent);
+        });
+
         it('includes hx-vals in sent message', async function() {
             let div = createProcessedHTML(`
                 <div hx-ws:connect="/ws/test">

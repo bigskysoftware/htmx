@@ -1,6 +1,6 @@
 ---
 title: "htmx:abort"
-description: "Trigger to abort an ongoing request"
+description: "Aborts in-flight request"
 ---
 
 The `htmx:abort` event is a control event that, when fired on an element, aborts its ongoing request.

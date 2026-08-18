@@ -1,6 +1,6 @@
 ---
 title: "htmx.config.morphSkip"
-description: "Skip morphing for specific elements"
+description: "Skips morphing for specific elements"
 ---
 
 The `htmx.config.morphSkip` option is a CSS selector for elements to skip during morphing.

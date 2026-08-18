@@ -26,12 +26,12 @@ social:
 
   - name: "@htmx_org"
     description: Follow @htmx_org for updates
-    iconClass: "icon-[fa6-brands--x-twitter]"
+    iconClass: "icon-[simple-icons--x]"
     url: https://x.com/htmx_org
 
   - name: Reddit
     description: Join r/htmx discussions
-    iconClass: "icon-[fa6-brands--reddit-alien]"
+    iconClass: "icon-[simple-icons--reddit]"
     url: https://www.reddit.com/r/htmx/
 
   - name: Stack Overflow

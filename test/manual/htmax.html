@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="htmx-config" content='{"logAll":true,"historyCache":{"disable":false}}'>
+    <script src="/htmax.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .htmx-indicator { opacity: 0; transition: opacity 200ms; }
+        .htmx-request .htmx-indicator { opacity: 1; }
+    </style>
+</head>
+<body class="max-w-3xl mx-auto p-6 my-8 space-y-12">
+
+<h1 class="text-2xl font-bold">htmax bundle — manual test</h1>
+<p class="text-sm text-neutral-500">
+    Version: <code id="version"></code>
+    <script>document.getElementById('version').textContent = htmx.version;</script>
+</p>
+
+<!-- ─── SSE ─────────────────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">1. SSE (hx-sse)</h2>
+    <p class="text-sm text-neutral-500">Connects to a stream and receives 5 messages then closes.</p>
+    <div hx-sse:connect="/htmax/sse-stream">
+        <div hx-sse:swap="message" hx-sse:close="close" id="sse-out" class="p-3 bg-neutral-100 rounded min-h-8">
+            Waiting for stream…
+        </div>
+    </div>
+</section>
+
+<!-- ─── WebSockets ───────────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">2. WebSockets (hx-ws)</h2>
+    <p class="text-sm text-neutral-500">Checks the extension is registered (full WS test requires <code>ws-server.js</code>).</p>
+    <button hx-get="/htmax/ws-status" hx-target="#ws-out"
+            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Check WS extension
+    </button>
+    <div id="ws-out" class="p-3 bg-neutral-100 rounded min-h-8"></div>
+</section>
+
+<!-- ─── Preload ──────────────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">3. Preload (hx-preload)</h2>
+    <p class="text-sm text-neutral-500">Hover the button to preload, then click to swap. Check Network tab — request fires on hover.</p>
+    <button hx-get="/htmax/preload-target" hx-target="#preload-out" hx-preload
+            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+        Hover then Click
+    </button>
+    <div id="preload-out" class="p-3 bg-neutral-100 rounded min-h-8"></div>
+</section>
+
+<!-- ─── Browser Indicator ────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">4. Browser Indicator (hx-browser-indicator)</h2>
+    <p class="text-sm text-neutral-500">Browser's native loading spinner should appear during the 1.5s request.</p>
+    <button hx-get="/htmax/indicator" hx-target="#indicator-out" hx-browser-indicator
+            class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700">
+        Trigger slow request
+    </button>
+    <div id="indicator-out" class="p-3 bg-neutral-100 rounded min-h-8"></div>
+</section>
+
+<!-- ─── Download ─────────────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">5. Download (hx-download)</h2>
+    <p class="text-sm text-neutral-500">Should trigger a file download without navigating away.</p>
+    <button hx-get="/htmax/download" hx-download="htmax-test.txt"
+            class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700">
+        Download file
+    </button>
+</section>
+
+<!-- ─── Optimistic ───────────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">6. Pending (hx-pending)</h2>
+    <p class="text-sm text-neutral-500">Template content shows immediately; server response replaces it after 1.5s.</p>
+    <button hx-post="/htmax/optimistic" hx-target="#optimistic-out"
+            hx-pending="#optimistic-template"
+            class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+        Submit optimistically
+    </button>
+    <template id="optimistic-template">
+        <span class="text-orange-500 italic">⏳ Saving…</span>
+    </template>
+    <div id="optimistic-out" class="p-3 bg-neutral-100 rounded min-h-8"></div>
+</section>
+
+<!-- ─── Targets ──────────────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">7. Targets (hx-targets)</h2>
+    <p class="text-sm text-neutral-500">Same response swapped into two elements simultaneously.</p>
+    <button hx-get="/htmax/targets" hx-targets="#targets-out-1, #targets-out-2"
+            class="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700">
+        Swap two targets
+    </button>
+    <div class="flex gap-4">
+        <div id="targets-out-1" class="flex-1 p-3 bg-neutral-100 rounded min-h-8">Target 1</div>
+        <div id="targets-out-2" class="flex-1 p-3 bg-neutral-100 rounded min-h-8">Target 2</div>
+    </div>
+</section>
+
+<!-- ─── Live ─────────────────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">8. Live (hx-live)</h2>
+    <p class="text-sm text-neutral-500">Counter increments live as you type.</p>
+    <div class="flex gap-4 items-center">
+        <input id="live-input" type="text" placeholder="Type here…"
+               class="border rounded px-3 py-2 flex-1">
+        <span hx-live:text="document.getElementById('live-input').value.length + ' chars'"
+              class="text-lg font-mono w-24 text-right">0 chars</span>
+    </div>
+</section>
+
+<!-- ─── Upsert ───────────────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">9. Upsert (hx-upsert)</h2>
+    <p class="text-sm text-neutral-500">Item 1 updates in place, Item 3 is inserted. Item 2 is preserved.</p>
+    <button hx-post="/htmax/upsert" hx-swap="none"
+            class="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700">
+        Upsert items
+    </button>
+    <div id="upsert-list" class="space-y-2 mt-2">
+        <div id="item-1" class="p-2 bg-neutral-100 rounded">Item 1 (original)</div>
+        <div id="item-2" class="p-2 bg-neutral-100 rounded">Item 2 (should stay)</div>
+    </div>
+</section>
+
+<!-- ─── Alpine Compat ────────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">10. Alpine Compat (hx-alpine-compat)</h2>
+    <p class="text-sm text-neutral-500">
+        Alpine is not loaded here — extension should silently no-op.
+        Check console for errors (there should be none).
+    </p>
+    <button hx-get="/htmax/clicked" hx-target="#alpine-out"
+            class="px-4 py-2 bg-sky-600 text-white rounded hover:bg-sky-700">
+        Trigger swap (no Alpine errors)
+    </button>
+    <div id="alpine-out" class="p-3 bg-neutral-100 rounded min-h-8"></div>
+</section>
+
+<!-- ─── History Cache ────────────────────────────────────────────────────── -->
+<section class="space-y-3">
+    <h2 class="text-lg font-semibold">11. History Cache (hx-history-cache)</h2>
+    <p class="text-sm text-neutral-500">
+        Navigate to page 2, then hit the browser back button.
+        The restore should come from <code>sessionStorage</code> (no network request in DevTools).
+    </p>
+    <div id="history-content">
+        <p class="mb-2">Page 1 — initial content.</p>
+        <a hx-get="/htmax/page2" hx-target="#history-content" hx-push-url="/htmax/page2"
+           href="/htmax/page2"
+           class="text-blue-600 underline cursor-pointer">
+            Go to page 2
+        </a>
+    </div>
+</section>
+
+<footer class="pt-6 border-t border-neutral-200 text-sm text-neutral-400">
+    Check browser console — <code>htmx.config.logAll</code> is on.
+    History cache is enabled via <code>historyCache.disable:false</code> in the meta tag.
+</footer>
+
+</body>
+</html>

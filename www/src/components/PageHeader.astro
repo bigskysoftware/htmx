@@ -4,7 +4,8 @@ import CopyPageButton from './CopyPageButton.astro';
 import { getFile } from '../lib/content';
 import { formatDate } from '../lib/utils';
 
-const { title, description, file, collection } = Astro.props;
+const { title, description, icon, file, collection } = Astro.props;
+const descriptionParts = description?.split(/(`[^`]+`)/g);
 
 const isEssay = !!file && collection === 'essays';
 
@@ -45,7 +46,10 @@ const primaryAuthor = byline?.authors[0];
 
 <header class="not-prose page-header">
     <div class="title-row">
-        <h1 set:html={title} />
+        <h1>
+            {icon && <i class:list={[icon, 'title-icon']} aria-hidden="true"></i>}
+            <span set:html={title} />
+        </h1>
         {file && (
             <div class="actions">
                 <CopyPageButton file={file} />
@@ -112,7 +116,11 @@ const primaryAuthor = byline?.authors[0];
             </div>
         </div>
     ) : description && (
-        <p class="description">{description}</p>
+        <p class="description">
+            {descriptionParts.map(part => part.startsWith('`')
+                ? <code>{part.slice(1, -1)}</code>
+                : part)}
+        </p>
     )}
 </header>
 
@@ -144,6 +152,9 @@ const primaryAuthor = byline?.authors[0];
     h1 {
         flex: 1;
         min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
         overflow-wrap: anywhere;
         font-family: var(--font-chicago);
         letter-spacing: var(--tracking-tightest);
@@ -151,7 +162,23 @@ const primaryAuthor = byline?.authors[0];
         font-weight: 700;
         color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
 
-        @media (min-width: 640px) { font-size: 2em; line-height: 3rem; letter-spacing: var(--tracking-tight); }
+        @media (min-width: 640px) {
+            gap: 0.75rem;
+            font-size: 2em;
+            line-height: 3rem;
+            letter-spacing: var(--tracking-tight);
+        }
+    }
+
+    .title-icon {
+        width: 1.125em;
+        height: 1.125em;
+        flex-shrink: 0;
+
+        @media (min-width: 640px) {
+            width: 1.25em;
+            height: 1.25em;
+        }
     }
 
     .actions {
@@ -236,6 +263,16 @@ const primaryAuthor = byline?.authors[0];
         font-weight: 300;
         font-size: 1rem;
         color: light-dark(var(--color-neutral-650), var(--color-neutral-350));
+
+        code {
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            background: light-dark(rgb(229 229 229 / 25%), rgb(38 38 38 / 25%));
+            font-family: var(--font-mono);
+            font-size: 0.875em;
+            font-weight: 600;
+            color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
+        }
 
         @media (min-width: 640px) { font-size: 1.125rem; }
         @media (min-width: 1024px) { font-size: 1.25rem; }

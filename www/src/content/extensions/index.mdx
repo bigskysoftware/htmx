@@ -6,6 +6,8 @@ thumbnail: "docs/extensions.svg"
 
 import { getFolder } from '../../lib/content';
 import { EXTENSION_CATEGORIES, groupFilesByCategory } from '../../lib/content-groups';
+import JumpTo from '../../components/JumpTo.astro';
+import IndexTable from '../../components/IndexTable.astro';
 
 export const folder = await getFolder('extensions');
 export const grouped = groupFilesByCategory(folder.files, EXTENSION_CATEGORIES).map(group => ({
@@ -19,7 +21,13 @@ export const grouped = groupFilesByCategory(folder.files, EXTENSION_CATEGORIES).
     })),
 }));
 
-<label class="not-prose text-field" for="extensions-search">
+export const getPageHeadings = () => grouped.map(group => ({
+    depth: 2,
+    slug: group.slug,
+    text: group.category,
+}));
+
+<label data-active-search class="not-prose text-field" for="extensions-search">
     <span class="sr-only">Search extensions</span>
     <i class="icon-[mdi--magnify]" aria-hidden="true"></i>
     <input
@@ -34,34 +42,35 @@ export const grouped = groupFilesByCategory(folder.files, EXTENSION_CATEGORIES).
         aria-keyshortcuts="/"
         _="install ActiveSearch"
     />
-    <span aria-hidden="true">Press <kbd>/</kbd></span>
+    <span aria-hidden="true">Focus <kbd>/</kbd></span>
 </label>
+
+<JumpTo headings={getPageHeadings()} />
 
 {grouped.map(group => (
 <section role="group">
 
 <h2 id={group.slug}>
-    <a href={`#${group.slug}`} class="no-underline interact:underline">
-        {group.category}
-    </a>
+    <span>
+        <a href={`#${group.slug}`} class="no-underline interact:underline">
+            {group.category}
+        </a>
+    </span>
 </h2>
 
-<table>
-    <tbody>
-        {group.items.map(item => (
-            <tr class="stretch-link">
-                <td>
-                    {item.icon && <i class={`${item.icon} size-5 inline-block align-middle mr-5`}></i>}
-                    <span class="inline-block align-middle">
-                        <a href={item.url}><code>{item.title}</code></a>
-                        {item.description && <span class="block sm:hidden text-[0.8125em] text-neutral-650 dark:text-neutral-350 mt-0.5 pl-[6px]">{item.description}</span>}
-                    </span>
-                </td>
-                <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350">{item.description || ''}</td>
-            </tr>
-        ))}
-    </tbody>
-</table>
+<IndexTable>
+    {group.items.map(item => (
+        <tr>
+            <th scope="row">
+                <span>
+                    {item.icon ? <i class={`${item.icon} icon`} aria-hidden="true"></i> : <span class="icon"></span>}
+                    <a href={item.url}><code>{item.title}</code></a>
+                </span>
+            </th>
+            <td set:html={item.description ? item.description.replace(/`([^`]+)`/g, '<code>$1</code>') : ''} />
+        </tr>
+    ))}
+</IndexTable>
 
 </section>
 ))}

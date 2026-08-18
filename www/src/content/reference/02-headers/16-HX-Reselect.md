@@ -1,11 +1,11 @@
 ---
 title: "HX-Reselect"
-description: "Override the content selection from the server"
+description: "Overrides content selection from server"
 ---
 
 The `HX-Reselect` response header overrides which part of the response is used for swapping, replacing whatever `hx-select` was set on the triggering element.
 
-## Syntax
+## Usage
 
 ```http
 HX-Reselect: #content
@@ -13,7 +13,6 @@ HX-Reselect: #content
 
 The value is a CSS selector applied to the response HTML to extract the content to swap in.
 
-## Example
 
 Return a full page but tell htmx to only use a specific fragment:
 

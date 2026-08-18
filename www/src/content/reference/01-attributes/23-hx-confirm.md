@@ -1,0 +1,37 @@
+---
+title: "hx-confirm"
+description: "Shows confirmation dialog before request"
+---
+
+The `hx-confirm` attribute asks for confirmation before issuing a request.
+
+Use it for destructive or irreversible actions.
+
+## Syntax
+
+```html
+<button hx-delete="/account" hx-confirm="Are you sure?">Delete Account</button>
+```
+
+Here is an example:
+
+```html
+<button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
+  Delete My Account
+</button>
+```
+
+## Event details
+
+The event triggered by `hx-confirm` contains additional properties in its `detail`:
+
+* triggeringEvent: the event that triggered the original request
+* issueRequest(skipConfirmation=false): a callback which can be used to confirm the AJAX request
+* question: the value of the `hx-confirm` attribute on the HTML element
+
+## Notes
+
+* `hx-confirm` uses the browser's `window.confirm` by default. You can customize this behavior as
+  shown in the [Dialogs](/patterns/dialogs) pattern.
+* a boolean `skipConfirmation` can be passed to the `issueRequest` callback; if true (defaults to false), the
+  `window.confirm` will not be called and the AJAX request is issued directly

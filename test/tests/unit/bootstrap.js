@@ -192,6 +192,7 @@ describe('bootstrap unit tests', function() {
             'ajax',
             'find',
             'findAll',
+            'initialize',
             'on',
             'onLoad',
             'parseInterval',
@@ -225,5 +226,29 @@ describe('bootstrap unit tests', function() {
         assert.deepEqual(ownProperties, expectedPublicProperties,
             'Public properties have changed. Expected: ' + JSON.stringify(expectedPublicProperties) +
             ', Got: ' + JSON.stringify(ownProperties));
+    })
+
+    it('constructor uses setTimeout when document is already loaded', async function() {
+        assert.notEqual(document.readyState, 'loading', 'document should already be loaded')
+        let HtmxClass = Object.getPrototypeOf(htmx).constructor
+        let initCalls = 0
+        let originalSetTimeout = window.setTimeout
+        window.setTimeout = function(fn, ...args) {
+            if (fn.name === 'init') {
+                initCalls++
+            }
+            return originalSetTimeout.call(this, fn, ...args)
+        }
+        try {
+            let newInstance = new HtmxClass()
+            await new Promise(r => originalSetTimeout(r, 100))
+            assert.equal(initCalls, 1, 'setTimeout should be called once for init')
+            assert.isDefined(newInstance.config, 'new instance should have config')
+            // Verify initialize is idempotent - calling again should not re-register listeners
+            newInstance.initialize()
+            assert.equal(initCalls, 1, 'initialize should be idempotent')
+        } finally {
+            window.setTimeout = originalSetTimeout
+        }
     })
 })

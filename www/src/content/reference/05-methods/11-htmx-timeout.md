@@ -1,6 +1,6 @@
 ---
 title: "htmx.timeout()"
-description: "Create a timeout promise"
+description: "Creates timeout `Promise`"
 ---
 
 The `htmx.timeout()` function creates a promise that resolves after a specified time interval.

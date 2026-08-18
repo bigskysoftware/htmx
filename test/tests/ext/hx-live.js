@@ -1,9 +1,17 @@
 describe('hx-live extension', function () {
 
     let extBackup;
+    let liveConfigBackup;
+
+    async function flushMicrotasks() {
+        await Promise.resolve();
+        await Promise.resolve();
+    }
 
     before(async () => {
         extBackup = backupExtensions();
+        liveConfigBackup = htmx.config.live;
+        htmx.config.live = { ...liveConfigBackup, inputDebounce: 0 };
         clearExtensions();
         htmx.config.extensions = 'hx-live';
         htmx.__approvedExt = 'hx-live';
@@ -18,6 +26,8 @@ describe('hx-live extension', function () {
 
     after(() => {
         restoreExtensions(extBackup);
+        if (liveConfigBackup === undefined) delete htmx.config.live;
+        else htmx.config.live = liveConfigBackup;
     });
 
     beforeEach(() => { setupTest(this.currentTest); });
@@ -30,6 +40,18 @@ describe('hx-live extension', function () {
     it('runs initially when registered', function() {
         let elt = createProcessedHTML('<output hx-live="this.dataset.v = \'init\'"></output>');
         elt.dataset.v.should.equal('init');
+    });
+
+    it('continues after an invalid expression', function() {
+        let error = console.error;
+        console.error = () => {};
+        try {
+            playground().innerHTML = '<output :text="("></output><output id="valid" :text="\'ok\'"></output>';
+            assert.doesNotThrow(() => htmx.process(playground()));
+            playground().querySelector('#valid').textContent.should.equal('ok');
+        } finally {
+            console.error = error;
+        }
     });
 
     it('recomputes on input event', async function() {
@@ -61,6 +83,26 @@ describe('hx-live extension', function () {
         sel.dispatchEvent(new Event('change', { bubbles: true }));
         await htmx.timeout(5);
         out.dataset.v.should.equal('b');
+    });
+
+    it('parses the configured input debounce', async function() {
+        htmx.live.refresh();
+        await flushMicrotasks();
+        let setTimeout = window.setTimeout;
+        let delay;
+        htmx.config.live.inputDebounce = '20ms';
+        window.setTimeout = (_fn, value) => {
+            delay = value;
+            return 0;
+        };
+        try {
+            let input = createProcessedHTML('<input><output hx-live=""></output>');
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            delay.should.equal(20);
+        } finally {
+            htmx.config.live.inputDebounce = 0;
+            window.setTimeout = setTimeout;
+        }
     });
 
     it('recomputes on DOM mutation (attribute change)', async function() {
@@ -234,7 +276,7 @@ describe('hx-live extension', function () {
         window.__debounceCountLive = 0;
         playground().innerHTML = `
             <input id="in" value="1">
-            <output hx-live="(async () => { await debounce(20); window.__debounceCountLive++; q('#in').value; })()"></output>
+            <output hx-live="await debounce(20); window.__debounceCountLive++; q('#in').value;"></output>
         `;
         htmx.process(playground());
         let inp = playground().querySelector('#in');
@@ -342,27 +384,42 @@ describe('hx-live extension', function () {
         delete window.__swapCountLive;
     });
 
-    it.skip('iteration cap warns on runaway', async function() {
-        let warned = false;
+    it('warns once when live expressions take more than 16ms', async function() {
+        htmx.live.refresh();
+        await Promise.resolve();
+
+        let originalNow = Object.getOwnPropertyDescriptor(performance, 'now');
         let originalWarn = console.warn;
-        console.warn = (...args) => {
-            if (typeof args[0] === 'string' && args[0].includes('hx-live recompute exceeded')) warned = true;
-            originalWarn.apply(console, args);
-        };
+        let now = 0;
+        let elapsed = 0;
+        let calls = 0;
+        let warnings = [];
+        Object.defineProperty(performance, 'now', {
+            configurable: true,
+            value: () => calls++ % 2 === 0 ? now : now += elapsed
+        });
+        console.warn = message => warnings.push(message);
+
         try {
-            window.__runawayCountLive = 0;
-            playground().innerHTML = '<output hx-live="window.__runawayCountLive++"></output>';
-            htmx.process(playground());
+            createProcessedHTML('<output hx-live=""></output>');
 
-            for (let i = 0; i < 100; i++) {
-                document.body.setAttribute('data-runaway-test-live', String(i));
-                await htmx.timeout(5);
-            }
+            elapsed = 16;
+            htmx.live.refresh();
+            await Promise.resolve();
+            warnings.should.deep.equal([]);
 
-            warned.should.equal(true);
-            document.body.removeAttribute('data-runaway-test-live');
-            delete window.__runawayCountLive;
+            elapsed = 16.1;
+            htmx.live.refresh();
+            await Promise.resolve();
+            warnings.should.deep.equal(['htmx: hx-live expressions took 16.1ms.']);
+
+            elapsed = 50;
+            htmx.live.refresh();
+            await Promise.resolve();
+            warnings.length.should.equal(1);
         } finally {
+            if (originalNow) Object.defineProperty(performance, 'now', originalNow);
+            else delete performance.now;
             console.warn = originalWarn;
         }
     });
@@ -375,6 +432,79 @@ describe('hx-live extension', function () {
         playground().innerHTML = '<div class="x">a</div><div class="x">b</div>';
         let proxy = htmx.live.q('.x');
         proxy.count.should.equal(2);
+    });
+
+    it('htmx.live.$ aliases htmx.live.q', function() {
+        htmx.live.$.should.equal(htmx.live.q);
+        playground().innerHTML = '<div class="x"></div><div class="x"></div>';
+        htmx.live.$('.x').count.should.equal(2);
+    });
+
+    it('leaves global $ available in expressions by default', function() {
+        let oldLive = htmx.config.live;
+        let oldDollar = window.$;
+        htmx.config.live = { ...oldLive };
+        delete htmx.config.live.useDollar;
+        window.$ = value => 'global:' + value;
+        try {
+            playground().innerHTML = '<output :text="$(\'value\')"></output>';
+            htmx.process(playground());
+            playground().querySelector('output').textContent.should.equal('global:value');
+        } finally {
+            htmx.config.live = oldLive;
+            if (oldDollar === undefined) delete window.$;
+            else window.$ = oldDollar;
+        }
+    });
+
+    it('useDollar shadows global $ in hx-live, bindings, and hx-on', function() {
+        let oldLive = htmx.config.live;
+        let oldDollar = window.$;
+        let globalCalls = 0;
+        let globalDollar = () => globalCalls++;
+        htmx.config.live = { ...oldLive, useDollar: true };
+        window.$ = globalDollar;
+        try {
+            playground().innerHTML = `
+                <div class="x"></div>
+                <output id="body" hx-live="this.dataset.count = $('.x').count"></output>
+                <output id="binding" :text="$('.x').count"></output>
+                <button hx-on:click="$('.x').attr('data-hit', 'yes')">change</button>
+            `;
+            htmx.process(playground());
+
+            playground().querySelector('#body').dataset.count.should.equal('1');
+            playground().querySelector('#binding').textContent.should.equal('1');
+            playground().querySelector('button').click();
+            playground().querySelector('.x').dataset.hit.should.equal('yes');
+            globalCalls.should.equal(0);
+            window.$.should.equal(globalDollar);
+        } finally {
+            htmx.config.live = oldLive;
+            if (oldDollar === undefined) delete window.$;
+            else window.$ = oldDollar;
+        }
+    });
+
+    it('useDollar works in js attributes and hx-trigger filters', async function() {
+        let oldLive = htmx.config.live;
+        htmx.config.live = { ...oldLive, useDollar: true };
+        try {
+            mockResponse('POST', '/dollar-scope', 'OK');
+            playground().innerHTML = `
+                <div class="allowed"></div>
+                <button hx-post="/dollar-scope"
+                        hx-trigger="click[$('.allowed').count === 1]"
+                        hx-vals="js:{ count: $('.allowed').count }">send</button>
+            `;
+            htmx.process(playground());
+            playground().querySelector('button').click();
+            await forRequest();
+
+            fetchMock.calls[0].request.body.get('count').should.equal('1');
+        } finally {
+            htmx.config.live = oldLive;
+        }
     });
 
     it('q returns 0-count proxy when no match', function() {
@@ -1809,6 +1939,20 @@ describe('hx-live extension', function () {
         div.style.height.should.equal('20px');
     });
 
+    it(':style replaces an old shorthand with a new longhand', async function() {
+        playground().innerHTML = `
+            <div data-all="true" :style="data.all
+                ? 'border: 1px solid red'
+                : 'border-left-color: green'"></div>
+        `;
+        htmx.process(playground());
+        let div = playground().querySelector('div');
+        div.dataset.all = 'false';
+        await htmx.timeout(5);
+        div.style.borderTop.should.equal('');
+        div.style.borderLeftColor.should.equal('green');
+    });
+
     it(':style overlap: binding overwrites matching static property', async function() {
         playground().innerHTML = `
             <input id="color" value="blue">
@@ -1852,6 +1996,19 @@ describe('hx-live extension', function () {
         await htmx.timeout(5);
         mirror.checked.should.equal(true);
         mirror.hasAttribute('checked').should.equal(true);
+    });
+
+    it('keeps checked and selected false after form reset when the result is zero', function() {
+        playground().innerHTML = `
+            <form>
+                <input type="checkbox" :checked="0">
+                <select multiple><option :selected="0">One</option></select>
+            </form>
+        `;
+        htmx.process(playground());
+        playground().querySelector('form').reset();
+        playground().querySelector('input').checked.should.equal(false);
+        playground().querySelector('option').selected.should.equal(false);
     });
 
     it(':value syncs property and attribute', async function() {

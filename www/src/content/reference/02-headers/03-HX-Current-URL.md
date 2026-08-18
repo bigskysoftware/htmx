@@ -1,13 +1,13 @@
 ---
 title: "HX-Current-URL"
-description: "Contains the URL of the browser when the request was made"
+description: "Contains browser URL when request started"
 ---
 
 The `HX-Current-URL` request header contains the browser's URL when the request was made.
 
 Use it to understand page context or build relative URLs.
 
-## Syntax
+## Usage
 
 The header is included as follows:
 
@@ -15,7 +15,6 @@ The header is included as follows:
 HX-Current-URL: https://example.com/products
 ```
 
-## Usage
 
 Read the current URL from the request:
 

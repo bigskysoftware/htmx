@@ -1,6 +1,6 @@
 ---
 title: "htmx.version"
-description: "Current htmx version (read-only)"
+description: "Reports current htmx version (read-only)"
 ---
 
 The `htmx.version` property contains the current htmx version string (read-only).
@@ -8,5 +8,5 @@ The `htmx.version` property contains the current htmx version string (read-only)
 ## Example
 
 ```javascript
-console.log(htmx.version); // "4.0.0-alpha3"
+console.log(htmx.version)
 ```

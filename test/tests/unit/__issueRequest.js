@@ -85,6 +85,48 @@ describe('__issueRequest unit tests', function() {
         assert.isFalse(fetchCalled)
     })
 
+    it('replace aborts the active request and runs the replacement', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none" hx-sync="replace"></div>')
+        let ctx1 = htmx.__createRequestContext(div, new Event('click'))
+        ctx1.fetch = (url, options) => new Promise((resolve, reject) => {
+            options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')))
+        })
+        let ctx2 = htmx.__createRequestContext(div, new Event('click'))
+        let replacementRan = false
+        ctx2.fetch = async () => {
+            replacementRan = true
+            return {status: 200, headers: new Headers(), text: async () => ''}
+        }
+
+        let request1 = htmx.__issueRequest(ctx1)
+        let request2 = htmx.__issueRequest(ctx2)
+        await Promise.all([request1, request2])
+
+        assert.isTrue(ctx1.request.signal.aborted)
+        assert.isTrue(replacementRan)
+    })
+
+    it('a later request aborts an active abort request', async function () {
+        let parent = createProcessedHTML('<div id="sync"><div id="first" hx-get="/first" hx-swap="none" hx-sync="#sync:abort"></div><div id="second" hx-get="/second" hx-swap="none" hx-sync="#sync:drop"></div></div>')
+        let ctx1 = htmx.__createRequestContext(parent.querySelector('#first'), new Event('click'))
+        ctx1.fetch = (url, options) => new Promise((resolve, reject) => {
+            options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')))
+        })
+        let ctx2 = htmx.__createRequestContext(parent.querySelector('#second'), new Event('click'))
+        let secondRan = false
+        ctx2.fetch = async () => {
+            secondRan = true
+            return {status: 200, headers: new Headers(), text: async () => ''}
+        }
+
+        let request1 = htmx.__issueRequest(ctx1)
+        let request2 = htmx.__issueRequest(ctx2)
+        await Promise.all([request1, request2])
+
+        assert.isTrue(ctx1.request.signal.aborted)
+        assert.isTrue(secondRan)
+    })
+
     it('returns early if htmx:before:request is cancelled', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))
@@ -175,6 +217,45 @@ describe('__issueRequest unit tests', function() {
 
         assert.isTrue(errorFired)
         assert.equal(capturedError, testError)
+    })
+
+    it('fires HX-Trigger event after swap completes', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+
+        let triggerFired = false
+        div.addEventListener('myEvent', () => triggerFired = true)
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers({ 'HX-Trigger': 'myEvent' }),
+            text: async () => ''
+        })
+
+        await htmx.__issueRequest(ctx)
+        assert.isTrue(triggerFired)
+    })
+
+    it('fires HX-Trigger on replacement element after outerHTML swap', async function () {
+        let div = createProcessedHTML('<div id="source" hx-get="/test" hx-swap="outerHTML"></div>')
+        let source = find('#source')
+        let ctx = htmx.__createRequestContext(source, new Event('click'))
+
+        let triggerTarget = null
+        document.addEventListener('myEvent', (e) => triggerTarget = e.target)
+
+        ctx.fetch = async () => ({
+            status: 200,
+            headers: new Headers({ 'HX-Trigger': 'myEvent' }),
+            text: async () => '<span id="replacement">New</span>'
+        })
+
+        await htmx.__issueRequest(ctx)
+
+        let replacement = find('#replacement')
+        assert.isNotNull(replacement)
+        assert.isFalse(source.isConnected)
+        assert.equal(triggerTarget, replacement)
     })
 
     it('always triggers htmx:finally:request', async function () {

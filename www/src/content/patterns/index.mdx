@@ -5,6 +5,8 @@ description: "Patterns, recipes, and working examples."
 
 import { getFolder } from '../../lib/content';
 import { PATTERN_CATEGORIES, groupFilesByCategory } from '../../lib/content-groups';
+import JumpTo from '../../components/JumpTo.astro';
+import IndexTable from '../../components/IndexTable.astro';
 
 export const folder = await getFolder('patterns');
 export const groupedPatterns = groupFilesByCategory(folder.files, PATTERN_CATEGORIES).map(group => ({
@@ -12,14 +14,20 @@ export const groupedPatterns = groupFilesByCategory(folder.files, PATTERN_CATEGO
     label: group.category,
     items: group.files.map(f => ({
         title: f.frontmatter.title,
-        url: f.url,
+        url: f.frontmatter.soon ? undefined : f.url,
         description: f.frontmatter.description,
         icon: f.frontmatter.icon || '',
-        soon: f.frontmatter.soon || false,
+        badge: f.frontmatter.soon ? 'Soon' : undefined,
     })),
 }));
 
-<label class="not-prose text-field" for="patterns-search">
+export const getPageHeadings = () => groupedPatterns.map(group => ({
+    depth: 2,
+    slug: group.slug,
+    text: group.label,
+}));
+
+<label data-active-search class="not-prose text-field" for="patterns-search">
     <span class="sr-only">Search patterns</span>
     <i class="icon-[mdi--magnify]" aria-hidden="true"></i>
     <input
@@ -34,40 +42,41 @@ export const groupedPatterns = groupFilesByCategory(folder.files, PATTERN_CATEGO
         aria-keyshortcuts="/"
         _="install ActiveSearch"
     />
-    <span aria-hidden="true">Press <kbd>/</kbd></span>
+    <span aria-hidden="true">Focus <kbd>/</kbd></span>
 </label>
+
+<JumpTo headings={getPageHeadings()} />
 
 {groupedPatterns.map(group => (
 <section role="group">
 
 <h2 id={group.slug}>
-    <a href={`#${group.slug}`} class="no-underline interact:underline">
-        {group.label}
-    </a>
+    <span>
+        <a href={`#${group.slug}`} class="no-underline interact:underline">
+            {group.label}
+        </a>
+    </span>
 </h2>
 
-<table>
-    <tbody>
-        {group.items.map(item => (
-            <tr class={`stretch-link ${item.soon ? 'opacity-50' : ''}`}>
-                <td>
-                    {item.icon && <i class={`${item.icon} size-5 inline-block align-middle mr-4 sm:mr-7`}></i>}
-                    <span class="inline-block align-middle">
-                        {item.soon
-                            ? <span>{item.title}</span>
-                            : <a href={item.url}>{item.title}</a>}
-                        {item.soon && <span class="sm:hidden text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">Soon</span>}
-                        {item.description && <span class="block sm:hidden text-[0.8125em] text-neutral-650 dark:text-neutral-350 mt-0.5">{item.description}</span>}
+<IndexTable>
+    {group.items.map(item => (
+        <tr aria-disabled={item.badge ? "true" : undefined}>
+            <th scope="row">
+                <span>
+                    {item.icon ? <i class={`${item.icon} icon`} aria-hidden="true"></i> : <span class="icon"></span>}
+                    <span>
+                        {item.url ? <a href={item.url}>{item.title}</a> : item.title}
+                        {item.badge && <span class="sm:hidden text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">{item.badge}</span>}
                     </span>
-                </td>
-                <td class="hidden sm:table-cell text-neutral-650 dark:text-neutral-350">
-                    {item.description || ''}
-                    {item.soon && <span class="text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">Soon</span>}
-                </td>
-            </tr>
-        ))}
-    </tbody>
-</table>
+                </span>
+            </th>
+            <td>
+                {item.description || ''}
+                {item.badge && <span class="hidden sm:inline text-[9px] ml-2 px-1.5 py-0.5 rounded bg-yellow-300/5 text-yellow-700 dark:text-yellow-300 border border-yellow-600/50 dark:border-yellow-300 font-medium uppercase tracking-wide">{item.badge}</span>}
+            </td>
+        </tr>
+    ))}
+</IndexTable>
 
 </section>
 ))}

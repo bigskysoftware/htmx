@@ -166,13 +166,15 @@
         api.triggerHtmxEvent(document, 'htmx:history:cache:before:restore', detail);
         if (detail.ready) await detail.ready;
 
+        let cachedHTML = item.content;
+        let restoreSwapTarget = getHistoryTarget();
+        let restoreSwapStyle = cfg().swapStyle;
         let ctx = {
             sourceElement: document.body,
-            target: getHistoryTarget(),
-            swap: cfg().swapStyle,
-            text: item.content,
-            transition: false,
-            _deferredHeadScripts: detail._deferredHeadScripts
+            target: restoreSwapTarget,
+            swap: restoreSwapStyle,
+            text: cachedHTML,
+            transition: false
         };
         await htmx.swap(ctx);
 
@@ -180,7 +182,8 @@
         requestAnimationFrame(() => {
             window.scrollTo(0, item.scroll || 0);
             restoreAnnotations(getHistoryTarget());
-            api.triggerHtmxEvent(document, 'htmx:history:cache:after:restore', { item });
+            detail.item = item;
+            api.triggerHtmxEvent(document, 'htmx:history:cache:after:restore', detail);
         });
     }
 
@@ -198,7 +201,7 @@
         // Before core pushes/replaces, save the outgoing page
         htmx_before_history_update: (elt, detail) => {
             if (cfg().disable) return;
-            if (!_currentId) stampCurrentEntry();
+            stampCurrentEntry();
             saveCurrentPage();
         },
 

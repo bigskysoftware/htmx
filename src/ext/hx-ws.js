@@ -96,7 +96,8 @@
             socket: null,
             attempt: 0,
             timer: null,
-            pendingRequests: new Map(),       //            abortController: null,
+            pendingRequests: new Map(),
+            abortController: null,
             visibilityHandler: null,
             cancelled: false
         };
@@ -188,7 +189,7 @@
                 if (elt) {
                     api.triggerHtmxEvent(elt, 'htmx:after:ws:connection', {connection});
                 } else {
-                    // Element was removed while connecting — orphaned socket
+                    // Element was removed while connecting (orphaned socket)
                     cleanupOrphanedConnection(url, connection);
                     return;
                 }
@@ -215,7 +216,7 @@
                 if (config.reconnect && findConnectedElement(url)) {
                     scheduleReconnect(url, connection);
                 } else {
-                    // No element or reconnect disabled — full cleanup
+                    // No element or reconnect disabled: full cleanup
                     cleanupOrphanedConnection(url, connection);
                 }
             }, opts);
@@ -266,7 +267,7 @@
                 return;
             }
         } else {
-            // Element gone — no point scheduling reconnect
+            // Element gone, no point scheduling reconnect
             cleanupOrphanedConnection(url, connection);
             return;
         }
@@ -432,7 +433,7 @@
         }
 
         if (!connectionElement) {
-            // No element in DOM for this connection — orphan cleanup
+            // No element in DOM for this connection (orphan cleanup)
             cleanupOrphanedConnection(connection.url, connection);
             return;
         }
@@ -511,7 +512,7 @@
         let specString = api.attributeValue(element, 'hx-trigger');
         if (!specString) {
             specString = element.matches('form') ? 'submit' :
-                         element.matches('input:not([type=button]),select,textarea') ? 'change' :
+                         element.matches('input:not([type=button]):not([type=submit]),select,textarea') ? 'change' :
                          'click';
         }
 
@@ -610,7 +611,7 @@
         window.addEventListener('pagehide', () => {
             connections.forEach((connection) => {
                 if (connection.socket) {
-                    connection.socket.close(1001, 'page navigating away');
+                    connection.socket.close(1000, 'page navigating away');
                 }
             });
         });

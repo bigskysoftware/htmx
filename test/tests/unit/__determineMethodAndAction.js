@@ -47,4 +47,20 @@ describe('__determineMethodAndAction unit tests', function() {
         assert.equal(result.action, '/test')
     })
 
+    it('hx-method:inherited on parent changes method of child hx-action', function() {
+        let html = createProcessedHTML('<div hx-method:inherited="delete"><button hx-action="/test"></button></div>')
+        let btn = html.querySelector('button')
+        let result = htmx.__determineMethodAndAction(btn, new Event('click'))
+        assert.equal(result.method, 'DELETE')
+        assert.equal(result.action, '/test')
+    })
+
+    it('hx-method:inherited on parent does not change method of child hx-verb', function() {
+        let html = createProcessedHTML('<div hx-method:inherited="delete"><button hx-post="/test"></button></div>')
+        let btn = html.querySelector('button')
+        let result = htmx.__determineMethodAndAction(btn, new Event('click'))
+        assert.equal(result.method, 'POST')
+        assert.equal(result.action, '/test')
+    })
+
 })

@@ -72,14 +72,17 @@ import htmx from 'htmx.org';
 
 The `htmax.js` file bundles htmx with the most popular extensions in a single file:
 
-* [SSE](/extensions/hx-sse)
-* [WebSockets](/extensions/hx-ws)
-* [preload](/extensions/hx-preload)
-* [browser-indicator](/extensions/hx-browser-indicator)
-* [download](/extensions/hx-download)
-* [optimistic](/extensions/hx-optimistic)
-* [targets](/extensions/hx-targets)
-* [live](/extensions/hx-live).
+* [`hx-sse`](/extensions/hx-sse)
+* [`hx-ws`](/extensions/hx-ws)
+* [`hx-preload`](/extensions/hx-preload)
+* [`hx-browser-indicator`](/extensions/hx-browser-indicator)
+* [`hx-download`](/extensions/hx-download)
+* [`hx-pending`](/extensions/hx-pending)
+* [`hx-targets`](/extensions/hx-targets)
+* [`hx-live`](/extensions/hx-live)
+* [`hx-upsert`](/extensions/hx-upsert)
+* [`hx-alpine-compat`](/extensions/hx-alpine-compat)
+* [`hx-history-cache`](/extensions/hx-history-cache) _(included but disabled by default)_
 
 The extensions are automatically available, you can just use their attributes directly (e.g. `hx-sse:connect`, `hx-ws:connect`).
 
@@ -87,9 +90,13 @@ The extensions are automatically available, you can just use their attributes di
 <script src="/js/htmax.min.js"></script>
 ```
 
-## Migration
+To enable history caching, opt in via the meta tag:
 
-### Quick Migration
+```html
+<meta name="htmx-config" content='{"historyCache": {"disable": false}}'>
+```
+
+## Migration
 
 There are two major behavioral changes between htmx 2.x and 4.x:
 
@@ -402,6 +409,7 @@ Still available: `htmx.ajax()`, `htmx.config`, `htmx.find()`, `htmx.findAll()`, 
 |----------------------------------------------------|-----------------------------------------------------------------------|
 | [`hx-action`](/reference/attributes/hx-action)     | Specify URL, with optional [`hx-method`](/reference/attributes/hx-method). Supports progressive enhancement via native `action`/`method` fallback |
 | [`hx-method`](/reference/attributes/hx-method)     | Specify HTTP method (overrides native `method` and `formmethod`)      |
+| [`hx-query`](/reference/attributes/hx-query)       | Issue a `QUERY` request, which sends parameters in the body           |
 | [`hx-config`](/reference/attributes/hx-config)     | Per-element request config (JSON or `key:value` syntax)               |
 | [`hx-ignore`](/reference/attributes/hx-ignore)     | Disable htmx processing (was `hx-disable`)                            |
 | [`hx-validate`](/reference/attributes/hx-validate) | Control form validation behavior                                      |
@@ -521,7 +529,7 @@ Internally-dispatched events route to the console as follows:
 
 This restores the htmx 2.x convention: if you want an internal failure path to show up in the console, fire an event with `detail.error` (or `detail.warn`); no per-site `console.error` needed.
 
-#### Request context
+#### Request Context in Events
 
 All events provide a consistent `ctx` object with request/response information.
 
@@ -535,9 +543,9 @@ All events provide a consistent `ctx` object with request/response information.
 | [`htmx:before:response`](/reference/events/htmx-before-response)             | Before response body is read (cancellable)        |
 | [`htmx:before:settle`](/reference/events/htmx-before-settle)                 | Before settle phase                               |
 | [`htmx:after:settle`](/reference/events/htmx-after-settle)                   | After settle phase                                |
-| [`htmx:before:viewTransition`](/reference/events/htmx-before-viewTransition) | Before a view transition starts (cancellable)     |
+| [`htmx:before:viewTransition`](/reference/events/htmx-before-viewTransition) | Before a view transition starts                   |
 | [`htmx:after:viewTransition`](/reference/events/htmx-after-viewTransition)   | After a view transition completes                 |
-| [`htmx:finally:request`](/reference/events/htmx-finally-request)             | Always fires after a request (success or failure) |
+| [`htmx:finally:request`](/reference/events/htmx-finally-request)             | When request completes, fails, or is cancelled |
 
 #### Config keys
 
@@ -562,7 +570,7 @@ htmx 4 ships with 9 core extensions. The SSE and WebSocket extensions have been 
 | [`browser-indicator`](/extensions/hx-browser-indicator) | Shows the browser's native loading indicator during requests                         |
 | [`head-support`](/extensions/hx-head)           | Merges head tag information (styles, etc.) in htmx requests                          |
 | [`htmx-2-compat`](/extensions/htmx-2-compat)         | Restores implicit inheritance, old event names, and previous error-swapping defaults |
-| [`optimistic`](/extensions/hx-optimistic)               | Shows expected content from a template before the server responds                    |
+| [`pending`](/extensions/hx-pending)               | Shows expected content from a template before the server responds                    |
 | [`preload`](/extensions/hx-preload)                     | Triggers requests early (on mouseover/mousedown) for near-instant page loads ([upgrade guide](/extensions/hx-preload#upgrading-from-htmx-2x)) |
 | [`sse`](/extensions/hx-sse)                             | Server-Sent Events streaming support ([upgrade guide](/extensions/hx-sse#upgrading-from-htmx-2x)) |
 | [`upsert`](/extensions/hx-upsert)                       | Updates existing elements by ID and inserts new ones, preserving unmatched elements  |
@@ -677,7 +685,7 @@ handle_swap: (swapStyle, target, fragment, swapSpec) => {
 All hooks receive `detail.ctx` with full request/response context:
 
 - `detail.ctx.request.body` (FormData in `htmx_config_request`)
-- `detail.ctx.request.headers` ([Web API Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object)
+- `detail.ctx.request.headers` (plain mutable object)
 - `detail.ctx.response.status`
 - `detail.ctx.text` (response body, modifiable in `htmx_after_request`)
 - `detail.ctx.target`
@@ -785,7 +793,7 @@ Event flow: response received, `ctx.text` set, `htmx:after:request` fires, `ctx.
 
 ##### `encodeParameters`
 
-Removed. Modify `detail.ctx.request.body` in `htmx_config_request`:
+Removed. Modify the final `detail.ctx.request.body` in `htmx_before_request`:
 
 ```javascript
 // htmx 2.x
@@ -808,7 +816,7 @@ encodeParameters: function(xhr, parameters, elt) {
 }
 
 // htmx 4
-htmx_config_request: (elt, detail) => {
+htmx_before_request: (elt, detail) => {
     detail.ctx.request.headers['Content-Type'] = 'application/json';
     var object = {};
     detail.ctx.request.body.forEach(function(value, key) {
@@ -823,7 +831,7 @@ htmx_config_request: (elt, detail) => {
 }
 ```
 
-`ctx.request.body` is FormData in `htmx_config_request`. It can be replaced with any value (string, JSON, URLSearchParams). For GET/DELETE, body becomes query parameters. For POST/PUT/PATCH, body becomes URLSearchParams (unless multipart).
+`ctx.request.body` is `FormData` in `htmx_config_request`. After that hook, GET and DELETE values move into the URL, non-multipart bodies become `URLSearchParams`, and multipart bodies remain `FormData`. In `htmx_before_request`, replace the final body with any valid `BodyInit`.
 
 ##### `isInlineSwap` and `handleSwap`
 
@@ -860,7 +868,7 @@ Return truthy if handled, falsy otherwise. Can return an array of elements for s
 | `getSelectors()`                        | `htmx_after_init` hook                                        |
 | `onEvent(name, evt)`                    | Individual `htmx_*` hooks                                     |
 | `transformResponse(text, xhr, elt)`     | `htmx_after_request` hook (modify `detail.ctx.text`)          |
-| `encodeParameters(xhr, params, elt)`    | `htmx_config_request` hook (modify `detail.ctx.request.body`) |
+| `encodeParameters(xhr, params, elt)`    | `htmx_before_request` hook (modify final `detail.ctx.request.body`) |
 | `isInlineSwap(swapStyle)`               | `handle_swap` or name swap style with "outer" prefix          |
 | `handleSwap(style, target, frag, info)` | `handle_swap(style, target, frag, spec)`                      |
 
@@ -869,7 +877,7 @@ Return truthy if handled, falsy otherwise. Can return an array of elements for s
 1. Rename `defineExtension` to `registerExtension`
 2. Replace `onEvent` with individual `htmx_*` hooks
 3. Replace `transformResponse` with `htmx_after_request`
-4. Replace `encodeParameters` with `htmx_config_request`
+4. Replace `encodeParameters` with `htmx_before_request`
 5. Merge `isInlineSwap` and `handleSwap` into `handle_swap`
 6. Replace `getSelectors` with `htmx_after_init`
 7. Remove `hx-ext` attributes from HTML
@@ -1025,6 +1033,7 @@ Use different attributes for different operations:
 <button hx-put="/users/1">Update User</button>
 <button hx-patch="/users/1">Patch User</button>
 <button hx-delete="/users/1">Delete User</button>
+<button hx-query="/users">Query Users</button>
 ```
 
 Each attribute combines the URL and HTTP method. Alternatively, use [`hx-action`](/reference/attributes/hx-action) and [`hx-method`](/reference/attributes/hx-method) to separate them — useful when the method is dynamic, or when you want progressive enhancement with native `action`/`method` fallback.
@@ -1402,8 +1411,8 @@ The modifiers available on `hx-swap` are (parsed as [HCON](#hcon)):
 | transition   | true or false, whether to use the view transition API for this swap                                  |
 | ignoreTitle  | If set to true, any title found in the new content will be ignored and not update the document title |
 | strip        | true or false, whether to strip the outer element when swapping (unwrap the content)                 |
-| focus-scroll | true or false, whether to scroll focused elements into view                                          |
-| swapEmpty    | true or false, whether to perform the main swap when the response body is empty (`false` skips it). Defaults to [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty) |
+| focusScroll  | true or false, whether to scroll focused elements into view                                          |
+| swapEmpty    | true or false, whether to perform the main swap when the response body is empty (`false` skips it). Default behavior: skip if partials or OOB swaps were extracted (unless [`htmx.config.allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB) is `true`) |
 | scroll       | top or bottom, will scroll the target element to its top or bottom                                   |
 | show         | top or bottom, will scroll the target element's top or bottom into view                              |
 | target       | A selector to retarget the swap to a different element                                               |
@@ -1605,7 +1614,7 @@ before it is issued:
 
 ```javascript
 document.body.addEventListener('htmx:config:request', function (evt) {
-    evt.detail.ctx.request.parameters['auth_token'] = getAuthToken(); // add a new parameter into the request
+    evt.detail.ctx.request.body.set('auth_token', getAuthToken()); // add a new parameter into the request
     evt.detail.ctx.request.headers['Authentication-Token'] = getAuthToken(); // add a new header into the request
 });
 ```
@@ -1662,7 +1671,7 @@ Here is an example that adds a parameter to an htmx request
 
 ```html
 <button hx-post="/example"
-        hx-on:htmx:config:request="ctx.request.parameters.example = 'Hello Scripting!'">
+        hx-on:htmx:config:request="ctx.request.body.set('example', 'Hello Scripting!')">
     Post Me!
 </button>
 ```
@@ -1838,10 +1847,7 @@ You can use the equivalent <code>&lt;template&gt;</code> form: <code>&lt;templat
 
 #### Empty Response Behaviour
 
-When a response contains only `<hx-partial>` elements and no main content, htmx will **not** perform the main swap.
-This is the opposite default to [`hx-swap-oob`](/reference/attributes/hx-swap-oob): with partials, an
-all-partial response signals intent — the server is explicitly routing multiple targeted updates and there is no main
-content to swap.
+When a response contains only `<hx-partial>` elements and no main content, htmx will **not** perform the main swap. Partials are designed as true response separators — each partial is a self-contained section, giving the server explicit control over multi-target updates.
 
 ```html
 <!-- Server returns only partials — main target is left untouched -->
@@ -1853,13 +1859,13 @@ content to swap.
 </hx-partial>
 ```
 
-If you also want the main target cleared, add `swapEmpty:true` to `hx-swap` on the triggering element:
+If you want the main target cleared, add `swapEmpty:true` to `hx-swap` on the triggering element:
 
 ```html
 <button hx-post="/submit" hx-swap="outerHTML swapEmpty:true">Submit</button>
 ```
 
-Or set the global default via [`htmx.config.defaultSwapEmpty`](/reference/config/htmx-config-defaultSwapEmpty).
+[`hx-swap-oob`](/reference/attributes/hx-swap-oob) also prevents empty main swaps by default, but this can be changed globally via [`htmx.config.allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB). Partials always prevent empty swaps regardless of that setting.
 
 #### When to Use Partials
 
@@ -1963,7 +1969,7 @@ key:value, key2:value2
 
 <!-- strings, quotes needed when value contains spaces or special chars -->
 <button hx-get="/api" hx-config='credentials:"include"'>
-<button hx-get="/api" hx-config="mode:'cors'">
+<button hx-get="/api" hx-config="cache:'no-cache'">
 ```
 
 #### Dot-notation for nested keys
@@ -2060,7 +2066,7 @@ Merges into the request context before the request is issued. Useful for per-ele
 
 ```html
 <button hx-get="/slow" hx-config="timeout:30000">
-<button hx-get="https://api.example.com/data" hx-config='credentials:"include" mode:"cors"'>
+<button hx-get="/api/data" hx-config='credentials:"include" cache:"no-cache"'>
 ```
 
 #### `<meta name="htmx-config">`
@@ -2816,7 +2822,7 @@ Extensions hook into htmx lifecycle events. Event names use underscores instead 
 | `htmx_before_request` | [`htmx:before:request`](/reference/events/htmx-before-request) | `(elt, detail)` | Before request is sent |
 | `htmx_before_response` | `htmx:before:response` | `(elt, detail)` | After fetch, before body consumed |
 | `htmx_after_request` | [`htmx:after:request`](/reference/events/htmx-after-request) | `(elt, detail)` | After request completes |
-| `htmx_finally_request` | [`htmx:finally:request`](/reference/events/htmx-finally-request) | `(elt, detail)` | Always called after request |
+| `htmx_finally_request` | [`htmx:finally:request`](/reference/events/htmx-finally-request) | `(elt, detail)` | When request completes, fails, or is cancelled |
 | `htmx_error` | [`htmx:error`](/reference/events/htmx-error) | `(elt, detail)` | On request error |
 
 ##### Swap Events
@@ -2874,14 +2880,25 @@ htmx.registerExtension("my-ext", {
 });
 ```
 
-Available internal API methods:
+Available internal API:
 
-- `attributeValue(elt, name, defaultVal, returnElt)` - Get htmx attribute value with inheritance
-- `parseTriggerSpecs(spec)` - Parse trigger specification string
-- `determineMethodAndAction(elt, evt)` - Get HTTP method and URL
-- `createRequestContext(elt, evt)` - Create request context object
-- `collectFormData(elt, form, submitter)` - Collect form data
-- `handleHxVals(elt, body)` - Process [`hx-vals`](/reference/attributes/hx-vals) attribute
+{/* check_extension_api:start */}
+- `HCON` - Parse and merge HCON values
+- `attributeValue(elt, name, defaultVal, returnElt)` - Get an attribute value with inheritance support
+- `parseTriggerSpecs(spec)` - Parse a trigger specification
+- `determineMethodAndAction(elt, evt)` - Get `{method, action}` for an element
+- `createRequestContext(elt, evt)` - Create a request context
+- `collectFormData(elt, form, submitter, validate, isGet)` - Collect form data
+- `getAttributeObject(elt, name, callback, scope)` - Read an object-valued attribute
+- `insertContent(task, cssTransition)` - Insert a swap task's content
+- `morph(oldNode, fragment, innerHTML)` - Morph existing content
+- `isSoftMatch(oldNode, newNode)` - Test whether two nodes can be morphed
+- `initSecurity(ttPolicy, syncFn, asyncFn)` - Configure Trusted Types and script constructors
+- `onTrigger(elt, spec, handler)` - Attach a parsed trigger handler
+- `htmxProp(elt)` - Get an element's internal htmx state
+- `triggerHtmxEvent(elt, name, detail, bubbles)` - Dispatch an htmx event
+- `executeJavaScript(thisArg, values, code, expression, isAsync)` - Execute JavaScript through htmx security policy
+{/* check_extension_api:end */}
 
 #### Request Context
 
@@ -2898,7 +2915,7 @@ The `detail.ctx` object contains request information:
         action,        // Request URL
         method,        // HTTP method
         headers,       // Request headers
-        body,          // Request body (FormData)
+        body,          // FormData during htmx_config_request; final BodyInit later
         validate,      // Whether to validate
         abort,         // Function to abort request
         signal         // AbortSignal
@@ -3014,9 +3031,7 @@ for exploring this topic.
 htmx defaults [`htmx.config.mode`](/reference/config/htmx-config-mode) to `"same-origin"`, which causes the
 browser to reject any cross-origin fetch, even if an attacker injects an `hx-get` pointing elsewhere.
 
-This setting is enforced globally: any `mode` value in a per-element `hx-config` attribute is ignored and
-reset to the global config value. This means injected markup like
-`hx-config='{"mode":"cors"}'` cannot widen request scope.
+This setting is enforced for markup: any `mode` value in a per-element `hx-config` attribute is ignored and reset to the global config value. Injected markup like `hx-config='{"mode":"cors"}'` cannot widen request scope.
 
 If your application legitimately needs CORS (e.g. an API on a different subdomain):
 
@@ -3168,7 +3183,7 @@ They are listed below:
 | `htmx.config.includeIndicatorCSS` | defaults to `true` (determines if the indicator styles are loaded)                                                                                                                                                                                                         |
 | `htmx.config.defaultTimeout`      | defaults to `60000` (60 seconds), the number of milliseconds a request can take before automatically being terminated                                                                                                                                                      |
 | `htmx.config.inlineScriptNonce`   | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                                                                                                                    |
-| `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,optimistic'`)                                                                                                                                                                         |
+| `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,pending'`)                                                                                                                                                                         |
 | `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute name prefixes to preserve when morphing elements                                                                                                                                                                   |
 | `htmx.config.morphScanLimit`      | limits the number of nodes scanned during morphing                                                                                                                                                                                                                         |
 | `htmx.config.morphSkip`           | defaults to `'[hx-morph-skip]'`, CSS selector for elements to completely skip during morphing (they stay frozen)                                                                                                                                                            |

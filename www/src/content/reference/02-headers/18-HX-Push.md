@@ -1,6 +1,6 @@
 ---
 title: "HX-Push"
-description: "Deprecated — use HX-Push-Url instead"
+description: "Deprecated; use `HX-Push-Url` instead"
 hidden: true
 ---
 

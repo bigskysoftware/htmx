@@ -1,6 +1,6 @@
 ---
 title: "htmx:after:history:update"
-description: "After browser history is updated"
+description: "Fires after browser history update"
 ---
 
 The `htmx:after:history:update` event fires after htmx has updated the browser history state.

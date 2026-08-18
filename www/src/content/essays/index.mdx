@@ -4,6 +4,8 @@ description: "On hypermedia and building for the web."
 ---
 
 import { getFolder } from '../../lib/content';
+import JumpTo from '../../components/JumpTo.astro';
+import IndexTable from '../../components/IndexTable.astro';
 
 export const essayFolder = await getFolder('essays');
 export const localEssays = essayFolder.files;
@@ -76,7 +78,12 @@ export const grouped = GROUPS.map(g => ({
     essays: allEssays.filter(e => (e.tags || '').includes(g.id)),
 })).filter(g => g.essays.length > 0);
 
-<label class="not-prose text-field" for="essays-search">
+export const getPageHeadings = () => [
+    {depth: 2, slug: 'most-recent', text: 'Most Recent'},
+    ...grouped.map(group => ({depth: 2, slug: group.id, text: group.label})),
+];
+
+<label data-active-search class="not-prose text-field" for="essays-search">
     <span class="sr-only">Search essays</span>
     <i class="icon-[mdi--magnify]" aria-hidden="true"></i>
     <input
@@ -91,28 +98,32 @@ export const grouped = GROUPS.map(g => ({
         aria-keyshortcuts="/"
         _="install ActiveSearch"
     />
-    <span aria-hidden="true">Press <kbd>/</kbd></span>
+    <span aria-hidden="true">Focus <kbd>/</kbd></span>
 </label>
+
+<JumpTo headings={getPageHeadings()} />
 
 <section role="group">
 
 <h2 id="most-recent">
-    <a href="#most-recent" class="no-underline interact:underline">
-        Most Recent
-    </a>
+    <span>
+        <a href="#most-recent" class="no-underline interact:underline">Most Recent</a>
+    </span>
 </h2>
 
-<table>
-    <tbody>
-        {recentEssays.map(essay => (
-            <tr class="stretch-link">
-                <td><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></td>
-                <td class="whitespace-nowrap text-neutral-650 dark:text-neutral-350">{essay.author || ''}</td>
-                <td class="whitespace-nowrap tabular-nums text-neutral-650 dark:text-neutral-350">{essay.date}</td>
-            </tr>
-        ))}
-    </tbody>
-</table>
+<IndexTable>
+    {recentEssays.map(essay => (
+        <tr>
+            <th scope="row"><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></th>
+            <td>
+                <span>
+                    <span>{essay.author || ''}</span>
+                    <time>{essay.date}</time>
+                </span>
+            </td>
+        </tr>
+    ))}
+</IndexTable>
 
 </section>
 
@@ -120,22 +131,26 @@ export const grouped = GROUPS.map(g => ({
 <section role="group">
 
 <h2 id={group.id}>
-    <a href={`#${group.id}`} class="no-underline interact:underline">
-        {group.label}
-    </a>
+    <span>
+        <a href={`#${group.id}`} class="no-underline interact:underline">
+            {group.label}
+        </a>
+    </span>
 </h2>
 
-<table>
-    <tbody>
-        {group.essays.map(essay => (
-            <tr class="stretch-link">
-                <td><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></td>
-                <td class="whitespace-nowrap text-neutral-650 dark:text-neutral-350">{essay.author || ''}</td>
-                <td class="whitespace-nowrap tabular-nums text-neutral-650 dark:text-neutral-350">{essay.date || ''}</td>
-            </tr>
-        ))}
-    </tbody>
-</table>
+<IndexTable>
+    {group.essays.map(essay => (
+        <tr>
+            <th scope="row"><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></th>
+            <td>
+                <span>
+                    <span>{essay.author || ''}</span>
+                    <time>{essay.date || ''}</time>
+                </span>
+            </td>
+        </tr>
+    ))}
+</IndexTable>
 
 </section>
 ))}

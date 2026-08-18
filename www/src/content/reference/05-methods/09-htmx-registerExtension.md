@@ -1,9 +1,11 @@
 ---
 title: "htmx.registerExtension()"
-description: "Register htmx extension"
+description: "Registers htmx extension"
 ---
 
-Registers an htmx extension. Alias for `htmx.defineExtension()`.
+The `htmx.registerExtension()` function registers an htmx extension.
+
+`htmx.defineExtension()` is an alias.
 
 ## Syntax
 

@@ -1,6 +1,6 @@
 ---
 title: "HX-Refresh"
-description: "Trigger a full page reload"
+description: "Reloads page with `location.reload()`"
 ---
 
 The `HX-Refresh` response header, when set to `true`, reloads the entire page.

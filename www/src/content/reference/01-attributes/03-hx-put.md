@@ -1,6 +1,6 @@
 ---
 title: "hx-put"
-description: "Issues a PUT request to the specified URL"
+description: "Issues `PUT` request to specified URL"
 ---
 
 The `hx-put` attribute will cause an element to issue a `PUT` to the specified URL and swap

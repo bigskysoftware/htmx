@@ -1,7 +1,7 @@
 ---
 title: "hx-targets"
-description: "Swap one response into multiple elements at once"
-category: "Swap behaviors"
+description: "Target many elements with `hx-targets='.selector'`"
+category: "Swaps"
 icon: "icon-[mdi--target]"
 keywords: ["targets", "multi-target", "selector", "swap", "broadcast"]
 ---

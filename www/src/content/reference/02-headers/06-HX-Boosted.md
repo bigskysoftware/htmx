@@ -1,6 +1,6 @@
 ---
 title: "HX-Boosted"
-description: "Indicates a boosted navigation request"
+description: "Indicates boosted navigation request"
 ---
 
 The `HX-Boosted` request header is set to `true` when the request comes from a boosted element via [`hx-boost`](/reference/attributes/hx-boost).
@@ -19,3 +19,7 @@ else:
     # Regular htmx requests get a fragment
     return render_template('fragment.html')
 ```
+
+## See Also
+
+- [`hx-boost`](/reference/attributes/hx-boost)

@@ -86,7 +86,7 @@
     --radius-xs: 0.125rem;
     --radius-sm: 0.25rem;
     --radius-md: 0.375rem;
-    --radius-lg: 0.625rem; /* override of Tailwind default 0.5rem */
+    --radius-lg: 0.625rem;
     --radius-xl: 0.75rem;
     --radius-full: 9999px;
 
@@ -101,7 +101,13 @@
     --header-height: var(--navigation-bar-height);
     --construction-banner-height: 40px;
 
-    /* ─── Shiki (was in input.css base layer; light-dark()-ified) ────── */
+    /* Total height of everything stuck above the content. */
+    --header-offset: var(--header-height);
+    &:has(#construction-banner) {
+        --header-offset: calc(var(--header-height) + var(--construction-banner-height));
+    }
+
+    /* ─── Shiki ──────────────────────────────────────────────────────── */
     --astro-code-foreground: light-dark(#1a1a1a, var(--color-neutral-350));
     --astro-code-background: light-dark(white, var(--color-neutral-930));
     --astro-code-token-string-expression: #bca26c; /* HTML tags (yellow) */
@@ -117,8 +123,11 @@
 
 /* ─── Base ─────────────────────────────────────────────────────────────── */
 @layer base {
+    html {
+        overflow-x: clip;
+    }
+
     body {
-        overflow-x: hidden;
         color: light-dark(var(--color-neutral-700), var(--color-neutral-300));
         background-color: light-dark(var(--color-neutral-25), var(--color-neutral-920));
     }
@@ -143,7 +152,7 @@
 
 /* ─── Components ───────────────────────────────────────────────────────── */
 @layer components {
-    /* Card — neutral background, thin border, rounded corners.
+    /* Card: neutral background, thin border, rounded corners.
        Variants tweak corner radius: .xs / .sm / .lg / .xl (default = md). */
     .card {
         background: light-dark(var(--color-neutral-25), var(--color-neutral-910));
@@ -173,11 +182,10 @@
         font-weight: 500;
         letter-spacing: 0.125em;
         text-transform: uppercase;
-        color: light-dark(var(--color-neutral-500), var(--color-neutral-500));
+        color: var(--color-neutral-500);
     }
 
-    /* Demo window chrome — border, title bar with dots + label, content padding.
-       Ported from input.css lines 442–502. @variant dark blocks rewritten as light-dark(). */
+    /* Demo window chrome: border, title bar with dots + label, content padding. */
     .demo-container {
         position: relative;
         margin-block: 2rem;
@@ -227,91 +235,129 @@
     }
 }
 
-/* ─── Stretched link (unlayered to override prose table padding) ───────── */
-table:has(.stretch-link) {
-    border-collapse: separate;
-    border-spacing: 0;
+/* While searching, the jump-to directory is noise between input and results. */
+[data-active-search]:has(input:not(:placeholder-shown)) ~ nav[aria-label="Page sections"] {
+    display: none;
 }
 
-tr.stretch-link {
+/* ─── Docs full-page sticky section headers (unlayered) ────────────────── */
+
+/* Skip rendering offscreen sections; /docs alone is ~10k elements.
+   Margin/padding absorb the h2 bleed that containment clips. */
+article.sticky-headers > section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 60rem;
+    margin-inline: -1rem;
+    padding-inline: 1rem;
     position: relative;
-
-    & td {
-        padding-block: 0.75em;
-    }
-
-    & td:first-child {
-        padding-inline-start: 0.75rem;
-    }
-
-    & td:last-child {
-        padding-inline-end: 0.75rem;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-        & td:first-child a {
-            position: static;
-
-            &::after {
-                content: '';
-                position: absolute;
-                inset: 0;
-            }
-        }
-
-        &:hover td {
-            color: light-dark(var(--color-neutral-900), var(--color-neutral-100));
-        }
-    }
-
+    padding-top: calc(var(--sticky-h2-gap) + var(--sticky-h2-height));
 }
 
-/* ─── Docs full-page sticky section headers ───────────────────────────── */
+/* The first section needs no inter-section gap above its bar. */
+article.sticky-headers > section:first-of-type {
+    padding-top: var(--sticky-h2-height);
+}
+
+article.sticky-headers > section:first-of-type > h2 {
+    inset-block-start: 0;
+}
+
+/* Sections above the :target render fully so anchor jumps land exactly. */
+article.sticky-headers > section:has(:target),
+article.sticky-headers > section:has(~ section :target) {
+    content-visibility: visible;
+}
+
+/* The h2 holds the anchor id so it must not move: it spans the section as
+   an invisible track, and the <a> inside is the bar that sticks along it. */
 article.sticky-headers > section > h2 {
-    position: sticky;
-    top: var(--header-height);
-    scroll-margin-top: var(--header-height);
+    position: absolute;
+    inset: var(--sticky-h2-gap) 0 0 0;
+    pointer-events: none;
     z-index: 20;
-    font-size: 1.5em;
+    scroll-margin-top: var(--header-offset);
     line-height: 1.2;
-    margin-bottom: 0;
+    margin: 0;
+}
+
+/* The bar is the h2's first child: the autolink <a> on markdown pages,
+   a plain wrapper span on index pages (link and count live inside). */
+article.sticky-headers > section > h2 > :first-child {
+    position: sticky;
+    top: var(--header-offset);
+    display: flex;
+    align-items: baseline;
+    pointer-events: auto;
     background: light-dark(var(--color-neutral-25), var(--color-neutral-920));
     padding-block: 0.875rem;
     @media (width >= 40rem) {
         padding-block: 1rem;
     }
-    margin-inline: -1rem;
     padding-inline: 1rem;
     border-bottom: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-850));
 }
 
-html:has(#construction-banner) article.sticky-headers > section > h2 {
-    top: calc(var(--header-height) + var(--construction-banner-height));
-    scroll-margin-top: calc(var(--header-height) + var(--construction-banner-height));
+/* Bar height: font (1.375 × prose base) × 1.2 line-height + padding + border.
+   Gap above the bar: steps on the spacing grid. */
+article.sticky-headers {
+    --sticky-h2-height: calc(1.375 * 0.875rem * 1.2 + 1.75rem + 1px);
+    --sticky-h2-gap: calc(var(--spacing) * 5);
+    @media (width >= 40rem) {
+        --sticky-h2-height: calc(1.375 * 1rem * 1.2 + 2rem + 1px);
+        --sticky-h2-gap: calc(var(--spacing) * 7);
+    }
 }
 
-/* Scroll-driven: show bg/border only when stuck.
-   Tracks parent section (not the sticky h2, which never exits the viewport).
-   Uses cover range with absolute offset: fires when section top reaches the sticky threshold. */
+/* Anchor targets clear the sticky h2 bar. */
+article.sticky-headers > section :is(h3, h4) {
+    scroll-margin-top: calc(var(--header-offset) + var(--sticky-h2-height) + 1rem);
+}
+
+/* Desktop TOC fades in once the page intro scrolls out under the header. */
+@supports (animation-timeline: view()) {
+    body {
+        timeline-scope: --toc-reveal;
+    }
+
+    /* The search field drives the reveal: unlike jump-to, it never hides. */
+    [data-active-search] {
+        view-timeline: --toc-reveal block;
+        view-timeline-inset: var(--header-offset) 0;
+    }
+
+    aside:has(#page-outline) {
+        animation: toc-reveal linear both;
+        animation-timeline: --toc-reveal;
+        animation-range: exit 0% exit 100%;
+    }
+
+    @keyframes toc-reveal {
+        from {
+            opacity: 0;
+            visibility: hidden;
+        }
+        to {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+}
+
+/* Show the bar's bg/border only while stuck.
+   Track the section, not the bar: the bar never leaves the viewport. */
 @supports (animation-timeline: view()) {
     article.sticky-headers > section {
         view-timeline: --section block;
     }
 
-    article.sticky-headers > section > h2 {
+    article.sticky-headers > section > h2 > :first-child {
         background: transparent;
         border-bottom-color: transparent;
         animation: stick-bg linear both;
         animation-timeline: --section;
         animation-range:
-            cover calc(100vh - var(--header-height))
-            cover calc(100vh - var(--header-height) + 1px);
-    }
-
-    html:has(#construction-banner) article.sticky-headers > section > h2 {
-        animation-range:
-            cover calc(100vh - var(--header-height) - var(--construction-banner-height))
-            cover calc(100vh - var(--header-height) - var(--construction-banner-height) + 1px);
+            cover calc(100vh - var(--header-offset))
+            cover calc(100vh - var(--header-offset) + 1px);
     }
 
     @keyframes stick-bg {
@@ -324,44 +370,15 @@ html:has(#construction-banner) article.sticky-headers > section > h2 {
 
 /* ─── Utilities ────────────────────────────────────────────────────────── */
 @layer utilities {
-    /* `interact` semantic — apply per-element inside scoped <style> blocks:
+    /* The conventional interaction state. Hover is gated to pointer devices;
+       :active gives touch feedback (iOS needs Layout.astro's touchstart listener):
 
          .btn {
              color: var(--color-blue-700);
              &:focus-visible, &:active { color: var(--color-blue-600); }
              @media (hover: hover) { &:hover { color: var(--color-blue-600); } }
          }
-
-       No global helper class — replicating the Tailwind variant in vanilla CSS
-       would need a preprocessor. Document the pattern, keep it manual. */
-    /* Scan lines mask. Dark-mode shifts the gradient stop (light-dark() takes
-       colors only, so swap via custom property + @media). */
-    .scan-lines {
-        --scan-stop: 12.5%;
-        mask-size: 100% max(1.5px, 0.02em);
-        mask-image: linear-gradient(to bottom, transparent 0%, black var(--scan-stop));
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .scan-lines {
-            --scan-stop: 17.5%;
-        }
-    }
-
-    /* 3D drop shadow (block).
-       Parameterize via inline style:
-         <div class="shadow-3d" style="--shadow-color: var(--color-blue-900)"></div>
-       Optional --shadow-depth (any <length>, default 0.375cqh). */
-    .shadow-3d {
-        box-shadow: 0 calc(var(--shadow-depth, 0.375cqh) / 2) 0 color-mix(in srgb, var(--shadow-color) 95%, white),
-        0 var(--shadow-depth, 0.375cqh) 0 color-mix(in srgb, var(--shadow-color) 95%, black);
-    }
-
-    /* 3D drop shadow (text). Parameterize identically via --shadow-color. */
-    .text-shadow-3d {
-        text-shadow: 0 2px 0 color-mix(in srgb, var(--shadow-color) 95%, white),
-        0 4px 0 color-mix(in srgb, var(--shadow-color) 95%, black);
-    }
+    */
 
     /* Subtle scrollbar. */
     .scrollbar-subtle {
