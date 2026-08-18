@@ -8,7 +8,6 @@ import PageHeader from '../components/PageHeader.astro';
 import Pagination from '../components/Pagination.astro';
 import FinderLink from '../components/FinderLink.astro';
 import { getFolder, render, COLLECTIONS, hasSubfolderPages } from '../lib/content';
-import { buildDocsSidebar } from '../lib/docs-sidebar';
 import { EXTENSION_CATEGORIES, PATTERN_CATEGORIES, buildCategorySidebar } from '../lib/content-groups';
 
 export async function getStaticPaths() {
@@ -66,19 +65,15 @@ const flatSidebarCategories = collection === 'extensions'
     : collection === 'patterns'
         ? PATTERN_CATEGORIES
         : null;
-const includeSidebar = isDocsRoot
-    || (!!(folder?.folders?.length || (flatSidebarCategories && folder?.files?.length))
-        && !isReferenceIndex && !isPatternsIndex && !isExtensionsIndex);
+const includeSidebar = !!(folder?.folders?.length || (flatSidebarCategories && folder?.files?.length))
+    && !isReferenceIndex && !isPatternsIndex && !isExtensionsIndex;
 const includeHeader = !isHomePage;
 const includeMockServer = file?.frontmatter?.includeMockServer === true;
 const includePagination = !isCollectionRootPage && !isSubfolderIndexPage && !!(file?.prev || file?.next);
 const useWideLayout = (isCollectionRootPage || isSubfolderIndexPage) && collection === 'about';
 
-let headings: any[] = isHomePage ? [] : pageHeadings;
+const headings: any[] = isHomePage ? [] : pageHeadings;
 let sidebarFolder = folder!;
-if (isDocsRoot) {
-    ({headings, sidebar: sidebarFolder} = await buildDocsSidebar(folder));
-}
 
 if (flatSidebarCategories) {
     sidebarFolder = buildCategorySidebar(folder, flatSidebarCategories);

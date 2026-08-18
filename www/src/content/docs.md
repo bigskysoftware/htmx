@@ -2,7 +2,31 @@
 title: "Documentation"
 description: "From installation to advanced usage."
 ---
-<hr data-sidebar-group="Get Started" />
+## Contents
+
+* [Installation](#installation)
+* [Migration From htmx 2.x](#migration-from-htmx-2x)
+* [Mental Model](#mental-model)
+* [Hypermedia Controls](#hypermedia-controls)
+* [Requests & Responses](#requests--responses)
+* [Client-Side Scripting](#client-side-scripting)
+* [Multi-Target Updates](#multi-target-updates)
+* [HCON](#hcon)
+* [CSS Transitions](#css-transitions)
+* [Synchronization](#synchronization)
+* [Confirmations](#confirmations)
+* [Boosting](#boosting)
+* [History](#history)
+* [Validation](#validation)
+* [Web Components](#web-components)
+* [Attribute Inheritance](#attribute-inheritance)
+* [Extended Selectors](#extended-selectors)
+* [Extension System](#extension-system)
+* [Best Practices](#best-practices)
+* [Caching](#caching)
+* [Debugging](#debugging)
+* [Configuration](#configuration)
+* [VS Code](#vs-code)
 
 ## Installation
 
@@ -879,8 +903,6 @@ Return truthy if handled, falsy otherwise. Can return an array of elements for s
 8. Update event names (colons to underscores in hook names)
 9. Test custom swap styles with OOB swaps
 
-<hr data-sidebar-group="Core Concepts" />
-
 ## Mental Model
 
 <!-- TODO: Add section for developers coming from React/Vue/Svelte -
@@ -1284,8 +1306,8 @@ The response loads into `#results`.
 
 The button stays unchanged.
 
-#### Extended Selectors
-Use [extended selectors](#extended-selectors-1) to target elements flexibly.
+#### Targeting With Extended Selectors
+Use [extended selectors](#extended-selectors) to target elements flexibly.
 
 Beyond standard CSS selectors, you can use:
 
@@ -2128,8 +2150,6 @@ This works for any attribute that accepts HCON/JSON, including `hx-vals` and `hx
 - [`hx-vals`](/reference/attributes/hx-vals)
 - [`hx-config`](/reference/attributes/hx-config)
 
-<hr data-sidebar-group="Features" />
-
 ## CSS Transitions
 
 htmx makes it easy to
@@ -2943,8 +2963,6 @@ htmx.registerExtension("my-swap", {
 
 For migrating extensions written for htmx 2.x, see [Migration → Migrating Your Own Extensions](#migrating-your-own-extensions).
 
-<hr data-sidebar-group="Security" />
-
 ## Best Practices
 
 htmx allows you to define logic directly in your DOM. This has a number of advantages, the largest being
@@ -3116,8 +3134,6 @@ fragment of that HTML when `HX-Request: true`, you need to add `Vary: HX-Request
 based on a composite of the response URL and the `HX-Request` request header rather than being based just on the
 response URL.
 
-<hr data-sidebar-group="Troubleshoot" />
-
 ## Debugging
 
 Declarative and event driven programming with htmx (or any other declarative language) can be a wonderful and highly
@@ -3207,8 +3223,6 @@ Have fun with htmx!
 
 You can accomplish [quite a bit](/patterns) without writing a lot of code!
 
-<hr data-sidebar-group="Editor Support" />
-
 ## VS Code
 The [HTMX Toolkit](https://marketplace.visualstudio.com/items?itemName=atoolz.htmx-vscode-toolkit) extension adds htmx support to Visual Studio Code with autocomplete, hover documentation, and snippets.
 
@@ -3227,4 +3241,3 @@ Search for **HTMX Toolkit** in the VS Code Extensions panel, or install from the
 
 The extension source code is maintained at [atoolz/htmx-vscode-toolkit](https://github.com/atoolz/htmx-vscode-toolkit).
 
-<style>[data-sidebar-group] { display: none; }</style>
