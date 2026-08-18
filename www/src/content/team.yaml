@@ -44,3 +44,8 @@
   image: /src/assets/img/team/andre.png
   github: andreahlert
   content: Building the tools htmx deserves, one extension at a time.
+
+- name: Dien Hoa Truong
+  image: /src/assets/img/team/hoa.png
+  github: dienhoa
+  content: AI engineer trying to learn web dev.
