@@ -85,6 +85,17 @@ describe('Core htmx Parameter Handling', function() {
     vals.do.should.deep.equal(['', 'rey', ''])
   })
 
+  it('element with array value appends array items to FormData', function() {
+    var div = make('<div id="c1" name="fruit"></div>')
+    Object.defineProperty(div, 'value', {
+      value: ['banana', 'apple'],
+      configurable: true
+    })
+    var res = htmx._('getInputValues')(div)
+    res.values.fruit.should.deep.equal(['banana', 'apple'])
+    res.formData.getAll('fruit').should.deep.equal(['banana', 'apple'])
+  })
+
   it('hx-include works with form', function() {
     var form = make('<form id="f1"><input id="i1" name="foo" value="bar"/><input id="i2" name="do" value="rey"/><input id="i2" name="do" value="rey"/></form>')
     var div = make('<div hx-include="#f1"></div>')

@@ -3451,7 +3451,8 @@ var htmx = (function() {
   function shouldInclude(element) {
     // Cast to trick tsc, undefined values will work fine here
     const elt = /** @type {HTMLInputElement} */ (element)
-    if (elt.name === '' || elt.name == null || elt.disabled || closest(elt, 'fieldset[disabled]')) {
+    const name = getRawAttribute(elt, 'name') || elt.name
+    if (name === '' || name == null || elt.disabled || closest(elt, 'fieldset[disabled]')) {
       return false
     }
     // ignore "submitter" types (see jQuery src/serialize.js)
@@ -3508,7 +3509,11 @@ var htmx = (function() {
       return toArray(elt.files)
     }
     // @ts-ignore value will be undefined for non-input elements, which is fine
-    return elt.value
+    const value = elt.value
+    if (Array.isArray(value)) {
+      return toArray(value)
+    }
+    return value
   }
 
   /**
