@@ -104,7 +104,7 @@ const sponsors = defineCollection({
                 ...sponsor,
                 id: slugify(sponsor.name),
                 url: sponsor.tracking !== false
-                    ? `${sponsor.url}?utm_source=htmx&utm_medium=sponsorship&utm_campaign=${sponsor.tier}-sponsor-${new Date().getFullYear()}`
+                    ? `${sponsor.url}${sponsor.url.includes('?') ? '&' : '?'}utm_source=htmx&utm_medium=sponsorship&utm_campaign=${sponsor.tier}-sponsor-${new Date().getFullYear()}`
                     : sponsor.url,
             }))
     }),

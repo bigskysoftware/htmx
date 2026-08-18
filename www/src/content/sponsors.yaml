@@ -6,6 +6,14 @@
   github: commspace
   image: /src/assets/img/sponsors/commspace.svg
 
+# Gold Sponsors
+
+- name: SerpApi
+  tier: gold
+  url: https://serpapi.com/?utm_source=bigsky_software&utm_campaign=os_sponsorship
+  tracking: false
+  image: /src/assets/img/sponsors/serpapi.svg
+
 # Silver Sponsors
 
 - name: JetBrains
