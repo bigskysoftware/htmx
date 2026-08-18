@@ -21,7 +21,7 @@ const about = defineCollection({
 });
 
 const docs = defineCollection({
-    loader: glob({base: "./src/content", pattern: "docs.mdx"}),
+    loader: glob({base: "./src/content", pattern: "docs.md"}),
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),

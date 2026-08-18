@@ -11,7 +11,7 @@ import { absolutizeRelativeLinks } from '../lib/utils';
  */
 export const GET = async ({ site }) => {
     const origin = site?.origin || 'https://htmx.org';
-    const content = absolutizeRelativeLinks(fileAsMarkdown('docs.mdx'), origin);
+    const content = absolutizeRelativeLinks(fileAsMarkdown('docs.md'), origin);
     return new Response(content, {
         headers: {
             'Content-Type': 'text/plain; charset=utf-8',

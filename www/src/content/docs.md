@@ -2,10 +2,6 @@
 title: "Documentation"
 description: "From installation to advanced usage."
 ---
-import { Code } from 'astro:components';
-import integrity from '../data/integrity.json';
-import { codeBlockTransformer } from '../lib/shiki-transformers.js';
-
 <hr data-sidebar-group="Get Started" />
 
 ## Installation
@@ -16,19 +12,27 @@ htmx is a single JavaScript file with no dependencies. No build step is required
 
 Add this in your `<head>` tag:
 
-<Code lang="html" code={`<script src="https://cdn.jsdelivr.net/npm/htmx.org@${integrity.version}" integrity="${integrity.min}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
+```html
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__" integrity="__SRI_MIN__" crossorigin="anonymous"></script>
+```
 
 #### Unminified
 
-<Code lang="html" code={`<script src="https://cdn.jsdelivr.net/npm/htmx.org@${integrity.version}/dist/htmx.js" integrity="${integrity.full}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
+```html
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.js" integrity="__SRI_FULL__" crossorigin="anonymous"></script>
+```
 
 #### ES Module
 
-<Code lang="html" code={`<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@${integrity.version}/dist/htmx.esm.min.js" integrity="${integrity.esmMin}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.esm.min.js" integrity="__SRI_ESM_MIN__" crossorigin="anonymous"></script>
+```
 
 #### ES Module (unminified)
 
-<Code lang="html" code={`<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@${integrity.version}/dist/htmx.esm.js" integrity="${integrity.esm}" crossorigin="anonymous"></script>`} theme="css-variables" transformers={[codeBlockTransformer]} />
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.esm.js" integrity="__SRI_ESM__" crossorigin="anonymous"></script>
+```
 
 ### Download
 
@@ -96,43 +100,35 @@ To enable history caching, opt in via the meta tag:
 <meta name="htmx-config" content='{"historyCache": {"disable": false}}'>
 ```
 
-## Migration
+## Migration From htmx 2.x
 
-There are two major behavioral changes between htmx 2.x and 4.x:
+There are three major behavioral changes between htmx 2.x and 4.x:
 
-* In htmx 2.0 attribute inheritance is *implicit* by default while in 4.0 it is explicit by default
-* In htmx 2.0, `400` and `500` response codes are not swapped by default, whereas in htmx 4.0 these requests will be
+* In htmx 2.0 attribute inheritance is _implicit_ by default while in 4.0 it is _explicit_ by default
+    * To restore the 2.0 behavior, you can set the [`htmx.config.implicitInheritance`](#TODO) setting to `true`
+* In htmx 2.0, `400` and `500` response codes are _not_ swapped by default, whereas in htmx 4.0 these requests _will_ be
   swapped
+    * To restore the 2.0 behavior, you can set the [`htmx.config.noSwap`](#TODO) setting to `[204, 304, '4xx', '5xx']`
+* In htmx 2.0, history used a local cache snapshot for history navigation, while in 4.0 it issues a request to the
+  server to get the full page to restore
+  * htmx includes an [hx-history-cache](#TODO) extension if you wish to have a local cache.  This extension integrates
+    with Alpine.js and hx-live seamlessly.
 
-Add these two config lines to restore htmx 2.x behavior:
-
-```html
-
-<script>
-    htmx.config.implicitInheritance = true;
-    htmx.config.noSwap = [204, 304, '4xx', '5xx'];
-</script>
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.min.js"></script>
-```
-
-[`implicitInheritance`](/reference/config/htmx-config-implicitInheritance) restores htmx 2's implicit attribute
-inheritance. [`noSwap`](/reference/config/htmx-config-noSwap) prevents swapping error responses.
-
-Or load the [`htmx-2-compat`](/extensions/htmx-2-compat) extension, which restores implicit inheritance, old event
-names, and previous error-swapping defaults:
-
-```html
-
-<script src="/path/to/htmx.js"></script>
-<script src="/path/to/ext/htmx-2-compat.js"></script>
-```
-
-Most htmx 2 apps should work with either approach. Then migrate incrementally using this guide.
+Event names were also standardized/rationalized.
 
 ### Upgrade Checker
 
-htmx 4 ships with a command-line tool scans your templates and JS files for htmx 2 code that needs updating. It checks 
-for removed attributes, old event names, inheritance patterns, extension changes, etc.
+To make upgrading easier, htmx 4 ships with a command-line upgrade tool that scans your templates and JS files for
+htmx 2 code that needs updating.
+
+It checks for the following:
+
+* Removed attributes
+* Old event names
+* Attribute inheritance patterns
+* Extension changes, etc.
+
+You can run the upgrade checker via `npx`:
 
 ```bash
 npx htmx.org@__VERSION__ upgrade-check -- ./path/to/project/root
@@ -140,11 +136,10 @@ npx htmx.org@__VERSION__ upgrade-check -- ./path/to/project/root
 npx htmx.org@__VERSION__ upgrade-check --ext .vue ./path/to/project/root
 ```
 
-By default, the tool scans `.html`, `.php`, `.js`, `.ts`, `.jinja`, `.jinja2`, `.j2`, `.erb`, and `.hbs` files.
+By default, the tool scans `.html`, `.php`, `.js`, `.ts`, `.jinja`, `.jinja2`, `.j2`, `.erb`, and `.hbs` files.  You
+can add additional HTML-like file extensions via the `--ext` argument.
 
-Output is `file:line` format, clickable in most editors. You can add additional file types with the `--ext` option.
-
-The tool requires Python 3.
+Output is `file:line` format, clickable in most editors.
 
 ### What Changed
 
@@ -611,7 +606,7 @@ Look for these:
 
 ### Migrating Your Own Extensions
 
-{/* Audience shifts here from htmx consumers to extension authors. */}
+<!-- Audience shifts here from htmx consumers to extension authors. -->
 
 If you maintain a custom extension written for htmx 2.x, the extension API has changed substantially. The catalog of bundled extensions ([/extensions](/extensions)) has already been ported. This section is for porting your own.
 
@@ -888,10 +883,10 @@ Return truthy if handled, falsy otherwise. Can return an array of elements for s
 
 ## Mental Model
 
-{/* TODO: Add section for developers coming from React/Vue/Svelte -
+<!-- TODO: Add section for developers coming from React/Vue/Svelte -
      cover the mindset shift from "client builds UI from JSON" to
      "server sends ready-to-render HTML". Address common misconceptions
-     and patterns to unlearn. */}
+     and patterns to unlearn. -->
 
 htmx extends HTML's built-in concept of [hypermedia controls](https://dl.acm.org/doi/fullHtml/10.1145/3648188.3675127).
 
@@ -2882,7 +2877,7 @@ htmx.registerExtension("my-ext", {
 
 Available internal API:
 
-{/* check_extension_api:start */}
+<!-- check_extension_api:start -->
 - `HCON` - Parse and merge HCON values
 - `attributeValue(elt, name, defaultVal, returnElt)` - Get an attribute value with inheritance support
 - `parseTriggerSpecs(spec)` - Parse a trigger specification
@@ -2898,7 +2893,7 @@ Available internal API:
 - `htmxProp(elt)` - Get an element's internal htmx state
 - `triggerHtmxEvent(elt, name, detail, bubbles)` - Dispatch an htmx event
 - `executeJavaScript(thisArg, values, code, expression, isAsync)` - Execute JavaScript through htmx security policy
-{/* check_extension_api:end */}
+<!-- check_extension_api:end -->
 
 #### Request Context
 
@@ -3232,4 +3227,4 @@ Search for **HTMX Toolkit** in the VS Code Extensions panel, or install from the
 
 The extension source code is maintained at [atoolz/htmx-vscode-toolkit](https://github.com/atoolz/htmx-vscode-toolkit).
 
-<style>{`[data-sidebar-group] { display: none; }`}</style>
+<style>[data-sidebar-group] { display: none; }</style>

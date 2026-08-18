@@ -3,7 +3,7 @@ import {render, readRaw} from './content';
 /**
  * Build the /docs sidebar from the raw MDX source.
  *
- * Groups are `<hr data-sidebar-group="Name" />` markers in docs.mdx.
+ * Groups are `<hr data-sidebar-group="Name" />` markers in docs.md.
  * Each h2 after a marker belongs to that group until the next marker.
  *
  * @param {import('./content').ContentFolder} folder
