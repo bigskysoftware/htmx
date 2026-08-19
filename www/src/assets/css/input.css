@@ -268,7 +268,7 @@
 
     :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
         /* No font sizing here: the typography scale (prose-sm/prose-base) owns it. */
-        @apply relative border border-neutral-200 dark:border-neutral-850 rounded-lg bg-white dark:bg-neutral-950 overflow-y-hidden;
+        @apply relative border border-neutral-300 dark:border-neutral-800 rounded-lg bg-white dark:bg-neutral-950 overflow-y-hidden;
 
         code {
             /* One step below the prose body at each scale; leading matches the old look. */

@@ -12,7 +12,9 @@ import HeroStats from "./HeroStats.astro";
     <div class="hero-inner">
 
         <div class="logo-line">
-            <h1 id="hero-logo">&lt;<em class="slash">/</em>&gt; <span class="wordmark">htm<em>x</em></span></h1><p>Supercharged HTML</p>
+            <h1 id="hero-logo">&lt;<em class="slash">/</em>&gt; <span class="wordmark">htm<em>x</em></span></h1>
+            <p>Supercharged<svg class="bolt" viewBox="0 0 24 24" aria-hidden="true"
+                                 ><path d="M11 2 L4 13 h7 l-4 9 L20 10 h-7 L20 2 z"/></svg>HTML</p>
         </div>
 
         <div class="sub">
@@ -51,8 +53,9 @@ import HeroStats from "./HeroStats.astro";
     }
 
     h1 {
-        display: inline;
-        font-size: 3.5rem;
+        /* Mobile shows only "</>", so it can carry the full width. The min()
+           keeps it inside the viewport below ~350px. */
+        font-size: min(10.5rem, 48vw);
         font-weight: 700;
         line-height: 1;
         font-family: var(--font-chicago);
@@ -88,19 +91,24 @@ import HeroStats from "./HeroStats.astro";
         }
     }
 
-    /* tagline rides the logo baseline, dropped slightly, as on htmx.org */
     .logo-line p {
-        display: inline;
-        margin-left: 0.6rem;
-        position: relative;
-        top: 0.5rem;
+        margin-top: 0.5rem;
         font-style: italic;
         font-weight: 300;
-        font-size: 1rem;
+        font-size: min(2.1rem, 9.5vw);
 
-        @media (max-width: 639px) { display: block; margin-left: 0; top: 0; margin-top: 1.25rem; }
-        @media (min-width: 640px) { font-size: 1.125rem; }
+        @media (min-width: 640px) { margin-top: 0.75rem; font-size: 1.125rem; }
         @media (min-width: 1024px) { font-size: 1.25rem; }
+    }
+
+    /* Tailwind only emits the yellow vars it sees in classes, so use literals. */
+    .bolt {
+        display: inline-block;
+        height: 0.95em;
+        width: auto;
+        margin-inline: 0.12em;
+        vertical-align: -0.14em;
+        fill: light-dark(#eab308, #facc15);
     }
 
 
