@@ -28,41 +28,6 @@ export function formatDate(value, format = 'short') {
 }
 
 /**
- * Converts any string into a URL-safe slug.
- * Handles special characters, whitespace, unicode, file paths, and number prefixes.
- *
- * Examples:
- * - "Alex Petros" → "alex-petros"
- * - "JetBrains" → "jetbrains"
- * - "Stack Overflow" → "stack-overflow"
- * - "02-forms/05-reset-on-submit.md" → "forms/reset-on-submit"
- *
- * @param {string} str
- * @returns {string}
- */
-export function slugify(str) {
-    return str
-        // Remove common file extensions
-        .replace(/\.(astro|md|mdx|json|yaml|yml|toml)$/, '')
-        // Split by slash for path handling
-        .split('/')
-        .map(part =>
-            part
-                // Remove number prefixes like "01-"
-                .replace(/^\d+-/, '')
-                .toLowerCase()
-                .trim()
-                // Remove special characters (keep word chars, spaces, hyphens)
-                .replace(/[^\w\s-]/g, '')
-                // Collapse whitespace/underscores/hyphens to single hyphen
-                .replace(/[\s_-]+/g, '-')
-                // Remove leading/trailing hyphens
-                .replace(/^-+|-+$/g, '')
-        )
-        .join('/');
-}
-
-/**
  * Rewrite root-relative markdown links `](/foo)` to absolute `](origin/foo)`.
  * Used when serving a markdown document from a context where relative links
  * won't resolve (llms.txt consumers, raw `.md` exports).
