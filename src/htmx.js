@@ -1837,9 +1837,11 @@ var htmx = (() => {
                     }
                 } else if (Array.isArray(input.value)) {
                     for (let v of input.value) {
-                        formData.append(name, v);
+                        if (v != null) {
+                            formData.append(name, v);
+                        }
                     }
-                } else {
+                } else if (input.value != null) {
                     formData.append(name, input.value);
                 }
             }
