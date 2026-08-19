@@ -4,6 +4,7 @@ header:
   - {name: patterns,   url: /patterns}
   - {name: extensions, url: /extensions}
   - {name: essays,     url: /essays}
+  - {name: game,       url: /game, boost: false}
   - {name: about,      url: /about}
 
 footer:

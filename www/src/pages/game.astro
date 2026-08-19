@@ -1,5 +1,10 @@
 ---
 const title = "htmx gameboy";
+
+// Same launch link as the home-page banner, in a palette that suits the shell.
+const CART_URL = 'https://swag.htmx.org/products/htmx-4-the-game';
+const colorPalette = ['#ff6ec7', '#c9a3ff', '#ffd93b', '#8be04e', '#35e0c8'];
+const colorLetters = 'Color'.split('').map((ch, i) => ({ ch, color: colorPalette[i % colorPalette.length] }));
 ---
 
 <!doctype html>
@@ -14,6 +19,12 @@ const title = "htmx gameboy";
             --page-bg: #8e8a82;
             --shell: #dcd7cc;
             --shell-edge: #b6b0a3;
+            --shell-lip: #a29c8f;
+            --shell-rim: #f0ece4;
+            --ink-lip: #16151c;
+            --ink-rim: #474453;
+            --accent-lip: #5c1339;
+            --accent-rim: #b23c78;
             --bezel: #4a4854;
             --screen: #9bbc0f;
             --accent: #8b1e57;
@@ -65,13 +76,94 @@ const title = "htmx gameboy";
         }
 
         /* ============ CHASSIS ============ */
+        .gb-wrap {
+            position: relative;
+        }
         .gameboy {
             width: min(440px, 94vw);
             background: var(--shell);
             border-radius: 8px 8px 48px 8px;
             padding: 22px 22px 28px;
-            border: 1px solid var(--shell-edge);
+            border: 1px solid var(--shell-rim);
             position: relative;
+            /* same construction as .gb-announce: a solid lip for the moulded
+               edge, then a soft drop shadow. Not interactive, so it never moves. */
+            box-shadow:
+                0 6px 0 var(--shell-lip),
+                0 16px 28px rgba(0,0,0,0.3);
+        }
+
+        /* ---- launch announcement (toned-down twin of the home-page banner) ---- */
+        @font-face {
+            font-family: 'ChicagoFLF';
+            src: url('/fonts/ChicagoFLF.ttf') format('truetype');
+            font-display: swap;
+        }
+
+        /* filled, 3D-pressable button — same build as the home-page .gb-btn,
+           sized down to sit above the chassis */
+        .gb-announce {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 16px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            background: linear-gradient(to bottom, #3b82f6, #1d4ed8);
+            border: 1px solid #60a5fa;
+            box-shadow:
+                0 4px 0 #1e40af,
+                0 10px 18px rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.45;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 120ms ease, box-shadow 120ms ease, filter 150ms ease;
+        }
+        @media (hover: hover) {
+            .gb-announce:hover { filter: brightness(1.08); }
+        }
+        .gb-announce:active {
+            transform: translateY(3px);
+            box-shadow:
+                0 1px 0 #1e40af,
+                0 4px 8px rgba(0,0,0,0.25);
+        }
+        .gb-announce:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 3px;
+        }
+        .gb-announce .pad { display: block; width: 32px; height: 32px; flex: none; opacity: 0.8; }
+        .gb-announce .copy { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+        .gb-announce .chicago { font-family: 'ChicagoFLF', sans-serif; }
+
+        /* heavy oblique caps, as on the home-page banner */
+        .gb-announce .gb-logo {
+            font-weight: 900;
+            font-style: italic;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: -0.03em;
+            white-space: nowrap;
+            color: #fff;
+        }
+        .gb-announce .gb-color {
+            font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', cursive;
+            font-weight: 700;
+            font-size: 0.98em;
+            margin-left: 0.2em;
+            white-space: nowrap;
+        }
+        .gb-announce .tm { font-size: 0.5em; vertical-align: super; }
+        .gb-announce .buy-chip {
+            display: inline-block;
+            font-size: 20px;
+            line-height: 1;
+            letter-spacing: 0.01em;
+            color: #fff;
         }
 
         /* keyboard help card (outside the chassis) */
@@ -80,13 +172,17 @@ const title = "htmx gameboy";
             top: 0;
             left: calc(100% + 20px);
             background: var(--shell);
-            border: 1px solid var(--shell-edge);
+            border: 1px solid var(--shell-rim);
             border-radius: 6px;
             padding: 12px 14px;
             font-size: 10px;
             line-height: 1.5;
             color: #5a5750;
             min-width: 150px;
+            /* same lip as the chassis, scaled to the smaller card */
+            box-shadow:
+                0 3px 0 var(--shell-lip),
+                0 8px 14px rgba(0,0,0,0.22);
         }
         .keyboard-help h2 {
             margin: 0 0 8px;
@@ -143,18 +239,25 @@ const title = "htmx gameboy";
             height: 30px;
             border-radius: 3px;
             background: var(--shell);
-            border: 1px solid #8a857c;
+            border: 1px solid var(--shell-rim);
             color: #5a5750;
             cursor: pointer;
             padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+            box-shadow:
+                0 2px 0 var(--shell-lip),
+                0 5px 9px rgba(0,0,0,0.22);
             transition: color 80ms, border-color 80ms, transform 80ms, box-shadow 80ms;
         }
-        .sound-toggle:hover { color: var(--ink); border-color: var(--ink); }
-        .sound-toggle:active { transform: translateY(2px); box-shadow: 0 0 0 rgba(0,0,0,0); }
+        .sound-toggle:hover { color: var(--ink); }
+        .sound-toggle:active {
+            transform: translateY(2px);
+            box-shadow:
+                0 1px 0 var(--shell-lip),
+                0 2px 5px rgba(0,0,0,0.18);
+        }
         .sound-toggle svg { display: block; width: 14px; height: 14px; }
         .sound-toggle .icon-off { display: none; }
         .sound-toggle[data-on="false"] .icon-on { display: none; }
@@ -205,6 +308,9 @@ const title = "htmx gameboy";
             position: relative;
             width: 104px;
             height: 104px;
+            filter:
+                drop-shadow(0 3px 0 var(--ink-lip))
+                drop-shadow(0 7px 7px rgba(0,0,0,0.28));
         }
         .dpad-btn {
             position: absolute;
@@ -212,9 +318,8 @@ const title = "htmx gameboy";
             cursor: pointer;
             touch-action: none;
             transition: opacity 80ms, transform 80ms;
-            box-shadow: 0 1px 0 rgba(0,0,0,0.15);
         }
-        .dpad-btn.pressed { opacity: 0.85; transform: translateY(1px); box-shadow: none; }
+        .dpad-btn.pressed { opacity: 0.85; transform: translateY(3px); }
         .dpad-up, .dpad-down { left: 36px; width: 32px; height: 36px; }
         .dpad-left, .dpad-right { top: 36px; width: 36px; height: 32px; }
         .dpad-up { top: 0; }
@@ -250,11 +355,19 @@ const title = "htmx gameboy";
             cursor: pointer;
             touch-action: none;
             user-select: none;
-            border: none;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+            border: 1px solid var(--accent-rim);
+            box-shadow:
+                0 3px 0 var(--accent-lip),
+                0 7px 12px rgba(0,0,0,0.28);
             transition: opacity 80ms, transform 80ms, box-shadow 80ms;
         }
-        .round-btn.pressed { opacity: 0.9; transform: translateY(2px); box-shadow: 0 0 0 rgba(0,0,0,0); }
+        .round-btn.pressed {
+            opacity: 0.9;
+            transform: translateY(3px);
+            box-shadow:
+                0 1px 0 var(--accent-lip),
+                0 3px 6px rgba(0,0,0,0.22);
+        }
         .btn-b { top: 20px; left: 0; }
         .btn-a { top: 0; left: 64px; }
 
@@ -273,10 +386,19 @@ const title = "htmx gameboy";
             background: var(--ink);
             cursor: pointer;
             touch-action: none;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+            border: 1px solid var(--ink-rim);
+            box-shadow:
+                0 2px 0 var(--ink-lip),
+                0 5px 9px rgba(0,0,0,0.25);
             transition: opacity 80ms, transform 80ms, box-shadow 80ms;
         }
-        .capsule-btn.pressed { opacity: 0.9; transform: translateY(2px); box-shadow: 0 0 0 rgba(0,0,0,0); }
+        .capsule-btn.pressed {
+            opacity: 0.9;
+            transform: translateY(2px);
+            box-shadow:
+                0 1px 0 var(--ink-lip),
+                0 2px 5px rgba(0,0,0,0.2);
+        }
         .capsule-label {
             font-size: 9px;
             font-weight: 600;
@@ -288,7 +410,9 @@ const title = "htmx gameboy";
         @media (max-width: 720px) {
             #page { padding: 12px 10px; }
             .row { width: 100%; max-width: 480px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+            .gb-wrap { width: 100%; max-width: 480px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
             .gameboy { width: 100%; max-width: 480px; }
+            .gb-announce { width: 100%; max-width: 480px; margin-bottom: 0; }
             .gb-bezel { padding: 16px 18px 20px; }
             .keyboard-help {
                 position: static;
@@ -317,6 +441,22 @@ const title = "htmx gameboy";
 
     <div id="page">
     <div class="row">
+        <a class="gb-announce" href={CART_URL}>
+            <svg class="pad" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M7.5 6h9a5.5 5.5 0 0 1 5.44 6.35l-.6 3.86A2.9 2.9 0 0 1 18.5 18c-.9 0-1.72-.5-2.15-1.28L15.4 15H8.6l-.95 1.72A2.46 2.46 0 0 1 5.5 18a2.9 2.9 0 0 1-2.84-1.79l-.6-3.86A5.5 5.5 0 0 1 7.5 6zm-1 3v1.5H5v2h1.5V14h2v-1.5H10v-2H8.5V9h-2zm9 .75a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5zm2.5 2.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5z"/>
+            </svg>
+            <span class="copy">
+                <span>
+                    <span class="chicago">htmx 4.0, The Game</span> is available for<br />
+                    <span class="gb-logo">Game Boy<sup class="tm">&trade;</sup></span>
+                    &amp;
+                    <span class="gb-logo">Game Boy</span><span class="gb-color">{colorLetters.map((l) => <span style={`color:${l.color}`}>{l.ch}</span>)}</span><sup class="tm">&trade;</sup>!
+                </span>
+                <span class="buy-chip chicago">Buy Now!</span>
+            </span>
+        </a>
+
+        <div class="gb-wrap">
         <div class="gameboy">
             <div class="gb-bezel">
                 <div class="bezel-brand">
@@ -376,6 +516,7 @@ const title = "htmx gameboy";
                 <dt>Select</dt><dd>Shift</dd>
             </dl>
         </aside>
+        </div>
     </div>
     </div>
 

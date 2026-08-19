@@ -131,6 +131,7 @@ const links = defineCollection({
         header: z.array(z.object({
             name: z.string(),
             url: z.string(),
+            boost: z.boolean().optional(),
         })),
         footer: z.array(z.object({
             name: z.string(),

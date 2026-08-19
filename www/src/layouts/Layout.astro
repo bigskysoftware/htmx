@@ -149,7 +149,7 @@ const footerSections = [
 <header role="banner"
         class="flex flex-col fixed inset-x-0 top-0 h-(--header-height) z-40 bg-neutral-10 dark:bg-neutral-920 border-b border-neutral-200 dark:border-neutral-850">
     <nav id="navigation"
-         class="w-full h-(--navigation-bar-height) flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 lg:py-4 gap-4 lg:gap-12"
+         class="w-full h-(--navigation-bar-height) flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 lg:py-4 gap-4 lg:gap-6"
          aria-label="Primary Navigation">
         <div class="flex items-center gap-3">
 
@@ -210,11 +210,12 @@ const footerSections = [
         <div class="hidden xl:flex items-center justify-between flex-1 gap-4 xl:gap-6">
             <div aria-label="Main" class="hidden xl:flex items-center gap-4 xl:gap-6 flex-1"
                  hx-preload:inherited="mouseenter">
-                <ul class="flex gap-4 xl:gap-6 items-center justify-center xl:text-[1.075rem]">
+                <ul class="flex gap-1 items-center justify-center xl:text-[1.075rem]">
                     {navigationItems.map((item) => (
                             <li>
                                 <a href={item.url}
                                    data-label={item.name}
+                                   hx-boost={item.boost === false ? "false" : undefined}
                                    aria-current={isCurrentPath(Astro.url.pathname, item.url) ? 'page' : undefined}
                                    class="inline-block px-3 py-1 text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline aria-[current=page]:font-bold aria-[current=page]:text-neutral-950 dark:aria-[current=page]:text-neutral-50 outline-hidden after:content-[attr(data-label)] after:block after:h-0 after:overflow-hidden after:font-bold after:invisible">
                                     {item.name}
@@ -302,6 +303,7 @@ const footerSections = [
                     <li>
                         <a href={item.url}
                            data-label={item.name}
+                           hx-boost={item.boost === false ? "false" : undefined}
                            aria-current={isCurrentPath(Astro.url.pathname, item.url) ? 'page' : undefined}
                            class="block rounded-sm px-3 py-2 text-base font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline aria-[current=page]:font-bold aria-[current=page]:text-neutral-950 dark:aria-[current=page]:text-neutral-50 outline-hidden after:content-[attr(data-label)] after:block after:h-0 after:overflow-hidden after:font-bold after:invisible"
                            _="on click set #mobile-navigation-toggle.checked to false">
