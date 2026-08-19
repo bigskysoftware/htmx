@@ -6,8 +6,6 @@ import { test, expect } from './_fixtures';
 test.describe('Redirects', () => {
     const REDIRECTS: [string, string][] = [
         ['/help', '/about'],
-        ['/reference/attributes', '/reference'],
-        ['/reference/events', '/reference'],
         ['/patterns/forms/active-search', '/patterns/active-search'],
     ];
 

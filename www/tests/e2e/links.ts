@@ -13,8 +13,8 @@ async function checkLinks(hrefs: (string | null)[], request: any) {
 }
 
 test.describe('Internal link integrity', () => {
-    test('reference index links resolve', async ({ page, request }) => {
-        await page.goto('/reference');
+    test('reference section links resolve', async ({ page, request }) => {
+        await page.goto('/reference/attributes');
 
         const hrefs = await page.locator('main a[href^="/reference/"]').evaluateAll(
             (els: HTMLAnchorElement[]) => els.map(el => el.getAttribute('href'))

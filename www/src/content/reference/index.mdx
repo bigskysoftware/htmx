@@ -4,133 +4,15 @@ description: "Attributes, headers, events, and configuration."
 ---
 
 import { getFolder } from '../../lib/content';
-import JumpTo from '../../components/JumpTo.astro';
 import IndexTable from '../../components/IndexTable.astro';
 
 export const folder = await getFolder('reference');
 
-export const ATTRIBUTE_GROUPS = [
-    { label: 'Requests', titles: ['hx-get', 'hx-post', 'hx-put', 'hx-patch', 'hx-delete', 'hx-query'] },
-    { label: 'Request Control', titles: ['hx-trigger', 'hx-swap', 'hx-target', 'hx-select', 'hx-swap-oob', 'hx-select-oob', 'hx-confirm'] },
-    { label: 'Scripting', titles: ['hx-on'] },
-    { label: 'Data', titles: ['hx-vals', 'hx-include', 'hx-headers', 'hx-encoding'] },
-    { label: 'History', titles: ['hx-push-url', 'hx-replace-url', 'hx-history-elt'] },
-    { label: 'Enhancements', titles: ['hx-boost', 'hx-preload', 'hx-pending'] },
-    { label: 'Advanced', titles: ['hx-indicator', 'hx-status', 'hx-sync', 'hx-validate', 'hx-disable', 'hx-ignore', 'hx-preserve', 'hx-action', 'hx-method', 'hx-config'] },
-];
-export const REQUEST_HEADERS = ['HX-Request', 'HX-Request-Type', 'HX-Current-URL', 'HX-Source', 'HX-Target', 'HX-Boosted', 'HX-History-Restore-Request'];
-export const EVENT_GROUPS = [
-    { label: 'Request Lifecycle', titles: ['htmx:config:request', 'htmx:confirm', 'htmx:before:request', 'htmx:before:response', 'htmx:after:request', 'htmx:response:error', 'htmx:before:swap', 'htmx:before:settle', 'htmx:after:settle', 'htmx:after:swap', 'htmx:finally:request', 'htmx:error', 'htmx:abort'] },
-    { label: 'Elements', titles: ['htmx:before:init', 'htmx:after:init', 'htmx:before:process', 'htmx:after:process', 'htmx:process:{type}', 'htmx:after:implicitInheritance', 'htmx:before:cleanup', 'htmx:after:cleanup', 'load'] },
-    { label: 'History', titles: ['htmx:before:history:update', 'htmx:after:history:update', 'htmx:after:history:push', 'htmx:after:history:replace', 'htmx:before:history:restore'] },
-    { label: 'View Transitions', titles: ['htmx:before:viewTransition', 'htmx:after:viewTransition'] },
-    { label: 'Triggers', titles: ['intersect', 'every'] },
-];
-export const CONFIG_GROUPS = [
-    { label: 'Core', titles: ['htmx.config', 'htmx.version', 'htmx.config.prefix', 'htmx.config.metaCharacter', 'htmx.config.extensions'] },
-    { label: 'Requests', titles: ['htmx.config.defaultTimeout', 'htmx.config.mode'] },
-    { label: 'Swaps', titles: ['htmx.config.defaultSwap', 'htmx.config.allowEmptySwapAfterOOB', 'htmx.config.noSwap', 'htmx.config.transitions', 'htmx.config.defaultSettleDelay', 'htmx.config.defaultFocusScroll'] },
-    { label: 'Morphing', titles: ['htmx.config.morphIgnore', 'htmx.config.morphSkip', 'htmx.config.morphSkipChildren', 'htmx.config.morphScanLimit'] },
-    { label: 'Indicators', titles: ['htmx.config.includeIndicatorCSS', 'htmx.config.indicatorClass', 'htmx.config.requestClass'] },
-    { label: 'Behavior', titles: ['htmx.config.history', 'htmx.config.implicitInheritance', 'htmx.config.inlineScriptNonce', 'htmx.config.logAll'] },
-];
-export const METHOD_GROUPS = [
-    { label: 'Requests', titles: ['htmx.ajax()'] },
-    { label: 'DOM', titles: ['htmx.find()', 'htmx.findAll()', 'htmx.process()', 'htmx.swap()'] },
-    { label: 'Events', titles: ['htmx.on()', 'htmx.onLoad()', 'htmx.trigger()'] },
-    { label: 'Extensions', titles: ['htmx.registerExtension()'] },
-    { label: 'Timing', titles: ['htmx.parseInterval()', 'htmx.timeout()'] },
-];
-
-export const groups = folder.folders.map(sub => {
-    const items = sub.files.map(f => ({
-        title: f.frontmatter.title,
-        url: f.url,
-        description: f.frontmatter.description,
-    }));
-
-    if (sub.slug === 'attributes') {
-        const subgroups = ATTRIBUTE_GROUPS.map(g => ({
-            label: g.label,
-            items: g.titles.map(t => items.find(i => i.title === t)).filter(Boolean),
-        }));
-        return { slug: sub.slug, label: sub.frontmatter.title, subgroups };
-    }
-    if (sub.slug === 'headers') {
-        const request = items.filter(i => REQUEST_HEADERS.includes(i.title));
-        const response = items.filter(i => !REQUEST_HEADERS.includes(i.title));
-        return { slug: sub.slug, label: sub.frontmatter.title, subgroups: [
-            { label: 'Request', items: request },
-            { label: 'Response', items: response },
-        ]};
-    }
-    const namedGroups = sub.slug === 'events' ? EVENT_GROUPS
-        : sub.slug === 'config' ? CONFIG_GROUPS
-        : sub.slug === 'methods' ? METHOD_GROUPS
-        : null;
-    if (namedGroups) {
-        const subgroups = namedGroups.map(g => ({
-            label: g.label,
-            items: g.titles.map(t => items.find(i => i.title === t)).filter(Boolean),
-        }));
-        return { slug: sub.slug, label: sub.frontmatter.title, subgroups };
-    }
-    return { slug: sub.slug, label: sub.frontmatter.title, subgroups: [{ label: null, items }] };
-});
-
-export const getPageHeadings = () => groups.map(group => ({depth: 2, slug: group.slug, text: group.label}));
-
-<label data-active-search class="not-prose text-field" for="reference-search">
-    <span class="sr-only">Search reference</span>
-    <i class="icon-[mdi--magnify]" aria-hidden="true"></i>
-    <input
-        id="reference-search"
-        type="text"
-        placeholder="Search reference..."
-        autocomplete="off"
-        autocapitalize="off"
-        autocorrect="off"
-        spellcheck="false"
-        enterkeyhint="search"
-        aria-keyshortcuts="/"
-        _="install ActiveSearch"
-    />
-    <span aria-hidden="true">Focus <kbd>/</kbd></span>
-</label>
-
-<JumpTo headings={getPageHeadings()} />
-
-{groups.map(group => (
-<section role="group">
-
-<h2 id={group.slug}>
-    <span>
-        <a href={`#${group.slug}`} class="no-underline interact:underline">
-            {group.label}
-        </a>
-        <span data-search-count class="active-search-count">{group.subgroups.reduce((total, sg) => total + sg.items.length, 0)} {group.label.toLowerCase()}</span>
-    </span>
-</h2>
-
-{group.subgroups.map(subgroup => (
-<section role="group">
-
-{subgroup.label && <h4 id={`${group.slug}-${subgroup.label.toLowerCase()}`} class="font-sans text-[0.625rem] font-normal uppercase tracking-widest text-neutral-600 dark:text-neutral-400">{subgroup.label}</h4>}
-
 <IndexTable>
-    {subgroup.items.map(item => (
+    {folder.folders.map(section => (
         <tr>
-            <th scope="row">
-                <span hidden>{group.label} {subgroup.label}</span>
-                <a href={item.url}><code set:html={item.title} /></a>
-            </th>
-            <td set:html={item.description ? item.description.replace(/`([^`]+)`/g, '<code>$1</code>') : ''} />
+            <th scope="row"><a href={section.url}>{section.frontmatter.title}</a></th>
+            <td>{section.frontmatter.description}</td>
         </tr>
     ))}
 </IndexTable>
-
-</section>
-))}
-
-</section>
-))}

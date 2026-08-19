@@ -62,7 +62,6 @@ const rawSources = import.meta.glob('/src/content/**/*.{md,mdx}', {
     eager: true,
 });
 
-
 // Cache for loaded modules to avoid re-importing
 const moduleCache = new Map();
 
@@ -75,18 +74,7 @@ async function loadModule(fullPath) {
     return mod;
 }
 
-/**
- * Convention: a file with slug `full` in a collection is the aggregate view
- * of that collection. It is excluded from content lists,
- * and its body is synthesised at content-load time by
- * aggregateCollectionMarkdown().
- * @param {{ slug: string }} file
- */
-export function isAggregate(file) {
-    return file.slug === 'full';
-}
-
-export function readRaw(fullPath) {
+function readRaw(fullPath) {
     try {
         return readFileSync(join(process.cwd(), fullPath.replace(/^\//, '')), 'utf-8');
     } catch {
@@ -181,7 +169,6 @@ function isDataFile(path) {
     return /\.(yaml|yml|json)$/.test(path);
 }
 
-
 // --- Helpers ---
 
 function getFolderName(path) {
@@ -210,30 +197,13 @@ function sortContentFiles(a, b) {
     return a.path.localeCompare(b.path);
 }
 
-
 // --- Constants ---
 
 export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'extensions', 'patterns', 'essays', 'interviews', 'announcements', 'podcasts', 'memes'];
 
-// These collections use subfolders as sections on the root page, not as pages.
-const INLINE_SUBFOLDER_COLLECTIONS = new Set(['reference']);
-
-export function hasSubfolderPages(collection) {
-    return !INLINE_SUBFOLDER_COLLECTIONS.has(collection);
-}
-
 function folderPageUrl(collection, slug) {
-    if (slug && !hasSubfolderPages(collection)) return undefined;
     return slug ? `/${collection}/${slug}` : `/${collection}`;
 }
-
-export const TAG_ORDER = [
-    {tag: 'foundations', label: 'Foundations'},
-    {tag: 'the-case-for-hypermedia', label: 'The Case for Hypermedia'},
-    {tag: 'case-studies', label: 'Case Studies'},
-    {tag: 'guides', label: 'Guides'},
-    {tag: 'simplicity', label: 'Simplicity'},
-];
 
 // --- Actions ---
 
@@ -290,47 +260,15 @@ export async function getFolder(path) {
             if (match) rootFrontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
         } catch {}
 
-        // A root file plus a same-named directory (with no index of its own)
-        // means the root file is the landing page and the directory holds its
-        // subpages. /docs works this way: docs.md is the tour, docs/*.md are
-        // the deep dives it links out to.
-        const rootUrl = isHome ? '/' : `/${path}`;
-        /** @type {ContentFile[]} */
-        const childFiles = allPaths
-            .filter(p => p.startsWith(`/src/content/${path}/`))
-            .sort()
-            .map((fullPath) => {
-                const relPath = fullPath.replace('/src/content/', '');
-                const slug = cleanPath(relPath.replace(`${path}/`, ''));
-                /** @type {Record<string, any>} */
-                let frontmatter = {};
-                try {
-                    const raw = readFileSync(join(process.cwd(), 'src', 'content', relPath), 'utf-8');
-                    const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
-                    if (match) frontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
-                } catch {}
-                return {
-                    path: relPath,
-                    folder: path,
-                    slug,
-                    url: `/${path}/${slug}`,
-                    frontmatter,
-                    breadcrumbs: [
-                        {label: rootFrontmatter.title, href: rootUrl},
-                        {label: frontmatter?.title},
-                    ],
-                };
-            });
-
         return {
             path: rootRelPath,
             folder: path,
             slug: '',
-            url: rootUrl,
+            url: isHome ? '/' : `/${path}`,
             frontmatter: rootFrontmatter,
-            files: childFiles.filter(f => !f.frontmatter?.hidden),
+            files: [],
             folders: [],
-            allFiles: childFiles,
+            allFiles: [],
             breadcrumbs: []
         };
     }

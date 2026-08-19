@@ -1,6 +1,6 @@
 import { test, expect } from './_fixtures';
 
-const START = '/reference';
+const START = '/reference/attributes';
 const TARGET_HREF = '/reference/attributes/hx-post';
 const TARGET_URL = /hx-post/;
 
@@ -66,7 +66,7 @@ test.describe('Morph navigation', () => {
         await expect(page).toHaveURL(TARGET_URL);
 
         await page.goBack();
-        await expect(page).toHaveURL(/\/reference$/);
+        await expect(page).toHaveURL(/\/reference\/attributes$/);
     });
 
     test('morph navigation scrolls to top', async ({ page }) => {

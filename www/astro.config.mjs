@@ -132,13 +132,6 @@ export default defineConfig({
         "/htmx-4": "/docs#migration-from-htmx-2x",
         "/whats-new-in-htmx-4": "/docs#migration-from-htmx-2x",
 
-        // Reference subcategory URLs now live as anchors on /reference
-        "/reference/attributes": "/reference",
-        "/reference/headers": "/reference",
-        "/reference/events": "/reference",
-        "/reference/config": "/reference",
-        "/reference/methods": "/reference",
-        "/reference/tags": "/reference",
     },
 
     integrations: [

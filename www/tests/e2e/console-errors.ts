@@ -56,7 +56,7 @@ test.describe('Console errors', () => {
     });
 
     test('no console errors after morph navigation', async ({ page }) => {
-        await page.goto('/reference', { waitUntil: 'networkidle' });
+        await page.goto('/reference/attributes', { waitUntil: 'networkidle' });
 
         const errors = collectErrors(page);
 

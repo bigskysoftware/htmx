@@ -235,11 +235,6 @@
     }
 }
 
-/* While searching, the jump-to directory is noise between input and results. */
-[data-active-search]:has(input:not(:placeholder-shown)) ~ nav[aria-label="Page sections"] {
-    display: none;
-}
-
 /* ─── Docs full-page sticky section headers (unlayered) ────────────────── */
 
 /* Skip rendering offscreen sections; /docs alone is ~10k elements.

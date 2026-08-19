@@ -5,7 +5,7 @@ import PageNav from '../components/PageNav.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PageHeader from '../components/PageHeader.astro';
 import FinderLink from '../components/FinderLink.astro';
-import { getFolder, render, COLLECTIONS, hasSubfolderPages } from '../lib/content';
+import { getFolder, render, COLLECTIONS } from '../lib/content';
 import { resolvePageNav } from '../lib/page-nav';
 
 export async function getStaticPaths() {
@@ -27,15 +27,12 @@ export async function getStaticPaths() {
             });
         });
 
-        // Inline subfolders are listed on their collection root, not as pages.
-        if (hasSubfolderPages(collection)) {
-            folder.folders.forEach((subfolder) => {
-                paths.push({
-                    params: { slug: `${collection}/${subfolder.slug}` },
-                    props: { subfolder, folder, collection }
-                });
+        folder.folders.forEach((subfolder) => {
+            paths.push({
+                params: { slug: `${collection}/${subfolder.slug}` },
+                props: { subfolder, folder, collection }
             });
-        }
+        });
     }
 
     return paths;

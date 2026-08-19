@@ -83,24 +83,6 @@ export const getPageHeadings = () => [
     ...grouped.map(group => ({depth: 2, slug: group.id, text: group.label})),
 ];
 
-<label data-active-search class="not-prose text-field" for="essays-search">
-    <span class="sr-only">Search essays</span>
-    <i class="icon-[mdi--magnify]" aria-hidden="true"></i>
-    <input
-        id="essays-search"
-        type="text"
-        placeholder="Search essays..."
-        autocomplete="off"
-        autocapitalize="off"
-        autocorrect="off"
-        spellcheck="false"
-        enterkeyhint="search"
-        aria-keyshortcuts="/"
-        _="install ActiveSearch"
-    />
-    <span aria-hidden="true">Focus <kbd>/</kbd></span>
-</label>
-
 <JumpTo headings={getPageHeadings()} />
 
 <section role="group">

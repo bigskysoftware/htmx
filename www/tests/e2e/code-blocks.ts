@@ -27,8 +27,7 @@ test.describe('Code blocks', () => {
     });
 
     test('code blocks survive morph navigation', async ({ page }) => {
-        // Start on the index: with no sidebar, that is where sibling links live.
-        await page.goto('/reference', { waitUntil: 'networkidle' });
+        await page.goto('/reference/attributes', { waitUntil: 'networkidle' });
 
         await page.locator('a[href="/reference/attributes/hx-post"]').first().click();
         await expect(page).toHaveURL(/hx-post/);
