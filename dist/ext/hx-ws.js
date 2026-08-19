@@ -189,7 +189,7 @@
                 if (elt) {
                     api.triggerHtmxEvent(elt, 'htmx:after:ws:connection', {connection});
                 } else {
-                    // Element was removed while connecting — orphaned socket
+                    // Element was removed while connecting (orphaned socket)
                     cleanupOrphanedConnection(url, connection);
                     return;
                 }
@@ -216,7 +216,7 @@
                 if (config.reconnect && findConnectedElement(url)) {
                     scheduleReconnect(url, connection);
                 } else {
-                    // No element or reconnect disabled — full cleanup
+                    // No element or reconnect disabled: full cleanup
                     cleanupOrphanedConnection(url, connection);
                 }
             }, opts);
@@ -267,7 +267,7 @@
                 return;
             }
         } else {
-            // Element gone — no point scheduling reconnect
+            // Element gone, no point scheduling reconnect
             cleanupOrphanedConnection(url, connection);
             return;
         }
@@ -433,7 +433,7 @@
         }
 
         if (!connectionElement) {
-            // No element in DOM for this connection — orphan cleanup
+            // No element in DOM for this connection (orphan cleanup)
             cleanupOrphanedConnection(connection.url, connection);
             return;
         }

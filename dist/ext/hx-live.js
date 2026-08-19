@@ -13,19 +13,20 @@
     let recomputeBound = null;
     let inputBound = null;
     let swaps = 0;
-    let i = 0;
-    let start = 0;
     let warned = false;
 
     const OBSERVE_OPTIONS = { childList: true, subtree: true, attributes: true, characterData: true };
 
     let inputDebounceId = null;
-    const INPUT_DEBOUNCE_MS = htmx.config.live?.inputDebounceMs ?? 100;
 
     function ensureActive() {
         if (observer) return;
         recomputeBound = () => schedule();
-        inputBound = () => { clearTimeout(inputDebounceId); inputDebounceId = setTimeout(schedule, INPUT_DEBOUNCE_MS); };
+        let inputDelay = htmx.parseInterval(htmx.config.live?.inputDebounce ?? 100) ?? 100;
+        inputBound = () => {
+            clearTimeout(inputDebounceId);
+            inputDebounceId = setTimeout(schedule, inputDelay);
+        };
         document.addEventListener('input', inputBound, true);
         document.addEventListener('change', recomputeBound, true);
         observer = new MutationObserver(recomputeBound);
@@ -42,26 +43,23 @@
         observer.disconnect();
         observer = null;
         recomputeBound = null;
+        warned = false;
     }
 
     function schedule() {
         if (pending) return;
         if (swaps > 0) return;
-        let now = Date.now();
-        if (now - start > 1000) {
-            start = now;
-            i = 0;
-            warned = false;
-        }
-        if (++i > 50 && !warned) {
-            console.warn('htmx: hx-live recompute exceeded 50/sec.');
-            warned = true;
-        }
         pending = true;
         queueMicrotask(() => {
             // Detach observer while writing so our own writes don't queue records.
             observer?.disconnect();
+            let startedAt = performance.now();
             fns.forEach(f => f());
+            let elapsed = performance.now() - startedAt;
+            if (!warned && elapsed > 16) {
+                console.warn(`htmx: hx-live expressions took ${elapsed.toFixed(1)}ms.`);
+                warned = true;
+            }
             if (fns.size === 0) {
                 deactivate();
             } else {
@@ -134,7 +132,11 @@
                     : (value ? 'true' : 'false');
                 e.setAttribute(name, attrVal);
             } else if (isPropAttr) {
-                if (value === false || value == null) {
+                if (name === 'checked' || name === 'selected') {
+                    let present = !!value;
+                    e[name] = present;
+                    e.toggleAttribute(name, present);
+                } else if (value === false || value == null) {
                     e[name] = (typeof e[name] === 'boolean') ? false : '';
                     e.removeAttribute(name);
                 } else if (value === true) {
@@ -162,7 +164,7 @@
     function applyStyleBinding(elt, value) {
         let prop = api.htmxProp(elt);
         let oldManaged = prop.liveStyles || new Set();
-        let newManaged = new Set();
+        let styles = [];
 
         if (typeof value === 'string') {
             for (let decl of value.split(';')) {
@@ -170,20 +172,20 @@
                 if (idx < 0) continue;
                 let k = decl.slice(0, idx).trim();
                 let v = decl.slice(idx + 1).trim();
-                if (k) {
-                    newManaged.add(k);
-                    elt.style.setProperty(k, v);
-                }
+                if (k) styles.push([k, v]);
             }
         } else if (value && typeof value === 'object') {
             for (let [k, v] of Object.entries(value)) {
-                let cssProp = camelToKebab(k);
-                newManaged.add(cssProp);
-                if (v == null || v === '') elt.style.removeProperty(cssProp);
-                else elt.style.setProperty(cssProp, String(v));
+                styles.push([camelToKebab(k), v == null || v === '' ? null : String(v)]);
             }
         }
+
+        let newManaged = new Set(styles.map(([k]) => k));
         for (let k of oldManaged) if (!newManaged.has(k)) elt.style.removeProperty(k);
+        for (let [k, v] of styles) {
+            if (v == null) elt.style.removeProperty(k);
+            else elt.style.setProperty(k, v);
+        }
         if (elt.style.length === 0) elt.removeAttribute('style');
         prop.liveStyles = newManaged;
     }
@@ -321,11 +323,11 @@
      *
      * @example
      * toggle('.active')                      // toggle class
-     * toggle('aria-expanded')                // flip "true" ↔ "false"
+     * toggle('aria-expanded')                // flip "true" <-> "false"
      * toggle('hidden')                       // toggle attribute presence
      * toggle('data-view', 'grid|list|table') // cycle attribute through values
      * toggle('.size', 'sm|md|lg')            // cycle classes (one at a time)
-     * toggle('data-open', 'on|')             // 'on' ↔ absent slot
+     * toggle('data-open', 'on|')             // 'on' <-> absent slot
      */
     function applyToggle(name, values, element) {
         let isClass = name.startsWith('.');
@@ -495,7 +497,7 @@
         if (extra === undefined) {
             if (window.Alpine) {
                 extra = '';
-                console.warn('hx-live: Alpine.js detected — ":" short-form bindings disabled. Set htmx.config.live.bindPrefix to configure.');
+                console.warn('hx-live: Alpine.js detected; ":" short-form bindings disabled. Set htmx.config.live.bindPrefix to configure.');
             } else {
                 extra = ':';
             }
@@ -533,13 +535,15 @@
                 ensureActive();
                 let code = elt.getAttribute(bodyAttr)
                 let debounce = getDebounce(elt);
+                let exec;
                 let run = async () => {
                     if (!elt.isConnected) {
                         fns.delete(run);
                         return;
                     }
                     try {
-                        await api.executeJavaScript(elt, { debounce }, code, false);
+                        exec ||= api.executeJavaScript(elt, { debounce }, code, false, true, true);
+                        await exec();
                     } catch (e) {
                         if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt });
                     }
@@ -571,26 +575,17 @@
         ensureActive();
         let debounce = getDebounce(elt);
         let isAsync = /\bawait\b/.test(code);
-        let run = isAsync ? async () => {
+        let exec;
+        let run = async () => {
             if (!elt.isConnected) {
                 fns.delete(run);
                 return;
             }
             try {
-                let value = await api.executeJavaScript(elt, { debounce }, code, true);
+                exec ||= api.executeJavaScript(elt, { debounce }, code, true, isAsync, true);
+                let value = isAsync ? await exec() : exec();
                 writeAttrBinding(elt, attrName, value);
-                observer?.takeRecords();
-            } catch (e) {
-                if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt, attr: attrName });
-            }
-        } : () => {
-            if (!elt.isConnected) {
-                fns.delete(run);
-                return;
-            }
-            try {
-                let value = api.executeJavaScript(elt, { debounce }, code, true, false);
-                writeAttrBinding(elt, attrName, value);
+                if (isAsync) observer?.takeRecords();
             } catch (e) {
                 if (e !== dbSym) console.error('htmx: hx-live expression threw', e, { elt, attr: attrName });
             }
@@ -635,6 +630,7 @@
         forEvent: (...args) => forEvent(null, ...args),
         nextFrame: () => new Promise(r => requestAnimationFrame(r))
     };
+    htmx.live.$ = htmx.live.q;
 
     htmx.registerExtension('hx-live', {
         init: (internalAPI) => {
@@ -671,6 +667,7 @@
                 classList: elt.classList,
                 data: makeDataProxy(elt)
             });
+            if (htmx.config.live?.useDollar) detail.scope.$ = detail.scope.q;
         }
     });
 })();

@@ -14,7 +14,7 @@
         for (const attr of newNode.attributes) newElt.setAttribute(attr.name, attr.value)
         newElt.textContent = newNode.textContent
 
-        // stylesheet — await CSSOM or content will flash unstyled
+        // stylesheet: await CSSOM or content will flash unstyled
         if (newNode.tagName === "LINK" && newNode.rel === "stylesheet") {
             return new Promise(resolve => {
                 newElt.onload = resolve
@@ -23,7 +23,7 @@
             })
         }
 
-        // blocking external script (no async/defer) — must init before swap
+        // blocking external script (no async/defer): must init before swap
         if (newNode.tagName === "SCRIPT" && newNode.src && !newNode.async && !newNode.defer) {
             return new Promise((resolve, reject) => {
                 newElt.onload = resolve
@@ -32,7 +32,7 @@
             })
         }
 
-        // meta, title, base, preload/prefetch/icon links, async scripts — fire-and-forget
+        // meta, title, base, preload/prefetch/icon links, async scripts: fire-and-forget
         document.head.appendChild(newElt)
         if (newNode._preloadHint) newElt.addEventListener("load", () => newNode._preloadHint.remove(), {once: true})
         return null
@@ -100,7 +100,7 @@
                             }
                         } else {
                             // if this is a merge, we remove this content since it is not in the new head
-                            if (htmx.trigger(document.body, "htmx:before:head:remove", {headElement: currentHeadElt}) !== false) {
+                            if (htmx.trigger(document.body, "htmx:head:before:remove", {headElement: currentHeadElt}) !== false) {
                                 removed.push(currentHeadElt)
                             }
                         }
@@ -111,7 +111,7 @@
                 // nodes to append to the head tag
                 nodesToAppend.push(...srcToNewHeadNodes.values())
 
-                // defer scripts need the swapped DOM to exist — split them out
+                // defer scripts need the swapped DOM to exist, so split them out
                 for (const newNode of nodesToAppend) {
                     if (newNode.tagName === "SCRIPT" && newNode.defer) {
                         deferred.push(newNode)
@@ -124,7 +124,7 @@
                             newNode._preloadHint = hint
                         }
                     } else {
-                        if (htmx.trigger(document.body, "htmx:before:head:add", {headElement: newNode}) !== false) {
+                        if (htmx.trigger(document.body, "htmx:head:before:add", {headElement: newNode}) !== false) {
                             await appendNode(newNode)
                             added.push(newNode)
                         }
@@ -134,12 +134,12 @@
                 // remove all removed elements, after we have appended the new elements to avoid
                 // additional network requests for things like style sheets
                 for (const removedElement of removed) {
-                    if (htmx.trigger(document.body, "htmx:before:head:remove", {headElement: removedElement}) !== false) {
+                    if (htmx.trigger(document.body, "htmx:head:before:remove", {headElement: removedElement}) !== false) {
                         currentHead.removeChild(removedElement)
                     }
                 }
 
-                htmx.trigger(document.body, "htmx:after:head:merge", {
+                htmx.trigger(document.body, "htmx:head:after:merge", {
                     added: added,
                     kept: preserved,
                     removed: removed
@@ -160,7 +160,7 @@
             let target = ctx.target
             // TODO - is there a better way to handle this?  it used to be based on if the element was boosted
             let defaultMergeStrategy = target === document.body ? "merge" : "append";
-            if (htmx.trigger(document.body, "htmx:before:head:merge", detail)) {
+            if (htmx.trigger(document.body, "htmx:head:before:merge", detail)) {
                 let realText = ctx.response.raw.text.bind(ctx.response.raw)
                 ctx.response.raw.text = async () => {
                     let text = await realText()
@@ -176,12 +176,15 @@
             if (detail.head) {
                 // mergeHead awaits stylesheets/blocking scripts, returns deferred scripts.
                 // Set detail.ready so history-cache awaits before swapping body.
-                // Stash deferred scripts on detail — history-cache copies them onto the swap ctx
+                // Stash deferred scripts on detail so history-cache copies them onto the swap ctx
                 // so htmx_after_swap picks them up.
                 detail.ready = mergeHead(detail.head, 'merge').then(deferred => {
                     detail._deferredHeadScripts = deferred;
                 });
             }
+        },
+        htmx_history_cache_after_restore: (elt, detail) => {
+            for (const node of detail._deferredHeadScripts || []) appendNode(node)
         }
     })
 

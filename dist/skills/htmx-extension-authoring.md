@@ -291,24 +291,24 @@ Key patterns:
 - Use `htmx_before_cleanup` to tear down listeners
 - Use `detail.ctx.fetch` to override the fetch call
 
-### Pattern: Optimistic UI (request/error/swap lifecycle)
+### Pattern: Pending UI (request/error/swap lifecycle)
 
-From `src/ext/hx-optimistic.js` -- shows optimistic content during request:
+From `src/ext/hx-pending.js` -- shows pending content during request:
 
 ```javascript
 (() => {
-    htmx.registerExtension('hx-optimistic', {
+    htmx.registerExtension('hx-pending', {
         htmx_before_request: (elt, detail) => {
-            // Insert optimistic content before request fires
-            insertOptimisticContent(detail.ctx);
+            // Insert pending content before request fires
+            insertPendingContent(detail.ctx);
         },
         htmx_error: (elt, detail) => {
             // Revert on error
-            removeOptimisticContent(detail.ctx);
+            removePendingContent(detail.ctx);
         },
         htmx_before_swap: (elt, detail) => {
-            // Remove optimistic content before real swap
-            removeOptimisticContent(detail.ctx);
+            // Remove pending content before real swap
+            removePendingContent(detail.ctx);
         },
     });
 })();
@@ -317,7 +317,7 @@ From `src/ext/hx-optimistic.js` -- shows optimistic content during request:
 Key patterns:
 - No `init` needed if you don't use the internal API
 - Store state on `detail.ctx` (per-request, not per-element)
-- Handle error case to revert optimistic changes
+- Handle error case to revert pending changes
 - Clean up before swap so real content replaces cleanly
 
 ## Migrating from htmx 2.x Extensions
