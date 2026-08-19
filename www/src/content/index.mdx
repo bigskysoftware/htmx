@@ -2,20 +2,9 @@
 title: "htmx"
 description: "htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext"
 ---
-import { getFile } from '../lib/content';
 import EasterEggs from "../components/EasterEggs.astro";
 import Sponsors from "../components/Sponsors.astro";
 import Hero from "../components/Hero.astro";
-import { Image } from 'astro:assets';
-import bookCoverHard from '../assets/img/cover.png';
-import bookCoverSoft from '../assets/img/cover2.png';
-export const sponsorsFile = await getFile('sponsors.yaml');
-export const sponsors = (sponsorsFile?.frontmatter || []).map(s => ({
-    ...s,
-    url: s.tracking !== false
-        ? `${s.url}?utm_source=htmx&utm_medium=sponsorship&utm_campaign=${s.tier}-sponsor-${new Date().getFullYear()}`
-        : s.url,
-}));
 
 <div class="not-prose">
 
@@ -49,8 +38,8 @@ Our book <a href="https://hypermedia.systems" target="_blank" rel="noopener nore
 
 <a href="https://hypermedia.systems" target="_blank" rel="noopener noreferrer" class="group block not-prose w-fit mx-auto font-chicago text-sm text-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 interact:underline">
     <div class="flex gap-8 justify-center mb-3">
-        <Image src={bookCoverHard} alt="Hypermedia Systems (hardcover)" width={240} class="w-auto h-auto max-w-[calc(50%-1rem)] rounded-sm border border-neutral-200 dark:border-neutral-800" />
-        <Image src={bookCoverSoft} alt="Hypermedia Systems (softcover)" width={240} class="w-auto h-auto max-w-[calc(50%-1rem)] rounded-sm border border-neutral-200 dark:border-neutral-800" />
+        <img src="/img/cover.webp" alt="Hypermedia Systems (hardcover)" width="240" height="328" loading="lazy" decoding="async" class="w-auto h-auto max-w-[calc(50%-1rem)] rounded-sm border border-neutral-200 dark:border-neutral-800" />
+        <img src="/img/cover2.webp" alt="Hypermedia Systems (softcover)" width="240" height="328" loading="lazy" decoding="async" class="w-auto h-auto max-w-[calc(50%-1rem)] rounded-sm border border-neutral-200 dark:border-neutral-800" />
     </div>
     <span class="font-sans font-medium text-base">Read it free online →</span>
 </a>
@@ -59,7 +48,7 @@ Our book <a href="https://hypermedia.systems" target="_blank" rel="noopener nore
 
 Thank you to all our generous [sponsors](https://github.com/sponsors/bigskysoftware?o=esb)!
 
-<Sponsors sponsors={sponsors} />
+<Sponsors />
 
 </div>
 
