@@ -105,3 +105,11 @@
 # Pages with no 4.0 equivalent.
 /events            /reference                                   301
 /server-examples   /about                                       301
+
+# htmx 4.x specific redirects
+/sitemap.xml            /sitemap-index.xml                           301
+/help                   /about                                       301
+/htmx-4                 /docs#migration-from-htmx-2x                 301
+/whats-new-in-htmx-4    /docs#migration-from-htmx-2x                 301
+/migration-guide-htmx-2 /docs#migration-from-htmx-2x                 301
+/migration-guide-htmx-4 /docs#migration-from-htmx-2x                 301
