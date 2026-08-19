@@ -1836,6 +1836,7 @@ var htmx = (() => {
                         formData.append(name, option.value);
                     }
                 } else if (Array.isArray(input.value)) {
+                    // Add all array values (e.g. custom elements)
                     for (let v of input.value) {
                         if (v != null) {
                             formData.append(name, v);
