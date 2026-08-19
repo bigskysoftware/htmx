@@ -260,15 +260,47 @@ export async function getFolder(path) {
             if (match) rootFrontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
         } catch {}
 
+        // A root file plus a same-named directory (with no index of its own)
+        // means the root file is the landing page and the directory holds its
+        // subpages. /docs works this way: docs.md is the tour, docs/*.md are
+        // the deep dives it links out to.
+        const rootUrl = isHome ? '/' : `/${path}`;
+        /** @type {ContentFile[]} */
+        const childFiles = allPaths
+            .filter(p => p.startsWith(`/src/content/${path}/`))
+            .sort()
+            .map((fullPath) => {
+                const relPath = fullPath.replace('/src/content/', '');
+                const slug = cleanPath(relPath.replace(`${path}/`, ''));
+                /** @type {Record<string, any>} */
+                let frontmatter = {};
+                try {
+                    const raw = readFileSync(join(process.cwd(), 'src', 'content', relPath), 'utf-8');
+                    const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+                    if (match) frontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
+                } catch {}
+                return {
+                    path: relPath,
+                    folder: path,
+                    slug,
+                    url: `/${path}/${slug}`,
+                    frontmatter,
+                    breadcrumbs: [
+                        {label: rootFrontmatter.title, href: rootUrl},
+                        {label: frontmatter?.title},
+                    ],
+                };
+            });
+
         return {
             path: rootRelPath,
             folder: path,
             slug: '',
-            url: isHome ? '/' : `/${path}`,
+            url: rootUrl,
             frontmatter: rootFrontmatter,
-            files: [],
+            files: childFiles.filter(f => !f.frontmatter?.hidden),
             folders: [],
-            allFiles: [],
+            allFiles: childFiles,
             breadcrumbs: []
         };
     }

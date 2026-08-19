@@ -19,8 +19,14 @@
 /attributes/kt-swap           /reference/attributes/hx-swap                301
 
 # Every other attribute kept its name.
-/attributes     /reference                                   301
+/attributes     /reference/attributes                        301
 /attributes/*   /reference/attributes/:splat                 301
+
+# The JavaScript API is now one page per method.
+/api                    /reference/methods                           301
+
+# Events moved under /reference/
+/events            /reference/events                            301
 
 # Headers. 4.0 capitalises the slugs, so no wildcard is possible.
 /headers/hx-location      /reference/headers/HX-Location               301
@@ -29,7 +35,7 @@
 /headers/hx-redirect      /reference/headers/HX-Redirect               301
 /headers/hx-replace-url   /reference/headers/HX-Replace-Url            301
 /headers/hx-trigger       /reference/headers/HX-Trigger                301
-/headers                  /reference                                   301
+/headers                  /reference/headers                           301
 
 # Examples became patterns.
 /examples                        /patterns                                    301
@@ -53,6 +59,7 @@
 /examples/modal-custom           /patterns/dialogs                            301
 /examples/modal-uikit            /patterns/dialogs                            301
 /examples/move-before            /patterns                                    301
+/examples/move-before/*          /patterns                                    301
 /examples/progress-bar           /patterns/progress-bar                       301
 /examples/reset-user-input       /patterns/reset-on-submit                    301
 /examples/sortable               /patterns/drag-to-reorder                    301
@@ -68,6 +75,14 @@
 /extensions/preload        /extensions/hx-preload                       301
 /extensions/sse            /extensions/hx-sse                           301
 /extensions/ws             /extensions/hx-ws                            301
+/extensions/idiomorph      /docs#morph-swaps                            301
+
+# Dropped in 4.0, so they stay on the 2.x site.
+/extensions/response-targets  https://v2.htmx.org/extensions/response-targets/ 301
+/extensions/htmx-1-compat     https://v2.htmx.org/extensions/htmx-1-compat/ 301
+
+# The 10- prefix reads as an ordering prefix, so the file is named out.
+/essays/10-tips-for-SSR-HDA-apps         /essays/ten-tips-for-SSR-HDA-apps            301
 
 # Interviews moved out of /essays.
 /essays/interviews                      /interviews                                  301
@@ -102,9 +117,14 @@
 # The feed moved.
 /feed.xml       /atom.xml                                    301
 
-# Pages with no 4.0 equivalent.
-/events            /reference                                   301
+# Ported from the 2.x site
+/quirks                 /docs/quirks                                 301
+/QUIRKS                 /docs/quirks                                 301
+/CVE-2026-3682-1        /cve-2026-3682-1                             301
+
+# Superseded elsewhere.
 /server-examples   /about                                       301
+/talk              /about                                       301
 
 # htmx 4.x specific redirects
 /sitemap.xml            /sitemap-index.xml                           301
