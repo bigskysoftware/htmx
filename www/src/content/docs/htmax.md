@@ -1,3 +1,8 @@
+---
+title: "htmax"
+description: "htmx bundled with the most popular extensions in a single file."
+---
+
 
 The `htmax.js` file bundles htmx with the most popular extensions in a single file:
 

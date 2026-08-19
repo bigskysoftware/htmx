@@ -1,8 +1,11 @@
-### Migrating htmx Extensions to htmx 4.0
+---
+title: "Migrating Extensions to htmx 4"
+description: "How to port a custom htmx 2.x extension to the 4.0 hook API."
+---
 
 If you maintain a custom extension written for htmx 2.x, the extension API has changed substantially. 
 
-#### From Callbacks to Hooks
+## From Callbacks to Hooks
 
 htmx 4 replaces the callback-based extension API with event-based hooks. 
 
@@ -24,9 +27,9 @@ htmx.registerExtension('my-ext', {
 });
 ```
 
-#### What Changed
+## What Changed
 
-##### No `hx-ext` attribute
+### No `hx-ext` attribute
 
 Extensions load by including the script. No attribute needed:
 
@@ -41,7 +44,7 @@ Restrict which extensions can load:
 <meta name="htmx-config" content='{"extensions": "sse, ws"}'>
 ```
 
-##### Event hooks replace callbacks
+### Event hooks replace callbacks
 
 Instead of a single `onEvent` callback that switches on event names, each event gets its own hook method. Hook names use underscores where events use colons:
 
@@ -55,7 +58,7 @@ Instead of a single `onEvent` callback that switches on event names, each event 
 
 All hooks receive `(elt, detail)`. Return `false` to cancel.
 
-##### `handle_swap` is special
+### `handle_swap` is special
 
 Unlike other hooks, `handle_swap` is called directly with positional parameters (no `htmx_` prefix, no detail object):
 
@@ -69,7 +72,7 @@ handle_swap: (swapStyle, target, fragment, swapSpec) => {
 }
 ```
 
-##### Detail object replaces event properties
+### Detail object replaces event properties
 
 All hooks receive `detail.ctx` with full request/response context:
 
@@ -79,13 +82,13 @@ All hooks receive `detail.ctx` with full request/response context:
 - `detail.ctx.text` (response body, modifiable in `htmx_after_request`)
 - `detail.ctx.target`
 
-##### OOB swap stripping
+### OOB swap stripping
 
 OOB swaps automatically strip the wrapper element for non-outer swap styles. Name custom swap styles starting with "outer" (e.g., `outerMorph`) to preserve the wrapper.
 
-#### Callback Migration Map
+## Callback Migration Map
 
-##### `init`
+### `init`
 
 ```javascript
 // htmx 2.x
@@ -101,7 +104,7 @@ init: (internalAPI) => {
 
 Store the `internalAPI` reference for use in other hooks. No return value needed.
 
-##### `getSelectors`
+### `getSelectors`
 
 Removed. Use `htmx_after_init` to check for attributes:
 
@@ -124,7 +127,7 @@ htmx_after_init: (elt) => {
 }
 ```
 
-##### `onEvent`
+### `onEvent`
 
 Replace with individual hooks:
 
@@ -151,7 +154,7 @@ htmx_before_swap: (elt, detail) => {
 }
 ```
 
-##### `transformResponse`
+### `transformResponse`
 
 Removed. Modify `detail.ctx.text` in `htmx_after_request`:
 
@@ -180,7 +183,7 @@ htmx_after_request: (elt, detail) => {
 
 Event flow: response received, `ctx.text` set, `htmx:after:request` fires, `ctx.text` consumed into fragment, `htmx:before:swap`.
 
-##### `encodeParameters`
+### `encodeParameters`
 
 Removed. Modify the final `detail.ctx.request.body` in `htmx_before_request`:
 
@@ -222,7 +225,7 @@ htmx_before_request: (elt, detail) => {
 
 `ctx.request.body` is `FormData` in `htmx_config_request`. After that hook, GET and DELETE values move into the URL, non-multipart bodies become `URLSearchParams`, and multipart bodies remain `FormData`. In `htmx_before_request`, replace the final body with any valid `BodyInit`.
 
-##### `isInlineSwap` and `handleSwap`
+### `isInlineSwap` and `handleSwap`
 
 Both replaced by `handle_swap`:
 
@@ -250,7 +253,7 @@ handle_swap: (swapStyle, target, fragment) => {
 
 Return truthy if handled, falsy otherwise. Can return an array of elements for settle tracking.
 
-#### Removed Callbacks
+## Removed Callbacks
 
 | htmx 2.x callback                       | htmx 4 replacement                                            |
 |-----------------------------------------|---------------------------------------------------------------|

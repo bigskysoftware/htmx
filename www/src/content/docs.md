@@ -4,6 +4,78 @@ description: "From installation to advanced usage."
 nav: docs-nav.html
 ---
 
+## htmx in a Nutshell
+
+htmx extends HTML's built-in concept of [hypermedia controls](https://dl.acm.org/doi/fullHtml/10.1145/3648188.3675127).
+
+To understand htmx, let's take a look at the two most widely known such controls: `<a>` (anchors, aka "links") & `<form>`s.
+
+Here is a basic, boring anchor tag:
+
+```html
+<a href="/blog">Blog</a>
+```
+
+If you get past how pedestrian this link is, it's actually a pretty amazing little bit of technology: when a user clicks
+on this link in a browser, the browser will issue an HTTP `GET` request to `/blog`. The browser then loads the HTML response
+returned by the server into the browser's window.
+
+Forms are a bit more complicated:
+
+```html
+<form method="post" action="/register">
+    <label>Email: <input type="email"></label>
+    <button type="submit">Submit</button>
+</form>
+```
+
+When a user submits this form (by, say, clicking on the "Submit" button) a browser will issue an HTTP `POST` request to
+`/register`. Again, the browser will load the HTML response to this request into the browser window.
+
+The common pattern here is that the user performs an action, say, a click, and the browser issues an HTTP request to
+a server and then loads the response HTML into the browser's window.
+
+### How htmx Extends This Idea
+
+The core idea of htmx is to use a few custom attributes to _generalize_ this idea:
+
+* Any element can issue an HTTP request
+* Any event can trigger that request
+* The response HTML can be placed anywhere in the DOM
+
+This small extension turns out to dramatically boost the expressiveness of HTML.
+
+Here is a sample htmx-powered button:
+
+```html
+<button hx-post="/clicked"
+        hx-trigger="click"
+        hx-target="#output"
+        hx-swap="outerHTML">
+    Click Me
+</button>
+<output id="output"></output>
+```
+
+The htmx attributes start with `hx-`.  Let's go through each one:
+
+* `hx-post="/clicked"` - this button should issue a POST request to the `/clicked` relative URL
+* `hx-trigger="click"` - it should issue the request when the button is clicked
+* `hx-target="#output"` - it should target the element with the id `output` with the HTML in the response to this request
+* `hx-swap="outerHTML"` - it should replace the element entirely with that html
+
+These four attributes let you specify how and when this button should issue a request and where in the DOM the resulting
+HTML should be placed.
+
+One thing to note: the `hx-trigger` here is redundant.  If it was omitted htmx would use the default trigger event
+which, in the case of buttons, is a click.
+
+One important thing to understand is that htmx expects _HTML_ from the server.  In this case the server would
+return a _partial_ bit of HTML, say a `<div>`, to replace the button.  What htmx does _not_ expect is JSON.
+
+Because htmx works in terms of HTML it follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS) (HATEOAS).
+
+This makes developing with htmx feel much more like traditional web development than most front-end libraries today.
 
 ## Installing htmx
 
@@ -124,109 +196,6 @@ Output is `file:line` format, clickable in most editors.
 For more details see [What's New in 4.0](/docs/whats-new-in-htmx-4)
 
 Extension authors who need to port their extensions to htmx 4 can refer to  [Migrating Extensions to 4.0](/docs/migrating-extensions-to-4)
-
-## Mental Model
-
-<!-- TODO: Add section for developers coming from React/Vue/Svelte -
-     cover the mindset shift from "client builds UI from JSON" to
-     "server sends ready-to-render HTML". Address common misconceptions
-     and patterns to unlearn. -->
-
-htmx extends HTML's built-in concept of [hypermedia controls](https://dl.acm.org/doi/fullHtml/10.1145/3648188.3675127).
-
-To understand htmx, you should first understand what these are.
-
-### HTML's Native Controls
-
-HTML has two major elements that issue HTTP requests in response to user actions: `<a>` (anchors, aka "links") and
-`<form>`.
-
-#### The Anchor Tag
-
-```html
-<a href="/blog">Blog</a>
-```
-
-When a user click this link a browser will issue an HTTP `GET` request to `/blog`. It will then load the HTML response
-into the browser's window.
-
-#### The Form Tag
-
-```html
-
-<form method="post" action="/register">
-    <label>Email: <input type="email"></label>
-    <button type="submit">Submit</button>
-</form>
-```
-
-When a user submits this form (by, say, clicking on the "Submit" button) a browser will issue an HTTP `POST` request to
-`/register`. Again, it will load the HTML response to this request into the browser window.
-
-These two hypermedia controls demonstrate the core idea behind them: in response to a user action a
-request is made and new content is loaded into the client.
-
-### Transclusion
-
-Both of these HTML elements support a (relatively little-known and unused)
-[`target`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement/target) attribute.
-
-By using this attribute you can place the response in, for example, an iframe rather than replacing the entire
-content in the window:
-
-```html
-
-<form method="post" action="/register" target="iframe1">
-    <label>Email: <input type="email"></label>
-    <button type="submit">Submit</button>
-</form>
-<iframe name="iframe1">
-    <!-- Response appears here -->
-</iframe>
-```
-
-This is [transclusion](https://en.wikipedia.org/wiki/Transclusion), where one HTML document is included inside of
-another.
-
-### How htmx Extends This Idea
-
-htmx generalizes these concepts. Any element can issue any type of HTTP request to any URL. Any event can trigger the
-request. And the response HTML can be placed anywhere in the DOM.
-
-```html
-
-<button hx-post="/clicked"
-        hx-trigger="click"
-        hx-target="#output"
-        hx-swap="outerHTML">
-    Click Me
-</button>
-<output id="output"></output>
-```
-
-These htmx attributes (which start with `hx-`) tell a browser:
-
-> When a user clicks this button, issue a POST request to `/clicked`. Use the response to replace the element with id
-`output`.
-
-Like anchor and form tags, htmx expects _HTML responses_ from the server.
-
-This is in contrast with many front-end libraries and frameworks today which instead expect JSON and
-use client-side templating to transform that JSON into HTML on the client.
-
-### htmx's Philosophy
-
-Because htmx works in terms of HTML it follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm). 
-It uses [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS) (HATEOAS).
-
-The server controls what the user sees by sending HTML.  Users select actions from that HTML and the server responds with
-more HTML (i.e. hypertext). 
-
-Thus, the hypermedia itself drives the application.
-
-## Hypermedia Controls
-
-htmx extends HTML with attributes that control how requests are made and how responses update the page.
 
 ### Making Requests
 
