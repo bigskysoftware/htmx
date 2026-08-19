@@ -3,16 +3,32 @@ title: "Reference"
 description: "Attributes, headers, events, and configuration."
 ---
 
-import { getFolder } from '../../lib/content';
-import IndexTable from '../../components/IndexTable.astro';
+import { getFolder, render } from '../../lib/content';
 
 export const folder = await getFolder('reference');
 
-<IndexTable>
-    {folder.folders.map(section => (
-        <tr>
-            <th scope="row"><a href={section.url}>{section.frontmatter.title}</a></th>
-            <td>{section.frontmatter.description}</td>
-        </tr>
-    ))}
-</IndexTable>
+export const sections = await Promise.all(
+    folder.folders.map(async section => ({
+        title: section.frontmatter.title,
+        description: section.frontmatter.description,
+        url: section.url,
+        slug: section.slug,
+        Content: (await render(section)).Content,
+    }))
+);
+
+export const getPageHeadings = () => sections.map(s => ({depth: 2, slug: s.slug, text: s.title}));
+
+{sections.map(section => (
+<section>
+
+<h2 id={section.slug}>
+    <span><a href={section.url}>{section.title}</a></span>
+</h2>
+
+{section.description}
+
+<section.Content />
+
+</section>
+))}

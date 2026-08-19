@@ -3,7 +3,7 @@ title: "Config"
 description: "Settings to customize htmx behavior and defaults."
 ---
 
-## Core
+### Core
 
 - [htmx.config](/reference/config/htmx-config) - configures htmx behavior globally
 - [htmx.version](/reference/config/htmx-config-version) - reports current htmx version (read-only)
@@ -11,12 +11,12 @@ description: "Settings to customize htmx behavior and defaults."
 - [htmx.config.metaCharacter](/reference/config/htmx-config-metaCharacter) - replaces `:` in attribute modifiers
 - [htmx.config.extensions](/reference/config/htmx-config-extensions) - restricts extension registration by name
 
-## Requests
+### Request Settings
 
 - [htmx.config.defaultTimeout](/reference/config/htmx-config-defaultTimeout) - sets default request timeout in `ms`
 - [htmx.config.mode](/reference/config/htmx-config-mode) - sets request mode for `fetch()`
 
-## Swaps
+### Swaps
 
 - [htmx.config.defaultSwap](/reference/config/htmx-config-defaultSwap) - sets default swap style for responses
 - [htmx.config.allowEmptySwapAfterOOB](/reference/config/htmx-config-allowEmptySwapAfterOOB) - controls whether OOB swaps prevent empty main swaps
@@ -25,20 +25,20 @@ description: "Settings to customize htmx behavior and defaults."
 - [htmx.config.defaultSettleDelay](/reference/config/htmx-config-defaultSettleDelay) - sets swap-to-settle delay in `ms`
 - [htmx.config.defaultFocusScroll](/reference/config/htmx-config-defaultFocusScroll) - scrolls to focused element after swap
 
-## Morphing
+### Morphing
 
 - [htmx.config.morphIgnore](/reference/config/htmx-config-morphIgnore) - preserves attribute prefixes during morphing
 - [htmx.config.morphSkip](/reference/config/htmx-config-morphSkip) - skips morphing for specific elements
 - [htmx.config.morphSkipChildren](/reference/config/htmx-config-morphSkipChildren) - skips morphing children of specific elements
 - [htmx.config.morphScanLimit](/reference/config/htmx-config-morphScanLimit) - limits siblings scanned during morph matching
 
-## Indicators
+### Indicators
 
 - [htmx.config.includeIndicatorCSS](/reference/config/htmx-config-includeIndicatorCSS) - includes built-in loading indicator CSS
 - [htmx.config.indicatorClass](/reference/config/htmx-config-indicatorClass) - sets class hidden by built-in indicator CSS
 - [htmx.config.requestClass](/reference/config/htmx-config-requestClass) - sets class applied during requests
 
-## Behavior
+### Behavior
 
 - [htmx.config.history](/reference/config/htmx-config-history) - controls htmx browser history management
 - [htmx.config.implicitInheritance](/reference/config/htmx-config-implicitInheritance) - enables implicit attribute inheritance

@@ -3,7 +3,7 @@ title: "Events"
 description: "Lifecycle hooks for requests, responses, swaps, and errors."
 ---
 
-## Request Lifecycle
+### Request Lifecycle
 
 - [htmx:config:request](/reference/events/htmx-config-request) - fires before request data is encoded
 - [htmx:confirm](/reference/events/htmx-confirm) - fires before handling `hx-confirm`
@@ -20,7 +20,7 @@ description: "Lifecycle hooks for requests, responses, swaps, and errors."
 - [htmx:error](/reference/events/htmx-error) - fires after request or swap exception
 - [htmx:abort](/reference/events/htmx-abort) - aborts in-flight request
 
-## Elements
+### Elements
 
 - [htmx:before:init](/reference/events/htmx-before-init) - fires before element initialization
 - [htmx:after:init](/reference/events/htmx-after-init) - fires after element initialization
@@ -32,7 +32,7 @@ description: "Lifecycle hooks for requests, responses, swaps, and errors."
 - [htmx:after:cleanup](/reference/events/htmx-after-cleanup) - fires after element data removal
 - [load](/reference/events/load) - fires after element initialization
 
-## History
+### History Events
 
 - [htmx:before:history:update](/reference/events/htmx-before-history-update) - fires before browser history update
 - [htmx:after:history:update](/reference/events/htmx-after-history-update) - fires after browser history update
@@ -40,12 +40,12 @@ description: "Lifecycle hooks for requests, responses, swaps, and errors."
 - [htmx:after:history:replace](/reference/events/htmx-after-replace-into-history) - fires after history replacement
 - [htmx:before:history:restore](/reference/events/htmx-before-restore-history) - fires before history restoration
 
-## View Transitions
+### View Transitions
 
 - [htmx:before:viewTransition](/reference/events/htmx-before-viewTransition) - fires before view transition starts
 - [htmx:after:viewTransition](/reference/events/htmx-after-viewTransition) - fires after view transition completes
 
-## Triggers
+### Triggers
 
 - [intersect](/reference/events/intersect) - fires when element enters viewport
 - [every](/reference/events/every) - fires at each polling interval

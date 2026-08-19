@@ -3,7 +3,7 @@ title: "Headers"
 description: "Request and response headers for server communication."
 ---
 
-## Request
+### Request
 
 - [HX-Request](/reference/headers/HX-Request) - indicates request was made by htmx
 - [HX-Request-Type](/reference/headers/HX-Request-Type) - indicates `partial` or `full` page request
@@ -13,7 +13,7 @@ description: "Request and response headers for server communication."
 - [HX-Boosted](/reference/headers/HX-Boosted) - indicates boosted navigation request
 - [HX-History-Restore-Request](/reference/headers/HX-History-Restore-Request) - indicates history navigation (back/forward)
 
-## Response
+### Response
 
 - [HX-Trigger](/reference/headers/HX-Trigger) - triggers client-side events with `htmx.trigger()`
 - [HX-Location](/reference/headers/HX-Location) - redirect without a full page load
