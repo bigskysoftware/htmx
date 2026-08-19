@@ -3,12 +3,7 @@ import { Image } from 'astro:assets';
 import { getFile } from '../lib/content';
 
 const sponsorsFile = await getFile('sponsors.yaml');
-const sponsors: Record<string, any>[] = (sponsorsFile?.frontmatter || []).map((s: any) => ({
-    ...s,
-    url: s.tracking !== false
-        ? `${s.url}?utm_source=htmx&utm_medium=sponsorship&utm_campaign=${s.tier}-sponsor-${new Date().getFullYear()}`
-        : s.url,
-}));
+const sponsors: Record<string, any>[] = sponsorsFile?.frontmatter || [];
 
 const sponsorLogos = import.meta.glob('/src/assets/img/sponsors/*.{svg,png,jpg,jpeg,webp}', { eager: true });
 
