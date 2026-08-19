@@ -21,7 +21,7 @@ const about = defineCollection({
 });
 
 const docs = defineCollection({
-    loader: glob({base: "./src/content", pattern: "docs.mdx"}),
+    loader: glob({base: "./src/content", pattern: "docs.md"}),
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
@@ -103,9 +103,6 @@ const sponsors = defineCollection({
             {
                 ...sponsor,
                 id: slugify(sponsor.name),
-                url: sponsor.tracking !== false
-                    ? `${sponsor.url}?utm_source=htmx&utm_medium=sponsorship&utm_campaign=${sponsor.tier}-sponsor-${new Date().getFullYear()}`
-                    : sponsor.url,
             }))
     }),
     schema: z.object({
@@ -115,7 +112,6 @@ const sponsors = defineCollection({
         github: z.string().optional(),
         image: z.string(),
         tier: z.enum(['bronze', 'silver', 'gold', 'platinum']),
-        tracking: z.boolean().default(true),
     }).strict(),
 });
 

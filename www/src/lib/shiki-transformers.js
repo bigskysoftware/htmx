@@ -73,25 +73,25 @@ export const codeBlockTransformer = {
             type: 'element',
             tagName: 'div',
             properties: {
-                class: 'sticky left-0 z-10 flex gap-1.5 px-3 py-2 bg-neutral-50 dark:bg-neutral-920 border-b border-neutral-100 dark:border-neutral-900 rounded-t-[3px]'
+                class: 'sticky left-0 z-10 flex gap-1.5 px-3 py-2 bg-neutral-50 dark:bg-neutral-920 border-b border-neutral-200 dark:border-neutral-850 rounded-t-[3px]'
             },
             children: [
                 {
                     type: 'element',
                     tagName: 'div',
-                    properties: {class: 'size-2.25 rounded-full bg-neutral-200 dark:bg-neutral-800'},
+                    properties: {class: 'size-2.25 rounded-full', style: 'background:#ff5f57'},
                     children: []
                 },
                 {
                     type: 'element',
                     tagName: 'div',
-                    properties: {class: 'size-2.25 rounded-full bg-neutral-200 dark:bg-neutral-800'},
+                    properties: {class: 'size-2.25 rounded-full', style: 'background:#febc2e'},
                     children: []
                 },
                 {
                     type: 'element',
                     tagName: 'div',
-                    properties: {class: 'size-2.25 rounded-full bg-neutral-200 dark:bg-neutral-800'},
+                    properties: {class: 'size-2.25 rounded-full', style: 'background:#28c840'},
                     children: []
                 }
             ]

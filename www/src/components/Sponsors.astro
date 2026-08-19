@@ -1,11 +1,9 @@
 ---
-interface Props {
-    sponsors: Record<string, any>[];
-}
-
 import { Image } from 'astro:assets';
+import { getFile } from '../lib/content';
 
-const { sponsors } = Astro.props;
+const sponsorsFile = await getFile('sponsors.yaml');
+const sponsors: Record<string, any>[] = sponsorsFile?.frontmatter || [];
 
 const sponsorLogos = import.meta.glob('/src/assets/img/sponsors/*.{svg,png,jpg,jpeg,webp}', { eager: true });
 
@@ -16,20 +14,50 @@ const sponsorsByTier = sponsors.reduce((acc, sponsor) => {
 }, {} as Record<string, typeof sponsors>);
 
 const tiers = Object.keys(sponsorsByTier);
+
+const tierStyles = {
+    platinum: {
+        heading: 'text-neutral-900 dark:text-neutral-100',
+        columns: 'grid-cols-1',
+        padding: 'p-8',
+        minHeight: 'min-h-[180px]',
+        logo: 'max-h-[80px] w-[360px]',
+        width: 360,
+        height: 80
+    },
+    gold: {
+        heading: 'text-neutral-800 dark:text-neutral-200',
+        columns: 'grid-cols-1',
+        padding: 'p-6',
+        minHeight: 'min-h-[150px]',
+        logo: 'max-h-[65px] w-[260px]',
+        width: 260,
+        height: 65
+    },
+    silver: {
+        heading: 'text-neutral-600 dark:text-neutral-400',
+        columns: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+        padding: 'p-6',
+        minHeight: 'min-h-[120px]',
+        logo: 'max-h-[55px] w-[180px]',
+        width: 180,
+        height: 55
+    }
+} as const;
 ---
 
 <div class="not-prose">
     <div class="max-w-2xl mx-auto">
         {tiers.map(tier => {
             const tierSponsors = sponsorsByTier[tier];
+            const style = tierStyles[tier as keyof typeof tierStyles] ?? tierStyles.silver;
 
             return (
                     <div class="first:mt-8 sm:first:mt-10 not-first:mt-12 sm:not-first:mt-16">
                         <h3 id={`${tier}-sponsors-heading`}
                             class:list={[
                                 'inline-flex items-center gap-3 mb-6 sm:mb-8 font-chicago text-xs uppercase tracking-wide',
-                                { 'text-neutral-900 dark:text-neutral-100': tier === 'platinum' },
-                                { 'text-neutral-600 dark:text-neutral-400': tier === 'silver' }
+                                style.heading
                             ]}>
                             <span aria-hidden="true">★</span>
                             <span>
@@ -39,8 +67,7 @@ const tiers = Object.keys(sponsorsByTier);
 
                         <ul class:list={[
                             'grid gap-4 list-none p-0 m-0',
-                            { 'grid-cols-1': tier === 'platinum' },
-                            { 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3': tier === 'silver' }
+                            style.columns
                         ]}>
                             {tierSponsors.map((sponsor) => {
                                 const logo = (sponsorLogos[sponsor.image] as any)?.default;
@@ -55,9 +82,8 @@ const tiers = Object.keys(sponsorsByTier);
                                                class:list={[
                                                    'card lg',
                                                    'flex items-center justify-center w-full h-full group relative outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-500 dark:focus-visible:ring-neutral-400 interact:border-neutral-300 dark:interact:border-neutral-600',
-                                                   { 'p-8': tier === 'platinum', 'p-6': tier !== 'platinum' },
-                                                   { 'min-h-[180px]': tier === 'platinum' },
-                                                   { 'min-h-[120px]': tier === 'silver' }
+                                                   style.padding,
+                                                   style.minHeight
                                                ]}>
                                                 {isSvg ? (
                                                         <SvgComponent
@@ -65,8 +91,7 @@ const tiers = Object.keys(sponsorsByTier);
                                                                 aria-label={`${sponsor.name} Logo`}
                                                                 class:list={[
                                                                     'object-contain pointer-events-none',
-                                                                    { 'max-h-[80px] w-[360px]': tier === 'platinum' },
-                                                                    { 'max-h-[55px] w-[180px]': tier === 'silver' }
+                                                                    style.logo
                                                                 ]}
                                                                 width="100%"
                                                         />
@@ -76,11 +101,10 @@ const tiers = Object.keys(sponsorsByTier);
                                                                 alt={`${sponsor.name} Logo`}
                                                                 class:list={[
                                                                     'object-contain pointer-events-none',
-                                                                    { 'max-h-[80px] w-[360px]': tier === 'platinum' },
-                                                                    { 'max-h-[55px] w-[180px]': tier === 'silver' }
+                                                                    style.logo
                                                                 ]}
-                                                                width={tier === 'platinum' ? 360 : 180}
-                                                                height={tier === 'platinum' ? 80 : 55}
+                                                                width={style.width}
+                                                                height={style.height}
                                                         />
                                                 )}
                                             </a>

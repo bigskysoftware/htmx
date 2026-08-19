@@ -11,11 +11,11 @@ import HeroStats from "./HeroStats.astro";
                 add .grid-dimmed to #background-grid">
     <div class="hero-inner">
 
-        <h1 id="hero-logo">HTML can do <em>that!?</em></h1>
-
-        <p>build modern UIs with the simplicity of hypertext</p>
-
-        <a class="cta" href="/docs#installation">Start Here</a>
+        <div class="logo-line">
+            <h1 id="hero-logo">&lt;<em class="slash">/</em>&gt; <span class="wordmark">htm<em>x</em></span></h1>
+            <p>Supercharged<svg class="bolt" viewBox="0 0 24 24" aria-hidden="true"
+                                 ><path d="M11 2 L4 13 h7 l-4 9 L20 10 h-7 L20 2 z"/></svg>HTML</p>
+        </div>
 
         <div class="sub">
             <CDNSnippet/>
@@ -27,13 +27,13 @@ import HeroStats from "./HeroStats.astro";
 
 <style>
     section {
-        padding: 3rem 0 1rem;
+        padding: 1.5rem 0 0.25rem;
         width: 100vw;
         position: relative;
         left: 50%;
         margin-left: -50vw;
 
-        @media (min-width: 640px) { padding-top: 6rem; padding-bottom: 2rem; }
+        @media (min-width: 640px) { padding-top: 3rem; padding-bottom: 0.5rem; }
     }
 
     .hero-inner {
@@ -48,8 +48,14 @@ import HeroStats from "./HeroStats.astro";
         @media (min-width: 1024px) { padding-inline: 2rem; }
     }
 
+    .logo-line {
+        text-align: center;
+    }
+
     h1 {
-        font-size: 3rem;
+        /* Mobile shows only "</>", so it can carry the full width. The min()
+           keeps it inside the viewport below ~350px. */
+        font-size: min(10.5rem, 48vw);
         font-weight: 700;
         line-height: 1;
         font-family: var(--font-chicago);
@@ -57,11 +63,21 @@ import HeroStats from "./HeroStats.astro";
         color: light-dark(black, white);
         transform: translateZ(0);
 
-        @media (min-width: 640px) { font-size: 3.75rem; letter-spacing: var(--tracking-tight); }
-        @media (min-width: 1024px) { font-size: 4.5rem; }
+        @media (min-width: 640px) { font-size: 5rem; letter-spacing: var(--tracking-tight); }
+        @media (min-width: 1024px) { font-size: 6.25rem; }
+
+        .wordmark {
+            @media (max-width: 639px) { display: none; }
+        }
+
+        /* ChicagoFLF draws the solidus at 77/1000em thick but the chevrons at
+           122/1000em. The stroke adds the 45/1000em difference. */
+        em.slash {
+            -webkit-text-stroke: 0.045em currentColor;
+        }
 
         em {
-            font-style: italic;
+            font-style: normal;
             color: light-dark(var(--color-blue-600), var(--color-blue-350));
             text-shadow:
                 0 2px 0 color-mix(in srgb, var(--color-blue-900) 95%, white),
@@ -75,70 +91,26 @@ import HeroStats from "./HeroStats.astro";
         }
     }
 
-    p {
-        margin-top: 1.75rem;
+    .logo-line p {
+        margin-top: 0.5rem;
+        font-style: italic;
         font-weight: 300;
-        font-size: 1.125rem;
-        margin-inline: auto;
+        font-size: min(2.1rem, 9.5vw);
 
-        @media (max-width: 639px) { max-width: 28ch; }
-        @media (min-width: 640px) { margin-top: 3.75rem; font-size: 1.375rem; }
-        @media (min-width: 1024px) { font-size: 1.5rem; }
+        @media (min-width: 640px) { margin-top: 0.75rem; font-size: 1.125rem; }
+        @media (min-width: 1024px) { font-size: 1.25rem; }
     }
 
-    .cta {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 1.75rem;
-        height: 2.25rem;
-        padding-inline: 1rem;
-        font-family: var(--font-chicago);
-        font-size: 0.75rem;
-        color: white;
-        background: linear-gradient(to bottom,
-            light-dark(var(--color-blue-600), var(--color-blue-500)),
-            light-dark(var(--color-blue-700), var(--color-blue-600)));
-        border: 1px solid light-dark(var(--color-blue-500), var(--color-blue-500));
-        border-radius: var(--radius-lg);
-        text-decoration: none;
-        box-shadow:
-            0 calc(0.375cqh / 2) 0 color-mix(in srgb, var(--color-blue-900) 95%, white),
-            0 0.375cqh 0 color-mix(in srgb, var(--color-blue-900) 95%, black);
-        transition: background 0.15s, border-color 0.15s;
-
-        @media (min-width: 640px) { margin-top: 3.75rem; height: 2.5rem; padding-inline: 1.5rem; font-size: 0.875rem; }
-        @media (min-width: 1024px) { height: 2.75rem; padding-inline: 2rem; font-size: 1rem; }
-
-        @media (prefers-color-scheme: dark) {
-            box-shadow:
-                0 calc(0.375cqh / 2) 0 color-mix(in srgb, var(--color-blue-800) 95%, white),
-                0 0.375cqh 0 color-mix(in srgb, var(--color-blue-800) 95%, black);
-        }
-
-        @media (hover: hover) {
-            &:hover {
-                background: linear-gradient(to bottom,
-                    light-dark(var(--color-blue-500), var(--color-blue-400)),
-                    light-dark(var(--color-blue-600), var(--color-blue-500)));
-                border-color: light-dark(var(--color-blue-500), var(--color-blue-400));
-            }
-        }
-
-        &:is(:focus-visible) {
-            background: linear-gradient(to bottom,
-                light-dark(var(--color-blue-500), var(--color-blue-400)),
-                light-dark(var(--color-blue-600), var(--color-blue-500)));
-            border-color: light-dark(var(--color-blue-500), var(--color-blue-400));
-        }
-
-        &:active {
-            translate: 0 0.375cqh;
-            box-shadow:
-                0 calc(2px / 2) 0 color-mix(in srgb, var(--color-blue-900) 95%, white),
-                0 2px 0 color-mix(in srgb, var(--color-blue-900) 95%, black);
-        }
+    /* Tailwind only emits the yellow vars it sees in classes, so use literals. */
+    .bolt {
+        display: inline-block;
+        height: 0.95em;
+        width: auto;
+        margin-inline: 0.12em;
+        vertical-align: -0.14em;
+        fill: light-dark(#eab308, #facc15);
     }
+
 
     .sub {
         margin-top: 2.25rem;

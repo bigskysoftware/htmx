@@ -2,46 +2,25 @@
 title: "htmx"
 description: "htmx gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext"
 ---
-import { getFile } from '../lib/content';
-import CDNGenerator from "../components/CDNGenerator.astro";
 import EasterEggs from "../components/EasterEggs.astro";
 import Sponsors from "../components/Sponsors.astro";
 import Hero from "../components/Hero.astro";
-import GameboyAnnounce from "../components/GameboyAnnounce.astro";
-import { Image } from 'astro:assets';
-import bookCoverHard from '../assets/img/cover.png';
-import bookCoverSoft from '../assets/img/cover2.png';
-export const sponsorsFile = await getFile('sponsors.yaml');
-export const sponsors = (sponsorsFile?.frontmatter || []).map(s => ({
-    ...s,
-    url: s.tracking !== false
-        ? `${s.url}?utm_source=htmx&utm_medium=sponsorship&utm_campaign=${s.tier}-sponsor-${new Date().getFullYear()}`
-        : s.url,
-}));
 
 <div class="not-prose">
 
 <EasterEggs/>
-
-<GameboyAnnounce/>
 
 <Hero/>
 
 </div>
 
 
-<div class="prose prose-htmx dark:prose-invert max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-16 pb-0">
+<div class="prose prose-htmx dark:prose-invert max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-8 pb-0">
 
-## motivation
+htmx is a small library that adds a few [attributes](/reference/attributes) to HTML, transforming the hypertext you know
+& love into a modern, dynamic tool that you can build amazing websites with.
 
-- Why should only [`<a>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) & [`<form>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form) make HTTP requests?
-- Why should only [`click`](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event) & [`submit`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event) trigger them?
-- Why should only [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET) & [`POST`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) be [available](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)?
-- Why should every update replace the **entire** screen?
-
-htmx removes these constraints and completes HTML as a [hypertext](https://en.wikipedia.org/wiki/Hypertext).
-
-## quick example
+## An Example
 
 ```html
 <button hx-post="/clicked" hx-swap="outerHTML">
@@ -49,25 +28,27 @@ htmx removes these constraints and completes HTML as a [hypertext](https://en.wi
 </button>
 ```
 
-When clicked, [`hx-post`](/reference/attributes/hx-post) sends a `POST` to `/clicked` and [`hx-swap`](/reference/attributes/hx-swap) replaces the button with the response. No JavaScript.
+When this button is clicked, the [`hx-post`](/reference/attributes/hx-post) attribute tells htmx to send a `POST` to
+`/clicked` and the [`hx-swap`](/reference/attributes/hx-swap) attribute tells htmx to replace the button with the response's HTML.
 
-## book
 
-<a href="https://hypermedia.systems" target="_blank" rel="noopener noreferrer" class="font-chicago">Hypermedia Systems</a> covers how to build [HDAs](/essays/hypermedia-driven-applications) using htmx & more.
+## The Book
+
+Our book <a href="https://hypermedia.systems" target="_blank" rel="noopener noreferrer" class="font-chicago">Hypermedia Systems</a> covers how to build applications using htmx.
 
 <a href="https://hypermedia.systems" target="_blank" rel="noopener noreferrer" class="group block not-prose w-fit mx-auto font-chicago text-sm text-center text-neutral-900 dark:text-neutral-100 interact:text-blue-700 dark:interact:text-blue-300 interact:underline">
     <div class="flex gap-8 justify-center mb-3">
-        <Image src={bookCoverHard} alt="Hypermedia Systems (hardcover)" width={240} class="w-auto h-auto max-w-[calc(50%-1rem)] rounded-sm border border-neutral-200 dark:border-neutral-800" />
-        <Image src={bookCoverSoft} alt="Hypermedia Systems (softcover)" width={240} class="w-auto h-auto max-w-[calc(50%-1rem)] rounded-sm border border-neutral-200 dark:border-neutral-800" />
+        <img src="/img/cover.webp" alt="Hypermedia Systems (hardcover)" width="240" height="328" loading="lazy" decoding="async" class="w-auto h-auto max-w-[calc(50%-1rem)] rounded-sm border border-neutral-200 dark:border-neutral-800" />
+        <img src="/img/cover2.webp" alt="Hypermedia Systems (softcover)" width="240" height="328" loading="lazy" decoding="async" class="w-auto h-auto max-w-[calc(50%-1rem)] rounded-sm border border-neutral-200 dark:border-neutral-800" />
     </div>
     <span class="font-sans font-medium text-base">Read it free online →</span>
 </a>
 
-## sponsors
+## Sponsors
 
 Thank you to all our generous [sponsors](https://github.com/sponsors/bigskysoftware?o=esb)!
 
-<Sponsors sponsors={sponsors} />
+<Sponsors />
 
 </div>
 

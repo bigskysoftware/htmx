@@ -97,7 +97,7 @@ export const GET = async () => {
                     'requests--responses': ['XHR', 'fetch', 'ajax'],
                 };
 
-                // Index each H2 in docs.mdx as a search hit; H3s become child hits with the H2 as breadcrumb.
+                // Index each H2 in docs.md as a search hit; H3s become child hits with the H2 as breadcrumb.
                 if (collectionId === 'docs' && folder.path) {
                     const raw = await readFile(join(process.cwd(), 'src', 'content', folder.path), 'utf-8');
                     const body = raw.replace(/^---\n[\s\S]*?\n---\n/, '').replace(/```[\s\S]*?```/g, '');

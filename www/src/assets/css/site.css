@@ -156,7 +156,7 @@
        Variants tweak corner radius: .xs / .sm / .lg / .xl (default = md). */
     .card {
         background: light-dark(var(--color-neutral-25), var(--color-neutral-910));
-        border: 1px solid light-dark(var(--color-neutral-200), var(--color-neutral-800));
+        border: 1px solid light-dark(var(--color-neutral-300), var(--color-neutral-700));
         border-radius: var(--radius-md);
 
         &.xs {
