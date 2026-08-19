@@ -6,6 +6,7 @@ description: "On hypermedia and building for the web."
 import { getFolder } from '../../lib/content';
 import JumpTo from '../../components/JumpTo.astro';
 import IndexTable from '../../components/IndexTable.astro';
+import { formatDate } from '../../lib/utils';
 
 export const essayFolder = await getFolder('essays');
 export const localEssays = essayFolder.files;
@@ -31,17 +32,12 @@ export const externalEssays = [
     {title: "Preserving REST-ful Visibility With Generalized Hypermedia Controls", url: "https://hypermedia.cs.montana.edu/papers/preserving-restful.pdf", author: "ACM SIGWEB", date: "2024-01-01", tags: "research"},
 ];
 
-export const fmtDate = (d) => {
-    if (!d) return undefined;
-    return new Date(d).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'});
-};
-
 export const allEssays = [
     ...localEssays.map(e => ({
         title: e.frontmatter.title,
         url: e.url,
         author: e.frontmatter.authors?.join(', '),
-        date: fmtDate(e.frontmatter.created),
+        date: formatDate(e.frontmatter.created),
         rawDate: e.frontmatter.created,
         tags: Array.isArray(e.frontmatter.tags) ? e.frontmatter.tags.join(' ') : '',
         external: false,
@@ -50,7 +46,7 @@ export const allEssays = [
         title: e.title,
         url: e.url,
         author: e.author,
-        date: fmtDate(e.date),
+        date: formatDate(e.date),
         rawDate: e.date ? new Date(e.date) : null,
         tags: e.tags,
         external: true,
