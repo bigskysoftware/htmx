@@ -235,11 +235,6 @@
     }
 }
 
-/* While searching, the jump-to directory is noise between input and results. */
-[data-active-search]:has(input:not(:placeholder-shown)) ~ nav[aria-label="Page sections"] {
-    display: none;
-}
-
 /* ─── Docs full-page sticky section headers (unlayered) ────────────────── */
 
 /* Skip rendering offscreen sections; /docs alone is ~10k elements.
@@ -311,36 +306,6 @@ article.sticky-headers {
 /* Anchor targets clear the sticky h2 bar. */
 article.sticky-headers > section :is(h3, h4) {
     scroll-margin-top: calc(var(--header-offset) + var(--sticky-h2-height) + 1rem);
-}
-
-/* Desktop TOC fades in once the page intro scrolls out under the header. */
-@supports (animation-timeline: view()) {
-    body {
-        timeline-scope: --toc-reveal;
-    }
-
-    /* The search field drives the reveal: unlike jump-to, it never hides. */
-    [data-active-search] {
-        view-timeline: --toc-reveal block;
-        view-timeline-inset: var(--header-offset) 0;
-    }
-
-    aside:has(#page-outline) {
-        animation: toc-reveal linear both;
-        animation-timeline: --toc-reveal;
-        animation-range: exit 0% exit 100%;
-    }
-
-    @keyframes toc-reveal {
-        from {
-            opacity: 0;
-            visibility: hidden;
-        }
-        to {
-            opacity: 1;
-            visibility: visible;
-        }
-    }
 }
 
 /* Show the bar's bg/border only while stuck.

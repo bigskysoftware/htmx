@@ -1,7 +1,135 @@
-# Old site: /attributes/* → /reference/attributes/*
-/attributes              /reference/attributes          301
-/attributes/*            /reference/attributes/:splat   301
+# htmx 2.x (htmx.org) URLs -> this site.
+#
+# Only 2.x -> 4.x mappings belong here. Redirects between this site's own
+# URLs live in astro.config.mjs.
+#
+# Netlify takes the first matching rule, so exceptions precede wildcards.
 
-# Old site: /headers/* → /reference/headers/*
-/headers                 /reference/headers             301
-/headers/*               /reference/headers/:splat      301
+# Attributes. Nine moved or went away in 4.0; targets follow the
+# "Renames and Removals" table in src/content/docs.md.
+/attributes/hx-disabled-elt   /reference/attributes/hx-disable             301
+/attributes/hx-vars           /reference/attributes/hx-vals                301
+/attributes/hx-request        /reference/attributes/hx-config              301
+/attributes/hx-params         /reference/events/htmx-config-request        301
+/attributes/hx-prompt         /extensions/hx-prompt                        301
+/attributes/hx-history        /extensions/hx-history-cache                 301
+/attributes/hx-ext            /docs#extension-system                       301
+/attributes/hx-disinherit     /docs#attribute-inheritance                  301
+/attributes/hx-inherit        /docs#attribute-inheritance                  301
+/attributes/kt-swap           /reference/attributes/hx-swap                301
+
+# Every other attribute kept its name.
+/attributes     /reference/attributes                        301
+/attributes/*   /reference/attributes/:splat                 301
+
+# The JavaScript API is now one page per method.
+/api                    /reference/methods                           301
+
+# Events moved under /reference/
+/events            /reference/events                            301
+
+# Headers. 4.0 capitalises the slugs, so no wildcard is possible.
+/headers/hx-location      /reference/headers/HX-Location               301
+/headers/hx-push          /reference/headers/HX-Push                   301
+/headers/hx-push-url      /reference/headers/HX-Push-Url               301
+/headers/hx-redirect      /reference/headers/HX-Redirect               301
+/headers/hx-replace-url   /reference/headers/HX-Replace-Url            301
+/headers/hx-trigger       /reference/headers/HX-Trigger                301
+/headers                  /reference/headers                           301
+
+# Examples became patterns.
+/examples                        /patterns                                    301
+/examples/active-search          /patterns/active-search                      301
+/examples/animations             /patterns/animations                         301
+/examples/async-auth             /patterns                                    301
+/examples/bulk-update            /patterns/bulk-actions                       301
+/examples/click-to-edit          /patterns/edit-in-place                      301
+/examples/click-to-load          /patterns/click-to-load                      301
+/examples/confirm                /patterns                                    301
+/examples/delete-row             /patterns/delete-in-place                    301
+/examples/dialogs                /patterns/dialogs                            301
+/examples/edit-row               /patterns/edit-in-place                      301
+/examples/file-upload            /patterns/file-upload                        301
+/examples/file-upload-input      /patterns/file-upload                        301
+/examples/infinite-scroll        /patterns/infinite-scroll                    301
+/examples/inline-validation      /patterns/active-validation                  301
+/examples/keyboard-shortcuts     /patterns/keyboard-shortcuts                 301
+/examples/lazy-load              /patterns/lazy-load                          301
+/examples/modal-bootstrap        /patterns/dialogs                            301
+/examples/modal-custom           /patterns/dialogs                            301
+/examples/modal-uikit            /patterns/dialogs                            301
+/examples/move-before            /patterns                                    301
+/examples/move-before/*          /patterns                                    301
+/examples/progress-bar           /patterns/progress-bar                       301
+/examples/reset-user-input       /patterns/reset-on-submit                    301
+/examples/sortable               /patterns/drag-to-reorder                    301
+/examples/tabs-hateoas           /patterns                                    301
+/examples/tabs-javascript        /patterns                                    301
+/examples/update-other-content   /patterns                                    301
+/examples/value-select           /patterns/linked-selects                     301
+/examples/web-components         /patterns                                    301
+
+# Extensions.
+/extensions/building       /docs#extension-system                       301
+/extensions/head-support   /extensions/hx-head                          301
+/extensions/preload        /extensions/hx-preload                       301
+/extensions/sse            /extensions/hx-sse                           301
+/extensions/ws             /extensions/hx-ws                            301
+/extensions/idiomorph      /docs#morph-swaps                            301
+
+# Dropped in 4.0, so they stay on the 2.x site.
+/extensions/response-targets  https://v2.htmx.org/extensions/response-targets/ 301
+/extensions/htmx-1-compat     https://v2.htmx.org/extensions/htmx-1-compat/ 301
+
+# The 10- prefix reads as an ordering prefix, so the file is named out.
+/essays/10-tips-for-SSR-HDA-apps         /essays/ten-tips-for-SSR-HDA-apps            301
+
+# Interviews moved out of /essays.
+/essays/interviews                      /interviews                                  301
+/essays/interviews/chris_wanstrath      /interviews/chris-wanstrath                  301
+/essays/interviews/henning_koch         /interviews/henning-koch                     301
+/essays/interviews/leonard_richardson   /interviews/leonard-richardson               301
+/essays/interviews/makinde_adeagbo      /interviews/makinde-adeagbo                  301
+/essays/interviews/mike_amundsen        /interviews/mike-amundsen                    301
+
+# Migration guides cover 1.x -> 2.x and other libraries, so they stay on
+# the 2.x site.
+/migration-guide                 https://v2.htmx.org/migration-guide-intercooler/ 301
+/migration-guide-hotwire-turbo   https://v2.htmx.org/migration-guide-hotwire-turbo/ 301
+/migration-guide-htmx-1          https://v2.htmx.org/migration-guide-htmx-1/  301
+/migration-guide-intercooler     https://v2.htmx.org/migration-guide-intercooler/ 301
+
+# Utility. Master keeps this in its own _redirects; point straight at the
+# invite rather than hopping through htmx.org.
+/discord        https://discord.gg/Z6gPqAd                   301
+
+# Posts became announcements. 0.0.5 was never announced; master sends it
+# to the 0.0.6 post, so keep that behaviour ahead of the wildcard.
+/posts/2020-6-19-htmx-0.0.5-is-released  /announcements/2020-6-20-htmx-0.0.6-is-released  301
+/posts          /announcements                               301
+/posts/*        /announcements/:splat                        301
+
+# Locality of Behaviour, under its old top-level URLs and both spellings.
+/locality-of-behaviour          /essays/locality-of-behaviour                301
+/locality-of-behavior           /essays/locality-of-behaviour                301
+/essays/locality-of-behavior    /essays/locality-of-behaviour                301
+
+# The feed moved.
+/feed.xml       /atom.xml                                    301
+
+# Ported from the 2.x site
+/quirks                 /docs/quirks                                 301
+/QUIRKS                 /docs/quirks                                 301
+/CVE-2026-3682-1        /cve-2026-3682-1                             301
+
+# Superseded elsewhere.
+/server-examples   /about                                       301
+/talk              /about                                       301
+
+# htmx 4.x specific redirects
+/sitemap.xml            /sitemap-index.xml                           301
+/help                   /about                                       301
+/htmx-4                 /docs#migration-from-htmx-2x                 301
+/whats-new-in-htmx-4    /docs#migration-from-htmx-2x                 301
+/migration-guide-htmx-2 /docs#migration-from-htmx-2x                 301
+/migration-guide-htmx-4 /docs#migration-from-htmx-2x                 301

@@ -1,16 +1,17 @@
 import { test, expect } from './_fixtures';
 
 test.describe('Content page structure', () => {
-    test('docs page has sidebar with section groups', async ({ page }) => {
+    test('docs page nav has group labels', async ({ page }) => {
         await page.goto('/docs');
-        const sidebar = page.locator('#sidebar-nav');
-        await expect(sidebar).toBeVisible();
+        const nav = page.locator('#page-nav');
+        await expect(nav).toBeVisible();
 
-        const groups = sidebar.locator('h3');
+        // docs-nav.html groups the sections. A bare span is a group label.
+        const groups = nav.locator('> ul > li > span');
         expect(await groups.count()).toBeGreaterThanOrEqual(6);
     });
 
-    test('docs sidebar scrollspy highlights a link on scroll', async ({ page }) => {
+    test('docs page nav scrollspy highlights a link on scroll', async ({ page }) => {
         await page.goto('/docs', { waitUntil: 'networkidle' });
         await page.waitForTimeout(300);
 
@@ -18,50 +19,49 @@ test.describe('Content page structure', () => {
         for (let y = 0; y <= 2000; y += 300) {
             await page.evaluate((scrollY: number) => window.scrollTo(0, scrollY), y);
             await page.waitForTimeout(150);
-            if (await page.locator('#sidebar-nav a.sidebar-link[aria-current]').count() > 0) break;
+            if (await page.locator('#page-nav a[aria-current]').count() > 0) break;
         }
-        const activeLink = page.locator('#sidebar-nav a.sidebar-link[aria-current]');
+        const activeLink = page.locator('#page-nav a[aria-current]');
         await expect(activeLink).toHaveCount(1);
         const href = await activeLink.getAttribute('href');
         expect(href).toMatch(/^#/);
     });
 
-    test('reference sidebar highlights current page', async ({ page }) => {
-        await page.goto('/reference/attributes/hx-get');
-        const activeLink = page.locator('#sidebar-nav a[aria-current]');
-        await expect(activeLink).toHaveCount(1);
-        await expect(activeLink).toContainText('hx-get');
-    });
-
-    test('reference sidebar section contains current page links', async ({ page }) => {
-        await page.goto('/reference/attributes/hx-get');
-        const group = page.locator('#sidebar-nav h3', { hasText: 'Attributes' });
-        await expect(group).toBeVisible();
-    });
-
-    test('docs sidebar anchor navigates to in-page heading', async ({ page }) => {
+    test('docs page nav anchor navigates to in-page heading', async ({ page }) => {
         await page.goto('/docs');
-        const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
-        if (await sidebarToggle.isVisible()) {
-            await sidebarToggle.click();
-        }
-        const link = page.locator('#sidebar-nav a.sidebar-link', { hasText: 'Installation' }).first();
+        const link = page.locator('#page-nav a', { hasText: 'Installation' }).first();
         const href = await link.getAttribute('href');
         expect(href).toBe('#installation');
         await link.click();
         await expect(page).toHaveURL(/\/docs#installation/);
     });
 
-    test('table of contents visible on wide viewport', async ({ page }) => {
-        await page.setViewportSize({ width: 1400, height: 900 });
-        await page.goto('/docs');
-        await expect(page.locator('#page-outline')).toBeVisible();
+    test('leaf page nav is derived from its own headings', async ({ page }) => {
+        await page.goto('/reference/attributes/hx-swap');
+        const links = page.locator('#page-nav a[href^="#"]');
+        expect(await links.count()).toBeGreaterThan(1);
     });
 
-    test('table of contents hidden on narrow viewport', async ({ page }) => {
-        await page.setViewportSize({ width: 1024, height: 768 });
+    test('leaf page breadcrumb trails back to the collection', async ({ page }) => {
+        await page.goto('/reference/attributes/hx-get');
+        const crumbs = page.locator('nav[aria-label="Breadcrumb"]');
+        await expect(crumbs).toContainText('Reference');
+        await expect(crumbs).toContainText('hx-get');
+        // The ol trail is the desktop crumb; .back-link is the mobile stand-in.
+        await crumbs.locator('ol a[href="/reference"]').click();
+        await expect(page).toHaveURL(/\/reference$/);
+    });
+
+    test('page nav visible on wide viewport', async ({ page }) => {
+        await page.setViewportSize({ width: 1400, height: 900 });
         await page.goto('/docs');
-        await expect(page.locator('#page-outline')).not.toBeVisible();
+        await expect(page.locator('#page-nav')).toBeVisible();
+    });
+
+    test('page nav hidden on narrow viewport', async ({ page }) => {
+        await page.setViewportSize({ width: 900, height: 768 });
+        await page.goto('/docs');
+        await expect(page.locator('#page-nav')).not.toBeVisible();
     });
 
     test('category URLs redirect to reference index', async ({ page }) => {

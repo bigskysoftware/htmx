@@ -31,8 +31,6 @@ import {cdnTokens, substituteTokens} from './cdn-tokens.js';
  * @property {string} url
  * @property {Record<string, any>} frontmatter
  * @property {Breadcrumb[]} breadcrumbs
- * @property {ContentFile} [prev]
- * @property {ContentFile} [next]
  */
 
 /**
@@ -64,7 +62,6 @@ const rawSources = import.meta.glob('/src/content/**/*.{md,mdx}', {
     eager: true,
 });
 
-
 // Cache for loaded modules to avoid re-importing
 const moduleCache = new Map();
 
@@ -77,18 +74,7 @@ async function loadModule(fullPath) {
     return mod;
 }
 
-/**
- * Convention: a file with slug `full` in a collection is the aggregate view
- * of that collection. It's excluded from sidebar lists and prev/next nav,
- * and its body is synthesised at content-load time by
- * aggregateCollectionMarkdown().
- * @param {{ slug: string }} file
- */
-export function isAggregate(file) {
-    return file.slug === 'full';
-}
-
-export function readRaw(fullPath) {
+function readRaw(fullPath) {
     try {
         return readFileSync(join(process.cwd(), fullPath.replace(/^\//, '')), 'utf-8');
     } catch {
@@ -183,7 +169,6 @@ function isDataFile(path) {
     return /\.(yaml|yml|json)$/.test(path);
 }
 
-
 // --- Helpers ---
 
 function getFolderName(path) {
@@ -191,9 +176,11 @@ function getFolderName(path) {
 }
 
 function cleanPath(path) {
+    // Bounded to 1-3 digits so an ordering prefix (01-, 02-) is stripped but a
+    // date prefix (2024-06-17-) survives. Announcements are named by date.
     return path
         .split('/')
-        .map(segment => segment.replace(/^\d+-/, '').replace(/\.(md|mdx)$/, ''))
+        .map(segment => segment.replace(/^\d{1,3}-/, '').replace(/\.(md|mdx)$/, ''))
         .join('/');
 }
 
@@ -210,45 +197,35 @@ function sortContentFiles(a, b) {
     return a.path.localeCompare(b.path);
 }
 
-
 // --- Constants ---
 
-export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'extensions', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'];
-
-// These collections use subfolders as sections on the root page, not as pages.
-const INLINE_SUBFOLDER_COLLECTIONS = new Set(['reference']);
-
-export function hasSubfolderPages(collection) {
-    return !INLINE_SUBFOLDER_COLLECTIONS.has(collection);
-}
+export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'extensions', 'patterns', 'essays', 'interviews', 'announcements', 'podcasts', 'memes'];
 
 function folderPageUrl(collection, slug) {
-    if (slug && !hasSubfolderPages(collection)) return undefined;
     return slug ? `/${collection}/${slug}` : `/${collection}`;
 }
-
-export const TAG_ORDER = [
-    {tag: 'foundations', label: 'Foundations'},
-    {tag: 'the-case-for-hypermedia', label: 'The Case for Hypermedia'},
-    {tag: 'case-studies', label: 'Case Studies'},
-    {tag: 'guides', label: 'Guides'},
-    {tag: 'simplicity', label: 'Simplicity'},
-];
 
 // --- Actions ---
 
 /**
  * Render a content file or folder. Separate from data, this is I/O.
  *
+ * `authored` is true when the page exports its own getPageHeadings(). The
+ * generated index pages build their sections from data, so their headings are
+ * a deliberate nav, not a derived outline. resolvePageNav() needs to tell the
+ * two apart.
+ *
  * @param {ContentFile | ContentFolder} item
- * @returns {Promise<{ Content: any; headings: any[] }>}
+ * @returns {Promise<{ Content: any; headings: any[]; authored: boolean }>}
  */
 export async function render(item) {
     const mod = await loadModule(`/src/content/${item.path}`);
-    if (!mod) return {Content: null, headings: []};
+    if (!mod) return {Content: null, headings: [], authored: false};
+    const authoredHeadings = mod.getPageHeadings?.();
     return {
         Content: mod.default,
-        headings: mod.getPageHeadings?.() || mod.getHeadings?.() || []
+        headings: authoredHeadings || mod.getHeadings?.() || [],
+        authored: !!authoredHeadings
     };
 }
 
@@ -282,15 +259,48 @@ export async function getFolder(path) {
             const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
             if (match) rootFrontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
         } catch {}
+
+        // A root file plus a same-named directory (with no index of its own)
+        // means the root file is the landing page and the directory holds its
+        // subpages. /docs works this way: docs.md is the tour, docs/*.md are
+        // the deep dives it links out to.
+        const rootUrl = isHome ? '/' : `/${path}`;
+        /** @type {ContentFile[]} */
+        const childFiles = allPaths
+            .filter(p => p.startsWith(`/src/content/${path}/`))
+            .sort()
+            .map((fullPath) => {
+                const relPath = fullPath.replace('/src/content/', '');
+                const slug = cleanPath(relPath.replace(`${path}/`, ''));
+                /** @type {Record<string, any>} */
+                let frontmatter = {};
+                try {
+                    const raw = readFileSync(join(process.cwd(), 'src', 'content', relPath), 'utf-8');
+                    const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+                    if (match) frontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
+                } catch {}
+                return {
+                    path: relPath,
+                    folder: path,
+                    slug,
+                    url: `/${path}/${slug}`,
+                    frontmatter,
+                    breadcrumbs: [
+                        {label: rootFrontmatter.title, href: rootUrl},
+                        {label: frontmatter?.title},
+                    ],
+                };
+            });
+
         return {
             path: rootRelPath,
             folder: path,
             slug: '',
-            url: isHome ? '/' : `/${path}`,
+            url: rootUrl,
             frontmatter: rootFrontmatter,
-            files: [],
+            files: childFiles.filter(f => !f.frontmatter?.hidden),
             folders: [],
-            allFiles: [],
+            allFiles: childFiles,
             breadcrumbs: []
         };
     }
@@ -404,7 +414,7 @@ export async function getFolder(path) {
             };
         });
 
-        // allFiles includes hidden files (for routing); files (sidebar) excludes them.
+        // allFiles includes hidden files (for routing); files (listings) excludes them.
         const allFilesFlat = [...files.sort(sortContentFiles), ...childFolders.flatMap(f => f.allFiles)];
 
         return {
@@ -425,13 +435,6 @@ export async function getFolder(path) {
 
     if (!folder) {
         throw new Error(`No index.md found for folder: ${path}`);
-    }
-
-    // Add prev/next links, hidden and soon files are excluded from the nav sequence
-    const navFiles = folder.allFiles.filter(f => !f.frontmatter?.hidden && !f.frontmatter?.soon);
-    for (let i = 0; i < navFiles.length; i++) {
-        if (i > 0) navFiles[i].prev = navFiles[i - 1];
-        if (i < navFiles.length - 1) navFiles[i].next = navFiles[i + 1];
     }
 
     return folder;
@@ -481,7 +484,7 @@ export async function getFile(path) {
     const slug = cleanPath(path.replace(`${folder}/`, ''));
     const fileUrl = `/${folder}/${slug}`;
 
-    // Build breadcrumbs and prev/next from folder tree
+    // Build breadcrumbs from folder tree
     const rootFolder = await getFolder(folder);
     /** @type {Breadcrumb[]} */
     const breadcrumbs = [
@@ -506,20 +509,13 @@ export async function getFile(path) {
 
     breadcrumbs.push({label: frontmatter.title});
 
-    const allFiles = rootFolder.allFiles;
-    const fileIndex = allFiles.findIndex(f => f.path === path);
-    const prev = fileIndex > 0 ? allFiles[fileIndex - 1] : undefined;
-    const next = fileIndex < allFiles.length - 1 ? allFiles[fileIndex + 1] : undefined;
-
     return {
         path,
         folder,
         slug,
         url: fileUrl,
         frontmatter,
-        breadcrumbs,
-        prev,
-        next
+        breadcrumbs
     };
 }
 

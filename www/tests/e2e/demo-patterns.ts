@@ -104,8 +104,7 @@ test.describe.serial('Pattern demo pages', () => {
         await waitForSw(page);
         await waitForDemo(page);
 
-        await page.click('a[href="/patterns/lazy-load"]');
-        await expect(page).toHaveURL('/patterns/lazy-load', { timeout: 10_000 });
+        await morphViaLink(page, '/patterns/lazy-load');
 
         await expect(page.locator('.demo-container', { hasText: '5-Day Forecast' })).toBeVisible({ timeout: 15_000 });
     });

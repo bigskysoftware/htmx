@@ -1,0 +1,22 @@
+---
+title: "All Essays"
+description: "Every essay, most recent first."
+hidden: true
+---
+
+import { allEssays } from './index.mdx';
+import IndexTable from '../../components/IndexTable.astro';
+
+<IndexTable>
+    {allEssays.map(essay => (
+        <tr>
+            <th scope="row"><a href={essay.url} {...(essay.external && {target: "_blank", rel: "noopener noreferrer"})}>{essay.title}{essay.external && ' ↗'}</a></th>
+            <td>
+                <span>
+                    <span>{essay.author || ''}</span>
+                    <time>{essay.date || ''}</time>
+                </span>
+            </td>
+        </tr>
+    ))}
+</IndexTable>

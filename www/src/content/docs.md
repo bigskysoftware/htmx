@@ -1,33 +1,8 @@
 ---
 title: "Documentation"
 description: "From installation to advanced usage."
+nav: docs-nav.html
 ---
-## Contents
-
-* [Installation](#installation)
-* [Migration From htmx 2.x](#migration-from-htmx-2x)
-* [Mental Model](#mental-model)
-* [Hypermedia Controls](#hypermedia-controls)
-* [Requests & Responses](#requests--responses)
-* [Client-Side Scripting](#client-side-scripting)
-* [Multi-Target Updates](#multi-target-updates)
-* [HCON](#hcon)
-* [CSS Transitions](#css-transitions)
-* [Synchronization](#synchronization)
-* [Confirmations](#confirmations)
-* [Boosting](#boosting)
-* [History](#history)
-* [Validation](#validation)
-* [Web Components](#web-components)
-* [Attribute Inheritance](#attribute-inheritance)
-* [Extended Selectors](#extended-selectors)
-* [Extension System](#extension-system)
-* [Best Practices](#best-practices)
-* [Caching](#caching)
-* [Debugging](#debugging)
-* [Configuration](#configuration)
-* [VS Code](#vs-code)
-
 ## Installation
 
 htmx is a single JavaScript file with no dependencies. No build step is required to use it.

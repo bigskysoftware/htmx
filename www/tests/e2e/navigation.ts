@@ -25,9 +25,9 @@ test.describe('Desktop navigation', () => {
     });
 
     test('aria-current persists on sub-pages', async ({ page }) => {
-        await page.goto('/docs/get-started/installation');
-        const docsLink = page.locator('nav#navigation a[href="/docs"]');
-        await expect(docsLink).toHaveAttribute('aria-current', 'page');
+        await page.goto('/reference/attributes/hx-get');
+        const sectionLink = page.locator('nav#navigation a[href="/reference"]');
+        await expect(sectionLink).toHaveAttribute('aria-current', 'page');
     });
 
     test('version selector is present', async ({ page }) => {

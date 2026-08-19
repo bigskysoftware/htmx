@@ -264,7 +264,7 @@ Any properties on `event.detail` are unpacked into scope, so you can write `mess
 
 ## Notes
 
-* Works with any event, including [htmx events](/reference#events).
+* Works with any event, including [htmx events](/reference/events).
 * `hx-on` is _not_ inherited, but events on children still [bubble up](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#event_bubbling_and_capture) and trigger it.
 * Both forms (`hx-on:event` and `hx-on="..."`) can coexist on the same element.
 * Browsers lowercase attribute names, so `hx-on:myEvent` won't match a `myEvent` dispatch. Use the extended form: `hx-on="myEvent -> ..."`.

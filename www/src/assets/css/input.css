@@ -443,50 +443,6 @@
 
 
 @layer components {
-    .active-search-count {
-        @apply ms-auto pe-2 font-sans tabular-nums text-xs font-normal tracking-wide text-neutral-500 dark:text-neutral-400;
-
-        &[data-visible] {
-            @apply text-blue-600 dark:text-blue-300;
-        }
-
-        &[data-visible]::before {
-            content: attr(data-visible) ' / ';
-        }
-    }
-
-    .text-field {
-        @apply mb-7 sm:mb-9 flex min-h-[44px] w-full cursor-text items-center rounded-lg border border-neutral-200 bg-white px-3 py-2 text-base font-sans text-neutral-400 outline-hidden shadow-xs transition-all focus-within:border-neutral-300 focus-within:ring-2 focus-within:ring-neutral-300/50 dark:border-neutral-800 dark:bg-neutral-910 dark:focus-within:border-neutral-600 dark:focus-within:ring-neutral-600/50;
-
-        > i {
-            @apply size-5 shrink-0 text-neutral-400;
-        }
-
-        > input {
-            /* 16px minimum on mobile, or iOS zooms the page on focus.
-               The placeholder can go smaller; the zoom keys off the input itself. */
-            @apply mx-2 min-w-0 flex-1 border-0 bg-transparent p-0 text-base sm:text-sm placeholder:text-sm text-neutral-900 outline-none placeholder:text-neutral-400 focus:ring-0 dark:text-neutral-100 dark:placeholder:text-neutral-500;
-        }
-
-        > span[aria-hidden="true"] {
-            @apply ms-auto hidden items-center gap-1 text-xs text-neutral-400 pointer-events-none transition-opacity dark:text-neutral-500;
-
-            /* Keyboard hint: only for mouse-and-keyboard devices. */
-            @media (hover: hover) and (pointer: fine) {
-                display: flex;
-            }
-        }
-
-        > span[aria-hidden="true"] > kbd {
-            @apply flex h-5 min-w-5 items-center justify-center rounded border border-neutral-200 bg-neutral-25 px-1.5 font-sans text-[10px] text-neutral-600 dark:border-neutral-800 dark:bg-neutral-910 dark:text-neutral-400;
-        }
-
-        > input:focus ~ span[aria-hidden="true"],
-        > input:not(:placeholder-shown) ~ span[aria-hidden="true"] {
-            @apply opacity-0;
-        }
-
-    }
 
     /* Demo window chrome. */
     .demo-container {

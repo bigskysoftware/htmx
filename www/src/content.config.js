@@ -1,179 +1,25 @@
-import {defineCollection, z} from "astro:content";
-import {glob, file} from "astro/loaders";
-import {slugify} from "./lib/utils";
-import {EXTENSION_CATEGORIES, PATTERN_CATEGORIES} from "./lib/content-groups";
-import yaml from "js-yaml";
+/**
+ * Astro requires every folder under src/content to be declared, or it
+ * auto-generates collections and warns that doing so is deprecated.
+ *
+ * Nothing reads these. All content loading goes through lib/content.js.
+ * They exist to keep the build quiet, so they carry no schemas.
+ */
 
-const home = defineCollection({
-    loader: glob({base: "./src/content", pattern: "index.mdx"}),
-    schema: z.object({
-        title: z.string(),
-        description: z.string(),
-    }).strict(),
+import {defineCollection} from "astro:content";
+import {glob} from "astro/loaders";
+
+const folder = (name) => defineCollection({
+    loader: glob({base: `./src/content/${name}`, pattern: "**/*.{md,mdx}"}),
 });
-
-const about = defineCollection({
-    loader: glob({base: "./src/content", pattern: "about.mdx"}),
-    schema: z.object({
-        title: z.string(),
-        description: z.string().optional(),
-    }).strict(),
-});
-
-const docs = defineCollection({
-    loader: glob({base: "./src/content", pattern: "docs.md"}),
-    schema: z.object({
-        title: z.string(),
-        description: z.string().optional(),
-        thumbnail: z.string().optional(),
-        keywords: z.array(z.string()).optional(),
-        includeMockServer: z.boolean().optional(),
-    }).strict(),
-});
-
-const reference = defineCollection({
-    loader: glob({base: "./src/content/reference", pattern: "{*.md,**/*.md}"}),
-    schema: z.object({
-        title: z.string(),
-        description: z.string().optional(),
-        keywords: z.array(z.string()).optional(),
-        thumbnail: z.string().optional(),
-        hidden: z.boolean().optional(),
-        includeMockServer: z.boolean().optional(),
-    }).strict(),
-});
-
-const extensions = defineCollection({
-    loader: glob({base: "./src/content/extensions", pattern: "{*.md,*.mdx,**/*.md,**/*.mdx}"}),
-    schema: z.object({
-        title: z.string(),
-        description: z.string().optional(),
-        keywords: z.array(z.string()).optional(),
-        thumbnail: z.string().optional(),
-        category: z.enum(EXTENSION_CATEGORIES).optional(),
-        icon: z.string().optional(),
-        includeMockServer: z.boolean().optional(),
-    }).strict(),
-});
-
-const patterns = defineCollection({
-    loader: glob({base: "./src/content/patterns", pattern: "{*.md,*.mdx,**/*.md,**/*.mdx}"}),
-    schema: z.object({
-        title: z.string(),
-        description: z.string().optional(),
-        keywords: z.array(z.string()).optional(),
-        thumbnail: z.string().optional(),
-        category: z.enum(PATTERN_CATEGORIES).optional(),
-        icon: z.string().optional(),
-        soon: z.boolean().optional(),
-        includeMockServer: z.boolean().optional(),
-    }).strict(),
-});
-
-const essays = defineCollection({
-    loader: glob({base: "./src/content/essays", pattern: ["{*.md,*.mdx,**/*.md,**/*.mdx}", "!index.mdx"]}),
-    schema: z.object({
-        title: z.string(),
-        description: z.string().optional(),
-                created: z.date().optional(),
-        modified: z.date().optional(),
-        authors: z.array(z.string()).min(1),
-        tags: z.array(z.enum(['foundations', 'the-case-for-hypermedia', 'case-studies', 'guides', 'simplicity', 'counterpoints'])).optional(),
-        keywords: z.array(z.string()).optional(),
-        includeMockServer: z.boolean().optional(),
-    }).strict(),
-});
-
-const interviews = defineCollection({
-    loader: glob({base: "./src/content/interviews", pattern: "{*.md,*.mdx,**/*.md,**/*.mdx}"}),
-    schema: z.object({
-        title: z.string(),
-        description: z.string().optional(),
-        created: z.date().optional(),
-        modified: z.date().optional(),
-        authors: z.array(z.string()).optional(),
-        keywords: z.array(z.string()).optional(),
-        includeMockServer: z.boolean().optional(),
-    }).strict(),
-});
-
-const sponsors = defineCollection({
-    loader: file('src/content/sponsors.yaml', {
-        parser: (fileContent) => /** @type {any[]} */ (yaml.load(fileContent)).map((sponsor) => (
-            {
-                ...sponsor,
-                id: slugify(sponsor.name),
-            }))
-    }),
-    schema: z.object({
-        id: z.string(), // generated from `name`
-        name: z.string(),
-        url: z.string().url(),
-        github: z.string().optional(),
-        image: z.string(),
-        tier: z.enum(['bronze', 'silver', 'gold', 'platinum']),
-    }).strict(),
-});
-
-const links = defineCollection({
-    loader: file('src/content/links.yaml', {
-        parser: (fileContent) => {
-            const data = /** @type {any} */ (yaml.load(fileContent));
-            return [{ id: 'links', ...data }];
-        }
-    }),
-    schema: z.object({
-        id: z.string(),
-        header: z.array(z.object({
-            name: z.string(),
-            url: z.string(),
-            boost: z.boolean().optional(),
-        })),
-        footer: z.array(z.object({
-            name: z.string(),
-            url: z.string(),
-            iconClass: z.string(),
-            boost: z.boolean().optional(),
-        })),
-        social: z.array(z.object({
-            name: z.string(),
-            description: z.string(),
-            iconClass: z.string(),
-            url: z.string(),
-        })),
-    }).strict(),
-})
-
-
-const team = defineCollection({
-    loader: file('src/content/team.yaml', {
-        parser: (fileContent) => /** @type {any[]} */ (yaml.load(fileContent)).map((member) => ({
-            ...member,
-            id: slugify(member.name)
-        }))
-    }),
-    schema: ({image}) => z.object({
-        id: z.string(), // generated from `name`
-        name: z.string(),
-        image: image(),
-        github: z.string().optional(),
-        url: z.string().url().optional(),
-        content: z.string(),
-    }).passthrough(),
-})
-
-
 
 export const collections = {
-    home,
-    about,
-    docs,
-    reference,
-    extensions,
-    patterns,
-    essays,
-    interviews,
-    sponsors,
-    links,
-    team,
+    announcements: folder("announcements"),
+    essays: folder("essays"),
+    extensions: folder("extensions"),
+    interviews: folder("interviews"),
+    memes: folder("memes"),
+    patterns: folder("patterns"),
+    podcasts: folder("podcasts"),
+    reference: folder("reference"),
 };

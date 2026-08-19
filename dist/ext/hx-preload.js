@@ -47,9 +47,10 @@
             let params = new URLSearchParams(body);
             if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
 
+            let url = new URL(action, location.href);
             elt._htmx.preload = {
                 prefetch: fetch(action, ctx.request),
-                action: action,
+                action: url.origin === location.origin ? url.pathname + url.search : url.href,
                 expiresAt: Date.now() + timeout
             };
 

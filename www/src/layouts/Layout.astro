@@ -2,7 +2,6 @@
 import '../assets/css/site.css';
 import '../assets/css/input.css';
 import scrollspyBehavior from '../assets/hyperscript/scrollspy.hs?raw';
-import activeSearchBehavior from '../assets/hyperscript/active-search.hs?raw';
 
 import {Image} from 'astro:assets';
 import {getFile} from '../lib/content';
@@ -20,7 +19,6 @@ const {
     keywords,
     article,
     breadcrumbs,
-    hasSidebar = false,
 } = Astro.props;
 
 // Site links (header nav, footer extras, social) loaded from one source.
@@ -118,7 +116,6 @@ const footerSections = [
     <script is:inline defer src="/js/_hyperscript.min.js"></script>
 
     <script type="text/hyperscript" is:inline set:html={scrollspyBehavior}></script>
-    <script type="text/hyperscript" is:inline set:html={activeSearchBehavior}></script>
 
     <!-- Re-execute inline scripts after morph navigation (hyperscript + pattern demos) -->
     <script is:inline defer src="/js/morph-afterswap.js"></script>
@@ -152,22 +149,6 @@ const footerSections = [
          class="w-full h-(--navigation-bar-height) flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 lg:py-4 gap-4 lg:gap-6"
          aria-label="Primary Navigation">
         <div class="flex items-center gap-3">
-
-            {hasSidebar && (
-                    <label class="lg:hidden flex items-center justify-center size-10 cursor-pointer select-none rounded-xs text-neutral-600 dark:text-neutral-400 interact:text-neutral-800 dark:interact:text-neutral-100"
-                           for="sidebar-toggle-mobile"
-                           aria-label="Toggle Sidebar"
-                           aria-controls="sidebar-nav"
-                           role="button"
-                           tabindex="0">
-                        <i class="size-5 icon-[mdi--menu-open]
-                              transition-opacity duration-200
-                              [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-0"></i>
-                        <i class="size-5 icon-[mdi--menu-close]
-                              absolute transition-opacity duration-200 opacity-0
-                              [html:has(#sidebar-toggle-mobile:checked)_&]:opacity-100"></i>
-                    </label>
-            )}
 
             <!-- Logo -->
             <a href="/" aria-label="HTMX Homepage"
@@ -344,7 +325,7 @@ const footerSections = [
 {/* ─── CONSTRUCTION BANNER (disabled — restore from git if needed) ─────────
 <a href="/docs#migration"
    id="construction-banner"
-   class="sticky top-(--header-height) z-30 h-10 [html:has(#sidebar)_&]:lg:pl-72 flex justify-center items-center text-center gap-2 px-4 py-3 text-xs sm:text-[0.825rem] tracking-tight bg-blue-50 dark:bg-[#161b26] border-y border-blue-200 dark:border-blue-600/30 text-blue-900 dark:text-blue-200 interact:bg-blue-100 dark:interact:bg-[#1b253a] transition font-medium"
+   class="sticky top-(--header-height) z-30 h-10 flex justify-center items-center text-center gap-2 px-4 py-3 text-xs sm:text-[0.825rem] tracking-tight bg-blue-50 dark:bg-[#161b26] border-y border-blue-200 dark:border-blue-600/30 text-blue-900 dark:text-blue-200 interact:bg-blue-100 dark:interact:bg-[#1b253a] transition font-medium"
    title="htmx 4.0 changes and migration guide">
     <i class="icon-[mdi--wrench] size-3.5 opacity-60" aria-hidden="true"></i>
     htmx 4.0 is under construction — <span class="underline underline-offset-4 font-chicago">migration guide</span>
@@ -355,12 +336,9 @@ const footerSections = [
 <slot/>
 
 <!-- ─── FOOTER ──────────────────────────────────────────────────────────── -->
-<footer class:list={[
-    "text-sm border-t border-neutral-200 dark:border-neutral-850 bg-neutral-10 dark:bg-neutral-920 mt-16 sm:mt-24 pt-12 pb-6 sm:pt-16 sm:pb-8 relative z-10",
-    hasSidebar && "lg:pl-72"
-]}>
-    <div class={hasSidebar ? "px-4 sm:px-6 lg:px-12 xl:px-8" : "px-4 sm:px-6 lg:px-8"}>
-        <div class={hasSidebar ? "mx-auto max-w-4xl" : "max-w-2xl lg:max-w-5xl mx-auto"}>
+<footer class="text-sm border-t border-neutral-200 dark:border-neutral-850 bg-neutral-10 dark:bg-neutral-920 mt-16 sm:mt-24 pt-12 pb-6 sm:pt-16 sm:pb-8 relative z-10">
+    <div class="px-4 sm:px-6 lg:px-8">
+        <div class="max-w-2xl lg:max-w-5xl mx-auto">
 
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8 sm:gap-8 lg:gap-12">
 

@@ -13,9 +13,9 @@ test.describe('Accessibility', () => {
         await expect(page.locator('nav[aria-label="Mobile Navigation"]')).toBeAttached();
     });
 
-    test('content pages have sidebar with aria-label', async ({ page }) => {
+    test('content pages have a page nav with aria-label', async ({ page }) => {
         await page.goto('/docs');
-        await expect(page.locator('nav[aria-label="Sidebar Navigation"]')).toBeVisible();
+        await expect(page.locator('#page-nav[aria-label="On this page"]')).toBeVisible();
     });
 
     test('search dialog has correct aria attributes', async ({ page }) => {
