@@ -1835,6 +1835,10 @@ var htmx = (() => {
                     for (let option of input.selectedOptions) {
                         formData.append(name, option.value);
                     }
+                } else if (Array.isArray(input.value)) {
+                    for (let v of input.value) {
+                        formData.append(name, v);
+                    }
                 } else {
                     formData.append(name, input.value);
                 }

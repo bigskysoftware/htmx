@@ -286,4 +286,14 @@ describe('__collectFormData unit tests', function() {
         assert.equal(files[0].name, 'file1.txt');
         assert.equal(files[1].name, 'file2.txt');
     });
+
+    it('collects element with array value as individual FormData items', function () {
+        let elt = createProcessedHTML('<div name="fruit"></div>');
+        Object.defineProperty(elt, 'value', {
+            value: ['banana', 'apple'],
+            configurable: true
+        });
+        let formData = htmx.__collectFormData(elt, null, null, false, false);
+        assert.deepEqual(formData.getAll('fruit'), ['banana', 'apple']);
+    });
 });
