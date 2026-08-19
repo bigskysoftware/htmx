@@ -1,40 +1,31 @@
 import { test, expect } from './_fixtures';
 
+// Redirects from the htmx 2.x site live in public/_redirects and are applied
+// by Netlify, not by the preview server, so they cannot be tested here.
+// These cover the ones astro.config.mjs generates.
 test.describe('Redirects', () => {
-    // Migration guides (target pages don't exist yet, but redirect HTML should be generated)
-    const MIGRATION_REDIRECTS: [string, string][] = [
-        ['/migration-guide-hotwire-turbo', '/docs/get-started/migration-turbo'],
-        ['/migration-guide-htmx-1', '/docs/get-started/migration-htmx-1'],
-        ['/migration-guide-htmx-4', '/docs/get-started/migration-htmx-4'],
-        ['/migration-guide-htmx-2', '/docs/get-started/migration-htmx-4'],
-        ['/migration-guide-intercooler', '/docs/get-started/migration-intercooler'],
-        ['/htmx-4', '/docs/get-started/migration-htmx-4'],
-        ['/whats-new-in-htmx-4', '/docs/get-started/migration-htmx-4'],
-    ];
-
-    const SIMPLE_REDIRECTS: [string, string][] = [
-        ['/events', '/reference'],
+    const REDIRECTS: [string, string][] = [
         ['/help', '/about'],
-        ['/server-examples', '/about'],
-        ['/examples', '/patterns'],
+        ['/reference/attributes', '/reference'],
+        ['/reference/events', '/reference'],
+        ['/patterns/forms/active-search', '/patterns/active-search'],
     ];
 
-    // Simple redirects where the target page exists
-    for (const [from, to] of SIMPLE_REDIRECTS) {
-        test(`${from} → ${to}`, async ({ page }) => {
+    for (const [from, to] of REDIRECTS) {
+        test(`${from} -> ${to}`, async ({ page }) => {
             await page.goto(from);
             await expect(page).toHaveURL(to);
         });
     }
 
-    // Migration redirects — only test that the redirect HTML is generated
-    // (target pages don't exist yet, so we just verify the redirect page exists)
-    for (const [from, to] of MIGRATION_REDIRECTS) {
-        test(`${from} redirect page exists`, async ({ request }) => {
-            const response = await request.get(from, { maxRedirects: 0 });
-            // Astro generates HTML with meta refresh for redirects
-            // The response should be 200 (HTML page) or 301/302
-            expect([200, 301, 302]).toContain(response.status());
+    // These land on an anchor of a page that must exist.
+    const ANCHOR_REDIRECTS = ['/htmx-4', '/whats-new-in-htmx-4', '/migration-guide-htmx-2'];
+
+    for (const from of ANCHOR_REDIRECTS) {
+        test(`${from} -> /docs#migration-from-htmx-2x`, async ({ page }) => {
+            await page.goto(from);
+            await expect(page).toHaveURL(/\/docs#migration-from-htmx-2x$/);
+            await expect(page.locator('#migration-from-htmx-2x')).toBeAttached();
         });
     }
 });

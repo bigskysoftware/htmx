@@ -105,6 +105,19 @@ const interviews = defineCollection({
     }).strict(),
 });
 
+const announcements = defineCollection({
+    loader: glob({base: "./src/content/announcements", pattern: "{*.md,*.mdx}"}),
+    schema: z.object({
+        title: z.string(),
+        description: z.string().optional(),
+        created: z.date().optional(),
+        authors: z.array(z.string()).optional(),
+        keywords: z.array(z.string()).optional(),
+        nav: z.union([z.boolean(), z.string()]).optional(),
+        includeMockServer: z.boolean().optional(),
+    }).strict(),
+});
+
 const sponsors = defineCollection({
     loader: file('src/content/sponsors.yaml', {
         parser: (fileContent) => /** @type {any[]} */ (yaml.load(fileContent)).map((sponsor) => (
@@ -180,6 +193,7 @@ export const collections = {
     patterns,
     essays,
     interviews,
+    announcements,
     sponsors,
     links,
     team,

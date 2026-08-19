@@ -22,7 +22,7 @@ best-in-class [progressive enhancement](https://developer.mozilla.org/en-US/docs
 and has many useful concepts such as [layers](https://unpoly.com/up.layer) and sophisticated
 [form validation](https://unpoly.com/validation).
 
-I interviewed the author, Henning Koch, [here](/essays/interviews/henning_koch)
+I interviewed the author, Henning Koch, [here](/interviews/henning-koch)
 
 You can see a demo application using Unpoly [here](https://demo.unpoly.com/).
 

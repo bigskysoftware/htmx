@@ -1,0 +1,23 @@
+---
+title: "Announcements"
+description: "Release notes and project news, newest first."
+---
+
+import { getFolder } from '../../lib/content';
+import IndexTable from '../../components/IndexTable.astro';
+
+export const folder = await getFolder('announcements');
+export const announcements = folder.files.map(e => ({
+    title: e.frontmatter.title,
+    url: e.url,
+    date: e.frontmatter.created ? new Date(e.frontmatter.created).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}) : undefined,
+}));
+
+<IndexTable>
+    {announcements.map(item => (
+        <tr>
+            <th scope="row"><a href={item.url}>{item.title}</a></th>
+            <td><time>{item.date || ''}</time></td>
+        </tr>
+    ))}
+</IndexTable>

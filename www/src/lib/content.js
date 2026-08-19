@@ -189,9 +189,11 @@ function getFolderName(path) {
 }
 
 function cleanPath(path) {
+    // Bounded to 1-3 digits so an ordering prefix (01-, 02-) is stripped but a
+    // date prefix (2024-06-17-) survives. Announcements are named by date.
     return path
         .split('/')
-        .map(segment => segment.replace(/^\d+-/, '').replace(/\.(md|mdx)$/, ''))
+        .map(segment => segment.replace(/^\d{1,3}-/, '').replace(/\.(md|mdx)$/, ''))
         .join('/');
 }
 
@@ -211,7 +213,7 @@ function sortContentFiles(a, b) {
 
 // --- Constants ---
 
-export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'extensions', 'patterns', 'essays', 'interviews', 'podcasts', 'memes'];
+export const COLLECTIONS = ['home', 'about', 'docs', 'reference', 'extensions', 'patterns', 'essays', 'interviews', 'announcements', 'podcasts', 'memes'];
 
 // These collections use subfolders as sections on the root page, not as pages.
 const INLINE_SUBFOLDER_COLLECTIONS = new Set(['reference']);
@@ -287,15 +289,48 @@ export async function getFolder(path) {
             const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
             if (match) rootFrontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
         } catch {}
+
+        // A root file plus a same-named directory (with no index of its own)
+        // means the root file is the landing page and the directory holds its
+        // subpages. /docs works this way: docs.md is the tour, docs/*.md are
+        // the deep dives it links out to.
+        const rootUrl = isHome ? '/' : `/${path}`;
+        /** @type {ContentFile[]} */
+        const childFiles = allPaths
+            .filter(p => p.startsWith(`/src/content/${path}/`))
+            .sort()
+            .map((fullPath) => {
+                const relPath = fullPath.replace('/src/content/', '');
+                const slug = cleanPath(relPath.replace(`${path}/`, ''));
+                /** @type {Record<string, any>} */
+                let frontmatter = {};
+                try {
+                    const raw = readFileSync(join(process.cwd(), 'src', 'content', relPath), 'utf-8');
+                    const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+                    if (match) frontmatter = /** @type {Record<string, any>} */ (yaml.load(match[1])) ?? {};
+                } catch {}
+                return {
+                    path: relPath,
+                    folder: path,
+                    slug,
+                    url: `/${path}/${slug}`,
+                    frontmatter,
+                    breadcrumbs: [
+                        {label: rootFrontmatter.title, href: rootUrl},
+                        {label: frontmatter?.title},
+                    ],
+                };
+            });
+
         return {
             path: rootRelPath,
             folder: path,
             slug: '',
-            url: isHome ? '/' : `/${path}`,
+            url: rootUrl,
             frontmatter: rootFrontmatter,
-            files: [],
+            files: childFiles.filter(f => !f.frontmatter?.hidden),
             folders: [],
-            allFiles: [],
+            allFiles: childFiles,
             breadcrumbs: []
         };
     }

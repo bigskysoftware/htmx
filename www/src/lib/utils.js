@@ -22,7 +22,9 @@ export function formatDate(value, format = 'short') {
     if (!value) return '';
     if (typeof value === 'string' && /^\d{4}$/.test(value)) return value;
     const d = value instanceof Date ? value : new Date(value);
-    return d.toLocaleDateString('en-US', { month: format, day: 'numeric', year: 'numeric' });
+    // Frontmatter dates are date-only, so they parse as UTC midnight. Without
+    // this the site renders the previous day in any timezone west of UTC.
+    return d.toLocaleDateString('en-US', { month: format, day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
 /**
