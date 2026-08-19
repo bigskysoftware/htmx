@@ -4,7 +4,6 @@ import mockServerScript from '../assets/js/mock-server.js?raw';
 import PageNav from '../components/PageNav.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import PageHeader from '../components/PageHeader.astro';
-import FinderLink from '../components/FinderLink.astro';
 import { getFolder, render, COLLECTIONS } from '../lib/content';
 import { resolvePageNav } from '../lib/page-nav';
 
@@ -115,22 +114,6 @@ const editPageUrl = `https://github.com/bigskysoftware/htmx/edit/four-dev/www/sr
                         {includeMockServer && <script is:inline set:html={mockServerScript}></script>}
                         <Content/>
                     </article>
-                    {isSubfolderIndexPage && (
-                        <nav class="not-prose mt-4 flex flex-col gap-1">
-                            {subfolder!.files.map((f) => (
-                                <FinderLink href={f.url}>
-                                    <span class="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-4">
-                                        <span class:list={["text-[13px] sm:text-sm leading-snug truncate", isReference && "font-mono"]} set:html={f.frontmatter.title} />
-                                        {f.frontmatter.description && (
-                                            <span class="text-[11px] text-neutral-500 dark:text-neutral-450 group-interact/link:text-blue-200 dark:group-interact/link:text-black truncate">
-                                                {f.frontmatter.description}
-                                            </span>
-                                        )}
-                                    </span>
-                                </FinderLink>
-                            ))}
-                        </nav>
-                    )}
                 </div>
 
             </div>

@@ -97,6 +97,7 @@
 /migration-guide                 https://v2.htmx.org/migration-guide-intercooler/ 301
 /migration-guide-hotwire-turbo   https://v2.htmx.org/migration-guide-hotwire-turbo/ 301
 /migration-guide-htmx-1          https://v2.htmx.org/migration-guide-htmx-1/  301
+/migration-guide-htmx-2          https://v2.htmx.org/migration-guide-htmx-1/  301
 /migration-guide-intercooler     https://v2.htmx.org/migration-guide-intercooler/ 301
 
 # Utility. Master keeps this in its own _redirects; point straight at the
@@ -129,7 +130,6 @@
 # htmx 4.x specific redirects
 /sitemap.xml            /sitemap-index.xml                           301
 /help                   /about                                       301
-/htmx-4                 /docs#migration-from-htmx-2x                 301
-/whats-new-in-htmx-4    /docs#migration-from-htmx-2x                 301
-/migration-guide-htmx-2 /docs#migration-from-htmx-2x                 301
-/migration-guide-htmx-4 /docs#migration-from-htmx-2x                 301
+/htmx-4                 /docs/whats-new-in-htmx-4                    301
+/whats-new-in-htmx-4    /docs/whats-new-in-htmx-4                    301
+/migration-guide-htmx-4 /docs/whats-new-in-htmx-4                    301
