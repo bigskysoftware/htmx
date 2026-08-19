@@ -27,13 +27,10 @@ test.describe('Code blocks', () => {
     });
 
     test('code blocks survive morph navigation', async ({ page }) => {
-        await page.goto(CODE_BLOCK_PAGE, { waitUntil: 'networkidle' });
+        // Start on the index: with no sidebar, that is where sibling links live.
+        await page.goto('/reference', { waitUntil: 'networkidle' });
 
-        const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
-        if (await sidebarToggle.isVisible()) {
-            await sidebarToggle.click();
-        }
-        await page.locator('#sidebar-nav a[href="/reference/attributes/hx-post"]').click();
+        await page.locator('a[href="/reference/attributes/hx-post"]').first().click();
         await expect(page).toHaveURL(/hx-post/);
 
         const codeBlock = page.locator('.prose pre code').first();

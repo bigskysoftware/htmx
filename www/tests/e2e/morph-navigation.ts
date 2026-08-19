@@ -1,19 +1,15 @@
 import { test, expect } from './_fixtures';
 
-const START = '/reference/attributes/hx-get';
+const START = '/reference';
 const TARGET_HREF = '/reference/attributes/hx-post';
 const TARGET_URL = /hx-post/;
 
 async function navigateToTarget(page: any) {
-    const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
-    if (await sidebarToggle.isVisible()) {
-        await sidebarToggle.click();
-    }
-    await page.locator(`#sidebar-nav a[href="${TARGET_HREF}"]`).click();
+    await page.locator(`a[href="${TARGET_HREF}"]`).first().click();
 }
 
 test.describe('Morph navigation', () => {
-    test('sidebar link navigates without full reload', async ({ page }) => {
+    test('index link navigates without full reload', async ({ page }) => {
         await page.goto(START, { waitUntil: 'networkidle' });
 
         await page.evaluate(() => {
@@ -70,7 +66,7 @@ test.describe('Morph navigation', () => {
         await expect(page).toHaveURL(TARGET_URL);
 
         await page.goBack();
-        await expect(page).toHaveURL(/hx-get/);
+        await expect(page).toHaveURL(/\/reference$/);
     });
 
     test('morph navigation scrolls to top', async ({ page }) => {

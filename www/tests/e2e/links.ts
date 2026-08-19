@@ -13,21 +13,10 @@ async function checkLinks(hrefs: (string | null)[], request: any) {
 }
 
 test.describe('Internal link integrity', () => {
-    test('sidebar links resolve (docs)', async ({ page, request }) => {
-        await page.goto('/docs');
+    test('reference index links resolve', async ({ page, request }) => {
+        await page.goto('/reference');
 
-        const hrefs = await page.locator('#sidebar-nav a[href]').evaluateAll(
-            (els: HTMLAnchorElement[]) => els.map(el => el.getAttribute('href'))
-        );
-
-        expect(hrefs.length).toBeGreaterThan(10);
-        await checkLinks(hrefs, request);
-    });
-
-    test('sidebar links resolve (reference)', async ({ page, request }) => {
-        await page.goto('/reference/attributes/hx-get');
-
-        const hrefs = await page.locator('#sidebar-nav a[href]').evaluateAll(
+        const hrefs = await page.locator('main a[href^="/reference/"]').evaluateAll(
             (els: HTMLAnchorElement[]) => els.map(el => el.getAttribute('href'))
         );
 
@@ -39,16 +28,6 @@ test.describe('Internal link integrity', () => {
         await page.goto('/reference/attributes/hx-get');
 
         const hrefs = await page.locator('nav[aria-label="Breadcrumb"] a[href]').evaluateAll(
-            (els: HTMLAnchorElement[]) => els.map(el => el.getAttribute('href'))
-        );
-
-        await checkLinks(hrefs, request);
-    });
-
-    test('pagination links resolve', async ({ page, request }) => {
-        await page.goto('/reference/attributes/hx-get');
-
-        const hrefs = await page.locator('nav[aria-label="Pagination"] a[href]').evaluateAll(
             (els: HTMLAnchorElement[]) => els.map(el => el.getAttribute('href'))
         );
 

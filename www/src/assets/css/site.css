@@ -313,36 +313,6 @@ article.sticky-headers > section :is(h3, h4) {
     scroll-margin-top: calc(var(--header-offset) + var(--sticky-h2-height) + 1rem);
 }
 
-/* Desktop TOC fades in once the page intro scrolls out under the header. */
-@supports (animation-timeline: view()) {
-    body {
-        timeline-scope: --toc-reveal;
-    }
-
-    /* The search field drives the reveal: unlike jump-to, it never hides. */
-    [data-active-search] {
-        view-timeline: --toc-reveal block;
-        view-timeline-inset: var(--header-offset) 0;
-    }
-
-    aside:has(#page-outline) {
-        animation: toc-reveal linear both;
-        animation-timeline: --toc-reveal;
-        animation-range: exit 0% exit 100%;
-    }
-
-    @keyframes toc-reveal {
-        from {
-            opacity: 0;
-            visibility: hidden;
-        }
-        to {
-            opacity: 1;
-            visibility: visible;
-        }
-    }
-}
-
 /* Show the bar's bg/border only while stuck.
    Track the section, not the bar: the bar never leaves the viewport. */
 @supports (animation-timeline: view()) {

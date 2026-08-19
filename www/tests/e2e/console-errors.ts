@@ -56,15 +56,11 @@ test.describe('Console errors', () => {
     });
 
     test('no console errors after morph navigation', async ({ page }) => {
-        await page.goto('/reference/attributes/hx-get', { waitUntil: 'networkidle' });
+        await page.goto('/reference', { waitUntil: 'networkidle' });
 
         const errors = collectErrors(page);
 
-        const sidebarToggle = page.locator('label[for="sidebar-toggle-mobile"]');
-        if (await sidebarToggle.isVisible()) {
-            await sidebarToggle.click();
-        }
-        await page.locator('#sidebar-nav a[href="/reference/attributes/hx-post"]').click();
+        await page.locator('a[href="/reference/attributes/hx-post"]').first().click();
 
         await expect(page).toHaveURL(/hx-post/);
         await page.waitForTimeout(500);

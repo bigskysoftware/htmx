@@ -83,9 +83,8 @@ test.describe.serial('Pattern demos', () => {
         await waitForSw(page);
         await waitForDemo(page);
 
-        // Morph to click-to-load via sidebar link
-        await page.click('a[href="/patterns/click-to-load"]');
-        await expect(page).toHaveURL('/patterns/click-to-load', { timeout: 10_000 });
+        // Morph to click-to-load via injected link
+        await morphViaLink(page, '/patterns/click-to-load');
 
         // Verify click-to-load specific content appears (not stale infinite-scroll)
         await expect(page.locator('#demo-content button', { hasText: /show more/i }))
@@ -112,9 +111,8 @@ test.describe.serial('Pattern demos', () => {
         await waitForSw(page);
         await waitForDemo(page);
 
-        // Morph to click-to-load
-        await page.click('a[href="/patterns/click-to-load"]');
-        await expect(page).toHaveURL('/patterns/click-to-load', { timeout: 10_000 });
+        // Morph to click-to-load via injected link
+        await morphViaLink(page, '/patterns/click-to-load');
 
         const loadMore = page.locator('#demo-content button', { hasText: /show more/i });
         await expect(loadMore).toBeVisible({ timeout: 15_000 });
@@ -146,8 +144,7 @@ test.describe.serial('Pattern demos', () => {
         await waitForDemo(page);
 
         // Morph to demo B
-        await page.click(`a[href="${DEMO_B}"]`);
-        await expect(page).toHaveURL(DEMO_B, { timeout: 10_000 });
+        await morphViaLink(page, DEMO_B);
         await waitForDemo(page);
 
         // Back to A

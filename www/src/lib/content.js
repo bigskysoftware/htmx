@@ -31,8 +31,6 @@ import {cdnTokens, substituteTokens} from './cdn-tokens.js';
  * @property {string} url
  * @property {Record<string, any>} frontmatter
  * @property {Breadcrumb[]} breadcrumbs
- * @property {ContentFile} [prev]
- * @property {ContentFile} [next]
  */
 
 /**
@@ -79,7 +77,7 @@ async function loadModule(fullPath) {
 
 /**
  * Convention: a file with slug `full` in a collection is the aggregate view
- * of that collection. It's excluded from sidebar lists and prev/next nav,
+ * of that collection. It is excluded from content lists,
  * and its body is synthesised at content-load time by
  * aggregateCollectionMarkdown().
  * @param {{ slug: string }} file
@@ -240,15 +238,22 @@ export const TAG_ORDER = [
 /**
  * Render a content file or folder. Separate from data, this is I/O.
  *
+ * `authored` is true when the page exports its own getPageHeadings(). The
+ * generated index pages build their sections from data, so their headings are
+ * a deliberate nav, not a derived outline. resolvePageNav() needs to tell the
+ * two apart.
+ *
  * @param {ContentFile | ContentFolder} item
- * @returns {Promise<{ Content: any; headings: any[] }>}
+ * @returns {Promise<{ Content: any; headings: any[]; authored: boolean }>}
  */
 export async function render(item) {
     const mod = await loadModule(`/src/content/${item.path}`);
-    if (!mod) return {Content: null, headings: []};
+    if (!mod) return {Content: null, headings: [], authored: false};
+    const authoredHeadings = mod.getPageHeadings?.();
     return {
         Content: mod.default,
-        headings: mod.getPageHeadings?.() || mod.getHeadings?.() || []
+        headings: authoredHeadings || mod.getHeadings?.() || [],
+        authored: !!authoredHeadings
     };
 }
 
@@ -404,7 +409,7 @@ export async function getFolder(path) {
             };
         });
 
-        // allFiles includes hidden files (for routing); files (sidebar) excludes them.
+        // allFiles includes hidden files (for routing); files (listings) excludes them.
         const allFilesFlat = [...files.sort(sortContentFiles), ...childFolders.flatMap(f => f.allFiles)];
 
         return {
@@ -425,13 +430,6 @@ export async function getFolder(path) {
 
     if (!folder) {
         throw new Error(`No index.md found for folder: ${path}`);
-    }
-
-    // Add prev/next links, hidden and soon files are excluded from the nav sequence
-    const navFiles = folder.allFiles.filter(f => !f.frontmatter?.hidden && !f.frontmatter?.soon);
-    for (let i = 0; i < navFiles.length; i++) {
-        if (i > 0) navFiles[i].prev = navFiles[i - 1];
-        if (i < navFiles.length - 1) navFiles[i].next = navFiles[i + 1];
     }
 
     return folder;
@@ -481,7 +479,7 @@ export async function getFile(path) {
     const slug = cleanPath(path.replace(`${folder}/`, ''));
     const fileUrl = `/${folder}/${slug}`;
 
-    // Build breadcrumbs and prev/next from folder tree
+    // Build breadcrumbs from folder tree
     const rootFolder = await getFolder(folder);
     /** @type {Breadcrumb[]} */
     const breadcrumbs = [
@@ -506,20 +504,13 @@ export async function getFile(path) {
 
     breadcrumbs.push({label: frontmatter.title});
 
-    const allFiles = rootFolder.allFiles;
-    const fileIndex = allFiles.findIndex(f => f.path === path);
-    const prev = fileIndex > 0 ? allFiles[fileIndex - 1] : undefined;
-    const next = fileIndex < allFiles.length - 1 ? allFiles[fileIndex + 1] : undefined;
-
     return {
         path,
         folder,
         slug,
         url: fileUrl,
         frontmatter,
-        breadcrumbs,
-        prev,
-        next
+        breadcrumbs
     };
 }
 

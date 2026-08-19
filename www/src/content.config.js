@@ -9,6 +9,7 @@ const home = defineCollection({
     schema: z.object({
         title: z.string(),
         description: z.string(),
+        nav: z.union([z.boolean(), z.string()]).optional(),
     }).strict(),
 });
 
@@ -17,6 +18,7 @@ const about = defineCollection({
     schema: z.object({
         title: z.string(),
         description: z.string().optional(),
+        nav: z.union([z.boolean(), z.string()]).optional(),
     }).strict(),
 });
 
@@ -28,6 +30,7 @@ const docs = defineCollection({
         thumbnail: z.string().optional(),
         keywords: z.array(z.string()).optional(),
         includeMockServer: z.boolean().optional(),
+        nav: z.union([z.boolean(), z.string()]).optional(),
     }).strict(),
 });
 
@@ -40,6 +43,7 @@ const reference = defineCollection({
         thumbnail: z.string().optional(),
         hidden: z.boolean().optional(),
         includeMockServer: z.boolean().optional(),
+        nav: z.union([z.boolean(), z.string()]).optional(),
     }).strict(),
 });
 
@@ -53,6 +57,7 @@ const extensions = defineCollection({
         category: z.enum(EXTENSION_CATEGORIES).optional(),
         icon: z.string().optional(),
         includeMockServer: z.boolean().optional(),
+        nav: z.union([z.boolean(), z.string()]).optional(),
     }).strict(),
 });
 
@@ -67,6 +72,7 @@ const patterns = defineCollection({
         icon: z.string().optional(),
         soon: z.boolean().optional(),
         includeMockServer: z.boolean().optional(),
+        nav: z.union([z.boolean(), z.string()]).optional(),
     }).strict(),
 });
 
@@ -81,6 +87,7 @@ const essays = defineCollection({
         tags: z.array(z.enum(['foundations', 'the-case-for-hypermedia', 'case-studies', 'guides', 'simplicity', 'counterpoints'])).optional(),
         keywords: z.array(z.string()).optional(),
         includeMockServer: z.boolean().optional(),
+        nav: z.union([z.boolean(), z.string()]).optional(),
     }).strict(),
 });
 
@@ -94,6 +101,7 @@ const interviews = defineCollection({
         authors: z.array(z.string()).optional(),
         keywords: z.array(z.string()).optional(),
         includeMockServer: z.boolean().optional(),
+        nav: z.union([z.boolean(), z.string()]).optional(),
     }).strict(),
 });
 
