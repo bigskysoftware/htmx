@@ -1525,9 +1525,8 @@ More examples and details can be found on the [`hx-sync` attribute page.](/refer
 
 ## Web Components
 
-htmx doesn't automatically scan inside web components' shadow DOM. You must manually initialize it.
-
-After creating your shadow DOM, call [`htmx.process`](/reference/methods/htmx-process):
+Note that htmx doesn't automatically initialize content inside web components: you must manually initialize it by 
+calling [`htmx.process`](/reference/methods/htmx-process) in the `connectedCallback()` method:
 
 ```javascript
 customElements.define('my-counter', class extends HTMLElement {
@@ -1543,39 +1542,29 @@ customElements.define('my-counter', class extends HTMLElement {
 
 ```
 
+Note that this is true regardless of whether or not the component uses a Shadow DOM.
+
 #### Targeting Elements Outside Shadow DOM
 
-Selectors like [`hx-target`](/reference/attributes/hx-target) only see elements inside the same shadow DOM.
+If you are using the Shadow DOM in a component, selectors like [`hx-target`](/reference/attributes/hx-target) will
+only see elements inside that same Shadow DOM.
 
-To break out:
-
-1. Target the host element, using `host`:
+To break out of a components Shadow DOM and target the Web Component itself you can use `host` as the target:
 
 ```html
+<!-- Inside a Web Component -->
 <button hx-get="..." hx-target="host">
   ...
 </button>
 ```
 
-2. Target elements in main document, using `global:<selector>`:
+To break out of the shadow DOM and target an element in the broader DOM, you can use the `global:` prefix:
 
 ```html
+<!-- Inside a Web Component -->
 <button hx-get="..." hx-target="global:#target">
   ...
 </button>
-```
-
-#### Components Without Shadow DOM
-
-Still call [`htmx.process`](/reference/methods/htmx-process) on the component:
-
-```javascript
-customElements.define('simple-widget', class extends HTMLElement {
-    connectedCallback() {
-        this.innerHTML = `Load`
-        htmx.process(this)
-    }
-})
 ```
 
 ## Extensions
