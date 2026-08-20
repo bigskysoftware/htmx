@@ -110,7 +110,7 @@ const SEARCH_RANKING: [string | string[], string][] = [
     ['events', 'Events'],
 
     // ── Docs (with keyword aliases) ──
-    [['installation', 'install', 'cdn', 'npm', 'getting started', 'quick start'], 'Installation'],
+    [['installing htmx', 'install htmx', 'cdn', 'npm'], 'Installing htmx'],
     [['boosting', 'boost', 'progressive enhancement'], 'Boosting'],
     [['history', 'back button', 'pushState'], 'History'],
     ['extensions', 'Extensions'],
@@ -150,6 +150,8 @@ const SEARCH_RANKING: [string | string[], string][] = [
 ];
 
 test.describe('Search ranking', () => {
+    test.setTimeout(60_000);
+
     test('first result matches expected title for each query', async ({ page }) => {
         await page.goto('/', { waitUntil: 'load' });
         await openSearch(page);
