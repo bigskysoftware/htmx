@@ -411,7 +411,6 @@ var htmx = (() => {
                 HCON.merge(sourceElement._htmx.boosted, ctx);
             }
             ctx.target = this.__resolveTarget(sourceElement, ctx.target);
-            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
             if (ctx.target) {
                 ctx.request.headers["HX-Target"] = this.__buildIdentifier(ctx.target);
             }
@@ -575,6 +574,8 @@ var htmx = (() => {
                 disableElements = this.__disableElements(elt);
 
                 ctx.fetch ||= window.fetch.bind(window)
+                // Set HX-Request-Type based on final target/select (after all modifications)
+                ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
                 if (!this.__trigger(elt, "htmx:before:request", {ctx})) return;
 
                 let response = await ctx.fetch(ctx.request.action, ctx.request);

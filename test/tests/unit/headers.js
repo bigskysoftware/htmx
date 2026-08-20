@@ -65,39 +65,45 @@ describe('Request Headers', function() {
     describe('HX-Request-Type header', function() {
 
         it('sets to partial for regular element target', async function() {
-            createProcessedHTML('<div id="result"></div><button hx-get="js:" hx-target="#result"></button>');
+            mockResponse('GET', '/test', 'ok');
+            createProcessedHTML('<div id="result"></div><button hx-get="/test" hx-target="#result"></button>');
             let btn = document.querySelector('button');
-            let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Request-Type'].should.equal('partial');
+            btn.click();
+            await forRequest();
+            lastFetch().request.headers['HX-Request-Type'].should.equal('partial');
         });
 
         it('sets to partial when targeting self', async function() {
-            let btn = createProcessedHTML('<button hx-get="js:"></button>');
-            let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Request-Type'].should.equal('partial');
+            mockResponse('GET', '/test', 'ok');
+            let btn = createProcessedHTML('<button hx-get="/test"></button>');
+            btn.click();
+            await forRequest();
+            lastFetch().request.headers['HX-Request-Type'].should.equal('partial');
         });
 
         it('sets to full when targeting body', async function() {
-            let btn = createProcessedHTML('<button hx-get="js:" hx-target="body"></button>');
-            let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Request-Type'].should.equal('full');
+            mockResponse('GET', '/test', 'ok');
+            let btn = createProcessedHTML('<button hx-get="/test" hx-target="body" hx-swap="none"></button>');
+            btn.click();
+            await forRequest();
+            lastFetch().request.headers['HX-Request-Type'].should.equal('full');
         });
 
         it('sets to full when hx-select is present', async function() {
-            let btn = createProcessedHTML('<button hx-get="js:" hx-select="#content"></button>');
-            let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Request-Type'].should.equal('full');
+            mockResponse('GET', '/test', '<div id="content">ok</div>');
+            createProcessedHTML('<div id="result"></div><button hx-get="/test" hx-target="#result" hx-select="#content"></button>');
+            let btn = document.querySelector('button');
+            btn.click();
+            await forRequest();
+            lastFetch().request.headers['HX-Request-Type'].should.equal('full');
         });
 
         it('sets to full when hx-select and body target both present', async function() {
-            let btn = createProcessedHTML('<button hx-get="js:" hx-target="body" hx-select="#content"></button>');
-            let ctx = htmx.__createRequestContext(btn, new Event('click'));
-            await htmx.__handleTriggerEvent(ctx);
-            ctx.request.headers['HX-Request-Type'].should.equal('full');
+            mockResponse('GET', '/test', '<div id="content">ok</div>');
+            let btn = createProcessedHTML('<button hx-get="/test" hx-target="body" hx-select="#content" hx-swap="none"></button>');
+            btn.click();
+            await forRequest();
+            lastFetch().request.headers['HX-Request-Type'].should.equal('full');
         });
 
     });
