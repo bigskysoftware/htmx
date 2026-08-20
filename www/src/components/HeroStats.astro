@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 // Auto-calculate bundle size from actual dist file
-const distPath = path.resolve(import.meta.dirname, '../../../dist/htmx.min.js.br');
+const distPath = path.resolve(process.cwd(), '../dist/htmx.min.js.br');
 const stats = fs.statSync(distPath);
 const bundleSize = `~${Math.floor(stats.size / 1024)}k`;
 ---
