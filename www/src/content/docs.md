@@ -1284,152 +1284,124 @@ simulating "going back" to the previous state.
 A user could copy and paste the URL into an email, or new tab.
 
 ## Client-Side Scripting
-<details class="warning">
-<summary>Changes in htmx 4.0</summary>
 
-htmx 4.0 changed event names significantly when compared with htmx 2.0, making them much more standardized.
+htmx encourages a hypermedia-based approach to building web applications, with requests to servers updating content
+with response HTML.
 
-See the full event mapping in the [Changes in htmx 4.0](#migration) document.
+However, for modern web applications it is often desirable to add client-side scripting to your website in order to
+improve interactivity.
 
-**Note:** All events now provide a consistent `ctx` object with request/response information.
+htmx offers various tools to help make this easier:
 
-</details>
-
-While htmx encourages a hypermedia approach to building web applications, it offers many options for client scripting.
-Scripting is included in the REST-ful description of web architecture,
-see: [Code-On-Demand](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_7). As much as is
-feasible, we recommend a [hypermedia-friendly](/essays/hypermedia-friendly-scripting) approach to scripting in your web
-application:
-
-* [Respect HATEOAS](/essays/hypermedia-friendly-scripting#prime_directive)
-* [Use events to communicate between components](/essays/hypermedia-friendly-scripting#events)
-* [Use islands to isolate non-hypermedia components from the rest of your application](/essays/hypermedia-friendly-scripting#islands)
-* [Consider inline scripting](/essays/hypermedia-friendly-scripting#inline)
-
-The primary integration point between htmx and scripting solutions is the events that htmx sends and can respond to.
-
-We have an entire chapter entitled ["Client-Side Scripting"](https://hypermedia.systems/client-side-scripting/) in [our
-book](https://hypermedia.systems) that looks at how scripting can be integrated into your htmx-based application.
+* A rich set of events that it triggers
+* A scripting API against the `htmx` object
+* `hx-on` attributes for basic inline scripting
+* Support for Alpine.js for more advanced inline scripting
+* The `hx-live` extension as a (new in htmx 4) DOM-oriented alternative to Alpine.js
 
 ### Events
 
-Htmx has an extensive events mechanism, which doubles as the logging system.
-
-If you want to register for a given htmx event you can use
+Htmx has an [extensive set of events](#TODO link) that you can listen for to log or modify behaviors with:
 
 ```javascript
 document.body.addEventListener('htmx:after:init', function (evt) {
-    myJavascriptLib.init(evt.detail.elt);
+    setUpElement(evt.detail.elt);
 });
 ```
 
-or, if you would prefer, you can use the following htmx helper:
+Here, we are using vanilla JavaScript to listen for an element being initialized by htmx and applying some additional
+logic to it with our own custom `setUpElement()` function.
 
-```javascript
-htmx.on("htmx:after:init", function (evt) {
-    myJavascriptLib.init(evt.detail.elt);
-});
-```
+See [Using htmx Events](/docs/using-htmx-events) for more details on using htmx events effectively.
 
-The `htmx:after:process` event is fired every time an element is processed by htmx, and is effectively the equivalent
-to the normal `load` event.
+### The `htmx` Object API
 
-#### Initialize A 3rd Party Library With Events
+The global `htmx` JavaScript object has the following methods available on it:
 
-Using the `htmx:after:process` event to initialize content is so common that htmx provides a helper function:
+| Method                                                                          | Description                                                              |
+|---------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| [`htmx.ajax()`](/reference/methods/htmx-ajax)                                   | issues an htmx request from JavaScript                                   |
+| [`htmx.find()`](/reference/methods/htmx-find)                                   | finds the first element that matches a CSS selector                      |
+| [`htmx.findAll()`](/reference/methods/htmx-findAll)                             | finds all elements that match a CSS selector                             |
+| [`htmx.process()`](/reference/methods/htmx-process)                             | initializes htmx attributes on an element and its descendants            |
+| [`htmx.swap()`](/reference/methods/htmx-swap)                                   | runs the swap lifecycle without a request                                |
+| [`htmx.initialize()`](/reference/methods/htmx-initialize)                       | initializes htmx manually, if the automatic startup is too early         |
+| [`htmx.on()`](/reference/methods/htmx-on)                                       | adds an event listener                                                   |
+| [`htmx.onLoad()`](/reference/methods/htmx-onLoad)                               | runs a callback when htmx processes new content                          |
+| [`htmx.trigger()`](/reference/methods/htmx-trigger)                             | dispatches a custom event on an element                                  |
+| [`htmx.registerExtension()`](/reference/methods/htmx-registerExtension)         | registers an htmx extension                                              |
+| [`htmx.parseInterval()`](/reference/methods/htmx-parseInterval)                 | converts a time string such as `5s` to milliseconds                      |
+| [`htmx.timeout()`](/reference/methods/htmx-timeout)                             | creates a promise that resolves after a time interval                    |
 
-```javascript
-htmx.onLoad(function (target) {
-    myJavascriptLib.init(target);
-});
-```
+The `htmx` object also holds [`htmx.config`](/reference/config/htmx-config), which sets the global configuration.
 
-This does the same thing as the first example, but is a little cleaner.
-
-#### Configure a Request With Events
-
-You can handle the [`htmx:config:request`](/reference/events/htmx-config-request) event in order to modify an AJAX request
-before it is issued:
-
-```javascript
-document.body.addEventListener('htmx:config:request', function (evt) {
-    evt.detail.ctx.request.body.set('auth_token', getAuthToken()); // add a new parameter into the request
-    evt.detail.ctx.request.headers['Authentication-Token'] = getAuthToken(); // add a new header into the request
-});
-```
-
-Here we add a parameter and header to the request before it is sent.
+See the [methods reference](/reference/methods) for the signature and examples of each method.
 
 ### The `hx-on:*` Attributes
 
-HTML allows the embedding of inline scripts via the [
-`onevent` properties](https://developer.mozilla.org/en-US/docs/Web/Events/Event_handlers#using_onevent_properties),
-such as `onClick`:
+You can embed JavaScript event handlers directly on elements by using the `hx-on:<event name>` syntax:
 
 ```html
-<button onclick="alert('You clicked me!')">
+<button hx-on:click="alert('You clicked me!'); await timeout(1000); console.log('done')">
     Click Me!
 </button>
 ```
 
-This feature allows scripting logic to be co-located with the HTML elements the logic applies to, giving good
-[Locality of Behaviour (LoB)](/essays/locality-of-behaviour).
+`hx-on` attributes have the following top level symbols available:
 
-Unfortunately, HTML only allows `on*` attributes for a fixed
-number of [specific DOM events](https://www.w3schools.com/tags/ref_eventattributes.asp) (e.g. `onclick`) and
-doesn't provide a generalized mechanism for responding to arbitrary events on elements.
+| Symbol        | Description                                                                                                     |
+|---------------|-----------------------------------------------------------------------------------------------------------------|
+| `this`        | the element that holds the `hx-on` attribute                                                                    |
+| `event`       | the event that triggered the handler                                                                            |
+| event details | every property of `event.detail` is in scope directly. For htmx events this includes `ctx`, the request context |
+| htmx methods  | every method of the [`htmx` object](#the-htmx-object-api) is in scope without the `htmx.` prefix (e.g. `find()` |
 
-In order to address this shortcoming, htmx offers [`hx-on:*`](/reference/attributes/hx-on) attributes.
+Note that this feature requires `eval()` and thus may not work if you have a strict CSP.
 
-These attributes allow you to respond to any event in a manner that preserves the LoB of the standard `on*` properties,
-and provide some nice quality of life improvements over the standard javascript API.
+### Alpine.js Support
 
-If you want to respond to the `click` event using an `hx-on` attribute, we would write this:
+[Alpine.js](https://alpinejs.dev/) is a very popular JavaScript library that adds significant expressivity to inline
+scripting:
 
-```html
-<button hx-on:click="alert('You clicked me!')">
-    Click Me!
-</button>
-```
+* Event handlers with [`x-on`](https://alpinejs.dev/directives/on)
+* Reactive state with [`x-data`](https://alpinejs.dev/directives/data)
+* Conditional content with [`x-show`](https://alpinejs.dev/directives/show) and [`x-if`](https://alpinejs.dev/directives/if)
+* Two-way form binding with [`x-model`](https://alpinejs.dev/directives/model)
+* Helpers such as `$refs`, `$store`, `$dispatch` and `$watch`
 
-So, the string `hx-on`, followed by a colon (or a dash), then by the name of the event.
+Alpine is a very popular library among htmx developers.  Out of the box the two technologies play together very well, but there
+is an [`hx-alpine-compat`](/extensions/hx-alpine-compat) extension that smooths over some corner cases when integrating the two libraries.
 
-#### The Scripting API
+### `hx-live`
 
-htmx provides some top level helper methods in `hx-on` handlers that make async scripting more enjoyable:
+`hx-live`, new in htmx 4, is our own take on DOM-oriented, reactive scripting for the web.  It is inspired by
+Alpine, [jQuery](#TODO) and [hyperscript](https://hyperscript.org).
 
-| function    | description                                                                                                                          |
-|-------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `find()`    | allows you to find content relative to the current element (e.g. `find('next div')` will find the next div after the current element |
-| `findAll()` | allows you to find multiple elements relative to the current element                                                                 |
-| `timeout()` | allows you to wait for a given amount of time (e.g. `await timeout(100)` before continuing                                           |
-
-#### Scripting Examples
-
-Here is an example that adds a parameter to an htmx request
+`hx-live` provides a jQuery-like `q()` selector function that allows you to select one or many elements and update/mutate 
+them as a group.  This function is made available at the top level in `hx-on:` attributes, and supports relative
+selectors.
 
 ```html
-<button hx-post="/example"
-        hx-on:htmx:config:request="ctx.request.body.set('example', 'Hello Scripting!')">
-    Post Me!
-</button>
+<input placeholder="Enter your name" type="text">
+<button hx-on:click="this.text = 'Hello, ' + q('previous input').value"></button>
 ```
 
-Here the `example` parameter is added to the `POST` request before it is issued, with the value 'Hello Scripting!'.
+When you click this button it will update its text based on the value of the preceding input.
 
-Another use case is to [reset user input](/patterns/reset-on-submit) on successful requests using the [`htmx:after:swap`](/reference/events/htmx-after-swap)
-event:
+hx-live also supports DOM-based reactivity:
 
 ```html
-<button hx-post="/example"
-        hx-on:htmx:after:request="find('closest form').reset()">
-    Post Me!
-</button>
+<input placeholder="Enter your name" type="text">
+<p :text="'Hello, ' + q('previous input').value"></p>
 ```
 
-### 3rd Party Javascript
+In this case, the paragraph will update as you enter text into the input.
 
-Htmx integrates well with third party libraries.
+For more details, see the [`hx-live`](/extensions/hx-live) extension documentation.
+
+### Other 3rd Party JavaScript
+
+htmx is designed to integrate well with most third party JavaScript libraries.
 
 If the library fires events on the DOM, you can use those events to trigger requests from htmx.
 
@@ -1466,11 +1438,16 @@ htmx.onLoad((content) => {
 
 This will ensure that as new content is added to the DOM by htmx, sortable elements are properly initialized.
 
-### See Also
+### Hyperscript
 
-- [`hx-on`](/reference/attributes/hx-on) (attribute)
-- [Hypermedia-Friendly Scripting](/essays/hypermedia-friendly-scripting) (essay)
-- [Locality of Behaviour](/essays/locality-of-behaviour) (essay)
+The experimental [hyperscript](https://hyperscript.org) scripting language is a sister project of htmx and integrates
+seamlessly with it.
+
+Definitely not for everyone, but a pretty fun little language:
+
+```html
+  <button _="on click add .highlight to <p/> in me">
+```
 
 ## Synchronizing Requests
 
