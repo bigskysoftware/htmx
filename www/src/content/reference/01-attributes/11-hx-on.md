@@ -182,7 +182,7 @@ Fires, then ignores further events for the given interval.
 
 ### `from:<selector>`
 
-Listens on a different element. Takes a CSS selector or an [extended selector](/docs#extended-selectors-1). Two special values: `self` (only the element itself, not children) and `outside` (anything outside the element).
+Listens on a different element. Takes a CSS selector or an [extended selector](/docs#targeting-with-extended-selectors). Two special values: `self` (only the element itself, not children) and `outside` (anything outside the element).
 
 ```html
 <div hx-on="keydown[key=='Escape'] from:body -> this.hidden = true">
@@ -285,5 +285,5 @@ Use top-level `await` in `hx-on`. Do not add an async wrapper.
 
 - [`hx-trigger`](/reference/attributes/hx-trigger) (attribute)
 - [Client Scripting](/docs#client-side-scripting) (guide)
-- [Extended Selectors](/docs#extended-selectors-1) (reference)
+- [Extended Selectors](/docs#targeting-with-extended-selectors) (reference)
 - [Locality of Behaviour](/essays/locality-of-behaviour) (essay)

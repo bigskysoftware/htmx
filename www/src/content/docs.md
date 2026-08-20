@@ -197,341 +197,7 @@ For more details see [What's New in 4.0](/docs/whats-new-in-htmx-4)
 
 Extension authors who need to port their extensions to htmx 4 can refer to  [Migrating Extensions to 4.0](/docs/migrating-extensions-to-4)
 
-### Making Requests
-
-Add [`hx-get`](/reference/attributes/hx-get) to an element. It makes an AJAX request when clicked.
-
-**Your HTML:**
-```html
-<button hx-get="/messages">
-    Load Messages
-</button>
-```
-
-**What the server returns:**
-```html
-<div>You have 3 new messages</div>
-```
-
-**What the user sees:**
-```html
-<button hx-get="/messages">
-    <div>You have 3 new messages</div>
-</button>
-```
-
-The response replaced the button's content. No JavaScript required.
-
-#### How It Works
-
-| Step                  | What Happens                     |
-|-----------------------|----------------------------------|
-| 1. User clicks button | htmx intercepts the click        |
-| 2. htmx makes request | Sends GET request to `/messages` |
-| 3. Server responds    | Returns HTML (not JSON)          |
-| 4. htmx updates page  | Swaps HTML into the button       |
-
-#### HTTP Methods
-
-Use different attributes for different operations:
-
-```html
-<button hx-get="/users">Load Users</button>
-<button hx-post="/users">Create User</button>
-<button hx-put="/users/1">Update User</button>
-<button hx-patch="/users/1">Patch User</button>
-<button hx-delete="/users/1">Delete User</button>
-<button hx-query="/users">Query Users</button>
-```
-
-Each attribute combines the URL and HTTP method. Alternatively, use [`hx-action`](/reference/attributes/hx-action) and [`hx-method`](/reference/attributes/hx-method) to separate them — useful when the method is dynamic, or when you want progressive enhancement with native `action`/`method` fallback.
-
-#### Common Patterns
-
-**Load data on click:**
-```html
-<button hx-get="/profile">View Profile</button>
-```
-
-**Submit a form:**
-```html
-<form hx-post="/contact">
-    <input name="email" type="email">
-    <button type="submit">Send</button>
-</form>
-```
-
-Form submits via AJAX instead of full page reload.
-
-**Delete an item:**
-```html
-<button hx-delete="/items/5">Delete Item</button>
-```
-
-#### What Gets Sent
-
-htmx sends standard HTTP requests:
-
-**Request to server:**
-```
-GET /messages HTTP/1.1
-HX-Request: true
-HX-Target: button
-```
-
-htmx adds custom headers so your server knows it's an htmx request.
-
-**Server response:**
-```html
-HTTP/1.1 200 OK
-Content-Type: text/html
-
-<div>You have 3 new messages</div>
-```
-
-Just HTML. No JSON parsing needed.
-
-### Request Indicators
-
-When an AJAX request is issued it is often good to let the user know that something is happening since the browser
-will not give them any feedback. You can accomplish this in htmx by using `htmx-indicator` class.
-
-The `htmx-indicator` class is defined so that the opacity of any element with this class is `0` by default, making it
-invisible but present in the DOM.
-
-When htmx issues a request, it will put a `htmx-request` class onto an element (either the requesting element or
-another element, if specified). The `htmx-request` class will cause a child element with the `htmx-indicator` class
-on it to transition to an opacity of `1`, showing the indicator.
-
-```html
-<button hx-get="/click">
-    Click Me!
-    <img class="htmx-indicator" src="/spinner.gif" alt="Loading...">
-</button>
-```
-
-Here we have a button. When it is clicked the `htmx-request` class will be added to it, which will reveal the spinner
-gif element.
-
-The `htmx-indicator` class uses opacity to hide and show the progress indicator but if you would prefer another
-mechanism you can create your own CSS transition like so:
-
-```css
-.htmx-indicator {
-    display: none;
-}
-
-.htmx-request .htmx-indicator {
-    display: inline;
-}
-
-.htmx-request.htmx-indicator {
-    display: inline;
-}
-```
-
-If you want the `htmx-request` class added to a different element, you can use
-the [`hx-indicator`](/reference/attributes/hx-indicator)
-attribute with a CSS selector to do so:
-
-```html
-<div>
-    <button hx-get="/click" hx-indicator="#indicator">
-        Click Me!
-    </button>
-    <img id="indicator" class="htmx-indicator" src="/spinner.gif" alt="Loading..."/>
-</div>
-```
-
-Here we call out the indicator explicitly by id.
-
-Note that we could have placed the class on the parent `div` as well and had the same effect.
-
-You can also add the [`disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled) to
-elements for the duration of a request by using the [`hx-disable`](/reference/attributes/hx-disable) attribute.
-
-### Targets
-
-By default, responses replace the element that made the request.
-
-Change this with [`hx-target`](/reference/attributes/hx-target).
-
-```html
-<button hx-get="..."
-        hx-target="#results">
-  Load Results
-</button>
-
-<div id="results">
-    <!-- Response goes here -->
-</div>
-```
-
-The button makes the request.
-
-The response loads into `#results`.
-
-The button stays unchanged.
-
-#### Targeting With Extended Selectors
-Use [extended selectors](#extended-selectors) to target elements flexibly.
-
-Beyond standard CSS selectors, you can use:
-
-* [`this`](#this) - target the element itself
-* [`closest <selector>`](#closest-selector) - find the nearest ancestor
-* [`find <selector>`](#find-selector) - find the first child
-* [`next`](#next) - target the next sibling
-* [`next <selector>`](#next-selector) - find next sibling matching `<selector>`
-* [`previous`](#previous) - target the previous sibling
-* [`previous <selector>`](#previous-selector) - find previous sibling matching `<selector>`
-* And more...
-
-See the full [extended selectors guide](#extended-selectors-1) for all options and examples.
-
-This keeps your HTML cleaner without requiring `id` attributes everywhere.
-
-### Swaps
-
-htmx offers many different ways to swap the HTML returned into the DOM. By default, the content replaces the
-[innerHTML](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML) of the target element, which is called
-an `innerHTML` swap.
-
-This is similar to how the `target` attribute on links and forms works, placing the retrieved document within an iframe.
-
-You can modify this by using the [`hx-swap`](/reference/attributes/hx-swap) attribute with any of the following values:
-
-| Name                        | Description                                                                                                                               |
-|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| `innerHTML`                 | the default, puts the content inside the target element                                                                                   |
-| `outerHTML`                 | replaces the entire target element with the returned content                                                                              |
-| `beforebegin` (or `before`) | prepends the content before the target in the target's parent element                                                                     |
-| `afterbegin` (or `prepend`) | prepends the content before the first child inside the target                                                                             |
-| `beforeend` (or `append`)   | appends the content after the last child inside the target                                                                                |
-| `afterend` (or `after`)     | appends the content after the target in the target's parent element                                                                       |
-| `delete`                    | deletes the target element regardless of the response                                                                                     |
-| `none`                      | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed) |
-| `innerMorph`                | morphs the children of the target element, preserving as much of the existing DOM as possible                                             |
-| `outerMorph`                | morphs the target element itself, preserving as much of the existing DOM as possible                                                      |
-| `textContent`               | Set the target's text content (no HTML parsing)                                                                                           |
-
-#### Morph Swaps
-
-htmx includes built-in `innerMorph` and `outerMorph` swaps that merge new content into the existing DOM rather than
-simply replacing it. They often do a better job preserving things like focus, video state, etc. by mutating existing
-nodes in-place during the swap operation, at the cost of more CPU.
-
-Consider this HTML:
-
-```html
-<div id="video-elt">
-    <h1>Title</h1>
-    <iframe id="video" width="791" height="445" src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>
-</div>
-<button hx-get="/swap"
-        hx-target="#video-elt"
-        hx-swap="outerMorph">
-    Swap Header To Bottom
-</button>
-```
-
-If the response content for this looks like this:
-
-```html
-<div id="video-elt">
-    <iframe id="video" width="791" height="445" src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>
-    <h1>Title</h1>
-</div>
-```
-
-Then htmx will "morph" the existing content to the new structure. Note that the `h1` element has moved below the
-video. With the `outerHTML` swap this will cause the video to stop playing and reset. However, the morphing algorithm
-uses ID elements to intelligently mutate the DOM and preserve the existing video element, keeping the video playing
-smoothly.
-
-Note that a similar effect can be achieved with the [`hx-preserve`](/reference/attributes/hx-preserve) attribute, discussed below.
-
-##### Excluding Elements from Morphing
-
-Add `hx-morph-skip` or `hx-morph-skip-children` to elements in your server templates:
-
-- `hx-morph-skip` - completely skip morphing specific elements (attrs + children stay frozen)
-- `hx-morph-skip-children` - update element attributes but preserve children
-
-Or configure globally with CSS selectors:
-
-```javascript
-htmx.config.morphSkip         = 'custom-widget, .frozen';
-htmx.config.morphSkipChildren = 'lit-component, .sortable';
-```
-
-Useful for third-party widgets, custom web components, or active animations.
-
-#### View Transitions
-
-The [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API)
-gives developers a way to create an animated transition between different DOM states.
-
-htmx supports view transitions via:
-- Setting `htmx.config.transitions` to `true` globally
-- Per-swap via `hx-swap` `transition` property: `hx-swap="outerHTML transition:true"`
-- For boosted elements: [`hx-boost`](/reference/attributes/hx-boost)`="transition:true"`
-
-#### Swap Options
-
-The [`hx-swap`](/reference/attributes/hx-swap) attribute also supports options for tuning the swapping behavior of htmx. For
-example, by default htmx will swap in the title of a title tag found anywhere in the new content. You can turn this
-behavior off by setting the `ignoreTitle` modifier to true:
-
-```html
-<button hx-post="/like" hx-swap="outerHTML ignoreTitle:true">Like</button>
-```
-
-The modifiers available on `hx-swap` are (parsed as [HCON](#hcon)):
-
-| Option       | Description                                                                                          |
-|--------------|------------------------------------------------------------------------------------------------------|
-| swap         | A time interval (e.g., 100ms, 1s) to delay the swap operation                                        |
-| transition   | true or false, whether to use the view transition API for this swap                                  |
-| ignoreTitle  | If set to true, any title found in the new content will be ignored and not update the document title |
-| strip        | true or false, whether to strip the outer element when swapping (unwrap the content)                 |
-| focusScroll  | true or false, whether to scroll focused elements into view                                          |
-| swapEmpty    | true or false, whether to perform the main swap when the response body is empty (`false` skips it). Default behavior: skip if partials or OOB swaps were extracted (unless [`htmx.config.allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB) is `true`) |
-| scroll       | top or bottom, will scroll the target element to its top or bottom                                   |
-| show         | top or bottom, will scroll the target element's top or bottom into view                              |
-| target       | A selector to retarget the swap to a different element                                               |
-
-All swap modifiers appear after the swap style is specified, and are colon-separated.
-
-See the [`hx-swap`](/reference/attributes/hx-swap) documentation for more details on these options.
-
-### Parameters
-
-By default, an element that causes a request will include its `value` if it has one. If the element is a form it
-will include the values of all inputs within it.
-
-As with HTML forms, the `name` attribute of the input is used as the parameter name in the request that htmx sends.
-
-Additionally, if the element causes a non-`GET` request, the values of all the inputs of the associated form will be
-included (typically this is the nearest enclosing form, but could be different if e.g. `<button form="associated-form">`
-is used).
-
-If you wish to include the values of other elements, you can use the [`hx-include`](/reference/attributes/hx-include) attribute
-with a CSS selector of all the elements whose values you want to include in the request.
-
-Finally, if you want to programmatically modify the parameters, you can use the [`htmx:config:request`](/reference/events/htmx-config-request)
-event.
-
-#### File Upload
-
-If you wish to upload files via an htmx request, you can set the [`hx-encoding`](/reference/attributes/hx-encoding) attribute to
-`multipart/form-data`. This will use a `FormData` object to submit the request, which will properly include the file
-in the request.
-
-Note that depending on your server-side technology, you may have to handle requests with this type of body content very
-differently.
-
-## Issuing Requests &  Handling Responses
+## Issuing Requests & Handling Responses
 
 The crux of htmx is issuing HTTP request in response to events and then placing the response HTML into the document.
 
@@ -563,7 +229,9 @@ As of htmx 4.0, you can also use the following alternative attributes:
 </button>
 ```
 
-This is closer to the syntax that forms use.
+This is inspired by the syntax that forms use:
+
+// TODO form example
 
 ### Triggering Requests
 
@@ -596,7 +264,7 @@ For example, if you want a request to only happen once, you can use the `once` m
 </div>
 ```
 
-Other modifiers you can use for triggers are (parsed as [HCON](#hcon)):
+Other modifiers you can use for triggers are (parsed as [HCON](/docs/hcon)):
 
 * `changed` - only issue a request if the value of the element has changed
 * `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
@@ -703,45 +371,767 @@ situations, consider [streaming HTML](#streaming-html).
 
 ### Handling Responses
 
-Htmx expects responses to the AJAX requests it makes to be HTML, typically HTML fragments (although a full HTML
-document, matched with a [`hx-select`](/reference/attributes/hx-select) tag can be useful too).
+htmx expects the responses to the HTTP requests it makes to be HTML.  This is in contrast
+with front-end frameworks like [React](#TODO), which use JSON-formatted responses instead. 
 
-Htmx will then swap the returned HTML into the document at the target specified and with the swap strategy specified.
+Typically, htmx responses will be HTML fragments, that is small bits of HTML rather than a full document:
 
-Sometimes you might want to do nothing in the swap, but still perhaps trigger a client side
-event ([see below](#response-headers)).
+```js
+// TODO sample list fragment
+```
 
-For this situation, by default, you can return a `204 - No Content` response code, and htmx will ignore the content of
-the response.
+Htmx will then _swap_ this content into the document.  To do this it needs two things:
 
-In the event of a connection error, the [`htmx:error`](/reference/events/htmx-error) event will be triggered.
+* A _target_ - where to place the content
+* A _swap strategy_ - how to place the content
 
-#### Configuring Response Handling 
+The two attributes that control this are [`hx-target`](#TODO) and [`hx-swap`](#TODO).
 
-By default, htmx will swap content for all HTTP responses except `204` and `304` status codes. This includes error
-responses (4xx, 5xx). You can customize this behavior using the [`hx-status`](/reference/attributes/hx-status) attribute pattern (`hx-status:XXX`) or by configuring
-`htmx.config.noSwap`.
+#### Targeting Elements
 
-##### Status-Code Conditional Swapping
-
-The `hx-status:XXX` attribute allows you to specify different swap behaviors based on the HTTP status code of the
-response.
-This gives you fine-grained control over how different response statuses are handled.
+By default, responses target the element that made the request. You can change this by using the 
+[`hx-target`](/reference/attributes/hx-target) attribute, which takes a [CSS selector](TODO MDN LINK) that specifies
+the element to target:
 
 ```html
-<button hx-get="/data"
-        hx-status:404="none"
-        hx-status:500="target:#error-container">
-    Load Data
+<button hx-get="/info"
+        hx-target="#output">
+  
+</button>
+<output id="output">-</output>
+```
+
+##### Targeting With Extended Selectors
+
+In addition to plain selectors, htmx has the notion of _extended_ selector syntax.  This syntax increases the expressiveness
+of attributes like `hx-target`:
+
+| Selector                  | Matches                                                | Example                            |
+|---------------------------|--------------------------------------------------------|------------------------------------|
+| `<CSS selector>`          | The same elements `querySelectorAll()` returns.        | `hx-target="#results"`             |
+| `this`                    | The element itself (the default target)                | `hx-target="this"`                 |
+| `closest <CSS selector>`  | The nearest ancestor that matches.                     | `hx-target="closest .card"`        |
+| `find <CSS selector>`     | The first descendant that matches.                     | `hx-target="find .username"`       |
+| `next`                    | The next sibling element.                              | `hx-target="next"`                 |
+| `next <CSS selector>`     | The first match after this element in document order.  | `hx-target="next .results"`        |
+| `previous`                | The previous sibling element.                          | `hx-target="previous"`             |
+| `previous <CSS selector>` | The first match before this element in document order. | `hx-target="previous .results"`    |
+| `body`                    | The document body.                                     | `hx-target="body"`                 |
+| `document`                | The document.                                          | `hx-trigger="click from:document"` |
+| `window`                  | The window.                                            | `hx-trigger="scroll from:window"`  |
+| `host`                    | The shadow root host. Useful inside a web component.   | `hx-target="host"`                 |
+
+Relative selectors are particularly useful for cleaning up your DOM:
+
+```html
+<button hx-get="/info"
+        hx-target="next output">
+  
+</button>
+<output>-</output>
+```
+
+Here we use the `next` relative selector to target the next `output` element without requiring an ID.  This technique
+can be particularly useful when you have repeated content such as a table and want to avoid generating IDs to make
+targets work out properly.
+
+#### Configuring Swaps
+
+The [`hx-swap`](/reference/attributes/hx-swap) attribute controls how the content is swapped into (or in place of) 
+the target element.
+
+The default swapping mechanism is `innerHTML`: htmx places the response content _inside_ the target element.  It
+does not replace it.  This is in line with the way that HTML's native [iframes](#TODO MDN link) work.
+
+Other swapping algorithms available are:
+
+| Name                        | Description                                                                                                                               |
+|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `innerHTML`                 | the default, puts the content inside the target element                                                                                   |
+| `outerHTML`                 | replaces the entire target element with the returned content                                                                              |
+| `before` (or `beforebegin`) | prepends the content before the target in the target's parent element                                                                     |
+| `prepend` (or `afterbegin`) | prepends the content before the first child inside the target                                                                             |
+| `append` (or `beforeend`)   | appends the content after the last child inside the target                                                                                |
+| `after` (or `afterend`)     | appends the content after the target in the target's parent element                                                                       |
+| `delete`                    | deletes the target element regardless of the response                                                                                     |
+| `none`                      | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed) |
+| `innerMorph`                | morphs the children of the target element, preserving as much of the existing DOM as possible                                             |
+| `outerMorph`                | morphs the target element itself, preserving as much of the existing DOM as possible                                                      |
+| `textContent`               | Set the target's text content (no HTML parsing)                                                                                           |
+
+
+// TODO afterend example
+
+// TODO hx-preserve
+
+##### Morphing Swaps
+
+In htmx 4 there are now built-in `innerMorph` and `outerMorph` swaps.  Previously, morphing swaps were available
+only via [extensions](#TODO link to idiomoph).
+
+Morph swaps merge new content into the existing DOM rather than simply replacing it, attempting to preserve existing
+nodes in the DOM. 
+
+Morphing rather than replacing content can do a better job preserving things like focus, video state, etc. by mutating 
+existing nodes in-place during a swap operation.
+
+See the [morph swap guide](docs/morphing-swaps) for more information on using this technique.
+
+#### Swap Options
+
+The [`hx-swap`](/reference/attributes/hx-swap) attribute also supports options for tuning the swapping behavior of htmx. 
+
+For example, by default htmx will swap in the title of any title tag found in the response content. 
+
+You can turn this behavior off by setting the `ignoreTitle` modifier to true:
+
+```html
+<button hx-post="/like" hx-swap="outerHTML ignoreTitle:true">Like</button>
+```
+
+The modifiers available on `hx-swap` are:
+
+| Option        | Description                                                                                          |
+|---------------|------------------------------------------------------------------------------------------------------|
+| `swap`        | A time interval (e.g., 100ms, 1s) to delay the swap operation                                        |
+| `transition`  | true or false, whether to use the view transition API for this swap                                  |
+| `ignoreTitle` | If set to true, any title found in the new content will be ignored and not update the document title |
+| `strip`       | true or false, whether to strip the outer element when swapping (unwrap the content)                 |
+| `focusScroll` | true or false, whether to scroll focused elements into view                                          |
+| `swapEmpty`   | true or false, whether to perform the main swap when the response body is empty (`false` skips it).  |
+| `scroll`      | top or bottom, will scroll the target element to its top or bottom                                   |
+| `show`        | top or bottom, will scroll the target element's top or bottom into view                              |
+| `target`      | A selector to retarget the swap to a different element                                               |
+
+All swap modifiers appear after the swap style, using [HCON](/docs/hcon).
+
+See the [`hx-swap`](/reference/attributes/hx-swap) documentation for more details on these options.
+
+## Forms
+
+Working with forms and inputs in htmx is natural if you are used to regular HTML.
+
+### Input Values
+
+By default, an element that causes a request will include its `value` if it has one. 
+
+If the element is a `form` it will include the values of all `inputs` within it.
+
+If an element issues a request that sends a body (that is, anything except `GET` and `DELETE`), the values of all
+the `inputs` of the associated form will be included (typically this is the nearest enclosing form, but could be different if, for example,
+the [`form` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/form) is used).
+
+// TODO demo
+
+#### Including Other Values
+
+If you want to include the values of other elements in a request, you can use the [`hx-include`](/reference/attributes/hx-include) attribute.
+
+The `hx-include` attribute takes an [extended CSS selector](#targeting-with-extended-selectors) and will include the values of all matching elements.
+
+To send computed values (rather than values held in inputs) use the [`hx-vals`](/reference/attributes/hx-vals) attribute.
+
+```html
+<button hx-post="/save" hx-vals='{"draft": true}'>Save Draft</button>
+```
+
+You can use a `js:` prefix to compute the value dynamically when the request is made:
+
+```html
+<button hx-post="/save" hx-vals='js:{scrollY: window.scrollY}'>Save</button>
+```
+
+#### File Uploads
+
+By default, htmx uses the standard [`application/x-www-form-urlencoded`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form#enctype) format for submitting values to the server.
+
+If you wish to upload files via an htmx request you can set the [`hx-encoding`](/reference/attributes/hx-encoding) attribute to
+`multipart/form-data`.
+
+This will use a `FormData` object to submit the request, which will properly include the file in the request.
+
+Note that, depending on what you are using on the server side to process requests, you may have to handle requests with 
+this body type very differently.
+
+See [file upload pattern](/patterns/file-upload) for a complete example.
+
+### Form Validation
+
+htmx integrates with the [HTML5 Validation API](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
+and will not issue a request for a form if a validatable input is invalid.
+
+Non-form elements do not validate before they make requests by default, but you can enable validation by setting
+the [`hx-validate`](/reference/attributes/hx-validate) attribute on them to "true".
+
+## Request Indicators
+
+When an HTTP request is issued by htmx it is often good to let the user know that something is happening. 
+
+You can accomplish this in htmx by using the special `htmx-indicator` class.
+
+The `htmx-indicator` class is defined by htmx such that the opacity of any element with this class is `0` by default, 
+making it invisible but present in the DOM.
+
+When htmx issues a request, it will add a `htmx-request` class onto an element (either the requesting element or
+another element, if specified). 
+
+The `htmx-request` class will cause a child element with the `htmx-indicator` class on it to transition to an opacity of 
+`1` which shows the indicator.
+
+```html
+<button hx-get="/click">
+    Click Me!
+    <img class="htmx-indicator" src="/spinner.gif" alt="Loading...">
 </button>
 ```
+
+When this button makes a request the `htmx-request` class will be added to it.
+
+This will reveal the spinner GIF element inside of it.
+
+### Custom Request Indicator CSS
+
+The `htmx-indicator` class uses opacity to hide and show the progress indicator but if you would prefer another
+mechanism you can create your own CSS transition like so:
+
+```css
+.htmx-indicator {
+    display: none;
+}
+
+.htmx-request .htmx-indicator {
+    display: inline;
+}
+
+.htmx-request.htmx-indicator {
+    display: inline;
+}
+```
+
+### Targeting A Specific Indicator
+
+If you want the `htmx-request` class added to a different element, you can use the 
+[`hx-indicator`](/reference/attributes/hx-indicator) attribute with an extended CSS selector to do so:
+
+```html
+<div>
+    <button hx-get="/click" hx-indicator="#indicator">
+        Click Me!
+    </button>
+    <img id="indicator" class="htmx-indicator" src="/spinner.gif" alt="Loading..."/>
+</div>
+```
+
+### Disabling Elements
+
+Another common need is to disable elements while a request is in flight to prevent the user from interacting with them.
+
+You can add the [`disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled) to
+elements for the duration of a request by using the [`hx-disable`](/reference/attributes/hx-disable) attribute:
+
+// TODO example
+
+## Attribute Inheritance
+
+<details class="warning">
+<summary>Changes in htmx 4.0</summary>
+
+In htmx 2.0 attribute inheritance was implicit by default: elements inherited the attributes on their parents, such
+as [`hx-target`](/reference/attributes/hx-target). In htmx 4.0 attribute inheritance is now explicit by default, using the `:inherited` modifier.
+
+</details>
+
+Attribute inheritance allows you to "hoist" attributes up the DOM, in order to avoid code duplication.
+
+Consider the following HTML:
+
+```html
+<button hx-delete="/account" hx-confirm="Are you sure?">
+    Delete My Account
+</button>
+<button hx-put="/account" hx-confirm="Are you sure?">
+    Update My Account
+</button>
+```
+
+Here we have a duplicate [`hx-confirm`](/reference/attributes/hx-confirm) attribute.
+
+We can hoist this attribute to a parent element using the `:inherited` modifier on the attribute:
+
+```html
+<div hx-confirm:inherited="Are you sure?">
+    <button hx-delete="/account">
+        Delete My Account
+    </button>
+    <button hx-put="/account">
+        Update My Account
+    </button>
+</div>
+```
+
+This `hx-confirm` attribute will now apply to all htmx-powered elements within it.
+
+## Link & Form Boosting
+
+In htmx you can "boos" regular HTML anchors and forms using the [`hx-boost`](/reference/attributes/hx-boost) attribute. 
+
+This attribute will convert anchor tags and forms into `fecth()`-based requests that, by default, target the body of 
+the page.
+
+Here is an example:
+
+```html
+<div hx-boost:inherited="true">
+    <a href="/blog">Blog</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+</div>
+```
+
+The anchor tags in this `div` will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
+
+Note that `hx-boost` is using the `inherited` modifier here.
+
+### Advantages & Disadvantages of Boosting
+
+Boosting is a feature that has been part of htmx since it was called [intercooler](https://intercoolerjs.org).  In
+the olden days there were big advantages to it:
+
+* It eliminated the [Flash of Unstyled Content (FOUC)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content)
+* It enabled CSS transitions between pages
+* It removed the need to reparse CSS/JS between pages
+* It allowed the preservation of elements with the `hx-preserve` 
+
+Over time, browsers have gotten better at inter-page transitions, eliminating the FOUC via [paint holding](https://developer.chrome.com/blog/paint-holding)
+and making View Transitions work for full-page navigation.
+
+This has reduced the advantages of boosting.  There is still a performance benefit to boosting, and it is still the
+only way to use CSS transitions & element preservation on navigation, however.
+
+A disadvantage that people sometimes run into (which is one of the reasons it is faster) is that boosted elements
+to not reset the JavaScript environment.  With normal navigation, the browser completely resets the JavaScript environment.
+
+When boosting you have to be careful to not redefine things on accident, which can lead to JavaScript errors.
+
+Generally, boosting is controversial in the htmx community.  Some people [love it](https://dev.to/yawaramin/why-hx-boost-is-actually-the-most-important-feature-of-htmx-3nc0), some people discourage it.
+
+For what it's worth, we use boosting in this documentation website.
+
+### Boosting & Progressive Enhancement
+
+A nice feature of `hx-boost` is that it degrades gracefully if JavaScript is not enabled: the links and forms continue
+to work, they simply don't use ajax requests.
+
+This is known as
+[Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows
+a wider audience to use your site's functionality.
+
+Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
+
+Consider the [active search](/patterns/active-search) example. As it is written, it will not degrade gracefully:
+someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity's sake,
+to keep the example as brief as possible.
+
+However, you could wrap the htmx-enhanced input in a form element:
+
+```html
+<form action="/search" method="POST">
+    <input class="form-control" type="search"
+           name="search" placeholder="Begin typing to search users..."
+           hx-query="/search"
+           hx-trigger="keyup changed delay:500ms, search"
+           hx-target="#search-results"
+           hx-indicator=".htmx-indicator">
+</form>
+```
+
+With this in place, javascript-enabled clients would still get the nice active-search UX, but non-javascript enabled
+clients would be able to hit the enter key and still search. 
+
+Even better, you could add a "Search" button as well. You would then need to update the form with an 
+[`hx-post`](/reference/attributes/hx-post) that mirrored the `action` attribute, or perhaps use `hx-boost`
+on it.
+
+You would need to check on the server side for the [`HX-Request`](/reference/headers/HX-Request) header to differentiate between an htmx-driven and a
+regular request, to determine exactly what to render to the client.
+
+Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.
+
+As you can see, this requires more thought and more work. It also rules some functionality entirely out of bounds.
+These tradeoffs must be made by you, the developer, with respect to your projects goals and audience.
+
+#### Accessibility
+
+[Accessibility](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/What_is_accessibility) is a concept
+closely related to progressive enhancement. Using progressive enhancement techniques such as `hx-boost` will make your
+htmx application more accessible to a wide array of users.
+
+htmx-based applications are very similar to normal, non-`fetch()` driven web applications because htmx is HTML-oriented.
+
+As such, the normal HTML accessibility recommendations apply. For example:
+
+* Use semantic HTML as much as possible (i.e. the right tags for the right things)
+* Ensure focus state is clearly visible
+* Associate text labels with all form fields
+* Maximize the readability of your application with appropriate fonts, contrast, etc.
+
+## User Confirmations
+
+Often you will want to confirm an action before issuing a request. htmx supports the [`hx-confirm`](/reference/attributes/hx-confirm)
+attribute, which allows you to confirm an action using a simple javascript dialog:
+
+```html
+<button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
+    Delete My Account
+</button>
+```
+
+`hx-confirm` may also contain JavaScript by using the `js:` or `javascript:` prefix. In this case
+the JavaScript will be evaluated and, if a promise is returned, it will wait until the promise
+resolves with a `true` value to continue
+
+```html
+
+<script>
+    async function swalConfirm() {
+        let result = await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        })
+        return result.isConfirmed
+    }
+</script>
+<button hx-delete="/account" hx-confirm="js:swalConfirm()">
+    Delete My Account
+</button>
+```
+
+## Swapping Animations
+
+There are two different ways to animate elements when htmx swaps a response into the DOM:
+
+* CSS Transitions
+* View Transitions
+
+Note that animations, while visually interesting, should never detract from usability and should generally be less than 
+100 milliseconds in duration.
+
+### CSS Transitions
+
+[CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) are a well
+established mechanism for animating content in the DOM.
+
+htmx will ensure that any content with a stable ID will have CSS transitions applied when a swap occurs, regardless
+of what swapping approach you use.
+
+So, if this original content:
+
+```html
+<div id="div1">Original Content</div>
+```
+
+is replaced with this new content:
+
+```html
+<div id="div1" class="red">New Content</div>
+```
+
+You can write a CSS transition between the two like so:
+
+```css
+.red {
+    color: red;
+    transition: all ease-in 100ms;
+}
+```
+
+### View Transitions
+
+A newer animation technique is the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API),
+which gives developers a way to create a structured animated transition between different DOM states.
+
+View Transitions are much more sophisticated (and complicated!) than CSS transitions but give you much more control
+over the animation.
+
+htmx supports view transitions via the following:
+
+- Setting `htmx.config.transitions` to `true` globally will enable view transitions for all swaps
+- Per-swap via the `hx-swap` attribute `transition` option: `hx-swap="outerHTML transition:true"`
+- For boosted elements via the transition option: `hx-boost="transition:true"`
+
+Note that the default view transition is a [250 millisecond cross-fade](https://drafts.csswg.org/css-view-transitions-1/#ua-styles)
+which, in our opinion, is a very bad default for swapping, so you will want to override this if you use view transitions
+with htmx.
+
+## Multi-Target Updates
+
+htmx requests normally update one target element. Sometimes you need to update multiple parts of the page at once.
+
+For example, after submitting a form, you might want to update both the form itself and a notification counter 
+elsewhere on the page.
+
+htmx provides two mechanisms to update multiple targets from a single response:
+
+* Out-of-Band Swaps
+* Partial Tags (new in htmx 4)
+
+### Out-of-Band Swaps
+
+Out-of-Band (OOB) swaps allow you to swap a single element from the position that it is located in a response to 
+another position in the DOM, based on the elements id.
+
+To do this, you can add [`hx-swap-oob`](/reference/attributes/hx-swap-oob)`="true"` to an element in your response. 
+
+When you do this, htmx will find the element already in the DOM with the same `id` in your page and swap it.
+
+So, if this content was returned by the server in response to submitting a form:
+
+```html
+<div id="message" hx-swap-oob="true">
+    Form submitted successfully!
+</div>
+
+<form id="my-form">
+    <!-- Updated form content -->
+</form>
+```
+
+Then the `form` element will be swapped into the DOM the normal way, according to the `hx-target` and `hx-swap` 
+attributes, but the div will be swaped "out of band" and replace the element in the DOM with the id `message`, elsewhere
+in the page.
+
+#### Customizing OOB Swaps
+
+You can control the swap style of an OOB swap by setting the value of `hx-swap-oob` to a valid swap strategy:
+
+```html
+<div id="notifications" hx-swap-oob="beforeend">
+    <span>New notification</span>
+</div>
+```
+
+This appends the content to `div#notifications` instead of replacing it.
+
+### Partials (`<hx-partial>`)
+
+The `hx-partial` tag is new in htmx 4, and it addresses issues that have come up in our experience with OOB swaps 
+over the years.
+
+To use the `hx-partial` tag, simply wrap content in it.
+
+You can then use the normal htmx attributes to specify exactly how to swap that content 
+into the DOM:
+
+```html
+<hx-partial hx-target="#messages" hx-swap="beforeend">
+    <div class="message">New message content</div>
+</hx-partial>
+
+<hx-partial hx-target="#notifications">
+    <span class="badge">5</span>
+</hx-partial>
+
+<form id="my-form">
+    <!-- Main form content -->
+</form>
+```
+
+`<hx-partial>` tags can have the following attributes:
+
+* [`hx-target`](/reference/attributes/hx-target) - CSS selector for where to place content
+* `id` - Shorthand alternative to `hx-target`. Targets the element with that ID (e.g. `<hx-partial id="messages">` targets `#messages`)
+* [`hx-swap`](/reference/attributes/hx-swap) - Optional. Swap style (defaults to `innerHTML`)
+
+Some server-side template languages remove tags they do not know. For these, use the equivalent `<template>` form:
+
+```html
+<template hx type="partial" hx-target="#messages" hx-swap="beforeend">
+    <div class="message">New message content</div>
+</template>
+```
+
+#### Pure <hx-partial> Responses
+
+When a response contains only `<hx-partial>` elements and no main content, htmx does **not** perform the main swap: it
+assumes you only want to do partial replacement with the response.
+
+```html
+<!-- Server returns only partials: the main target is left untouched -->
+<hx-partial hx-target="#notifications">
+    <span class="badge">5</span>
+</hx-partial>
+<hx-partial hx-target="#messages" hx-swap="beforeend">
+    <div class="message">New message</div>
+</hx-partial>
+```
+
+If you want the main target cleared, add `swapEmpty:true` to `hx-swap` on the triggering element:
+
+```html
+<button hx-post="/submit" hx-swap="outerHTML swapEmpty:true">Submit</button>
+```
+
+### OOB vs `<hx-partial>`
+
+OOB swaps were designed for simple one-for-one replacements in the DOM.  They make sense when you have one element
+that you want to replace directly with another single element.
+
+Partials are more general but correspondingly more complicated.  They make sense when you want to replace arbitrary
+content (not just content keyed by id) with any form of content.  Because the replacement content is _within_ the
+`<hx-partial>` tag, it can be arbitrarily complex (e.g. multiple top level elements)
+
+Both approaches can be used within a single response if desired.
+
+## Streaming HTML
+
+For more interactive scenarios, where a server sends multiple updates to the DOM from a single request, htmx
+provides various _streaming HTML_ extensions.
+
+The streaming extensions provided by htmx use:
+
+* [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE)
+* [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
+* Multi-Part Responses
+
+### SSE
+
+Server-Sent Events let one HTTP response stream multiple _events_ to the browser over a single connection.
+
+The [`hx-sse`](/extensions/hx-sse) extension supports swapping content via these events.
+
+Consider the following button:
+
+```html
+<button hx-post="/generate"
+        hx-target="next output"
+        hx-swap="append">
+  Generate
+</button>
+
+<output></output>
+```
+
+With the htmx SSE extension installed, as unnamed events are received from the server the content in those events
+will be appended to the output tag.  This allows for a natural, streaming mechanism for inserting content as it
+becomes available into an element.
+
+For more details, see the [`hx-sse`](/extensions/hx-sse) extension documentation.
+
+### Web Sockets
+
+In contrast with SSE, Web Sockets hold a connection open in both directions, so the server and the browser can both send
+messages at any time.
+
+The [`hx-ws`](/extensions/hx-ws) extension supports swapping content from these messages as well as sending messages
+to the server from DOM elements.
+
+Consider the following chat window:
+
+```html
+<div hx-ws:connect="/chat"
+     hx-target="#messages"
+     hx-swap="append">
+
+  <div id="messages"></div>
+
+  <form hx-ws:send>
+    <input name="message">
+    <button>Send</button>
+  </form>
+
+</div>
+```
+
+With the htmx Web Socket extension installed, the connection opens on load and every message the server sends is
+appended to `#messages`.  The form sends its values back over the same connection as JSON, so no new request is
+made.
+
+For more details, see the [`hx-ws`](/extensions/hx-ws) extension documentation.
+
+### Multi-Part
+
+A [`multipart/mixed`](https://www.rfc-editor.org/rfc/rfc2046#section-5.1.3) response carries many _parts_ in one
+body, with a delimiter chosen by the server:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: multipart/mixed; boundary=...
+
+Hello
+--...
+Content-Type: text/html
+
+, world!
+```
+
+
+The [`hx-multipart`](/extensions/hx-multipart) extension supports swapping the content of these parts into the DOM
+as they arrive.
+
+Consider the generate button we looked at in the SSE example:
+
+```html
+<button hx-post="/generate"
+        hx-target="next output"
+        hx-swap="append">
+  Generate
+</button>
+
+<output></output>
+```
+
+With the htmx multi-part extension installed, if the server responds with a request of type `multipart/mixed;`, as parts 
+are received from the server the content in those parts will be appended to the output tag.
+
+For more details, see the [`hx-multipart`](/extensions/hx-multipart) extension documentation.
+
+### Picking A Streaming Technology
+
+Each streaming technology has strengths and weaknesses.
+
+SSE is widely supported and is our default recommendation for streaming responses.
+
+Web Sockets are the most complicated but support bi-directional communication.
+
+Multi-part, despite being very old, is less widely supported by server side frameworks.  However, we feel it more 
+naturally follows HTTP semantics.  We recommend it if you are a purist and are willing to do a bit of work on the
+server side to make this style of response easy to work with.
+
+## Advanced Request & Response Techniques
+
+The out-of-the-box request & response behavior of htmx is often sufficient for people, but some times you may
+want to do more advanced HTTP handling.  This section documents how to do so.
+
+### HTTP Response Code Handling
+
+By default, htmx will swap all responses it receives into the DOM except for responses with the [HTTP response codes](#TODO MDN link)
+`204` or `304`.
+
+If you respond with a `204 - No Content` response code, and htmx will ignore the content of the response and not swap
+anything, even if the response has a body.
+
+If the response code is `400` or `500`, htmx will trigger an [`htmx:response:error`](/reference/events/htmx-response-error) event.
+
+#### Configuring Response Code Handling
+
+You can customize this behavior using the [`hx-status`](/reference/attributes/hx-status) attribute, which takes
+a response code pattern after a colon:
+
+htmx tests the exact code first, then the two-digit wildcard (e.g. `50x`), then the one-digit wildcard (e.g. `5xx`).
+
+Here is an example:
 
 ```html
 <form hx-post="/submit"
       hx-target="#result"
       hx-status:422="target:#validation-errors"
-      hx-status:500="target:#server-error"
-      hx-status:503="none">
+      hx-status:5xx="target:#server-error"
+      hx-status:503="swap:none">
     <input name="email">
     <button type="submit">Submit</button>
 </form>
@@ -751,29 +1141,65 @@ This gives you fine-grained control over how different response statuses are han
 <div id="server-error"></div>
 ```
 
-In this example:
+This tells htmx:
 
 - Successful responses (2xx) swap into `#result` (default behavior)
 - `422` responses swap into `#validation-errors`
-- `500` responses swap into `#server-error`
-- `503` responses don't swap at all
+- `503` responses do not swap at all
+- `5xx` all other 500 responses swap into `#server-error`
 
-#### Request Headers
+You can also use the [`htmx.config.noSwap`](/reference/config/htmx-config-noSwap) configuration for global configuration
+of response code handling.  
+
+For example, to revert to the htmx 2.0 behavior of not swapping on `4xx` and `5xx` response codes you can add the
+following configuration:
+
+```html
+<meta name="htmx-config" content='{"noSwap": [204, 304, "4xx", "5xx"]}'>
+```
+### Request Headers
 
 htmx includes headers in the requests it makes:
 
-| Header                       | Description                                                                                          |
-|------------------------------|------------------------------------------------------------------------------------------------------|
-| [`HX-Boosted`](/reference/headers/HX-Boosted)                 | indicates that the request is via an element using [`hx-boost`](/reference/attributes/hx-boost)                  |
-| [`HX-Current-URL`](/reference/headers/HX-Current-URL)             | the current URL of the browser                                                                       |
-| [`HX-Request`](/reference/headers/HX-Request)                 | always "true"                                                                                        |
-| [`HX-Request-Type`](/reference/headers/HX-Request-Type)            | `"partial"` for targeted swaps, `"full"` for body-level or `hx-select` requests                      |
-| [`HX-Source`](/reference/headers/HX-Source)                  | the source element in `tag#id` format (e.g. `button#submit`)                                         |
-| [`HX-Target`](/reference/headers/HX-Target)                  | the target element in `tag#id` format (e.g. `div#results`)                                           |
+| Header                                                  | Description                                                                                     |
+|---------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| [`HX-Boosted`](/reference/headers/HX-Boosted)           | indicates that the request is via an element using [`hx-boost`](/reference/attributes/hx-boost) |
+| [`HX-Current-URL`](/reference/headers/HX-Current-URL)   | the current URL of the browser                                                                  |
+| [`HX-Request`](/reference/headers/HX-Request)           | always "true"                                                                                   |
+| [`HX-Request-Type`](/reference/headers/HX-Request-Type) | `"partial"` for targeted swaps, `"full"` for body-level or `hx-select` requests                 |
+| [`HX-Source`](/reference/headers/HX-Source)             | the source element in `tag#id` format (e.g. `button#submit`)                                    |
+| [`HX-Target`](/reference/headers/HX-Target)             | the target element in `tag#id` format (e.g. `div#results`)                                      |
 
-#### Response Headers
+htmx also sends [`HX-History-Restore-Request`](/reference/headers/HX-History-Restore-Request) when it refetches a page
+after a miss in the history cache. See [Browser History Support](#browser-history-support) for more info.
 
-htmx supports htmx-specific response headers:
+#### Adding Your Own Headers
+
+To add headers to a request, use the [`hx-headers`](/reference/attributes/hx-headers) attribute.
+
+```html
+<div hx-get="/data" hx-headers='{"X-Widget-Id": "42"}'>Get Data</div>
+```
+
+You can use a `js:` prefix to compute the headers when the request is made.
+
+```html
+<div hx-get="/data" hx-headers='js:{"X-Scroll": window.scrollY}'>Get Data</div>
+```
+
+Here is an example that sends a [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) token on every htmx request.
+
+```html
+<body hx-headers:inherited='js:{"X-CSRF-Token": getCsrfToken()}'>
+  ...
+</body>
+```
+
+If you want to set headers programmatically, use the [`htmx:config:request`](/reference/events/htmx-config-request) event.
+
+### Response Headers
+
+htmx supports the following response headers:
 
 | Header                                           | Description                                                                                                                                                                        |
 |--------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -787,17 +1213,75 @@ htmx supports htmx-specific response headers:
 | [`HX-Reselect`](/reference/headers/HX-Reselect)                                    | a CSS selector that allows you to choose which part of the response is used to be swapped in. Overrides an existing [`hx-select`](/reference/attributes/hx-select) on the triggering element |
 | [`HX-Trigger`](/reference/headers/HX-Trigger)              | allows you to trigger client-side events                                                                                                                                           |
 
-For more on the `HX-Trigger` headers, see [`HX-Trigger` Response Headers](/reference/headers/HX-Trigger).
+The [`HX-Trigger` Response Headers](/reference/headers/HX-Trigger) can be particularly useful, allowing you to trigger
+client-side JavaScript code from the server.
 
-Submitting a form via htmx has the benefit of no longer needing
-the [Post/Redirect/Get Pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get).
-After successfully processing a POST request on the server, you don't need to return
-a [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). You can directly return the new HTML fragment.
+### Per-Request Configuration With `hx-config`
 
-Also, the response headers above are not provided to htmx for processing with 3xx Redirect response codes
-like [HTTP 302 (Redirect)](https://en.wikipedia.org/wiki/HTTP_302). Instead, the browser will intercept the redirection
-internally and return the headers and response from the redirected URL. Where possible use alternative response codes
-like `200` to allow returning of these response headers.
+The [`hx-config`](/reference/attributes/hx-config) attribute allows you to control fine-grained details of the 
+request issued by htmx:
+
+```html
+<button hx-post="/api/users" hx-config="timeout:5s">Create User</button>
+```
+
+Most of `hx-config` options map directly onto the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit)
+request options:
+
+| Option        | Description                                                                                                                                                                            |
+|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `timeout`     | aborts the request after this time. Accepts `500ms`, `5s`, `2m`, or a number of milliseconds. Defaults to [`htmx.config.defaultTimeout`](/reference/config/htmx-config-defaultTimeout) |
+| `credentials` | `"omit"`, `"same-origin"` or `"include"`. Defaults to `"same-origin"`                                                                                                                  |
+| `cache`       | a [fetch cache mode](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#cache), such as `"no-cache"` or `"reload"`                                                            |
+| `redirect`    | `"follow"`, `"error"` or `"manual"`                                                                                                                                                    |
+| `referrer`    | a referrer URL, or `"no-referrer"`                                                                                                                                                     |
+| `integrity`   | a [subresource integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) value                                                                            |
+| `validate`    | `true` to validate the form before htmx sends the request. See [Form Validation](#form-validation)                                                                                     |
+
+
+#### The `mode` Option Is _Not_ Available
+
+`hx-config` does not allow the `mode` option for security reasons. 
+
+htmx always resets `mode` to `htmx.config.mode`, which defaults to `"same-origin"`.
+
+This stops an attacker who can inject an attribute from widening the scope of a request. 
+
+See [Security Considerations](#security-considerations) for more info.
+
+## Browser History Support
+
+<details class="warning">
+<summary>Changes in htmx 4.0</summary>
+
+History support in htmx 4.0 has changed significantly. We no longer snapshot the DOM and keep a copy in sessionStorage.
+
+Instead, we issue a full page request every time someone navigates to a history element. This is much less error-prone
+and foolproof. It also eliminates security concerns regarding keeping history state in accessible storage
+
+This change makes history restoration much more reliable and reduces client-side complexity.
+
+</details>
+
+Htmx provides a simple mechanism for interacting with
+the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
+
+If you want a given element to push its request URL into the browser navigation bar and add the current state of the
+page
+to the browser's history, include the [`hx-push-url`](/reference/attributes/hx-push-url) attribute:
+
+```html
+<a hx-get="/blog" hx-push-url="true">Blog</a>
+```
+
+When a user clicks on this link, htmx will push a new location onto the history stack.
+
+When a user hits the back button, htmx will retrieve the old content from the original URL and swap it back into the
+body,
+simulating "going back" to the previous state.
+
+**NOTE:** If you push a URL into the history, you **must** be able to navigate to that URL and get a full page back!
+A user could copy and paste the URL into an email, or new tab.
 
 ## Client-Side Scripting
 <details class="warning">
@@ -988,442 +1472,7 @@ This will ensure that as new content is added to the DOM by htmx, sortable eleme
 - [Hypermedia-Friendly Scripting](/essays/hypermedia-friendly-scripting) (essay)
 - [Locality of Behaviour](/essays/locality-of-behaviour) (essay)
 
-## Multi-Target Updates
-
-### The Problem
-
-htmx requests normally update one target element. Sometimes you need to update multiple parts of the page at once.
-
-For example: After submitting a form, you want to update both the form itself and a notification counter.
-
-### The Solution
-
-htmx provides two ways to update multiple targets from a single response:
-
-1. **Out-of-Band Swaps** - Match elements by their `id` attribute
-2. **Partial Tags** - Explicitly specify where content goes
-
-Choose the method that fits your needs.
-
-### Out-of-Band Swaps
-
-Use out-of-band swaps when you want to match elements by their `id`.
-
-Add [`hx-swap-oob`](/reference/attributes/hx-swap-oob)`="true"` to any element in your response. htmx will find the element with the same `id` in your page and swap it.
-
-**Server response:**
-
-```html
-<div id="message" hx-swap-oob="true">
-    Form submitted successfully!
-</div>
-
-<form id="my-form">
-    <!-- Updated form content -->
-</form>
-```
-
-**Result:**
-- The `div#message` updates wherever it exists in your page
-- The form updates in its normal target location
-
-#### Customize the Swap
-
-Specify a different swap style:
-
-```html
-<div id="notifications" hx-swap-oob="beforeend">
-    <span>New notification</span>
-</div>
-```
-
-This appends the content to `div#notifications` instead of replacing it.
-
-#### Target a Different Element
-
-Override the `id` matching by specifying a custom target:
-
-```html
-<div hx-swap-oob="innerHTML:#status">
-    Processing...
-</div>
-```
-
-This swaps the content into the element matching `#status`, regardless of the element's own `id`.
-
-#### When to Use Out-of-Band Swaps
-
-Use out-of-band swaps when:
-- Elements have consistent, unique `id` attributes
-- You want simple, ID-based updates
-- You're updating notification areas, counters, or status indicators
-
-### Partials (`<hx-partial>`)
-
-Use partials when you need explicit control over targeting.
-
-Wrap content in `<hx-partial>` tags. Specify where it goes with [`hx-target`](/reference/attributes/hx-target).
-
-**Server response:**
-
-```html
-<hx-partial hx-target="#messages" hx-swap="beforeend">
-    <div class="message">New message content</div>
-</hx-partial>
-
-<hx-partial hx-target="#notifications">
-    <span class="badge">5</span>
-</hx-partial>
-
-<form id="my-form">
-    <!-- Main form content -->
-</form>
-```
-
-**Result:**
-- First partial's content appends to `#messages`
-- Second partial's content replaces contents of `#notifications`
-- Form updates in its normal target location
-
-#### Attributes
-
-Each `<hx-partial>` accepts:
-
-- [`hx-target`](/reference/attributes/hx-target) - CSS selector for where to place content
-- `id` - Shorthand alternative to `hx-target`. Targets the element with that ID (e.g. `<hx-partial id="messages">` targets `#messages`)
-- [`hx-swap`](/reference/attributes/hx-swap) - Optional. Swap style (defaults to `innerHTML`)
-
-Either `hx-target` or `id` is required. If both are present, `hx-target` takes precedence.
-
-<details>
-<summary>Alternative syntax for template languages that strip unknown tags</summary>
-You can use the equivalent <code>&lt;template&gt;</code> form: <code>&lt;template hx type="partial" hx-target="..." hx-swap="..."&gt;</code>. htmx converts <code>&lt;hx-partial&gt;</code> to this form internally.
-</details>
-
-#### Empty Response Behaviour
-
-When a response contains only `<hx-partial>` elements and no main content, htmx will **not** perform the main swap. Partials are designed as true response separators — each partial is a self-contained section, giving the server explicit control over multi-target updates.
-
-```html
-<!-- Server returns only partials — main target is left untouched -->
-<hx-partial hx-target="#notifications">
-    <span class="badge">5</span>
-</hx-partial>
-<hx-partial hx-target="#messages" hx-swap="beforeend">
-    <div class="message">New message</div>
-</hx-partial>
-```
-
-If you want the main target cleared, add `swapEmpty:true` to `hx-swap` on the triggering element:
-
-```html
-<button hx-post="/submit" hx-swap="outerHTML swapEmpty:true">Submit</button>
-```
-
-[`hx-swap-oob`](/reference/attributes/hx-swap-oob) also prevents empty main swaps by default, but this can be changed globally via [`htmx.config.allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB). Partials always prevent empty swaps regardless of that setting.
-
-#### When to Use Partials
-
-Use partials when:
-- Elements don't have `id` attributes
-- You need to target by class or other selectors
-- You want explicit control over what goes where
-- You're building more complex update patterns
-
-### Choosing Between Them
-
-Both methods work together. Use them in the same response if needed.
-
-**Use [`hx-swap-oob`](/reference/attributes/hx-swap-oob)** for simple ID-based updates.
-
-**Use [`<hx-partial>`](/reference/tags/hx-partial)** for everything else.
-
-### Additional Features
-
-#### Select Specific Elements for OOB
-
-Use [`hx-select-oob`](/reference/attributes/hx-select-oob) on the triggering element to extract specific elements from the response for out-of-band swapping:
-
-```html
-<button hx-post="/submit"
-        hx-target="#form"
-        hx-select-oob="#message, #counter">
-    Submit
-</button>
-```
-
-This pulls `#message` and `#counter` from the response and swaps them out-of-band, even if they don't have `hx-swap-oob` attributes.
-
-#### Preserve Content During Swaps
-
-Add [`hx-preserve`](/reference/attributes/hx-preserve)`="true"` to elements you want to keep across swaps:
-
-```html
-<video id="my-video" hx-preserve="true">
-    <source src="video.mp4">
-</video>
-```
-
-This keeps the video playing even when the parent container gets updated.
-
-## HCON
-HCON (htmx Configuration Object Notation) is htmx's mini config language for structured HTML attributes.
-
-```html
-<meta name="htmx-config" content="transitions defaultTimeout:5000 sse.reconnect:true">
-```
-
-The equivalent JSON form works too:
-
-```html
-<meta name="htmx-config" content='{"transitions":true,"defaultTimeout":5000,"sse":{"reconnect":true}}'>
-```
-
-HCON drops the outer braces and accepts flag-style booleans, dotted paths, flexible quoting, and space-separated pairs.
-
-You encounter HCON any time htmx reads a structured attribute:
-
-- `hx-swap` modifiers: `innerHTML swap:200ms settle:100ms`
-- `hx-trigger` modifiers: `click delay:500ms throttle:1s`
-- `hx-config`: `credentials:"include" timeout:5000`
-- `hx-vals` / `hx-headers`: `token:"abc" retry:3`
-- `<meta name="htmx-config">`
-- `HX-Location` response header
-
----
-
-### Syntax
-
-#### Key-value pairs
-
-Pairs are separated by spaces or commas. Both are equivalent.
-
-```
-key:value key2:value2
-key:value, key2:value2
-```
-
-#### Value types
-
-| Input | Parsed as |
-|---|---|
-| `true` / `false` | boolean |
-| `42`, `0.5` | number |
-| `"quoted string"` | string (double quotes) |
-| `'quoted string'` | string (single quotes) |
-| `bare-word` | string |
-| *(no value)* | `true` |
-
-```html
-<!-- booleans -->
-<button hx-get="/api" hx-config="validate">          <!-- validate: true -->
-<button hx-get="/api" hx-config="validate:false">    <!-- validate: false -->
-
-<!-- numbers -->
-<button hx-get="/api" hx-config="timeout:5000">
-
-<!-- strings, quotes needed when value contains spaces or special chars -->
-<button hx-get="/api" hx-config='credentials:"include"'>
-<button hx-get="/api" hx-config="cache:'no-cache'">
-```
-
-#### Dot-notation for nested keys
-
-Use `.` to set nested object properties:
-
-```html
-<meta name="htmx-config" content="sse.reconnect:true sse.reconnectDelay:1000">
-```
-
-This produces `{ sse: { reconnect: true, reconnectDelay: 1000 } }`.
-
-#### JSON fallback
-
-Any value starting with `{` is parsed as JSON instead of HCON. This lets you compose config server-side and inject it directly:
-
-```html
-<!-- server renders this -->
-<meta name="htmx-config" content='{"defaultSwap":"outerHTML","transitions":true}'>
-
-<!-- or on an element -->
-<button hx-get="/api" hx-config='{"credentials":"include","timeout":5000}'>
-```
-
-JSON and HCON are not mixed, the entire string is one or the other.
-
-#### Escaping commas and special characters
-
-Wrap values in quotes when they contain commas, spaces, or HCON delimiters.
-
-```html
-<!-- comma ends the trigger spec -->
-<input hx-trigger="keyup from:.a, .b">
-
-<!-- quoted, comma is part of the value -->
-<input hx-trigger='keyup from:".a, .b"'>
-
-<!-- space ends the bare value -->
-<button hx-vals="message:hello world">
-
-<!-- quoted, the whole phrase is the value -->
-<button hx-vals='message:"hello world"'>
-```
-
-Use whichever quote style the HTML attribute is not using:
-
-```html
-<input hx-trigger="keyup from:'.a, .b'">
-<input hx-trigger='keyup from:".a, .b"'>
-```
-
----
-
-### Where HCON is used
-
-#### `hx-swap` modifiers
-
-The swap style comes first (not HCON), then modifiers are parsed as HCON:
-
-```html
-<div hx-get="/update" hx-swap="innerHTML swap:200ms settle:100ms scroll:top">
-<div hx-get="/update" hx-swap="outerHTML transition:true ignoreTitle:true">
-```
-
-The full JSON form is also accepted. When using JSON, omitting `"style"` falls back to `config.defaultSwap` as expected; including it overrides the style:
-
-```html
-<!-- modifiers only, style = config.defaultSwap -->
-<div hx-swap='{"swap":"200ms","settle":"100ms"}'>
-
-<!-- explicit style -->
-<div hx-swap='{"style":"outerHTML","swap":"200ms"}'>
-```
-
-Available swap modifiers: `swap`, `settle`, `scroll`, `show`, `scrollTarget`, `showTarget`,
-`transition`, `strip`, `ignoreTitle`, `focusScroll`, `target`.
-
-#### `hx-trigger` modifiers
-
-The event name comes first, then modifiers:
-
-```html
-<input hx-get="/search" hx-trigger="keyup delay:300ms">
-<button hx-post="/save" hx-trigger="click throttle:1s">
-<div hx-get="/poll" hx-trigger="every 2s">
-<form hx-post="/submit" hx-trigger="submit once">
-```
-
-Available trigger modifiers: `delay`, `throttle`, `from`, `target`, `consume`, `changed`, `once`.
-
-#### `hx-config`
-
-Merges into the request context before the request is issued. Useful for per-element fetch options:
-
-```html
-<button hx-get="/slow" hx-config="timeout:30000">
-<button hx-get="/api/data" hx-config='credentials:"include" cache:"no-cache"'>
-```
-
-#### `<meta name="htmx-config">`
-
-Sets global `htmx.config` values. Accepts HCON or JSON:
-
-```html
-<!-- HCON -->
-<meta name="htmx-config" content="defaultSwap:outerHTML transitions:true">
-
-<!-- JSON -->
-<meta name="htmx-config" content='{"defaultSwap":"outerHTML","transitions":true}'>
-
-<!-- nested via dot notation -->
-<meta name="htmx-config" content="sse.reconnect:true sse.reconnectMaxAttempts:5">
-```
-
-#### `HX-Location` response header
-
-The server can return HCON or JSON in this header:
-
-```
-HX-Location: /new-page
-HX-Location: path:"/new-page" push:"true"
-HX-Location: {"path":"/new-page","push":"true"}
-```
-
----
-
-### Attribute inheritance and `:append`
-
-HCON itself is a parsing format. The `:append` composition feature lives one level up, in htmx's attribute inheritance system. When you use `:append` on an attribute name, htmx merges the child value with the inherited parent value by concatenating them (stripping `{}`):
-
-```html
-<div hx-headers:inherited='{"X-Tenant": "acme"}'>
-  <button hx-get="/api"
-          hx-headers:append='{"X-Request-ID": "123"}'>
-    <!-- sends both headers -->
-  </button>
-</div>
-```
-
-This works for any attribute that accepts HCON/JSON, including `hx-vals` and `hx-headers`.
-
----
-
-### Notes and limitations
-
-- **Use JSON literals for primitive types.** `count:42` becomes a number, `enabled:true` becomes a boolean, and `name:bob` stays a string.
-- **Quote values for grouping, not type control.** Quotes preserve spaces, commas, and delimiters. Quoted numeric and boolean values still parse as numbers and booleans.
-- **Write durations naturally.** `200ms`, `2s`, and `1m` stay strings in HCON; htmx converts them where durations are expected.
-- **Quote dotted keys to keep them literal.** `"a.b":1` produces `{"a.b": 1}`. Bare `a.b:1` produces `{a: {b: 1}}`.
-- **Quote spaces and commas.** HCON-aware comma splitting preserves commas inside `[...]`, `(...)`, `<.../>`, and quotes.
-- **Use JSON for arrays.** HCON has no array literal syntax, so use JSON fallback, such as `{"items":[1,2,3]}`.
-- **Use dot-notation for nested objects.** `a.b.c:value` works; `a:{b:{c:value}}` does not.
-- **Use `js:` for expressions.** HCON values are literals, so write `hx-vals="js:{token: getToken()}"` for dynamic values.
-- **Avoid prototype keys.** `__proto__`, `constructor`, and `prototype` are ignored.
-- **Choose JSON or HCON.** A string starting with `{` is JSON; the two syntaxes cannot be mixed.
-
-### See also
-
-- [`hx-swap`](/reference/attributes/hx-swap)
-- [`hx-trigger`](/reference/attributes/hx-trigger)
-- [`hx-vals`](/reference/attributes/hx-vals)
-- [`hx-config`](/reference/attributes/hx-config)
-
-## CSS Transitions
-
-htmx makes it easy to
-use [CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) without
-javascript. Consider this HTML content:
-
-```html
-<div id="div1">Original Content</div>
-```
-
-Imagine this content is replaced by htmx via an ajax request with this new content:
-
-```html
-<div id="div1" class="red">New Content</div>
-```
-
-Note two things:
-
-* The div has the *same* id in the original and in the new content
-* The `red` class has been added to the new content
-
-Given this situation, we can write a CSS transition from the old state to the new state:
-
-```css
-.red {
-    color: red;
-    transition: all ease-in 1s;
-}
-```
-
-When htmx swaps in this new content, it will do so in such a way that the CSS transition will apply to the new content,
-giving you a nice, smooth transition to the new state.
-
-So, in summary, all you need to do to use CSS transitions for an element is keep its `id` stable across requests!
-
-## Synchronization
+## Synchronizing Requests
 
 Often you want to coordinate the requests between two elements. For example, you may want a request from one element
 to supersede the request of another element, or to wait until the other element's request has finished.
@@ -1473,157 +1522,6 @@ cancel any in-flight requests:
 ```
 
 More examples and details can be found on the [`hx-sync` attribute page.](/reference/attributes/hx-sync)
-
-## Confirmations
-
-Often you will want to confirm an action before issuing a request. htmx supports the [`hx-confirm`](/reference/attributes/hx-confirm)
-attribute, which allows you to confirm an action using a simple javascript dialog:
-
-```html
-<button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
-    Delete My Account
-</button>
-```
-
-`hx-confirm` may also contain JavaScript by using the `js:` or `javascript:` prefix. In this case
-the JavaScript will be evaluated and, if a promise is returned, it will wait until the promise
-resolves with a `true` value to continue
-
-```html
-
-<script>
-    async function swalConfirm() {
-        let result = await Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        })
-        return result.isConfirmed
-    }
-</script>
-<button hx-delete="/account" hx-confirm="js:swalConfirm()">
-    Delete My Account
-</button>
-```
-
-## Boosting
-
-Htmx supports "boosting" regular HTML anchors and forms with the [`hx-boost`](/reference/attributes/hx-boost) attribute. This
-attribute will convert all anchor tags and forms into AJAX requests that, by default, target the body of the page.
-
-Here is an example:
-
-```html
-<div hx-boost:inherited="true">
-    <a href="/blog">Blog</a>
-    <a href="/about">About</a>
-    <a href="/contact">Contact</a>
-</div>
-```
-
-The anchor tags in this div will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
-
-Note that `hx-boost` is using the `inherited` modifier here.
-
-### Progressive Enhancement 
-
-A nice feature of `hx-boost` is that it degrades gracefully if javascript is not enabled: the links and forms continue
-to work, they simply don't use ajax requests.
-
-This is known as
-[Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows
-a wider audience to use your site's functionality.
-
-Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
-
-Consider the [active search](/patterns/active-search) example. As it is written, it will not degrade gracefully:
-someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity's sake,
-to keep the example as brief as possible.
-
-However, you could wrap the htmx-enhanced input in a form element:
-
-```html
-<form action="/search" method="POST">
-    <input class="form-control" type="search"
-           name="search" placeholder="Begin typing to search users..."
-           hx-post="/search"
-           hx-trigger="keyup changed delay:500ms, search"
-           hx-target="#search-results"
-           hx-indicator=".htmx-indicator">
-</form>
-```
-
-With this in place, javascript-enabled clients would still get the nice active-search UX, but non-javascript enabled
-clients would be able to hit the enter key and still search. Even better, you could add a "Search" button as well.
-You would then need to update the form with an [`hx-post`](/reference/attributes/hx-post) that mirrored the `action` attribute, or perhaps use `hx-boost`
-on it.
-
-You would need to check on the server side for the [`HX-Request`](/reference/headers/HX-Request) header to differentiate between an htmx-driven and a
-regular request, to determine exactly what to render to the client.
-
-Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.
-
-As you can see, this requires more thought and more work. It also rules some functionality entirely out of bounds.
-These tradeoffs must be made by you, the developer, with respect to your projects goals and audience.
-
-[Accessibility](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/What_is_accessibility) is a concept
-closely related to progressive enhancement. Using progressive enhancement techniques such as `hx-boost` will make your
-htmx application more accessible to a wide array of users.
-
-htmx-based applications are very similar to normal, non-AJAX driven web applications because htmx is HTML-oriented.
-
-As such, the normal HTML accessibility recommendations apply. For example:
-
-* Use semantic HTML as much as possible (i.e. the right tags for the right things)
-* Ensure focus state is clearly visible
-* Associate text labels with all form fields
-* Maximize the readability of your application with appropriate fonts, contrast, etc.
-
-## History
-
-<details class="warning">
-<summary>Changes in htmx 4.0</summary>
-
-History support in htmx 4.0 has changed significantly. We no longer snapshot the DOM and keep a copy in sessionStorage.
-
-Instead, we issue a full page request every time someone navigates to a history element. This is much less error-prone
-and foolproof. It also eliminates security concerns regarding keeping history state in accessible storage
-
-This change makes history restoration much more reliable and reduces client-side complexity.
-
-</details>
-
-Htmx provides a simple mechanism for interacting with
-the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
-
-If you want a given element to push its request URL into the browser navigation bar and add the current state of the
-page
-to the browser's history, include the [`hx-push-url`](/reference/attributes/hx-push-url) attribute:
-
-```html
-<a hx-get="/blog" hx-push-url="true">Blog</a>
-```
-
-When a user clicks on this link, htmx will push a new location onto the history stack.
-
-When a user hits the back button, htmx will retrieve the old content from the original URL and swap it back into the
-body,
-simulating "going back" to the previous state.
-
-**NOTE:** If you push a URL into the history, you **must** be able to navigate to that URL and get a full page back!
-A user could copy and paste the URL into an email, or new tab.
-
-## Validation
-
-Htmx integrates with the [HTML5 Validation API](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
-and will not issue a request for a form if a validatable input is invalid.
-
-Non-form elements do not validate before they make requests by default, but you can enable validation by setting
-the [`hx-validate`](/reference/attributes/hx-validate) attribute to "true".
 
 ## Web Components
 
@@ -1680,315 +1578,7 @@ customElements.define('simple-widget', class extends HTMLElement {
 })
 ```
 
-## Attribute Inheritance
-
-<details class="warning">
-<summary>Changes in htmx 4.0</summary>
-
-In htmx 2.0 attribute inheritance was implicit by default: elements inherited the attributes on their parents, such
-as [`hx-target`](/reference/attributes/hx-target). In htmx 4.0 attribute inheritance is now explicit by default, using the `:inherited` modifier.
-
-</details>
-
-Inheritance allows you to "hoist" attributes up the DOM to avoid code duplication.
-
-Consider the following htmx:
-
-```html
-<button hx-delete="/account" hx-confirm="Are you sure?">
-    Delete My Account
-</button>
-<button hx-put="/account" hx-confirm="Are you sure?">
-    Update My Account
-</button>
-```
-
-Here we have a duplicate [`hx-confirm`](/reference/attributes/hx-confirm) attribute.
-
-We can hoist this attribute to a parent element using the `:inherited` modifier:
-
-```html
-<div hx-confirm:inherited="Are you sure?">
-    <button hx-delete="/account">
-        Delete My Account
-    </button>
-    <button hx-put="/account">
-        Update My Account
-    </button>
-</div>
-```
-
-This `hx-confirm` attribute will now apply to all htmx-powered elements within it.
-
-## Extended Selectors
-Extended selectors let you target elements in flexible ways.
-
-Use them with [`hx-target`](/reference/attributes/hx-target), [`hx-sync`](/reference/attributes/hx-sync), and other attributes that accept selectors.
-
-### Standard CSS Selectors
-
-Start with any CSS selector.
-
-```html
-<!-- Target by ID -->
-<button hx-get="/data" hx-target="#results">Load</button>
-
-<!-- Target by class -->
-<button hx-get="/data" hx-target=".container">Load</button>
-
-<!-- Target by attribute -->
-<button hx-get="/data" hx-target="[data-results]">Load</button>
-```
-
-### `this`
-
-Target the element itself.
-
-```html
-<!-- Update the button when clicked -->
-<button hx-get="/status" hx-target="this">Check Status</button>
-```
-
-The button will replace itself with the response.
-
-### `closest <selector>`
-
-Find the nearest ancestor matching the selector.
-
-Searches upward through parent elements.
-
-```html
-<div class="card">
-  <div class="card-body">
-    <button hx-get="/refresh" hx-target="closest .card">Refresh</button>
-  </div>
-</div>
-```
-
-The button targets its parent `.card` element.
-
-Works like [Element.closest()](https://developer.mozilla.org/docs/Web/API/Element/closest).
-
-### `find <selector>`
-
-Find the first child matching the selector.
-
-Searches downward through descendant elements.
-
-```html
-<div hx-get="/user" hx-target="find .username">
-  <span class="username">Loading...</span>
-</div>
-```
-
-The div targets its child `.username` element.
-
-Works like [Element.querySelector()](https://developer.mozilla.org/docs/Web/API/Element/querySelector).
-
-### `findAll <selector>`
-
-Find all children matching the selector.
-
-```html
-<div hx-get="/items" hx-target="findAll .item">
-  <div class="item">Item 1</div>
-  <div class="item">Item 2</div>
-</div>
-```
-
-Targets all `.item` elements inside the div.
-
-Works like [Element.querySelectorAll()](https://developer.mozilla.org/docs/Web/API/Element/querySelectorAll).
-
-### `next`
-
-Target the next sibling element.
-
-```html
-<button hx-get="/more" hx-target="next">Load More</button>
-<div>Content loads here</div>
-```
-
-Targets the element immediately after the button.
-
-Works like [`Element.nextElementSibling`](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling).
-
-### `next <selector>`
-
-Scan forward for the first matching element.
-
-Searches through all following siblings.
-
-```html
-<button hx-get="/data" hx-target="next .results">Load</button>
-<div class="other">Not here</div>
-<div class="results">Loads here</div>
-```
-
-Skips siblings until it finds `.results`.
-
-### `previous`
-
-Target the previous sibling element.
-
-```html
-<div>Content loads here</div>
-<button hx-get="/more" hx-target="previous">Load More</button>
-```
-
-Targets the element immediately before the button.
-
-Works like [Element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling).
-
-### `previous <selector>`
-
-Scan backward for the first matching element.
-
-Searches through all preceding siblings.
-
-```html
-<div class="results">Loads here</div>
-<div class="other">Not here</div>
-<button hx-get="/data" hx-target="previous .results">Load</button>
-```
-
-Skips siblings until it finds `.results`.
-
-### Special Keywords
-
-#### `body`
-
-Target the document body.
-
-```html
-<button hx-get="/page" hx-target="body">Load Page</button>
-```
-
-Useful for full-page updates.
-
-#### `document`
-
-Reference the entire document.
-
-```html
-<div hx-trigger="click from:document">...</div>
-```
-
-Used primarily with event triggers.
-
-#### `window`
-
-Reference the window object.
-
-```html
-<div hx-trigger="scroll from:window">...</div>
-```
-
-Used primarily with window events.
-
-#### `host`
-
-Target the shadow DOM host element.
-
-```html
-<!-- Inside shadow DOM -->
-<button hx-get="/data" hx-target="host">Update Host</button>
-```
-
-Only works inside shadow DOM.
-
-### `global <selector>`
-
-Search the entire document tree.
-
-By default, selectors search within the current shadow DOM boundary.
-
-```html
-<!-- Inside shadow DOM -->
-<button hx-get="/data" hx-target="global #results">Load</button>
-
-<!-- Targets #results in the main document -->
-<div id="results"></div>
-```
-
-Crosses shadow DOM boundaries.
-
-### Multiple Targets
-
-`hx-target` only resolves to a single element. To swap the same response into multiple elements, use the [`hx-targets`](/extensions/hx-targets) extension attribute:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/ext/hx-targets.js"></script>
-
-<button hx-get="/data" hx-targets="#results, #cache">Load</button>
-```
-
-See the [hx-targets extension docs](/extensions/hx-targets) for full details.
-
-### Hyperscript-Style Syntax
-
-Wrap selectors in `<.../>` for hyperscript compatibility.
-
-```html
-<button hx-get="/data" hx-target="<#results/>">Load</button>
-```
-
-This mimics [hyperscript query literals](https://hyperscript.org/expressions/query-reference/).
-
-Useful if you're using hyperscript alongside htmx.
-
-### Common Patterns
-
-#### Update parent card
-
-```html
-<div class="card">
-  <button hx-delete="/item/1" hx-target="closest .card">Delete</button>
-</div>
-```
-
-#### Update sibling container
-
-```html
-<button hx-get="/data" hx-target="next .results">Load</button>
-<div class="results"></div>
-```
-
-#### Update self
-
-```html
-<div hx-get="/refresh" hx-target="this">Click to refresh</div>
-```
-
-#### Update child element
-
-```html
-<div hx-get="/user" hx-target="find .username">
-  <span class="username">Loading...</span>
-</div>
-```
-
-### Notes
-
-* Selectors are evaluated once when htmx processes the element. They are not re-evaluated when the page changes.
-
-### Tips
-
-Start with simple CSS selectors.
-
-Use `this` for self-updates.
-
-Use `closest` to update parent containers.
-
-Use `find` to update child elements.
-
-Use `next` and `previous` for sibling relationships.
-
-Avoid `id` attributes when relative selectors work.
-
-This keeps your HTML cleaner.
-
-## Extension System
+## Extensions
 
 htmx supports extensions to augment its core hypermedia infrastructure. The extension mechanism takes pressure off the core library to add new features, allowing it to focus on its main purpose of generalizing hypermedia controls.
 
@@ -2201,7 +1791,7 @@ htmx.registerExtension("my-swap", {
 
 For migrating extensions written for htmx 2.x, see [Migration → Migrating Your Own Extensions](#migrating-your-own-extensions).
 
-## Best Practices
+## Security Considerations
 
 htmx allows you to define logic directly in your DOM. This has a number of advantages, the largest being
 [Locality of Behavior](/essays/locality-of-behaviour), which makes your system easier to understand and
@@ -2445,7 +2035,7 @@ They are listed below:
 
 </div>
 
-You can set most options directly in JavaScript, or you can use a `meta` tag (accepts [HCON](#hcon) or JSON):
+You can set most options directly in JavaScript, or you can use a `meta` tag (accepts [HCON](/docs/hcon) or JSON):
 
 > **Note:** Some options are read only once during initialisation and must be set via the `meta` tag to take effect. These include `prefix`, `extensions`, and `metaCharacter`.
 

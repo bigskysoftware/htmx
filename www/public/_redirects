@@ -75,7 +75,7 @@
 /extensions/preload        /extensions/hx-preload                       301
 /extensions/sse            /extensions/hx-sse                           301
 /extensions/ws             /extensions/hx-ws                            301
-/extensions/idiomorph      /docs#morph-swaps                            301
+/extensions/idiomorph      /docs/morphing-swaps                         301
 
 # Dropped in 4.0, so they stay on the 2.x site.
 /extensions/response-targets  https://v2.htmx.org/extensions/response-targets/ 301
