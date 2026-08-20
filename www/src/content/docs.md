@@ -1509,6 +1509,8 @@ and abort an input's in flight request:
 
 This resolves the synchronization between the two elements in a declarative way.
 
+### Aborting A Request
+
 htmx also supports a programmatic way to cancel requests: you can send the [`htmx:abort`](/reference/events/htmx-abort) event to an element to
 cancel any in-flight requests:
 
