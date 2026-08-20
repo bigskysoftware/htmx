@@ -2015,7 +2015,7 @@ You can set most options directly in JavaScript, or you can use a `meta` tag (ac
 <meta name="htmx-config" content='{"defaultSwap":"innerHTML"}'>
 ```
 
-### Conclusion
+## Conclusion
 
 And that's it!
 
