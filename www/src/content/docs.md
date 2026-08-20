@@ -76,7 +76,6 @@ return a _partial_ bit of HTML, say a `<div>`, to replace the button.  What htmx
 Because htmx works in terms of HTML it follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS) (HATEOAS).
 
 This makes developing with htmx feel much more like traditional web development than most front-end libraries today.
-
 ## Installing htmx
 
 htmx is a single JavaScript file with no dependencies. No build step is required to use it.
@@ -151,7 +150,6 @@ htmx has many useful [extensions](/extensions) that add functionality to it.
 
 If you want to install a distribution that ships with most of the useful extensions already installed so you 
 don't have to think about it, you can use the [htmax.js](/docs/htmax) distribution.
-
 ## Migrating From htmx 2.x to 4.x
 
 There are three major behavioral changes between htmx 2.x and 4.x:
@@ -196,7 +194,6 @@ Output is `file:line` format, clickable in most editors.
 For more details see [What's New in 4.0](/docs/whats-new-in-htmx-4)
 
 Extension authors who need to port their extensions to htmx 4 can refer to  [Migrating Extensions to 4.0](/docs/migrating-extensions-to-4)
-
 ## Issuing Requests & Handling Responses
 
 The crux of htmx is issuing HTTP request in response to events and then placing the response HTML into the document.
@@ -577,7 +574,6 @@ If you want to make additional swaps from a larger piece of server content you c
 
 Here, in addition to filtering the main swap down to the element with the id `main`, htmx finds elements with the ids 
 `alert` and `sidebar` in the response content and swaps each one over the element with the same `id` in the current page.
-
 ## Forms
 
 Working with forms and inputs in htmx is natural if you are used to regular HTML.
@@ -641,87 +637,6 @@ and will not issue a request for a form if a validatable input is invalid.
 
 Non-form elements do not validate before they make requests by default, but you can enable validation by setting
 the [`hx-validate`](/reference/attributes/hx-validate) attribute on them to "true".
-
-## Request Indicators
-
-When an HTTP request is issued by htmx it is often good to let the user know that something is happening. 
-
-You can accomplish this in htmx by using the special `htmx-indicator` class.
-
-The `htmx-indicator` class is defined by htmx such that the opacity of any element with this class is `0` by default, 
-making it invisible but present in the DOM.
-
-When htmx issues a request, it will add a `htmx-request` class onto an element (either the requesting element or
-another element, if specified). 
-
-The `htmx-request` class will cause a child element with the `htmx-indicator` class on it to transition to an opacity of 
-`1` which shows the indicator.
-
-```html
-<button hx-get="/click">
-    Click Me!
-    <img class="htmx-indicator" src="/spinner.gif" alt="Loading...">
-</button>
-```
-
-When this button makes a request the `htmx-request` class will be added to it.
-
-This will reveal the spinner GIF element inside of it.
-
-### Custom Request Indicator CSS
-
-The `htmx-indicator` class uses opacity to hide and show the progress indicator but if you would prefer another
-mechanism you can create your own CSS transition like so:
-
-```css
-.htmx-indicator {
-    display: none;
-}
-
-.htmx-request .htmx-indicator {
-    display: inline;
-}
-
-.htmx-request.htmx-indicator {
-    display: inline;
-}
-```
-
-### Targeting A Specific Indicator
-
-If you want the `htmx-request` class added to a different element, you can use the 
-[`hx-indicator`](/reference/attributes/hx-indicator) attribute with an extended CSS selector to do so:
-
-```html
-<div>
-    <button hx-get="/click" hx-indicator="#indicator">
-        Click Me!
-    </button>
-    <img id="indicator" class="htmx-indicator" src="/spinner.gif" alt="Loading..."/>
-</div>
-```
-
-### Disabling Elements
-
-Another common need is to disable elements while a request is in flight to prevent the user from interacting with them.
-
-You can add the [`disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled) to
-elements for the duration of a request by using the [`hx-disable`](/reference/attributes/hx-disable) attribute:
-
-```html
-<button hx-post="/submit" hx-disable="this">Submit</button>
-```
-
-The value is an [extended selector](#targeting-with-extended-selectors), so you can disable other elements too. Here
-the whole fieldset is disabled while the request is in flight:
-
-```html
-<fieldset>
-  <input name="email">
-  <button hx-post="/submit" hx-disable="closest fieldset">Submit</button>
-</fieldset>
-```
-
 ## Attribute Inheritance
 
 <details class="warning">
@@ -777,204 +692,6 @@ the child value to the inherited value instead:
 If no ancestor provides a value, the append value is used on its own.
 
 You can combine `:inherited` and `:append` on a element if you want child elements to inherit the new value.
-
-## Link & Form Boosting
-
-In htmx you can "boos" regular HTML anchors and forms using the [`hx-boost`](/reference/attributes/hx-boost) attribute. 
-
-This attribute will convert anchor tags and forms into `fecth()`-based requests that, by default, target the body of 
-the page.
-
-Here is an example:
-
-```html
-<div hx-boost:inherited="true">
-    <a href="/blog">Blog</a>
-    <a href="/about">About</a>
-    <a href="/contact">Contact</a>
-</div>
-```
-
-The anchor tags in this `div` will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
-
-Note that `hx-boost` is using the `inherited` modifier here.
-
-### Advantages & Disadvantages of Boosting
-
-Boosting is a feature that has been part of htmx since it was called [intercooler](https://intercoolerjs.org).  In
-the olden days there were big advantages to it:
-
-* It eliminated the [Flash of Unstyled Content (FOUC)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content)
-* It enabled CSS transitions between pages
-* It removed the need to reparse CSS/JS between pages
-* It allowed the preservation of elements with the `hx-preserve` 
-
-Over time, browsers have gotten better at inter-page transitions, eliminating the FOUC via [paint holding](https://developer.chrome.com/blog/paint-holding)
-and making View Transitions work for full-page navigation.
-
-This has reduced the advantages of boosting.  There is still a performance benefit to boosting, and it is still the
-only way to use CSS transitions & element preservation on navigation, however.
-
-A disadvantage that people sometimes run into (which is one of the reasons it is faster) is that boosted elements
-to not reset the JavaScript environment.  With normal navigation, the browser completely resets the JavaScript environment.
-
-When boosting you have to be careful to not redefine things on accident, which can lead to JavaScript errors.
-
-Generally, boosting is controversial in the htmx community.  Some people [love it](https://dev.to/yawaramin/why-hx-boost-is-actually-the-most-important-feature-of-htmx-3nc0), some people discourage it.
-
-For what it's worth, we use boosting in this documentation website.
-
-### Boosting & Progressive Enhancement
-
-A nice feature of `hx-boost` is that it degrades gracefully if JavaScript is not enabled: the links and forms continue
-to work, they simply don't use ajax requests.
-
-This is known as
-[Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows
-a wider audience to use your site's functionality.
-
-Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
-
-Consider the [active search](/patterns/active-search) example. As it is written, it will not degrade gracefully:
-someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity's sake,
-to keep the example as brief as possible.
-
-However, you could wrap the htmx-enhanced input in a form element:
-
-```html
-<form action="/search" method="POST">
-    <input class="form-control" type="search"
-           name="search" placeholder="Begin typing to search users..."
-           hx-query="/search"
-           hx-trigger="keyup changed delay:500ms, search"
-           hx-target="#search-results"
-           hx-indicator=".htmx-indicator">
-</form>
-```
-
-With this in place, javascript-enabled clients would still get the nice active-search UX, but non-javascript enabled
-clients would be able to hit the enter key and still search. 
-
-Even better, you could add a "Search" button as well. You would then need to update the form with an 
-[`hx-post`](/reference/attributes/hx-post) that mirrored the `action` attribute, or perhaps use `hx-boost`
-on it.
-
-You would need to check on the server side for the [`HX-Request`](/reference/headers/HX-Request) header to differentiate between an htmx-driven and a
-regular request, to determine exactly what to render to the client.
-
-Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.
-
-As you can see, this requires more thought and more work. It also rules some functionality entirely out of bounds.
-These tradeoffs must be made by you, the developer, with respect to your projects goals and audience.
-
-#### Accessibility
-
-[Accessibility](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/What_is_accessibility) is a concept
-closely related to progressive enhancement. Using progressive enhancement techniques such as `hx-boost` will make your
-htmx application more accessible to a wide array of users.
-
-htmx-based applications are very similar to normal, non-`fetch()` driven web applications because htmx is HTML-oriented.
-
-As such, the normal HTML accessibility recommendations apply. For example:
-
-* Use semantic HTML as much as possible (i.e. the right tags for the right things)
-* Ensure focus state is clearly visible
-* Associate text labels with all form fields
-* Maximize the readability of your application with appropriate fonts, contrast, etc.
-
-## User Confirmations
-
-Often you will want to confirm an action before issuing a request. htmx supports the [`hx-confirm`](/reference/attributes/hx-confirm)
-attribute, which allows you to confirm an action using a simple javascript dialog:
-
-```html
-<button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
-    Delete My Account
-</button>
-```
-
-`hx-confirm` may also contain JavaScript by using the `js:` or `javascript:` prefix. In this case
-the JavaScript will be evaluated and, if a promise is returned, it will wait until the promise
-resolves with a `true` value to continue
-
-```html
-
-<script>
-    async function swalConfirm() {
-        let result = await Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        })
-        return result.isConfirmed
-    }
-</script>
-<button hx-delete="/account" hx-confirm="js:swalConfirm()">
-    Delete My Account
-</button>
-```
-
-## Swapping Animations
-
-There are two different ways to animate elements when htmx swaps a response into the DOM:
-
-* CSS Transitions
-* View Transitions
-
-Note that animations, while visually interesting, should never detract from usability and should generally be less than 
-100 milliseconds in duration.
-
-### CSS Transitions
-
-[CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) are a well
-established mechanism for animating content in the DOM.
-
-htmx will ensure that any content with a stable ID will have CSS transitions applied when a swap occurs, regardless
-of what swapping approach you use.
-
-So, if this original content:
-
-```html
-<div id="div1">Original Content</div>
-```
-
-is replaced with this new content:
-
-```html
-<div id="div1" class="red">New Content</div>
-```
-
-You can write a CSS transition between the two like so:
-
-```css
-.red {
-    color: red;
-    transition: all ease-in 100ms;
-}
-```
-
-### View Transitions
-
-A newer animation technique is the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API),
-which gives developers a way to create a structured animated transition between different DOM states.
-
-View Transitions are much more sophisticated (and complicated!) than CSS transitions but give you much more control
-over the animation.
-
-htmx supports view transitions via the following:
-
-- Setting `htmx.config.transitions` to `true` globally will enable view transitions for all swaps
-- Per-swap via the `hx-swap` attribute `transition` option: `hx-swap="outerHTML transition:true"`
-- For boosted elements via the transition option: `hx-boost="transition:true"`
-
-Note that the default view transition is a [250 millisecond cross-fade](https://drafts.csswg.org/css-view-transitions-1/#ua-styles)
-which, in our opinion, is a very bad default for swapping, so you will want to override this if you use view transitions
-with htmx.
-
 ## Multi-Target Updates
 
 htmx requests normally update one target element. Sometimes you need to update multiple parts of the page at once.
@@ -1122,122 +839,412 @@ content (not just content keyed by id) with any form of content.  Because the re
 `<hx-partial>` tag, it can be arbitrarily complex (e.g. multiple top level elements)
 
 Both approaches can be used within a single response if desired.
+## Synchronizing Requests
 
-## Streaming HTML
+Often you want to coordinate the requests between two elements. For example, you may want a request from one element
+to supersede the request of another element, or to wait until the other element's request has finished.
 
-For more interactive scenarios, where a server sends multiple updates to the DOM from a single request, htmx
-provides various _streaming HTML_ extensions.
+htmx offers a [`hx-sync`](/reference/attributes/hx-sync) attribute to help you accomplish this.
 
-The streaming extensions provided by htmx use:
-
-* [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE)
-* [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
-* Multi-Part Responses
-
-### SSE
-
-Server-Sent Events let one HTTP response stream multiple _events_ to the browser over a single connection.
-
-The [`hx-sse`](/extensions/hx-sse) extension supports swapping content via these events.
-
-Consider the following button:
+Consider a race condition between a form submission and an individual input's validation request in this HTML:
 
 ```html
-<button hx-post="/generate"
-        hx-target="next output"
-        hx-swap="append">
-  Generate
-</button>
-
-<output></output>
+<form hx-post="/store">
+    <input id="title" name="title" type="text"
+           hx-post="/validate"
+           hx-trigger="change">
+    <button type="submit">Submit</button>
+</form>
 ```
 
-With the htmx SSE extension installed, as unnamed events are received from the server the content in those events
-will be appended to the output tag.  This allows for a natural, streaming mechanism for inserting content as it
-becomes available into an element.
+Without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel requests to
+`/validate` and `/store`.
 
-For more details, see the [`hx-sse`](/extensions/hx-sse) extension documentation.
-
-### Web Sockets
-
-In contrast with SSE, Web Sockets hold a connection open in both directions, so the server and the browser can both send
-messages at any time.
-
-The [`hx-ws`](/extensions/hx-ws) extension supports swapping content from these messages as well as sending messages
-to the server from DOM elements.
-
-Consider the following chat window:
+Using `hx-sync="closest form"` on the input and `hx-sync="this:replace"` on the form will watch for requests from the
+form
+and abort an input's in flight request:
 
 ```html
-<div hx-ws:connect="/chat"
-     hx-target="#messages"
-     hx-swap="append">
+<form hx-post="/store" hx-sync="this:replace">
+    <input id="title" name="title" type="text"
+           hx-post="/validate"
+           hx-trigger="change"
+           hx-sync="closest form">
+    <button type="submit">Submit</button>
+</form>
+```
 
-  <div id="messages"></div>
+This resolves the synchronization between the two elements in a declarative way.
 
-  <form hx-ws:send>
-    <input name="message">
-    <button>Send</button>
-  </form>
+### Aborting A Request
 
+htmx also supports a programmatic way to cancel requests: you can send the [`htmx:abort`](/reference/events/htmx-abort) event to an element to
+cancel any in-flight requests:
+
+```html
+<button id="request-button" hx-post="/example">
+    Issue Request
+</button>
+<button onclick="htmx.trigger('#request-button', 'htmx:abort')">
+    Cancel Request
+</button>
+```
+
+More examples and details can be found on the [`hx-sync` attribute page.](/reference/attributes/hx-sync)
+## Request Indicators
+
+When an HTTP request is issued by htmx it is often good to let the user know that something is happening. 
+
+You can accomplish this in htmx by using the special `htmx-indicator` class.
+
+The `htmx-indicator` class is defined by htmx such that the opacity of any element with this class is `0` by default, 
+making it invisible but present in the DOM.
+
+When htmx issues a request, it will add a `htmx-request` class onto an element (either the requesting element or
+another element, if specified). 
+
+The `htmx-request` class will cause a child element with the `htmx-indicator` class on it to transition to an opacity of 
+`1` which shows the indicator.
+
+```html
+<button hx-get="/click">
+    Click Me!
+    <img class="htmx-indicator" src="/spinner.gif" alt="Loading...">
+</button>
+```
+
+When this button makes a request the `htmx-request` class will be added to it.
+
+This will reveal the spinner GIF element inside of it.
+
+### Custom Request Indicator CSS
+
+The `htmx-indicator` class uses opacity to hide and show the progress indicator but if you would prefer another
+mechanism you can create your own CSS transition like so:
+
+```css
+.htmx-indicator {
+    display: none;
+}
+
+.htmx-request .htmx-indicator {
+    display: inline;
+}
+
+.htmx-request.htmx-indicator {
+    display: inline;
+}
+```
+
+### Targeting A Specific Indicator
+
+If you want the `htmx-request` class added to a different element, you can use the 
+[`hx-indicator`](/reference/attributes/hx-indicator) attribute with an extended CSS selector to do so:
+
+```html
+<div>
+    <button hx-get="/click" hx-indicator="#indicator">
+        Click Me!
+    </button>
+    <img id="indicator" class="htmx-indicator" src="/spinner.gif" alt="Loading..."/>
 </div>
 ```
 
-With the htmx Web Socket extension installed, the connection opens on load and every message the server sends is
-appended to `#messages`.  The form sends its values back over the same connection as JSON, so no new request is
-made.
+### Disabling Elements
 
-For more details, see the [`hx-ws`](/extensions/hx-ws) extension documentation.
+Another common need is to disable elements while a request is in flight to prevent the user from interacting with them.
 
-### Multi-Part
-
-A [`multipart/mixed`](https://www.rfc-editor.org/rfc/rfc2046#section-5.1.3) response carries many _parts_ in one
-body, with a delimiter chosen by the server:
-
-```http
-HTTP/1.1 200 OK
-Content-Type: multipart/mixed; boundary=...
-
-Hello
---...
-Content-Type: text/html
-
-, world!
-```
-
-
-The [`hx-multipart`](/extensions/hx-multipart) extension supports swapping the content of these parts into the DOM
-as they arrive.
-
-Consider the generate button we looked at in the SSE example:
+You can add the [`disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled) to
+elements for the duration of a request by using the [`hx-disable`](/reference/attributes/hx-disable) attribute:
 
 ```html
-<button hx-post="/generate"
-        hx-target="next output"
-        hx-swap="append">
-  Generate
-</button>
-
-<output></output>
+<button hx-post="/submit" hx-disable="this">Submit</button>
 ```
 
-With the htmx multi-part extension installed, if the server responds with a request of type `multipart/mixed;`, as parts 
-are received from the server the content in those parts will be appended to the output tag.
+The value is an [extended selector](#targeting-with-extended-selectors), so you can disable other elements too. Here
+the whole fieldset is disabled while the request is in flight:
 
-For more details, see the [`hx-multipart`](/extensions/hx-multipart) extension documentation.
+```html
+<fieldset>
+  <input name="email">
+  <button hx-post="/submit" hx-disable="closest fieldset">Submit</button>
+</fieldset>
+```
+## User Confirmations
 
-### Picking A Streaming Technology
+Often you will want to confirm an action before issuing a request. htmx supports the [`hx-confirm`](/reference/attributes/hx-confirm)
+attribute, which allows you to confirm an action using a simple javascript dialog:
 
-Each streaming technology has strengths and weaknesses.
+```html
+<button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
+    Delete My Account
+</button>
+```
 
-SSE is widely supported and is our default recommendation for streaming responses.
+`hx-confirm` may also contain JavaScript by using the `js:` or `javascript:` prefix. In this case
+the JavaScript will be evaluated and, if a promise is returned, it will wait until the promise
+resolves with a `true` value to continue
 
-Web Sockets are the most complicated but support bi-directional communication.
+```html
 
-Multi-part, despite being very old, is less widely supported by server side frameworks.  However, we feel it more 
-naturally follows HTTP semantics.  We recommend it if you are a purist and are willing to do a bit of work on the
-server side to make this style of response easy to work with.
+<script>
+    async function swalConfirm() {
+        let result = await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        })
+        return result.isConfirmed
+    }
+</script>
+<button hx-delete="/account" hx-confirm="js:swalConfirm()">
+    Delete My Account
+</button>
+```
+## Swapping Animations
 
+There are two different ways to animate elements when htmx swaps a response into the DOM:
+
+* CSS Transitions
+* View Transitions
+
+Note that animations, while visually interesting, should never detract from usability and should generally be less than 
+100 milliseconds in duration.
+
+### CSS Transitions
+
+[CSS Transitions](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions) are a well
+established mechanism for animating content in the DOM.
+
+htmx will ensure that any content with a stable ID will have CSS transitions applied when a swap occurs, regardless
+of what swapping approach you use.
+
+So, if this original content:
+
+```html
+<div id="div1">Original Content</div>
+```
+
+is replaced with this new content:
+
+```html
+<div id="div1" class="red">New Content</div>
+```
+
+You can write a CSS transition between the two like so:
+
+```css
+.red {
+    color: red;
+    transition: all ease-in 100ms;
+}
+```
+
+### View Transitions
+
+A newer animation technique is the [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API),
+which gives developers a way to create a structured animated transition between different DOM states.
+
+View Transitions are much more sophisticated (and complicated!) than CSS transitions but give you much more control
+over the animation.
+
+htmx supports view transitions via the following:
+
+- Setting `htmx.config.transitions` to `true` globally will enable view transitions for all swaps
+- Per-swap via the `hx-swap` attribute `transition` option: `hx-swap="outerHTML transition:true"`
+- For boosted elements via the transition option: `hx-boost="transition:true"`
+
+Note that the default view transition is a [250 millisecond cross-fade](https://drafts.csswg.org/css-view-transitions-1/#ua-styles)
+which, in our opinion, is a very bad default for swapping, so you will want to override this if you use view transitions
+with htmx.
+## Link & Form Boosting
+
+In htmx you can "boos" regular HTML anchors and forms using the [`hx-boost`](/reference/attributes/hx-boost) attribute. 
+
+This attribute will convert anchor tags and forms into `fecth()`-based requests that, by default, target the body of 
+the page.
+
+Here is an example:
+
+```html
+<div hx-boost:inherited="true">
+    <a href="/blog">Blog</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+</div>
+```
+
+The anchor tags in this `div` will issue an AJAX `GET` request to `/blog` and swap the response into the `body` tag.
+
+Note that `hx-boost` is using the `inherited` modifier here.
+
+### Advantages & Disadvantages of Boosting
+
+Boosting is a feature that has been part of htmx since it was called [intercooler](https://intercoolerjs.org).  In
+the olden days there were big advantages to it:
+
+* It eliminated the [Flash of Unstyled Content (FOUC)](https://en.wikipedia.org/wiki/Flash_of_unstyled_content)
+* It enabled CSS transitions between pages
+* It removed the need to reparse CSS/JS between pages
+* It allowed the preservation of elements with the `hx-preserve` 
+
+Over time, browsers have gotten better at inter-page transitions, eliminating the FOUC via [paint holding](https://developer.chrome.com/blog/paint-holding)
+and making View Transitions work for full-page navigation.
+
+This has reduced the advantages of boosting.  There is still a performance benefit to boosting, and it is still the
+only way to use CSS transitions & element preservation on navigation, however.
+
+A disadvantage that people sometimes run into (which is one of the reasons it is faster) is that boosted elements
+to not reset the JavaScript environment.  With normal navigation, the browser completely resets the JavaScript environment.
+
+When boosting you have to be careful to not redefine things on accident, which can lead to JavaScript errors.
+
+Generally, boosting is controversial in the htmx community.  Some people [love it](https://dev.to/yawaramin/why-hx-boost-is-actually-the-most-important-feature-of-htmx-3nc0), some people discourage it.
+
+For what it's worth, we use boosting in this documentation website.
+
+### Boosting & Progressive Enhancement
+
+A nice feature of `hx-boost` is that it degrades gracefully if JavaScript is not enabled: the links and forms continue
+to work, they simply don't use ajax requests.
+
+This is known as
+[Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement), and it allows
+a wider audience to use your site's functionality.
+
+Other htmx patterns can be adapted to achieve progressive enhancement as well, but they will require more thought.
+
+Consider the [active search](/patterns/active-search) example. As it is written, it will not degrade gracefully:
+someone who does not have javascript enabled will not be able to use this feature. This is done for simplicity's sake,
+to keep the example as brief as possible.
+
+However, you could wrap the htmx-enhanced input in a form element:
+
+```html
+<form action="/search" method="POST">
+    <input class="form-control" type="search"
+           name="search" placeholder="Begin typing to search users..."
+           hx-query="/search"
+           hx-trigger="keyup changed delay:500ms, search"
+           hx-target="#search-results"
+           hx-indicator=".htmx-indicator">
+</form>
+```
+
+With this in place, javascript-enabled clients would still get the nice active-search UX, but non-javascript enabled
+clients would be able to hit the enter key and still search. 
+
+Even better, you could add a "Search" button as well. You would then need to update the form with an 
+[`hx-post`](/reference/attributes/hx-post) that mirrored the `action` attribute, or perhaps use `hx-boost`
+on it.
+
+You would need to check on the server side for the [`HX-Request`](/reference/headers/HX-Request) header to differentiate between an htmx-driven and a
+regular request, to determine exactly what to render to the client.
+
+Other patterns can be adapted similarly to achieve the progressive enhancement needs of your application.
+
+As you can see, this requires more thought and more work. It also rules some functionality entirely out of bounds.
+These tradeoffs must be made by you, the developer, with respect to your projects goals and audience.
+
+#### Accessibility
+
+[Accessibility](https://developer.mozilla.org/en-US/docs/Learn/Accessibility/What_is_accessibility) is a concept
+closely related to progressive enhancement. Using progressive enhancement techniques such as `hx-boost` will make your
+htmx application more accessible to a wide array of users.
+
+htmx-based applications are very similar to normal, non-`fetch()` driven web applications because htmx is HTML-oriented.
+
+As such, the normal HTML accessibility recommendations apply. For example:
+
+* Use semantic HTML as much as possible (i.e. the right tags for the right things)
+* Ensure focus state is clearly visible
+* Associate text labels with all form fields
+* Maximize the readability of your application with appropriate fonts, contrast, etc.
+## Browser History Support
+
+<details class="warning">
+<summary>Changes in htmx 4.0</summary>
+
+History support in htmx 4.0 has changed significantly. We no longer snapshot the DOM and keep a copy in sessionStorage.
+
+Instead, we issue a full page request every time someone navigates to a history element. This is much less error-prone
+and foolproof. It also eliminates security concerns regarding keeping history state in accessible storage
+
+This change makes history restoration much more reliable and reduces client-side complexity.
+
+</details>
+
+Htmx provides a simple mechanism for interacting with
+the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
+
+If you want a given element to push its request URL into the browser navigation bar and add the current state of the
+page
+to the browser's history, include the [`hx-push-url`](/reference/attributes/hx-push-url) attribute:
+
+```html
+<a hx-get="/blog" hx-push-url="true">Blog</a>
+```
+
+When a user clicks on this link, htmx will push a new location onto the history stack.
+
+When a user hits the back button, htmx will retrieve the old content from the original URL and swap it back into the
+body,
+simulating "going back" to the previous state.
+
+**NOTE:** If you push a URL into the history, you **must** be able to navigate to that URL and get a full page back!
+A user could copy and paste the URL into an email, or new tab.
+
+### Replacing The Current URL
+
+If you want to chante the URL without updating history use the [`hx-replace-url`](/reference/attributes/hx-replace-url) 
+attribute instead:
+
+```html
+<a hx-get="/account" hx-replace-url="true">My Account</a>
+```
+
+### History Response Headers
+
+The server can override either attribute for a single response with the
+[`HX-Push-Url`](/reference/headers/HX-Push-Url) and [`HX-Replace-Url`](/reference/headers/HX-Replace-Url) response
+headers.
+
+### Restoring Only Part Of The Page
+
+By default htmx replaces the whole `body` when a user navigates back or forward.
+
+If you wish for history to be restored only within a specific element you can use the
+[`hx-history-elt`](/reference/attributes/hx-history-elt) attribute:
+
+```html
+<body>
+    <nav><!-- never replaced --></nav>
+
+    <main hx-history-elt>
+        <h1>Page 1</h1>
+    </main>
+</body>
+```
+
+On a history navigation htmx requests the URL, selects the `hx-history-elt` element out of the response, and swaps
+it over the current one, leaving the rest of the page untouched.
+
+### Configuring History
+
+The [`htmx.config.history`](/reference/config/htmx-config-history) setting allow you to specify how history works:
+
+| Value      | Behavior                                                          |
+|------------|-------------------------------------------------------------------|
+| `true`     | the default. htmx requests the URL and swaps the response         |
+| `"reload"` | htmx does a full page reload instead of a request                 |
+| `false`    | htmx does not handle history at all. The browser behaves normally |
+
+If you want the htmx 2.x behavior of restoring history from a local snapshot instead of a full server request, use the
+[`hx-history-cache`](/extensions/hx-history-cache) extension.
 ## Advanced Request & Response Techniques
 
 The out-of-the-box request & response behavior of htmx is often sufficient for people, but some times you may
@@ -1384,89 +1391,120 @@ htmx always resets `mode` to `htmx.config.mode`, which defaults to `"same-origin
 This stops an attacker who can inject an attribute from widening the scope of a request. 
 
 See [Security Considerations](#security-considerations) for more info.
+## Streaming HTML
 
-## Browser History Support
+For more interactive scenarios, where a server sends multiple updates to the DOM from a single request, htmx
+provides various _streaming HTML_ extensions.
 
-<details class="warning">
-<summary>Changes in htmx 4.0</summary>
+The streaming extensions provided by htmx use:
 
-History support in htmx 4.0 has changed significantly. We no longer snapshot the DOM and keep a copy in sessionStorage.
+* [Server Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) (SSE)
+* [Web Sockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
+* Multi-Part Responses
 
-Instead, we issue a full page request every time someone navigates to a history element. This is much less error-prone
-and foolproof. It also eliminates security concerns regarding keeping history state in accessible storage
+### SSE
 
-This change makes history restoration much more reliable and reduces client-side complexity.
+Server-Sent Events let one HTTP response stream multiple _events_ to the browser over a single connection.
 
-</details>
+The [`hx-sse`](/extensions/hx-sse) extension supports swapping content via these events.
 
-Htmx provides a simple mechanism for interacting with
-the [browser history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API):
-
-If you want a given element to push its request URL into the browser navigation bar and add the current state of the
-page
-to the browser's history, include the [`hx-push-url`](/reference/attributes/hx-push-url) attribute:
+Consider the following button:
 
 ```html
-<a hx-get="/blog" hx-push-url="true">Blog</a>
+<button hx-post="/generate"
+        hx-target="next output"
+        hx-swap="append">
+  Generate
+</button>
+
+<output></output>
 ```
 
-When a user clicks on this link, htmx will push a new location onto the history stack.
+With the htmx SSE extension installed, as unnamed events are received from the server the content in those events
+will be appended to the output tag.  This allows for a natural, streaming mechanism for inserting content as it
+becomes available into an element.
 
-When a user hits the back button, htmx will retrieve the old content from the original URL and swap it back into the
-body,
-simulating "going back" to the previous state.
+For more details, see the [`hx-sse`](/extensions/hx-sse) extension documentation.
 
-**NOTE:** If you push a URL into the history, you **must** be able to navigate to that URL and get a full page back!
-A user could copy and paste the URL into an email, or new tab.
+### Web Sockets
 
-### Replacing The Current URL
+In contrast with SSE, Web Sockets hold a connection open in both directions, so the server and the browser can both send
+messages at any time.
 
-If you want to chante the URL without updating history use the [`hx-replace-url`](/reference/attributes/hx-replace-url) 
-attribute instead:
+The [`hx-ws`](/extensions/hx-ws) extension supports swapping content from these messages as well as sending messages
+to the server from DOM elements.
+
+Consider the following chat window:
 
 ```html
-<a hx-get="/account" hx-replace-url="true">My Account</a>
+<div hx-ws:connect="/chat"
+     hx-target="#messages"
+     hx-swap="append">
+
+  <div id="messages"></div>
+
+  <form hx-ws:send>
+    <input name="message">
+    <button>Send</button>
+  </form>
+
+</div>
 ```
 
-### History Response Headers
+With the htmx Web Socket extension installed, the connection opens on load and every message the server sends is
+appended to `#messages`.  The form sends its values back over the same connection as JSON, so no new request is
+made.
 
-The server can override either attribute for a single response with the
-[`HX-Push-Url`](/reference/headers/HX-Push-Url) and [`HX-Replace-Url`](/reference/headers/HX-Replace-Url) response
-headers.
+For more details, see the [`hx-ws`](/extensions/hx-ws) extension documentation.
 
-### Restoring Only Part Of The Page
+### Multi-Part
 
-By default htmx replaces the whole `body` when a user navigates back or forward.
+A [`multipart/mixed`](https://www.rfc-editor.org/rfc/rfc2046#section-5.1.3) response carries many _parts_ in one
+body, with a delimiter chosen by the server:
 
-If you wish for history to be restored only within a specific element you can use the
-[`hx-history-elt`](/reference/attributes/hx-history-elt) attribute:
+```http
+HTTP/1.1 200 OK
+Content-Type: multipart/mixed; boundary=...
+
+Hello
+--...
+Content-Type: text/html
+
+, world!
+```
+
+
+The [`hx-multipart`](/extensions/hx-multipart) extension supports swapping the content of these parts into the DOM
+as they arrive.
+
+Consider the generate button we looked at in the SSE example:
 
 ```html
-<body>
-    <nav><!-- never replaced --></nav>
+<button hx-post="/generate"
+        hx-target="next output"
+        hx-swap="append">
+  Generate
+</button>
 
-    <main hx-history-elt>
-        <h1>Page 1</h1>
-    </main>
-</body>
+<output></output>
 ```
 
-On a history navigation htmx requests the URL, selects the `hx-history-elt` element out of the response, and swaps
-it over the current one, leaving the rest of the page untouched.
+With the htmx multi-part extension installed, if the server responds with a request of type `multipart/mixed;`, as parts 
+are received from the server the content in those parts will be appended to the output tag.
 
-### Configuring History
+For more details, see the [`hx-multipart`](/extensions/hx-multipart) extension documentation.
 
-The [`htmx.config.history`](/reference/config/htmx-config-history) setting allow you to specify how history works:
+### Picking A Streaming Technology
 
-| Value      | Behavior                                                          |
-|------------|-------------------------------------------------------------------|
-| `true`     | the default. htmx requests the URL and swaps the response         |
-| `"reload"` | htmx does a full page reload instead of a request                 |
-| `false`    | htmx does not handle history at all. The browser behaves normally |
+Each streaming technology has strengths and weaknesses.
 
-If you want the htmx 2.x behavior of restoring history from a local snapshot instead of a full server request, use the
-[`hx-history-cache`](/extensions/hx-history-cache) extension.
+SSE is widely supported and is our default recommendation for streaming responses.
 
+Web Sockets are the most complicated but support bi-directional communication.
+
+Multi-part, despite being very old, is less widely supported by server side frameworks.  However, we feel it more 
+naturally follows HTTP semantics.  We recommend it if you are a purist and are willing to do a bit of work on the
+server side to make this style of response easy to work with.
 ## Client-Side Scripting
 
 htmx encourages a hypermedia-based approach to building web applications, with requests to servers updating content
@@ -1632,60 +1670,6 @@ Definitely not for everyone, but a pretty fun little language:
 ```html
   <button _="on click add .highlight to <p/> in me">
 ```
-
-## Synchronizing Requests
-
-Often you want to coordinate the requests between two elements. For example, you may want a request from one element
-to supersede the request of another element, or to wait until the other element's request has finished.
-
-htmx offers a [`hx-sync`](/reference/attributes/hx-sync) attribute to help you accomplish this.
-
-Consider a race condition between a form submission and an individual input's validation request in this HTML:
-
-```html
-<form hx-post="/store">
-    <input id="title" name="title" type="text"
-           hx-post="/validate"
-           hx-trigger="change">
-    <button type="submit">Submit</button>
-</form>
-```
-
-Without using `hx-sync`, filling out the input and immediately submitting the form triggers two parallel requests to
-`/validate` and `/store`.
-
-Using `hx-sync="closest form"` on the input and `hx-sync="this:replace"` on the form will watch for requests from the
-form
-and abort an input's in flight request:
-
-```html
-<form hx-post="/store" hx-sync="this:replace">
-    <input id="title" name="title" type="text"
-           hx-post="/validate"
-           hx-trigger="change"
-           hx-sync="closest form">
-    <button type="submit">Submit</button>
-</form>
-```
-
-This resolves the synchronization between the two elements in a declarative way.
-
-### Aborting A Request
-
-htmx also supports a programmatic way to cancel requests: you can send the [`htmx:abort`](/reference/events/htmx-abort) event to an element to
-cancel any in-flight requests:
-
-```html
-<button id="request-button" hx-post="/example">
-    Issue Request
-</button>
-<button onclick="htmx.trigger('#request-button', 'htmx:abort')">
-    Cancel Request
-</button>
-```
-
-More examples and details can be found on the [`hx-sync` attribute page.](/reference/attributes/hx-sync)
-
 ## Web Components
 
 Note that htmx doesn't automatically initialize content inside web components: you must manually initialize it by 
@@ -1730,7 +1714,6 @@ followed by a space and the selector:
   ...
 </button>
 ```
-
 ## Extensions
 
 htmx supports extensions to augment its core hypermedia infrastructure.
@@ -1778,7 +1761,6 @@ import 'htmx.org/dist/ext/hx-sse';
 ### Building Extensions
 
 If you wish to build your own htmx extension, see [Building Extensions](/docs/building-extensions).
-
 
 ## Security Considerations
 
@@ -1928,7 +1910,6 @@ global vehicles for adding the CSRF token to the `HTTP` request header, as illus
 ```
 
 The above elements are usually unique in an HTML document and should be easy to locate within templates.
-
 ## Caching
 
 htmx works with standard [HTTP caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching)
@@ -1951,7 +1932,6 @@ For example, if your server renders the full HTML when the [`HX-Request`](/refer
 fragment of that HTML when `HX-Request: true`, you need to add `Vary: HX-Request`. That causes the cache to be keyed
 based on a composite of the response URL and the `HX-Request` request header rather than being based just on the
 response URL.
-
 ## Debugging
 
 Declarative and event driven programming with htmx (or any other declarative language) can be a wonderful and highly
@@ -1988,12 +1968,10 @@ Finally, push come shove, you might want to just debug `htmx.js` by loading up t
 You would most likely want to set a break point in the methods to see what's going on.
 
 And always feel free to jump on the [Discord](https://htmx.org/discord) if you need help.
-
 ## Editor Support
 
 While htmx is simple enough that editor support is not necessary to use it, see [Editor Support](/docs/editor-support)
 for information on tooling available in your preferred editor.
-
 ## Configuration
 
 Htmx has configuration options that can be accessed either programmatically or declaratively.
