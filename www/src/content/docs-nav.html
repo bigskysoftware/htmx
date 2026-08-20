@@ -3,6 +3,8 @@
   frontmatter. Every anchor is checked against the page headings at build time,
   so a renamed heading fails the build rather than breaking the link silently.
 
+  Entries follow the order of the ## headings in docs.md.
+
   Write plain markup. The rail styles ul, li, a and span by selector. A bare
   span is a group label.
 -->
@@ -17,25 +19,28 @@
     <li><span>Core Concepts</span>
         <ul>
             <li><a href="#issuing-requests--handling-responses">Requests &amp; Responses</a></li>
-            <li><a href="#client-side-scripting">Client-Side Scripting</a></li>
-            <li><a href="#multi-target-updates">Multi-Target Updates</a></li>
+            <li><a href="#forms">Forms</a></li>
+            <li><a href="#request-indicators">Request Indicators</a></li>
+            <li><a href="#attribute-inheritance">Attribute Inheritance</a></li>
         </ul>
     </li>
     <li><span>Features</span>
         <ul>
-            <li><a href="#swapping-animations">Swap Animations</a></li>
-            <li><a href="#synchronizing-requests">Synchronization</a></li>
-            <li><a href="#user-confirmations">Confirmations</a></li>
             <li><a href="#link--form-boosting">Boosting</a></li>
-            <li><a href="#browser-history-support">History</a></li>
-            <li><a href="#forms">Forms</a></li>
-            <li><a href="#web-components">Web Components</a></li>
+            <li><a href="#user-confirmations">Confirmations</a></li>
+            <li><a href="#swapping-animations">Swap Animations</a></li>
+            <li><a href="#multi-target-updates">Multi-Target Updates</a></li>
+            <li><a href="#streaming-html">Streaming HTML</a></li>
         </ul>
     </li>
     <li><span>Advanced</span>
         <ul>
-            <li><a href="#attribute-inheritance">Attribute Inheritance</a></li>
-            <li><a href="#extensions">Extension System</a></li>
+            <li><a href="#advanced-request--response-techniques">Requests &amp; Responses</a></li>
+            <li><a href="#browser-history-support">History</a></li>
+            <li><a href="#client-side-scripting">Client-Side Scripting</a></li>
+            <li><a href="#synchronizing-requests">Synchronization</a></li>
+            <li><a href="#web-components">Web Components</a></li>
+            <li><a href="#extensions">Extensions</a></li>
         </ul>
     </li>
     <li><span>Security</span>

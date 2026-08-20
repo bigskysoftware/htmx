@@ -157,13 +157,13 @@ don't have to think about it, you can use the [htmax.js](/docs/htmax) distributi
 There are three major behavioral changes between htmx 2.x and 4.x:
 
 * In htmx 2.0 attribute inheritance is _implicit_ by default while in 4.0 it is _explicit_ by default
-    * To restore the 2.0 behavior, you can set the [`htmx.config.implicitInheritance`](#TODO) setting to `true`
+    * To restore the 2.0 behavior, you can set the [`htmx.config.implicitInheritance`](/reference/config/htmx-config-implicitInheritance) setting to `true`
 * In htmx 2.0, `400` and `500` response codes are _not_ swapped by default, whereas in htmx 4.0 these requests _will_ be
   swapped
-    * To restore the 2.0 behavior, you can set the [`htmx.config.noSwap`](#TODO) setting to `[204, 304, '4xx', '5xx']`
+    * To restore the 2.0 behavior, you can set the [`htmx.config.noSwap`](/reference/config/htmx-config-noSwap) setting to `[204, 304, '4xx', '5xx']`
 * In htmx 2.0, history used a local cache snapshot for history navigation, while in 4.0 it issues a request to the
   server to get the full page to restore
-  * htmx includes an [hx-history-cache](#TODO) extension if you wish to have a local cache.  This extension integrates
+  * htmx includes an [`hx-history-cache`](/extensions/hx-history-cache) extension if you wish to have a local cache.  This extension integrates
     with Alpine.js and hx-live seamlessly.
 
 Event names were also standardized/rationalized.
@@ -231,7 +231,11 @@ As of htmx 4.0, you can also use the following alternative attributes:
 
 This is inspired by the syntax that forms use:
 
-// TODO form example
+```html
+<form action="/info" method="GET">
+  <button>Get Information</button>
+</form>
+```
 
 ### Triggering Requests
 
@@ -272,7 +276,7 @@ Other modifiers you can use for triggers are (parsed as [HCON](/docs/hcon)):
 * `throttle:<time interval>` - issue the first request immediately, then wait the given amount of time (e.g. `1s`)
   before issuing another. If more events occur during that period, the last one triggers a request at its end.
 * `from:<selector>` - listen for the event on a different element. This accepts CSS and
-  [extended selectors](#extended-selectors), and can be used for things like keyboard shortcuts. Note that the selector
+  [extended selectors](#targeting-with-extended-selectors), and can be used for things like keyboard shortcuts. Note that the selector
   is not re-evaluated if the page changes.
 
 Multiple triggers can be specified by separating the triggers with a comma.
@@ -372,12 +376,15 @@ situations, consider [streaming HTML](#streaming-html).
 ### Handling Responses
 
 htmx expects the responses to the HTTP requests it makes to be HTML.  This is in contrast
-with front-end frameworks like [React](#TODO), which use JSON-formatted responses instead. 
+with front-end frameworks like [React](https://react.dev/), which use JSON-formatted responses instead. 
 
 Typically, htmx responses will be HTML fragments, that is small bits of HTML rather than a full document:
 
-```js
-// TODO sample list fragment
+```html
+<ul id="contacts">
+  <li>Joe Blow</li>
+  <li>Jane Doe</li>
+</ul>
 ```
 
 Htmx will then _swap_ this content into the document.  To do this it needs two things:
@@ -385,12 +392,12 @@ Htmx will then _swap_ this content into the document.  To do this it needs two t
 * A _target_ - where to place the content
 * A _swap strategy_ - how to place the content
 
-The two attributes that control this are [`hx-target`](#TODO) and [`hx-swap`](#TODO).
+The two attributes that control this are [`hx-target`](/reference/attributes/hx-target) and [`hx-swap`](/reference/attributes/hx-swap).
 
 #### Targeting Elements
 
 By default, responses target the element that made the request. You can change this by using the 
-[`hx-target`](/reference/attributes/hx-target) attribute, which takes a [CSS selector](TODO MDN LINK) that specifies
+[`hx-target`](/reference/attributes/hx-target) attribute, which takes a [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors) that specifies
 the element to target:
 
 ```html
@@ -441,7 +448,7 @@ The [`hx-swap`](/reference/attributes/hx-swap) attribute controls how the conten
 the target element.
 
 The default swapping mechanism is `innerHTML`: htmx places the response content _inside_ the target element.  It
-does not replace it.  This is in line with the way that HTML's native [iframes](#TODO MDN link) work.
+does not replace it.  This is in line with the way that HTML's native [iframes](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe) work.
 
 Other swapping algorithms available are:
 
@@ -454,20 +461,44 @@ Other swapping algorithms available are:
 | `append` (or `beforeend`)   | appends the content after the last child inside the target                                                                                |
 | `after` (or `afterend`)     | appends the content after the target in the target's parent element                                                                       |
 | `delete`                    | deletes the target element regardless of the response                                                                                     |
-| `none`                      | does not append content from response ([Out of Band Swaps](#oob_swaps) and [Response Headers](#response-headers) will still be processed) |
+| `none`                      | does not append content from response ([Out-of-Band Swaps](#out-of-band-swaps) and [Response Headers](#response-headers) will still be processed) |
 | `innerMorph`                | morphs the children of the target element, preserving as much of the existing DOM as possible                                             |
 | `outerMorph`                | morphs the target element itself, preserving as much of the existing DOM as possible                                                      |
 | `textContent`               | Set the target's text content (no HTML parsing)                                                                                           |
 
+As an example, `afterend` inserts the response after the target, rather than inside it. This is how a
+"load more" button appends new rows and then replaces itself:
 
-// TODO afterend example
+```html
+<tr id="row-20">
+  <td>Row 20</td>
+  <td>
+    <button hx-get="/rows?page=2"
+            hx-target="closest tr"
+            hx-swap="outerHTML">
+      Load More
+    </button>
+  </td>
+</tr>
+```
 
-// TODO hx-preserve
+##### Preserving Content During Swaps
+
+Some elements must survive a swap untouched, such as a playing video or a third party widget. Add
+[`hx-preserve`](/reference/attributes/hx-preserve) to keep an element as it is when an ancestor is replaced:
+
+```html
+<div id="results">
+  <video id="player" hx-preserve></video>
+</div>
+```
+
+Preserved elements match by `id`. Give the element a stable `id`, and include the same `id` in the response.
 
 ##### Morphing Swaps
 
 In htmx 4 there are now built-in `innerMorph` and `outerMorph` swaps.  Previously, morphing swaps were available
-only via [extensions](#TODO link to idiomoph).
+only via the [Idiomorph](https://github.com/bigskysoftware/idiomorph) extension.
 
 Morph swaps merge new content into the existing DOM rather than simply replacing it, attempting to preserve existing
 nodes in the DOM. 
@@ -521,7 +552,15 @@ If an element issues a request that sends a body (that is, anything except `GET`
 the `inputs` of the associated form will be included (typically this is the nearest enclosing form, but could be different if, for example,
 the [`form` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/form) is used).
 
-// TODO demo
+```html
+<form>
+  <input name="email" value="joe@example.com">
+  <input name="plan" value="pro">
+  <button hx-post="/signup">Sign Up</button>
+</form>
+```
+
+The button issues a `POST` to `/signup` with `email=joe@example.com&plan=pro`.
 
 #### Including Other Values
 
@@ -629,7 +668,19 @@ Another common need is to disable elements while a request is in flight to preve
 You can add the [`disabled` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/disabled) to
 elements for the duration of a request by using the [`hx-disable`](/reference/attributes/hx-disable) attribute:
 
-// TODO example
+```html
+<button hx-post="/submit" hx-disable="this">Submit</button>
+```
+
+The value is an [extended selector](#targeting-with-extended-selectors), so you can disable other elements too. Here
+the whole fieldset is disabled while the request is in flight:
+
+```html
+<fieldset>
+  <input name="email">
+  <button hx-post="/submit" hx-disable="closest fieldset">Submit</button>
+</fieldset>
+```
 
 ## Attribute Inheritance
 
@@ -1109,7 +1160,7 @@ want to do more advanced HTTP handling.  This section documents how to do so.
 
 ### HTTP Response Code Handling
 
-By default, htmx will swap all responses it receives into the DOM except for responses with the [HTTP response codes](#TODO MDN link)
+By default, htmx will swap all responses it receives into the DOM except for responses with the [HTTP response codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status)
 `204` or `304`.
 
 If you respond with a `204 - No Content` response code, and htmx will ignore the content of the response and not swap
@@ -1301,7 +1352,7 @@ htmx offers various tools to help make this easier:
 
 ### Events
 
-Htmx has an [extensive set of events](#TODO link) that you can listen for to log or modify behaviors with:
+Htmx has an [extensive set of events](/reference/events) that you can listen for to log or modify behaviors with:
 
 ```javascript
 document.body.addEventListener('htmx:after:init', function (evt) {
@@ -1523,7 +1574,7 @@ customElements.define('my-counter', class extends HTMLElement {
 
 Note that this is true regardless of whether or not the component uses a Shadow DOM.
 
-#### Targeting Elements Outside Shadow DOM
+### Targeting Elements Outside Shadow DOM
 
 If you are using the Shadow DOM in a component, selectors like [`hx-target`](/reference/attributes/hx-target) will
 only see elements inside that same Shadow DOM.
@@ -1537,11 +1588,12 @@ To break out of a components Shadow DOM and target the Web Component itself you 
 </button>
 ```
 
-To break out of the shadow DOM and target an element in the broader DOM, you can use the `global:` prefix:
+To break out of the shadow DOM and target an element in the broader DOM, you can use the `global` keyword,
+followed by a space and the selector:
 
 ```html
 <!-- Inside a Web Component -->
-<button hx-get="..." hx-target="global:#target">
+<button hx-get="..." hx-target="global #target">
   ...
 </button>
 ```
@@ -1572,8 +1624,9 @@ The following extensions ship with htmx:
 | [`hx-alpine-compat`](/extensions/hx-alpine-compat)         | Compatibility  | Run htmx alongside Alpine.js without conflicts      |
 | [`hx-csp`](/extensions/hx-csp)                             | Security       | Make htmx work under strict Content Security Policy |
 
+Note that many these extensions are come pre-bundled into [`htmax.js`](/docs/htmax) as a single file.
 
-#### Using Extensions
+### Using Extensions
 
 To install an extension, include the extension script after htmx is included.
 
