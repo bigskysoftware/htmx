@@ -1375,7 +1375,7 @@ is an [`hx-alpine-compat`](/extensions/hx-alpine-compat) extension that smooths 
 ### `hx-live`
 
 `hx-live`, new in htmx 4, is our own take on DOM-oriented, reactive scripting for the web.  It is inspired by
-Alpine, [jQuery](#TODO) and [hyperscript](https://hyperscript.org).
+Alpine, [jQuery](https://jquery.org) and [hyperscript](https://hyperscript.org).
 
 `hx-live` provides a jQuery-like `q()` selector function that allows you to select one or many elements and update/mutate 
 them as a group.  This function is made available at the top level in `hx-on:` attributes, and supports relative
@@ -1548,19 +1548,34 @@ To break out of the shadow DOM and target an element in the broader DOM, you can
 
 ## Extensions
 
-htmx supports extensions to augment its core hypermedia infrastructure. The extension mechanism takes pressure off the core library to add new features, allowing it to focus on its main purpose of generalizing hypermedia controls.
+htmx supports extensions to augment its core hypermedia infrastructure.
 
-For the catalog of core extensions shipped with htmx, see [/extensions](/extensions).
+The following extensions ship with htmx:
 
-### Using Extensions
+| Extension                                                  | Category       | Description                                         |
+|------------------------------------------------------------|----------------|-----------------------------------------------------|
+| [`hx-multipart`](/extensions/hx-multipart)                 | Streaming HTML | Stream HTML with `multipart/mixed`                  |
+| [`hx-sse`](/extensions/hx-sse)                             | Streaming HTML | Stream HTML with `text/event-stream` (SSE)          |
+| [`hx-ws`](/extensions/hx-ws)                               | Streaming HTML | Stream HTML and send data over WebSockets           |
+| [`hx-browser-indicator`](/extensions/hx-browser-indicator) | UX             | Show tab's spinner with `hx-browser-indicator`      |
+| [`hx-live`](/extensions/hx-live)                           | UX             | Our own DOM-based reactive scripting solution       |
+| [`hx-pending`](/extensions/hx-pending)                     | UX             | Show custom content during requests                 |
+| [`hx-prompt`](/extensions/hx-prompt)                       | UX             | Prompt before requests with `hx-prompt='Reason?'`   |
+| [`hx-preload`](/extensions/hx-preload)                     | Performance    | Preload on hover with `hx-preload='mouseover'`      |
+| [`hx-history-cache`](/extensions/hx-history-cache)         | Performance    | Restore back/forward pages from `sessionStorage`    |
+| [`hx-ptag`](/extensions/hx-ptag)                           | Performance    | Skip unchanged polls with `HX-PTag: "v42"`          |
+| [`hx-download`](/extensions/hx-download)                   | Swaps          | Download files with `hx-swap='download'`            |
+| [`hx-head`](/extensions/hx-head)                           | Swaps          | Merge `<head>` tags with `hx-head='merge'`          |
+| [`hx-targets`](/extensions/hx-targets)                     | Swaps          | Target many elements with `hx-targets='.selector'`  |
+| [`hx-upsert`](/extensions/hx-upsert)                       | Swaps          | Update or insert elements with `hx-swap='upsert'`   |
+| [`htmx-2-compat`](/extensions/htmx-2-compat)               | Compatibility  | Restore htmx 2.x defaults and event names on htmx 4 |
+| [`hx-alpine-compat`](/extensions/hx-alpine-compat)         | Compatibility  | Run htmx alongside Alpine.js without conflicts      |
+| [`hx-csp`](/extensions/hx-csp)                             | Security       | Make htmx work under strict Content Security Policy |
 
-In htmx 4, extensions hook into standard events rather than callback extension points. They are lightweight with no performance penalty.
 
-Extensions apply page-wide without requiring `hx-ext` on parent elements. They activate via custom attributes where needed.
+#### Using Extensions
 
-#### Loading an Extension
-
-Include the extension script after htmx. Core extensions ship with htmx in the `/ext/` directory:
+To install an extension, include the extension script after htmx is included.
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/htmx.org@__VERSION__/dist/htmx.min.js"></script>
@@ -1574,190 +1589,10 @@ import 'htmx.org';
 import 'htmx.org/dist/ext/hx-sse';
 ```
 
-#### Restricting Extensions
-
-To restrict which extensions can register, use an allow list:
-
-```html
-<meta name="htmx-config" content='{"extensions": "my-ext,another-ext"}'>
-```
-
-When this config is set, only the listed extensions will be loaded. Without it, all registered extensions are active.
-
 ### Building Extensions
 
-htmx 4 introduces an extension system based on event hooks rather than the old callback-based API.
+If you wish to build your own htmx extension, see [Building Extensions](/docs/building-extensions).
 
-#### Defining an Extension
-
-Extensions are defined using `htmx.registerExtension()`:
-
-```javascript
-htmx.registerExtension("my-ext", {
-    init: (internalAPI) => {
-        // Called once when extension is registered
-        // Store internalAPI reference if needed
-    },
-
-    htmx_before_request: (elt, detail) => {
-        // Called before each request
-        // Return false to cancel
-    },
-
-    htmx_after_request: (elt, detail) => {
-        // Called after each request
-    },
-});
-```
-
-#### Event Hooks
-
-Extensions hook into htmx lifecycle events. Event names use underscores instead of colons:
-
-##### Core Lifecycle Events
-
-| Hook Name | Triggered Event | Parameters | Description |
-|-----------|----------------|------------|-------------|
-| `htmx_before_init` | [`htmx:before:init`](/reference/events/htmx-before-init) | `(elt, detail)` | Before element initialization |
-| `htmx_after_init` | [`htmx:after:init`](/reference/events/htmx-after-init) | `(elt, detail)` | After element initialization |
-| `htmx_before_process` | [`htmx:before:process`](/reference/events/htmx-before-process) | `(elt, detail)` | Before processing element |
-| `htmx_after_process` | [`htmx:after:process`](/reference/events/htmx-after-process) | `(elt, detail)` | After processing element |
-| `htmx_before_cleanup` | [`htmx:before:cleanup`](/reference/events/htmx-before-cleanup) | `(elt, detail)` | Before cleaning up element |
-| `htmx_after_cleanup` | [`htmx:after:cleanup`](/reference/events/htmx-after-cleanup) | `(elt, detail)` | After cleaning up element |
-
-##### Request Lifecycle Events
-
-| Hook Name | Triggered Event | Parameters | Description |
-|-----------|----------------|------------|-------------|
-| `htmx_config_request` | [`htmx:config:request`](/reference/events/htmx-config-request) | `(elt, detail)` | Configure request before sending |
-| `htmx_before_request` | [`htmx:before:request`](/reference/events/htmx-before-request) | `(elt, detail)` | Before request is sent |
-| `htmx_before_response` | `htmx:before:response` | `(elt, detail)` | After fetch, before body consumed |
-| `htmx_after_request` | [`htmx:after:request`](/reference/events/htmx-after-request) | `(elt, detail)` | After request completes |
-| `htmx_finally_request` | [`htmx:finally:request`](/reference/events/htmx-finally-request) | `(elt, detail)` | When request completes, fails, or is cancelled |
-| `htmx_error` | [`htmx:error`](/reference/events/htmx-error) | `(elt, detail)` | On request error |
-
-##### Swap Events
-
-| Hook Name | Triggered Event | Parameters | Description |
-|-----------|----------------|------------|-------------|
-| `htmx_before_swap` | [`htmx:before:swap`](/reference/events/htmx-before-swap) | `(elt, detail)` | Before content swap |
-| `htmx_after_swap` | [`htmx:after:swap`](/reference/events/htmx-after-swap) | `(elt, detail)` | After content swap |
-| `htmx_finally_swap` | [`htmx:finally:swap`](/reference/events/htmx-finally-swap) | `(elt, detail)` | After swap (success or error) |
-| `htmx_before_settle` | `htmx:before:settle` | `(elt, detail)` | Before settle phase |
-| `htmx_after_settle` | `htmx:after:settle` | `(elt, detail)` | After settle phase |
-| `handle_swap` | _(direct call)_ | `(swapStyle, target, fragment, swapSpec)` | Custom swap handler |
-
-##### History Events
-
-| Hook Name | Triggered Event | Parameters | Description |
-|-----------|----------------|------------|-------------|
-| `htmx_before_history_update` | [`htmx:before:history:update`](/reference/events/htmx-before-history-update) | `(elt, detail)` | Before updating history |
-| `htmx_after_history_update` | [`htmx:after:history:update`](/reference/events/htmx-after-history-update) | `(elt, detail)` | After updating history |
-| `htmx_after_history_push` | [`htmx:after:history:push`](/reference/events/htmx-after-push-into-history) | `(elt, detail)` | After pushing to history |
-| `htmx_after_history_replace` | [`htmx:after:history:replace`](/reference/events/htmx-after-replace-into-history) | `(elt, detail)` | After replacing history |
-| `htmx_before_history_restore` | [`htmx:before:history:restore`](/reference/events/htmx-before-restore-history) | `(elt, detail)` | Before restoring from history |
-
-#### Cancelling Events
-
-Return `false` or set `detail.cancelled = true` to cancel an event:
-
-```javascript
-htmx.registerExtension("validator", {
-    htmx_before_request: (elt, detail) => {
-        if (!isValid(detail.ctx)) {
-            return false; // Cancel request
-        }
-    },
-});
-```
-
-#### Internal API
-
-The `init` hook receives an internal API object with helper methods:
-
-```javascript
-let api;
-
-htmx.registerExtension("my-ext", {
-    init: (internalAPI) => {
-        api = internalAPI;
-    },
-
-    htmx_after_init: (elt) => {
-        let value = api.attributeValue(elt, "hx-my-attr");
-        let specs = api.parseTriggerSpecs("click, keyup delay:500ms");
-        let { method, action } = api.determineMethodAndAction(elt, evt);
-    },
-});
-```
-
-Available internal API:
-
-<!-- check_extension_api:start -->
-- `HCON` - Parse and merge HCON values
-- `attributeValue(elt, name, defaultVal, returnElt)` - Get an attribute value with inheritance support
-- `parseTriggerSpecs(spec)` - Parse a trigger specification
-- `determineMethodAndAction(elt, evt)` - Get `{method, action}` for an element
-- `createRequestContext(elt, evt)` - Create a request context
-- `collectFormData(elt, form, submitter, validate, isGet)` - Collect form data
-- `getAttributeObject(elt, name, callback, scope)` - Read an object-valued attribute
-- `insertContent(task, cssTransition)` - Insert a swap task's content
-- `morph(oldNode, fragment, innerHTML)` - Morph existing content
-- `isSoftMatch(oldNode, newNode)` - Test whether two nodes can be morphed
-- `initSecurity(ttPolicy, syncFn, asyncFn)` - Configure Trusted Types and script constructors
-- `onTrigger(elt, spec, handler)` - Attach a parsed trigger handler
-- `htmxProp(elt)` - Get an element's internal htmx state
-- `triggerHtmxEvent(elt, name, detail, bubbles)` - Dispatch an htmx event
-- `executeJavaScript(thisArg, values, code, expression, isAsync)` - Execute JavaScript through htmx security policy
-<!-- check_extension_api:end -->
-
-#### Request Context
-
-The `detail.ctx` object contains request information:
-
-```javascript
-{
-    sourceElement,      // Element triggering request
-    sourceEvent,        // Event that triggered request
-    status,            // Request status
-    target,            // Target element for swap
-    swap,              // Swap strategy
-    request: {
-        action,        // Request URL
-        method,        // HTTP method
-        headers,       // Request headers
-        body,          // FormData during htmx_config_request; final BodyInit later
-        validate,      // Whether to validate
-        abort,         // Function to abort request
-        signal         // AbortSignal
-    },
-    response: {        // Available after request
-        raw,           // Raw Response object
-        status,        // HTTP status code
-        headers        // Response headers: https://developer.mozilla.org/en-US/docs/Web/API/Headers
-    },
-    text,              // Response text (after request)
-    hx                 // HX-* response headers (parsed)
-}
-```
-
-#### Custom Swap Strategies
-
-Extensions can implement custom swap strategies:
-
-```javascript
-htmx.registerExtension("my-swap", {
-    handle_swap: (swapStyle, target, fragment, swapSpec) => {
-        if (swapStyle === "my-custom-swap") {
-            target.appendChild(fragment);
-            return true; // Handled
-        }
-        return false; // Not handled
-    },
-});
-```
-
-For migrating extensions written for htmx 2.x, see [Migration → Migrating Your Own Extensions](#migrating-your-own-extensions).
 
 ## Security Considerations
 

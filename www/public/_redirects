@@ -70,7 +70,7 @@
 /examples/web-components         /patterns                                    301
 
 # Extensions.
-/extensions/building       /docs#extension-system                       301
+/extensions/building       /docs/building-extensions                    301
 /extensions/head-support   /extensions/hx-head                          301
 /extensions/preload        /extensions/hx-preload                       301
 /extensions/sse            /extensions/hx-sse                           301
