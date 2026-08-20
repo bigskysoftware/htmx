@@ -1942,7 +1942,8 @@ HTTP response header to the response for a given URL, the browser will automatic
 [`If-Modified-Since`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since)
 request HTTP header to the next requests to the same URL.
 
-For polling use cases where you want the server to skip responses when content hasn't changed, see the [`ptag` extension](/extensions/hx-ptag).
+For polling use cases where you want the server to skip responses when content hasn't changed, see 
+the [`ptag` extension](/extensions/hx-ptag).
 
 Be mindful that if your server can render different content for the same URL depending on some other
 headers, you need to use the [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching#vary)
@@ -1956,8 +1957,7 @@ response URL.
 ## Debugging
 
 Declarative and event driven programming with htmx (or any other declarative language) can be a wonderful and highly
-productive
-activity, but one disadvantage when compared with imperative approaches is that it can be trickier to debug.
+productive activity, but one disadvantage when compared with imperative approaches is that it can be trickier to debug.
 
 Figuring out why something *isn't* happening, for example, can be difficult if you don't know the tricks.
 
@@ -1974,8 +1974,7 @@ Observability tools (Sentry, DataDog RUM, LogRocket, etc.) capture `console.*` a
 Of course, that won't tell you why htmx *isn't* doing something. You might also not know *what* events a DOM
 element is firing to use as a trigger. To address this, you can use the
 [`monitorEvents()`](https://developers.google.com/web/updates/2015/05/quickly-monitor-events-from-the-console-panel)
-method available in the
-browser console:
+method available in the browser console:
 
 ```javascript
 monitorEvents(htmx.find("#theElement"));
