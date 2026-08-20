@@ -26,8 +26,14 @@
 
   function parseParams(url, body) {
     const params = {};
-    new URL(url, location.origin).searchParams.forEach((v, k) => { params[k] = v; });
-    if (body) try { new URLSearchParams(body).forEach((v, k) => { params[k] = v; }); } catch (e) {}
+    const set = (sp) => {
+      for (const k of new Set(sp.keys())) {
+        const vals = sp.getAll(k);
+        params[k] = vals.length > 1 ? vals : vals[0];
+      }
+    };
+    set(new URL(url, location.origin).searchParams);
+    if (body) try { set(new URLSearchParams(body)); } catch (e) {}
     return params;
   }
 
@@ -102,6 +108,23 @@
         .catch(err => { console.warn('[demo] SW registration failed:', err); delete window._demoSwReady; })
     : Promise.resolve();
 
+  // Wait for SW to control page and confirm it's responding via BroadcastChannel
+  async function waitForSwReady() {
+    const reg = await swReady;
+    if (!navigator.serviceWorker?.controller && reg?.active) {
+      await new Promise(resolve => {
+        navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+        reg.active.postMessage({ type: 'claim' });
+      });
+    }
+    // Ping SW via BroadcastChannel to confirm it's actually responding
+    const channel = new BroadcastChannel('demo-sw-ready');
+    await new Promise(resolve => {
+      channel.onmessage = (e) => { if (e.data === 'pong') { channel.close(); resolve(); } };
+      channel.postMessage('ping');
+    });
+  }
+
   window._demoGeneration ??= 0;
 
   // --- WebSocket mock ---
@@ -157,27 +180,13 @@
 
     start(path, selector) {
       const generation = ++window._demoGeneration;
-      swReady.then(reg => {
-        if (generation !== window._demoGeneration) return;
-        if (!navigator.serviceWorker?.controller && reg?.active) {
-          return new Promise(resolve => {
-            navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
-            reg.active.postMessage({ type: 'claim' });
-          });
-        }
-      }).then(() => {
+      waitForSwReady().then(() => {
         if (generation !== window._demoGeneration) return;
         if (wsHandlers.length > 0) window.WebSocket = MockWebSocket;
         else if (window._OriginalWebSocket) window.WebSocket = window._OriginalWebSocket;
         var el = document.querySelector(selector || '#demo-content');
         if (!el) return;
-        // Fetch and swap manually rather than using hx-get/hx-trigger="load".
-        // htmx re-processes all body children after a morph navigation (htmx.js:1402),
-        // which re-triggers "load" on the demo element, causing an infinite request loop.
-        fetch(DEMO_PREFIX + path).then(r => {
-          if (!r.ok) return;
-          return r.text();
-        }).then(html => {
+        fetch(DEMO_PREFIX + path).then(r => r.ok ? r.text() : null).then(html => {
           if (!html || generation !== window._demoGeneration) return;
           el.innerHTML = html;
           if (window.htmx) htmx.process(el);

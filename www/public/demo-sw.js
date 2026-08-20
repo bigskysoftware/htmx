@@ -3,7 +3,7 @@
 // Intercepts fetch requests and relays them to the page via MessageChannel.
 // Supports HTTP and SSE (Server-Sent Events via ReadableStream).
 
-const FALLTHROUGH_TIMEOUT = 300; // ms before falling through to real network
+const FALLTHROUGH_TIMEOUT = 500; // ms before falling through to real network
 const DEMO_PREFIX = '/_/';
 
 // SSE stream controllers, keyed by connection ID
@@ -12,6 +12,12 @@ let sseConnectionId = 0;
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
+
+// Ping/pong via BroadcastChannel so page can confirm SW is ready
+const readyChannel = new BroadcastChannel('demo-sw-ready');
+readyChannel.onmessage = (e) => {
+  if (e.data === 'ping') readyChannel.postMessage('pong');
+};
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
@@ -89,7 +95,6 @@ async function handleRequest(event) {
 
 // Listen for messages from the page
 self.addEventListener('message', (event) => {
-  // Re-claim after hard reload
   if (event.data.type === 'claim') {
     self.clients.claim();
     return;
