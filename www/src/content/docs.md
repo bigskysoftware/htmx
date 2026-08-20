@@ -291,131 +291,7 @@ Content-Type: text/html
 
 Just HTML. No JSON parsing needed.
 
-### Triggers
-
-By default, requests are triggered by the "natural" event of an element:
-
-* `input`, `textarea` & `select` are triggered on the `change` event
-* `form` is triggered on the `submit` event
-* everything else is triggered by the `click` event
-
-If you want different behavior you can use the [`hx-trigger`](/reference/attributes/hx-trigger)
-attribute to specify which event will cause the request.
-
-Here is a `div` that posts to `/mouse_entered` when a mouse enters it:
-
-```html
-<div hx-post="/mouse_entered" hx-trigger="mouseenter">
-    Mouse Trap
-</div>
-```
-
-#### Trigger Modifiers
-
-A trigger can also have additional modifiers that change its behavior. For example, if you want a request to only
-happen once, you can use the `once` modifier for the trigger:
-
-```html
-<div hx-post="/mouse_entered" hx-trigger="mouseenter once">
-    Mouse Trap
-</div>
-```
-
-Other modifiers you can use for triggers are (parsed as [HCON](#hcon)):
-
-* `changed` - only issue a request if the value of the element has changed
-* `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
-  issuing the request. If the event triggers again, the countdown is reset.
-* `throttle:<time interval>` - wait the given amount of time (e.g. `1s`) before
-  issuing the request. Unlike `delay` if a new event occurs before the time limit is hit the event will be discarded,
-  so the request will trigger at the end of the time period.
-* `from:<CSS Selector>` - listen for the event on a different element. This can be used for things like keyboard
-  shortcuts. Note that this CSS selector is not re-evaluated if the page changes.
-
-Multiple triggers can be specified in the [`hx-trigger`](/reference/attributes/hx-trigger) attribute, separated by commas.
-
-You can use these features to implement many common UX patterns, such as [Active Search](/patterns/active-search):
-
-```html
-<input type="text"
-       name="q"
-       placeholder="Search..."
-       hx-get="/search"
-       hx-trigger="input delay:500ms, keyup[key=='Enter']"
-       hx-target="#search-results">
-<div id="search-results"></div>
-```
-
-This input will issue a request 500 milliseconds after an input event occurs, or the `enter` key is pressed and inserts
-the results into the `div` with the id `search-results`.
-
-#### Trigger Filters
-
-In the example above, you may have noticed the square brackets after the event name. This is called a "trigger filter".
-
-Trigger filters allow you to place a filtering javascript expression after the event name that will prevent the trigger
-if the filter does not return true.
-
-Here is an example that triggers only on a Shift-Click of the element
-
-```html
-<div hx-get="/shift_clicked" hx-trigger="click[shiftKey]">
-    Shift Click Me
-</div>
-```
-
-Properties like `shiftKey` will be resolved against the triggering event first, then against the global scope.
-
-The `this` symbol will be set to the current element.
-
-#### Special Events
-
-htmx provides a few special events for use in [`hx-trigger`](/reference/attributes/hx-trigger):
-
-* `load` - fires once when the element is first loaded
-* `revealed` - fires once when an element first scrolls into the viewport
-* `intersect` - fires once when an element first intersects the viewport. This supports two additional options:
-    * `root:<selector>` - a CSS selector of the root element for intersection
-    * `threshold:<float>` - a floating point number between 0.0 and 1.0, indicating what amount of intersection to fire
-      the event on
-
-You can also use custom events to trigger requests.
-
-#### Polling
-
-Polling is a simple technique where a web page periodically issues a request to the server to see if any updates have
-occurred. It is not very highly respected in many web development circles, but it is simple, can be relatively
-resource-light because it does not maintain a constant network connection, and it tolerates network failures well
-
-In htmx you can implement polling via the `every` syntax in the [`hx-trigger`](/reference/attributes/hx-trigger) attribute:
-
-```html
-<div hx-get="/news" hx-trigger="every 2s"></div>
-```
-
-This tells htmx:
-
-> Every 2 seconds, issue a GET to /news and load the response into the div
-
-#### Load Polling
-
-Another technique that can be used to achieve polling in htmx is "load polling", where an element specifies
-a `load` trigger along with a delay, and replaces itself with the response:
-
-```html
-<div hx-get="/messages"
-     hx-trigger="load delay:1s"
-     hx-swap="outerHTML">
-</div>
-```
-
-If the `/messages` end point keeps returning a div set up this way, it will keep "polling" back to the URL every
-second.
-
-Load polling can be useful in situations where a poll has an end point at which point the polling terminates, such as
-when you are showing the user a [progress bar](/patterns/progress-bar).
-
-#### Request Indicators
+### Request Indicators
 
 When an AJAX request is issued it is often good to let the user know that something is happening since the browser
 will not give them any feedback. You can accomplish this in htmx by using `htmx-indicator` class.
@@ -655,7 +531,178 @@ in the request.
 Note that depending on your server-side technology, you may have to handle requests with this type of body content very
 differently.
 
-## Requests & Responses
+## Issuing Requests &  Handling Responses
+
+The crux of htmx is issuing HTTP request in response to events and then placing the response HTML into the document.
+
+The core attributes for driving this behavior are:
+
+* [`hx-get`](/reference/attributes/hx-get) - issues an HTTP `GET`
+* [`hx-post`](/reference/attributes/hx-post) - issues an HTTP `POST`
+* [`hx-put`](/reference/attributes/hx-put) - issues an HTTP `PUT`
+* [`hx-patch`](/reference/attributes/hx-patch) - issues an HTTP `PATCH`
+* [`hx-delete`](/reference/attributes/hx-delete) - issues an HTTP `DELETE`
+* [`hx-query`](/reference/attributes/hx-query) - issues an HTTP `QUERY`
+
+These attributes can be placed on any element to tell that element to issue a request when triggered:
+
+```html
+<button hx-get="/info">
+  Get Information
+</button>
+```
+
+As of htmx 4.0, you can also use the following alternative attributes:
+
+* [`hx-action`](/reference/attributes/hx-action) - The URL to issue a request to
+* [`hx-method`](/reference/attributes/hx-method) - The HTTP Action to use
+
+```html
+<button hx-action="/info" hx-method="GET">
+  Get Information
+</button>
+```
+
+This is closer to the syntax that forms use.
+
+### Triggering Requests
+
+By default, HTTP requests are triggered by the "natural" event of an element:
+
+* `input`, `textarea` & `select` are triggered on the `change` event
+* `form` is triggered on the `submit` event
+* everything else is triggered by the `click` event
+
+If you want different behavior you can use the [`hx-trigger`](/reference/attributes/hx-trigger)
+attribute to specify which event will cause the request.
+
+Here is a `div` that issues an HTTP `POST` to `/mouse_entered` when a mouse enters it:
+
+```html
+<div hx-post="/mouse_entered" hx-trigger="mouseenter">
+    Mouse Trap
+</div>
+```
+
+#### Trigger Modifiers
+
+A trigger can also have additional modifiers that change its behavior.
+
+For example, if you want a request to only happen once, you can use the `once` modifier for the trigger:
+
+```html
+<div hx-post="/mouse_entered" hx-trigger="mouseenter once">
+    Mouse Trap
+</div>
+```
+
+Other modifiers you can use for triggers are (parsed as [HCON](#hcon)):
+
+* `changed` - only issue a request if the value of the element has changed
+* `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
+  issuing the request. If the event triggers again, the countdown is reset.
+* `throttle:<time interval>` - issue the first request immediately, then wait the given amount of time (e.g. `1s`)
+  before issuing another. If more events occur during that period, the last one triggers a request at its end.
+* `from:<selector>` - listen for the event on a different element. This accepts CSS and
+  [extended selectors](#extended-selectors), and can be used for things like keyboard shortcuts. Note that the selector
+  is not re-evaluated if the page changes.
+
+Multiple triggers can be specified by separating the triggers with a comma.
+
+You can use triggers to implement many common UX patterns, such as [Active Search](/patterns/active-search):
+
+```html
+<input type="text"
+       name="q"
+       placeholder="Search..."
+       hx-query="/search"
+       hx-trigger="input delay:500ms, keyup[key=='Enter']"
+       hx-target="#search-results">
+<div id="search-results"></div>
+```
+
+This input will issue a `QUERY` request 500 milliseconds after an input event occurs or when the `enter` key is pressed.
+
+The input inserts the resulting HTML into the `div` with the id `search-results`. (Response handling is discussed
+[below](#handling-responses).)
+
+#### Trigger Filters
+
+In the example above, you may have noticed the square brackets after the `keyup` event name. This is a trigger filter.
+
+Trigger filters allow you to place a filtering JavaScript expression after the event name that allows you to cancel
+the trigger if conditions are not met.  To cancel the trigger, the expression should return `false`.
+
+Here is an example that triggers only on a Shift-Click of the element
+
+```html
+<div hx-get="/shift_clicked" hx-trigger="click[shiftKey]">
+    Shift Click Me
+</div>
+```
+
+Properties like `shiftKey` will be resolved against the triggering event first, then against the global scope.
+
+The `this` symbol will be set to the current element.
+
+Note that trigger filters require the use of `eval()`, so they should not be used with a strict
+[Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP).
+
+#### Special Events
+
+htmx provides a few special events for use in [`hx-trigger`](/reference/attributes/hx-trigger):
+
+* `load` - fires once when the element is first loaded
+* `revealed` - fires once when an element first scrolls into the viewport
+* `intersect` - fires when an element enters the viewport. Add the `once` modifier to fire only once. This supports
+  three additional options:
+    * `root:<selector>` - a CSS selector of the root element for intersection
+    * `rootMargin:<margin>` - a margin around the root element
+    * `threshold:<float>` - a floating point number between 0.0 and 1.0, indicating what amount of intersection to fire
+      the event on
+
+You can also use custom events to trigger requests. Dispatch them with [`htmx.trigger()`](/reference/methods/htmx-trigger)
+or from the server with the [`HX-Trigger`](/reference/headers/HX-Trigger) response header.
+
+#### Polling
+
+Polling is a simple technique where a web page periodically issues a request to the server to see if any updates have
+occurred. It is a simple mechanism for getting updated content from a server. It does not require a permanent server
+connection, and it tolerates network failures well.
+
+In htmx you can implement polling via the `every` syntax in the [`hx-trigger`](/reference/attributes/hx-trigger) attribute:
+
+```html
+<div hx-get="/news" hx-trigger="every 2s"></div>
+```
+
+This tells htmx:
+
+> Every 2 seconds, issue a GET to /news and load the response into the div
+
+#### Load Polling
+
+Another technique that can be used to achieve polling in htmx is "load polling", where an element specifies
+a `load` trigger along with a delay, and replaces itself with the response:
+
+```html
+<div hx-get="/messages"
+     hx-trigger="load delay:1s"
+     hx-swap="outerHTML">
+</div>
+```
+
+If the `/messages` end point keeps returning a div set up this way, it will keep "polling" back to the URL every
+second.
+
+Load polling can be useful in situations where a poll has an end point at which point the polling terminates, such as
+when you are showing the user a [progress bar](/patterns/progress-bar).
+
+Polling is a simple, useful technique for many problems but isn't appropriate for more interactive situations. For these
+situations, consider [streaming HTML](#streaming-html).
+
+### Handling Responses
+
 Htmx expects responses to the AJAX requests it makes to be HTML, typically HTML fragments (although a full HTML
 document, matched with a [`hx-select`](/reference/attributes/hx-select) tag can be useful too).
 
@@ -2431,4 +2478,3 @@ Search for **HTMX Toolkit** in the VS Code Extensions panel, or install from the
 ### Source
 
 The extension source code is maintained at [atoolz/htmx-vscode-toolkit](https://github.com/atoolz/htmx-vscode-toolkit).
-
