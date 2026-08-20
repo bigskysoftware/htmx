@@ -506,7 +506,7 @@ nodes in the DOM.
 Morphing rather than replacing content can do a better job preserving things like focus, video state, etc. by mutating 
 existing nodes in-place during a swap operation.
 
-See the [morph swap guide](docs/morphing-swaps) for more information on using this technique.
+See the [morph swap guide](/docs/morphing-swaps) for more information on using this technique.
 
 #### Swap Options
 
@@ -534,9 +534,41 @@ The modifiers available on `hx-swap` are:
 | `show`        | top or bottom, will scroll the target element's top or bottom into view                              |
 | `target`      | A selector to retarget the swap to a different element                                               |
 
-All swap modifiers appear after the swap style, using [HCON](/docs/hcon).
+All swap modifiers appear after the swap style.
 
 See the [`hx-swap`](/reference/attributes/hx-swap) documentation for more details on these options.
+
+#### Selecting Response Content
+
+Sometimes you may want to only swap a sub-element within the content returned by the server. A common case is a server 
+that can only render full pages, when you only need one part of that page.
+
+The [`hx-select`](/reference/attributes/hx-select) attribute takes a plain CSS selector and extracts only that content for
+swapping:
+
+```html
+<button hx-get="/info" hx-target="#result" hx-select="#info-detail">
+  Get Info
+</button>
+
+<div id="result"></div>
+```
+#### Selecting "Out of Band" Content
+
+If you want to make additional swaps from a larger piece of server content you can use the 
+[`hx-select-oob`](/reference/attributes/hx-select-oob) attribute to do so:
+
+```html
+<button hx-get="/dashboard"
+        hx-target="#main"
+        hx-select="#main-content"
+        hx-select-oob="#alert,#sidebar">
+  Refresh
+</button>
+```
+
+Here, in addition to filtering the main swap down to the element with the id `main`, htmx finds elements with the ids 
+`alert` and `sidebar` in the response content and swaps each one over the element with the same `id` in the current page.
 
 ## Forms
 
@@ -1333,6 +1365,54 @@ simulating "going back" to the previous state.
 
 **NOTE:** If you push a URL into the history, you **must** be able to navigate to that URL and get a full page back!
 A user could copy and paste the URL into an email, or new tab.
+
+### Replacing The Current URL
+
+If you want to chante the URL without updating history use the [`hx-replace-url`](/reference/attributes/hx-replace-url) 
+attribute instead:
+
+```html
+<a hx-get="/account" hx-replace-url="true">My Account</a>
+```
+
+### History Response Headers
+
+The server can override either attribute for a single response with the
+[`HX-Push-Url`](/reference/headers/HX-Push-Url) and [`HX-Replace-Url`](/reference/headers/HX-Replace-Url) response
+headers.
+
+### Restoring Only Part Of The Page
+
+By default htmx replaces the whole `body` when a user navigates back or forward.
+
+If you wish for history to be restored only within a specific element you can use the
+[`hx-history-elt`](/reference/attributes/hx-history-elt) attribute:
+
+```html
+<body>
+    <nav><!-- never replaced --></nav>
+
+    <main hx-history-elt>
+        <h1>Page 1</h1>
+    </main>
+</body>
+```
+
+On a history navigation htmx requests the URL, selects the `hx-history-elt` element out of the response, and swaps
+it over the current one, leaving the rest of the page untouched.
+
+### Configuring History
+
+The [`htmx.config.history`](/reference/config/htmx-config-history) setting allow you to specify how history works:
+
+| Value      | Behavior                                                          |
+|------------|-------------------------------------------------------------------|
+| `true`     | the default. htmx requests the URL and swaps the response         |
+| `"reload"` | htmx does a full page reload instead of a request                 |
+| `false`    | htmx does not handle history at all. The browser behaves normally |
+
+If you want the htmx 2.x behavior of restoring history from a local snapshot instead of a full server request, use the
+[`hx-history-cache`](/extensions/hx-history-cache) extension.
 
 ## Client-Side Scripting
 
