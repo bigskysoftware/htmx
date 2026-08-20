@@ -29,11 +29,11 @@ test.describe('Content page structure', () => {
 
     test('docs page nav anchor navigates to in-page heading', async ({ page }) => {
         await page.goto('/docs');
-        const link = page.locator('#page-nav a', { hasText: 'Installation' }).first();
+        const link = page.locator('#page-nav a', { hasText: 'Installing htmx' }).first();
         const href = await link.getAttribute('href');
-        expect(href).toBe('#installation');
+        expect(href).toBe('#installing-htmx');
         await link.click();
-        await expect(page).toHaveURL(/\/docs#installation/);
+        await expect(page).toHaveURL(/\/docs#installing-htmx/);
     });
 
     test('leaf page nav is derived from its own headings', async ({ page }) => {

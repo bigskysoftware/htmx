@@ -52,7 +52,7 @@ test.describe('Responsive behavior', () => {
         await expect(disclosure).toBeVisible();
 
         await disclosure.locator('summary').click();
-        await expect(page.locator('#page-nav-mobile a[href="#installation"]')).toBeVisible();
+        await expect(page.locator('#page-nav-mobile a[href="#installing-htmx"]')).toBeVisible();
     });
 
     test('mobile search opens via evaluate', async ({ page }) => {
