@@ -9,17 +9,37 @@ htmx 4 is a ground-up rewrite. This guide covers the practical steps to migrate 
 
 ## Instructions for Claude
 
-When helping with an htmx 2 → 4 upgrade:
+When helping with an htmx 2 -> 4 upgrade:
 
 1. Search the codebase for all htmx usage: `hx-` attributes, `data-hx-` attributes, `htmx:` event
    listeners, `htmx.` API calls, and server-side `HX-` header handling
 2. Identify the scope: how many files, how complex the usage
 3. Work through the steps below in order, making changes file by file
-4. Pay special attention to the hx-disable/hx-ignore rename order (Step 1)
-5. For attribute inheritance (Step 3), use codebase analysis to find likely-inherited attributes
-   rather than blindly adding `:inherited` everywhere — see the detailed instructions in that step
-6. Check server-side code for header handling changes (often in middleware or base controllers)
-7. Check for custom extensions — these need a full rewrite
+4. Run the shipped `upgrade-check` tool first (Step 0) to build the worklist
+5. Pay special attention to the hx-disable/hx-ignore rename order (Step 1)
+6. For attribute inheritance (Step 3), use codebase analysis to find likely-inherited attributes
+   rather than blindly adding `:inherited` everywhere -- see the detailed instructions in that step
+7. Check server-side code for header handling changes (often in middleware or base controllers)
+8. Check for custom extensions -- these need a full rewrite
+
+## Step 0: Run the Shipped Upgrade Checker
+
+htmx 4 ships a command-line checker. Run it first to scope the work. It prints clickable `file:line`
+references with a suggested fix for each hit.
+
+```bash
+npx htmx.org@4.0.0 upgrade-check -- ./path/to/project
+
+# add file extensions the scanner does not know
+npx htmx.org@4.0.0 upgrade-check --ext .vue ./path/to/project
+```
+
+Pin the version to the htmx 4 release you are moving to.
+
+By default it scans `.html`, `.php`, `.js`, `.ts`, `.jinja`, `.jinja2`, `.j2`, `.erb` and `.hbs`.
+
+It flags removed attributes, old event names, inheritance patterns and extension changes. It does not
+rewrite anything, so work through the steps below with its output as the worklist.
 
 ## Step 1: Attribute Renames
 
@@ -28,10 +48,10 @@ Search and replace across the codebase. **Order matters for hx-disable.**
 ```
 # IMPORTANT: Do hx-disable FIRST (it means something different in htmx 2 vs 4)
 # In htmx 2, hx-disable stops htmx processing. In htmx 4, hx-ignore does that.
-hx-disable  →  hx-ignore          (htmx 2's "disable htmx processing")
+hx-disable  ->  hx-ignore          (htmx 2's "disable htmx processing")
 
 # Now safe to rename hx-disabled-elt
-hx-disabled-elt  →  hx-disable    (htmx 2's "disable elements during request")
+hx-disabled-elt  ->  hx-disable    (htmx 2's "disable elements during request")
 ```
 
 ## Step 2: Remove Deleted Attributes
@@ -44,7 +64,7 @@ hx-disabled-elt  →  hx-disable    (htmx 2's "disable elements during request")
 | `hx-ext="..."`        | Remove (just including the extension script is enough)      |
 | `hx-disinherit="..."` | Remove (inheritance is explicit by default)                 |
 | `hx-inherit="..."`    | Remove (use `:inherited` modifier on individual attributes) |
-| `hx-request='...'`    | `hx-config='...'` (same JSON format)                        |
+| `hx-request='...'`    | `hx-config='...'`. Takes HCON, which accepts the old JSON    |
 | `hx-history="false"`  | Remove (history no longer uses localStorage)                |
 
 ## Step 3: Update Attribute Inheritance
@@ -60,18 +80,18 @@ and child/descendant elements rely on it without declaring it themselves.
 
 Common attributes that are frequently inherited:
 
-- **`hx-target`** — very common. Look for a container with `hx-target` and multiple child elements
+- **`hx-target`** -- very common. Look for a container with `hx-target` and multiple child elements
   with `hx-get`/`hx-post`/etc. that don't have their own `hx-target`
-- **`hx-include`** — common in form-heavy UIs where a parent sets a shared include
-- **`hx-swap`** — when a group of elements should all swap the same way
-- **`hx-boost`** — typically set on a parent `<div>` or `<body>` to boost all links within
-- **`hx-confirm`** — set on a container to confirm all actions within it
-- **`hx-headers`** — set on a parent to attach auth tokens or CSRF headers to all requests within
-- **`hx-indicator`** — set on a parent to share a loading indicator
-- **`hx-sync`** — set on a parent to coordinate request timing for children
-- **`hx-config`** — set on a parent to configure timeouts, etc. for children
-- **`hx-encoding`** — set on a parent for multipart encoding across children
-- **`hx-validate`** — set on a parent to enable validation for all children
+- **`hx-include`** -- common in form-heavy UIs where a parent sets a shared include
+- **`hx-swap`** -- when a group of elements should all swap the same way
+- **`hx-boost`** -- typically set on a parent `<div>` or `<body>` to boost all links within
+- **`hx-confirm`** -- set on a container to confirm all actions within it
+- **`hx-headers`** -- set on a parent to attach auth tokens or CSRF headers to all requests within
+- **`hx-indicator`** -- set on a parent to share a loading indicator
+- **`hx-sync`** -- set on a parent to coordinate request timing for children
+- **`hx-config`** -- set on a parent to configure timeouts, etc. for children
+- **`hx-encoding`** -- set on a parent for multipart encoding across children
+- **`hx-validate`** -- set on a parent to enable validation for all children
 
 ### What to search for
 
@@ -93,29 +113,21 @@ inheritance parents. Add `:inherited` to them:
 </div>
 ```
 
-For `hx-boost`, it is almost always inherited — a `hx-boost="true"` on a non-link, non-form
+For `hx-boost`, it is almost always inherited -- a `hx-boost="true"` on a non-link, non-form
 element is always meant for its descendants.
 
-## Step 4: Update `data-hx-*` Attributes
+## Step 4: Check `data-hx-*` Attributes
 
-In htmx 2, both `hx-get` and `data-hx-get` worked. In htmx 4, only `hx-*` works by default.
+No change is needed. In htmx 4 `htmx.config.prefix` defaults to `"data-hx-"`, and the prefix is
+additive: htmx checks both `hx-get` and `data-hx-get`. Leave `data-hx-*` markup as it is.
 
-Option A: Replace all `data-hx-` with `hx-`:
-
-```
-data-hx-get    →  hx-get
-data-hx-post   →  hx-post
-data-hx-target →  hx-target
-(etc.)
-```
-
-Option B: Set the prefix config:
+Set `prefix` only if you want a third spelling:
 
 ```html
-<meta name="htmx-config" content='{"prefix": "data-hx-"}'>
+<meta name="htmx-config" content='{"prefix": "x-hx-"}'>
 ```
 
-Note: with a custom prefix, ALL attributes must use it.
+Setting `prefix` replaces `data-hx-`, so any `data-hx-*` markup stops working. `hx-*` always works.
 
 ## Step 5: Update Event Listeners
 
@@ -130,13 +142,13 @@ htmx 2 uses camelCase event names. htmx 4 uses colon-separated names.
 | `htmx:afterRequest`         | `htmx:after:request`              |
 | `htmx:beforeSwap`           | `htmx:before:swap`                |
 | `htmx:afterSwap`            | `htmx:after:swap`                 |
-| `htmx:afterSettle`          | `htmx:after:swap`                 |
+| `htmx:afterSettle`          | `htmx:after:settle`               |
 | `htmx:beforeSend`           | `htmx:before:request`             |
 | `htmx:load`                 | `htmx:after:init`                 |
 | `htmx:beforeOnLoad`         | `htmx:before:init`                |
 | `htmx:afterOnLoad`          | `htmx:after:init`                 |
 | `htmx:beforeProcessNode`    | `htmx:before:process`             |
-| `htmx:afterProcessNode`     | `htmx:after:init`                 |
+| `htmx:afterProcessNode`     | `htmx:after:process`              |
 | `htmx:beforeCleanupElement` | `htmx:before:cleanup`             |
 | `htmx:beforeHistorySave`    | `htmx:before:history:update`      |
 | `htmx:beforeHistoryUpdate`  | `htmx:before:history:update`      |
@@ -156,8 +168,8 @@ htmx 2 uses camelCase event names. htmx 4 uses colon-separated names.
 
 **Removed events (no htmx 4 equivalent):**
 
-- `htmx:validation:validate`, `htmx:validation:failed`, `htmx:validation:halted` — use native form validation
-- `htmx:xhr:loadstart`, `htmx:xhr:loadend`, `htmx:xhr:progress`, `htmx:xhr:abort` — XHR is gone
+- `htmx:validation:validate`, `htmx:validation:failed`, `htmx:validation:halted` -- use native form validation
+- `htmx:xhr:loadstart`, `htmx:xhr:loadend`, `htmx:xhr:progress`, `htmx:xhr:abort` -- XHR is gone
 
 **In `hx-on:` attributes:**
 
@@ -221,9 +233,9 @@ Removed configs (no equivalent): `refreshOnHistoryMiss`, `historyCacheSize`, `de
 
 | htmx 2 header     | htmx 4 header | Format change                                        |
 |-------------------|---------------|------------------------------------------------------|
-| `HX-Trigger`      | `HX-Source`   | Was element ID → now `tag#id` (e.g. `button#submit`) |
+| `HX-Trigger`      | `HX-Source`   | Was element ID -> now `tag#id` (e.g. `button#submit`) |
 | `HX-Trigger-Name` | Removed       | Use `HX-Source`                                      |
-| `HX-Target`       | `HX-Target`   | Was element ID → now `tag#id`                        |
+| `HX-Target`       | `HX-Target`   | Was element ID -> now `tag#id`                        |
 | `HX-Prompt`       | Via extension | Load the `hx-prompt` extension to restore the header |
 
 New request header: `HX-Request-Type` (`"full"` or `"partial"`).
@@ -276,7 +288,9 @@ htmx.registerExtension('my-ext', {
 });
 ```
 
-To restrict which extensions can load, use the `extensions` config as a whitelist:
+To restrict which extensions can load, use the `extensions` config as a whitelist. It takes the
+registration name passed to `registerExtension()`, which is not always the file name. `hx-sse.js`
+registers as `sse`, `hx-preload.js` as `preload`, `htmx-2-compat.js` as `compat`:
 
 ```html
 <meta name="htmx-config" content='{"extensions": "my-ext"}'>
@@ -327,7 +341,7 @@ If your server returns error HTML in 4xx/5xx responses and you don't want it swa
 For large codebases where a full migration isn't practical all at once, there are two options to
 ease the transition:
 
-**Config flags** — add to your htmx config meta tag to restore htmx 2 defaults:
+**Config flags** -- add to your htmx config meta tag to restore htmx 2 defaults:
 
 ```html
 <meta name="htmx-config" content='{
@@ -339,7 +353,7 @@ ease the transition:
 - `implicitInheritance: true` restores automatic attribute inheritance (skipping Step 3)
 - `noSwap: [204, 304, "4xx", "5xx"]` restores htmx 2's 4xx/5xx no-swap behavior (skipping Step 13)
 
-**Compatibility extension** — `htmx-2-compat.js` fires old event names alongside new ones and
+**Compatibility extension** -- `htmx-2-compat.js` fires old event names alongside new ones and
 handles old attribute names:
 
 ```html
