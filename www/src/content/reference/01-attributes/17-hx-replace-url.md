@@ -6,6 +6,10 @@ description: "Replaces current URL in browser history"
 The `hx-replace-url` attribute allows you to replace the current url of the
 browser [location history](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
 
+This overwrites the current history entry rather than adding one. Core htmx restores the page by fetching
+its URL again. Use the [`hx-history-cache`](/extensions/hx-history-cache) extension to restore saved DOM
+snapshots instead.
+
 ## Syntax
 
 ```html
@@ -28,8 +32,7 @@ Here is an example:
 </div>
 ```
 
-This will cause htmx to snapshot the current DOM to `localStorage` and replace the URL `/account' in the browser
-location bar.
+This replaces the current history entry with `/account` in the browser location bar.
 
 Another example:
 
@@ -39,7 +42,7 @@ Another example:
 </div>
 ```
 
-This will replace the URL `/account/home' in the browser location bar.
+This replaces the current history entry with `/account/home` in the browser location bar.
 
 ## Notes
 

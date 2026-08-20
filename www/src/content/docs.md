@@ -268,16 +268,22 @@ For example, if you want a request to only happen once, you can use the `once` m
 </div>
 ```
 
-Other modifiers you can use for triggers are (parsed as [HCON](/docs/hcon)):
+Other modifiers you can use for triggers are:
 
-* `changed` - only issue a request if the value of the element has changed
-* `delay:<time interval>` - wait the given amount of time (e.g. `1s`) before
-  issuing the request. If the event triggers again, the countdown is reset.
-* `throttle:<time interval>` - issue the first request immediately, then wait the given amount of time (e.g. `1s`)
-  before issuing another. If more events occur during that period, the last one triggers a request at its end.
-* `from:<selector>` - listen for the event on a different element. This accepts CSS and
-  [extended selectors](#targeting-with-extended-selectors), and can be used for things like keyboard shortcuts. Note that the selector
-  is not re-evaluated if the page changes.
+| Modifier                   | Description                                                                                                                                                                                                                 |
+|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `changed`                  | only issue a request if the value of the element has changed                                                                                                                                                                |
+| `delay:<time interval>`    | wait the given amount of time (e.g. `1s`) before issuing the request. If the event triggers again, the countdown is reset                                                                                                   |
+| `throttle:<time interval>` | issue the first request immediately, then wait the given amount of time (e.g. `1s`) before issuing another. If more events occur during that period, the last one triggers a request at its end                             |
+| `from:<selector>`          | listen for the event on a different element. Accepts CSS and [extended selectors](#targeting-with-extended-selectors), and is used for things like keyboard shortcuts. The selector is not re-evaluated if the page changes |
+| `target:<selector>`        | only fire if `event.target` matches the given CSS selector. Useful when you listen on a container but only want events from certain children                                                                                |
+| `prevent`                  | call `event.preventDefault()`                                                                                                                                                                                               |
+| `stop`                     | call `event.stopPropagation()`. `consume` does the same thing                                                                                                                                                               |
+| `halt`                     | shorthand for `prevent stop`                                                                                                                                                                                                |
+| `capture`                  | listen during the capture phase, from the top down, rather than the bubble phase                                                                                                                                            |
+| `passive`                  | tell the browser that the handler will not call `preventDefault()`, so the browser can scroll without waiting for your code                                                                                                 |
+
+Note that a selector with whitespace in `from` or `target` needs parentheses, for example `from:(form input)`.
 
 Multiple triggers can be specified by separating the triggers with a comma.
 
@@ -456,6 +462,7 @@ Other swapping algorithms available are:
 |-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
 | `innerHTML`                 | the default, puts the content inside the target element                                                                                   |
 | `outerHTML`                 | replaces the entire target element with the returned content                                                                              |
+| `outerSync`                 | morphs the target's attributes, then replaces its children. The target stays in the DOM                                                   |
 | `before` (or `beforebegin`) | prepends the content before the target in the target's parent element                                                                     |
 | `prepend` (or `afterbegin`) | prepends the content before the first child inside the target                                                                             |
 | `append` (or `beforeend`)   | appends the content after the last child inside the target                                                                                |
@@ -525,6 +532,7 @@ The modifiers available on `hx-swap` are:
 | Option        | Description                                                                                          |
 |---------------|------------------------------------------------------------------------------------------------------|
 | `swap`        | A time interval (e.g., 100ms, 1s) to delay the swap operation                                        |
+| `settle`      | A time interval to delay the settle phase, which runs after the swap. Defaults to `1ms`              |
 | `transition`  | true or false, whether to use the view transition API for this swap                                  |
 | `ignoreTitle` | If set to true, any title found in the new content will be ignored and not update the document title |
 | `strip`       | true or false, whether to strip the outer element when swapping (unwrap the content)                 |
@@ -1000,6 +1008,35 @@ You can control the swap style of an OOB swap by setting the value of `hx-swap-o
 
 This appends the content to `div#notifications` instead of replacing it.
 
+#### Pure OOB Responses
+
+htmx removes the OOB elements from the response before the main swap. If nothing is left, the main swap is skipped
+and the main target keeps its content.
+
+```html
+<!-- Server returns only OOB content: the main target is left untouched -->
+<div id="notifications" hx-swap-oob="true">
+    <span class="badge">5</span>
+</div>
+```
+
+Two settings change this. Set
+[`htmx.config.allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB) to `true` to run the
+main swap anyway, everywhere:
+
+```html
+<meta name="htmx-config" content="allowEmptySwapAfterOOB:true">
+```
+
+Or set the `swapEmpty` modifier on one element, which wins over the config:
+
+```html
+<button hx-post="/submit" hx-swap="outerHTML swapEmpty:true">Submit</button>
+```
+
+Note that `<hx-partial>` elements always skip an empty main swap, and neither setting changes that. See
+[Pure `<hx-partial>` Responses](#pure-hx-partial-responses).
+
 ### Partials (`<hx-partial>`)
 
 The `hx-partial` tag is new in htmx 4, and it addresses issues that have come up in our experience with OOB swaps 
@@ -1038,7 +1075,7 @@ Some server-side template languages remove tags they do not know. For these, use
 </template>
 ```
 
-#### Pure <hx-partial> Responses
+#### Pure `<hx-partial>` Responses
 
 When a response contains only `<hx-partial>` elements and no main content, htmx does **not** perform the main swap: it
 assumes you only want to do partial replacement with the response.
@@ -1963,6 +2000,7 @@ They are listed below:
 | `htmx.config.morphSkip`           | defaults to `'[hx-morph-skip]'`, CSS selector for elements to completely skip during morphing (they stay frozen)                                                                                                                                                            |
 | `htmx.config.morphSkipChildren`   | defaults to `'[hx-morph-skip-children]'`, CSS selector for elements whose attributes update but children are preserved during morphing                                                                                                                                      |
 | `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                                        |
+| `htmx.config.allowEmptySwapAfterOOB` | defaults to `false`, whether the main swap still runs when a response contained only out-of-band elements                                                                                                                                                              |
 | `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                                          |
 | `htmx.config.defaultFocusScroll`  | defaults to `false`, whether to scroll focused elements into view after swap                                                                                                                                                                                                |
 | `htmx.config.defaultSettleDelay`  | defaults to `1` (ms), delay between swap and settle phases                                                                                                                                                                                                                 |
