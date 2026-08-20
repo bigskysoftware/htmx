@@ -762,6 +762,22 @@ We can hoist this attribute to a parent element using the `:inherited` modifier 
 
 This `hx-confirm` attribute will now apply to all htmx-powered elements within it.
 
+### Adding To An Inherited Value
+
+By default, an attribute on a child _overrides_ an inherited value for that attribute. You can use the `:append` modifier to append
+the child value to the inherited value instead:
+
+```html
+<div hx-vals:inherited="tenant:acme">
+    ...
+    <button hx-post="/save" hx-vals:append="source:save-btn">Save</button>
+</div>
+```
+
+If no ancestor provides a value, the append value is used on its own.
+
+You can combine `:inherited` and `:append` on a element if you want child elements to inherit the new value.
+
 ## Link & Form Boosting
 
 In htmx you can "boos" regular HTML anchors and forms using the [`hx-boost`](/reference/attributes/hx-boost) attribute. 
@@ -1981,30 +1997,30 @@ They are listed below:
 
 <div class="info-table">
 
-| Config Variable                   | Info                                                                                                                                                                                                                                                                       |
-|-----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `htmx.config.logAll`              | defaults to `false`, if set to `true` htmx will log all events to the console for debugging                                                                                                                                                                                |
-| `htmx.config.prefix`              | defaults to `"data-hx-"`, a secondary attribute prefix recognised alongside the always-active `hx-` prefix (e.g. `data-hx-get` works by default). Set to `""` to disable. **Must be set via meta tag**, setting this after page load will not apply correctly. |
-| `htmx.config.transitions`         | defaults to `false`, whether to use view transitions when swapping content (if browser supports it)                                                                                                                                                                         |
-| `htmx.config.history`             | defaults to `true`, whether to enable history support. Set to `"reload"` to do a full page reload on history navigation instead of an AJAX request                                                                                                                          |
-| `htmx.config.mode`                | defaults to `'same-origin'`, the fetch mode for AJAX requests. Can be `'cors'`, `'no-cors'`, or `'same-origin'`                                                                                                                                                            |
-| `htmx.config.defaultSwap`         | defaults to `innerHTML`                                                                                                                                                                                                                                                    |
-| `htmx.config.indicatorClass`      | defaults to `htmx-indicator`                                                                                                                                                                                                                                               |
-| `htmx.config.requestClass`        | defaults to `htmx-request`                                                                                                                                                                                                                                                 |
-| `htmx.config.includeIndicatorCSS` | defaults to `true` (determines if the indicator styles are loaded)                                                                                                                                                                                                         |
-| `htmx.config.defaultTimeout`      | defaults to `60000` (60 seconds), the number of milliseconds a request can take before automatically being terminated                                                                                                                                                      |
-| `htmx.config.inlineScriptNonce`   | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                                                                                                                    |
-| `htmx.config.extensions`          | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,pending'`)                                                                                                                                                                         |
-| `htmx.config.morphIgnore`         | defaults to `["data-htmx-powered"]`, array of attribute name prefixes to preserve when morphing elements                                                                                                                                                                   |
-| `htmx.config.morphScanLimit`      | limits the number of nodes scanned during morphing                                                                                                                                                                                                                         |
-| `htmx.config.morphSkip`           | defaults to `'[hx-morph-skip]'`, CSS selector for elements to completely skip during morphing (they stay frozen)                                                                                                                                                            |
-| `htmx.config.morphSkipChildren`   | defaults to `'[hx-morph-skip-children]'`, CSS selector for elements whose attributes update but children are preserved during morphing                                                                                                                                      |
-| `htmx.config.noSwap`              | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                                        |
-| `htmx.config.allowEmptySwapAfterOOB` | defaults to `false`, whether the main swap still runs when a response contained only out-of-band elements                                                                                                                                                              |
-| `htmx.config.implicitInheritance` | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                                          |
-| `htmx.config.defaultFocusScroll`  | defaults to `false`, whether to scroll focused elements into view after swap                                                                                                                                                                                                |
-| `htmx.config.defaultSettleDelay`  | defaults to `1` (ms), delay between swap and settle phases                                                                                                                                                                                                                 |
-| `htmx.config.metaCharacter`       | defaults to `undefined`, allows you to use a custom character instead of `:` for attribute modifiers (e.g., `-` to use `hx-get-inherited` instead of `hx-get:inherited`)                                                                                                   |
+| Config Variable                      | Info                                                                                                                                                                                                                                                           |
+|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `htmx.config.logAll`                 | defaults to `false`, if set to `true` htmx will log all events to the console for debugging                                                                                                                                                                    |
+| `htmx.config.prefix`                 | defaults to `"data-hx-"`, a secondary attribute prefix recognised alongside the always-active `hx-` prefix (e.g. `data-hx-get` works by default). Set to `""` to disable. **Must be set via meta tag**, setting this after page load will not apply correctly. |
+| `htmx.config.transitions`            | defaults to `false`, whether to use view transitions when swapping content (if browser supports it)                                                                                                                                                            |
+| `htmx.config.history`                | defaults to `true`, whether to enable history support. Set to `"reload"` to do a full page reload on history navigation instead of an AJAX request                                                                                                             |
+| `htmx.config.mode`                   | defaults to `'same-origin'`, the fetch mode for AJAX requests. Can be `'cors'`, `'no-cors'`, or `'same-origin'`                                                                                                                                                |
+| `htmx.config.defaultSwap`            | defaults to `innerHTML`                                                                                                                                                                                                                                        |
+| `htmx.config.indicatorClass`         | defaults to `htmx-indicator`                                                                                                                                                                                                                                   |
+| `htmx.config.requestClass`           | defaults to `htmx-request`                                                                                                                                                                                                                                     |
+| `htmx.config.includeIndicatorCSS`    | defaults to `true` (determines if the indicator styles are loaded)                                                                                                                                                                                             |
+| `htmx.config.defaultTimeout`         | defaults to `60000` (60 seconds), the number of milliseconds a request can take before automatically being terminated                                                                                                                                          |
+| `htmx.config.inlineScriptNonce`      | defaults to `''`, meaning that no nonce will be added to inline scripts                                                                                                                                                                                        |
+| `htmx.config.extensions`             | defaults to `''`, a comma-separated list of extension names to load (e.g., `'preload,pending'`)                                                                                                                                                                |
+| `htmx.config.morphIgnore`            | defaults to `["data-htmx-powered"]`, array of attribute name prefixes to preserve when morphing elements                                                                                                                                                       |
+| `htmx.config.morphScanLimit`         | limits the number of nodes scanned during morphing                                                                                                                                                                                                             |
+| `htmx.config.morphSkip`              | defaults to `'[hx-morph-skip]'`, CSS selector for elements to completely skip during morphing (they stay frozen)                                                                                                                                               |
+| `htmx.config.morphSkipChildren`      | defaults to `'[hx-morph-skip-children]'`, CSS selector for elements whose attributes update but children are preserved during morphing                                                                                                                         |
+| `htmx.config.noSwap`                 | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                            |
+| `htmx.config.allowEmptySwapAfterOOB` | defaults to `false`, whether the main swap still runs when a response contained only out-of-band elements                                                                                                                                                      |
+| `htmx.config.implicitInheritance`    | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                              |
+| `htmx.config.defaultFocusScroll`     | defaults to `false`, whether to scroll focused elements into view after swap                                                                                                                                                                                   |
+| `htmx.config.defaultSettleDelay`     | defaults to `1` (ms), delay between swap and settle phases                                                                                                                                                                                                     |
+| `htmx.config.metaCharacter`          | defaults to `undefined`, allows you to use a custom character instead of `:` for attribute modifiers (e.g., `-` to use `hx-get-inherited` instead of `hx-get:inherited`)                                                                                       |
 
 </div>
 
