@@ -195,13 +195,48 @@ describe('hx-live extension', function () {
         elt.dataset.v.should.equal('done');
     });
 
-    it('hx-live body supports top-level await directly', async function() {
+    it('effect supports top-level await directly', async function() {
         let elt = createProcessedHTML(
             `<output hx-live="!this.dataset.s && (this.dataset.s='1', this.dataset.v = 'pending', await timeout(5), this.dataset.v = 'done')"></output>`
         );
         elt.dataset.v.should.equal('pending');
         await htmx.timeout(30);
         elt.dataset.v.should.equal('done');
+    });
+
+    it('does not rerun after an async effect writes to the DOM', async function() {
+        window.__asyncEffectRuns = 0;
+        let elt = createProcessedHTML(`
+            <output hx-live="window.__asyncEffectRuns++; await timeout(1); this.textContent = 'done'"></output>
+        `);
+        await htmx.timeout(30);
+        elt.textContent.should.equal('done');
+        let settledRuns = window.__asyncEffectRuns;
+        await htmx.timeout(20);
+        window.__asyncEffectRuns.should.equal(settledRuns);
+        assert.isAtMost(settledRuns, 2);
+        delete window.__asyncEffectRuns;
+    });
+
+    it('does not rerun after an async effect writes before another await', async function() {
+        window.__multiStepEffectRuns = 0;
+        playground().innerHTML = `
+            <output hx-live="
+                window.__multiStepEffectRuns++;
+                await timeout(1);
+                class.pending = true;
+                await timeout(15);
+                class.done = true
+            "></output>
+        `;
+        await htmx.timeout(1);
+        htmx.process(playground());
+        let elt = playground().querySelector('output');
+        await htmx.timeout(10);
+        window.__multiStepEffectRuns.should.equal(1);
+        await htmx.timeout(20);
+        elt.classList.contains('done').should.equal(true);
+        delete window.__multiStepEffectRuns;
     });
 
     it('forEvent(event, ms) resolves on event before timeout', async function() {
@@ -225,6 +260,18 @@ describe('hx-live extension', function () {
         );
         await htmx.timeout(30);
         window.__waitResultLive.should.equal(5);
+        delete window.__waitResultLive;
+    });
+
+    it('forEvent listens on an explicit EventTarget', async function() {
+        window.__waitResultLive = null;
+        createProcessedHTML(
+            `<output hx-live="!this.dataset.s && (this.dataset.s='1', (async()=>{ window.__waitResultLive = await forEvent(window, 'live-resize', 1000) })())"></output>`
+        );
+        await htmx.timeout(5);
+        window.dispatchEvent(new Event('live-resize'));
+        await htmx.timeout(5);
+        window.__waitResultLive.type.should.equal('live-resize');
         delete window.__waitResultLive;
     });
 
@@ -469,7 +516,7 @@ describe('hx-live extension', function () {
                 <div class="x"></div>
                 <output id="body" hx-live="this.dataset.count = $('.x').count"></output>
                 <output id="binding" :text="$('.x').count"></output>
-                <button hx-on:click="$('.x').attr('data-hit', 'yes')">change</button>
+                <button hx-on:click="$('.x').attr['data-hit'] = 'yes'">change</button>
             `;
             htmx.process(playground());
 
@@ -999,18 +1046,6 @@ describe('hx-live extension', function () {
         assert.isFunction(htmx.live.toggle);
     });
 
-    it('classList scope helper accesses this.classList', function() {
-        playground().innerHTML = `
-            <button hx-on:click="classList.add('done'); classList.remove('pending')">Go</button>
-        `;
-        htmx.process(playground());
-        let btn = playground().querySelector('button');
-        btn.classList.add('pending');
-        btn.click();
-        btn.classList.contains('done').should.equal(true);
-        btn.classList.contains('pending').should.equal(false);
-    });
-
     it('htmx.live.toggle(target, name) toggles across matches', function() {
         playground().innerHTML = `
             <div class="tab"></div>
@@ -1020,6 +1055,18 @@ describe('hx-live extension', function () {
         let tabs = playground().querySelectorAll('.tab');
         tabs[0].classList.contains('active').should.equal(true);
         tabs[1].classList.contains('active').should.equal(false);
+    });
+
+    it('htmx.live.take(target, name, scope) moves state to the target', function() {
+        playground().innerHTML = `
+            <button class="tab selected" id="a"></button>
+            <button class="tab" id="b"></button>
+        `;
+
+        htmx.live.take('#b', '.selected', '.tab');
+
+        playground().querySelector('#a').classList.contains('selected').should.equal(false);
+        playground().querySelector('#b').classList.contains('selected').should.equal(true);
     });
 
     it('htmx.live.refresh() recomputes live expressions even when no DOM event triggered', async function() {
@@ -1105,230 +1152,707 @@ describe('hx-live extension', function () {
     });
 
     // -------------------------------------------------------------------------
-    // attr() scope helper
+    // DOM state
     // -------------------------------------------------------------------------
 
-    it('attr() getter: boolean attr returns boolean', function() {
-        playground().innerHTML = '<input id="a" disabled><input id="b">';
-        htmx.live.attr('#a', 'disabled').should.equal(true);
-        htmx.live.attr('#b', 'disabled').should.equal(false);
+    it('state bags read and write the current element', function() {
+        let button = createProcessedHTML(`
+            <section data-count="1">
+                <button aria-pressed="false" hx-on:click="
+                    data.count++;
+                    aria.pressed = true;
+                    attr.disabled = true;
+                    class.active = true
+                ">Go</button>
+            </section>
+        `).querySelector('button');
+
+        button.click();
+
+        button.parentElement.dataset.count.should.equal('2');
+        button.getAttribute('aria-pressed').should.equal('true');
+        button.disabled.should.equal(true);
+        button.classList.contains('active').should.equal(true);
     });
 
-    it('attr() getter: ARIA returns boolean from "true"/"false"', function() {
-        playground().innerHTML = '<div id="a" aria-expanded="true"></div><div id="b" aria-expanded="false"></div>';
-        htmx.live.attr('#a', 'aria-expanded').should.equal(true);
-        htmx.live.attr('#b', 'aria-expanded').should.equal(false);
+    it('bare class supports member access', function() {
+        let button = createProcessedHTML(`<button class="active extra" hx-on:click="
+            class.assign({ ready: true });
+            window.__bareClassMembers = [
+                class.active,
+                class['extra'],
+                class?.active,
+                (() => class.active)()
+            ]
+        "></button>`);
+
+        button.click();
+
+        window.__bareClassMembers.should.deep.equal([true, true, true, true]);
+        button.classList.contains('ready').should.equal(true);
+        delete window.__bareClassMembers;
     });
 
-    it('attr() getter: .class returns boolean (has class)', function() {
-        playground().innerHTML = '<div id="a" class="foo"></div><div id="b"></div>';
-        htmx.live.attr('#a', '.foo').should.equal(true);
-        htmx.live.attr('#b', '.foo').should.equal(false);
+    it('attr.class supports first-class value operations', function() {
+        let button = createProcessedHTML(`<button class="active" hx-on:click="
+            let identity = value => value;
+            window.__classValue = [
+                [...attr.class],
+                'active' in attr.class,
+                identity(attr.class) === attr.class,
+                8 / attr.class.active / 2,
+                typeof attr.class
+            ]
+        "></button>`);
+
+        button.click();
+
+        window.__classValue.should.deep.equal([['active'], true, true, 4, 'object']);
+        delete window.__classValue;
     });
 
-    it('attr() getter: class returns full class string', function() {
-        playground().innerHTML = '<div id="a" class="foo bar baz"></div>';
-        htmx.live.attr('#a', 'class').should.equal('foo bar baz');
+    it('bare class works in nested template expressions', function() {
+        let button = createProcessedHTML(`<button class="active" hx-on:click="
+            window.__bareClassTemplates = [
+                \`simple:\${class.active}\`,
+                \`nested:\${{ state: { value: attr.class.active } }.state.value}\`
+            ]
+        "></button>`);
+
+        button.click();
+
+        window.__bareClassTemplates.should.deep.equal(['simple:true', 'nested:true']);
+        delete window.__bareClassTemplates;
     });
 
-    it('attr() getter: regular attr returns string or null', function() {
-        playground().innerHTML = '<div id="a" data-x="hello"></div><div id="b"></div>';
-        htmx.live.attr('#a', 'data-x').should.equal('hello');
-        assert.isNull(htmx.live.attr('#b', 'data-x'));
+    it('attr.class works in expression compilation', function() {
+        let button = createProcessedHTML('<button class="active"></button>');
+        let result = htmx.__executeJavaScript(button, {}, `({
+            spread: [...attr.class],
+            contains: 'active' in attr.class,
+            same: attr.class === attr.class
+        })`, true, false);
+
+        result.spread.should.deep.equal(['active']);
+        result.contains.should.equal(true);
+        result.same.should.equal(true);
     });
 
-    it('attr() getter: checked returns property value', function() {
-        playground().innerHTML = '<input id="a" type="checkbox" checked><input id="b" type="checkbox">';
-        htmx.live.attr('#a', 'checked').should.equal(true);
-        htmx.live.attr('#b', 'checked').should.equal(false);
+    it('bare class rewriting preserves native JavaScript syntax', function() {
+        let button = createProcessedHTML(`<button hx-on:click="
+            class Widget {
+                class = 'field';
+                #class = { active: 'private' };
+                read() { return [this.class, this.#class.active] }
+            }
+            let Anonymous = class { class = 'anonymous' };
+            let object = { class: 'property' };
+            let methods = { class() { return 'method' } };
+            window.__nativeClassSyntax = [
+                new Widget().read(),
+                new Anonymous().class,
+                object.class,
+                methods.class(),
+                'class.active',
+                /class\\.active/.source,
+                \`raw class.active\`,
+                \`multi-line
+                 class.active\`
+            ]
+        "></button>`);
+
+        button.click();
+
+        window.__nativeClassSyntax.should.deep.equal([
+            ['field', 'private'], 'anonymous', 'property', 'method',
+            'class.active', 'class\\.active', 'raw class.active',
+            'multi-line\n                 class.active'
+        ]);
+        delete window.__nativeClassSyntax;
     });
 
-    it('attr() getter: value returns property value', function() {
-        playground().innerHTML = '<input id="a" value="hello">';
-        let inp = playground().querySelector('#a');
-        // After user interaction the property and attribute can diverge
-        inp.value = 'world';
-        htmx.live.attr('#a', 'value').should.equal('world');
+    it('q() reads the first match and writes every match', function() {
+        playground().innerHTML = '<button class="item" data-state="first"></button><button class="item" data-state="second"></button>';
+        let items = htmx.live.q('.item');
+
+        items.data.state.should.equal('first');
+        items.attr.hidden = true;
+        items.aria.busy = false;
+        items.class.ready = true;
+
+        for (let item of playground().querySelectorAll('.item')) {
+            item.hidden.should.equal(true);
+            item.getAttribute('aria-busy').should.equal('false');
+            item.classList.contains('ready').should.equal(true);
+        }
     });
 
-    it('attr() setter: boolean attr truthy sets, falsy removes', function() {
-        playground().innerHTML = '<input id="a">';
-        htmx.live.attr('#a', 'disabled', true);
-        playground().querySelector('#a').hasAttribute('disabled').should.equal(true);
-        htmx.live.attr('#a', 'disabled', false);
-        playground().querySelector('#a').hasAttribute('disabled').should.equal(false);
+    it('bare state is local except for cascading data', function() {
+        let button = createProcessedHTML(`
+            <section hidden data-count="1" aria-busy="false" class="active">
+                <button hx-on:click="window.__ownership = [
+                    attr.hidden, aria.busy, class.active, data.count,
+                    closest.attr.hidden, closest.aria.busy, closest.class.active, closest.data.count
+                ]">Check</button>
+            </section>
+        `).querySelector('button');
+
+        button.click();
+
+        window.__ownership.should.deep.equal([false, undefined, false, 1, true, false, true, 1]);
+        delete window.__ownership;
     });
 
-    it('attr() setter: ARIA writes "true"/"false", never removes', function() {
-        playground().innerHTML = '<div id="a"></div>';
-        let div = playground().querySelector('#a');
-        htmx.live.attr('#a', 'aria-expanded', true);
-        div.getAttribute('aria-expanded').should.equal('true');
-        htmx.live.attr('#a', 'aria-expanded', false);
-        div.getAttribute('aria-expanded').should.equal('false');
-        // null/undefined also writes "false". ARIA is never removed.
-        htmx.live.attr('#a', 'aria-expanded', null);
-        div.getAttribute('aria-expanded').should.equal('false');
+    it('q() state is local and q().closest state cascades', function() {
+        playground().innerHTML = `
+            <section hidden data-count="1" aria-busy="false" class="active">
+                <button id="item"></button>
+            </section>
+        `;
+        let item = htmx.live.q('#item');
+
+        item.attr.hidden.should.equal(false);
+        assert.isUndefined(item.data.count);
+        assert.isUndefined(item.aria.busy);
+        item.class.active.should.equal(false);
+
+        item.closest.attr.hidden.should.equal(true);
+        item.closest.data.count.should.equal(1);
+        item.closest.aria.busy.should.equal(false);
+        item.closest.class.active.should.equal(true);
     });
 
-    it('attr() setter: aria-* strings and numbers pass through', function() {
-        playground().innerHTML = '<div id="a"></div><div id="b"></div><div id="c"></div>';
-        // String values (tristate, tokens) pass through unchanged.
-        htmx.live.attr('#a', 'aria-pressed', 'mixed');
-        playground().querySelector('#a').getAttribute('aria-pressed').should.equal('mixed');
-        htmx.live.attr('#b', 'aria-current', 'page');
-        playground().querySelector('#b').getAttribute('aria-current').should.equal('page');
-        // Numbers stringify (e.g. aria-valuenow).
-        htmx.live.attr('#c', 'aria-valuenow', 50);
-        playground().querySelector('#c').getAttribute('aria-valuenow').should.equal('50');
+    it('closest class supports class operations', function() {
+        playground().innerHTML = `
+            <section class="active old">
+                <article class="busy"><button id="item"></button></article>
+            </section>
+        `;
+        let classes = htmx.live.q('#item').closest.class;
+
+        classes.contains('active').should.equal(true);
+        classes.add('selected');
+        classes.remove('busy');
+        classes.toggle('active').should.equal(false);
+        classes.replace('old', 'new').should.equal(true);
+        classes.assign({ new: false, ready: true });
+
+        let item = playground().querySelector('#item');
+        item.classList.contains('selected').should.equal(true);
+        item.classList.contains('ready').should.equal(true);
+        item.parentElement.hasAttribute('class').should.equal(false);
+        item.parentElement.parentElement.hasAttribute('class').should.equal(false);
     });
 
-    it('attr() setter: .class true/false add/remove', function() {
-        playground().innerHTML = '<div id="a"></div>';
-        let div = playground().querySelector('#a');
-        htmx.live.attr('#a', '.active', true);
-        div.classList.contains('active').should.equal(true);
-        htmx.live.attr('#a', '.active', false);
-        div.classList.contains('active').should.equal(false);
-    });
+    it('closest writes to the current element when no match exists', function() {
+        playground().innerHTML = '<button id="item"></button>';
+        let closest = htmx.live.q('#item').closest;
 
-    it('attr() setter: class (string) sets managed class list', function() {
-        playground().innerHTML = '<div id="a" class="external"></div>';
-        let div = playground().querySelector('#a');
-        htmx.live.attr('#a', 'class', 'foo bar');
-        div.classList.contains('external').should.equal(true);
-        div.classList.contains('foo').should.equal(true);
-        div.classList.contains('bar').should.equal(true);
+        closest.attr.hidden = true;
+        closest.data.count = 1;
+        closest.aria.busy = false;
+        closest.class.active = true;
 
-        // Re-apply with different set. Previous managed dropped, external untouched.
-        htmx.live.attr('#a', 'class', 'baz');
-        div.classList.contains('external').should.equal(true);
-        div.classList.contains('foo').should.equal(false);
-        div.classList.contains('bar').should.equal(false);
-        div.classList.contains('baz').should.equal(true);
-    });
-
-    it('attr() setter: class (object) toggles each independently', function() {
-        playground().innerHTML = '<div id="a" class="external"></div>';
-        let div = playground().querySelector('#a');
-        htmx.live.attr('#a', 'class', { foo: true, bar: false });
-        div.classList.contains('foo').should.equal(true);
-        div.classList.contains('bar').should.equal(false);
-        div.classList.contains('external').should.equal(true);
-
-        // Flip foo, set bar
-        htmx.live.attr('#a', 'class', { foo: false, bar: true });
-        div.classList.contains('foo').should.equal(false);
-        div.classList.contains('bar').should.equal(true);
-    });
-
-    it('attr() setter: class (object) supports space-separated keys', function() {
-        playground().innerHTML = '<div id="a"></div>';
-        let div = playground().querySelector('#a');
-        htmx.live.attr('#a', 'class', { 'foo bar': true, baz: false });
-        div.classList.contains('foo').should.equal(true);
-        div.classList.contains('bar').should.equal(true);
-        div.classList.contains('baz').should.equal(false);
-    });
-
-    it('attr() setter: checked syncs property and attribute', function() {
-        playground().innerHTML = '<input id="a" type="checkbox">';
-        let inp = playground().querySelector('#a');
-        htmx.live.attr('#a', 'checked', true);
-        inp.checked.should.equal(true);
-        inp.hasAttribute('checked').should.equal(true);
-        htmx.live.attr('#a', 'checked', false);
-        inp.checked.should.equal(false);
-        inp.hasAttribute('checked').should.equal(false);
-    });
-
-    it('attr() setter: value syncs property and attribute', function() {
-        playground().innerHTML = '<input id="a" type="text">';
-        let inp = playground().querySelector('#a');
-        htmx.live.attr('#a', 'value', 'hello');
-        inp.value.should.equal('hello');
-        inp.getAttribute('value').should.equal('hello');
-        htmx.live.attr('#a', 'value', null);
-        inp.value.should.equal('');
-        inp.hasAttribute('value').should.equal(false);
-    });
-
-    it('attr() setter: regular attr null removes', function() {
-        playground().innerHTML = '<div id="a" data-x="hello"></div>';
-        htmx.live.attr('#a', 'data-x', null);
-        playground().querySelector('#a').hasAttribute('data-x').should.equal(false);
-    });
-
-    it('attr() setter: regular attr stringifies non-string values', function() {
-        playground().innerHTML = '<div id="a"></div>';
-        htmx.live.attr('#a', 'data-x', 42);
-        playground().querySelector('#a').getAttribute('data-x').should.equal('42');
-    });
-
-    it('attr() setter: contenteditable false writes "false" string, not removes', function() {
-        playground().innerHTML = '<div id="a"></div>';
-        htmx.live.attr('#a', 'contenteditable', false);
-        playground().querySelector('#a').getAttribute('contenteditable').should.equal('false');
-    });
-
-    it('attr() setter: draggable false writes "false" string', function() {
-        playground().innerHTML = '<div id="a"></div>';
-        htmx.live.attr('#a', 'draggable', false);
-        playground().querySelector('#a').getAttribute('draggable').should.equal('false');
-    });
-
-    it('attr() setter: spellcheck false writes "false" string', function() {
-        playground().innerHTML = '<div id="a"></div>';
-        htmx.live.attr('#a', 'spellcheck', false);
-        playground().querySelector('#a').getAttribute('spellcheck').should.equal('false');
-    });
-
-    it('attr() setter: contenteditable null removes attribute', function() {
-        playground().innerHTML = '<div id="a" contenteditable="true"></div>';
-        htmx.live.attr('#a', 'contenteditable', null);
-        playground().querySelector('#a').hasAttribute('contenteditable').should.equal(false);
-    });
-
-    it('q().attr() applies setter to all matched elements', function() {
-        playground().innerHTML = '<input class="x"><input class="x"><input class="x">';
-        htmx.live.q('.x').attr('disabled', true);
-        let inputs = playground().querySelectorAll('.x');
-        for (let inp of inputs) inp.hasAttribute('disabled').should.equal(true);
-    });
-
-    it('q().attr() getter returns from first matched element', function() {
-        playground().innerHTML = '<div class="x" data-i="a"></div><div class="x" data-i="b"></div>';
-        htmx.live.q('.x').attr('data-i').should.equal('a');
-    });
-
-    it('q().attr() returns proxy for chaining', function() {
-        playground().innerHTML = '<button class="x"></button>';
-        let r = htmx.live.q('.x').attr('role', 'button').attr('.active', true);
-        r.count.should.equal(1);
-        let btn = playground().querySelector('.x');
-        btn.getAttribute('role').should.equal('button');
-        btn.classList.contains('active').should.equal(true);
-    });
-
-    it('attr() is available in hx-on scope bound to element', function() {
-        playground().innerHTML = '<button hx-on:click="attr(\'data-clicked\', \'yes\')">x</button>';
-        htmx.process(playground());
-        let btn = playground().querySelector('button');
-        btn.click();
-        btn.getAttribute('data-clicked').should.equal('yes');
-    });
-
-    it('attr() in hx-live expression operates on current element', async function() {
-        let elt = createProcessedHTML(
-            `<output hx-live="!this.dataset.s && (this.dataset.s='1', attr('.flipped', true))"></output>`
+        playground().querySelector('#item').outerHTML.should.equal(
+            '<button id="item" hidden="" data-count="1" aria-busy="false" class="active"></button>'
         );
-        await htmx.timeout(5);
-        elt.classList.contains('flipped').should.equal(true);
     });
 
-    // -------------------------------------------------------------------------
-    // matches() scope helper
-    // -------------------------------------------------------------------------
+    it('closest updates each shared match once', function() {
+        playground().innerHTML = `
+            <section hidden data-count="1" aria-busy="false" class="active">
+                <button class="item"></button><button class="item"></button>
+            </section>
+            <section hidden data-count="4" aria-busy="false" class="active">
+                <button class="item"></button>
+            </section>
+        `;
+        let calls = { attr: 0, data: 0, aria: 0, class: 0 };
+        let closest = htmx.live.q('.item').closest;
+
+        closest.attr.hidden = hidden => { calls.attr++; return !hidden; };
+        closest.data.count = count => { calls.data++; return count + 1; };
+        closest.aria.busy = busy => { calls.aria++; return !busy; };
+        closest.class.active = active => { calls.class++; return !active; };
+
+        [...playground().querySelectorAll('section')].map(elt => [
+            elt.hidden,
+            elt.dataset.count,
+            elt.getAttribute('aria-busy'),
+            elt.classList.contains('active')
+        ]).should.deep.equal([
+            [false, '2', 'true', false],
+            [false, '5', 'true', false]
+        ]);
+        calls.should.deep.equal({ attr: 2, data: 2, aria: 2, class: 2 });
+    });
+
+    it('state bags delete local and closest state', function() {
+        playground().innerHTML = `
+            <section hidden data-open="true" aria-busy="true" class="active">
+                <button id="item" title="local" data-local="true" aria-current="page" class="selected"></button>
+            </section>
+        `;
+        let item = htmx.live.q('#item');
+
+        delete item.attr.title;
+        delete item.data.local;
+        delete item.aria.current;
+        delete item.class.selected;
+        delete item.closest.attr.hidden;
+        delete item.closest.data.open;
+        delete item.closest.aria.busy;
+        delete item.closest.class.active;
+
+        item.arr()[0].outerHTML.should.equal('<button id="item"></button>');
+        item.arr()[0].parentElement.attributes.length.should.equal(0);
+    });
+
+    it('attr data deletion removes while null assignment stores null', function() {
+        playground().innerHTML = `
+            <section data-count="1">
+                <button id="item" data-local="true"></button>
+            </section>
+        `;
+        let item = htmx.live.q('#item');
+
+        delete item.attr['data-local'];
+        delete item.closest.attr['data-count'];
+        item.attr['data-value'] = null;
+
+        let element = playground().querySelector('#item');
+        element.hasAttribute('data-local').should.equal(false);
+        element.parentElement.hasAttribute('data-count').should.equal(false);
+        element.getAttribute('data-value').should.equal('null');
+        (item.attr['data-value'] === null).should.equal(true);
+    });
+
+    it('string boolean attributes have typed reads and writes', function() {
+        playground().innerHTML = '<div id="item" contenteditable="plaintext-only" draggable="TRUE" spellcheck="false" writingsuggestions="123"></div>';
+        let attr = htmx.live.q('#item').attr;
+
+        [attr.contenteditable, attr.draggable, attr.spellcheck, attr.writingsuggestions]
+            .should.deep.equal(['plaintext-only', true, false, 123]);
+
+        attr.spellcheck = value => !value;
+        attr.contenteditable = true;
+        attr.draggable = false;
+        delete attr.writingsuggestions;
+
+        let element = playground().querySelector('#item');
+        [element.getAttribute('contenteditable'), element.getAttribute('draggable'), element.getAttribute('spellcheck')]
+            .should.deep.equal(['true', 'false', 'true']);
+        element.hasAttribute('writingsuggestions').should.equal(false);
+    });
+
+    it('property-backed attributes preserve native typed state', function() {
+        playground().innerHTML = `
+            <input id="check" type="checkbox" checked>
+            <select multiple><option id="option" selected>x</option></select>
+            <input id="number" type="number" value="3">
+            <div id="hidden" hidden="until-found"></div>
+        `;
+        let check = htmx.live.q('#check').attr;
+        let option = htmx.live.q('#option').attr;
+        let number = htmx.live.q('#number').attr;
+        let hidden = htmx.live.q('#hidden').attr;
+
+        [check.checked, option.selected, number.value, hidden.hidden]
+            .should.deep.equal([true, true, 3, 'until-found']);
+
+        check.checked = value => !value;
+        option.selected = value => !value;
+        number.value = value => value + 1;
+        hidden.hidden = value => value === 'until-found' ? false : 'until-found';
+
+        [check.checked, option.selected, number.value, hidden.hidden]
+            .should.deep.equal([false, false, 4, false]);
+        [['#check', 'checked'], ['#option', 'selected'], ['#hidden', 'hidden']].forEach(([selector, name]) => {
+            playground().querySelector(selector).hasAttribute(name).should.equal(false);
+        });
+        playground().querySelector('#number').getAttribute('value').should.equal('4');
+
+        hidden.hidden = 'until-found';
+        hidden.hidden.should.equal('until-found');
+        playground().querySelector('#hidden').getAttribute('hidden').should.equal('until-found');
+    });
+
+    it('current HTML boolean attributes use presence semantics', function() {
+        playground().innerHTML = '<input id="color" type="color" alpha><div id="heading" headingreset></div>';
+        let template = document.createElement('template');
+        template.id = 'shadow';
+        template.setAttribute('shadowrootmode', 'open');
+        template.setAttribute('shadowrootslotassignment', 'manual');
+        for (let name of ['shadowrootclonable', 'shadowrootcustomelementregistry', 'shadowrootdelegatesfocus', 'shadowrootserializable']) {
+            template.setAttribute(name, '');
+        }
+        playground().append(template);
+
+        let attributes = [
+            [htmx.live.q('#color').attr, 'alpha'],
+            [htmx.live.q('#heading').attr, 'headingreset'],
+            ...['shadowrootclonable', 'shadowrootcustomelementregistry', 'shadowrootdelegatesfocus', 'shadowrootserializable']
+                .map(name => [htmx.live.q('#shadow').attr, name])
+        ];
+
+        for (let [attr, name] of attributes) {
+            attr[name].should.equal(true);
+            attr[name] = false;
+            attr[name].should.equal(false);
+        }
+        let shadow = htmx.live.q('#shadow').attr;
+        shadow.shadowrootmode.should.equal('open');
+        shadow.shadowrootslotassignment.should.equal('manual');
+    });
+
+    it('generic attributes stringify booleans and remove null', function() {
+        playground().innerHTML = '<div id="item"></div>';
+        let attr = htmx.live.q('#item').attr;
+
+        attr.title = true;
+        playground().querySelector('#item').getAttribute('title').should.equal('true');
+        attr.title = false;
+        playground().querySelector('#item').getAttribute('title').should.equal('false');
+        attr.title = null;
+        playground().querySelector('#item').hasAttribute('title').should.equal(false);
+    });
+
+    it('numeric HTML attributes read numbers', function() {
+        playground().innerHTML = `
+            <div id="global" tabindex="-1"></div>
+            <table><colgroup><col id="column" span="2"></colgroup><tbody><tr><td id="cell" colspan="3" rowspan="4"></td></tr></tbody></table>
+            <input id="input" type="number" maxlength="10" minlength="2" size="20" min="0.5" max="10" step="0.25">
+            <ol id="list" start="-2"></ol>
+            <textarea id="text" rows="5" cols="30"></textarea>
+            <canvas id="canvas" width="640" height="480"></canvas>
+            <meter id="meter" low="0.2" high="0.8" optimum="0.5"></meter>
+        `;
+        let values = [
+            ['#global', 'tabindex', -1],
+            ['#cell', 'colspan', 3], ['#cell', 'rowspan', 4],
+            ['#input', 'maxlength', 10], ['#input', 'minlength', 2], ['#input', 'size', 20],
+            ['#column', 'span', 2], ['#list', 'start', -2],
+            ['#text', 'rows', 5], ['#text', 'cols', 30],
+            ['#canvas', 'width', 640], ['#canvas', 'height', 480],
+            ['#input', 'min', 0.5], ['#input', 'max', 10], ['#input', 'step', 0.25],
+            ['#meter', 'low', 0.2], ['#meter', 'high', 0.8], ['#meter', 'optimum', 0.5]
+        ];
+
+        values.forEach(([selector, name, expected]) => {
+            htmx.live.q(selector).attr[name].should.equal(expected);
+        });
+    });
+
+    it('numeric HTML attributes preserve non-numbers and support updates', function() {
+        playground().innerHTML = '<input id="date" type="date" min="2025-01-01" step="any"><meter id="meter" optimum="0.5"></meter>';
+        let date = htmx.live.q('#date').attr;
+        let meter = htmx.live.q('#meter').attr;
+
+        date.min.should.equal('2025-01-01');
+        date.step.should.equal('any');
+        (date.max === null).should.equal(true);
+
+        meter.optimum = value => value + 0.25;
+        meter.optimum.should.equal(0.75);
+        playground().querySelector('#meter').getAttribute('optimum').should.equal('0.75');
+    });
+
+    it('class is the typed class attribute', function() {
+        playground().innerHTML = '<button id="item" class="idle"></button>';
+        let item = htmx.live.q('#item');
+
+        (item.class === item.attr.class).should.equal(true);
+        (item.class === item.attr['class']).should.equal(true);
+        item.class.idle.should.equal(true);
+    });
+
+    it('class supports grouped writes and DOMTokenList', function() {
+        playground().innerHTML = '<button id="item" class="idle pending"></button>';
+        let classes = htmx.live.q('#item').class;
+
+        classes.assign({ idle: false, ready: true });
+        classes.add('selected');
+
+        classes.length.should.equal(3);
+        classes.value.should.equal('pending ready selected');
+        [...classes].should.deep.equal(['pending', 'ready', 'selected']);
+        classes.item(0).should.equal('pending');
+
+        classes.value = 'one two';
+        [...playground().querySelector('#item').classList].should.deep.equal(['one', 'two']);
+    });
+
+    it('class supports remove and replace', function() {
+        playground().innerHTML = '<button id="item" class="idle ready"></button>';
+        let classes = htmx.live.q('#item').class;
+
+        classes.remove('idle');
+        classes.replace('ready', 'done').should.equal(true);
+
+        classes.contains('idle').should.equal(false);
+        classes.contains('done').should.equal(true);
+    });
+
+    it('class methods write every match and return the first result', function() {
+        playground().innerHTML = '<button class="item"></button><button class="item active"></button>';
+        let classes = htmx.live.q('.item').class;
+
+        classes.toggle('active').should.equal(true);
+
+        [...playground().querySelectorAll('.item')].map(elt => elt.classList.contains('active'))
+            .should.deep.equal([true, false]);
+    });
+
+    it('native class members win on read and class membership remains accessible', function() {
+        playground().innerHTML = '<button id="item" class="toggle value length"></button>';
+        let classes = htmx.live.q('#item').class;
+
+        (typeof classes.toggle).should.equal('function');
+        classes.value.should.equal('toggle value length');
+        classes.length.should.equal(3);
+        classes.contains('toggle').should.equal(true);
+        classes.contains('value').should.equal(true);
+        classes.contains('length').should.equal(true);
+
+        classes.toggle = false;
+        classes.contains('toggle').should.equal(false);
+    });
+
+    it('state is empty when q() has no matches', function() {
+        let empty = htmx.live.q('.missing');
+
+        assert.isUndefined(empty.attr.hidden);
+        assert.isUndefined(empty.data.count);
+        assert.isUndefined(empty.aria.busy);
+        assert.isUndefined(empty.class.active);
+        assert.isUndefined(empty.closest.attr.hidden);
+        assert.isUndefined(empty.closest.data.count);
+        assert.isUndefined(empty.closest.aria.busy);
+        assert.isUndefined(empty.closest.class.active);
+
+        empty.attr.hidden = true;
+        empty.data.count = 1;
+        empty.aria.busy = true;
+        empty.class.active = true;
+        empty.closest.data.count = 1;
+
+        [...empty.class].should.deep.equal([]);
+        playground().children.length.should.equal(0);
+    });
+
+    it('take does nothing when q() has no matches', function() {
+        playground().innerHTML = '<button id="item" class="active" aria-selected="true"></button>';
+
+        htmx.live.q('.missing').take('.active').take('aria-selected');
+
+        let item = playground().querySelector('#item');
+        item.classList.contains('active').should.equal(true);
+        item.getAttribute('aria-selected').should.equal('true');
+    });
+
+    it('state reads typed DOM values', function() {
+        playground().innerHTML = '<input id="item" type="number" value="3" hidden aria-busy="false" aria-valuenow="4" aria-controls="a b">';
+        let item = htmx.live.q('#item');
+
+        item.attr.value.should.equal(3);
+        item.attr.hidden.should.equal(true);
+        item.aria.busy.should.equal(false);
+        item.aria.valueNow.should.equal(4);
+        item.aria.controls.should.deep.equal(['a', 'b']);
+    });
+
+    it('ARIA booleans, tristates, and undefined states use booleans and tokens', function() {
+        playground().innerHTML = '<button id="item"></button>';
+        let element = playground().querySelector('#item');
+        let aria = htmx.live.q('#item').aria;
+        let booleanNames = [
+            'atomic', 'busy', 'disabled', 'modal', 'multiline', 'multiselectable',
+            'readonly', 'required', 'expanded', 'grabbed', 'hidden', 'selected',
+            'checked', 'pressed'
+        ];
+
+        for (let name of booleanNames) {
+            element.setAttribute('aria-' + name, 'true');
+            aria[name].should.equal(true);
+            element.setAttribute('aria-' + name, 'false');
+            aria[name].should.equal(false);
+        }
+
+        for (let name of ['checked', 'pressed']) {
+            element.setAttribute('aria-' + name, 'mixed');
+            aria[name].should.equal('mixed');
+        }
+        for (let name of ['expanded', 'grabbed', 'hidden', 'selected']) {
+            element.setAttribute('aria-' + name, 'undefined');
+            aria[name].should.equal('undefined');
+        }
+    });
+
+    it('ARIA tokens preserve named values and type boolean tokens', function() {
+        playground().innerHTML = '<button id="item"></button>';
+        let element = playground().querySelector('#item');
+        let aria = htmx.live.q('#item').aria;
+        let tokens = {
+            autocomplete: 'list',
+            current: 'page',
+            haspopup: 'menu',
+            invalid: 'spelling',
+            live: 'polite',
+            orientation: 'vertical',
+            sort: 'ascending'
+        };
+
+        for (let [name, value] of Object.entries(tokens)) {
+            element.setAttribute('aria-' + name, value);
+            aria[name].should.equal(value);
+        }
+
+        for (let name of ['current', 'haspopup', 'invalid']) {
+            element.setAttribute('aria-' + name, 'true');
+            aria[name].should.equal(true);
+            element.setAttribute('aria-' + name, 'false');
+            aria[name].should.equal(false);
+        }
+    });
+
+    it('ARIA integers and numbers read as numbers', function() {
+        playground().innerHTML = '<div id="item"></div>';
+        let element = playground().querySelector('#item');
+        let aria = htmx.live.q('#item').aria;
+        let integers = [
+            'colcount', 'colindex', 'colspan', 'level', 'posinset',
+            'rowcount', 'rowindex', 'rowspan', 'setsize'
+        ];
+
+        for (let name of integers) {
+            element.setAttribute('aria-' + name, '2');
+            aria[name].should.equal(2);
+        }
+
+        element.setAttribute('aria-valuemin', '-1.5');
+        element.setAttribute('aria-valuemax', '2.5');
+        element.setAttribute('aria-valuenow', '0.5');
+        aria.valueMin.should.equal(-1.5);
+        aria.valueMax.should.equal(2.5);
+        aria.valueNow.should.equal(0.5);
+    });
+
+    it('ARIA numbers use JSON number syntax', function() {
+        playground().innerHTML = '<div id="item" aria-valuenow="0.5"></div>';
+        let element = playground().querySelector('#item');
+        let aria = htmx.live.q('#item').aria;
+
+        aria.valueNow.should.equal(0.5);
+        element.setAttribute('aria-valuenow', '.5');
+        aria.valueNow.should.equal('.5');
+    });
+
+    it('ARIA strings and ID references preserve JSON-looking text', function() {
+        playground().innerHTML = '<div id="item"></div>';
+        let element = playground().querySelector('#item');
+        let aria = htmx.live.q('#item').aria;
+        let strings = {
+            activedescendant: '50',
+            details: 'true',
+            errormessage: 'null',
+            keyshortcuts: '[]',
+            label: 'false',
+            placeholder: '{}',
+            roledescription: '0',
+            valuetext: '1'
+        };
+
+        for (let [name, value] of Object.entries(strings)) {
+            element.setAttribute('aria-' + name, value);
+            aria[name].should.equal(value);
+        }
+    });
+
+    it('ARIA ID reference lists and token lists read as arrays', function() {
+        playground().innerHTML = '<div id="item"></div>';
+        let element = playground().querySelector('#item');
+        let aria = htmx.live.q('#item').aria;
+        let lists = {
+            controls: ['a', 'b'],
+            describedby: ['a', 'b'],
+            flowto: ['a', 'b'],
+            labelledby: ['a', 'b'],
+            owns: ['a', 'b'],
+            dropeffect: ['copy', 'move'],
+            relevant: ['additions', 'text']
+        };
+
+        for (let [name, value] of Object.entries(lists)) {
+            element.setAttribute('aria-' + name, value.join(' '));
+            aria[name].should.deep.equal(value);
+        }
+    });
+
+    it('ARIA writes serialize typed values and updater results', function() {
+        playground().innerHTML = '<div id="item" aria-expanded="false"></div>';
+        let element = playground().querySelector('#item');
+        let aria = htmx.live.q('#item').aria;
+
+        aria.expanded = expanded => !expanded;
+        aria.valueNow = 2.5;
+        aria.current = 'page';
+        aria.controls = ['menu', 'help'];
+        aria.label = 'true';
+
+        element.getAttribute('aria-expanded').should.equal('true');
+        element.getAttribute('aria-valuenow').should.equal('2.5');
+        element.getAttribute('aria-current').should.equal('page');
+        element.getAttribute('aria-controls').should.equal('menu help');
+        element.getAttribute('aria-label').should.equal('true');
+    });
+
+    it('updater functions receive each current value', function() {
+        playground().innerHTML = '<input class="item" value=" a "><input class="item" value=" b ">';
+
+        htmx.live.q('.item').value = value => value.trim();
+        htmx.live.q('.item').attr.title = title => title || 'ready';
+
+        [...playground().querySelectorAll('.item')].map(elt => [elt.value, elt.title])
+            .should.deep.equal([['a', 'ready'], ['b', 'ready']]);
+    });
+
+    it('state updater functions receive typed current values', function() {
+        playground().innerHTML = '<button id="item" hidden class="active" data-count="1" aria-busy="false"></button>';
+        let item = htmx.live.q('#item');
+
+        item.attr.hidden = hidden => !hidden;
+        item.data.count = count => count + 1;
+        item.aria.busy = busy => !busy;
+        item.class.active = active => !active;
+
+        let element = playground().querySelector('#item');
+        element.hidden.should.equal(false);
+        element.dataset.count.should.equal('2');
+        element.getAttribute('aria-busy').should.equal('true');
+        element.classList.contains('active').should.equal(false);
+    });
+
+    it('toggle cycles through variadic values', function() {
+        playground().innerHTML = '<button id="item" data-view="grid"></button>';
+
+        htmx.live.q('#item').toggle('data-view', 'grid', 'list');
+
+        playground().querySelector('#item').dataset.view.should.equal('list');
+    });
+
+    it('toggle cycles typed attribute values', function() {
+        playground().innerHTML = '<button id="item" data-code=\'"123"\' data-count="1" aria-checked="false"></button>';
+        let item = htmx.live.q('#item');
+
+        item.toggle('data-code', '123', '456');
+        item.toggle('data-count', 1, 2);
+        item.toggle('aria-checked', false, true);
+
+        item.data.code.should.equal('456');
+        item.data.count.should.equal(2);
+        item.aria.checked.should.equal(true);
+        playground().querySelector('#item').getAttribute('data-code').should.equal('"456"');
+    });
 
     it('matches() is available in hx-on scope bound to element', function() {
         playground().innerHTML = '<input id="i" type="text" required hx-on:click="window.__matchesLive = matches(\':required\')">';
@@ -1350,15 +1874,6 @@ describe('hx-live extension', function () {
         let div = playground().querySelector('[hx-live]');
         div.dataset.has.should.equal('true');
     });
-
-    it('htmx.live.attr is exposed on public API', function() {
-        assert.isFunction(htmx.live.attr);
-    });
-
-    // -------------------------------------------------------------------------
-    // cascading data proxy
-    // -------------------------------------------------------------------------
-
     it('data.foo reads this.dataset.foo when present locally', async function() {
         playground().innerHTML = `
             <div id="me" data-foo="local"
@@ -1529,6 +2044,23 @@ describe('hx-live extension', function () {
         let elt = playground().querySelector('#me');
         elt.click();
         elt.dataset.v.should.equal('string:hello');
+    });
+
+    it('data proxy preserves JSON-looking strings', function() {
+        playground().innerHTML = '<div id="item"></div>';
+        let data = htmx.live.q('#item').data;
+        let element = playground().querySelector('#item');
+        let values = ['123', 'true', 'false', 'null', '[]', '{}', '"text"'];
+
+        values.forEach((value, index) => {
+            data[index] = value;
+            data[index].should.equal(value);
+            element.getAttribute('data-' + index).should.equal(JSON.stringify(value));
+        });
+
+        data.plain = 'ready';
+        data.plain.should.equal('ready');
+        element.getAttribute('data-plain').should.equal('ready');
     });
 
     it('data proxy: null round-trips through JSON', async function() {
@@ -1721,7 +2253,7 @@ describe('hx-live extension', function () {
     });
 
     // -------------------------------------------------------------------------
-    // Simple form: :attr / hx-live:attr
+    // Bindings: :attr / hx-live:attr
     // -------------------------------------------------------------------------
 
     it(':hidden truthy sets attribute, falsy removes', async function() {
@@ -1798,7 +2330,7 @@ describe('hx-live extension', function () {
         img.getAttribute('src').should.equal('/avatar/bob');
     });
 
-    it('simple form supports top-level await', async function() {
+    it('binding supports top-level await', async function() {
         playground().innerHTML = `<output :text="await Promise.resolve('hello-async')"></output>`;
         htmx.process(playground());
         await htmx.timeout(20);
@@ -2067,14 +2599,14 @@ describe('hx-live extension', function () {
         div.classList.contains('big').should.equal(true);
     });
 
-    it('simple form: hx-ignore skips :attr discovery', function() {
+    it('binding: hx-ignore skips :attr discovery', function() {
         playground().innerHTML = '<div hx-ignore><span :text="\'should-not-run\'"></span></div>';
         htmx.process(playground());
         let span = playground().querySelector('span');
         span.textContent.should.equal('');
     });
 
-    it('simple form: matches() works in :attr expressions', async function() {
+    it('binding: matches() works in :attr expressions', async function() {
         playground().innerHTML = `
             <fieldset :disabled="matches(':has(input:invalid)')">
                 <input required>
@@ -2093,7 +2625,7 @@ describe('hx-live extension', function () {
         fs.hasAttribute('disabled').should.equal(false);
     });
 
-    it('simple form: registration is idempotent across re-process', function() {
+    it('binding: registration is idempotent across re-process', function() {
         window.__liveCallCountSimple = 0;
         playground().innerHTML = '<output :text="(window.__liveCallCountSimple = (window.__liveCallCountSimple||0) + 1, \'ok\')"></output>';
         htmx.process(playground());
@@ -2110,7 +2642,7 @@ describe('hx-live extension', function () {
 
     describe('morph integration', function() {
 
-        it('hx-live body: morph changing expression adopts new code, does not duplicate', async function() {
+        it('effect: morph changing expression adopts new code, does not duplicate', async function() {
             window.__morphLiveCount = 0;
             playground().innerHTML = '<div id="wrap"><output id="o" hx-live="window.__morphLiveCount++"></output></div>';
             htmx.process(playground());
@@ -2134,7 +2666,7 @@ describe('hx-live extension', function () {
             delete window.__morphLiveCount;
         });
 
-        it('hx-live body: morph removing hx-live stops the fn from running', async function() {
+        it('effect: morph removing hx-live stops the fn from running', async function() {
             window.__morphRemovedCount = 0;
             playground().innerHTML = '<div id="wrap"><output id="o" hx-live="window.__morphRemovedCount++"></output></div>';
             htmx.process(playground());

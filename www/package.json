@@ -11,6 +11,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "playwright test",
+    "test:types": "tsc -p tests/types",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed"
   },
