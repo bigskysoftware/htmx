@@ -19,7 +19,7 @@
         navigation.addEventListener('navigate', (event) => {
             if (!event.canIntercept) return;
 
-            // save state before intercept — navigation.navigate() with {history:'replace'} wipes it
+            // save state before intercept (navigation.navigate() with {history:'replace'} wipes it)
             let savedState = history.state;
 
             let hideBrowserIndicator;
@@ -40,7 +40,7 @@
 
             cleanupNavigation = () => {
                 hideBrowserIndicator();
-                // restore after resolving — replaceState during a pending intercept aborts the signal early
+                // restore after resolving (replaceState during a pending intercept aborts the signal early)
                 history.replaceState(savedState, '');
             };
         }, {once: true});

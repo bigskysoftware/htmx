@@ -218,7 +218,7 @@
                         });
                     } catch (e) {
                         if (ac.signal.aborted) break;
-                        api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
+                        api.triggerHtmxEvent(element, 'htmx:sse:error', {connection, error: e});
                         reconnectRequested = false;
                         connection.attempt++;
                         continue;
@@ -226,9 +226,9 @@
 
                     if (!currentResponse.ok) {
                         api.triggerHtmxEvent(element, 'htmx:sse:error', {
+                            connection,
                             error: new Error(`SSE reconnect failed with status ${currentResponse.status}`),
-                            status: currentResponse.status,
-                            url: ctx.request.action
+                            status: currentResponse.status
                         });
                         reconnectRequested = false;
                         connection.attempt++;
@@ -256,17 +256,23 @@
 
                         if (!msg.hasData && !msg.event) continue;
 
+                        let pendingWork = [];
                         let detail = {
-                            message: {data: msg.data, event: msg.event, id: msg.id, cancelled: false}
+                            connection,
+                            message: {data: msg.data, event: msg.event, id: msg.id},
+                            cancelled: false,
+                            waitUntil: promise => pendingWork.push(Promise.resolve(promise))
                         };
-                        if (!api.triggerHtmxEvent(element, 'htmx:sse:before:message', detail) || detail.message.cancelled) continue;
+                        let shouldProcess = api.triggerHtmxEvent(element, 'htmx:sse:before:message', detail);
+
+                        await Promise.all(pendingWork);
+                        if (!shouldProcess || detail.cancelled) continue;
 
                         if (msg.retry != null) config.reconnectDelay = msg.retry;
 
                         if (detail.message.event) {
                             htmx.trigger(element, detail.message.event, {data: detail.message.data, id: detail.message.id});
-                            delete detail.message.cancelled;
-                            api.triggerHtmxEvent(element, 'htmx:sse:after:message', detail);
+                            api.triggerHtmxEvent(element, 'htmx:sse:after:message', {connection, message: detail.message});
 
                             // hx-sse:close="eventname": close connection on matching event
                             let closeEvent = api.attributeValue(element, 'hx-sse:close');
@@ -283,12 +289,11 @@
                         // ensures OOB-only messages don't clear target (regardless of allowEmptySwapAfterOOB)
                         if (!ctx.swap.includes('swapEmpty')) ctx.swap += ' swapEmpty:false';
                         await htmx.swap(ctx);
-                        delete detail.message.cancelled;
-                        api.triggerHtmxEvent(element, 'htmx:sse:after:message', detail);
+                        api.triggerHtmxEvent(element, 'htmx:sse:after:message', {connection, message: detail.message});
                     }
                 } catch (e) {
                     if (!connection.abortController?.signal?.aborted) {
-                        api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
+                        api.triggerHtmxEvent(element, 'htmx:sse:error', {connection, error: e});
                     }
                 }
 

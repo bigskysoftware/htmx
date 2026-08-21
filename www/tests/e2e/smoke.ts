@@ -32,8 +32,8 @@ test.describe('Smoke tests', () => {
     }
 
     const SAMPLE_CONTENT_PAGES = [
-        '/docs/get-started/installation',
-        '/docs/core-concepts/mental-model',
+        '/docs',
+        '/about',
         '/reference/attributes/hx-get',
         '/reference/headers/HX-Request',
         '/reference/events',

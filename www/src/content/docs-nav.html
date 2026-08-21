@@ -1,0 +1,119 @@
+<!--
+  The left rail for docs.md. Referenced by `nav: docs-nav.html` in that file's
+  frontmatter. Every anchor is checked against the page headings at build time,
+  so a renamed heading fails the build rather than breaking the link silently.
+
+  Entries MUST follow the order of the headings in docs.md, at every level. The
+  scrollspy behavior in src/assets/hyperscript/scrollspy.hs walks these links in
+  rail order and highlights the last heading above the fold, so a rail that does
+  not match document order highlights the wrong entry.
+
+  Sub-items are curated, not a depth rule. A heading earns a slot when someone
+  would link to it directly, and only in sections long enough that landing at
+  the top is not good enough. Commentary headings stay out.
+
+  Write plain markup. The rail styles ul, li, a and span by selector. A bare
+  span is a group label.
+-->
+<ul>
+    <li><span>Get Started</span>
+        <ul>
+            <li><a href="#htmx-in-a-nutshell">htmx in a Nutshell</a></li>
+            <li><a href="#installing-htmx">Installing htmx</a></li>
+            <li><a href="#migrating-from-htmx-2x-to-4x">Migrating From htmx 2.x</a></li>
+        </ul>
+    </li>
+    <li><span>Requests &amp; Responses</span>
+        <ul>
+            <li><a href="#issuing-requests--handling-responses">Requests &amp; Responses</a>
+                <ul>
+                    <li><a href="#triggering-requests">Triggering Requests</a>
+                        <ul>
+                            <li><a href="#trigger-modifiers">Trigger Modifiers</a></li>
+                            <li><a href="#trigger-filters">Trigger Filters</a></li>
+                            <li><a href="#special-events">Special Events</a></li>
+                            <li><a href="#polling">Polling</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#handling-responses">Handling Responses</a>
+                        <ul>
+                            <li><a href="#targeting-elements">Targeting Elements</a></li>
+                            <li><a href="#configuring-swaps">Configuring Swaps</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="#forms">Forms</a></li>
+            <li><a href="#attribute-inheritance">Attribute Inheritance</a></li>
+            <li><a href="#multi-target-updates">Multi-Target Updates</a>
+                <ul>
+                    <li><a href="#out-of-band-swaps">Out-of-Band Swaps</a></li>
+                    <li><a href="#partials-hx-partial">Partials</a></li>
+                </ul>
+            </li>
+            <li><a href="#synchronizing-requests">Synchronizing Requests</a></li>
+        </ul>
+    </li>
+    <li><span>Feedback</span>
+        <ul>
+            <li><a href="#request-indicators">Request Indicators</a></li>
+            <li><a href="#user-confirmations">User Confirmations</a></li>
+            <li><a href="#swapping-animations">Swapping Animations</a></li>
+        </ul>
+    </li>
+    <li><span>Navigation</span>
+        <ul>
+            <li><a href="#link--form-boosting">Link &amp; Form Boosting</a></li>
+            <li><a href="#browser-history-support">Browser History</a></li>
+        </ul>
+    </li>
+    <li><span>Going Further</span>
+        <ul>
+            <li><a href="#advanced-request--response-techniques">Headers &amp; Status Codes</a>
+                <ul>
+                    <li><a href="#http-response-code-handling">Response Codes</a></li>
+                    <li><a href="#request-headers">Request Headers</a></li>
+                    <li><a href="#response-headers">Response Headers</a></li>
+                    <li><a href="#per-request-configuration-with-hx-config">hx-config</a></li>
+                </ul>
+            </li>
+            <li><a href="#streaming-html">Streaming HTML</a>
+                <ul>
+                    <li><a href="#sse">SSE</a></li>
+                    <li><a href="#web-sockets">Web Sockets</a></li>
+                    <li><a href="#multi-part">Multi-Part</a></li>
+                </ul>
+            </li>
+            <li><a href="#client-side-scripting">Client-Side Scripting</a>
+                <ul>
+                    <li><a href="#events">Events</a></li>
+                    <li><a href="#the-htmx-object-api">htmx Object API</a></li>
+                    <li><a href="#the-hx-on-attributes">hx-on Attributes</a></li>
+                    <li><a href="#alpinejs-support">Alpine.js</a></li>
+                    <li><a href="#hx-live">hx-live</a></li>
+                </ul>
+            </li>
+            <li><a href="#web-components">Web Components</a></li>
+            <li><a href="#extensions">Extensions</a></li>
+        </ul>
+    </li>
+    <li><span>Production</span>
+        <ul>
+            <li><a href="#security-considerations">Security</a>
+                <ul>
+                    <li><a href="#rule-1-escape-all-user-content">Escaping User Content</a></li>
+                    <li><a href="#csp-options">CSP Options</a></li>
+                    <li><a href="#csrf-prevention">CSRF Prevention</a></li>
+                </ul>
+            </li>
+            <li><a href="#caching">Caching</a></li>
+        </ul>
+    </li>
+    <li><span>Reference</span>
+        <ul>
+            <li><a href="#debugging">Debugging</a></li>
+            <li><a href="#editor-support">Editor Support</a></li>
+            <li><a href="#configuration">Configuration</a></li>
+        </ul>
+    </li>
+</ul>

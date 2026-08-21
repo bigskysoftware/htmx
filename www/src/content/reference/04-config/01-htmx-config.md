@@ -7,7 +7,7 @@ The `htmx.config` object holds the current htmx configuration. You can modify it
 
 ## Configure via Meta Tag
 
-Set config values with [HCON](/docs#hcon):
+Set config values with [HCON](/docs/hcon):
 
 ```html
 <meta name="htmx-config"
@@ -59,5 +59,5 @@ htmx.config.defaultTimeout = 5000;
 
 ## See Also
 
-- [HCON](/docs#hcon)
+- [HCON](/docs/hcon)
 - [`hx-config`](/reference/attributes/hx-config)

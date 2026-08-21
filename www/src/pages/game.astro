@@ -1,0 +1,624 @@
+---
+const title = "htmx gameboy";
+
+// Same launch link as the home-page banner, in a palette that suits the shell.
+const CART_URL = 'https://swag.htmx.org/products/htmx-4-the-game';
+const colorPalette = ['#ff6ec7', '#c9a3ff', '#ffd93b', '#8be04e', '#35e0c8'];
+const colorLetters = 'Color'.split('').map((ch, i) => ({ ch, color: colorPalette[i % colorPalette.length] }));
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>{title}</title>
+    <style>
+        :root {
+            --page-bg: #8e8a82;
+            --shell: #dcd7cc;
+            --shell-edge: #b6b0a3;
+            --shell-lip: #a29c8f;
+            --shell-rim: #f0ece4;
+            --ink-lip: #16151c;
+            --ink-rim: #474453;
+            --accent-lip: #5c1339;
+            --accent-rim: #b23c78;
+            --bezel: #4a4854;
+            --screen: #9bbc0f;
+            --accent: #8b1e57;
+            --ink: #2a2834;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            background: var(--page-bg);
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            touch-action: manipulation;
+        }
+
+        a { color: inherit; }
+
+        #back-nav {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            font-size: 12px;
+            color: #5a5750;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #8a857c;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.15);
+            z-index: 100;
+        }
+        #back-nav:hover { color: var(--ink); border-color: var(--ink); }
+
+        #page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+        }
+        .row {
+            position: relative;
+            width: min(440px, 94vw);
+        }
+
+        /* ============ CHASSIS ============ */
+        .gb-wrap {
+            position: relative;
+        }
+        .gameboy {
+            width: min(440px, 94vw);
+            background: var(--shell);
+            border-radius: 8px 8px 48px 8px;
+            padding: 22px 22px 28px;
+            border: 1px solid var(--shell-rim);
+            position: relative;
+            /* same construction as .gb-announce: a solid lip for the moulded
+               edge, then a soft drop shadow. Not interactive, so it never moves. */
+            box-shadow:
+                0 6px 0 var(--shell-lip),
+                0 16px 28px rgba(0,0,0,0.3);
+        }
+
+        /* ---- launch announcement (toned-down twin of the home-page banner) ---- */
+        @font-face {
+            font-family: 'ChicagoFLF';
+            src: url('/fonts/ChicagoFLF.ttf') format('truetype');
+            font-display: swap;
+        }
+
+        /* filled, 3D-pressable button — same build as the home-page .gb-btn,
+           sized down to sit above the chassis */
+        .gb-announce {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 16px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            background: linear-gradient(to bottom, #3b82f6, #1d4ed8);
+            border: 1px solid #60a5fa;
+            box-shadow:
+                0 4px 0 #1e40af,
+                0 10px 18px rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.45;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 120ms ease, box-shadow 120ms ease, filter 150ms ease;
+        }
+        @media (hover: hover) {
+            .gb-announce:hover { filter: brightness(1.08); }
+        }
+        .gb-announce:active {
+            transform: translateY(3px);
+            box-shadow:
+                0 1px 0 #1e40af,
+                0 4px 8px rgba(0,0,0,0.25);
+        }
+        .gb-announce:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 3px;
+        }
+        .gb-announce .pad { display: block; width: 32px; height: 32px; flex: none; opacity: 0.8; }
+        .gb-announce .copy { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+        .gb-announce .chicago { font-family: 'ChicagoFLF', sans-serif; }
+
+        /* heavy oblique caps, as on the home-page banner */
+        .gb-announce .gb-logo {
+            font-weight: 900;
+            font-style: italic;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: -0.03em;
+            white-space: nowrap;
+            color: #fff;
+        }
+        .gb-announce .gb-color {
+            font-family: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', cursive;
+            font-weight: 700;
+            font-size: 0.98em;
+            margin-left: 0.2em;
+            white-space: nowrap;
+        }
+        .gb-announce .tm { font-size: 0.5em; vertical-align: super; }
+        .gb-announce .buy-chip {
+            display: inline-block;
+            font-size: 20px;
+            line-height: 1;
+            letter-spacing: 0.01em;
+            color: #fff;
+        }
+
+        /* keyboard help card (outside the chassis) */
+        .keyboard-help {
+            position: absolute;
+            top: 0;
+            left: calc(100% + 20px);
+            background: var(--shell);
+            border: 1px solid var(--shell-rim);
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 10px;
+            line-height: 1.5;
+            color: #5a5750;
+            min-width: 150px;
+            /* same lip as the chassis, scaled to the smaller card */
+            box-shadow:
+                0 3px 0 var(--shell-lip),
+                0 8px 14px rgba(0,0,0,0.22);
+        }
+        .keyboard-help h2 {
+            margin: 0 0 8px;
+            font-size: 9px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #7a7568;
+            font-weight: 700;
+        }
+        .keyboard-help dl {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 4px 12px;
+            margin: 0;
+        }
+        .keyboard-help dt { color: #5a5750; font-weight: 500; }
+        .keyboard-help dd { margin: 0; color: var(--ink); font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 10px; }
+
+        /* brand strip inside the bezel */
+        .bezel-brand {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .bezel-brand .stripes {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .bezel-brand .stripes span {
+            display: block;
+            height: 2px;
+            border-radius: 1px;
+        }
+        .bezel-brand .stripes .red { background: #e05a6a; }
+        .bezel-brand .stripes .blue { background: #7a8fe8; }
+        .bezel-brand .word {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #d9d5d0;
+            white-space: nowrap;
+        }
+
+        /* sound toggle in lower-left of chassis */
+        .sound-toggle {
+            position: absolute;
+            bottom: 22px;
+            left: 22px;
+            width: 30px;
+            height: 30px;
+            border-radius: 3px;
+            background: var(--shell);
+            border: 1px solid var(--shell-rim);
+            color: #5a5750;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 2px 0 var(--shell-lip),
+                0 5px 9px rgba(0,0,0,0.22);
+            transition: color 80ms, border-color 80ms, transform 80ms, box-shadow 80ms;
+        }
+        .sound-toggle:hover { color: var(--ink); }
+        .sound-toggle:active {
+            transform: translateY(2px);
+            box-shadow:
+                0 1px 0 var(--shell-lip),
+                0 2px 5px rgba(0,0,0,0.18);
+        }
+        .sound-toggle svg { display: block; width: 14px; height: 14px; }
+        .sound-toggle .icon-off { display: none; }
+        .sound-toggle[data-on="false"] .icon-on { display: none; }
+        .sound-toggle[data-on="false"] .icon-off { display: block; }
+
+        /* screen bezel */
+        .gb-bezel {
+            background: var(--bezel);
+            border-radius: 4px 4px 28px 4px;
+            padding: 24px 24px 28px;
+        }
+        .gb-screen {
+            background: var(--screen);
+            aspect-ratio: 10 / 9;
+            overflow: hidden;
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.45),
+                inset 0 0 0 1px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .gb-screen::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            box-shadow: inset 0 -1px 2px rgba(255,255,255,0.15);
+        }
+        .gb-screen canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        /* controls */
+        .gb-controls {
+            margin-top: 28px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* D-pad */
+        .dpad {
+            position: relative;
+            width: 104px;
+            height: 104px;
+            filter:
+                drop-shadow(0 3px 0 var(--ink-lip))
+                drop-shadow(0 7px 7px rgba(0,0,0,0.28));
+        }
+        .dpad-btn {
+            position: absolute;
+            background: var(--ink);
+            cursor: pointer;
+            touch-action: none;
+            transition: opacity 80ms, transform 80ms;
+        }
+        .dpad-btn.pressed { opacity: 0.85; transform: translateY(3px); }
+        .dpad-up, .dpad-down { left: 36px; width: 32px; height: 36px; }
+        .dpad-left, .dpad-right { top: 36px; width: 36px; height: 32px; }
+        .dpad-up { top: 0; }
+        .dpad-down { top: 68px; }
+        .dpad-left { left: 0; }
+        .dpad-right { left: 68px; }
+        .dpad::after {
+            content: "";
+            position: absolute;
+            top: 36px; left: 36px; width: 32px; height: 32px;
+            background: var(--ink);
+            pointer-events: none;
+        }
+
+        /* A/B buttons */
+        .ab-buttons {
+            position: relative;
+            width: 132px;
+            height: 104px;
+        }
+        .round-btn {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: rgba(255,255,255,0.9);
+            font-weight: 700;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            touch-action: none;
+            user-select: none;
+            border: 1px solid var(--accent-rim);
+            box-shadow:
+                0 3px 0 var(--accent-lip),
+                0 7px 12px rgba(0,0,0,0.28);
+            transition: opacity 80ms, transform 80ms, box-shadow 80ms;
+        }
+        .round-btn.pressed {
+            opacity: 0.9;
+            transform: translateY(3px);
+            box-shadow:
+                0 1px 0 var(--accent-lip),
+                0 3px 6px rgba(0,0,0,0.22);
+        }
+        .btn-b { top: 20px; left: 0; }
+        .btn-a { top: 0; left: 64px; }
+
+        /* Start/Select */
+        .ss-buttons {
+            margin-top: 18px;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+        .ss-pair { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .capsule-btn {
+            width: 62px;
+            height: 20px;
+            border-radius: 10px;
+            background: var(--ink);
+            cursor: pointer;
+            touch-action: none;
+            border: 1px solid var(--ink-rim);
+            box-shadow:
+                0 2px 0 var(--ink-lip),
+                0 5px 9px rgba(0,0,0,0.25);
+            transition: opacity 80ms, transform 80ms, box-shadow 80ms;
+        }
+        .capsule-btn.pressed {
+            opacity: 0.9;
+            transform: translateY(2px);
+            box-shadow:
+                0 1px 0 var(--ink-lip),
+                0 2px 5px rgba(0,0,0,0.2);
+        }
+        .capsule-label {
+            font-size: 9px;
+            font-weight: 600;
+            color: #5a5750;
+            letter-spacing: 0.12em;
+        }
+
+        /* ============ MOBILE LAYOUT ============ */
+        @media (max-width: 720px) {
+            #page { padding: 12px 10px; }
+            .row { width: 100%; max-width: 480px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+            .gb-wrap { width: 100%; max-width: 480px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+            .gameboy { width: 100%; max-width: 480px; }
+            .gb-announce { width: 100%; max-width: 480px; margin-bottom: 0; }
+            .gb-bezel { padding: 16px 18px 20px; }
+            .keyboard-help {
+                position: static;
+                order: -1;
+                width: 100%;
+                max-width: 480px;
+                padding: 6px 10px;
+                min-width: 0;
+            }
+            .keyboard-help h2 { display: none; }
+            .keyboard-help dl {
+                display: block;
+                text-align: center;
+                line-height: 1.6;
+            }
+            .keyboard-help dt { display: inline; font-size: 10px; color: #7a7568; }
+            .keyboard-help dd { display: inline; font-size: 10px; margin: 0 12px 0 4px; }
+        }
+
+        /* hide the emulator's built-in touch controller */
+        #controller { display: none !important; }
+    </style>
+</head>
+<body>
+    <a id="back-nav" href="/">← back</a>
+
+    <div id="page">
+    <div class="row">
+        <a class="gb-announce" href={CART_URL}>
+            <svg class="pad" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M7.5 6h9a5.5 5.5 0 0 1 5.44 6.35l-.6 3.86A2.9 2.9 0 0 1 18.5 18c-.9 0-1.72-.5-2.15-1.28L15.4 15H8.6l-.95 1.72A2.46 2.46 0 0 1 5.5 18a2.9 2.9 0 0 1-2.84-1.79l-.6-3.86A5.5 5.5 0 0 1 7.5 6zm-1 3v1.5H5v2h1.5V14h2v-1.5H10v-2H8.5V9h-2zm9 .75a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5zm2.5 2.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5z"/>
+            </svg>
+            <span class="copy">
+                <span>
+                    <span class="chicago">htmx 4.0, The Game</span> is available for<br />
+                    <span class="gb-logo">Game Boy<sup class="tm">&trade;</sup></span>
+                    &amp;
+                    <span class="gb-logo">Game Boy</span><span class="gb-color">{colorLetters.map((l) => <span style={`color:${l.color}`}>{l.ch}</span>)}</span><sup class="tm">&trade;</sup>!
+                </span>
+                <span class="buy-chip chicago">Buy Now!</span>
+            </span>
+        </a>
+
+        <div class="gb-wrap">
+        <div class="gameboy">
+            <div class="gb-bezel">
+                <div class="bezel-brand">
+                    <div class="stripes"><span class="red"></span><span class="blue"></span></div>
+                    <div class="word">htmx</div>
+                    <div class="stripes"><span class="red"></span><span class="blue"></span></div>
+                </div>
+                <div class="gb-screen">
+                    <canvas id="mainCanvas" width="256" height="224">No Canvas Support</canvas>
+                </div>
+            </div>
+
+            <button type="button" class="sound-toggle" id="sound-toggle" data-on="true" aria-label="Toggle sound">
+                <svg class="icon-on" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6v4h2.5L9 13V3L5.5 6H3z" fill="currentColor" stroke="none"/>
+                    <path d="M11 5.5c.8.6 1.3 1.5 1.3 2.5s-.5 1.9-1.3 2.5"/>
+                    <path d="M13 3.5c1.5 1.1 2.5 2.7 2.5 4.5s-1 3.4-2.5 4.5"/>
+                </svg>
+                <svg class="icon-off" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6v4h2.5L9 13V3L5.5 6H3z" fill="currentColor" stroke="none"/>
+                    <path d="M11.5 6l3 4M14.5 6l-3 4"/>
+                </svg>
+            </button>
+
+            <div class="gb-controls">
+                <div class="dpad">
+                    <div class="dpad-btn dpad-up" data-gb-btn="up"></div>
+                    <div class="dpad-btn dpad-down" data-gb-btn="down"></div>
+                    <div class="dpad-btn dpad-left" data-gb-btn="left"></div>
+                    <div class="dpad-btn dpad-right" data-gb-btn="right"></div>
+                </div>
+                <div class="ab-buttons">
+                    <div class="round-btn btn-b" data-gb-btn="b">B</div>
+                    <div class="round-btn btn-a" data-gb-btn="a">A</div>
+                </div>
+            </div>
+
+            <div class="ss-buttons">
+                <div class="ss-pair">
+                    <div class="capsule-btn" data-gb-btn="select"></div>
+                    <div class="capsule-label">SELECT</div>
+                </div>
+                <div class="ss-pair">
+                    <div class="capsule-btn" data-gb-btn="start"></div>
+                    <div class="capsule-label">START</div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="keyboard-help">
+            <h2>Keyboard</h2>
+            <dl>
+                <dt>D-pad</dt><dd>↑ ↓ ← →</dd>
+                <dt>A</dt><dd>Z</dd>
+                <dt>B</dt><dd>X</dd>
+                <dt>Start</dt><dd>Enter</dd>
+                <dt>Select</dt><dd>Shift</dd>
+            </dl>
+        </aside>
+        </div>
+    </div>
+    </div>
+
+    <!-- hidden stubs required by the emulator's onscreen-controller binding -->
+    <div id="controller" aria-hidden="true" style="display:none">
+        <div id="controller_dpad"></div>
+        <div id="controller_select"></div>
+        <div id="controller_start"></div>
+        <div id="controller_b"></div>
+        <div id="controller_a"></div>
+    </div>
+
+    <script is:inline>
+        window.customControls = {
+            up: ["ArrowUp", "w"],
+            down: ["ArrowDown", "s"],
+            left: ["ArrowLeft", "a"],
+            right: ["ArrowRight", "d"],
+            a: ["z", "j"],
+            b: ["x", "k"],
+            start: ["Enter"],
+            select: ["Shift"]
+        };
+
+        const BTN_METHODS = {
+            up: "setJoypUp", down: "setJoypDown", left: "setJoypLeft", right: "setJoypRight",
+            a: "setJoypA", b: "setJoypB", start: "setJoypStart", select: "setJoypSelect"
+        };
+        function setJoyp(btn, down) {
+            const emu = window.gbEmulator;
+            const fn = emu && BTN_METHODS[btn];
+            if (emu && fn) emu[fn](down);
+        }
+
+        // Sound toggle (persisted in localStorage)
+        (function () {
+            const btn = document.getElementById("sound-toggle");
+            if (!btn) return;
+            const STORE_KEY = "htmxgb:soundOn";
+            const DEFAULT_VOLUME = 0.5;
+            let soundOn = localStorage.getItem(STORE_KEY) !== "false"; // default ON
+
+            function apply() {
+                if (window.vm) window.vm.volume = soundOn ? DEFAULT_VOLUME : 0;
+                const ctx = window.gbAudioCtx;
+                if (ctx) {
+                    if (soundOn) { if (ctx.state === "suspended") ctx.resume(); }
+                    else { if (ctx.state === "running") ctx.suspend(); }
+                }
+                btn.setAttribute("data-on", soundOn ? "true" : "false");
+                btn.setAttribute("aria-label", soundOn ? "Sound on" : "Sound off");
+            }
+
+            // Wait for vm (the emulator script sets window.vm on init).
+            function waitForVm() {
+                if (window.vm) { apply(); return; }
+                setTimeout(waitForVm, 50);
+            }
+            waitForVm();
+            apply(); // update button label immediately
+
+            btn.addEventListener("click", function () {
+                soundOn = !soundOn;
+                localStorage.setItem(STORE_KEY, soundOn ? "true" : "false");
+                apply();
+            });
+        })();
+
+        // Pause emulator while the tab is hidden — prevents a glitchy
+        // catch-up frame when rAF resumes after tab throttling.
+        document.addEventListener("visibilitychange", function () {
+            if (!window.vm) return;
+            window.vm.paused = document.hidden;
+        });
+
+        document.querySelectorAll("[data-gb-btn]").forEach(function (el) {
+            const btn = el.getAttribute("data-gb-btn");
+            let active = false;
+            const press = function (e) {
+                if (active) return;
+                active = true;
+                el.classList.add("pressed");
+                setJoyp(btn, true);
+                if (e.pointerId !== undefined) {
+                    try { el.setPointerCapture(e.pointerId); } catch (_) {}
+                }
+                e.preventDefault();
+            };
+            const release = function (e) {
+                if (!active) return;
+                active = false;
+                el.classList.remove("pressed");
+                setJoyp(btn, false);
+                if (e && e.preventDefault) e.preventDefault();
+            };
+            el.addEventListener("pointerdown", press);
+            el.addEventListener("pointerup", release);
+            el.addEventListener("pointercancel", release);
+            el.addEventListener("pointerleave", release);
+        });
+    </script>
+    <script is:inline src="/htmxgb/binjgb.js"></script>
+    <script is:inline src="/htmxgb/js/script.js"></script>
+</body>
+</html>

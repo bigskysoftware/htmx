@@ -12,13 +12,14 @@ Work through these in order -- most issues fall in the first few:
 
 1. **Is htmx loaded?** Check for `htmx` global in console, verify script tag
 2. **Is the element processed?** Check `element._htmx` property exists
-3. **What htmx version?** Check `htmx.config.version` -- htmx 4 API is very different from htmx 2
+3. **What htmx version?** Check `htmx.version` -- the htmx 4 API is very different from htmx 2
 4. **Is the trigger correct?** Defaults: `click` for most, `change` for inputs/selects/textareas, `submit` for forms
 5. **Is the target correct?** Verify the CSS selector matches an existing element
 6. **Does the server return HTML?** Not JSON -- check Content-Type and response body
 7. **Check the response status** -- htmx 4 swaps ALL responses except 204 and 304 by default
 8. **Is inheritance set up?** htmx 4 requires `:inherited` modifier on parent attributes
-9. **For extensions:** Is the extension approved in `<meta name="htmx-config" content='{"extensions":"..."}'>`?
+9. **For extensions:** Is the script loaded after `htmx.js`? If you set the `extensions` whitelist, the
+   registration name must be in it. An unset whitelist allows every extension
 
 ## Enable Debug Logging
 
@@ -112,14 +113,16 @@ monitorEvents(htmx.find("#theElement"));
 - In htmx 4, OOB swaps happen AFTER the main content swap (changed from htmx 2)
 
 **Check response headers:**
-- `HX-Retarget`, `HX-Reswap`, `HX-Reselect` override client-side attributes
-- `hx-status:XXX` attributes can change target/swap based on status code
+- `HX-Retarget`, `HX-Reswap`, `HX-Reselect` override client-side attributes, and htmx applies them before `hx-status`
+- `hx-status:XXX` attributes can change target, swap, select or history handling for one status code.
+  htmx tries the exact code first, then `NNx`, then `Nxx`, and stops at the first match
 
 ### Extension Not Working
 
 1. Is the extension script loaded AFTER htmx.js?
-2. Is the extension name listed in the `extensions` config? Check `<meta name="htmx-config" content='{"extensions": "ext-name"}'>`
-3. Does the extension name match exactly (case-sensitive)?
+2. If you set the `extensions` whitelist, is the extension name in it? An unset whitelist allows every extension
+3. Does the name match exactly? It is case-sensitive, and the registration name is not always the file name.
+   `hx-sse.js` registers as `sse`, `hx-preload.js` as `preload`, `htmx-2-compat.js` as `compat`
 4. Check console for registration errors
 5. htmx 4 extensions use `htmx.registerExtension()` not `htmx.defineExtension()` -- make sure you have an htmx 4 compatible extension
 
@@ -162,18 +165,18 @@ The #1 gotcha in htmx 4:
 - `GET` and `DELETE` requests do NOT include enclosing form data by default in htmx 4
 - Fix: add `hx-include="closest form"` to include form values
 - Non-GET/DELETE requests (POST, PUT, PATCH) DO include enclosing form values automatically
-- Check `hx-vals` syntax: must be valid JSON, use `js:` prefix for dynamic values
+- Check `hx-vals` syntax: it takes HCON (`key:value, other:2`), which also accepts JSON. Use the `js:` prefix for dynamic values
 
 ### htmx 2 Code Not Working in htmx 4
 
 Quick compatibility fixes:
 1. Add `htmx.config.implicitInheritance = true` (restores automatic inheritance)
 2. Add `htmx.config.noSwap = [204, 304, '4xx', '5xx']` (restores htmx 2 swap behavior)
-3. Replace `hx-ext="name"` with `<script src="ext.js">` + `<meta name="htmx-config" content='{"extensions":"name"}'>`
-4. Update event names: `htmx:beforeRequest` → `htmx:before:request`, `htmx:afterSwap` → `htmx:after:swap`, etc.
-5. Replace `hx-disabled-elt` → `hx-disable`
-6. Replace `hx-disable` (old meaning of ignoring) → `hx-ignore`
-7. Replace `hx-vars` → `hx-vals` with `js:` prefix
+3. Replace `hx-ext="name"` with `<script src="ext.js">`. The `extensions` config is an optional whitelist, not a requirement
+4. Update event names: `htmx:beforeRequest` -> `htmx:before:request`, `htmx:afterSwap` -> `htmx:after:swap`, etc.
+5. Replace `hx-disabled-elt` -> `hx-disable`
+6. Replace `hx-disable` (old meaning of ignoring) -> `hx-ignore`
+7. Replace `hx-vars` -> `hx-vals` with `js:` prefix
 8. Load the `hx-prompt` extension to keep `hx-prompt` working
 9. Or load the `htmx-2-compat` extension for gradual migration
 
@@ -192,6 +195,7 @@ Quick compatibility fixes:
 
 ### Console
 - `htmx.config.logAll = true` -- log every event (errors and warnings already on by default)
+- `htmx.version` -- confirm which major version is loaded
 - `htmx.find("#selector")` -- test extended CSS selectors
 - `htmx.trigger(elt, "eventName")` -- manually fire events
 

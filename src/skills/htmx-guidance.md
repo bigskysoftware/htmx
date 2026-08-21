@@ -21,6 +21,7 @@ Issue requests with these attributes. Each takes a URL:
 | `hx-put`    | PUT request    |
 | `hx-patch`  | PATCH request  |
 | `hx-delete` | DELETE request |
+| `hx-query`  | QUERY request  |
 
 ### Default Triggers
 
@@ -41,14 +42,21 @@ Specify what event triggers the request:
 
 **Modifiers:**
 
-- `once` -- fire only once
-- `changed` -- only if value changed
-- `delay:<time>` -- debounce (resets on re-trigger), e.g. `delay:500ms`
-- `throttle:<time>` -- throttle (ignores during cooldown)
-- `from:<selector>` -- listen on a different element (supports `document`, `window`, `closest <sel>`, `find <sel>`,
-  `next`, `previous`)
-- `target:<selector>` -- filter by event target
-- `consume` -- stop event from triggering other htmx requests on parents
+| Modifier            | Description                                                                          |
+|---------------------|--------------------------------------------------------------------------------------|
+| `once`              | fire only once                                                                       |
+| `changed`           | only fire if the value of the element changed                                        |
+| `delay:<time>`      | debounce, e.g. `delay:500ms`. A new event resets the countdown                        |
+| `throttle:<time>`   | throttle. The first event fires at once, later events wait for the cooldown           |
+| `from:<selector>`   | listen on a different element. Accepts `document`, `window`, `closest`, `find`, `next`, `previous` |
+| `target:<selector>` | only fire if `event.target` matches the selector                                      |
+| `prevent`           | call `event.preventDefault()`                                                        |
+| `stop`              | call `event.stopPropagation()`. `consume` is a synonym                                |
+| `halt`              | shorthand for `prevent stop`                                                         |
+| `capture`           | listen in the capture phase instead of the bubble phase                              |
+| `passive`           | tell the browser the handler will not call `preventDefault()`                         |
+
+A selector with whitespace needs parentheses: `from:(form input)`.
 
 **Filters** (JavaScript expressions in brackets):
 
@@ -112,6 +120,7 @@ Controls how response content is placed relative to the target. Default: `innerH
 |--------------------------|----------------------------------------------------|
 | `innerHTML`              | Replace inner HTML of target                       |
 | `outerHTML`              | Replace entire target element                      |
+| `outerSync`              | Morph the target's attributes, then replace its children. Target stays in DOM |
 | `innerMorph`             | Morph children of target (preserves DOM state)     |
 | `outerMorph`             | Morph target itself (preserves DOM state)          |
 | `textContent`            | Replace text content, no HTML parsing              |
@@ -137,8 +146,11 @@ Controls how response content is placed relative to the target. Default: `innerH
 | `ignoreTitle:true`  | Don't update page title from response        |
 | `scroll:top/bottom` | Scroll target after swap                     |
 | `show:top/bottom`   | Scroll target into viewport                  |
+| `scrollTarget:<selector>` | Scroll this element instead of the target |
+| `showTarget:<selector>`   | Scroll this element into view instead of the target |
 | `strip:true`        | Remove outer wrapper element before swapping |
 | `focusScroll:true`  | Scroll to focused element                    |
+| `swapEmpty:true`    | Run the main swap even when nothing remains after OOB and partial content is removed |
 | `target:<selector>` | Retarget the swap                            |
 
 ## Attribute Inheritance (CRITICAL htmx 4 change)
@@ -181,46 +193,66 @@ Set via meta tag or JavaScript:
 
 Key config values:
 
-| Config                | Default                 | Description                                            |
-|-----------------------|-------------------------|--------------------------------------------------------|
-| `defaultSwap`         | `innerHTML`             | Default swap strategy                                  |
-| `defaultTimeout`      | `60000`                 | Request timeout (ms)                                   |
-| `noSwap`              | `[204, 304]`            | Status codes that skip swapping                        |
-| `implicitInheritance` | `false`                 | Auto-inherit attributes from parents                   |
-| `transitions`         | `false`                 | Enable View Transitions globally                       |
-| `logAll`              | `false`                 | Log all events to console (debugging)                  |
-| `mode`                | `same-origin`           | Fetch mode (`cors`, `no-cors`, `same-origin`)          |
-| `history`             | `true`                  | Enable history support (`true`, `false`, `"reload"`)   |
-| `extensions`          | `""`                    | Whitelist of allowed extensions (empty = allow all)    |
-| `prefix`              | `""`                    | Custom attribute prefix (e.g. `"data-hx-"`)            |
-| `morphIgnore`         | `["data-htmx-powered"]` | Attribute name prefixes to leave unchanged when morphing |
-| `morphScanLimit`      | `10`                    | Sibling scan limit during morphing                       |
-| `morphSkip`           | `'[hx-morph-skip]'`     | CSS selector for elements to skip morphing entirely      |
-| `morphSkipChildren`   | `'[hx-morph-skip-children]'` | CSS selector for elements whose children skip morphing |
+| Config                   | Default                      | Description                                                    |
+|--------------------------|------------------------------|----------------------------------------------------------------|
+| `defaultSwap`            | `innerHTML`                  | Default swap strategy                                          |
+| `defaultTimeout`         | `60000`                      | Request timeout (ms)                                           |
+| `defaultSettleDelay`     | `1`                          | Delay in ms between swap and settle                            |
+| `defaultFocusScroll`     | `false`                      | Scroll focused elements into view after a swap                 |
+| `noSwap`                 | `[204, 304]`                 | Status codes that skip swapping                                |
+| `allowEmptySwapAfterOOB` | `false`                      | Run the main swap when the response holds only OOB or partial content |
+| `implicitInheritance`    | `false`                      | Auto-inherit attributes from parents                           |
+| `transitions`            | `false`                      | Enable View Transitions globally                               |
+| `logAll`                 | `false`                      | Log every event to console (debugging)                         |
+| `mode`                   | `same-origin`                | Fetch mode (`cors`, `no-cors`, `same-origin`)                  |
+| `history`                | `true`                       | Enable history support (`true`, `false`, `"reload"`)           |
+| `extensions`             | `""`                         | Whitelist of allowed extensions. Empty allows all              |
+| `prefix`                 | `"data-hx-"`                 | Second attribute prefix, checked in addition to `hx-`          |
+| `metaCharacter`          | unset, acts as `:`           | Character that introduces an attribute modifier                |
+| `indicatorClass`         | `htmx-indicator`             | Class on elements that show during a request                   |
+| `requestClass`           | `htmx-request`               | Class added while a request is in flight                       |
+| `includeIndicatorCSS`    | `true`                       | Inject the default indicator stylesheet                        |
+| `inlineScriptNonce`      | unset                        | Nonce added to scripts htmx inserts                            |
+| `morphIgnore`            | `["data-htmx-powered"]`      | Attribute name prefixes to leave unchanged when morphing       |
+| `morphScanLimit`         | `10`                         | Sibling scan limit during morphing                             |
+| `morphSkip`              | `'[hx-morph-skip]'`          | CSS selector for elements to skip morphing entirely            |
+| `morphSkipChildren`      | `'[hx-morph-skip-children]'` | CSS selector for elements whose children skip morphing         |
+
+`prefix` is additive, not a replacement. `hx-get` and `data-hx-get` both work out of the box.
+
+Config values use HCON, htmx's configuration object notation. HCON accepts JSON, but also a shorter form:
+
+```html
+<meta name="htmx-config" content="defaultSwap:outerHTML, logAll:true">
+```
 
 ## Events
 
 htmx 4 naming convention: `htmx:phase:action`
 
-**Lifecycle:**
+**Element lifecycle:**
 
+- `htmx:before:process` / `htmx:after:process` -- htmx scans a subtree
 - `htmx:before:init` / `htmx:after:init` -- element initialization
 - `htmx:before:cleanup` / `htmx:after:cleanup` -- element removal
+- `htmx:before:on:init` -- before an `hx-on` handler is installed
 
 **Request:**
 
+- `htmx:confirm` -- after trigger, before request. Detail holds `issueRequest` and `dropRequest` for async confirmation
 - `htmx:config:request` -- configure request (modify headers, body, URL). Cancel with `evt.preventDefault()`
 - `htmx:before:request` -- just before fetch. Cancel with `evt.preventDefault()`
 - `htmx:before:response` -- after fetch response received, before body consumed
 - `htmx:after:request` -- after request completes
 - `htmx:finally:request` -- when request completes, fails, or is cancelled
 - `htmx:error` -- on any error (network, response, swap)
+- `htmx:response:error` -- the server returned an HTTP error status
 
 **Swap:**
 
 - `htmx:before:swap` / `htmx:after:swap` -- before/after content swap
+- `htmx:finally:swap` -- after the swap, on success or error
 - `htmx:before:settle` / `htmx:after:settle` -- before/after settle phase
-- `htmx:confirm` -- after trigger, before request (for async confirmation)
 
 **History:**
 
@@ -231,6 +263,16 @@ htmx 4 naming convention: `htmx:phase:action`
 **View Transitions:**
 
 - `htmx:before:viewTransition` / `htmx:after:viewTransition`
+
+**Aborting a request:** `htmx:abort` is an event you dispatch, not one htmx fires. Send it at an element to
+cancel that element's in-flight requests:
+
+```js
+htmx.trigger("#slow-thing", "htmx:abort");
+```
+
+A few hooks are delivered to extensions only and never reach the DOM: `htmx:before:morph:node`,
+`htmx:before:morph:attr`, `htmx:after:implicitInheritance` and `htmx:process:<type>`.
 
 ### Request Context
 
@@ -384,7 +426,7 @@ Server sends `HX-Trigger: newContact` header. Table listens for the event:
 **Warning:** morphing preserves user input values. It cannot be used to reset forms -- use `innerHTML`/`outerHTML` for
 that.
 
-**Excluding elements from morphing** — add attributes to your server templates:
+**Excluding elements from morphing** -- add attributes to your server templates:
 
 ```html
 <!-- freeze entire element: attrs + children unchanged -->
@@ -424,32 +466,41 @@ htmx.config.morphSkipChildren = 'lit-component, .sortable';
 | `hx-replace-url` | Replace URL in browser history                                            |
 | `hx-encoding`    | Change encoding (e.g. `multipart/form-data` for file uploads)             |
 | `hx-validate`    | Validate form elements before request                                     |
+| `hx-action`      | Request URL, when the method comes from `hx-method`                       |
+| `hx-method`      | HTTP method, paired with `hx-action`                                      |
+| `hx-status:XXX`  | Change target, swap or history handling for one status code               |
+| `hx-history-elt` | Element to restore on history navigation, instead of `body`               |
+| `hx-morph-skip`  | Freeze this element during a morph swap                                   |
+| `hx-morph-skip-children` | Update attributes but freeze children during a morph swap         |
 
 ## Parameters
 
 - Non-GET/DELETE requests automatically include enclosing form values
 - GET and DELETE do NOT include enclosing form data. Use `hx-include="closest form"` if needed
-- Use `hx-vals='{"key": "value"}'` for static values
+- Use `hx-vals="key:value"` for static values. `hx-vals` takes HCON, which also accepts JSON
 - Use `hx-vals='js:{"key": computeValue()}'` for dynamic values
+- `hx-headers` and `hx-config` take HCON too
 
 ## JavaScript API
 
 ```js
-htmx.ajax("GET", "/data", {target: "#result"})  // Programmatic request, returns Promise
-htmx.on("htmx:after:swap", (evt) => { ...
-})    // Event listener
-htmx.onLoad((elt) => { ...
-})                    // Process new content
+htmx.version                                     // Version string, read-only
+htmx.ajax("GET", "/data", {target: "#result"})   // Programmatic request, returns Promise
+htmx.on("htmx:after:swap", (evt) => {})          // Event listener
+htmx.onLoad((elt) => {})                         // Callback for new content
 htmx.process(element)                            // Initialize htmx on dynamic content
+htmx.initialize()                                // Set up history and process document.body
 htmx.find("closest .container")                  // Extended CSS selector query
 htmx.findAll(".items")                           // Find all matching
 htmx.trigger(elt, "myEvent", {detail: ...})      // Fire custom event
 htmx.swap(ctx)                                   // Manual swap
-htmx.timeout(1000)                               // Promise that resolves after delay
-htmx.live.take(elt, ".active", ".tab")           // Take class — provided by hx-live
-htmx.live.forEvent(elt, "click", 5000)           // Race events/timeouts — provided by hx-live
-htmx.live.nextFrame()                            // requestAnimationFrame promise — provided by hx-live
+htmx.timeout(1000)                               // Promise that resolves after a delay
+htmx.parseInterval("2s")                         // Parse a time interval to ms
+htmx.registerExtension("name", hooks)            // Register an extension
 ```
+
+The `hx-live` extension adds an `htmx.live` namespace: `take()`, `toggle()`, `attr()`, `q()` (alias `$`),
+`debounce()`, `refresh()`, `forEvent()` and `nextFrame()`.
 
 ## Common Patterns
 
@@ -570,11 +621,36 @@ Extensions are loaded by including the script file. They apply page-wide automat
 <script src="/path/to/hx-preload.js"></script>
 ```
 
-To restrict which extensions can load, use the `extensions` config as a whitelist:
+To restrict which extensions can load, use the `extensions` config as a whitelist. The whitelist takes the
+registration name, which is not always the file name:
 
 ```html
 <meta name="htmx-config" content='{"extensions": "preload"}'>
 ```
+
+Shipped extensions and their registration names:
+
+| File                      | Registers as        | Purpose                                             |
+|---------------------------|---------------------|-----------------------------------------------------|
+| `hx-multipart.js`         | `hx-multipart`      | Stream HTML with `multipart/mixed`                  |
+| `hx-sse.js`               | `sse`               | Stream HTML with `text/event-stream` (SSE)          |
+| `hx-ws.js`                | `ws`                | Stream HTML and send data over WebSockets           |
+| `hx-browser-indicator.js` | `browser-indicator` | Show the browser tab's own spinner                  |
+| `hx-live.js`              | `hx-live`           | DOM-based reactive scripting                        |
+| `hx-pending.js`           | `hx-pending`        | Show custom content during requests                 |
+| `hx-prompt.js`            | `hx-prompt`         | Restores htmx 2's `hx-prompt`                       |
+| `hx-preload.js`           | `preload`           | Preload on hover or other triggers                  |
+| `hx-history-cache.js`     | `history-cache`     | Restore back/forward pages from `sessionStorage`    |
+| `hx-ptag.js`              | `ptag`              | Skip unchanged polls with `HX-PTag`                 |
+| `hx-download.js`          | `download`          | Download files with `hx-swap="download"`            |
+| `hx-head.js`              | `hx-head`           | Merge `<head>` tags with `hx-head="merge"`          |
+| `hx-targets.js`           | `hx-targets`        | Target many elements with `hx-targets`              |
+| `hx-upsert.js`            | `upsert`            | Update or insert elements with `hx-swap="upsert"`   |
+| `htmx-2-compat.js`        | `compat`            | Restore htmx 2 defaults and event names             |
+| `hx-alpine-compat.js`     | `alpine-compat`     | Run htmx alongside Alpine.js without conflicts      |
+| `hx-csp.js`               | `hx-csp`            | Make htmx work under a strict Content Security Policy |
+
+`htmax.js` bundles htmx with the most popular extensions in one file.
 
 ## htmx 2 vs htmx 4: Practical Differences
 
@@ -589,11 +665,11 @@ modifier on attributes, or colon-separated event names like `htmx:after:swap`. T
 | `hx-disable` (stops htmx processing) | `hx-ignore`                                                   | Different purpose in each version                 |
 | `hx-ext="my-ext"`                    | Just include the script file                                  | No attribute needed; config whitelist is optional  |
 | `hx-request='{"timeout":5000}'`      | `hx-config='{"timeout":5000}'`                                | Renamed                                           |
-| `hx-prompt="Enter value"`            | [`hx-prompt` extension](/extensions/hx-prompt) (same syntax), or [`hx-on::config:request` one-liner](/extensions/hx-prompt#without-the-extension) | Restored via extension                            |
+| `hx-prompt="Enter value"`            | [`hx-prompt` extension](https://four.htmx.org/extensions/hx-prompt) (same syntax), or [`hx-on::config:request` one-liner](https://four.htmx.org/extensions/hx-prompt#without-the-extension) | Restored via extension                            |
 | `hx-disinherit="*"`                  | Not needed                                                    | Inheritance is explicit by default in htmx 4      |
 | `hx-vars`                            | `hx-vals` with `js:` prefix                                   | hx-vars removed                                   |
 | Attributes inherit implicitly        | Must use `:inherited` modifier                                | `hx-target:inherited="#out"`                      |
-| `data-hx-get` works automatically    | Requires `config.prefix = "data-hx-"`                         | Only `hx-*` by default in htmx 4                  |
+| `data-hx-get` works automatically    | `data-hx-get` still works                                     | `config.prefix` defaults to `"data-hx-"`          |
 
 htmx 4 adds: `hx-action`, `hx-method`, `hx-config`, `hx-status:XXX`, `hx-partial`, `:inherited` and `:append` modifiers.
 
@@ -666,5 +742,5 @@ When generating htmx code:
 1. **Prefer `<hx-partial>` tags** over `hx-swap-oob` for multi-region updates (more explicit)
 1. **GET and DELETE don't include form data** -- use `hx-include="closest form"` if needed
 1. When showing patterns, include both the HTML and describe what the server endpoint should return
-1. There are many useful extensions, for examples sse.js (Server Sent Events) for more dynamic situation and
-   hx-preload.js for speeding up navigational requests. Suggest them if they make sense.
+1. There are many useful extensions, for example `hx-sse.js` for Server-Sent Events and `hx-preload.js` for
+   faster navigation. Suggest them if they make sense.

@@ -6,6 +6,13 @@
   github: commspace
   image: /src/assets/img/sponsors/commspace.svg
 
+# Gold Sponsors
+
+- name: SerpApi
+  tier: gold
+  url: https://serpapi.com/?utm_source=bigsky_software&utm_campaign=os_sponsorship
+  image: /src/assets/img/sponsors/serpapi.svg
+
 # Silver Sponsors
 
 - name: JetBrains
@@ -27,25 +34,24 @@
 
 - name: ButterCMS
   tier: silver
-  url: https://buttercms.com
+  url: https://buttercms.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmxhome
   github: ButterCMS
   image: /src/assets/img/sponsors/butter-cms.svg
 
 - name: Black Host
   tier: silver
   url: https://black.host
-  tracking: false
   github: Black-HOST
   image: /src/assets/img/sponsors/blackhost.svg
 
 - name: V7N
   tier: silver
-  url: https://www.v7n.com
+  url: https://www.v7n.com/
   image: /src/assets/img/sponsors/v7n.svg
 
 - name: Hiro The Doggo
   tier: silver
-  url: https://tacohiro.systems
+  url: https://tacohiro.systems/
   github: sekunho
   image: /src/assets/img/sponsors/tacohiro-systems.png
 
@@ -56,7 +62,7 @@
 
 - name: PullApprove
   tier: silver
-  url: https://pullapprove.com
+  url: https://www.pullapprove.com/?utm_campaign=sponsorship&utm_medium=banner&utm_source=htmx
   image: /src/assets/img/sponsors/pullapprove.svg
 
 - name: UI Bakery
@@ -67,20 +73,20 @@
 
 - name: Tracebit
   tier: silver
-  url: https://tracebit.com
+  url: https://tracebit.com/?utm_source=htmx
   github: tracebit-com
   image: /src/assets/img/sponsors/tracebit.svg
 
 
 - name: RxDB
   tier: silver
-  url: https://rxdb.info
+  url: https://rxdb.info/?utm_source=sponsor&utm_medium=githubsponsor&utm_campaign=githubsponsor-htmx
   github: pubkey
   image: /src/assets/img/sponsors/rxdb.svg
 
 - name: Ohne-Makler
   tier: silver
-  url: https://ohne-makler.net
+  url: https://www.ohne-makler.net/
   image: /src/assets/img/sponsors/ohne-makler.svg
 
 - name: Cased
@@ -91,38 +97,50 @@
 
 - name: LLC.org
   tier: silver
-  url: https://llc.org
+  url: https://www.llc.org/
   github: llcorg
   image: /src/assets/img/sponsors/llc-org.svg
 
 - name: VPS Server
   tier: silver
-  url: https://vpsserver.com
+  url: https://www.vpsserver.com/
   github: VPSServerCom
   image: /src/assets/img/sponsors/vps-server.svg
 
 
 - name: a-blog cms
   tier: silver
-  url: https://a-blogcms.jp
+  url: https://www.a-blogcms.jp/
   github: appleple
   image: /src/assets/img/sponsors/ablogcms.svg
 
 - name: Broadband Map
   tier: silver
-  url: https://broadbandmap.com
+  url: https://broadbandmap.com/
   github: CoverageCritic
   image: /src/assets/img/sponsors/broadband-map.svg
 
 - name: Follower24
   tier: silver
-  url: https://follower24.de
+  url: https://www.follower24.de/
   github: Follower24
   image: /src/assets/img/sponsors/follower24.svg
 
 
 - name: Exchange Rate API
   tier: silver
-  url: https://exchangerate-api.com
+  url: https://www.exchangerate-api.com
   github: ExchangeRate-API
   image: /src/assets/img/sponsors/exchange-rate-api.svg
+
+- name: Instant Famous
+  tier: silver
+  url: https://instant-famous.com/
+  github: mersano
+  image: /src/assets/img/sponsors/instant-famous.png
+
+- name: Stake
+  tier: silver
+  url: https://hellostake.com/au/referral-code
+  github: blacksandsmedia
+  image: /src/assets/img/sponsors/stake.jpeg

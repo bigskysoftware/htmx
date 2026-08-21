@@ -41,6 +41,11 @@
           "doc-url": "https://four.htmx.org/reference/attributes/hx-delete"
         },
         {
+          "name": "hx-query",
+          "description": "Issues a `QUERY` request to the specified URL and swaps the response into the DOM.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-query"
+        },
+        {
           "name": "hx-trigger",
           "description": "Controls which event specifications trigger an element's request. Supports filters and modifiers such as `delay`, `throttle`, `once`, `changed`, `from`, and `target`.",
           "doc-url": "https://four.htmx.org/reference/attributes/hx-trigger"
@@ -242,7 +247,7 @@
         },
         {
           "name": "hx-method",
-          "description": "Specifies the HTTP method to use with `hx-action`. Valid methods are `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`.",
+          "description": "Specifies the HTTP method to use with `hx-action`. Valid methods are `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, and `QUERY`. A verb-specific attribute such as `hx-post` wins over `hx-method`.",
           "doc-url": "https://four.htmx.org/reference/attributes/hx-method"
         },
         {
@@ -552,17 +557,17 @@
         },
         {
           "name": "sse:error",
-          "description": "Fires when an SSE stream error occurs. `detail.error`, `detail.url`, and sometimes `detail.status` describe the failure.",
+          "description": "Fires when an SSE stream error occurs. `detail.connection` identifies the failed stream when available; `detail.url` identifies setup failures; `detail.error` and sometimes `detail.status` describe the failure.",
           "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxsseerror"
         },
         {
           "name": "sse:before:message",
-          "description": "Fires before an SSE message is processed. `detail.message` contains `data`, `event`, `id`, and `cancelled`.",
+          "description": "Fires before an SSE message is processed. `detail.connection` identifies the stream; `detail.message` contains `data`, `event`, and `id`. Use `detail.waitUntil()` to delay processing or set `detail.cancelled` to cancel.",
           "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxssebeforemessage"
         },
         {
           "name": "sse:after:message",
-          "description": "Fires after an SSE message is processed. `detail.message` contains `data`, `event`, and `id`.",
+          "description": "Fires after an SSE message is processed. `detail.connection` identifies the stream; `detail.message` contains `data`, `event`, and `id`.",
           "doc-url": "https://four.htmx.org/extensions/hx-sse#htmxsseaftermessage"
         },
         {

@@ -1,22 +1,24 @@
 /**
- * Remark plugin: replace a __VERSION__ token with the current htmx version,
- * giving CDN/npm snippets across all docs a single source of truth
- * (www/src/data/integrity.json, generated from package.json).
+ * Remark plugin: replace CDN tokens (__VERSION__, __SRI_MIN__, and friends)
+ * with values from www/src/data/integrity.json, giving CDN/npm snippets across
+ * all docs a single source of truth. The token map lives in cdn-tokens.js.
  *
- * Runs on the markdown AST, before syntax highlighting, so the token is a
+ * Runs on the markdown AST, before syntax highlighting, so each token is a
  * single text value rather than split across highlight spans. Touched node
  * types: `code`/`inlineCode` (fenced + inline snippets), `html` (raw HTML in
  * .md), and `mdxJsx*Element` string attributes (raw `<a href>` links in .mdx).
- * Prose `text` nodes are intentionally left alone.
+ * Prose `text` nodes are intentionally left alone: markdown reads `__x__` as
+ * emphasis, so a token in prose would render as bold text.
  *
- * JSX `<Code>` blocks in .mdx are not markdown nodes and are unaffected; those
- * interpolate `${integrity.version}` directly.
- *
- * @param {{ version: string, token?: string }} options
+ * @param {{ tokens: Record<string, string> }} options
  */
-export function remarkCdnVersion({version, token = '__VERSION__'} = {}) {
-    if (!version) throw new Error('remarkCdnVersion: version is required');
-    const sub = (s) => typeof s === 'string' ? s.split(token).join(version) : s;
+import { substituteTokens } from './cdn-tokens.js';
+
+export function remarkCdnVersion({tokens} = {}) {
+    if (!tokens || !Object.keys(tokens).length) {
+        throw new Error('remarkCdnVersion: tokens is required');
+    }
+    const sub = (s) => substituteTokens(s, tokens);
     return function (tree) {
         replace(tree, sub);
     };

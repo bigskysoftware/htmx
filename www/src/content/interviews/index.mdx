@@ -5,13 +5,14 @@ description: "Conversations with creators and thinkers in the hypermedia space"
 
 import { getFolder } from '../../lib/content';
 import IndexTable from '../../components/IndexTable.astro';
+import { formatDate } from '../../lib/utils';
 
 export const interviewFolder = await getFolder('interviews');
 export const interviews = interviewFolder.files.map(e => ({
     title: e.frontmatter.title,
     url: e.url,
     author: e.frontmatter.authors?.join(', '),
-    date: e.frontmatter.created ? new Date(e.frontmatter.created).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'}) : undefined,
+    date: formatDate(e.frontmatter.created),
 }));
 
 <IndexTable>

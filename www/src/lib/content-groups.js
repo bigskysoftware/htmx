@@ -19,21 +19,3 @@ export function groupFilesByCategory(files, categories) {
         files: files.filter(file => file.frontmatter.category === category),
     })).filter(group => group.files.length > 0);
 }
-
-export function buildCategorySidebar(folder, categories) {
-    return {
-        ...folder,
-        files: [],
-        folders: groupFilesByCategory(folder.files, categories).map(group => ({
-            path: `${folder.path}#${group.slug}`,
-            folder: folder.folder,
-            slug: group.slug,
-            url: `${folder.url}#${group.slug}`,
-            frontmatter: {title: group.category},
-            breadcrumbs: [],
-            files: group.files,
-            folders: [],
-            allFiles: group.files,
-        })),
-    };
-}

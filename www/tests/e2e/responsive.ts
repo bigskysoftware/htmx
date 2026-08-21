@@ -42,17 +42,17 @@ test.describe('Responsive behavior', () => {
         await expect(page).toHaveURL('/docs');
     });
 
-    test('mobile sidebar toggle works on content pages', async ({ page }) => {
-        await page.goto('/reference/attributes/hx-get');
+    test('page nav collapses to a disclosure on narrow viewports', async ({ page }) => {
+        await page.goto('/docs');
 
-        // Toggle the sidebar checkbox (the label doesn't render due to nested slot limitation)
-        await page.evaluate(() => {
-            const checkbox = document.getElementById('sidebar-toggle-mobile') as HTMLInputElement;
-            if (checkbox) checkbox.checked = true;
-        });
+        // The desktop rail is lg-and-up only.
+        await expect(page.locator('#page-nav')).not.toBeVisible();
 
-        // Sidebar nav should become visible
-        await expect(page.locator('#sidebar-nav')).toBeVisible();
+        const disclosure = page.locator('#page-nav-disclosure');
+        await expect(disclosure).toBeVisible();
+
+        await disclosure.locator('summary').click();
+        await expect(page.locator('#page-nav-mobile a[href="#installing-htmx"]')).toBeVisible();
     });
 
     test('mobile search opens via evaluate', async ({ page }) => {

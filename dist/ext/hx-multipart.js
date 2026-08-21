@@ -97,6 +97,7 @@
             abort: ctx.request.abort,
             abortController: null,
             iterator: null,
+            lastPartId: null,
             delayCanceller: null,
             visibilityHandler: null,
             unpauseResolver: null,
@@ -171,15 +172,23 @@
                     let ac = new AbortController();
                     connection.abortController = ac;
                     try {
+                        let headers = {...ctx.request.headers};
+                        if (connection.lastPartId != null) {
+                            for (let name in headers) {
+                                if (name.toLowerCase() === 'hx-last-part-id') delete headers[name];
+                            }
+                            if (connection.lastPartId) headers['HX-Last-Part-ID'] = connection.lastPartId;
+                        }
                         currentResponse = await fetch(ctx.request.action, {
                             ...ctx.request,
+                            headers,
                             signal: ac.signal
                         });
                     } catch (error) {
                         if (!ac.signal.aborted) {
                             api.triggerHtmxEvent(element, 'htmx:multipart:error', {
-                                error,
-                                url: ctx.request.action
+                                connection,
+                                error
                             });
                         }
                         connection.attempt++;
@@ -188,9 +197,9 @@
 
                     if (!currentResponse.ok) {
                         api.triggerHtmxEvent(element, 'htmx:multipart:error', {
+                            connection,
                             error: new Error(`Multipart reconnect failed with status ${currentResponse.status}`),
-                            status: currentResponse.status,
-                            url: ctx.request.action
+                            status: currentResponse.status
                         });
                         connection.attempt++;
                         continue;
@@ -200,9 +209,9 @@
                     let nextType = contentType.split(';', 1)[0].trim().toLowerCase();
                     if (nextType !== type) {
                         api.triggerHtmxEvent(element, 'htmx:multipart:error', {
+                            connection,
                             error: new Error(`Multipart reconnect returned ${nextType || 'no Content-Type'}`),
-                            status: currentResponse.status,
-                            url: ctx.request.action
+                            status: currentResponse.status
                         });
                         connection.attempt++;
                         continue;
@@ -215,6 +224,8 @@
                 }
 
                 let pending = new Set();
+                let checkpoints = [];
+                let checkpointIndex = 0;
                 let iterator = currentResponse.parts()[Symbol.asyncIterator]();
                 connection.iterator = iterator;
 
@@ -225,6 +236,7 @@
 
                         let pendingWork = [];
                         let detail = {
+                            connection,
                             ctx,
                             part,
                             cancelled: false,
@@ -246,8 +258,11 @@
                             reswap,   // HX-Reswap
                             retarget, // HX-Retarget
                             reselect, // HX-Reselect
+                            partId,   // HX-Part-ID
                             ...actions // other HX-* headers in camelCase
                         } = extractPartActions(part.headers);
+                        let checkpoint = {id: partId, completed: false};
+                        checkpoints.push(checkpoint);
 
                         // Let part headers override envelope and request defaults.
                         swap = reswap ?? swap ?? defaultSwap;
@@ -272,7 +287,17 @@
                                 });
                             }
 
-                            api.triggerHtmxEvent(ctx.sourceElement, 'htmx:multipart:after:part', {ctx, part});
+                            checkpoint.completed = true;
+                            while (checkpoints[checkpointIndex]?.completed) {
+                                let completed = checkpoints[checkpointIndex++];
+                                if (completed.id !== undefined) connection.lastPartId = completed.id;
+                            }
+                            if (checkpointIndex === checkpoints.length) {
+                                checkpoints.length = 0;
+                                checkpointIndex = 0;
+                            }
+
+                            api.triggerHtmxEvent(ctx.sourceElement, 'htmx:multipart:after:part', {connection, ctx, part});
                         })();
 
                         if (type === 'multipart/parallel') {
@@ -287,10 +312,11 @@
                     }
                     await Promise.all(pending);
                 } catch (error) {
+                    await Promise.allSettled(pending);
                     if (!connection.cancelled) {
                         api.triggerHtmxEvent(element, 'htmx:multipart:error', {
-                            error,
-                            url: ctx.request.action
+                            connection,
+                            error
                         });
                     }
                 } finally {
@@ -528,7 +554,7 @@ class MultipartParser {
   onPull = null
 
   constructor(boundary) {
-    // RFC 2046 §5.1.1 limits the boundary to 1-70 ASCII characters from a
+    // RFC 2046 S5.1.1 limits the boundary to 1-70 ASCII characters from a
     // small subset. Real-world implementations stick to printable ASCII; we
     // enforce that broader range so non-ASCII boundaries fail loudly instead
     // of silently misaligning the parser's char-length arithmetic.
@@ -562,7 +588,7 @@ class MultipartParser {
    * @param {((part: BodyPart) => void) | null} [onPart]
    */
   write(chunk, onPart = null) {
-    // Discard epilogue bytes after the closing boundary (RFC 2046 §5.1.1).
+    // Discard epilogue bytes after the closing boundary (RFC 2046 S5.1.1).
     if (this.#state === State.DONE) return
 
     let index = 0
@@ -698,7 +724,7 @@ class MultipartParser {
           this.#buffer = chunk
           break
         }
-        // Discard preamble bytes before the opening boundary (RFC 2046 §5.1.1).
+        // Discard preamble bytes before the opening boundary (RFC 2046 S5.1.1).
         const openingIndex = this.#findOpeningBoundary(chunk)
         if (openingIndex === -1) {
           const tailStart = chunkLength - (this.#openingBoundaryLength - 1)

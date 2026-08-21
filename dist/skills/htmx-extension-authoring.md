@@ -66,9 +66,15 @@ Include the script after htmx.js. Optionally restrict which extensions can regis
 
 When the `extensions` config is set, only listed extensions load. Without it, all registered extensions are active.
 
+The whitelist matches the name passed to `registerExtension()`, not the file name. The shipped extensions are
+not consistent about this: `hx-sse.js` registers as `sse`, `hx-preload.js` as `preload`, `htmx-2-compat.js` as
+`compat`, but `hx-live.js` registers as `hx-live`. Pick one and document it for your own extension.
+
 ## Event Hooks Reference
 
-Hook names use underscores (not colons). All hooks receive `(elt, detail)` unless noted.
+A hook name is the event name with every colon replaced by an underscore. `htmx:before:morph:node`
+becomes `htmx_before_morph_node`. Any event htmx dispatches can be hooked this way, including events
+that other extensions dispatch. All hooks receive `(elt, detail)` unless noted.
 
 ### Core Lifecycle
 
@@ -80,6 +86,7 @@ Hook names use underscores (not colons). All hooks receive `(elt, detail)` unles
 | `htmx_after_process` | `htmx:after:process` | After processing element |
 | `htmx_before_cleanup` | `htmx:before:cleanup` | Before cleaning up element |
 | `htmx_after_cleanup` | `htmx:after:cleanup` | After cleaning up element |
+| `htmx_before_on_init` | `htmx:before:on:init` | Before an `hx-on` handler is installed |
 
 ### Request Lifecycle
 
@@ -90,7 +97,9 @@ Hook names use underscores (not colons). All hooks receive `(elt, detail)` unles
 | `htmx_before_response` | `htmx:before:response` | After fetch response, before body consumed |
 | `htmx_after_request` | `htmx:after:request` | After request completes |
 | `htmx_finally_request` | `htmx:finally:request` | When request completes, fails, or is cancelled |
+| `htmx_confirm` | `htmx:confirm` | After trigger, before request. Detail carries `issueRequest` and `dropRequest` |
 | `htmx_error` | `htmx:error` | On any error |
+| `htmx_response_error` | `htmx:response:error` | The server returned an HTTP error status |
 
 ### Swap
 
@@ -101,6 +110,8 @@ Hook names use underscores (not colons). All hooks receive `(elt, detail)` unles
 | `htmx_finally_swap` | `htmx:finally:swap` | After swap (success or error) |
 | `htmx_before_settle` | `htmx:before:settle` | Before settle phase |
 | `htmx_after_settle` | `htmx:after:settle` | After settle phase |
+| `htmx_before_morph_node` | `htmx:before:morph:node` | Before a node is morphed. Cancel to keep the existing node |
+| `htmx_before_morph_attr` | `htmx:before:morph:attr` | Before an attribute is morphed. Cancel to keep the existing value |
 | `handle_swap` | _(direct call)_ | Custom swap handler. Signature: `(swapStyle, target, fragment, swapSpec)`. Return truthy if handled. |
 
 ### History
@@ -125,6 +136,11 @@ Hook names use underscores (not colons). All hooks receive `(elt, detail)` unles
 | Hook | Event |
 |------|-------|
 | `htmx_after_implicitInheritance` | `htmx:after:implicitInheritance` |
+| `htmx_process_<type>` | _(extensions only)_ |
+
+`htmx_process_<type>` handles a `<template hx type="<type>">` element in a response. `hx-upsert.js` uses
+`htmx_process_upsert` this way. `htmx_before_morph_node`, `htmx_before_morph_attr` and
+`htmx_after_implicitInheritance` also reach extensions only. They are never dispatched to the DOM.
 
 ## Cancelling Events
 
@@ -291,24 +307,24 @@ Key patterns:
 - Use `htmx_before_cleanup` to tear down listeners
 - Use `detail.ctx.fetch` to override the fetch call
 
-### Pattern: Optimistic UI (request/error/swap lifecycle)
+### Pattern: Pending UI (request/error/swap lifecycle)
 
-From `src/ext/hx-optimistic.js` -- shows optimistic content during request:
+From `src/ext/hx-pending.js` -- shows pending content during request:
 
 ```javascript
 (() => {
-    htmx.registerExtension('hx-optimistic', {
+    htmx.registerExtension('hx-pending', {
         htmx_before_request: (elt, detail) => {
-            // Insert optimistic content before request fires
-            insertOptimisticContent(detail.ctx);
+            // Insert pending content before request fires
+            insertPendingContent(detail.ctx);
         },
         htmx_error: (elt, detail) => {
             // Revert on error
-            removeOptimisticContent(detail.ctx);
+            removePendingContent(detail.ctx);
         },
         htmx_before_swap: (elt, detail) => {
-            // Remove optimistic content before real swap
-            removeOptimisticContent(detail.ctx);
+            // Remove pending content before real swap
+            removePendingContent(detail.ctx);
         },
     });
 })();
@@ -317,7 +333,7 @@ From `src/ext/hx-optimistic.js` -- shows optimistic content during request:
 Key patterns:
 - No `init` needed if you don't use the internal API
 - Store state on `detail.ctx` (per-request, not per-element)
-- Handle error case to revert optimistic changes
+- Handle error case to revert pending changes
 - Clean up before swap so real content replaces cleanly
 
 ## Migrating from htmx 2.x Extensions
