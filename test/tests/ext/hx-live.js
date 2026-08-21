@@ -1303,7 +1303,24 @@ describe('hx-live extension', function () {
         delete window.__ownership;
     });
 
-    it('q() state is local and q().closest state cascades', function() {
+    it('bare local forces element scoping and closest() selects an ancestor', function() {
+        let button = createProcessedHTML(`
+            <section class="card" hidden data-count="1">
+                <button hx-on:click="window.__scoped = [
+                    data.count, local.data.count,
+                    local.attr.hidden, closest.attr.hidden,
+                    closest('.card').local.data.count, closest('.missing').count
+                ]">Check</button>
+            </section>
+        `).querySelector('button');
+
+        button.click();
+
+        window.__scoped.should.deep.equal([1, undefined, false, true, 1, 0]);
+        delete window.__scoped;
+    });
+
+    it('q() data cascades, other q() state is local', function() {
         playground().innerHTML = `
             <section hidden data-count="1" aria-busy="false" class="active">
                 <button id="item"></button>
@@ -1311,15 +1328,78 @@ describe('hx-live extension', function () {
         `;
         let item = htmx.live.q('#item');
 
+        // data is DOM scoped everywhere
+        item.data.count.should.equal(1);
+
+        // everything else stays on the element itself
         item.attr.hidden.should.equal(false);
-        assert.isUndefined(item.data.count);
         assert.isUndefined(item.aria.busy);
         item.class.active.should.equal(false);
 
+        // local forces element scoping, including for data
+        assert.isUndefined(item.local.data.count);
+        item.local.attr.hidden.should.equal(false);
+        assert.isUndefined(item.local.aria.busy);
+        item.local.class.active.should.equal(false);
+
+        // closest forces DOM scoping for everything
         item.closest.attr.hidden.should.equal(true);
         item.closest.data.count.should.equal(1);
         item.closest.aria.busy.should.equal(false);
         item.closest.class.active.should.equal(true);
+    });
+
+    it('q() data writes go to the nearest owner', function() {
+        playground().innerHTML = `
+            <section data-count="1">
+                <button id="a"></button><button id="b"></button>
+            </section>
+        `;
+        let section = playground().querySelector('section');
+
+        htmx.live.q('button').data.count = 5;
+        section.dataset.count.should.equal('5');
+        assert.isNull(playground().querySelector('#a').getAttribute('data-count'));
+        assert.isNull(playground().querySelector('#b').getAttribute('data-count'));
+
+        // no owner in the ancestry: the write lands on each element
+        htmx.live.q('button').data.other = 'x';
+        playground().querySelector('#a').dataset.other.should.equal('x');
+        playground().querySelector('#b').dataset.other.should.equal('x');
+
+        // local forces the write onto the elements themselves
+        htmx.live.q('button').local.data.count = 9;
+        playground().querySelector('#a').dataset.count.should.equal('9');
+        playground().querySelector('#b').dataset.count.should.equal('9');
+        section.dataset.count.should.equal('5');
+    });
+
+    it('closest() selects the nearest matching ancestor', function() {
+        playground().innerHTML = `
+            <section class="card" data-name="outer">
+                <article class="card" data-name="inner">
+                    <button id="item"></button>
+                </article>
+            </section>
+        `;
+        let item = htmx.live.q('#item');
+
+        item.closest('.card').count.should.equal(1);
+        item.closest('.card').local.data.name.should.equal('inner');
+        item.closest('section').local.data.name.should.equal('outer');
+        item.closest('.missing').count.should.equal(0);
+
+        // still readable as a state bag
+        item.closest.data.name.should.equal('inner');
+    });
+
+    it('closest() de-duplicates a shared ancestor', function() {
+        playground().innerHTML = `
+            <section class="card">
+                <button class="item"></button><button class="item"></button>
+            </section>
+        `;
+        htmx.live.q('.item').closest('.card').count.should.equal(1);
     });
 
     it('closest class supports class operations', function() {

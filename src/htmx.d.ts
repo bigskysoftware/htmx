@@ -273,6 +273,15 @@ export namespace HxLive {
     readonly class: ClassProxy;
   }
 
+  /**
+   * Reads as a cascading state bag and calls as a selector.
+   * `closest.data.count` resolves the nearest owner of `data-count`.
+   * `closest('.card')` returns the nearest matching ancestor.
+   */
+  export interface Closest extends Scope {
+    (selector: string): Query;
+  }
+
   export interface Query {
     /** Number of matched elements. */
     count: number;
@@ -285,14 +294,16 @@ export namespace HxLive {
     q(selector: string): Query;
     /** Typed attributes on the selected elements themselves. */
     readonly attr: AttrProxy;
-    /** Typed `data-*` values on the selected elements themselves. */
+    /** Typed `data-*` values from the nearest element carrying each key. */
     readonly data: DataProxy;
     /** Typed `aria-*` values on the selected elements themselves. */
     readonly aria: AriaProxy;
     /** Class state and `classList` methods on the selected elements themselves. */
     readonly class: ClassProxy & DOMTokenList;
-    /** Typed state on the closest match for each selected element. */
-    readonly closest: Scope;
+    /** Forces element scoping for every bag, including `data`. */
+    readonly local: Scope;
+    /** Forces DOM scoping for every bag. Also callable as `closest(selector)`. */
+    readonly closest: Closest;
     /**
      * Move a class or attribute from sibling/scoped elements to all matched elements.
      * @param scope - CSS selector, DOM node, or `{ from: string }`. Defaults to parent element.

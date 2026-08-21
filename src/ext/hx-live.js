@@ -321,9 +321,27 @@
         return scope;
     }
 
+    // `closest` reads as a cascading state bag and calls as a selector:
+    //   closest.data.count      nearest owner of data-count
+    //   closest('.card').data   query proxy for the nearest matching ancestor
+    function makeClosest(elts) {
+        let scope;
+        return new Proxy(function () {}, {
+            apply: (_, __, [selector]) => {
+                let out = new Set();
+                for (let elt of elts) {
+                    let match = elt.closest?.(selector);
+                    if (match) out.add(match);
+                }
+                return qProxy([...out]);
+            },
+            get: (_, p) => (scope ||= makeStateScope(elts, true))[p]
+        });
+    }
+
     function makeExpressionScope(elt) {
         let local = makeStateScope([elt], false);
-        let closest = makeStateScope([elt], true);
+        let closest = makeClosest([elt]);
         return {
             q: makeQ(elt),
             forEvent: (...args) => forEvent(elt, ...args),
@@ -338,6 +356,7 @@
             style: elt.style,
             data: closest.data,
             aria: local.aria,
+            local,
             closest
         };
     }
@@ -604,10 +623,12 @@
                 if (p === 'insert') return (pos, s) => { elts.forEach(e => e.insertAdjacentHTML(positions[pos], s)); return proxy; };
                 if (p === 'take') return (name, scope) => { applyTake(elts, name, scope); return proxy; };
                 if (p === 'toggle') return (name, ...values) => { elts.forEach(e => applyToggle(e, name, ...values)); return proxy; };
-                if (p === 'attr' || p === 'data' || p === 'class' || p === 'aria') {
+                if (p === 'attr' || p === 'class' || p === 'aria') {
                     return (local ||= makeStateScope(elts, false))[p];
                 }
-                if (p === 'closest') return closest ||= makeStateScope(elts, true);
+                if (p === 'data') return (closest ||= makeClosest(elts)).data;
+                if (p === 'local') return local ||= makeStateScope(elts, false);
+                if (p === 'closest') return closest ||= makeClosest(elts);
                 if (arrayMethods.includes(p)) return elts[p].bind(elts);
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];

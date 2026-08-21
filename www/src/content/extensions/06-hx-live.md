@@ -330,7 +330,7 @@ q('.foo in #scope')             // restrict to a specific root
 q('.foo in this')               // restrict to the current element
 ```
 
-`next`, `previous`, and `closest` resolve against `this`. They require an expression scope with a current element.
+`next`, `previous`, and `closest` resolve against `this`. They require an expression scope with a current element. For an ancestor lookup that works anywhere, use [`closest(selector)`](#closestselector).
 
 **Chaining** 
 
@@ -358,18 +358,45 @@ q('.list').insert('end', '<li>new</li>') // before / after / start / end
 
 ### Local and Closest State
 
-Bare `attr.*`, `aria.*`, and `class.*` use the current element. Bare `data.*` uses the closest element carrying that `data-*` attribute.
+Each state bag has a default scope. `data` is DOM scoped. Every other bag is element scoped.
 
-`q(...)` makes every state bag local to the selected elements. Add `.closest` to use the closest match instead:
-
-| Current expression | Selected elements | Closest match |
+| Bag | Default scope | Resolves to |
 |---|---|---|
-| `attr.hidden` | `q('.item').attr.hidden` | `q('.item').closest.attr.hidden` |
-| `data.count` | `q('.item').data.count` | `q('.item').closest.data.count` |
-| `aria.busy` | `q('.item').aria.busy` | `q('.item').closest.aria.busy` |
-| `class.active` | `q('.item').class.active` | `q('.item').closest.class.active` |
+| `data.*` | DOM | the closest element carrying that `data-*` attribute |
+| `attr.*` | element | the element itself |
+| `aria.*` | element | the element itself |
+| `class.*` | element | the element itself |
 
-A closest write uses the selected element when no match exists. A closest delete does nothing when no match exists. When several selected elements share a match, hx-live updates it once.
+The default is the same for a bare expression and for `q(...)`:
+
+```js
+data.count             // nearest data-count, starting at this element
+q('.item').data.count  // nearest data-count, starting at each .item
+attr.hidden            // the hidden attribute on this element
+q('.item').attr.hidden // the hidden attribute on each .item
+```
+
+Two bags override the default. `local` forces element scoping. `closest` forces DOM scoping.
+
+| | Element scope | DOM scope |
+|---|---|---|
+| Current expression | `local.data.count` | `closest.attr.hidden` |
+| Selected elements | `q('.item').local.data.count` | `q('.item').closest.attr.hidden` |
+
+A DOM scoped write uses the element itself when no owner exists. A DOM scoped delete does nothing when no owner exists. When several elements share an owner, hx-live updates it once.
+
+### `closest(selector)`
+
+`closest` also calls as a selector. It returns a query proxy for the nearest ancestor that matches, starting at the element itself.
+
+```js
+closest('.card')                  // nearest .card, including this element
+closest('.card').data.name        // that card's nearest data-name
+closest('.card').local.data.name  // that card's own data-name
+q('.item').closest('.card')       // one entry per distinct card
+```
+
+With no match the result holds zero elements, so reads return `undefined` and writes do nothing.
 
 ### `attr`
 
@@ -1061,6 +1088,9 @@ htmx.live.toggle('.tab', 'data-view', 'grid', 'list')
 htmx.live.debounce(200)
 htmx.live.forEvent(window, 'resize', '2s')
 htmx.live.nextFrame()
+htmx.live.q('.row').local.data.count    // force element scoping
+htmx.live.q('.row').closest.data.count  // force DOM scoping
+htmx.live.q('.row').closest('.card')    // nearest matching ancestor
 ```
 
 `htmx.live.refresh()` forces a recompute. Use it when an expression reads from a source the observer cannot see (a JS variable, a getter, an external store) and you've just mutated it.
@@ -1070,7 +1100,11 @@ window.appState = 'loading';
 htmx.live.refresh();
 ```
 
-Selector directionals (`next`, `previous`, `closest`) need a current element, so they do not work from `htmx.live.q`.
+Selector directionals (`next`, `previous`, `closest`) need a current element, so the string forms do not work from `htmx.live.q`. The `closest(selector)` call works anywhere, because it starts at the selected elements:
+
+```js
+htmx.live.q('.item').closest('.card').data.name
+```
 
 ## Configuration
 
