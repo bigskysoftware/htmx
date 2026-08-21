@@ -1756,6 +1756,24 @@ describe('hx-live extension', function () {
         classes.contains('toggle').should.equal(false);
     });
 
+    it('DOM methods no-op when q() has no matches', function() {
+        let empty = htmx.live.q('.missing');
+
+        // methods resolve and do nothing rather than throwing
+        assert.isUndefined(empty.matches('div'));
+        assert.isUndefined(empty.remove());
+        assert.isUndefined(empty.focus());
+        assert.isUndefined(empty.getAttribute('id'));
+        assert.isUndefined(empty.setAttribute('id', 'x'));
+
+        // properties and unknown names stay undefined
+        assert.isUndefined(empty.textContent);
+        assert.isUndefined(empty.className);
+        assert.isUndefined(empty.notARealMember);
+
+        playground().children.length.should.equal(0);
+    });
+
     it('state is empty when q() has no matches', function() {
         let empty = htmx.live.q('.missing');
 

@@ -615,6 +615,19 @@
         htmx.process(parent);
     }
 
+    // Shared rather than a fresh closure per access, so an empty selection has a
+    // stable identity and allocates nothing.
+    let noop = () => undefined;
+
+    // Find a DOM member's descriptor without invoking it. Reading the value off a
+    // prototype would call accessors with the wrong `this` and throw.
+    function domDescriptor(name) {
+        for (let proto = HTMLElement.prototype; proto; proto = Object.getPrototypeOf(proto)) {
+            let d = Object.getOwnPropertyDescriptor(proto, name);
+            if (d) return d;
+        }
+    }
+
     function qProxy(elts) {
         let local, closest;
         let proxy = new Proxy({}, {
@@ -638,6 +651,8 @@
                 if (p === 'local') return local ||= makeStateScope(elts, false);
                 if (p === 'closest') return closest ||= makeClosest(elts);
                 if (arrayMethods.includes(p)) return elts[p].bind(elts);
+                // if no elts, look up name in DOM api and determine if it's a function
+                if (!elts.length) return typeof domDescriptor(p)?.value === 'function' ? noop : undefined;
                 let v = elts[0]?.[p];
                 if (typeof v === 'function') return (...a) => elts.map(e => e[p](...a))[0];
                 if (v && typeof v === 'object') return qProxy(elts.map(e => e[p]));
