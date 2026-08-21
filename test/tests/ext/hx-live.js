@@ -628,6 +628,64 @@ describe('hx-live extension', function () {
         playground().querySelectorAll('.added').length.should.equal(1);
     });
 
+    // htmx.process() stamps data-htmx-powered, which is noise for markup assertions
+    let clean = html => html.replace(/ data-htmx-powered="true"/g, '');
+
+    it('insert() places content at all four adjacent positions', function() {
+        playground().innerHTML = '<div><b id="anchor">X</b></div>';
+        let p = htmx.live.q('#anchor');
+        p.insert('before', '<i>B</i>');
+        p.insert('after', '<i>A</i>');
+        p.insert('start', '<i>S</i>');
+        p.insert('end', '<i>E</i>');
+        clean(playground().querySelector('div').innerHTML)
+            .should.equal('<i>B</i><b id="anchor"><i>S</i>X<i>E</i></b><i>A</i>');
+    });
+
+    it('insert("into") replaces the children', function() {
+        playground().innerHTML = '<div class="x"><p>old</p><p>gone</p></div>';
+        htmx.live.q('.x').insert('into', '<span class="added">new</span>');
+        let div = playground().querySelector('.x');
+        clean(div.innerHTML).should.equal('<span class="added">new</span>');
+        div.isConnected.should.equal(true);
+    });
+
+    it('insert("replace") replaces the element itself', function() {
+        playground().innerHTML = '<div><b>keep</b><i class="x">gone</i><b>keep</b></div>';
+        htmx.live.q('.x').insert('replace', '<em class="added">new</em>');
+        clean(playground().querySelector('div').innerHTML)
+            .should.equal('<b>keep</b><em class="added">new</em><b>keep</b>');
+    });
+
+    it('insert() processes the content it adds', function() {
+        playground().innerHTML = '<div class="x"></div>';
+        htmx.live.q('.x').insert('end',
+            '<button id="ins" hx-on:click="this.textContent = \'ran\'">go</button>');
+        let btn = playground().querySelector('#ins');
+        btn.click();
+        btn.textContent.should.equal('ran');
+    });
+
+    it('insert() processes content for into and replace too', function() {
+        playground().innerHTML = '<div class="x"></div><div class="y"></div>';
+        htmx.live.q('.x').insert('into',
+            '<button class="a" hx-on:click="this.textContent = \'ran\'">go</button>');
+        htmx.live.q('.y').insert('replace',
+            '<button class="b" hx-on:click="this.textContent = \'ran\'">go</button>');
+        for (let sel of ['.a', '.b']) {
+            let btn = playground().querySelector(sel);
+            btn.click();
+            btn.textContent.should.equal('ran');
+        }
+    });
+
+    it('insert() keeps parsing context for table rows', function() {
+        playground().innerHTML = '<table><tbody class="x"><tr><td>one</td></tr></tbody></table>';
+        htmx.live.q('.x').insert('end', '<tr class="added"><td>two</td></tr>');
+        playground().querySelectorAll('tbody > tr').length.should.equal(2);
+        playground().querySelector('tr.added').parentElement.tagName.should.equal('TBODY');
+    });
+
     it('insert() scope helper inserts HTML relative to this', function() {
         playground().innerHTML = `
             <button hx-on:click="insert('after', '<span class=&quot;added&quot;>+</span>')">Add</button>

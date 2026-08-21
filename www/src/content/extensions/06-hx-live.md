@@ -825,14 +825,18 @@ Dispatch a `CustomEvent` from this element.
 
 ### `insert(position, html)`
 
-Insert an HTML string. Wraps [`insertAdjacentHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML) with friendlier position names: `before` and `after` for siblings, `start` and `end` for children.
+Insert an HTML string, then process what was added, so htmx and hx-live attributes in the new content work.
 
 ```js
-insert('start',  '<li>first</li>')   // first child
-insert('end',    '<li>last</li>')    // last child
-insert('before', '<hr>')             // sibling before
-insert('after',  '<hr>')             // sibling after
+insert('start',   '<li>first</li>')  // first child
+insert('end',     '<li>last</li>')   // last child
+insert('before',  '<hr>')            // sibling before
+insert('after',   '<hr>')            // sibling after
+insert('into',    '<p>fresh</p>')    // replace the children
+insert('replace', '<p>fresh</p>')    // replace the element itself
 ```
+
+Parsing stays context sensitive, so a `<tr>` inserted into a `<tbody>` lands correctly. After `replace` the original element is detached.
 
 ```html
 <ul hx-on:click="insert('end', '<li>+</li>')">Click to add a row</ul>

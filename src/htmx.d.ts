@@ -320,11 +320,13 @@ export namespace HxLive {
      */
     trigger(type: string, detail?: any, bubbles?: boolean): Query;
     /**
-     * Insert HTML relative to all matched elements.
+     * Insert HTML relative to all matched elements, then process what was added.
      * - `'before'`/`'after'`: sibling before/after
      * - `'start'`/`'end'`: first/last child
+     * - `'into'`: replace the children
+     * - `'replace'`: replace the element itself
      */
-    insert(pos: 'before' | 'after' | 'start' | 'end', html: string): Query;
+    insert(pos: 'before' | 'after' | 'start' | 'end' | 'into' | 'replace', html: string): Query;
     /** Iterate over matched elements. */
     [Symbol.iterator](): IterableIterator<Element>;
     /** DOM property passthrough: reads from first element, writes to all. */

@@ -351,7 +351,7 @@
             take: (name, scope) => applyTake([elt], name, scope),
             toggle: (name, ...values) => applyToggle(elt, name, ...values),
             attr: local.attr,
-            insert: (pos, html) => elt.insertAdjacentHTML(positions[pos], html),
+            insert: (pos, html) => insertContent(elt, pos, html),
             matches: sel => elt.matches(sel),
             style: elt.style,
             data: closest.data,
@@ -607,6 +607,14 @@
 
     let positions = { before: 'beforebegin', after: 'afterend', start: 'afterbegin', end: 'beforeend' };
 
+    function insertContent(elt, pos, html) {
+        let parent = elt.parentElement;
+        if (pos === 'into') elt.innerHTML = html;
+        else if (pos === 'replace') elt.outerHTML = html;
+        else elt.insertAdjacentHTML(positions[pos], html);
+        htmx.process(parent);
+    }
+
     function qProxy(elts) {
         let local, closest;
         let proxy = new Proxy({}, {
@@ -620,7 +628,7 @@
                     return qProxy([...out]);
                 };
                 if (p === 'trigger') return (t, d, b) => { elts.forEach(e => htmx.trigger(e, t, d, b)); return proxy; };
-                if (p === 'insert') return (pos, s) => { elts.forEach(e => e.insertAdjacentHTML(positions[pos], s)); return proxy; };
+                if (p === 'insert') return (pos, s) => { elts.forEach(e => insertContent(e, pos, s)); return proxy; };
                 if (p === 'take') return (name, scope) => { applyTake(elts, name, scope); return proxy; };
                 if (p === 'toggle') return (name, ...values) => { elts.forEach(e => applyToggle(e, name, ...values)); return proxy; };
                 if (p === 'attr' || p === 'class' || p === 'aria') {
