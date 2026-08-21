@@ -82,6 +82,7 @@ const SEARCH_RANKING: [string | string[], string][] = [
     ['hx-target', 'hx-target'],
     ['hx-trigger', 'hx-trigger'],
     ['hx-boost', 'hx-boost'],
+    ['boost', 'hx-boost'],  // bare "boost" surfaces the attribute, not the docs section
     ['hx-push-url', 'hx-push-url'],
     ['hx-select', 'hx-select'],
     ['hx-swap-oob', 'hx-swap-oob'],
@@ -111,15 +112,15 @@ const SEARCH_RANKING: [string | string[], string][] = [
 
     // ── Docs (with keyword aliases) ──
     [['installing htmx', 'install htmx', 'cdn', 'npm'], 'Installing htmx'],
-    [['boosting', 'boost', 'progressive enhancement'], 'Boosting'],
-    [['history', 'back button', 'pushState'], 'History'],
+    ['boosting', 'Link & Form Boosting'],
+    ['browser history', 'Browser History Support'],
     ['extensions', 'Extensions'],
     [['websockets', 'ws'], 'hx-ws'],
     [['server-sent events', 'server sent events', 'event stream'], 'hx-sse'],
-    ['validation', 'Validation'],
+    ['validation', 'Active Validation'],
     ['inheritance', 'Attribute Inheritance'],
-    [['synchronization', 'sync', 'debounce', 'throttle', 'race condition'], 'Synchronization'],
-    [['CSS Transitions', 'fade'], 'CSS Transitions'],
+    [['sync', 'synchronizing'], 'Synchronizing Requests'],
+    ['CSS Transitions', 'Swapping Animations'],
     [['oob', 'out of band'], 'Multi-Target Updates'],
     [['javascript', 'scripting', 'hyperscript'], 'Client-Side Scripting'],
     ['alpine', 'hx-alpine-compat'],
@@ -129,7 +130,7 @@ const SEARCH_RANKING: [string | string[], string][] = [
     [['configuration', 'settings', 'meta tag'], 'Configuration'],
     ['config', 'Config'],
     [['debugging', 'debug', 'devtools', 'logAll'], 'Debugging'],
-    ['XHR', 'Requests & Responses'],
+    [['requests', 'issuing requests'], 'Issuing Requests & Handling Responses'],
 
     // ── Patterns ──
     ['infinite scroll', 'Infinite Scroll'],
