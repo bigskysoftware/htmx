@@ -174,4 +174,4 @@ htmx.registerExtension("my-swap", {
 });
 ```
 
-For migrating extensions written for htmx 2.x, see [Migrating Extensions to htmx 4](/docs/migrating-extensions-to-4).
+For migrating extensions written for htmx 2.x, see [Migrating Extensions to htmx 4](/docs/extension-htmx-4-migration-guide).

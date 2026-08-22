@@ -202,4 +202,4 @@ at warning level. `logAll` adds everything else.
 * [Client-Side Scripting](/docs#client-side-scripting)
 * [The `hx-on:*` attributes](/reference/attributes/hx-on)
 * [Events reference](/reference/events)
-* [Building Extensions](/docs/building-extensions), which hooks the same events from an extension
+* [Building Extensions](/docs/extension-authoring-guide), which hooks the same events from an extension

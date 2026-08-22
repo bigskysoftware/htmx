@@ -193,7 +193,7 @@ Output is `file:line` format, clickable in most editors.
 
 For more details see [What's New in 4.0](/docs/whats-new-in-htmx-4)
 
-Extension authors who need to port their extensions to htmx 4 can refer to  [Migrating Extensions to 4.0](/docs/migrating-extensions-to-4)
+Extension authors who need to port their extensions to htmx 4 can refer to  [Migrating Extensions to 4.0](/docs/extension-htmx-4-migration-guide)
 ## Issuing Requests & Handling Responses
 
 The crux of htmx is issuing HTTP request in response to events and then placing the response HTML into the document.
@@ -510,7 +510,7 @@ nodes in the DOM.
 Morphing rather than replacing content can do a better job preserving things like focus, video state, etc. by mutating 
 existing nodes in-place during a swap operation.
 
-See the [morph swap guide](/docs/morphing-swaps) for more information on using this technique.
+See the [morph swap guide](/docs/morphing-swaps-guide) for more information on using this technique.
 
 #### Swap Options
 
@@ -1534,7 +1534,7 @@ document.body.addEventListener('htmx:after:init', function (evt) {
 Here, we are using vanilla JavaScript to listen for an element being initialized by htmx and applying some additional
 logic to it with our own custom `setUpElement()` function.
 
-See [Using htmx Events](/docs/using-htmx-events) for more details on using htmx events effectively.
+See [Using htmx Events](/docs/htmx-events-guide) for more details on using htmx events effectively.
 
 ### The `htmx` Object API
 
@@ -1619,7 +1619,7 @@ hx-live also supports DOM-based reactivity:
 
 In this case, the paragraph will update as you enter text into the input.
 
-For more details, see the [`hx-live`](/extensions/hx-live) extension documentation.
+For more details, see the [`hx-live` Programming Guide](/docs/hx-live-guide) and the [`hx-live` extension reference](/extensions/hx-live).
 
 ### Other 3rd Party JavaScript
 
@@ -1760,7 +1760,7 @@ import 'htmx.org/dist/ext/hx-sse';
 
 ### Building Extensions
 
-If you wish to build your own htmx extension, see [Building Extensions](/docs/building-extensions).
+If you wish to build your own htmx extension, see [Building Extensions](/docs/extension-authoring-guide).
 
 ## Security Considerations
 
@@ -2007,7 +2007,7 @@ They are listed below:
 
 </div>
 
-You can set most options directly in JavaScript, or you can use a `meta` tag (accepts [HCON](/docs/hcon) or JSON):
+You can set most options directly in JavaScript, or you can use a `meta` tag (accepts [HCON](/docs/hcon-guide) or JSON):
 
 > **Note:** Some options are read only once during initialisation and must be set via the `meta` tag to take effect. These include `prefix`, `extensions`, and `metaCharacter`.
 

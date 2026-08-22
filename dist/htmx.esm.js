@@ -893,7 +893,9 @@ var htmx = (() => {
             let args = {}
             Object.assign(args, this.#apiMethods(thisArg))
             let scope = {};
-            this.#triggerExtensions(thisArg, "htmx:scope", { scope });
+            let detail = { scope, code };
+            this.#triggerExtensions(thisArg, "htmx:scope", detail);
+            code = detail.code;
             Object.assign(args, scope);
             Object.assign(args, obj)
             let keys = Object.keys(args);

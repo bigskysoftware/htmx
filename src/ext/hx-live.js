@@ -819,6 +819,7 @@
             cleanupLive(elt);
         },
         htmx_before_morph_attr: (elt, detail) => {
+            if (!liveQuery) buildLiveQuery();
             if (bindPrefixes.some(p => detail.attrName.startsWith(p))) cleanupLive(elt);
         },
         htmx_after_process: (elt) => {

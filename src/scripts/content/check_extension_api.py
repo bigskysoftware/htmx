@@ -38,7 +38,7 @@ runtime_names = re.findall(
 
 try:
     skill_section = marked_section(ROOT / "src/skills/htmx-extension-authoring.md")
-    docs_section = marked_section(ROOT / "www/src/content/docs/building-extensions.md")
+    docs_section = marked_section(ROOT / "www/src/content/docs/extension-authoring-guide.md")
 except ValueError as error:
     print(error, file=sys.stderr)
     raise SystemExit(1) from error

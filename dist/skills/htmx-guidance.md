@@ -150,7 +150,7 @@ Controls how response content is placed relative to the target. Default: `innerH
 | `showTarget:<selector>`   | Scroll this element into view instead of the target |
 | `strip:true`        | Remove outer wrapper element before swapping |
 | `focusScroll:true`  | Scroll to focused element                    |
-| `swapEmpty:true`    | Run the main swap even when the response body is empty |
+| `swapEmpty:true`    | Run the main swap even when nothing remains after OOB and partial content is removed |
 | `target:<selector>` | Retarget the swap                            |
 
 ## Attribute Inheritance (CRITICAL htmx 4 change)
@@ -220,7 +220,7 @@ Key config values:
 
 `prefix` is additive, not a replacement. `hx-get` and `data-hx-get` both work out of the box.
 
-Config values use [HCON](https://four.htmx.org/docs/hcon), which accepts JSON but also a shorter form:
+Config values use HCON, htmx's configuration object notation. HCON accepts JSON, but also a shorter form:
 
 ```html
 <meta name="htmx-config" content="defaultSwap:outerHTML, logAll:true">
@@ -489,7 +489,7 @@ htmx.ajax("GET", "/data", {target: "#result"})   // Programmatic request, return
 htmx.on("htmx:after:swap", (evt) => {})          // Event listener
 htmx.onLoad((elt) => {})                         // Callback for new content
 htmx.process(element)                            // Initialize htmx on dynamic content
-htmx.initialize(element)                         // Initialize a single element
+htmx.initialize()                                // Set up history and process document.body
 htmx.find("closest .container")                  // Extended CSS selector query
 htmx.findAll(".items")                           // Find all matching
 htmx.trigger(elt, "myEvent", {detail: ...})      // Fire custom event
@@ -665,7 +665,7 @@ modifier on attributes, or colon-separated event names like `htmx:after:swap`. T
 | `hx-disable` (stops htmx processing) | `hx-ignore`                                                   | Different purpose in each version                 |
 | `hx-ext="my-ext"`                    | Just include the script file                                  | No attribute needed; config whitelist is optional  |
 | `hx-request='{"timeout":5000}'`      | `hx-config='{"timeout":5000}'`                                | Renamed                                           |
-| `hx-prompt="Enter value"`            | [`hx-prompt` extension](/extensions/hx-prompt) (same syntax), or [`hx-on::config:request` one-liner](/extensions/hx-prompt#without-the-extension) | Restored via extension                            |
+| `hx-prompt="Enter value"`            | [`hx-prompt` extension](https://four.htmx.org/extensions/hx-prompt) (same syntax), or [`hx-on::config:request` one-liner](https://four.htmx.org/extensions/hx-prompt#without-the-extension) | Restored via extension                            |
 | `hx-disinherit="*"`                  | Not needed                                                    | Inheritance is explicit by default in htmx 4      |
 | `hx-vars`                            | `hx-vals` with `js:` prefix                                   | hx-vars removed                                   |
 | Attributes inherit implicitly        | Must use `:inherited` modifier                                | `hx-target:inherited="#out"`                      |

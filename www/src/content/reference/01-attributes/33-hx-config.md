@@ -3,7 +3,7 @@ title: "hx-config"
 description: "Configures request behavior"
 ---
 
-The `hx-config` attribute configures request behavior with [HCON](/docs/hcon) or JSON.
+The `hx-config` attribute configures request behavior with [HCON](/docs/hcon-guide) or JSON.
 
 ## Syntax
 
