@@ -511,10 +511,56 @@ describe('scroll restoration on history traversal', function() {
     });
 });
 
+describe('HX-Request-Type header in history restore', function() {
+
+    beforeEach(function() { setupTest(); });
+    afterEach(function() { cleanupTest(); });
+
+    it('sends HX-Request-Type: full for history restore to body', async function() {
+        mockResponse('GET', '/restore-test', '<div>restored</div>', { headers: { 'HX-Reswap': 'none' } });
+
+        htmx.__restoreHistory({htmx: true}, '/restore-test');
+        await forRequest();
+
+        assert.equal(lastFetch().request.headers['HX-Request-Type'], 'full');
+    });
+
+    it('sends HX-Request-Type: full for history restore with hx-history-elt', async function() {
+        playground().innerHTML = '<main hx-history-elt><p>old</p></main>';
+        htmx.process(playground());
+
+        mockResponse('GET', '/restore-test', '<html><body><main hx-history-elt><p>new</p></main></body></html>', { headers: { 'HX-Reswap': 'none' } });
+
+        htmx.__restoreHistory({htmx: true}, '/restore-test');
+        await forRequest();
+
+        assert.equal(lastFetch().request.headers['HX-Request-Type'], 'full');
+    });
+
+    it('sends HX-History-Restore-Request: true for history restore', async function() {
+        mockResponse('GET', '/restore-test', '<div>restored</div>', { headers: { 'HX-Reswap': 'none' } });
+
+        htmx.__restoreHistory({htmx: true}, '/restore-test');
+        await forRequest();
+
+        assert.equal(lastFetch().request.headers['HX-History-Restore-Request'], 'true');
+    });
+
+    it('does not send HX-Request header for history restore (so servers return full pages)', async function() {
+        mockResponse('GET', '/restore-test', '<div>restored</div>', { headers: { 'HX-Reswap': 'none' } });
+
+        htmx.__restoreHistory({htmx: true}, '/restore-test');
+        await forRequest();
+
+        // HX-Request is intentionally omitted so servers return full pages
+        assert.isUndefined(lastFetch().request.headers['HX-Request']);
+    });
+});
+
 describe('history restore edge cases', function() {
 
-    beforeEach(() => { setupTest(this.currentTest); });
-    afterEach(() => { cleanupTest(); });
+    beforeEach(function() { setupTest(); });
+    afterEach(function() { cleanupTest(); });
 
     it('a second back aborts the in-flight restore', async function() {
         this.timeout(5000);

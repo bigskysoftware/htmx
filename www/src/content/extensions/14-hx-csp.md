@@ -119,6 +119,19 @@ The server cannot know the page nonce — it only knows its own per-response non
 
 The risk: unlike `<script nonce>`, `hx-nonce` attributes are not blanked by browsers after parse, so they are a possible additional nonce exposure surface. The scrub step is a defence-in-depth measure to ensure a stolen nonce cannot be pre-stamped into injected content to pass nonce checks.
 
+## Caching Nonced Responses
+
+If you cache nonced responses, you must ensure that the initial page load and subsequent htmx requests are cached separately. Otherwise, the nonce reuse protection will block legitimate responses — when a user navigates back to a cached page via history restore, the cached response will contain the same nonce as the current page, triggering the scrub step.
+
+htmx sends an `HX-Request-Type` header with every request (`full` or `partial`). Add `Vary: HX-Request-Type` to separate the cache:
+
+```http
+Cache-Control: public, max-age=3600
+Vary: HX-Request-Type
+```
+
+This ensures initial page loads and htmx requests are cached separately, so the response nonce will always differ from the page nonce.
+
 ## Inline Scripts in Swapped Content
 
 When htmx swaps in HTML containing `<script>` tags, it re-creates them to trigger execution. The `hx-csp` extension ensures the response nonce is rewritten to the page nonce before parsing, so script nonces are correctly promoted and execute under a strict `script-src 'nonce-<nonce>'` policy.
