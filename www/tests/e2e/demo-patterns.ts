@@ -357,6 +357,50 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     // =============================================
+    // Display
+    // =============================================
+
+    test('dialogs: native dialog opens, loads, and closes every way', async ({ page }) => {
+        await page.goto('/patterns/dialogs');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const openBtn = demo(page, 'button').filter({ hasText: /open a modal/i });
+        const dialog = page.locator('#modal');
+        const isOpen = () => dialog.evaluate((d: HTMLDialogElement) => d.open);
+
+        // Opens at once, then htmx fills the body
+        await openBtn.click();
+        expect(await isOpen()).toBe(true);
+        await expect(page.locator('#modal-body')).toContainText('Modal Dialog');
+
+        // A CSS reset can zero the UA margin:auto and stretch the dialog over
+        // the whole viewport, which swallows every backdrop click
+        const box = await dialog.boundingBox();
+        const view = page.viewportSize()!;
+        expect(box!.width).toBeLessThan(view.width);
+        expect(box!.height).toBeLessThan(view.height);
+
+        // command="close"
+        await dialog.getByRole('button', { name: /close/i }).click();
+        expect(await isOpen()).toBe(false);
+
+        // Escape, via closedby="any"
+        await openBtn.click();
+        await page.keyboard.press('Escape');
+        expect(await isOpen()).toBe(false);
+
+        // Backdrop click, via closedby="any"
+        await openBtn.click();
+        await page.mouse.click(20, 20);
+        expect(await isOpen()).toBe(false);
+
+        // Reopening must still work
+        await openBtn.click();
+        expect(await isOpen()).toBe(true);
+    });
+
+    // =============================================
     // Advanced
     // =============================================
 

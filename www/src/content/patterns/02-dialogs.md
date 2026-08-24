@@ -4,105 +4,133 @@ title: "Dialogs"
 description: Show modals and popups on demand
 category: "Display"
 icon: "icon-[vaadin--modal-list]"
-soon: true
 ---
 
 <script>
 server.get("/demo", () => `
   <button class="px-3.5 py-1.5 text-sm font-medium rounded-md cursor-pointer text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 interact:bg-neutral-50 dark:interact:bg-neutral-850 interact:text-neutral-800 dark:interact:text-neutral-100 active:scale-[0.98] transition"
-          hx-get="/modal"
-          hx-target="body"
-          hx-swap="beforeend">
+          hx-get="/modal-body"
+          hx-target="#modal-body"
+          command="show-modal"
+          commandfor="modal">
     Open a Modal
   </button>
+
+  <dialog id="modal" closedby="any"
+          class="m-auto w-4/5 max-w-md p-6 rounded-lg bg-white dark:bg-neutral-900 shadow-xl text-left">
+    <div id="modal-body" class="min-h-[92px] flex items-center text-sm text-neutral-500 dark:text-neutral-400">
+      Loading&hellip;
+    </div>
+    <button class="mt-6 px-3.5 py-1.5 text-sm font-medium rounded-md cursor-pointer text-white dark:text-neutral-900 bg-neutral-800 dark:bg-neutral-200 interact:bg-neutral-700 dark:interact:bg-neutral-300 active:scale-[0.98] transition"
+            command="close" commandfor="modal">
+      Close
+    </button>
+  </dialog>
 `);
 
-server.get("/modal", () => `
-  <div id="modal" class="fixed inset-0 bg-black/50 z-50 flex flex-col items-center" style="animation:fadeIn 150ms ease"
-       _="on closeModal add .closing wait for animationend then remove me">
-    <div class="absolute inset-0 z-[-1]" _="on click trigger closeModal"></div>
-    <div class="mt-[10vh] w-4/5 max-w-md bg-white dark:bg-neutral-900 rounded-lg shadow-xl p-6" style="animation:zoomIn 150ms ease"
-         _="on closeModal in closest #modal add .closing">
-      <h1 class="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-2">Modal Dialog</h1>
-      <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
-        This is the modal content. You can put anything here, like text, or a form, or an image.
-      </p>
-      <button class="px-3.5 py-1.5 text-sm font-medium rounded-md cursor-pointer text-white dark:text-neutral-900 bg-neutral-800 dark:bg-neutral-200 interact:bg-neutral-700 dark:interact:bg-neutral-300 active:scale-[0.98] transition" _="on click trigger closeModal">Close</button>
-    </div>
-  </div>
-`);
+server.get("/modal-body", () => ({ delay: 400, body: `
+  <div>
+    <h1 class="text-lg font-semibold text-neutral-800 dark:text-neutral-100 mb-2">Modal Dialog</h1>
+    <p class="text-sm text-neutral-600 dark:text-neutral-400">
+      This content came from the server. Press Escape, click the backdrop, or use the button to close.
+    </p>
+  </div>` }));
 
 server.start("/demo");
 </script>
 
-<div id="demo-content" class="not-prose demo-container flex justify-center"></div>
+<div id="demo-content" class="not-prose demo-container flex justify-center min-h-[116px]"></div>
 
-## Browser native dialogs
+## Basic usage
 
-The simplest approach uses [`hx-confirm`](/reference/attributes/hx-confirm) to trigger a native browser prompt before sending a request.
-
-On the client, add `hx-confirm` to any element that makes a request:
+Use the native [`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog) element. The browser gives you the backdrop, the focus trap, Escape to close, and correct stacking. You write no JavaScript.
 
 ```html
-<button hx-post="/submit"
-        hx-confirm="Are you sure?"
-        hx-target="#response">
-  Prompt Submission
-</button>
+<button command="show-modal" commandfor="modal">Open a Modal</button>
+
+<dialog id="modal" closedby="any">
+  <h1>Modal Dialog</h1>
+  <p>This is the modal content.</p>
+  <button command="close" commandfor="modal">Close</button>
+</dialog>
 ```
 
-- [`hx-confirm`](/reference/attributes/hx-confirm)=`"Are you sure?"` shows the browser's built-in confirm dialog.
-- The AJAX request only fires if the user clicks OK. No extra HTML or CSS required.
+- [`command`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#command)=`"show-modal"` opens the dialog as a modal. `command="close"` closes it.
+- [`commandfor`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#commandfor) names the target dialog by `id`.
+- [`closedby`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog#closedby)=`"any"` also closes the dialog on a backdrop click or on Escape.
 
-## Custom modals
+A modal dialog renders in the [top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer), above all page content. Its position in the DOM does not matter, so put it where it belongs in your markup.
 
-htmx makes it straightforward to build modals from scratch. A button loads remote content and appends it to `<body>` as a full-screen overlay.
+## Loading content from the server
 
-On the client, a button fetches the modal markup:
+Add htmx attributes to the same button. It fetches the content and opens the dialog in one click.
 
 ```html
-<button hx-get="/modal"
-        hx-target="body"
-        hx-swap="beforeend">
+<button hx-get="/modal-body"
+        hx-target="#modal-body"
+        command="show-modal"
+        commandfor="modal">
+  Open a Modal
+</button>
+
+<dialog id="modal" closedby="any">
+  <div id="modal-body">Loading...</div>
+  <button command="close" commandfor="modal">Close</button>
+</dialog>
+```
+
+- [`hx-get`](/reference/attributes/hx-get) requests the content.
+- [`hx-target`](/reference/attributes/hx-target)=`"#modal-body"` puts the response inside the dialog.
+- The dialog opens at once, so the user sees the loading state. The content replaces it when it arrives.
+
+To load the whole dialog instead of its body, target the dialog itself with [`hx-swap`](/reference/attributes/hx-swap)=`"innerHTML"`. Keep the `<dialog>` element in the page so `commandfor` can always find it.
+
+## Notes
+
+### Browser support
+
+`command` and `commandfor` are recent. If you must support an older browser, call [`showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal) instead:
+
+```html
+<button hx-get="/modal-body"
+        hx-target="#modal-body"
+        onclick="modal.showModal()">
   Open a Modal
 </button>
 ```
 
-- [`hx-get`](/reference/attributes/hx-get) requests `/modal`.
-- [`hx-target`](/reference/attributes/hx-target)=`"body"` targets the document body.
-- [`hx-swap`](/reference/attributes/hx-swap)=[`"beforeend"`](/reference/attributes/hx-swap#beforeend) appends the response as the last child of `<body>`.
+`<dialog>` itself has been available in every major browser since 2022.
 
-On the server, respond with the full modal markup. [Hyperscript](https://hyperscript.org) handles the close animation -- adding a `.closing` class, waiting for the CSS transition to finish, then removing the element:
+### Confirmations
+
+For a yes or no question, you do not need a dialog at all. [`hx-confirm`](/reference/attributes/hx-confirm) shows the browser confirm and only sends the request when the user accepts.
 
 ```html
-<div id="modal"
-     _="on closeModal add .closing
-        wait for animationend
-        then remove me">
-  <div class="modal-underlay"
-       _="on click trigger closeModal">
-  </div>
-  <div class="modal-content">
-    <h1>Modal Dialog</h1>
-    <p>This is the modal content.</p>
-    <button _="on click trigger closeModal">
-      Close
-    </button>
-  </div>
-</div>
+<button hx-delete="/contact/1" hx-confirm="Are you sure?">Delete</button>
 ```
 
-Click the underlay or the Close button to dismiss.
+To collect a value, use the [`hx-prompt`](/extensions/hx-prompt) extension. It shows a native prompt and sends the answer in the `HX-Prompt` request header.
 
-## Notes
+### Centering with a CSS reset
 
-CSS frameworks like Bootstrap and UIKit ship their own modal components. htmx works with these too -- use `hx-get` to load modal content into a framework-provided container, and trigger the framework's show/hide methods via JavaScript or Hyperscript.
+The browser centers a modal dialog with `margin: auto`. A CSS reset that sets `margin: 0` on every element removes that, and the dialog stretches to the viewport edges. Tailwind's preflight does this. Put the margin back:
+
+```css
+dialog:modal {
+  margin: auto;
+}
+```
+
+### Styling the backdrop
+
+Style the backdrop with the [`::backdrop`](https://developer.mozilla.org/en-US/docs/Web/CSS/::backdrop) pseudo-element.
+
+```css
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+```
 
 <style>
-@keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
-@keyframes fadeOut { from { opacity: 1 } to { opacity: 0 } }
-@keyframes zoomIn  { from { transform: scale(0.9) } to { transform: scale(1) } }
-@keyframes zoomOut { from { transform: scale(1) } to { transform: scale(0.9) } }
-#modal.closing { animation: fadeOut 150ms ease forwards }
-#modal.closing > div:last-child { animation: zoomOut 150ms ease forwards }
+#modal::backdrop { background: rgb(0 0 0 / 0.5) }
 </style>
