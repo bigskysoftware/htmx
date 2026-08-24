@@ -330,6 +330,41 @@ test.describe.serial('Pattern demo pages', () => {
         await expect(demo(page, '#user-view')).toContainText('Carson Gross');
     });
 
+    test('file-upload: multipart submit keeps the file through validation', async ({ page }) => {
+        await page.goto('/patterns/file-upload');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const form = demo(page, '#upload-form');
+        await expect(form).toHaveAttribute('hx-encoding', 'multipart/form-data');
+
+        await demo(page, '#file-input').setInputFiles({
+            name: 'report.pdf', mimeType: 'application/pdf', buffer: Buffer.from('hello pdf body'),
+        });
+        await expect(demo(page, '#file-label')).toHaveText('report.pdf');
+
+        // Submit with the text fields empty: validation fails, but hx-preserve
+        // must keep the chosen file, and the label must be restored with it
+        await demo(page, '#upload-form button[type="submit"]').click();
+        await expect(demo(page, 'p[class*="red"]')).toHaveCount(2);
+        await expect(demo(page, '#file-label')).toHaveText('report.pdf');
+        expect(await page.evaluate(() =>
+            (document.getElementById('file-input') as HTMLInputElement).files?.length)).toBe(1);
+
+        // Now succeed. The response echoes what actually reached the server,
+        // which proves the multipart body carried the file.
+        await demo(page, '#name-input').fill('Jane Smith');
+        await demo(page, '#email-input').fill('jane@example.com');
+        await demo(page, '#upload-form button[type="submit"]').click();
+
+        await expect(demo(page, '#upload-wrapper')).toContainText('Submitted successfully');
+        await expect(demo(page, '#upload-wrapper')).toContainText('report.pdf');
+        await expect(demo(page, '#upload-wrapper')).toContainText('14 bytes');
+
+        await demo(page, 'button').filter({ hasText: /try again/i }).click();
+        await expect(demo(page, '#upload-form')).toBeVisible();
+    });
+
     test('bulk-actions: renders table with checkboxes', async ({ page }) => {
         await page.goto('/patterns/bulk-actions');
         await waitForSw(page);

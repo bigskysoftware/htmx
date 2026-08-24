@@ -33,7 +33,13 @@
       }
     };
     set(new URL(url, location.origin).searchParams);
-    if (body) try { set(new URLSearchParams(body)); } catch (e) {}
+    if (Array.isArray(body)) {
+      // multipart entries forwarded by the service worker
+      for (const [k, v] of body) {
+        if (k in params) params[k] = [].concat(params[k], v);
+        else params[k] = v;
+      }
+    } else if (body) try { set(new URLSearchParams(body)); } catch (e) {}
     return params;
   }
 

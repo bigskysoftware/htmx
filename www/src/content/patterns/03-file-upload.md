@@ -4,7 +4,6 @@ title: "File Upload"
 description: Upload files with progress and validation
 category: "Forms"
 icon: "icon-[mdi--file-upload-outline]"
-soon: true
 ---
 
 <script>
@@ -19,8 +18,11 @@ function renderForm(errors = {}, values = {}) {
   const fileSelected = values.file;
 
   return `
-  <form id="upload-form" hx-post="/submit" hx-target="#upload-wrapper" hx-swap="innerHTML"
-        hx-on::after-settle="var fi=document.getElementById('file-input'); var lb=document.getElementById('file-label'); if(fi&&lb&&fi.files[0]) lb.textContent=fi.files[0].name"
+  <form id="upload-form" hx-post="/submit" hx-encoding="multipart/form-data"
+        hx-target="#upload-wrapper" hx-swap="innerHTML"
+        hx-on::after:settle="let fi = document.getElementById('file-input');
+                             let lb = document.getElementById('file-label');
+                             if (fi && lb && fi.files[0]) lb.textContent = fi.files[0].name"
         class="w-full mx-auto flex flex-col gap-5">
     <div class="grid grid-cols-2 gap-4">
       <div>
@@ -59,7 +61,8 @@ server.get("/demo", () =>
 server.post("/submit", (req) => {
   const name = (req.params.name || '').trim();
   const email = (req.params.email || '').trim();
-  const hasFile = req.params.file && req.params.file !== '' && req.params.file !== '[object File]';
+  const upload = req.params.file;
+  const hasFile = upload instanceof File && upload.size > 0;
 
   const errors = {};
   if (!name) errors.name = 'Name is required.';
@@ -67,7 +70,7 @@ server.post("/submit", (req) => {
   else if (!email.includes('@')) errors.email = 'Enter a valid email.';
 
   if (Object.keys(errors).length > 0) {
-    return renderForm(errors, { name, email, file: hasFile ? 'file' : '' });
+    return renderForm(errors, { name, email, file: hasFile ? upload.name : '' });
   }
 
   return `
@@ -75,7 +78,7 @@ server.post("/submit", (req) => {
     <div class="flex flex-col items-center gap-3 py-8 text-center">
       <i class="icon-[mdi--check-circle] size-12 text-green-500 dark:text-green-400"></i>
       <p class="text-sm font-medium text-neutral-800 dark:text-neutral-200">Submitted successfully</p>
-      <p class="text-xs text-neutral-500 dark:text-neutral-400">Your file selection was preserved through validation.</p>
+      <p class="text-xs text-neutral-500 dark:text-neutral-400">${hasFile ? 'Received <b>' + upload.name + '</b>, ' + upload.size + ' bytes.' : 'No file was attached.'}</p>
       <button hx-get="/reset" hx-target="#upload-wrapper" hx-swap="innerHTML"
               class="mt-2 px-4 py-2 text-[0.8125rem] font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-850 rounded-md cursor-pointer transition active:scale-[0.98]">
         Try again
@@ -144,24 +147,10 @@ The input is outside the form element, so it is never replaced during swaps.
 
 ## Upload progress
 
-htmx 4.x uses the native [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) API. `fetch` supports [upload progress monitoring](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#monitoring_upload_progress) in some browsers, but cross-browser support is limited. For reliable progress tracking, use [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload) directly:
+htmx 4 sends requests with the native [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) API, which, sadly, does not report upload progress.
 
-```html
-<form id="upload-form" enctype="multipart/form-data">
-  <input type="file" name="file">
-  <button>Upload</button>
-  <progress id="progress" value="0" max="100"></progress>
-</form>
+If you want more fully featured upload consider one of the following JavaScript libraries:
 
-<script>
-  document.querySelector('#upload-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const xhr = new XMLHttpRequest();
-    xhr.upload.addEventListener('progress', (evt) => {
-      document.querySelector('#progress').value = (evt.loaded / evt.total) * 100;
-    });
-    xhr.open('POST', '/upload');
-    xhr.send(new FormData(e.target));
-  });
-</script>
-```
+- [Uppy](https://uppy.io)
+- [FilePond](https://pqina.nl/filepond/)
+- [Dropzone](https://www.dropzone.dev)

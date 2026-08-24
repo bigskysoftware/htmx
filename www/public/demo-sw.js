@@ -31,9 +31,19 @@ async function handleRequest(event) {
   if (!client) return fetch(event.request);
 
   const messageChannel = new MessageChannel();
-  const requestBody = event.request.method !== 'GET'
-    ? await event.request.text()
-    : null;
+  // multipart bodies cannot survive text(), so hand the page the entries
+  const contentType = event.request.headers.get('content-type') || '';
+  let requestBody = null;
+  if (event.request.method !== 'GET') {
+    try {
+      requestBody = contentType.includes('multipart/form-data')
+        ? [...(await event.request.formData()).entries()]
+        : await event.request.text();
+    } catch (err) {
+      console.warn('[demo-sw] could not read request body:', err);
+      requestBody = '';
+    }
+  }
 
   return new Promise((resolve) => {
     const timeout = setTimeout(() => {
