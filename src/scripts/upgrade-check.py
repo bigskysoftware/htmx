@@ -337,9 +337,64 @@ def check_swap_syntax(node, value, filepath, issues):
                             f'use {kind}:{position} {target_key}:{selector}'))
 
 
+def is_boostable(node):
+    """True if htmx boosts this element: <a href> or <form>."""
+    return node.tag == "form" or (node.tag == "a" and "href" in node.attrs)
+
+
+def collect_boosted(root):
+    """Return the set of nodes that htmx 2 boosts.
+
+    hx-boost was implicitly inherited, so an <a href> or <form> makes a request
+    when any ancestor turns boost on. Such elements are request sources even
+    though they carry no hx-get/hx-post attribute.
+    """
+    boosted = set()
+
+    def walk(node, boost):
+        for attr_name, value in node.attrs.items():
+            if attr_name.lower().split(":", 1)[0] == "hx-boost":
+                boost = (value or "true").strip().lower() != "false"
+        if boost and is_boostable(node):
+            boosted.add(node)
+        for child in node.children:
+            walk(child, boost)
+
+    walk(root, False)
+    return boosted
+
+
+def request_source(node, boosted):
+    """Describe why this node makes a request, or return None."""
+    if node.has_request_attr():
+        return next(a for a in node.attrs if a in REQUEST_ATTRS)
+    if node in boosted:
+        return f"boosted <{node.tag}>"
+    return None
+
+
+# Values that indicate a CSRF/XSRF token in an hx-headers attribute.
+CSRF_VALUE = re.compile(r"csrf|xsrf", re.IGNORECASE)
+
+
+def attrs_value(node, attr_name):
+    """Return the attribute value, or an empty string."""
+    return node.attrs.get(attr_name) or ""
+
+
+def csrf_hint(value):
+    """Return an extra warning if the value carries a CSRF token."""
+    if CSRF_VALUE.search(value):
+        return (" (this looks like a CSRF token; without :inherited the header "
+                "does not reach child elements and the server rejects the request)")
+    return ""
+
+
 def check_inheritance(root, filepath, issues):
     """Detect implicit inheritance patterns: inheritable attr on ancestor,
     request attr on descendant."""
+    boosted = collect_boosted(root)
+
     def walk(node):
         for attr_name in node.attrs:
             name_lower = attr_name.lower()
@@ -362,12 +417,25 @@ def check_inheritance(root, filepath, issues):
 
             # For other attrs, check for descendants that make requests
             for desc in node.descendants():
-                if desc.has_request_attr():
+                source = request_source(desc, boosted)
+                if source:
                     issues.append(Issue(filepath, node.line, "inheritance",
                                         f'{attr_name} needs :inherited suffix '
-                                        f'(descendant on line {desc.line} has '
-                                        f'{next(a for a in desc.attrs if a in REQUEST_ATTRS)})'))
+                                        f'(descendant on line {desc.line} has {source})'
+                                        + csrf_hint(attrs_value(node, attr_name))))
                     break
+            else:
+                # No request attribute in this file. hx-headers is still almost
+                # always a bug here: the htmx 2 CSRF recipe puts hx-headers on
+                # <body> in a base template, and the requests live in the child
+                # templates. A single-file scan cannot see them.
+                if name_lower == "hx-headers":
+                    issues.append(Issue(filepath, node.line, "inheritance",
+                                        f'{attr_name} needs :inherited suffix to reach '
+                                        f'descendants (no request attribute in this file; '
+                                        f'if this is a base template, the requests are in '
+                                        f'other files)'
+                                        + csrf_hint(attrs_value(node, attr_name))))
 
         for child in node.children:
             walk(child)

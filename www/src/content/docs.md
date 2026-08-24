@@ -1904,7 +1904,7 @@ element issuing the request or one of its ancestor elements. This makes the `htm
 global vehicles for adding the CSRF token to the `HTTP` request header, as illustrated below.
 
 ```html
-<html lang="en" hx-headers='{"X-CSRF-TOKEN": "CSRF_TOKEN_INSERTED_HERE"}'>
+<html lang="en" hx-headers:inherited='{"X-CSRF-TOKEN": "CSRF_TOKEN_INSERTED_HERE"}'>
 :
 </html>
 ```
