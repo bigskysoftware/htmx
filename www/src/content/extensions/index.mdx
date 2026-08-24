@@ -6,7 +6,6 @@ thumbnail: "docs/extensions.svg"
 
 import { getFolder } from '../../lib/content';
 import { EXTENSION_CATEGORIES, groupFilesByCategory } from '../../lib/content-groups';
-import JumpTo from '../../components/JumpTo.astro';
 import IndexTable from '../../components/IndexTable.astro';
 
 export const folder = await getFolder('extensions');
@@ -26,8 +25,6 @@ export const getPageHeadings = () => grouped.map(group => ({
     slug: group.slug,
     text: group.category,
 }));
-
-<JumpTo headings={getPageHeadings()} />
 
 {grouped.map(group => (
 <section role="group">

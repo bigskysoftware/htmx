@@ -41,6 +41,7 @@ export const communityItems = communityLinks.map((link) => ({
 }));
 
 export const exploreItems = [
+    {url: "/announcements", icon: "icon-[mdi--bullhorn-outline]", title: "Announcements", description: "Release notes and project news"},
     {url: "/interviews", icon: "icon-[mdi--microphone]", title: "Interviews", description: "Conversations about hypermedia"},
     {url: "/podcasts", icon: "icon-[mdi--podcast]", title: "Podcasts", description: "Talks and appearances"},
     {url: "/memes", icon: "icon-[mdi--emoticon-cool-outline]", title: "Memes", description: "For hypermedia teens"},
@@ -48,7 +49,7 @@ export const exploreItems = [
 
 export const linkSections = [
     { id: "community", title: "Community", gridClass: "grid grid-cols-1 sm:grid-cols-2 gap-4", centered: false, items: communityItems },
-    { id: "keep-exploring", title: "Keep Exploring", gridClass: "grid grid-cols-1 sm:grid-cols-3 gap-4", centered: true, items: exploreItems },
+    { id: "keep-exploring", title: "Keep Exploring", gridClass: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4", centered: true, items: exploreItems },
 ];
 
 {/* Team */}

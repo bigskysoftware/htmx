@@ -4,7 +4,6 @@ description: "On hypermedia and building for the web."
 ---
 
 import { getFolder } from '../../lib/content';
-import JumpTo from '../../components/JumpTo.astro';
 import IndexTable from '../../components/IndexTable.astro';
 import { formatDate } from '../../lib/utils';
 
@@ -78,8 +77,6 @@ export const getPageHeadings = () => [
     {depth: 2, slug: 'most-recent', text: 'Most Recent'},
     ...grouped.map(group => ({depth: 2, slug: group.id, text: group.label})),
 ];
-
-<JumpTo headings={getPageHeadings()} />
 
 <section role="group">
 
