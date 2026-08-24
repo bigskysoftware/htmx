@@ -360,6 +360,60 @@ test.describe.serial('Pattern demo pages', () => {
     // Display
     // =============================================
 
+    test('tabs: server-driven strip carries the selection', async ({ page }) => {
+        await page.goto('/patterns/tabs');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const tabs = page.locator('#demo-content [role="tab"]');
+        const selected = page.locator('#demo-content [role="tab"][aria-selected="true"]');
+
+        await expect(tabs).toHaveCount(3);
+        await expect(selected).toHaveText('Overview');
+
+        // The response replaces the strip too, so the count must stay at 3
+        await tabs.nth(2).click();
+        await expect(selected).toHaveText('Extensions');
+        await expect(tabs).toHaveCount(3);
+        await expect(page.locator('#demo-content #panel')).toContainText('Extensions add behavior');
+
+        await tabs.nth(0).click();
+        await expect(selected).toHaveText('Overview');
+    });
+
+    test('tabs: arrow keys move between tabs and focus survives the swap', async ({ page }) => {
+        await page.goto('/patterns/tabs');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const tabs = page.locator('#demo-content [role="tab"]');
+        const selected = page.locator('#demo-content [role="tab"][aria-selected="true"]');
+        const focused = () => page.evaluate(() => document.activeElement?.textContent?.trim());
+
+        await tabs.first().focus();
+
+        // The strip is re-rendered on every response, so focus only survives
+        // because the swap is a morph. Without it the second press does nothing.
+        await page.keyboard.press('ArrowRight');
+        await expect(selected).toHaveText('Install');
+        expect(await focused()).toBe('Install');
+
+        await page.keyboard.press('ArrowRight');
+        await expect(selected).toHaveText('Extensions');
+
+        // Wraps around
+        await page.keyboard.press('ArrowRight');
+        await expect(selected).toHaveText('Overview');
+
+        await page.keyboard.press('End');
+        await expect(selected).toHaveText('Extensions');
+        await page.keyboard.press('Home');
+        await expect(selected).toHaveText('Overview');
+
+        // Roving tabindex: one tab stop for the whole strip
+        expect(await tabs.evaluateAll(ts => ts.map(t => (t as HTMLElement).tabIndex).join(','))).toBe('0,-1,-1');
+    });
+
     test('dialogs: native dialog opens, loads, and closes every way', async ({ page }) => {
         await page.goto('/patterns/dialogs');
         await waitForSw(page);
