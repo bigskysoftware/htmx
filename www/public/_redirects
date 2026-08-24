@@ -40,7 +40,8 @@
 # Examples became patterns.
 /examples                        /patterns                                    301
 /examples/active-search          /patterns/active-search                      301
-/examples/animations             /patterns/animations                         301
+/examples/animations             /docs#swapping-animations                    301
+/patterns/animations             /docs#swapping-animations                    301
 /examples/async-auth             /patterns                                    301
 /examples/bulk-update            /patterns/bulk-actions                       301
 /examples/click-to-edit          /patterns/edit-in-place                      301
