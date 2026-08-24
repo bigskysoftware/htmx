@@ -94,8 +94,9 @@ if(window.location.search=="?ads=true") {
 </a>
 </div>
 
-<div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; color: black; filter: drop-shadow(3px 3px darkgray)">
-<b>NEWS:</b> htmx v4 is under active development and is now in beta, with a target release date of Summer '26!  More details
+<div class="alert" style="border-radius: 8px">
+<b>NEWS:</b> htmx 4.0 <a href="https://four.htmx.org/announcements/2026-08-28-htmx-4.0.0-is-released">has been released</a>!  It is not currently marked as <code>latest</code> in NPM so that people using
+the 2.x line are not accidentally upgraded.  We will mark it <code>latest</code> at some point in 2027.  More details
 at <a href="https://four.htmx.org">https://four.htmx.org</a>
 </div>
 
