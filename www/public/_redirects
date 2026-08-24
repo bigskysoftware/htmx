@@ -66,7 +66,8 @@
 /examples/sortable               /patterns/drag-to-reorder                    301
 /examples/tabs-hateoas           /patterns                                    301
 /examples/tabs-javascript        /patterns                                    301
-/examples/update-other-content   /patterns                                    301
+/examples/update-other-content   /docs#multi-target-updates                   301
+/patterns/update-other-content   /docs#multi-target-updates                   301
 /examples/value-select           /patterns/linked-selects                     301
 /examples/web-components         /patterns                                    301
 
