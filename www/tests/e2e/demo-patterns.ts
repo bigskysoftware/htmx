@@ -330,6 +330,72 @@ test.describe.serial('Pattern demo pages', () => {
         await expect(demo(page, '#user-view')).toContainText('Carson Gross');
     });
 
+    test('drag-to-reorder: dragging persists the new order', async ({ page }) => {
+        await page.goto('/patterns/drag-to-reorder');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const form = demo(page, 'form.sortable');
+        await expect(form).toBeVisible();
+
+        // hx-on:load builds the instance when htmx processes the form
+        expect(await page.evaluate(() =>
+            !!(window as any).Sortable?.get(document.querySelector('#demo-content form.sortable')))).toBe(true);
+
+        const order = () => page.evaluate(() =>
+            [...document.querySelectorAll('#demo-content form.sortable input[name="item"]')]
+                .map(i => (i as HTMLInputElement).value).join(','));
+        expect(await order()).toBe('1,2,3,4,5');
+
+        const posts: string[] = [];
+        page.on('request', r => { if (r.url().includes('/_/items')) posts.push(r.method()); });
+
+        const items = demo(page, 'form.sortable > div:not(.htmx-indicator)');
+        const from = (await items.nth(0).boundingBox())!;
+        const to = (await items.nth(2).boundingBox())!;
+        await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2 + 15, { steps: 5 });
+        await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2 + 5, { steps: 15 });
+        await page.mouse.up();
+
+        // The list re-renders from server state, so a changed order proves the post landed
+        await expect.poll(order).not.toBe('1,2,3,4,5');
+        expect(posts).toEqual(['POST']);
+
+        // The form survives its own innerHTML swap, so the same Sortable
+        // instance must still be bound, and hx-on::after:swap must re-enable it
+        await expect.poll(() => page.evaluate(() => {
+            const inst = (window as any).Sortable?.get(document.querySelector('#demo-content form.sortable'));
+            return inst ? inst.option('disabled') : 'no instance';
+        })).toBe(false);
+
+        const after = await order();
+        const from2 = (await items.nth(0).boundingBox())!;
+        const to2 = (await items.nth(2).boundingBox())!;
+        await page.mouse.move(from2.x + from2.width / 2, from2.y + from2.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(from2.x + from2.width / 2, from2.y + from2.height / 2 + 15, { steps: 5 });
+        await page.mouse.move(to2.x + to2.width / 2, to2.y + to2.height / 2 + 5, { steps: 15 });
+        await page.mouse.up();
+        await expect.poll(order).not.toBe(after);
+    });
+
+    test('drag-to-reorder: initializes after morph navigation', async ({ page }) => {
+        await page.goto('/patterns/lazy-load');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        // The demo only renders after the Sortable import resolves, so the
+        // library is always present by the time hx-on:load runs.
+        await morphViaLink(page, '/patterns/drag-to-reorder');
+        await waitForDemo(page);
+
+        await expect.poll(() => page.evaluate(() =>
+            !!(window as any).Sortable?.get(document.querySelector('#demo-content form.sortable'))),
+            { timeout: 15_000 }).toBe(true);
+    });
+
     test('file-upload: multipart submit keeps the file through validation', async ({ page }) => {
         await page.goto('/patterns/file-upload');
         await waitForSw(page);
