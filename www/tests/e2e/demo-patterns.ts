@@ -322,6 +322,22 @@ test.describe.serial('Pattern demo pages', () => {
         await expect(demo(page, '#result')).toContainText('Done!');
     });
 
+    test('keyboard-shortcuts: matches on code, not the composed key', async ({ page }) => {
+        await page.goto('/patterns/keyboard-shortcuts');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        // macOS composes Option+Shift+D into a character, so key is not "D".
+        // The filter must read code instead.
+        await page.evaluate(() => {
+            document.body.dispatchEvent(new KeyboardEvent('keyup', {
+                key: '\u00CE', code: 'KeyD', altKey: true, shiftKey: true, bubbles: true,
+            }));
+        });
+
+        await expect(demo(page, '#result')).toContainText('Done!');
+    });
+
     // =============================================
     // Real-time
     // =============================================

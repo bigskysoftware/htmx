@@ -10,7 +10,7 @@ icon: "icon-[mdi--keyboard]"
 server.get("/init", () => `
 <div class="flex items-center gap-4">
   <button class="px-4 py-2 text-sm font-medium rounded-md cursor-pointer text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-850 hover:text-neutral-800 dark:hover:text-neutral-100 active:scale-[0.98] transition"
-          hx-trigger="click, keyup[altKey&&shiftKey&&key=='D'] from:body"
+          hx-trigger="click, keyup[altKey&&shiftKey&&code=='KeyD'] from:body"
           hx-post="/doit"
           hx-target="#result">
     Do It! (Alt+Shift+D)
@@ -32,14 +32,14 @@ server.start("/init");
 On the client, add a keyboard event to `hx-trigger` alongside `click`.
 
 ```html
-<button hx-trigger="click, keyup[altKey&&shiftKey&&key=='D'] from:body"
+<button hx-trigger="click, keyup[altKey&&shiftKey&&code=='KeyD'] from:body"
         hx-post="/doit">
   Do It! (Alt+Shift+D)
 </button>
 ```
 
 - [`hx-trigger`](/reference/attributes/hx-trigger) accepts multiple events separated by commas.
-- `keyup[altKey&&shiftKey&&key=='D']` uses an [event filter](/reference/attributes/hx-trigger#filter) to match only the Alt+Shift+D combination.
+- `keyup[altKey&&shiftKey&&code=='KeyD']` uses an [event filter](/reference/attributes/hx-trigger#filter) to match only the Alt+Shift+D combination.
 - [`from:body`](/reference/attributes/hx-trigger#fromselector) makes the shortcut global: the listener is on the `<body>`, not the button itself.
 
 On the server, respond with the result content:
@@ -52,16 +52,13 @@ On the server, respond with the result content:
 
 ### Browser shortcut conflicts
 
-The browser can already own your combination. Add the [`prevent`](/reference/attributes/hx-trigger#prevent) modifier to call `event.preventDefault()`.
+Test each shortcut in every browser/OS you support. Some combinations, such as `Ctrl+W` and `Ctrl+N`, reach the browser before the page.
 
-```html
-<button hx-trigger="keyup[ctrlKey&&key=='k'] from:body prevent"
-        hx-post="/doit">
-  Search (Ctrl+K)
-</button>
-```
+### Gotcha: Use `code`, not `key`
 
-Test each shortcut in every browser you support. Some combinations, such as `Ctrl+W` and `Ctrl+N`, reach the browser before the page.
+[`code`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code) identifies the physical key. [`key`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key) gives the character the key produces, which the modifiers and the keyboard layout change.
+
+`code` is also layout independent. `code=='KeyD'` matches the same physical key on QWERTY, AZERTY, and Dvorak. Use `key` only when you want the character, such as `key=='?'`.
 
 ### Keyboard event properties
 
