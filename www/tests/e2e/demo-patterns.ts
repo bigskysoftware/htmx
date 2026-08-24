@@ -293,4 +293,46 @@ test.describe.serial('Pattern demo pages', () => {
         }
     });
 
+    // =============================================
+    // Real-time
+    // =============================================
+
+    test('polling: card refreshes on the interval', async ({ page }) => {
+        await page.goto('/patterns/polling');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const card = demo(page, '#server-status');
+        await expect(card).toBeVisible();
+        await expect(card).toHaveAttribute('hx-trigger', 'every 2s');
+
+        const served = demo(page, 'p').filter({ hasText: /requests served/i });
+        const before = await served.innerText();
+
+        // Two intervals plus slack
+        await page.waitForTimeout(5000);
+        await expect(served).not.toHaveText(before);
+    });
+
+    test('polling: pause removes the trigger, resume restores it', async ({ page }) => {
+        await page.goto('/patterns/polling');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const card = demo(page, '#server-status');
+        await expect(card).toHaveAttribute('hx-trigger', 'every 2s');
+
+        await demo(page, 'button').filter({ hasText: /pause/i }).click();
+        await expect(card).not.toHaveAttribute('hx-trigger', /.*/);
+
+        // The poll is off, so the counter must hold still
+        const served = demo(page, 'p').filter({ hasText: /requests served/i });
+        const paused = await served.innerText();
+        await page.waitForTimeout(4000);
+        await expect(served).toHaveText(paused);
+
+        await demo(page, 'button').filter({ hasText: /resume/i }).click();
+        await expect(card).toHaveAttribute('hx-trigger', 'every 2s');
+    });
+
 });
