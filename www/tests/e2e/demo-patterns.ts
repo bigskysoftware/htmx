@@ -267,6 +267,42 @@ test.describe.serial('Pattern demo pages', () => {
     // Records
     // =============================================
 
+    test('delete-in-place: confirms, fades, and removes the row', async ({ page }) => {
+        await page.goto('/patterns/delete-in-place');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const rows = demo(page, 'tbody tr');
+        await expect(rows).toHaveCount(4);
+        await expect(rows.first()).toContainText('Joe Smith');
+
+        page.once('dialog', d => {
+            expect(d.type()).toBe('confirm');
+            expect(d.message()).toBe('Are you sure?');
+            d.accept();
+        });
+
+        await demo(page, 'tbody tr button').first().click();
+
+        // swap:500ms holds the row while htmx-swapping drives the fade
+        await expect(demo(page, 'tr.htmx-swapping')).toHaveCount(1);
+
+        await expect(rows).toHaveCount(3);
+        await expect(rows.first()).toContainText('Angie MacDowell');
+    });
+
+    test('delete-in-place: dismissing the confirm keeps the row', async ({ page }) => {
+        await page.goto('/patterns/delete-in-place');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        page.once('dialog', d => d.dismiss());
+        await demo(page, 'tbody tr button').first().click();
+
+        await page.waitForTimeout(800);
+        await expect(demo(page, 'tbody tr')).toHaveCount(4);
+    });
+
     test('bulk-actions: renders table with checkboxes', async ({ page }) => {
         await page.goto('/patterns/bulk-actions');
         await waitForSw(page);

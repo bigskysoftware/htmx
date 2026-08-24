@@ -4,7 +4,6 @@ title: "Delete in Place"
 description: Remove a record without page refresh
 category: "Records"
 icon: "icon-[mdi--delete]"
-soon: true
 ---
 
 <script>
@@ -15,7 +14,7 @@ server.get("/demo", () => {
     { name: "Fuqua Tarkenton", email: "fuqua@tarkenton.org", status: "Active" },
     { name: "Kim Yee",         email: "kim@yee.org",         status: "Inactive" },
   ];
-  return ` class="w-full border-collapse">
+  return `<table class="w-full border-collapse">
   <thead>
     <tr>
       <th class="text-left px-3 py-2 text-neutral-450 dark:text-neutral-400 font-semibold text-xs uppercase tracking-wide">Name</th>
@@ -47,7 +46,7 @@ function rowTemplate(contact, i) {
 server.start("/demo");
 </script>
 
-<div id="demo-content" class="not-prose demo-container min-h-[280px]"></div>
+<div id="demo-content" class="not-prose demo-container min-h-[293px]"></div>
 
 ## Basic usage
 
