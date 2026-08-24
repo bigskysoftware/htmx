@@ -277,7 +277,8 @@ const footerSections = [
 
 <!-- Mobile Navigation Drawer -->
 <nav id="mobile-navigation" aria-label="Mobile Navigation"
-     class="xl:hidden z-50 opacity-0 top-(--header-height) fixed inset-0 h-screen bg-neutral-10 dark:bg-neutral-920 pointer-events-none select-none [html:has(#mobile-navigation-toggle:checked)_&]:opacity-100 [html:has(#mobile-navigation-toggle:checked)_&]:pointer-events-auto overflow-y-auto overscroll-contain">
+     class="xl:hidden z-50 opacity-0 top-(--header-height) fixed inset-0 h-screen bg-neutral-10 dark:bg-neutral-920 pointer-events-none select-none [html:has(#mobile-navigation-toggle:checked)_&]:opacity-100 [html:has(#mobile-navigation-toggle:checked)_&]:pointer-events-auto overflow-y-auto overscroll-contain"
+     _="on htmx:after:swap from body set #mobile-navigation-toggle.checked to false">
     <div class="p-4">
         <ul class="flex flex-col gap-1">
             {navigationItems.map((item) => (
@@ -286,8 +287,8 @@ const footerSections = [
                            data-label={item.name}
                            hx-boost={item.boost === false ? "false" : undefined}
                            aria-current={isCurrentPath(Astro.url.pathname, item.url) ? 'page' : undefined}
-                           class="block rounded-sm px-3 py-2 text-base font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline aria-[current=page]:font-bold aria-[current=page]:text-neutral-950 dark:aria-[current=page]:text-neutral-50 outline-hidden after:content-[attr(data-label)] after:block after:h-0 after:overflow-hidden after:font-bold after:invisible"
-                           _="on click set #mobile-navigation-toggle.checked to false">
+                           class="block rounded-sm px-3 py-2.5 text-lg font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline aria-[current=page]:font-bold aria-[current=page]:text-neutral-950 dark:aria-[current=page]:text-neutral-50 outline-hidden after:content-[attr(data-label)] after:block after:h-0 after:overflow-hidden after:font-bold after:invisible"
+                            _="on htmx:after:swap set #mobile-navigation-toggle.checked to false">
                             {item.name}
                         </a>
                     </li>
@@ -301,7 +302,7 @@ const footerSections = [
                 <a href="/discord"
                    title="Join the Discord community"
                    hx-boost="false"
-                   class="flex items-center gap-3 rounded-sm px-3 py-2 text-base font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline outline-hidden"
+                   class="flex items-center gap-3 rounded-sm px-3 py-2.5 text-lg font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline outline-hidden"
                    _="on click set #mobile-navigation-toggle.checked to false">
                     <i class="icon-[simple-icons--discord] size-4.5 text-current" aria-hidden="true"></i>
                     Discord
@@ -312,7 +313,7 @@ const footerSections = [
                 <a href="https://github.com/bigskysoftware/htmx"
                    target="_blank" rel="noopener noreferrer"
                    title="View source code on GitHub"
-                   class="flex items-center gap-3 rounded-sm px-3 py-2 text-base font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline outline-hidden"
+                   class="flex items-center gap-3 rounded-sm px-3 py-2.5 text-lg font-medium text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline outline-hidden"
                    _="on click set #mobile-navigation-toggle.checked to false">
                     <i class="icon-[mdi--github] size-5 text-current" aria-hidden="true"></i>
                     GitHub
