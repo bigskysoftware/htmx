@@ -4,7 +4,6 @@ title: "Keyboard Shortcuts"
 description: Bind keyboard shortcuts to interactive elements
 category: "Advanced"
 icon: "icon-[mdi--keyboard]"
-soon: true
 ---
 
 <script>
@@ -26,7 +25,7 @@ server.post("/doit", () =>
 server.start("/init");
 </script>
 
-<div id="demo-content" class="not-prose demo-container flex justify-center"></div>
+<div id="demo-content" class="not-prose demo-container flex justify-center min-h-[120px]"></div>
 
 ## Basic usage
 
@@ -40,8 +39,8 @@ On the client, add a keyboard event to `hx-trigger` alongside `click`.
 ```
 
 - [`hx-trigger`](/reference/attributes/hx-trigger) accepts multiple events separated by commas.
-- `keyup[altKey&&shiftKey&&key=='D']` uses an [event filter](/reference/attributes/hx-trigger#event-filters) to match only the Alt+Shift+D combination.
-- [`from:body`](/reference/attributes/hx-trigger#from) makes the shortcut global: the listener is on the `<body>`, not the button itself.
+- `keyup[altKey&&shiftKey&&key=='D']` uses an [event filter](/reference/attributes/hx-trigger#filter) to match only the Alt+Shift+D combination.
+- [`from:body`](/reference/attributes/hx-trigger#fromselector) makes the shortcut global: the listener is on the `<body>`, not the button itself.
 
 On the server, respond with the result content:
 
@@ -50,6 +49,19 @@ On the server, respond with the result content:
 ```
 
 ## Notes
+
+### Browser shortcut conflicts
+
+The browser can already own your combination. Add the [`prevent`](/reference/attributes/hx-trigger#prevent) modifier to call `event.preventDefault()`.
+
+```html
+<button hx-trigger="keyup[ctrlKey&&key=='k'] from:body prevent"
+        hx-post="/doit">
+  Search (Ctrl+K)
+</button>
+```
+
+Test each shortcut in every browser you support. Some combinations, such as `Ctrl+W` and `Ctrl+N`, reach the browser before the page.
 
 ### Keyboard event properties
 

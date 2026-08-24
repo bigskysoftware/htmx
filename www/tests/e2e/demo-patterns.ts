@@ -294,6 +294,35 @@ test.describe.serial('Pattern demo pages', () => {
     });
 
     // =============================================
+    // Advanced
+    // =============================================
+
+    test('keyboard-shortcuts: click and Alt+Shift+D both fire', async ({ page }) => {
+        await page.goto('/patterns/keyboard-shortcuts');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const result = demo(page, '#result');
+        await expect(result).toBeEmpty();
+
+        await demo(page, 'button').click();
+        await expect(result).toContainText('Done!');
+
+        // Reload for a clean slate, then use the shortcut
+        await page.reload();
+        await waitForDemo(page);
+        await expect(demo(page, '#result')).toBeEmpty();
+
+        await page.keyboard.down('Alt');
+        await page.keyboard.down('Shift');
+        await page.keyboard.press('KeyD');
+        await page.keyboard.up('Shift');
+        await page.keyboard.up('Alt');
+
+        await expect(demo(page, '#result')).toContainText('Done!');
+    });
+
+    // =============================================
     // Real-time
     // =============================================
 
