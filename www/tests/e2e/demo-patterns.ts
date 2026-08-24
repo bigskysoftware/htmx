@@ -303,6 +303,33 @@ test.describe.serial('Pattern demo pages', () => {
         await expect(demo(page, 'tbody tr')).toHaveCount(4);
     });
 
+    test('edit-in-place: edit, save, and cancel', async ({ page }) => {
+        await page.goto('/patterns/edit-in-place');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const card = demo(page, '#user-view');
+        await expect(card).toContainText('Joe Smith');
+
+        // View to edit form
+        await demo(page, 'button').filter({ hasText: /^edit$/i }).click();
+        await expect(demo(page, 'form#user-view')).toBeVisible();
+
+        // Save writes the new value and returns the view
+        await demo(page, 'input[name="name"]').fill('Carson Gross');
+        await demo(page, 'button[type="submit"]').click();
+        await expect(demo(page, 'form#user-view')).toHaveCount(0);
+        await expect(demo(page, '#user-view')).toContainText('Carson Gross');
+
+        // Cancel discards the edit
+        await demo(page, 'button').filter({ hasText: /^edit$/i }).click();
+        await expect(demo(page, 'form#user-view')).toBeVisible();
+        await demo(page, 'input[name="name"]').fill('Discarded');
+        await demo(page, 'button').filter({ hasText: /^cancel$/i }).click();
+        await expect(demo(page, 'form#user-view')).toHaveCount(0);
+        await expect(demo(page, '#user-view')).toContainText('Carson Gross');
+    });
+
     test('bulk-actions: renders table with checkboxes', async ({ page }) => {
         await page.goto('/patterns/bulk-actions');
         await waitForSw(page);
