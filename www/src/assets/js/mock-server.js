@@ -79,7 +79,7 @@
           }
         };
         activeSseStreams.set(connId, stream);
-        sseHandler.handler(stream);
+        sseHandler.handler(stream, { url, method, params: parseParams(url, body), headers: headers || {} });
         return;
       }
     }
