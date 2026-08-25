@@ -301,7 +301,7 @@ export async function getFolder(path) {
             files: childFiles.filter(f => !f.frontmatter?.hidden),
             folders: [],
             allFiles: childFiles,
-            breadcrumbs: []
+            breadcrumbs: isHome ? [] : [{label: rootFrontmatter.title}]
         };
     }
 
