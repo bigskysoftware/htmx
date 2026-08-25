@@ -604,8 +604,8 @@ test.describe.serial('Pattern demo pages', () => {
     // Real-time
     // =============================================
 
-    test('streaming-response: turns accumulate and clear', async ({ page }) => {
-        await page.goto('/patterns/streaming-response');
+    test('llm-streaming: turns accumulate and clear', async ({ page }) => {
+        await page.goto('/patterns/llm-streaming-response');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -649,8 +649,8 @@ test.describe.serial('Pattern demo pages', () => {
         await expect(conv.locator('p')).toHaveCount(0);
     });
 
-    test('streaming-response: the prompt is disabled while a reply streams', async ({ page }) => {
-        await page.goto('/patterns/streaming-response');
+    test('llm-streaming: the prompt is disabled while a reply streams', async ({ page }) => {
+        await page.goto('/patterns/llm-streaming-response');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -674,8 +674,8 @@ test.describe.serial('Pattern demo pages', () => {
         await expect(prompt).toBeEnabled({ timeout: 15_000 });
     });
 
-    test('streaming-response: clear stops a reply in progress', async ({ page }) => {
-        await page.goto('/patterns/streaming-response');
+    test('llm-streaming: clear stops a reply in progress', async ({ page }) => {
+        await page.goto('/patterns/llm-streaming-response');
         await waitForSw(page);
         await waitForDemo(page);
 
@@ -697,6 +697,35 @@ test.describe.serial('Pattern demo pages', () => {
         await prompt.fill('Does htmx suck?');
         await prompt.press('Enter');
         await expect.poll(async () => (await conv.innerText()).includes('Yes.')).toBe(true);
+    });
+
+    test('live-updates: a persistent connection pushes row updates', async ({ page }) => {
+        // A persistent SSE connection never lets the network go idle
+        await page.goto('/patterns/live-updates', { waitUntil: 'domcontentloaded' });
+        await expect(demo(page, '#quotes tr')).toHaveCount(4);
+
+        const prices = () => page.evaluate(() =>
+            [...document.querySelectorAll('#demo-content #quotes tr')]
+                .map(r => r.cells.length ? r.cells[2].textContent!.trim() : 'BROKEN').join(','));
+
+        const before = await prices();
+        expect(before).not.toContain('BROKEN');
+
+        // Each event carries an <hx-partial> naming one row
+        await expect.poll(prices, { timeout: 15_000 }).not.toBe(before);
+
+        // Rows are replaced, not appended, and their cells survive. A bare
+        // <tr> works because hx-partial becomes a <template> before parsing.
+        // A multi-line SSE payload needs a data: prefix per line, or only the
+        // first line arrives and the row comes back empty.
+        await expect(demo(page, '#quotes tr')).toHaveCount(4);
+        expect(await prices()).not.toContain('BROKEN');
+
+        // The connection element keeps htmx-request for the life of the
+        // connection, so the badge stays lit. That only works because core
+        // awaits ctx.extensionPromise before releasing the request.
+        expect(await page.evaluate(() =>
+            getComputedStyle(document.querySelector('#demo-content .htmx-indicator')!).opacity)).toBe('1');
     });
 
     test('polling: card refreshes on the interval', async ({ page }) => {

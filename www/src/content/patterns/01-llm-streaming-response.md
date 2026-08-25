@@ -1,6 +1,6 @@
 ---
 includeMockServer: true
-title: "Streaming Response"
+title: "LLM Streaming Response"
 description: Stream a reply into the page token by token
 category: "Streaming HTML"
 icon: "icon-[cil--stream]"
