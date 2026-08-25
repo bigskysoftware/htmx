@@ -271,6 +271,39 @@ describe('__issueRequest unit tests', function() {
         assert.isTrue(finallyFired)
     })
 
+    it('waits for all htmx:before:response work before finalizing', async function () {
+        let div = createProcessedHTML('<button hx-get="/test" hx-disable="this" hx-swap="none">Go</button>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+        let rejectFirst
+        let resolveSecond
+        let first = new Promise((resolve, reject) => rejectFirst = reject)
+        let second = new Promise(resolve => resolveSecond = resolve)
+        let finallyFired = false
+
+        ctx.fetch = async () => ({status: 200, headers: new Headers(), text: async () => ''})
+        div.addEventListener('htmx:before:response', event => {
+            event.detail.waitUntil(first)
+            event.detail.waitUntil(second)
+            event.preventDefault()
+        })
+        div.addEventListener('htmx:finally:request', () => finallyFired = true)
+
+        let request = htmx.__issueRequest(ctx)
+        await htmx.timeout(1)
+        assert.isTrue(div.disabled)
+        assert.isFalse(finallyFired)
+
+        rejectFirst(new Error('extension failed'))
+        await htmx.timeout(1)
+        assert.isTrue(div.disabled)
+        assert.isFalse(finallyFired)
+
+        resolveSecond()
+        await request
+        assert.isFalse(div.disabled)
+        assert.isTrue(finallyFired)
+    })
+
     it('updates ctx.status through request lifecycle', async function () {
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
         let ctx = htmx.__createRequestContext(div, new Event('click'))

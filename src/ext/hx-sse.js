@@ -377,11 +377,18 @@
             let contentType = ctx.response.raw.headers.get('Content-Type');
             if (!contentType?.includes('text/event-stream')) return;
 
-            // Take over; core will return without calling response.text()
+            clearTimeout(ctx.requestTimeout);
+            let releaseRequest;
+            let requestComplete = new Promise(resolve => releaseRequest = resolve);
+            element.addEventListener('htmx:sse:request:release', releaseRequest, {once: true});
             handleSSEResponse(ctx).catch(e => {
                 api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
                 cleanup(element);
+            }).finally(() => {
+                element.removeEventListener('htmx:sse:request:release', releaseRequest);
+                releaseRequest();
             });
+            detail.waitUntil(requestComplete);
             return false;
         },
 

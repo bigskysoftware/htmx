@@ -62,6 +62,51 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    it('holds the request until the stream ends', async function() {
+        const stream = mockStreamResponse('/request-lifecycle');
+        let button = createProcessedHTML('<button hx-get="/request-lifecycle" hx-disable="this" hx-swap="innerHTML">Stream</button>');
+        let finallyFired = false;
+        button.addEventListener('htmx:finally:request', () => finallyFired = true);
+
+        button.click();
+        await htmx.timeout(1);
+        assert.isTrue(button.disabled);
+        assert.isFalse(finallyFired);
+
+        stream.send('message');
+        await waitForEvent('htmx:sse:after:message');
+        assert.isTrue(button.disabled);
+        assert.isFalse(finallyFired);
+
+        let finalized = waitForEvent('htmx:finally:request');
+        stream.close();
+        await finalized;
+        assert.isFalse(button.disabled);
+        assert.isTrue(finallyFired);
+    });
+
+    it('releases the request while the stream continues', async function() {
+        const stream = mockStreamResponse('/release-request');
+        let button = createProcessedHTML('<button hx-get="/release-request" hx-disable="this" hx-swap="innerHTML">Stream</button>');
+
+        button.click();
+        await htmx.timeout(1);
+        stream.send('shell');
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('button', 'shell');
+        assert.isTrue(button.disabled);
+
+        let finalized = waitForEvent('htmx:finally:request');
+        stream.send('', 'htmx:sse:request:release');
+        await finalized;
+        assert.isFalse(button.disabled);
+
+        stream.send('late message');
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('button', 'late message');
+        stream.close();
+    });
+
     it('continuous stream reconnects with exponential backoff', async function() {
         const stream = mockStreamResponse('/reconnect');
         createProcessedHTML('<button hx-get="/reconnect" hx-config="sse.reconnect:true sse.reconnectDelay:50ms sse.reconnectMaxAttempts:3 sse.reconnectJitter:0" hx-swap="innerHTML">Connect</button>');

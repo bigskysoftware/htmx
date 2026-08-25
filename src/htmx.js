@@ -555,6 +555,7 @@ var htmx = (() => {
 
             let indicators = [];
             let disableElements = [];
+            let responseWork = [];
             try {
                 // Handle confirmation
                 if (ctx.confirm) {
@@ -586,7 +587,7 @@ var htmx = (() => {
                     headers: response.headers,
                 }
                 this.__extractHxHeaders(ctx);
-                if (!this.__trigger(elt, "htmx:before:response", {ctx})) return;
+                if (!this.__trigger(elt, "htmx:before:response", {ctx, waitUntil: promise => responseWork.push(Promise.resolve(promise))})) return;
                 ctx.text = await response.text();
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
 
@@ -613,6 +614,7 @@ var htmx = (() => {
                 ctx.status = "error: " + error;
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
+                await Promise.allSettled(responseWork);
                 clearTimeout(ctx.requestTimeout);
                 if (ctx.hx?.trigger) { // HX-Trigger
                     this.__handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
