@@ -303,6 +303,36 @@ event-43  ------------------->  replayed
 
 The server decides which messages to replay. `hx-sse` processes every event it receives and does not deduplicate replays.
 
+### Control Request Lifecycle
+
+By default, htmx completes the request lifecycle after the first SSE message arrives. Use `hx:hold` and `hx:release` events to keep the request open longer.
+
+Send `hx:hold` as the first message to block the request lifecycle:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: text/event-stream
+
+event: hx:hold
+data:
+
+data: First chunk
+
+data: Second chunk
+
+event: hx:release
+data:
+
+```
+
+The request stays open until `hx:release` arrives. This keeps:
+
+- The `.htmx-request` class on the element
+- The element disabled (when [`hx-disable`](/reference/attributes/hx-disable) is used)
+- Request indicators visible
+
+Without `hx:hold`, the request completes after the first message and indicators disappear while streaming continues.
+
 ### Trigger Client Events
 
 An SSE `event` field dispatches a DOM event instead of swapping its data:
@@ -503,6 +533,30 @@ document.addEventListener('htmx:sse:after:message', event => {
   console.log('Received:', event.detail.message.data)
 })
 ```
+
+### `hx:hold`
+
+A named SSE event that blocks the request lifecycle until `hx:release` arrives.
+
+```http
+event: hx:hold
+data:
+
+```
+
+Must be the first message in the stream. The request stays open, keeping `.htmx-request` on the element and indicators visible.
+
+### `hx:release`
+
+A named SSE event that releases a request blocked by `hx:hold`.
+
+```http
+event: hx:release
+data:
+
+```
+
+After this event, the request lifecycle completes normally. If `hx:hold` was not sent, this event is ignored.
 
 ### `htmx:sse:close`
 

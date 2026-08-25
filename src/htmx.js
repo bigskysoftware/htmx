@@ -613,6 +613,7 @@ var htmx = (() => {
                 ctx.status = "error: " + error;
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
+                await ctx.extensionPromise?.catch(() => {});
                 clearTimeout(ctx.requestTimeout);
                 if (ctx.hx?.trigger) { // HX-Trigger
                     this.__handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);

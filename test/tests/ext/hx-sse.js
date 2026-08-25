@@ -972,9 +972,14 @@ describe('hx-sse SSE extension', function() {
 
         await htmx.timeout(1);
 
+        // Set up listener for child's request completion BEFORE triggering
+        let childRequestComplete = new Promise(resolve => {
+            find('#child').addEventListener('htmx:finally:request', resolve, {once: true});
+        });
+
         stream.send('payload', 'update');
         await waitForEvent('htmx:sse:after:message');
-        await forRequest();
+        await childRequestComplete;  // Wait for the CHILD's request, not the parent's
 
         assertTextContentIs('#child', 'Updated!');
 
@@ -1518,5 +1523,299 @@ describe('hx-sse SSE extension', function() {
         console.warn = originalWarn;
 
         assert.equal(warnings.filter(warning => warning.includes('sse-swap')).length, 1);
+    });
+
+    // ========================================
+    // hx:hold / hx:release lifecycle tests
+    // ========================================
+
+    it('releases after first message when no hx:hold is sent', async function() {
+        const stream = mockStreamResponse('/no-begin');
+        createProcessedHTML('<button hx-get="/no-begin" hx-swap="innerHTML">Go</button>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        // Register listener AFTER click to avoid catching events from previous tests
+        let finallyFired = false;
+        onDoc('htmx:finally:request', () => { finallyFired = true; });
+
+        assert.isFalse(finallyFired, 'finally should not fire before first message');
+
+        stream.send('first message');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        assert.isTrue(finallyFired, 'finally should fire after first message');
+        assertTextContentIs('button', 'first message');
+
+        // Subsequent messages still work (background streaming)
+        stream.send('second message');
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('button', 'second message');
+
+        stream.close();
+    });
+
+    it('hx:hold blocks until hx:release', async function() {
+        const stream = mockStreamResponse('/begin-ready');
+        createProcessedHTML('<button hx-get="/begin-ready" hx-swap="innerHTML">Go</button>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        // Register listener AFTER click to avoid catching events from previous tests
+        let finallyFired = false;
+        onDoc('htmx:finally:request', () => { finallyFired = true; });
+
+        // Send hx:hold
+        stream.send('Loading...', 'hx:hold');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        assert.isFalse(finallyFired, 'finally should NOT fire after hx:hold');
+        assertTextContentIs('button', 'Loading...');
+
+        // Send more messages while blocked
+        stream.send('Still loading...');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        assert.isFalse(finallyFired, 'finally should still NOT fire during blocking');
+        assertTextContentIs('button', 'Still loading...');
+
+        // Send hx:release to release
+        stream.send('Done!', 'hx:release');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        assert.isTrue(finallyFired, 'finally should fire after hx:release');
+        assertTextContentIs('button', 'Done!');
+
+        stream.close();
+    });
+
+    it('hx:hold/hx:release allows background streaming after release', async function() {
+        const stream = mockStreamResponse('/begin-ready-bg');
+        createProcessedHTML('<button hx-get="/begin-ready-bg" hx-swap="innerHTML">Go</button>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.send('Loading...', 'hx:hold');
+        await waitForEvent('htmx:sse:after:message');
+
+        stream.send('Complete', 'hx:release');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        // Background streaming should continue
+        stream.send('Background update 1');
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('button', 'Background update 1');
+
+        stream.send('Background update 2');
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('button', 'Background update 2');
+
+        stream.close();
+    });
+
+    it('hx:hold with empty data still blocks', async function() {
+        const stream = mockStreamResponse('/begin-empty');
+        createProcessedHTML('<button hx-get="/begin-empty" hx-swap="innerHTML">Original</button>');
+
+        let finallyFired = false;
+        onDoc('htmx:finally:request', () => { finallyFired = true; });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        // Send hx:hold with no data
+        stream.sendRaw('event: hx:hold\ndata:\n\n');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        assert.isFalse(finallyFired, 'finally should NOT fire after empty hx:hold');
+        assertTextContentIs('button', 'Original'); // No swap for empty data
+
+        stream.send('Ready!', 'hx:release');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        assert.isTrue(finallyFired, 'finally should fire after hx:release');
+        assertTextContentIs('button', 'Ready!');
+
+        stream.close();
+    });
+
+    it('hx:release with empty data still releases', async function() {
+        const stream = mockStreamResponse('/ready-empty');
+        createProcessedHTML('<button hx-get="/ready-empty" hx-swap="innerHTML">Original</button>');
+
+        let finallyFired = false;
+        onDoc('htmx:finally:request', () => { finallyFired = true; });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.send('Loading...', 'hx:hold');
+        await waitForEvent('htmx:sse:after:message');
+
+        // Send hx:release with no data
+        stream.sendRaw('event: hx:release\ndata:\n\n');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        assert.isTrue(finallyFired, 'finally should fire after empty hx:release');
+        assertTextContentIs('button', 'Loading...'); // Content from hx:hold
+
+        stream.close();
+    });
+
+    it('indicators stay visible during hx:hold/hx:release blocking phase', async function() {
+        const stream = mockStreamResponse('/indicator-test');
+        createProcessedHTML(`
+            <button hx-get="/indicator-test" hx-swap="innerHTML" hx-indicator="#spinner">Go</button>
+            <div id="spinner" class="htmx-indicator">Loading...</div>
+        `);
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        // Indicator should be visible
+        assert.isTrue(find('#spinner').classList.contains('htmx-request'), 'Indicator should be visible initially');
+
+        stream.send('Starting...', 'hx:hold');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        // Indicator should STILL be visible during blocking
+        assert.isTrue(find('#spinner').classList.contains('htmx-request'), 'Indicator should stay visible during blocking');
+
+        stream.send('Done!', 'hx:release');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        // Indicator should be hidden after release
+        assert.isFalse(find('#spinner').classList.contains('htmx-request'), 'Indicator should hide after hx:release');
+
+        stream.close();
+    });
+
+    it('disabled elements stay disabled during hx:hold/hx:release blocking phase', async function() {
+        const stream = mockStreamResponse('/disable-test');
+        createProcessedHTML(`
+            <form hx-get="/disable-test" hx-swap="innerHTML" hx-target="#output" hx-disable="find input, find button">
+                <input type="text" value="test">
+                <button type="submit">Submit</button>
+            </form>
+            <div id="output"></div>
+        `);
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        // Elements should be disabled
+        assert.isTrue(find('input').disabled, 'Input should be disabled initially');
+        assert.isTrue(find('button').disabled, 'Button should be disabled initially');
+
+        stream.send('Processing...', 'hx:hold');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        // Elements should STILL be disabled during blocking
+        assert.isTrue(find('input').disabled, 'Input should stay disabled during blocking');
+        assert.isTrue(find('button').disabled, 'Button should stay disabled during blocking');
+
+        stream.send('Complete!', 'hx:release');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        // Elements should be re-enabled after release
+        assert.isFalse(find('input').disabled, 'Input should be enabled after hx:release');
+        assert.isFalse(find('button').disabled, 'Button should be enabled after hx:release');
+
+        stream.close();
+    });
+
+    it('stream ending during blocking phase still cleans up', async function() {
+        let ctrl;
+        fetchMock.mockResponse('GET', '/end-during-block', () => {
+            const body = new ReadableStream({ start(c) { ctrl = c; } });
+            const response = new MockResponse(body, {
+                headers: { 'Content-Type': 'text/event-stream' }
+            });
+            response.body = body;
+            return response;
+        });
+
+        createProcessedHTML('<button hx-get="/end-during-block" hx-swap="innerHTML">Go</button>');
+
+        let closeFired = false;
+        let closeReason = null;
+        onDoc('htmx:sse:close', (e) => {
+            closeFired = true;
+            closeReason = e.detail.reason;
+        });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        // Send hx:hold
+        const enc = new TextEncoder();
+        ctrl.enqueue(enc.encode('event: hx:hold\ndata: Loading...\n\n'));
+        await waitForEvent('htmx:sse:after:message');
+
+        // Close stream without sending hx:release
+        ctrl.close();
+        await waitForEvent('htmx:sse:close');
+
+        assert.isTrue(closeFired, 'close event should fire');
+        assert.equal(closeReason, 'ended', 'Close reason should be "ended"');
+    });
+
+    it('hx-sse:close during blocking phase closes connection', async function() {
+        const stream = mockStreamResponse('/close-during-block');
+        createProcessedHTML('<button hx-get="/close-during-block" hx-sse:close="done" hx-swap="innerHTML">Go</button>');
+
+        let closeFired = false;
+        onDoc('htmx:sse:close', () => { closeFired = true; });
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.send('Loading...', 'hx:hold');
+        await waitForEvent('htmx:sse:after:message');
+
+        // Send close event during blocking
+        stream.send('Closing', 'done');
+        await waitForEvent('htmx:sse:close');
+
+        assert.isTrue(closeFired, 'Connection should close on matching event during blocking');
+    });
+
+    it('multiple messages between hx:hold and hx:release all swap', async function() {
+        const stream = mockStreamResponse('/multi-swap');
+        createProcessedHTML('<div id="target" hx-get="/multi-swap" hx-swap="beforeend">Start:</div>');
+
+        find('#target').click();
+        await htmx.timeout(1);
+
+        stream.send('<span>1</span>', 'hx:hold');
+        await waitForEvent('htmx:sse:after:message');
+
+        stream.send('<span>2</span>');
+        await waitForEvent('htmx:sse:after:message');
+
+        stream.send('<span>3</span>');
+        await waitForEvent('htmx:sse:after:message');
+
+        stream.send('<span>4</span>', 'hx:release');
+        await waitForEvent('htmx:sse:after:message');
+
+        assertTextContentIs('#target', 'Start:1234');
+
+        stream.close();
     });
 });

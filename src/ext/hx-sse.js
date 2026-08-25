@@ -114,10 +114,18 @@
 
     // Starts streaming from a response. Handles reconnection by re-fetching
     // with the saved request context (no full pipeline re-run).
-    async function handleSSEResponse(ctx) {
+    async function handleSSEResponse(ctx, releaseRequest) {
         let element = ctx.sourceElement;
         let config = getConfig(element);
         let reconnectRequested = false;
+        let held = false;
+
+        function release() {
+            if (releaseRequest) {
+                releaseRequest();
+                releaseRequest = null;
+            }
+        }
 
         let connection = {
             url: ctx.request.action,
@@ -270,6 +278,15 @@
 
                         if (msg.retry != null) config.reconnectDelay = msg.retry;
 
+                        // Lifecycle: hx:hold blocks release until hx:release
+                        if (detail.message.event === 'hx:hold') {
+                            held = true;
+                            detail.message.event = '';
+                        } else if (detail.message.event === 'hx:release') {
+                            held = false;
+                            detail.message.event = '';
+                        }
+
                         if (detail.message.event) {
                             htmx.trigger(element, detail.message.event, {data: detail.message.data, id: detail.message.id});
                             api.triggerHtmxEvent(element, 'htmx:sse:after:message', {connection, message: detail.message});
@@ -289,10 +306,11 @@
                         // ensures OOB-only messages don't clear target (regardless of allowEmptySwapAfterOOB)
                         if (!ctx.swap.includes('swapEmpty')) ctx.swap += ' swapEmpty:false';
                         await htmx.swap(ctx);
+                        if (!held) release();
                         api.triggerHtmxEvent(element, 'htmx:sse:after:message', {connection, message: detail.message});
                     }
                 } catch (e) {
-                    if (!connection.abortController?.signal?.aborted) {
+                    if (!connection.abortController?.signal?.aborted && e.name !== 'AbortError') {
                         api.triggerHtmxEvent(element, 'htmx:sse:error', {connection, error: e});
                     }
                 }
@@ -303,6 +321,7 @@
             }
         } finally {
             cleanup(element, element.isConnected ? 'ended' : 'removed');
+            release();  // Ensure request is released if stream ends
         }
     }
 
@@ -377,10 +396,14 @@
             let contentType = ctx.response.raw.headers.get('Content-Type');
             if (!contentType?.includes('text/event-stream')) return;
 
-            // Take over; core will return without calling response.text()
-            handleSSEResponse(ctx).catch(e => {
-                api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
-                cleanup(element);
+            // Take over streaming; use extensionPromise to hold the request open
+            clearTimeout(ctx.requestTimeout);
+            let releaseRequest;
+            ctx.extensionPromise = new Promise(resolve => releaseRequest = resolve);
+            handleSSEResponse(ctx, releaseRequest).catch(e => {
+                if (e.name !== 'AbortError') {
+                    api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
+                }
             });
             return false;
         },
