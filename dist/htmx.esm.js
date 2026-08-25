@@ -411,7 +411,6 @@ var htmx = (() => {
                 HCON.merge(sourceElement._htmx.boosted, ctx);
             }
             ctx.target = this.#resolveTarget(sourceElement, ctx.target);
-            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
             if (ctx.target) {
                 ctx.request.headers["HX-Target"] = this.#buildIdentifier(ctx.target);
             }
@@ -575,6 +574,8 @@ var htmx = (() => {
                 disableElements = this.#disableElements(elt);
 
                 ctx.fetch ||= window.fetch.bind(window)
+                // Set HX-Request-Type based on final target/select (after all modifications)
+                ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
                 if (!this.#trigger(elt, "htmx:before:request", {ctx})) return;
 
                 let response = await ctx.fetch(ctx.request.action, ctx.request);
@@ -612,6 +613,9 @@ var htmx = (() => {
                 ctx.status = "error: " + error;
                 this.#trigger(elt, "htmx:error", {ctx, error})
             } finally {
+                // An extension that took over the response reports when it has
+                // finished delivering. Undefined for a normal request.
+                await ctx.extensionPromise?.catch(() => {});
                 clearTimeout(ctx.requestTimeout);
                 if (ctx.hx?.trigger) { // HX-Trigger
                     this.#handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
