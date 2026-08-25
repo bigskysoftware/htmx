@@ -2,7 +2,7 @@
 includeMockServer: true
 title: "Polling"
 description: Check for updates at regular intervals
-category: "Real-time"
+category: "Streaming HTML"
 icon: "icon-[mdi--reload]"
 ---
 

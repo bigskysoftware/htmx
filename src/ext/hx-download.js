@@ -35,13 +35,16 @@
             }
             let cd = ctx.response.headers.get('Content-Disposition');
             if (ctx.swap !== 'download' && !cd?.includes('attachment')) return;
-            streamDownload(ctx.sourceElement, ctx.response.raw, ctx.request.action);
+            // a download has no fixed duration, so drop the request timeout and
+            // hand core a promise so it holds the request until we finish
+            clearTimeout(ctx.requestTimeout);
+            ctx.extensionPromise = streamDownload(ctx.sourceElement, ctx.response.raw, ctx.request.action);
             return false;
         }
     });
 
     function streamDownload(sourceElement, response, url) {
-        (async () => {
+        return (async () => {
             let total = +response.headers.get('Content-Length') || null;
             api.triggerHtmxEvent(sourceElement, 'htmx:download:start', {total});
             let reader = response.body.getReader();

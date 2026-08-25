@@ -411,7 +411,6 @@ var htmx = (() => {
                 HCON.merge(sourceElement._htmx.boosted, ctx);
             }
             ctx.target = this.#resolveTarget(sourceElement, ctx.target);
-            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
             if (ctx.target) {
                 ctx.request.headers["HX-Target"] = this.#buildIdentifier(ctx.target);
             }
@@ -575,6 +574,8 @@ var htmx = (() => {
                 disableElements = this.#disableElements(elt);
 
                 ctx.fetch ||= window.fetch.bind(window)
+                // Set HX-Request-Type based on final target/select (after all modifications)
+                ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
                 if (!this.#trigger(elt, "htmx:before:request", {ctx})) return;
 
                 let response = await ctx.fetch(ctx.request.action, ctx.request);
@@ -612,6 +613,9 @@ var htmx = (() => {
                 ctx.status = "error: " + error;
                 this.#trigger(elt, "htmx:error", {ctx, error})
             } finally {
+                // An extension that took over the response reports when it has
+                // finished delivering. Undefined for a normal request.
+                await ctx.extensionPromise?.catch(() => {});
                 clearTimeout(ctx.requestTimeout);
                 if (ctx.hx?.trigger) { // HX-Trigger
                     this.#handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);
@@ -2638,7 +2642,8 @@ htmx.config.historyCache ??= { disable: true };
                         api.triggerHtmxEvent(element, 'htmx:sse:after:message', {connection, message: detail.message});
                     }
                 } catch (e) {
-                    if (!connection.abortController?.signal?.aborted) {
+                    // core aborts its own controller, so check the error too
+                    if (!connection.abortController?.signal?.aborted && e.name !== 'AbortError') {
                         api.triggerHtmxEvent(element, 'htmx:sse:error', {connection, error: e});
                     }
                 }
@@ -2723,9 +2728,15 @@ htmx.config.historyCache ??= { disable: true };
             let contentType = ctx.response.raw.headers.get('Content-Type');
             if (!contentType?.includes('text/event-stream')) return;
 
-            // Take over; core will return without calling response.text()
-            handleSSEResponse(ctx).catch(e => {
-                api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
+            // Take over; core will return without calling response.text().
+            // A stream has no fixed duration, so drop the request timeout, and
+            // hand core a promise so it holds the request open until we finish.
+            clearTimeout(ctx.requestTimeout);
+            ctx.extensionPromise = handleSSEResponse(ctx).catch(e => {
+                // an aborted stream is a normal end, not an error
+                if (e.name !== 'AbortError') {
+                    api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
+                }
                 cleanup(element);
             });
             return false;
@@ -3630,13 +3641,16 @@ htmx.config.historyCache ??= { disable: true };
             }
             let cd = ctx.response.headers.get('Content-Disposition');
             if (ctx.swap !== 'download' && !cd?.includes('attachment')) return;
-            streamDownload(ctx.sourceElement, ctx.response.raw, ctx.request.action);
+            // a download has no fixed duration, so drop the request timeout and
+            // hand core a promise so it holds the request until we finish
+            clearTimeout(ctx.requestTimeout);
+            ctx.extensionPromise = streamDownload(ctx.sourceElement, ctx.response.raw, ctx.request.action);
             return false;
         }
     });
 
     function streamDownload(sourceElement, response, url) {
-        (async () => {
+        return (async () => {
             let total = +response.headers.get('Content-Length') || null;
             api.triggerHtmxEvent(sourceElement, 'htmx:download:start', {total});
             let reader = response.body.getReader();
@@ -4639,8 +4653,6 @@ htmx.config.historyCache ??= { disable: true };
             cleanupLive(elt);
         },
         htmx_before_morph_attr: (elt, detail) => {
-            // A morph can reach us before anything has been processed, for example when
-            // this script arrives in swapped content. Build the prefixes on demand.
             if (!liveQuery) buildLiveQuery();
             if (bindPrefixes.some(p => detail.attrName.startsWith(p))) cleanupLive(elt);
         },

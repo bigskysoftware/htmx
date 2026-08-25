@@ -613,6 +613,9 @@ var htmx = (() => {
                 ctx.status = "error: " + error;
                 this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
+                // An extension that took over the response reports when it has
+                // finished delivering. Undefined for a normal request.
+                await ctx.extensionPromise?.catch(() => {});
                 clearTimeout(ctx.requestTimeout);
                 if (ctx.hx?.trigger) { // HX-Trigger
                     this.__handleTriggerHeader(ctx.hx.trigger, ctx.sourceElement);

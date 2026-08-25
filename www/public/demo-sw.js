@@ -115,7 +115,10 @@ self.addEventListener('message', (event) => {
       const { eventType, data } = event.data;
       let chunk = '';
       if (eventType) chunk += `event: ${eventType}\n`;
-      chunk += `data: ${data}\n\n`;
+      // SSE is line based, so every line of a multi-line payload needs its
+      // own data: prefix. Without this only the first line survives.
+      for (const line of String(data).split('\n')) chunk += `data: ${line}\n`;
+      chunk += '\n';
       controller.enqueue(new TextEncoder().encode(chunk));
     }
   } else if (event.data.type === 'sse-end') {

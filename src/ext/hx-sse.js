@@ -292,7 +292,8 @@
                         api.triggerHtmxEvent(element, 'htmx:sse:after:message', {connection, message: detail.message});
                     }
                 } catch (e) {
-                    if (!connection.abortController?.signal?.aborted) {
+                    // core aborts its own controller, so check the error too
+                    if (!connection.abortController?.signal?.aborted && e.name !== 'AbortError') {
                         api.triggerHtmxEvent(element, 'htmx:sse:error', {connection, error: e});
                     }
                 }
@@ -377,9 +378,15 @@
             let contentType = ctx.response.raw.headers.get('Content-Type');
             if (!contentType?.includes('text/event-stream')) return;
 
-            // Take over; core will return without calling response.text()
-            handleSSEResponse(ctx).catch(e => {
-                api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
+            // Take over; core will return without calling response.text().
+            // A stream has no fixed duration, so drop the request timeout, and
+            // hand core a promise so it holds the request open until we finish.
+            clearTimeout(ctx.requestTimeout);
+            ctx.extensionPromise = handleSSEResponse(ctx).catch(e => {
+                // an aborted stream is a normal end, not an error
+                if (e.name !== 'AbortError') {
+                    api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});
+                }
                 cleanup(element);
             });
             return false;

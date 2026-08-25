@@ -819,8 +819,6 @@
             cleanupLive(elt);
         },
         htmx_before_morph_attr: (elt, detail) => {
-            // A morph can reach us before anything has been processed, for example when
-            // this script arrives in swapped content. Build the prefixes on demand.
             if (!liveQuery) buildLiveQuery();
             if (bindPrefixes.some(p => detail.attrName.startsWith(p))) cleanupLive(elt);
         },

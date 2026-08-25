@@ -34,7 +34,9 @@ async function morphViaLink(page: any, url: string) {
 
 const DEMO_A = '/patterns/click-to-load';
 const DEMO_B = '/patterns/lazy-load';
-const STUB = '/patterns/polling';
+// A page with no demo. Every pattern page has one now, so use a
+// reference page to prove the container is author-placed.
+const STUB = '/reference/attributes/hx-get';
 
 // Serial: SW state leaks between parallel workers
 test.describe.serial('Pattern demos', () => {
@@ -158,11 +160,11 @@ test.describe.serial('Pattern demos', () => {
         await waitForDemo(page);
     });
 
-    test('no demo container on stub pages', async ({ page }) => {
+    test('no demo container on pages without one', async ({ page }) => {
         await page.goto(STUB);
         await expect(page.locator('.prose')).toBeVisible();
 
-        // Stub pages don't have a demo container (it's author-placed, not layout-injected)
+        // The demo container is author-placed, not layout-injected
         const demoCount = await page.locator('#demo-content, .demo-container').count();
         expect(demoCount).toBe(0);
     });

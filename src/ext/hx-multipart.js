@@ -410,6 +410,10 @@
             let type = contentType.split(';', 1)[0].trim().toLowerCase();
             if (type !== 'multipart/mixed' && type !== 'multipart/parallel') return;
 
+            // core clears this in its finally, which we block by awaiting inside
+            // response.text(). A persistent connection would hit the default timeout.
+            clearTimeout(ctx.requestTimeout);
+
             if (ctx.hx.pushurl == null && ctx.hx.push != null) ctx.hx.pushurl = ctx.hx.push;
             let handled = false;
             response.text = async () => {

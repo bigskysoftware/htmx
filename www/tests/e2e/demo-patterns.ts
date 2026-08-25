@@ -604,6 +604,130 @@ test.describe.serial('Pattern demo pages', () => {
     // Real-time
     // =============================================
 
+    test('llm-streaming: turns accumulate and clear', async ({ page }) => {
+        await page.goto('/patterns/llm-streaming-response');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const conv = demo(page, '#conversation');
+        const prompt = demo(page, 'input[name="prompt"]');
+        await expect(conv).toHaveText('');
+
+        // The request lives on the form, so Enter submits it
+        await prompt.fill('What is hypermedia?');
+        await prompt.press('Enter');
+
+        // before:request resets the form, and params are collected before it fires
+        await expect(prompt).toHaveValue('');
+
+        // The answer must build up over several events, not land in one swap
+        const lengths: number[] = [];
+        for (let i = 0; i < 4; i++) {
+            await page.waitForTimeout(300);
+            lengths.push((await conv.innerText()).length);
+        }
+        expect(new Set(lengths).size).toBeGreaterThan(2);
+        expect(lengths[3]).toBeGreaterThan(lengths[0]);
+
+        await expect.poll(async () => (await conv.innerText()).length, { timeout: 15_000 })
+            .toBeGreaterThan(300);
+        await expect(conv.locator('p')).toHaveCount(1);
+
+        // A second turn appends rather than replacing
+        await prompt.fill('Does htmx suck?');
+        await prompt.press('Enter');
+        await expect(conv.locator('p')).toHaveCount(2);
+        await expect(conv).toContainText('What is hypermedia?');
+        await expect.poll(async () => (await conv.innerText()).includes('Yes.')).toBe(true);
+
+        // Prompts are escaped, not parsed as markup
+        await prompt.fill('<b>bold</b>');
+        await prompt.press('Enter');
+        await expect(conv.locator('b')).toHaveCount(0);
+
+        await demo(page, '#chat-clear').click();
+        await expect(conv.locator('p')).toHaveCount(0);
+    });
+
+    test('llm-streaming: the prompt is disabled while a reply streams', async ({ page }) => {
+        await page.goto('/patterns/llm-streaming-response');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const prompt = demo(page, 'input[name="prompt"]');
+        const clear = demo(page, '#chat-clear');
+        await expect(prompt).toBeEnabled();
+
+        await prompt.fill('What is hypermedia?');
+        await prompt.press('Enter');
+
+        // hx-disable="find fieldset" spans the whole stream. That only works
+        // because core awaits ctx.extensionPromise before releasing the
+        // request, otherwise it re-enables when the headers land.
+        await expect(prompt).toBeDisabled();
+        await page.waitForTimeout(2000);
+        await expect(prompt).toBeDisabled();
+
+        // Clear sits outside the fieldset, so it stays available as an escape
+        await expect(clear).toBeEnabled();
+
+        await expect(prompt).toBeEnabled({ timeout: 15_000 });
+    });
+
+    test('llm-streaming: clear stops a reply in progress', async ({ page }) => {
+        await page.goto('/patterns/llm-streaming-response');
+        await waitForSw(page);
+        await waitForDemo(page);
+
+        const conv = demo(page, '#conversation');
+        const prompt = demo(page, 'input[name="prompt"]');
+
+        await prompt.fill('What is hypermedia?');
+        await prompt.press('Enter');
+        await expect.poll(async () => (await conv.innerText()).length).toBeGreaterThan(20);
+
+        // /clear stops the generation server side, so nothing arrives after
+        await demo(page, '#chat-clear').click();
+        await expect(conv).toHaveText('');
+        await page.waitForTimeout(2500);
+        await expect(conv).toHaveText('');
+
+        // the form is usable again
+        await expect(prompt).toBeEnabled();
+        await prompt.fill('Does htmx suck?');
+        await prompt.press('Enter');
+        await expect.poll(async () => (await conv.innerText()).includes('Yes.')).toBe(true);
+    });
+
+    test('live-updates: a persistent connection pushes row updates', async ({ page }) => {
+        // A persistent SSE connection never lets the network go idle
+        await page.goto('/patterns/live-updates', { waitUntil: 'domcontentloaded' });
+        await expect(demo(page, '#quotes tr')).toHaveCount(4);
+
+        const prices = () => page.evaluate(() =>
+            [...document.querySelectorAll('#demo-content #quotes tr')]
+                .map(r => r.cells.length ? r.cells[2].textContent!.trim() : 'BROKEN').join(','));
+
+        const before = await prices();
+        expect(before).not.toContain('BROKEN');
+
+        // Each event carries an <hx-partial> naming one row
+        await expect.poll(prices, { timeout: 15_000 }).not.toBe(before);
+
+        // Rows are replaced, not appended, and their cells survive. A bare
+        // <tr> works because hx-partial becomes a <template> before parsing.
+        // A multi-line SSE payload needs a data: prefix per line, or only the
+        // first line arrives and the row comes back empty.
+        await expect(demo(page, '#quotes tr')).toHaveCount(4);
+        expect(await prices()).not.toContain('BROKEN');
+
+        // The connection element keeps htmx-request for the life of the
+        // connection, so the badge stays lit. That only works because core
+        // awaits ctx.extensionPromise before releasing the request.
+        expect(await page.evaluate(() =>
+            getComputedStyle(document.querySelector('#demo-content .htmx-indicator')!).opacity)).toBe('1');
+    });
+
     test('polling: card refreshes on the interval', async ({ page }) => {
         await page.goto('/patterns/polling');
         await waitForSw(page);
