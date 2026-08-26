@@ -364,7 +364,7 @@ If the user clicks **Save**, then **Refresh**, htmx sends both when the connecti
 
 ##### Use Shared Connections
 
-Put several [`hx-ws:send`](#hx-wssend) elements inside one [`hx-ws:connect`](#hx-wsconnect):
+Each [`hx-ws:connect`](#hx-wsconnect) element opens its own connection, even for the same URL. To share one connection, put several [`hx-ws:send`](#hx-wssend) elements inside one [`hx-ws:connect`](#hx-wsconnect):
 
 ```html
 <div hx-ws:connect="/actions">
@@ -454,7 +454,7 @@ Defaults:
 - [`ws.reconnect:true`](#wsreconnect)
 - [`ws.pauseOnBackground:true`](#wspauseonbackground)
 
-Each `hx-ws:connect` element owns its connection. Separate elements open separate connections, even when they use the same URL.
+Each `hx-ws:connect` element owns its connection. Separate elements open separate connections, even when they use the same URL. To share one connection, use [one connection element with several senders inside it](#use-shared-connections).
 
 ### `hx-ws:send`
 
@@ -891,7 +891,7 @@ Code `1000` stops reconnecting by default. Messages created while a connection o
 
 #### Connection Ownership
 
-Each `hx-ws:connect` element owns its connection. Separate elements no longer share a connection by URL.
+Each `hx-ws:connect` element owns its connection. Separate elements no longer share a connection by URL. A page with several `hx-ws:connect` elements for one URL now opens several sockets. To share one connection, use [one connection element with several senders inside it](#use-shared-connections).
 
 An `hx-ws:send` value no longer opens a connection and is ignored. Put `hx-ws:send` inside an `hx-ws:connect`, or put both attributes on one element.
 
