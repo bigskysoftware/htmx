@@ -1,5 +1,5 @@
 ---
-title: "Building Extensions"
+title: "htmx Extension Authoring Guide"
 description: "The htmx 4 extension system, its event hooks, and the internal API."
 ---
 

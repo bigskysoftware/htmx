@@ -1,5 +1,5 @@
 ---
-title: "Using htmx Events"
+title: "htmx Events Guide"
 description: "Listen for htmx events to log, cancel, and modify request and swap behavior."
 ---
 
@@ -202,4 +202,4 @@ at warning level. `logAll` adds everything else.
 * [Client-Side Scripting](/docs#client-side-scripting)
 * [The `hx-on:*` attributes](/reference/attributes/hx-on)
 * [Events reference](/reference/events)
-* [Building Extensions](/docs/extension-authoring-guide), which hooks the same events from an extension
+* [htmx Extension Authoring Guide](/docs/extension-authoring-guide), which hooks the same events from an extension

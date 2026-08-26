@@ -510,7 +510,7 @@ nodes in the DOM.
 Morphing rather than replacing content can do a better job preserving things like focus, video state, etc. by mutating 
 existing nodes in-place during a swap operation.
 
-See the [morph swap guide](/docs/morphing-swaps-guide) for more information on using this technique.
+See the [Morphing Guide](/docs/morphing-swaps-guide) for more information on using this technique.
 
 #### Swap Options
 
@@ -1534,7 +1534,7 @@ document.body.addEventListener('htmx:after:init', function (evt) {
 Here, we are using vanilla JavaScript to listen for an element being initialized by htmx and applying some additional
 logic to it with our own custom `setUpElement()` function.
 
-See [Using htmx Events](/docs/htmx-events-guide) for more details on using htmx events effectively.
+See [htmx Events Guide](/docs/htmx-events-guide) for more details on using htmx events effectively.
 
 ### The `htmx` Object API
 
@@ -1619,7 +1619,7 @@ hx-live also supports DOM-based reactivity:
 
 In this case, the paragraph will update as you enter text into the input.
 
-For more details, see the [`hx-live` Programming Guide](/docs/hx-live-guide) and the [`hx-live` extension reference](/extensions/hx-live).
+For more details, see the [`hx-live` Programmers Guide](/docs/hx-live-guide) and the [`hx-live` extension reference](/extensions/hx-live).
 
 ### Other 3rd Party JavaScript
 
@@ -1760,7 +1760,7 @@ import 'htmx.org/dist/ext/hx-sse';
 
 ### Building Extensions
 
-If you wish to build your own htmx extension, see [Building Extensions](/docs/extension-authoring-guide).
+If you wish to build your own htmx extension, see [htmx Extension Authoring Guide](/docs/extension-authoring-guide).
 
 ## Security Considerations
 

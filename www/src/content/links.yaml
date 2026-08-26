@@ -7,6 +7,17 @@ header:
   - {name: game,       url: /game, boost: false}
   - {name: about,      url: /about}
 
+# Dropdown under the "docs" header link. Hand-ordered, hand-named.
+# A file in src/content/docs/ appears here only if it is listed.
+guides:
+  - {name: Morphing Guide,                  url: /docs/morphing-swaps-guide}
+  - {name: htmx Events Guide,               url: /docs/htmx-events-guide}
+  - {name: hx-live Programmers Guide,       url: /docs/hx-live-guide}
+  - {name: htmx Extension Authoring Guide,  url: /docs/extension-authoring-guide}
+  - {name: HCON,                            url: /docs/hcon-guide}
+  - {name: htmax,                           url: /docs/htmax}
+  - {name: Editor Support,                  url: /docs/editor-support}
+
 footer:
   - {name: Interviews, url: /interviews,                iconClass: "icon-[mdi--account-voice]"}
   - {name: Podcasts,   url: /podcasts,                  iconClass: "icon-[lucide--audio-lines]"}

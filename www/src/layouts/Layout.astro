@@ -24,6 +24,7 @@ const {
 // Site links (header nav, footer extras, social) loaded from one source.
 const links = (await getFile('links.yaml'))?.frontmatter;
 const navigationItems = links.header;
+const docsGuides = links.guides;
 const footerSections = [
     {name: "Links", items: links.header},
     {name: "Community", items: links.social.map((s: any) => ({name: s.name, url: s.url, iconClass: s.iconClass}))},
@@ -193,7 +194,7 @@ const footerSections = [
                  hx-preload:inherited="mouseenter">
                 <ul class="flex gap-1 items-center justify-center xl:text-[1.075rem]">
                     {navigationItems.map((item) => (
-                            <li>
+                            <li class="flex items-center">
                                 <a href={item.url}
                                    data-label={item.name}
                                    hx-boost={item.boost === false ? "false" : undefined}
@@ -201,6 +202,29 @@ const footerSections = [
                                    class="inline-block px-3 py-1 text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline aria-[current=page]:font-bold aria-[current=page]:text-neutral-950 dark:aria-[current=page]:text-neutral-50 outline-hidden after:content-[attr(data-label)] after:block after:h-0 after:overflow-hidden after:font-bold after:invisible">
                                     {item.name}
                                 </a>
+                                {item.url === "/docs" && (
+                                        <details class="group/guides relative -ms-1"
+                                                 _="on click elsewhere remove @open from me end
+                                                    on keyup[key is 'Escape'] from window remove @open from me end
+                                                    on htmx:after:swap from body remove @open from me">
+                                            <summary aria-label="Show guides"
+                                                     class="flex items-center justify-center size-6 cursor-pointer rounded-sm list-none [&::-webkit-details-marker]:hidden text-neutral-500 dark:text-neutral-450 interact:text-blue-700 dark:interact:text-blue-300 outline-hidden">
+                                                <i class="icon-[mdi--chevron-down] size-4 group-open/guides:rotate-180"
+                                                   aria-hidden="true"></i>
+                                            </summary>
+                                            <ul class="absolute start-0 top-full mt-3 w-64 py-2 text-base rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-910 shadow-lg">
+                                                {docsGuides.map((guide: any) => (
+                                                        <li>
+                                                            <a href={guide.url}
+                                                               aria-current={isCurrentPath(Astro.url.pathname, guide.url) ? 'page' : undefined}
+                                                               class="block px-4 py-1.5 text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline aria-[current=page]:font-bold aria-[current=page]:text-neutral-950 dark:aria-[current=page]:text-neutral-50 outline-hidden">
+                                                                {guide.name}
+                                                            </a>
+                                                        </li>
+                                                ))}
+                                            </ul>
+                                        </details>
+                                )}
                             </li>
                     ))}
                 </ul>
@@ -291,6 +315,19 @@ const footerSections = [
                             _="on htmx:after:swap set #mobile-navigation-toggle.checked to false">
                             {item.name}
                         </a>
+                        {item.url === "/docs" && (
+                                <ul class="ms-3 ps-3 mt-1 flex flex-col gap-1 border-s border-neutral-200 dark:border-neutral-800">
+                                    {docsGuides.map((guide: any) => (
+                                            <li>
+                                                <a href={guide.url}
+                                                   aria-current={isCurrentPath(Astro.url.pathname, guide.url) ? 'page' : undefined}
+                                                   class="block rounded-sm px-3 py-2 text-base text-neutral-600 dark:text-neutral-400 interact:text-blue-700 dark:interact:text-blue-300 interact:underline aria-[current=page]:font-bold aria-[current=page]:text-neutral-950 dark:aria-[current=page]:text-neutral-50 outline-hidden">
+                                                    {guide.name}
+                                                </a>
+                                            </li>
+                                    ))}
+                                </ul>
+                        )}
                     </li>
             ))}
         </ul>

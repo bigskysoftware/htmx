@@ -1,5 +1,5 @@
 ---
-title: "Morphing Swaps"
+title: "Morphing Guide"
 description: "Morph swaps and how to exclude elements from them."
 ---
 

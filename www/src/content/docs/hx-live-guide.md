@@ -1,5 +1,5 @@
 ---
-title: "Using hx-live"
+title: "hx-live Programmers Guide"
 description: "A programmers guide to hx-live."
 ---
 
