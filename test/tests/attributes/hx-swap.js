@@ -8,6 +8,31 @@ describe('hx-swap modifiers', function() {
         cleanupTest()
     })
 
+    it('reset modifier resets form after swap', async function () {
+        mockResponse('POST', '/test', '<div id="result">Done</div>')
+        createProcessedHTML('<form id="f" hx-post="/test" hx-swap="beforeend reset" hx-target="#out"><input name="msg" value=""/></form><div id="out"></div>')
+        let input = find('input')
+        input.value = 'typed'
+        find('#f').dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}))
+        // Form should NOT be reset yet (safe - waits for swap)
+        input.value.should.equal('typed')
+        await forRequest()
+        // Now form should be reset after successful swap
+        input.value.should.equal('')
+        find('#result').textContent.should.equal('Done')
+    })
+
+    it('swap:none with reset does not reset (no-op)', async function () {
+        mockResponse('POST', '/test', 'ignored')
+        createProcessedHTML('<form id="f" hx-post="/test" hx-swap="none reset"><input name="msg" value=""/></form>')
+        let input = find('input')
+        input.value = 'typed'
+        find('#f').dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}))
+        await forRequest()
+        // swap:none means no swap happens, so reset should not fire
+        input.value.should.equal('typed')
+    })
+
     it('properly parses various swap specifications', function() {
         assert.equal(htmx.__parseSwapSpec('innerHTML').style, 'innerHTML')
         assert.equal(htmx.__parseSwapSpec('innerHTML').swap, undefined)

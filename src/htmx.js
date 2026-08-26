@@ -508,6 +508,7 @@ var htmx = (() => {
             })
 
             if (!this.__trigger(elt, "htmx:config:request", {ctx: ctx})) return
+            if (elt._htmx?.triggerSpecs?.some(s => s.reset)) elt.closest?.('form')?.reset();
             if (ctx.request.method === 'DIALOG') return
 
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
@@ -1347,6 +1348,7 @@ var htmx = (() => {
             }
             let swapStyle = swapSpec.style;
             if (swapStyle === 'none') return;
+            if (swapSpec.reset) task.sourceElement?.closest?.('form')?.reset();
             // full-page response: fragment has a <body> wrapper, so upgrade outerHTML to outerSync, strip for everything else
             if (fragment.firstElementChild?.tagName === 'BODY') {
                 if (swapStyle === 'outerHTML') swapStyle = 'outerSync';
