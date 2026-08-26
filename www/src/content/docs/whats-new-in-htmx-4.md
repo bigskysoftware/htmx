@@ -419,16 +419,26 @@ All events provide a consistent `ctx` object with request/response information.
 
 ### Core extensions
 
-htmx 4 ships with 9 core extensions. The SSE and WebSocket extensions have been significantly rewritten. See their upgrade guides for details.
+htmx 4 ships with a bunch of "core" extensions now. The SSE and WebSocket extensions have been significantly rewritten, and `hx-multipart`,
+`hx-live`, `hx-targets`, `hx-ptag`, `hx-csp`, `hx-download`, `hx-prompt`, and `hx-history-cache` are new. See their
+upgrade guides for details.
 
-| Extension                                                 | Description                                                                          |
-|-----------------------------------------------------------|--------------------------------------------------------------------------------------|
-| [`alpine-compat`](/extensions/hx-alpine-compat)         | Alpine.js compatibility: initializes Alpine on fragments before swap                 |
-| [`browser-indicator`](/extensions/hx-browser-indicator) | Shows the browser's native loading indicator during requests                         |
-| [`head-support`](/extensions/hx-head)           | Merges head tag information (styles, etc.) in htmx requests                          |
-| [`htmx-2-compat`](/extensions/htmx-2-compat)         | Restores implicit inheritance, old event names, and previous error-swapping defaults |
-| [`pending`](/extensions/hx-pending)               | Shows expected content from a template before the server responds                    |
-| [`preload`](/extensions/hx-preload)                     | Triggers requests early (on mouseover/mousedown) for near-instant page loads ([upgrade guide](/extensions/hx-preload#upgrading-from-htmx-2x)) |
-| [`sse`](/extensions/hx-sse)                             | Server-Sent Events streaming support ([upgrade guide](/extensions/hx-sse#upgrading-from-htmx-2x)) |
-| [`upsert`](/extensions/hx-upsert)                       | Updates existing elements by ID and inserts new ones, preserving unmatched elements  |
-| [`ws`](/extensions/hx-ws)                               | Bi-directional WebSocket communication ([upgrade guide](/extensions/hx-ws#upgrading-from-htmx-2x)) |
+| Extension                                                  | Category       | Description                                         |
+|------------------------------------------------------------|----------------|-----------------------------------------------------|
+| [`hx-multipart`](/extensions/hx-multipart)                 | Streaming HTML | Stream HTML with `multipart/mixed`                  |
+| [`hx-sse`](/extensions/hx-sse)                             | Streaming HTML | Stream HTML with `text/event-stream` (SSE) ([upgrade guide](/extensions/hx-sse#upgrading-from-htmx-2x)) |
+| [`hx-ws`](/extensions/hx-ws)                               | Streaming HTML | Stream HTML and send data over WebSockets ([upgrade guide](/extensions/hx-ws#upgrading-from-htmx-2x)) |
+| [`hx-browser-indicator`](/extensions/hx-browser-indicator) | UX             | Show tab's spinner with `hx-browser-indicator`      |
+| [`hx-live`](/extensions/hx-live)                           | UX             | Our own DOM-based reactive scripting solution       |
+| [`hx-pending`](/extensions/hx-pending)                     | UX             | Show custom content during requests                 |
+| [`hx-prompt`](/extensions/hx-prompt)                       | UX             | Prompt before requests with `hx-prompt='Reason?'`   |
+| [`hx-preload`](/extensions/hx-preload)                     | Performance    | Preload on hover ([upgrade guide](/extensions/hx-preload#upgrading-from-htmx-2x)) |
+| [`hx-history-cache`](/extensions/hx-history-cache)         | Performance    | Restore back/forward pages from `sessionStorage`    |
+| [`hx-ptag`](/extensions/hx-ptag)                           | Performance    | Skip unchanged polls with `HX-PTag: "v42"`          |
+| [`hx-download`](/extensions/hx-download)                   | Swaps          | Download files with `hx-swap='download'`            |
+| [`hx-head`](/extensions/hx-head)                           | Swaps          | Merge `<head>` tags with `hx-head='merge'`          |
+| [`hx-targets`](/extensions/hx-targets)                     | Swaps          | Target many elements with `hx-targets='.selector'`  |
+| [`hx-upsert`](/extensions/hx-upsert)                       | Swaps          | Update or insert elements with `hx-swap='upsert'`   |
+| [`htmx-2-compat`](/extensions/htmx-2-compat)               | Compatibility  | Restore htmx 2.x defaults and event names on htmx 4 |
+| [`hx-alpine-compat`](/extensions/hx-alpine-compat)         | Compatibility  | Run htmx alongside Alpine.js without conflicts      |
+| [`hx-csp`](/extensions/hx-csp)                             | Security       | Make htmx work under strict Content Security Policy |
