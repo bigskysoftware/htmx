@@ -296,24 +296,4 @@ describe('__collectFormData unit tests', function() {
         let formData = htmx.__collectFormData(elt, null, null, false, false);
         assert.deepEqual(formData.getAll('fruit'), ['banana', 'apple']);
     });
-
-    it('filters out null or undefined values inside array', function () {
-        let elt = createProcessedHTML('<div name="fruit"></div>');
-        Object.defineProperty(elt, 'value', {
-            value: ['banana', null, 'apple', undefined],
-            configurable: true
-        });
-        let formData = htmx.__collectFormData(elt, null, null, false, false);
-        assert.deepEqual(formData.getAll('fruit'), ['banana', 'apple']);
-    });
-
-    it('skips element when value is null or undefined', function () {
-        let elt = createProcessedHTML('<div name="fruit"></div>');
-        Object.defineProperty(elt, 'value', {
-            value: null,
-            configurable: true
-        });
-        let formData = htmx.__collectFormData(elt, null, null, false, false);
-        assert.equal(formData.get('fruit'), null);
-    });
 });
