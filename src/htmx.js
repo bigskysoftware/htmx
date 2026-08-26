@@ -1841,7 +1841,14 @@ var htmx = (() => {
                     for (let option of input.selectedOptions) {
                         formData.append(name, option.value);
                     }
-                } else {
+                } else if (Array.isArray(input.value)) {
+                    // Add all array values (e.g. custom elements)
+                    for (let v of input.value) {
+                        if (v != null) {
+                            formData.append(name, v);
+                        }
+                    }
+                } else if (input.value != null) {
                     formData.append(name, input.value);
                 }
             }
