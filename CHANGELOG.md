@@ -1,5 +1,29 @@
 # Changelog
 
+## [4.0.0] - 2026-??-??
+
+The first stable release of the htmx 4.0 line. See [What's New in htmx 4](https://htmx.org/docs/whats-new-in-htmx-4)
+for the full catalog of changes from 2.x, and [Migrating Extensions to 4.0](https://htmx.org/docs/extension-htmx-4-migration-guide)
+for extension authors.
+
+Changes:
+
+* New core `hx-query` attribute, for the `QUERY` HTTP method ([#3962](https://github.com/bigskysoftware/htmx/pull/3962))
+* Standardized `hx-sse` events and config, and aligned them with `hx-multipart` and `hx-ws` ([#3929](https://github.com/bigskysoftware/htmx/pull/3929), [#3961](https://github.com/bigskysoftware/htmx/pull/3961))
+* Added `connection` to `hx-sse` and `hx-multipart` event details ([#3960](https://github.com/bigskysoftware/htmx/pull/3960))
+* Added multipart resume cursors ([#3915](https://github.com/bigskysoftware/htmx/pull/3915))
+* Exposed `htmx.initialize()` for async and streaming use cases ([#3953](https://github.com/bigskysoftware/htmx/pull/3953))
+* `htmx.ajax()` requests now accept the `htmx:abort` event ([#3944](https://github.com/bigskysoftware/htmx/pull/3944))
+* Simplified the request queue ([#3941](https://github.com/bigskysoftware/htmx/pull/3941))
+* Improved the view transitions extension point ([#3918](https://github.com/bigskysoftware/htmx/pull/3918))
+* `hx-partial` supports extended CSS selectors ([#3924](https://github.com/bigskysoftware/htmx/pull/3924))
+* `hx-live`: cached eval functions ([#3919](https://github.com/bigskysoftware/htmx/pull/3919)), interval syntax for input debounce ([#3930](https://github.com/bigskysoftware/htmx/pull/3930)), a warning for expressions over 16ms ([#3932](https://github.com/bigskysoftware/htmx/pull/3932)), and an optional `$` alias
+* Custom elements with an array `.value` now send one form field per item ([#3965](https://github.com/bigskysoftware/htmx/pull/3965))
+* `hx-csp` handles `Vary` caching for nonced responses
+* Core is now at 100 percent code coverage ([#3945](https://github.com/bigskysoftware/htmx/pull/3945))
+* Many smaller fixes and yet another a website overhaul :)
+
+
 ## [4.0.0-beta6] - 2026-07-22
 
 * New `hx-multipart` extension: stream `multipart/mixed` and `multipart/parallel` responses, with per-part `HX-*` action headers
