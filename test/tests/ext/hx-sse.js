@@ -1507,6 +1507,36 @@ describe('hx-sse SSE extension', function() {
         assert.equal(warnings.filter(warning => warning.includes('sse-close')).length, 1);
     });
 
+    it('cleanup aborts the initial connection fetch when element is swapped out', async function() {
+        const stream = mockStreamResponse('/abort-initial');
+        mockResponse('GET', '/replace', '<div id="replacement">Replaced</div>');
+        
+        createProcessedHTML('<div id="container" hx-get="/replace" hx-trigger="click" hx-swap="innerHTML"><div id="sse" hx-sse:connect="/abort-initial" hx-swap="innerHTML">Waiting</div></div>');
+
+        await htmx.timeout(1);
+
+        stream.send('connected');
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('#sse', 'connected');
+
+        // Grab the connection before cleanup
+        let connection = find('#sse')._htmx.sse;
+        assert.isNotNull(connection.abortController, 'Initial connection should have abortController');
+        assert.isNotNull(connection.abortController.signal, 'abortController should have signal');
+        assert.isFalse(connection.abortController.signal.aborted, 'Signal should not be aborted yet');
+
+        let closeFired = false;
+        onDoc('htmx:sse:close', () => { closeFired = true; });
+
+        // Trigger htmx swap which should call htmx_before_cleanup on the SSE element
+        find('#container').click();
+        await forRequest();
+
+        assertTextContentIs('#container', 'Replaced');
+        assert.isTrue(closeFired, 'htmx:sse:close should fire');
+        assert.isTrue(connection.abortController.signal.aborted, 'Cleanup should abort the initial connection');
+    });
+
     it('warns once for removed sse-swap attribute', function() {
         let warnings = [];
         let originalWarn = console.warn;
