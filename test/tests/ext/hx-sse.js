@@ -1549,4 +1549,139 @@ describe('hx-sse SSE extension', function() {
 
         assert.equal(warnings.filter(warning => warning.includes('sse-swap')).length, 1);
     });
+
+    // ========================================
+    // releaseOn / hx:release tests
+    // ========================================
+
+    it('releases when stream closes by default (releaseOn:end)', async function() {
+        const stream = mockStreamResponse('/default-release');
+        createProcessedHTML('<button hx-get="/default-release" hx-swap="innerHTML" hx-indicator="#spinner">Go</button><div id="spinner" class="htmx-indicator">Loading...</div>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.send('first message');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        // Indicator should still be visible (default is releaseOn:end)
+        assert.isTrue(find('#spinner').classList.contains('htmx-request'), 'Indicator should stay visible during streaming');
+
+        stream.send('second message');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        // Still visible
+        assert.isTrue(find('#spinner').classList.contains('htmx-request'), 'Indicator should stay visible after multiple messages');
+
+        stream.close();
+        await waitForEvent('htmx:sse:close');
+        await htmx.timeout(10);
+
+        // Now hidden
+        assert.isFalse(find('#spinner').classList.contains('htmx-request'), 'Indicator should hide when stream closes');
+    });
+
+    it('releaseOn:first releases after first message', async function() {
+        const stream = mockStreamResponse('/first-release');
+        createProcessedHTML('<button hx-get="/first-release" hx-config="sse.releaseOn:first" hx-swap="innerHTML" hx-indicator="#spinner">Go</button><div id="spinner" class="htmx-indicator">Loading...</div>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        // Indicator should be visible before first message
+        assert.isTrue(find('#spinner').classList.contains('htmx-request'), 'Indicator should be visible initially');
+
+        stream.send('first message');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        // Indicator should be hidden after first message
+        assert.isFalse(find('#spinner').classList.contains('htmx-request'), 'Indicator should hide after first message with releaseOn:first');
+
+        // Subsequent messages still work (background streaming)
+        stream.send('second message');
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('button', 'second message');
+
+        stream.close();
+    });
+
+    it('hx:release event triggers early release', async function() {
+        const stream = mockStreamResponse('/release-test');
+        createProcessedHTML('<button hx-get="/release-test" hx-config="sse.releaseOn:end" hx-swap="innerHTML" hx-indicator="#spinner">Go</button><div id="spinner" class="htmx-indicator">Loading...</div>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        // Indicator should be visible
+        assert.isTrue(find('#spinner').classList.contains('htmx-request'), 'Indicator should be visible initially');
+
+        stream.send('Still streaming...');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        // Indicator should still be visible (releaseOn:end)
+        assert.isTrue(find('#spinner').classList.contains('htmx-request'), 'Indicator should stay visible with releaseOn:end');
+
+        // Send hx:release event to trigger early release
+        stream.send('', 'hx:release');
+        await waitForEvent('htmx:sse:after:message');
+        await htmx.timeout(10);
+
+        // Indicator should be hidden after hx:release
+        assert.isFalse(find('#spinner').classList.contains('htmx-request'), 'Indicator should hide after hx:release');
+
+        // But streaming should continue
+        stream.send('More content');
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('button', 'More content');
+
+        stream.close();
+    });
+
+    it('releaseOn:immediate releases right away for hx-sse:connect', async function() {
+        const stream = mockStreamResponse('/immediate-test');
+        createProcessedHTML('<div hx-sse:connect="/immediate-test" hx-swap="innerHTML" hx-indicator="#spinner">Waiting</div><div id="spinner" class="htmx-indicator">Loading...</div>');
+
+        await htmx.timeout(10);
+
+        // Indicator should already be hidden (immediate release)
+        assert.isFalse(find('#spinner').classList.contains('htmx-request'), 'Indicator should hide immediately for hx-sse:connect');
+
+        // But streaming should work
+        stream.send('content');
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('div', 'content');
+
+        stream.close();
+    });
+
+
+    it('multiple hx:release events are idempotent', async function() {
+        const stream = mockStreamResponse('/multi-release');
+        createProcessedHTML('<button hx-get="/multi-release" hx-config="sse.releaseOn:end" hx-swap="innerHTML">Go</button>');
+
+        find('button').click();
+        await htmx.timeout(1);
+
+        stream.send('content');
+        await waitForEvent('htmx:sse:after:message');
+
+        // Send multiple hx:release events - should not cause errors
+        stream.send('', 'hx:release');
+        await waitForEvent('htmx:sse:after:message');
+        stream.send('', 'hx:release');
+        await waitForEvent('htmx:sse:after:message');
+        stream.send('', 'hx:release');
+        await waitForEvent('htmx:sse:after:message');
+
+        // Streaming should still work
+        stream.send('more content');
+        await waitForEvent('htmx:sse:after:message');
+        assertTextContentIs('button', 'more content');
+
+        stream.close();
+    });
 });

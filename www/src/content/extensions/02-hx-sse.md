@@ -376,6 +376,7 @@ Defaults:
 - [`hx-trigger="load"`](/reference/attributes/hx-trigger#load)
 - [`sse.reconnect:true`](#ssereconnect)
 - [`sse.pauseOnBackground:true`](#ssepauseonbackground)
+- [`sse.releaseOn:immediate`](#ssereleaseon)
 - [`swapEmpty:false`](/reference/attributes/hx-swap#swapempty) for each message
 
 ### `hx-sse:close`
@@ -537,6 +538,46 @@ document.addEventListener('htmx:sse:error', event => {
 - `error`: the error value
 - `status`: the HTTP status for a failed reconnect response, when available
 
+### `hx:release`
+
+A server-sent event that ends the request lifecycle early. Only useful with [`sse.releaseOn:end`](#ssereleaseon).
+
+```http
+event: hx:release
+data:
+
+```
+
+When the server sends this event, htmx hides indicators and re-enables elements immediately. The stream continues running in the background.
+
+This is useful for LLM streaming where you want to:
+- Show a loading indicator until the model starts responding
+- Let the user interact with the page while tokens continue streaming
+
+```html
+<button hx-post="/generate"
+        hx-target="#output"
+        hx-swap="beforeend"
+        hx-config="sse.releaseOn:end"
+        hx-indicator="#spinner">
+  Generate
+</button>
+```
+
+The server streams:
+
+```http
+data: First token
+
+event: hx:release
+data:
+
+data: more tokens...
+
+```
+
+The indicator hides after `hx:release`, but tokens keep appending.
+
 ## Config
 
 ### `sse.reconnect`
@@ -609,6 +650,41 @@ Close the stream while the page is hidden and reconnect when it becomes visible.
 ```
 
 Defaults to `true` for `hx-sse:connect` and `false` for normal htmx requests. Use event IDs and server-side replay to recover messages sent while disconnected.
+
+### `sse.releaseOn`
+
+Control when the request lifecycle ends (indicators hide, elements re-enable).
+
+```html
+<meta name="htmx-config" content="sse.releaseOn:first">
+```
+
+Values:
+
+- `immediate`: release when SSE takes over (after headers arrive)
+- `first`: release after the first message swaps
+- `end`: release when the stream closes
+
+Defaults to `immediate` for `hx-sse:connect` and `end` for normal htmx requests.
+
+With the default `end`, indicators stay visible and [`hx-disable`](/reference/attributes/hx-disable) keeps elements disabled until the stream closes. This works well for LLM streaming where you want to prevent duplicate submissions.
+
+Use `first` if you want the UI to become interactive as soon as content starts arriving:
+
+```html
+<button hx-post="/generate"
+        hx-config="sse.releaseOn:first">
+  Generate
+</button>
+```
+
+The server can also release early by sending an [`hx:release`](#hxrelease) event:
+
+```http
+event: hx:release
+data:
+
+```
 
 ## Migration
 

@@ -135,9 +135,11 @@ The code is pretty simple: the form targets the transcript and appends to it, ex
 - The request lives on the `<form>`, so it fires on submit and carries the form fields. Enter works as well as the button.
 - [`hx-swap`](/reference/attributes/hx-swap)=[`"beforeend"`](/reference/attributes/hx-swap#beforeend--append) appends each event, so turns build up instead of replacing each other. [`scroll:bottom`](/reference/attributes/hx-swap#scroll) keeps the newest text in view.
 - [`hx-target`](/reference/attributes/hx-target) points at the transcript.
-- [`hx-disable`](/reference/attributes/hx-disable)=`"find fieldset"` disables the prompt and the Ask button until the reply finishes. A `<fieldset>` disables everything inside it, so one attribute covers both.
+- [`hx-disable`](/reference/attributes/hx-disable)=`"find fieldset"` disables the prompt and the Ask button until the reply finishes. A `<fieldset>` disables everything inside it, so one attribute covers both. This works because SSE defaults to [`sse.releaseOn:end`](/extensions/hx-sse#ssereleaseon).
 - Clear sits outside the fieldset, so it stays available while a reply is arriving.
 - There is no `hx-sse:connect` here. The extension handles any response that arrives as `text/event-stream`, so a normal request is enough.
+
+To let users type ahead while tokens are still arriving, have the server send [`hx:release`](/extensions/hx-sse#hxrelease) after initial response is in place. The fieldset re-enables but tokens keep appending.
 
 The server side answers with a response type of `text/event-stream`, which causes the SSE extension to take over.  It
 treats each unnamed event as content to be swapped into the target:
