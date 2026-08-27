@@ -426,11 +426,6 @@
           "doc-url": "https://four.htmx.org/reference/events/htmx-after-process"
         },
         {
-          "name": "after:implicitInheritance",
-          "description": "Fires after implicit inheritance is applied to an element.",
-          "doc-url": "https://four.htmx.org/reference/events/htmx-after-implicitInheritance"
-        },
-        {
           "name": "before:cleanup",
           "description": "Fires before htmx removes listeners and internal data from an element. Event detail is empty.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-before-cleanup"
