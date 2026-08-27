@@ -16,13 +16,13 @@ Empty - no additional context provided.
 ## Example
 
 ```html
-<div hx-get="/status" hx-trigger="every 5s">
+<div id="status" hx-get="/status" hx-trigger="every 5s">
   Status updates every 5 seconds
 </div>
 ```
 
 ```javascript
-htmx.on('every', (evt) => {
+htmx.on('#status', 'every', (evt) => {
   console.log('Polling:', evt.target);
 });
 ```

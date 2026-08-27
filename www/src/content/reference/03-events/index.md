@@ -26,8 +26,6 @@ description: "Lifecycle hooks for requests, responses, swaps, and errors."
 - [htmx:after:init](/reference/events/htmx-after-init) - fires after element initialization
 - [htmx:before:process](/reference/events/htmx-before-process) - fires before DOM node processing
 - [htmx:after:process](/reference/events/htmx-after-process) - fires after DOM node processing
-- [htmx:process:{type}](/reference/events/htmx-process-type) - fires during registered template processing
-- [htmx:after:implicitInheritance](/reference/events/htmx-after-implicitInheritance) - fires after implicit inheritance
 - [htmx:before:cleanup](/reference/events/htmx-before-cleanup) - fires before element data removal
 - [htmx:after:cleanup](/reference/events/htmx-after-cleanup) - fires after element data removal
 - [load](/reference/events/load) - fires after element initialization

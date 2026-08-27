@@ -16,13 +16,13 @@ Empty - no additional context provided.
 ## Example
 
 ```html
-<div hx-get="/lazy-content" hx-trigger="intersect">
+<div id="lazy" hx-get="/lazy-content" hx-trigger="intersect">
   Content loads when scrolled into view
 </div>
 ```
 
 ```javascript
-htmx.on('intersect', (evt) => {
+htmx.on('#lazy', 'intersect', (evt) => {
   console.log('Element visible:', evt.target);
 });
 ```
