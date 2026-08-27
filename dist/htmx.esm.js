@@ -181,7 +181,7 @@ var htmx = (() => {
         }
 
         #initHtmxConfig() {
-            this.version = '4.0.0-beta6'
+            this.version = '4.0.0'
             this.config = {
                 logAll: false,
                 prefix: "data-hx-",
@@ -752,6 +752,7 @@ var htmx = (() => {
                     if (spec.once) {
                         for (let info of spec.listeners) info.fromElt.removeEventListener(info.eventName, info.handler, info);
                     }
+                    if (spec.reset) elt.closest?.('form')?.reset();
                     handler(evt);
                 };
 
@@ -1347,6 +1348,7 @@ var htmx = (() => {
             }
             let swapStyle = swapSpec.style;
             if (swapStyle === 'none') return;
+            if (swapSpec.reset) task.sourceElement?.closest?.('form')?.reset();
             // full-page response: fragment has a <body> wrapper, so upgrade outerHTML to outerSync, strip for everything else
             if (fragment.firstElementChild?.tagName === 'BODY') {
                 if (swapStyle === 'outerHTML') swapStyle = 'outerSync';
@@ -1840,6 +1842,11 @@ var htmx = (() => {
                     // Add all selected options
                     for (let option of input.selectedOptions) {
                         formData.append(name, option.value);
+                    }
+                } else if (Array.isArray(input.value)) {
+                    // Add all array values (e.g. custom elements)
+                    for (let v of input.value) {
+                        formData.append(name, v);
                     }
                 } else {
                     formData.append(name, input.value);

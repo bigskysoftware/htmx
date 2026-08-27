@@ -181,7 +181,7 @@ var htmx = (() => {
         }
 
         __initHtmxConfig() {
-            this.version = '4.0.0-beta6'
+            this.version = '4.0.0'
             this.config = {
                 logAll: false,
                 prefix: "data-hx-",

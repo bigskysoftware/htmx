@@ -122,7 +122,7 @@
         let connection = {
             url: ctx.request.action,
             config: config,
-            abortController: null,
+            abortController: { abort: ctx.request.abort, signal: ctx.request.signal },
             reader: null,
             lastEventId: '',
             delayCanceller: null,
