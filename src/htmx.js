@@ -368,9 +368,10 @@ var htmx = (() => {
         }
 
         __createHtmxEventHandler(elt) {
-            return async (evt) => {
+            return async (evt, spec) => {
                 try {
                     let ctx = this.__createRequestContext(elt, evt);
+                    ctx.reset = !!spec?.reset;
                     await this.__handleTriggerEvent(ctx);
                 } catch (e) {
                     this.__trigger(elt, 'htmx:error', { error: e });
@@ -568,6 +569,10 @@ var htmx = (() => {
                     if (!confirmed) return;
                 }
 
+                // reset the form only once the request is committed, and after
+                // __handleTriggerEvent collected the body
+                if (ctx.reset) (elt.form || elt.closest?.('form'))?.reset();
+
                 // initialize timeout & indicators after confirmation
                 this.__initTimeout(ctx);
                 indicators = this.__showIndicators(elt);
@@ -752,8 +757,7 @@ var htmx = (() => {
                     if (spec.once) {
                         for (let info of spec.listeners) info.fromElt.removeEventListener(info.eventName, info.handler, info);
                     }
-                    if (spec.reset) elt.closest?.('form')?.reset();
-                    handler(evt);
+                    handler(evt, spec);
                 };
 
                 // Wrap inner with delay/throttle if needed
@@ -1348,7 +1352,7 @@ var htmx = (() => {
             }
             let swapStyle = swapSpec.style;
             if (swapStyle === 'none') return;
-            if (swapSpec.reset) task.sourceElement?.closest?.('form')?.reset();
+            if (swapSpec.reset) (task.sourceElement?.form || task.sourceElement?.closest?.('form'))?.reset();
             // full-page response: fragment has a <body> wrapper, so upgrade outerHTML to outerSync, strip for everything else
             if (fragment.firstElementChild?.tagName === 'BODY') {
                 if (swapStyle === 'outerHTML') swapStyle = 'outerSync';

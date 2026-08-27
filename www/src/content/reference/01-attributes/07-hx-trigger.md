@@ -218,7 +218,7 @@ Tells the browser the handler won't call `preventDefault()`, so the browser can 
 
 ### `reset`
 
-Resets the enclosing form to return all input values to their defaults when the trigger fires (before the request is sent).
+Resets the enclosing form to return all input values to their defaults. The reset occurs when htmx issues the request, after htmx collects the request body. The request sends the values that the user entered.
 
 ```html
 <form hx-post="/chat" hx-trigger="submit reset">
@@ -227,7 +227,11 @@ Resets the enclosing form to return all input values to their defaults when the 
 </form>
 ```
 
-This is "optimistic" - the form resets immediately, even if the request fails. For safer reset after a successful response, use [`hx-swap`](/reference/attributes/hx-swap#reset) instead.
+This is "optimistic". The form resets before the response arrives, and it stays reset if the request fails. For a reset after a successful response, use [`hx-swap`](/reference/attributes/hx-swap#reset) instead.
+
+The form does not reset if [`hx-confirm`](/reference/attributes/hx-confirm) cancels the request, or if [`hx-sync`](/reference/attributes/hx-sync) drops it.
+
+The modifier applies only to the trigger that fires. In `hx-trigger="click, keyup reset"`, a `keyup` resets the form and a `click` does not.
 
 ### Example
 

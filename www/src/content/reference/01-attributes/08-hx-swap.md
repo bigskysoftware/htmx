@@ -355,7 +355,7 @@ Default behavior: skip if partials or OOB swaps were extracted (unless [`htmx.co
 
 ### `reset`
 
-Resets the enclosing form after a successful swap.
+Resets the enclosing form after a successful swap. If the element carries a `form` attribute, htmx resets the form that the attribute names.
 
 ```html
 <form hx-post="/chat" hx-swap="beforeend reset" hx-target="#messages">
@@ -364,7 +364,7 @@ Resets the enclosing form after a successful swap.
 </form>
 ```
 
-The form only resets after the response is received and swapped. For "optimistic" reset before the request, use [`hx-trigger`](/reference/attributes/hx-trigger#reset) instead.
+The form only resets after the response is received and swapped. For an "optimistic" reset when the request starts, use [`hx-trigger`](/reference/attributes/hx-trigger#reset) instead.
 
 The form won't reset when no swap occurs:
 - `swap:none`

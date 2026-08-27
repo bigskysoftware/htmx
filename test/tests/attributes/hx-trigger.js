@@ -6,15 +6,14 @@ describe('hx-trigger attribute', function() {
         cleanupTest()
     })
 
-    it('reset modifier resets form before request', async function () {
+    it('reset modifier resets form when the request is issued', async function () {
         mockResponse('POST', '/test', 'Done')
         let form = createProcessedHTML('<form hx-post="/test" hx-trigger="submit reset"><input name="msg" value=""/></form>')
         let input = form.querySelector('input')
         input.value = 'changed'
         form.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}))
-        // Form should be reset immediately (optimistic) - back to default value (empty)
-        input.value.should.equal('')
         await forRequest()
+        input.value.should.equal('')
     })
 
     it('reset modifier works on button inside form', async function () {
@@ -23,8 +22,55 @@ describe('hx-trigger attribute', function() {
         let input = find('input')
         input.value = 'typed'
         find('button').click()
-        input.value.should.equal('')
         await forRequest()
+        input.value.should.equal('')
+    })
+
+    it('reset modifier sends the values before it clears them', async function () {
+        mockResponse('POST', '/test', 'Done')
+        let sent = null
+        let listener = (e) => { sent = e.detail.ctx.request.body }
+        document.addEventListener('htmx:before:request', listener)
+        try {
+            let form = createProcessedHTML('<form hx-post="/test" hx-trigger="submit reset"><input name="msg" value=""/></form>')
+            form.querySelector('input').value = 'typed'
+            form.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}))
+            await forRequest()
+            sent.get('msg').should.equal('typed')
+        } finally {
+            document.removeEventListener('htmx:before:request', listener)
+        }
+    })
+
+    it('reset modifier applies only to the spec that fired', async function () {
+        mockResponse('POST', '/test', 'Done')
+        let form = createProcessedHTML('<form hx-post="/test" hx-trigger="click, keyup reset"><input name="msg" value=""/></form>')
+        let input = form.querySelector('input')
+        input.value = 'typed'
+        form.click()
+        await forRequest()
+        input.value.should.equal('typed')
+    })
+
+    it('reset modifier does not reset when the confirm is cancelled', async function () {
+        mockResponse('POST', '/test', 'Done')
+        let form = createProcessedHTML('<form hx-post="/test" hx-confirm="sure?" hx-trigger="click reset"><input name="msg" value=""/></form>')
+        form.addEventListener('htmx:confirm', (e) => { e.preventDefault(); e.detail.dropRequest() })
+        let input = form.querySelector('input')
+        input.value = 'typed'
+        form.click()
+        await htmx.timeout(20)
+        input.value.should.equal('typed')
+    })
+
+    it('reset modifier resets a form the element points at with form=', async function () {
+        mockResponse('POST', '/test', 'Done')
+        createProcessedHTML('<div><form id="rf"><input name="msg" value=""/></form><button form="rf" hx-post="/test" hx-trigger="click reset">Send</button></div>')
+        let input = find('#rf input')
+        input.value = 'typed'
+        find('button').click()
+        await forRequest()
+        input.value.should.equal('')
     })
 
     it('non-default triggers work', async function () {

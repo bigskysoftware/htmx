@@ -22,6 +22,16 @@ describe('hx-swap modifiers', function() {
         find('#result').textContent.should.equal('Done')
     })
 
+    it('reset modifier resets a form the element points at with form=', async function () {
+        mockResponse('POST', '/test', 'Done')
+        createProcessedHTML('<div><form id="sf"><input name="msg" value=""/></form><button form="sf" hx-post="/test" hx-swap="beforeend reset" hx-target="#out">Send</button><div id="out"></div></div>')
+        let input = find('#sf input')
+        input.value = 'typed'
+        find('button').click()
+        await forRequest()
+        input.value.should.equal('')
+    })
+
     it('swap:none with reset does not reset (no-op)', async function () {
         mockResponse('POST', '/test', 'ignored')
         createProcessedHTML('<form id="f" hx-post="/test" hx-swap="none reset"><input name="msg" value=""/></form>')
