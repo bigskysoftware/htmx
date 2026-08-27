@@ -9,10 +9,10 @@
 
 ## introduction
 
-htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),
-[WebSockets](https://htmx.org/extensions/ws/) and [Server Sent Events](https://htmx.org/extensions/sse/)
-directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build
-[modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
+htmx allows you to access  [AJAX](https://htmx.org/docs#issuing-requests--handling-responses), [CSS Transitions](https://htmx.org/docs#css-transitions),
+[WebSockets](https://htmx.org/extensions/hx-ws) and [Server Sent Events](https://htmx.org/extensions/hx-sse)
+directly in HTML, using [attributes](https://htmx.org/reference/attributes), so you can build
+[modern user interfaces](https://htmx.org/patterns) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
 htmx is small ([~12k min.gz'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),
@@ -41,7 +41,7 @@ By removing these arbitrary constraints htmx completes HTML as a
   </button>
 ```
 
-The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htmx.org/attributes/hx-swap) attributes tell htmx:
+The [`hx-post`](https://htmx.org/reference/attributes/hx-post) and [`hx-swap`](https://htmx.org/reference/attributes/hx-swap) attributes tell htmx:
 
 > When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the response
 
