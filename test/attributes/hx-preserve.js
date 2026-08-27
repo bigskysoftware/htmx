@@ -76,4 +76,14 @@ describe('hx-preserve attribute', function() {
     htmx._('handlePreservedElements')(fragment)
     fragment.firstChild.innerHTML.should.equal('Old Content')
   })
+
+  it('handles hx-preserve on elements with dotted IDs', function() {
+    this.server.respondWith('GET', '/test', "<div id='d1.sub' hx-preserve>New Content</div><div id='d2'>New Content</div>")
+    var div = make("<div hx-get='/test'><div id='d1.sub' hx-preserve>Old Content</div><div id='d2'>Old Content</div></div>")
+    div.click()
+    this.server.respond()
+    var preserved = document.querySelector('[id="d1.sub"]')
+    preserved.innerHTML.should.equal('Old Content')
+    byId('d2').innerHTML.should.equal('New Content')
+  })
 })
