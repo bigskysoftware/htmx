@@ -216,19 +216,6 @@ Tells the browser the handler won't call `preventDefault()`, so the browser can 
 <div hx-trigger="scroll passive" hx-get="...">...</div>
 ```
 
-### `reset`
-
-Resets the enclosing form to return all input values to their defaults when the trigger fires (before the request is sent).
-
-```html
-<form hx-post="/chat" hx-trigger="submit reset">
-  <input name="message">
-  <button>Send</button>
-</form>
-```
-
-This is "optimistic" - the form resets immediately, even if the request fails. For safer reset after a successful response, use [`hx-swap`](/reference/attributes/hx-swap#reset) instead.
-
 ### Example
 
 A search box that searches on `input`, but only if the value has [`changed`](#changed) and the user hasn't typed anything new for 1 second ([`delay`](#delay)):

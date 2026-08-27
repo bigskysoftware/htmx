@@ -752,7 +752,6 @@ var htmx = (() => {
                     if (spec.once) {
                         for (let info of spec.listeners) info.fromElt.removeEventListener(info.eventName, info.handler, info);
                     }
-                    if (spec.reset) elt.closest?.('form')?.reset();
                     handler(evt);
                 };
 
@@ -1348,7 +1347,6 @@ var htmx = (() => {
             }
             let swapStyle = swapSpec.style;
             if (swapStyle === 'none') return;
-            if (swapSpec.reset) task.sourceElement?.closest?.('form')?.reset();
             // full-page response: fragment has a <body> wrapper, so upgrade outerHTML to outerSync, strip for everything else
             if (fragment.firstElementChild?.tagName === 'BODY') {
                 if (swapStyle === 'outerHTML') swapStyle = 'outerSync';
