@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0] - 2026-??-??
+## [4.0.0] - 2026-08-28
 
 The first stable release of the htmx 4.0 line. See [What's New in htmx 4](https://htmx.org/docs/whats-new-in-htmx-4)
 for the full catalog of changes from 2.x, and [Migrating Extensions to 4.0](https://htmx.org/docs/extension-htmx-4-migration-guide)
