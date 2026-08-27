@@ -1,17 +1,17 @@
 - name: Alex Petros
   image: /src/assets/img/team/alex.png
   github: alexpetros
-  content: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  content: Herding Cats
 
 - name: Deniz Akşimşek
   image: /src/assets/img/team/deniz.png
   github: dz4k
-  content: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  content: Being a cat
 
 - name: Michael West
   image: /src/assets/img/team/latent.png
   github: MichaelWest22
-  content: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  content: The voice of reason
 
 - name: Christian Tanul
   image: /src/assets/img/team/scriptogre.png
@@ -26,7 +26,7 @@
 - name: Stephen Mitchell
   image: /src/assets/img/team/scum.png
   github: bigskysoftware
-  content: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  content: Game Master
 
 - name: Carson Gross
   image: /src/assets/img/team/grug.png
