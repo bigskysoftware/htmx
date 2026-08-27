@@ -82,6 +82,7 @@ server.get("/demo", () => `
        class="h-[200px] overflow-y-auto p-3 text-sm leading-relaxed border border-neutral-200 dark:border-neutral-800 rounded-lg text-neutral-600 dark:text-neutral-400"></div>
   <form class="flex gap-2"
         hx-get="/generate" hx-target="#conversation" hx-swap="beforeend scroll:bottom"
+        hx-config="sse.releaseOn:end"
         hx-disable="find fieldset"
         hx-on::before:request="this.reset()">
     <fieldset class="flex flex-1 gap-2 disabled:opacity-50 transition-opacity">
@@ -118,6 +119,7 @@ The code is pretty simple: the form targets the transcript and appends to it, ex
 
 <form hx-get="/generate"
       hx-target="#conversation" hx-swap="beforeend scroll:bottom"
+      hx-config="sse.releaseOn:end"
       hx-disable="find fieldset"
       hx-on::before:request="this.reset()">
 
@@ -135,9 +137,12 @@ The code is pretty simple: the form targets the transcript and appends to it, ex
 - The request lives on the `<form>`, so it fires on submit and carries the form fields. Enter works as well as the button.
 - [`hx-swap`](/reference/attributes/hx-swap)=[`"beforeend"`](/reference/attributes/hx-swap#beforeend--append) appends each event, so turns build up instead of replacing each other. [`scroll:bottom`](/reference/attributes/hx-swap#scroll) keeps the newest text in view.
 - [`hx-target`](/reference/attributes/hx-target) points at the transcript.
+- [`hx-config`](/reference/attributes/hx-config)=`"sse.releaseOn:end"` keeps the request lifecycle open until the stream ends, so `hx-disable` stays in effect.
 - [`hx-disable`](/reference/attributes/hx-disable)=`"find fieldset"` disables the prompt and the Ask button until the reply finishes. A `<fieldset>` disables everything inside it, so one attribute covers both.
 - Clear sits outside the fieldset, so it stays available while a reply is arriving.
 - There is no `hx-sse:connect` here. The extension handles any response that arrives as `text/event-stream`, so a normal request is enough.
+
+To let users type ahead while tokens are still arriving, have the server send [`hx:release`](/extensions/hx-sse#hxrelease) after initial response is in place. The fieldset re-enables but tokens keep appending.
 
 The server side answers with a response type of `text/event-stream`, which causes the SSE extension to take over.  It
 treats each unnamed event as content to be swapped into the target:
