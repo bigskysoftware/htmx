@@ -353,6 +353,24 @@ Use `swapEmpty` to keep the target or clear it:
 
 Default behavior: skip if partials or OOB swaps were extracted (unless [`htmx.config.allowEmptySwapAfterOOB`](/reference/config/htmx-config-allowEmptySwapAfterOOB) is `true`)
 
+### `reset`
+
+Resets the enclosing form after a successful swap.
+
+```html
+<form hx-post="/chat" hx-swap="beforeend reset" hx-target="#messages">
+  <input name="message">
+  <button>Send</button>
+</form>
+```
+
+The form only resets after the response is received and swapped. For "optimistic" reset before the request, use [`hx-trigger`](/reference/attributes/hx-trigger#reset) instead.
+
+The form won't reset when no swap occurs:
+- `swap:none`
+- Status codes in [`htmx.config.noSwap`](/reference/config/htmx-config-noSwap) (default: 204, 304)
+- [`hx-status`](/reference/attributes/hx-status) overrides to `swap:none`
+
 ## Caveats
 
 - On `<body>`, `outerHTML` behaves like [`outerSync`](#outersync):
