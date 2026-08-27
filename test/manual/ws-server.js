@@ -118,7 +118,7 @@ wss.on('connection', (ws, req) => {
 function handleChatConnection(ws) {
     // Send welcome message (no hx-partial, let hx-swap handle it)
     ws.send(JSON.stringify({
-        payload: '<div class="message received"><div>👋 Welcome to the chat!</div><div class="message-time">' + new Date().toLocaleTimeString() + '</div></div>'
+        content: '<div class="message received"><div>👋 Welcome to the chat!</div><div class="message-time">' + new Date().toLocaleTimeString() + '</div></div>'
     }));
 }
 
@@ -143,7 +143,7 @@ function handleNotificationsConnection(ws) {
         const html = `<div class="notification">${notification}<div class="notification-time">${new Date().toLocaleTimeString()}</div></div>`;
         
         broadcast('notifications', {
-            payload: html
+            content: html
         });
 
         setTimeout(sendNotification, 5000 + Math.random() * 3000);
@@ -156,7 +156,7 @@ function handleNotificationsConnection(ws) {
 function handleCounterConnection(ws) {
     // Send current counter value
     ws.send(JSON.stringify({
-        payload: `<hx-partial id="counter">${counter}</hx-partial>`
+        content: `<hx-partial id="counter">${counter}</hx-partial>`
     }));
 }
 
@@ -172,7 +172,7 @@ function handleTickerConnection(ws) {
     ).join('');
     
     ws.send(JSON.stringify({
-        payload: `<hx-partial id="ticker">${html}</hx-partial>`
+        content: `<hx-partial id="ticker">${html}</hx-partial>`
     }));
 
     // Update prices every 2-3 seconds
@@ -196,7 +196,7 @@ function handleTickerConnection(ws) {
         }).join('');
 
         broadcast('ticker', {
-            payload: `<hx-partial id="ticker">${html}</hx-partial>`
+            content: `<hx-partial id="ticker">${html}</hx-partial>`
         });
 
         setTimeout(updatePrices, 2000 + Math.random() * 1000);
@@ -214,7 +214,7 @@ function handleDashboardConnection(ws) {
         const disk = Math.floor(Math.random() * 100);
 
         broadcast('dashboard', {
-            payload: `
+            content: `
                 <hx-partial id="cpu">CPU: ${cpu}%</hx-partial>
                 <hx-partial id="memory">Memory: ${memory}%</hx-partial>
                 <hx-partial id="disk">Disk: ${disk}%</hx-partial>
@@ -233,15 +233,14 @@ function handleMessage(ws, data) {
 
     if (ws.channel === 'chat') {
         // Broadcast chat message
-        if (data.values && data.values.message) {
-            const message = data.values.message;
+        if (data.message) {
+            const message = data.message;
             // Don't use hx-partial - just send raw HTML and let hx-swap="beforeend" handle it
             const html = `<div class="message sent"><div>${escapeHtml(message)}</div><div class="message-time">${new Date().toLocaleTimeString()}</div></div>`;
             
             // Echo back to sender
             ws.send(JSON.stringify({
-                payload: html,
-                request_id: data.request_id
+                content: html
             }));
 
             // Simulate bot response after 1 second
@@ -259,13 +258,13 @@ function handleMessage(ws, data) {
                 const botHtml = `<div class="message received"><div>🤖 ${botResponse}</div><div class="message-time">${new Date().toLocaleTimeString()}</div></div>`;
                 
                 broadcast('chat', {
-                    payload: botHtml
+                    content: botHtml
                 });
             }, 1000);
         }
     } else if (ws.channel === 'counter') {
         // Handle counter actions
-        const action = data.values?.action || data.action;
+        const action = data.action;
         
         if (action === 'increment') {
             counter++;
@@ -277,8 +276,7 @@ function handleMessage(ws, data) {
 
         // Broadcast new counter value to all clients
         broadcast('counter', {
-            payload: `<hx-partial id="counter">${counter}</hx-partial>`,
-            request_id: data.request_id
+            content: `<hx-partial id="counter">${counter}</hx-partial>`
         });
     }
 }
@@ -309,4 +307,3 @@ server.listen(PORT, () => {
 ╚═══════════════════════════════════════════════════════════╝
     `);
 });
-

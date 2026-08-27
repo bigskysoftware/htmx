@@ -27,7 +27,7 @@ A beautiful, comprehensive demonstration of the `hx-ws` extension showcasing rea
 ### 2. **Live Notifications**
 - Receive random notifications every 5-8 seconds
 - Shows real-time server push
-- Uses `beforeend` swap to prepend new notifications
+- Uses `afterbegin` to prepend new notifications
 
 ### 3. **Shared Counter**
 - Multiple clients share the same counter state
@@ -64,32 +64,35 @@ A beautiful, comprehensive demonstration of the `hx-ws` extension showcasing rea
 
 ## 🎨 Key Concepts
 
-### HTML Partial Format
+### HTML Message Format
 
-Server messages use this format:
+Server messages use `content` for HTML and may specify a target and serialized swap specification:
 
 ```json
 {
-  "channel": "ui",
-  "format": "html",
-  "payload": "<hx-partial id=\"target-id\">Content</hx-partial>"
+  "content": "<p>Content</p>",
+  "target": "#target-id",
+  "swap": "beforeend settle:10ms"
 }
 ```
 
-### Request/Response Pattern
+### Message Flow
 
 Client sends:
 ```json
 {
-  "type": "request",
-  "request_id": "uuid-here",
-  "values": {
-    "message": "Hello!"
-  }
+  "headers": { "HX-Request": "true" },
+  "message": "Hello!"
 }
 ```
 
-Server responds with matching `request_id` to target the originating element.
+Server responds:
+
+```json
+{
+  "content": "<p>Saved</p>"
+}
+```
 
 ### Multiple Partials
 
@@ -112,13 +115,14 @@ htmx.config.ws = {
     reconnectMaxDelay: 60000,     // Max delay (ms)
     reconnectMaxAttempts: Infinity,// Max reconnect attempts
     reconnectJitter: 0.3,         // Jitter factor (0-1)
-    pauseOnBackground: true       // Pause connection when tab is backgrounded
+    pauseOnBackground: true,      // Pause connection when tab is backgrounded
+    protocols: null               // Optional WebSocket subprotocols
 };
 ```
 
 ## 🎓 Learning Points
 
-1. **Connection Pooling**: Multiple elements can share the same WebSocket connection
+1. **Connection Ownership**: Each connection element owns its WebSocket
 2. **Bi-directional**: Both client and server can initiate messages
 3. **Event-Driven**: Rich event system for monitoring and debugging
 4. **Swap Strategies**: Flexible content replacement strategies
@@ -143,7 +147,7 @@ htmx.config.ws = {
 
 ### Button Actions
 ```html
-<button hx-ws:send='{"action":"increment"}' hx-trigger="click">
+<button hx-ws:send hx-vals='{"action":"increment"}' hx-trigger="click">
     Increment
 </button>
 ```
@@ -160,8 +164,9 @@ htmx.config.ws = {
 ## 🐛 Debugging
 
 The demo includes a live event log that shows:
-- Connection events (`htmx:before:ws:connection`, `htmx:after:ws:connection`)
-- Message events (`htmx:before:ws:send`, `htmx:after:ws:message`)
+- Connection events (`htmx:ws:before:connection`, `htmx:ws:after:connection`)
+- Outgoing message events (`htmx:ws:before:message:outgoing`, `htmx:ws:after:message:outgoing`)
+- Message events (`htmx:ws:before:message:incoming`, `htmx:ws:after:message:incoming`)
 - Error events (`htmx:ws:error`, `htmx:ws:close`)
 
 ## 🤝 Contributing
@@ -176,10 +181,9 @@ Try modifying the demos to learn:
 ## 📖 Documentation
 
 For full documentation, visit:
-- [HTMX WebSocket Extension Docs](https://htmx.org/extensions/websockets/)
+- [htmx WebSocket Extension Docs](https://four.htmx.org/extensions/hx-ws)
 - [WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
 
 ## 🎉 Have Fun!
 
 Open multiple browser windows to see real-time synchronization in action. The shared counter and chat work across all connected clients!
-
