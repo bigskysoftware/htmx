@@ -656,7 +656,7 @@ Defaults to `true` for `hx-sse:connect` and `false` for normal htmx requests. Us
 Control when the request lifecycle ends (indicators hide, elements re-enable).
 
 ```html
-<meta name="htmx-config" content="sse.releaseOn:end">
+<meta name="htmx-config" content="sse.releaseOn:first">
 ```
 
 Values:
@@ -665,9 +665,20 @@ Values:
 - `first`: release after the first message swaps
 - `end`: release when the stream closes
 
-Defaults to `immediate` for `hx-sse:connect` and `first` for normal htmx requests.
+Defaults to `immediate` for `hx-sse:connect` and `end` for normal htmx requests.
 
-The server can release early by sending an `hx:release` event:
+With the default `end`, indicators stay visible and [`hx-disable`](/reference/attributes/hx-disable) keeps elements disabled until the stream closes. This works well for LLM streaming where you want to prevent duplicate submissions.
+
+Use `first` if you want the UI to become interactive as soon as content starts arriving:
+
+```html
+<button hx-post="/generate"
+        hx-config="sse.releaseOn:first">
+  Generate
+</button>
+```
+
+The server can also release early by sending an [`hx:release`](#hxrelease) event:
 
 ```http
 event: hx:release

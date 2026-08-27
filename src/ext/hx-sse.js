@@ -17,7 +17,7 @@
             reconnectMaxAttempts: Infinity,
             reconnectJitter: 0.3,
             pauseOnBackground: hasHxSseConnect,
-            releaseOn: hasHxSseConnect ? 'immediate' : 'first',
+            releaseOn: hasHxSseConnect ? 'immediate' : 'end',
             ...htmx.config.sse,
             ...hxConfig
         };
