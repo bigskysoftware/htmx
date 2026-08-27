@@ -45,4 +45,13 @@ describe('hx-select-oob attribute', function() {
     var div2 = byId('d2')
     div2.innerHTML.should.equal('')
   })
+
+  it('handles elements with IDs containing dots in hx-select-oob', function() {
+    this.server.respondWith('GET', '/test', "Normal Content<div id='d2.sub'><div id='d3'>New oob Content</div></div>")
+    var div1 = make("<div id='d1' hx-get='/test' hx-select-oob='#d2.sub'>Click Me!</div>")
+    make("<div id='d2.sub'><div id='d3'>Old Content</div></div>")
+    div1.click()
+    this.server.respond()
+    byId('d3').innerHTML.should.equal('New oob Content')
+  })
 })

@@ -1518,7 +1518,7 @@ var htmx = (function() {
     const pantry = find('#--htmx-preserve-pantry--')
     if (pantry) {
       for (const preservedElt of [...pantry.children]) {
-        const existingElement = find('#' + preservedElt.id)
+        const existingElement = find('#' + CSS.escape(preservedElt.id))
         // @ts-ignore - use proposed moveBefore feature
         existingElement.parentNode.moveBefore(preservedElt, existingElement)
         existingElement.remove()
@@ -1926,7 +1926,7 @@ var htmx = (function() {
               id = id.substring(1)
             }
             const oobValue = oobSelectValue[1] || 'true'
-            const oobElement = fragment.querySelector('#' + id)
+            const oobElement = fragment.querySelector('#' + CSS.escape(id))
             if (oobElement) {
               oobSwap(oobValue, oobElement, settleInfo, rootNode)
             }
@@ -2001,7 +2001,7 @@ var htmx = (function() {
         })
 
         if (swapOptions.anchor) {
-          const anchorTarget = asElement(resolveTarget('#' + swapOptions.anchor))
+          const anchorTarget = asElement(resolveTarget('#' + CSS.escape(swapOptions.anchor)))
           if (anchorTarget) {
             anchorTarget.scrollIntoView({ block: 'start', behavior: 'auto' })
           }
