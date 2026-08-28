@@ -75,7 +75,7 @@ An unmatched target selector rejects the returned promise.
 
 ### `options`
 
-Use an options object for more control. It accepts [request context](/docs#request-context) fields:
+Use an options object for more control. It accepts request context fields:
 
 ```javascript
 await htmx.ajax('POST', '/messages', {

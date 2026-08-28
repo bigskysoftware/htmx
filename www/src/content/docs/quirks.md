@@ -127,7 +127,7 @@ Here is a meta tag allowing all responses to swap:
 ## `GET` Requests on Non-Form Elements Do Not Include Form Values by Default
 
 If a non-form element makes a non-`GET` request (e.g. a `PUT` request) via htmx, the values of the enclosing form
-of that element (if any) [will be included in the request](/docs#parameters).
+of that element (if any) [will be included in the request](/docs#input-values).
 
 However, if the element issues a `GET`, the values of an enclosing form will
 [not be included.](https://github.com/bigskysoftware/htmx/blob/fb78106dc6ef20d3dfa7e54aca20408c4e4336fc/src/htmx.js#L3525)
@@ -144,7 +144,7 @@ If you wish to include the values of the enclosing form when issuing an `GET` yo
 
 ## History Can Be Tricky
 
-htmx provides support for interacting with the browser's [history](/docs#history).  This can be very powerful, but it
+htmx provides support for interacting with the browser's [history](/docs#browser-history-support).  This can be very powerful, but it
 can also be tricky, particularly if you are using 3rd party JavaScript libraries that modify the DOM.
 
 There can also be [security concerns](/extensions/hx-history-cache) when using htmx's history support.

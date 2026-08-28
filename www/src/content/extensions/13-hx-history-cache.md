@@ -15,7 +15,7 @@ The `history-cache` extension replaces htmx's default history handling with a cl
 <script src="/path/to/ext/hx-history-cache.js"></script>
 ```
 
-If you are using the [htmax bundle](/docs#htmax), `hx-history-cache` is already included but disabled by default. Opt in with:
+If you are using the [htmax bundle](/docs#installing-htmx--the-core-extensions-htmaxjs), `hx-history-cache` is already included but disabled by default. Opt in with:
 
 ```html
 <meta name="htmx-config" content='{"historyCache": {"disable": false}}'>

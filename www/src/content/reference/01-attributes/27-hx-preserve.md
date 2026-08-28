@@ -23,7 +23,7 @@ Response element type and other attributes are ignored.
   the [morphdom extension](https://github.com/bigskysoftware/htmx-extensions/blob/main/src/morphdom-swap/README), which
   does a more elaborate DOM
   reconciliation
-* When using [History Support](/docs#history) for actions like the back button `hx-preserve` elements will also have
+* When using [History Support](/docs#browser-history-support) for actions like the back button `hx-preserve` elements will also have
   their state preserved
 * Avoid using [`hx-swap`](/reference/attributes/hx-swap) set to `none` with requests that could contain a `hx-preserve` element to
   avoid losing it
