@@ -14,7 +14,7 @@ component put on the element can be preserved.
 
 The authors of htmx created a morphing algorithm called [idiomorph](https://github.com/bigskysoftware/idiomorph), which
 included an extension that  was recommended in htmx 2 if people wanted to have a morphing swap.  Other morphing algorithms
-were also available: [Morphdom](#TODO) and [Alpine's Morph](#TODO)
+were also available: [Morphdom](https://github.com/patrick-steele-idem/morphdom) and [Alpine's Morph](https://alpinejs.dev/plugins/morph)
 
 In htmx 4, the idiomorph algorithm has been integrated into htmx, allowing you to specify the `innerMorph` and `outerMorph`
 swap strategies without including any extensions.
