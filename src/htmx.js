@@ -1347,10 +1347,12 @@ var htmx = (() => {
             }
             let swapStyle = swapSpec.style;
             if (swapStyle === 'none') return;
-            // full-page response: fragment has a <body> wrapper, so upgrade outerHTML to outerSync, strip for everything else
+            if (swapSpec.reset) task.sourceElement?.closest?.('form')?.reset();
+            // Body fragment: strip wrapper unless outer* swap on document.body
             if (fragment.firstElementChild?.tagName === 'BODY') {
-                if (swapStyle === 'outerHTML') swapStyle = 'outerSync';
-                else if (!swapStyle.startsWith('outer')) swapSpec.strip = true;
+                const keepBody = target === document.body && swapStyle.startsWith('outer')
+                if (keepBody && swapStyle === 'outerHTML') swapStyle = 'outerSync'
+                swapSpec.strip ??= !keepBody
             }
             if (swapSpec.strip && fragment.firstElementChild) {
                 fragment = document.createDocumentFragment();

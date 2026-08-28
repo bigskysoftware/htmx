@@ -95,4 +95,40 @@ describe('hx-swap modifiers', function() {
         assert.equal(find('#target').className, 'test')
         assert.equal(find('#target').textContent, 'New Text')
     })
+
+    it('outerHTML with body fragment on non-body target strips body wrapper', async function () {
+        mockResponse('GET', '/test', '<body class="from-response"><p>New content</p></body>')
+        createProcessedHTML('<button id="btn" hx-get="/test" hx-target="#target" hx-swap="outerHTML">Get</button><div id="target" class="original">Old</div>');
+        find('#btn').click()
+        await forRequest()
+        // Target should be replaced by <p>, body wrapper stripped
+        assert.isUndefined(find('#target'), 'Target should be replaced')
+        let p = find('p')
+        assert.exists(p)
+        assert.equal(p.textContent, 'New content')
+        assert.equal(p.parentElement.id, 'test-playground')
+    })
+
+    it('outerHTML with full HTML document on non-body target strips body wrapper', async function () {
+        mockResponse('GET', '/test', '<!DOCTYPE html><html><head><title>Page</title></head><body class="page"><div class="content">Content</div></body></html>')
+        createProcessedHTML('<button id="btn" hx-get="/test" hx-target="#target" hx-swap="outerHTML">Get</button><div id="target" class="widget">Widget</div>');
+        find('#btn').click()
+        await forRequest()
+        assert.isUndefined(find('#target'), 'Target should be replaced')
+        let content = find('.content')
+        assert.exists(content)
+        assert.equal(content.parentElement.id, 'test-playground')
+    })
+
+    it('innerHTML with body fragment strips body wrapper', async function () {
+        mockResponse('GET', '/test', '<body class="ignored"><span>A</span><span>B</span></body>')
+        createProcessedHTML('<button id="btn" hx-get="/test" hx-target="#target" hx-swap="innerHTML">Get</button><div id="target" class="keep-me">Old</div>');
+        find('#btn').click()
+        await forRequest()
+        let target = find('#target')
+        assert.exists(target)
+        assert.equal(target.className, 'keep-me', 'Target keeps its attributes')
+        assert.equal(target.children.length, 2)
+        assert.equal(target.children[0].tagName, 'SPAN')
+    })
 })
