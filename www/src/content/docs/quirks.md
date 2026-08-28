@@ -3,49 +3,7 @@ title: "htmx quirks"
 description: "Caveats and gotchas, in the spirit of SQLite's quirks page."
 ---
 
-<!-- TODO: Update this page for 4.0. It was ported from the 2.x site as-is and
-     parts of it are now wrong:
-       - Attribute Inheritance: 4.0 made inheritance explicit and removed
-         hx-inherit and hx-disinherit, so most of that section no longer applies
-       - History Can Be Tricky: hx-history is gone; history caching is now the
-         hx-history-cache extension
-       - The JavaScript API Is Not A Focus: 4.0 dropped 12 of the 21 methods
-         that page describes
-     Check each section against /docs before treating this as current. -->
-
 This is a "quirks" page, based on [SQLite's "Quirks, Caveats, and Gotchas In SQLite" page](https://www.sqlite.org/quirks.html).
-
-## Attribute Inheritance
-
-Many attributes in htmx are [inherited](/docs#attribute-inheritance): child elements can receive behavior from attributes located
-on parent elements.
-
-As an example, here are two htmx-powered buttons that inherit their [target](/reference/attributes/hx-target) from a parent
-div:
-
-```html
-<div hx-target="#output">
-    <button hx-post="/items/100/like">Like</button>
-    <button hx-delete="/items/100">Delete</button>
-</div>
-<output id="output"></output>
-```
-
-This helps avoid repeating attributes, thus keeping code [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
-
-On the other hand, as the attributes get further away elements, you lose [Locality of Behavior](/essays/locality-of-behaviour)
-and it becomes more difficult to understand what an element is doing.
-
-It is also possible to inadvertently change the behavior of elements by adding attributes to parents.
-
-Some people prefer to disable inheritance in htmx entirely, using the `htmx.config.disableInheritance`
-[configuration variable](/docs#configuration).
-
-Here is a `meta` tag configuration that does so:
-
-```html
-  <meta name="htmx-config" content='{"disableInheritance":true}'>
-```
 
 ## The Default Swap Strategy is `innerHTML`
 
@@ -140,22 +98,6 @@ If you wish to include the values of the enclosing form when issuing an `GET` yo
         hx-include="closest form">
   Search
 </button>
-```
-
-## History Can Be Tricky
-
-htmx provides support for interacting with the browser's [history](/docs#browser-history-support).  This can be very powerful, but it
-can also be tricky, particularly if you are using 3rd party JavaScript libraries that modify the DOM.
-
-There can also be [security concerns](/extensions/hx-history-cache) when using htmx's history support.
-
-Most of these issues can be solved by disabling any local history cache and simply issuing a server request when a
-user navigates backwards in history, with the tradeoff that history navigation will be slower.
-
-Here is a meta tag that disables history caching:
-
-```html
-  <meta name="htmx-config" content='{"historyCacheSize": 0}'>
 ```
 
 ## Some People Don't Like `hx-boost`
