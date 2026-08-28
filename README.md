@@ -33,7 +33,7 @@ By removing these arbitrary constraints htmx completes HTML as a
 
 ```html
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0/dist/htmx.min.js"
-          integrity="sha384-uq4r49FLPS7UdQdjT2I3NEfbM2EGe7sAU+OGDnYa/+eR9SMmHeH+NpYrud9SM+w7"
+          integrity="sha384-NUC6aloictnWRymGp9SMhZJkTc9/sH3k9AF5dhL9gWDF1osvz9yO1oXSD8EK9Weu"
           crossorigin="anonymous"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
