@@ -992,7 +992,7 @@ Client state:
      :.error="data.level === 'error'"></div>
 ```
 
-## How it works
+## How It Works
 
 ### Re-run triggers
 

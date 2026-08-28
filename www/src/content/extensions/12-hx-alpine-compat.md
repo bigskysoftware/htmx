@@ -36,6 +36,6 @@ Alpine can bind reactive values to an element's `id` attribute via `:id` or `x-b
 
 When used alongside the [`hx-history-cache`](/extensions/hx-history-cache) extension, `alpine-compat` also handles saving and restoring Alpine component state across history navigation.
 
-### How it works
+### How It Works
 
 Before a page is saved to the history cache, the extension serializes each Alpine component's reactive data to a `data-alpine-state` attribute, then tears down the Alpine tree so the snapshot is clean HTML. On restore, it re-applies the saved values back into the live Alpine data stack after Alpine has re-initialized the restored content.
