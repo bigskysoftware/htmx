@@ -411,6 +411,22 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(input.value, 'hello', 'focused input value should not be overwritten by stale server value');
         });
 
+        it('preserves focused textarea value when server sends stale content during live typing', async function() {
+            const div = createProcessedHTML('<div id="target"><textarea id="notes">old</textarea></div>');
+            const textarea = div.querySelector('#notes');
+            textarea.value = 'user typed this';
+            textarea.focus();
+
+            await htmx.swap({
+                target: '#target',
+                text: '<textarea id="notes">stale</textarea>',
+                swap: 'innerMorph',
+                sourceElement: div
+            });
+
+            assert.equal(div.querySelector('#notes'), textarea, 'textarea node should be preserved');
+            assert.equal(textarea.value, 'user typed this', 'focused textarea value should not be overwritten');
+        });
 
     });
 

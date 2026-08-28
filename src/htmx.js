@@ -2172,7 +2172,7 @@ var htmx = (() => {
             if (!this.__triggerExtensions(oldNode, "htmx:before:morph:node", {oldNode, newNode})) return;
                 
             this.__copyAttributes(oldNode, newNode);
-            if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
+            if (oldNode instanceof HTMLTextAreaElement && document.activeElement !== oldNode && oldNode.defaultValue != newNode.defaultValue) {
                 oldNode.value = newNode.value;
             }
             let skipChildren = this.config.morphSkipChildren && oldNode.matches?.(this.config.morphSkipChildren);
