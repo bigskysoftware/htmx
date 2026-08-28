@@ -398,6 +398,10 @@
             let releaseRequest;
             ctx.extensionPromise = new Promise(resolve => releaseRequest = resolve);
             handleSSEResponse(ctx, releaseRequest).catch(e => {
+                // a throw before the stream loop skips the finally, so release
+                // the request here and tear the connection down
+                releaseRequest();
+                cleanup(element);
                 // an aborted stream is a normal end, not an error
                 if (e.name !== 'AbortError') {
                     api.triggerHtmxEvent(element, 'htmx:sse:error', {error: e, url: ctx.request.action});

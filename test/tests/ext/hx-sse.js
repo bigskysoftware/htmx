@@ -62,6 +62,30 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    it('releases the request when setup throws', async function() {
+        mockStreamResponse('/setup-throw');
+        createProcessedHTML('<button hx-get="/setup-throw" hx-swap="innerHTML" hx-indicator="#spin">Go</button><div id="spin" class="htmx-indicator">Loading</div>');
+
+        // a throw before the stream loop skips the finally that normally releases
+        let original = Object.getOwnPropertyDescriptor(htmx.config, 'sse');
+        Object.defineProperty(htmx.config, 'sse', {
+            configurable: true,
+            get() { throw new Error('config blew up') }
+        });
+
+        try {
+            find('button').click();
+            await htmx.timeout(50);
+            assert.isFalse(find('#spin').classList.contains('htmx-request'),
+                'Indicator must hide when setup throws');
+            assert.isUndefined(find('button')._htmx?.sse,
+                'Connection must not stay registered when setup throws');
+        } finally {
+            delete htmx.config.sse;
+            if (original) Object.defineProperty(htmx.config, 'sse', original);
+        }
+    });
+
     it('continuous stream reconnects with exponential backoff', async function() {
         const stream = mockStreamResponse('/reconnect');
         createProcessedHTML('<button hx-get="/reconnect" hx-config="sse.reconnect:true sse.reconnectDelay:50ms sse.reconnectMaxAttempts:3 sse.reconnectJitter:0" hx-swap="innerHTML">Connect</button>');
