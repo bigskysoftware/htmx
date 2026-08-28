@@ -132,14 +132,12 @@ export interface HtmxConfig {
    */
   metaCharacter?: string;
   /**
-   * Whether an empty response body performs the main swap.
-   * - `true`: swap (clears target)
-   * - `false`: skip swap
-   * - `undefined`: swap unless response contained only `<hx-partial>` elements
-   * Overridable per element via the `swapEmpty` modifier on `hx-swap`.
-   * @default undefined
+   * Run the main swap when the response contained only out-of-band elements.
+   * `<hx-partial>` content always prevents the main swap, whatever this is set to.
+   * Override per element with the `swapEmpty` modifier on `hx-swap`.
+   * @default false
    */
-  defaultSwapEmpty?: boolean;
+  allowEmptySwapAfterOOB: boolean;
   /** Requires hx-live. */
   live?: HxLive.Config;
 }
