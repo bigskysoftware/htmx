@@ -48,7 +48,7 @@ Used when the target is any other element.
 <div hx-post="...">...</div>
 ```
 
-## Examples
+## Example
 
 Use it on the server to customize response behavior:
 

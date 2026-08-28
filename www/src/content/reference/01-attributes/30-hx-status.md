@@ -5,7 +5,7 @@ description: "Handles responses differently by status code"
 
 The `hx-status` attribute overrides swap behavior based on the HTTP response status code.
 
-## Examples
+## Example
 
 ```html
 <!-- Show validation errors in a specific container -->

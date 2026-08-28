@@ -40,7 +40,7 @@ When `hx-method` is omitted, htmx falls back to `formmethod`, then native `metho
 * If no method can be determined from any source, defaults to `GET`
 * The shorthand attributes [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc. combine URL and method into one attribute
 
-## Examples
+## Example
 
 ```html
 <!-- Explicit method -->

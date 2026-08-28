@@ -77,7 +77,7 @@ Clicking "View" sends a GET, clicking "Delete" sends a DELETE — matching nativ
 * The shorthand attributes like [`hx-get`](/reference/attributes/hx-get), [`hx-post`](/reference/attributes/hx-post), etc. combine both URL
   and method
 
-## Examples
+## Example
 
 ```html
 <!-- Server-rendered dynamic method -->
