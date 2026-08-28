@@ -52,6 +52,8 @@ import `htmx.org`;
 import `htmx-ext-sse`; 
 ```
 
+_Note: when used with the [idiomorph extension](@/extensions/idiomorph.md), requires htmx-ext-sse 2.2.4+ ([#164](https://github.com/bigskysoftware/htmx-extensions/issues/164))._
+
 ## Usage
 
 ```html

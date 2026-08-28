@@ -45,6 +45,8 @@ import `htmx.org`;
 import `idiomorph/htmx`;
 ```
 
+_Note: when used with the [SSE extension](@/extensions/sse.md), requires htmx-ext-sse 2.2.4+ ([#164](https://github.com/bigskysoftware/htmx-extensions/issues/164))._
+
 ## Usage
 
 Once you have referenced the idiomorph extension, you can register it with the name `morph` on the body and then begin
