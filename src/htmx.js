@@ -1347,7 +1347,6 @@ var htmx = (() => {
             }
             let swapStyle = swapSpec.style;
             if (swapStyle === 'none') return;
-            if (swapSpec.reset) task.sourceElement?.closest?.('form')?.reset();
             // Body fragment: strip wrapper unless outer* swap on document.body
             if (fragment.firstElementChild?.tagName === 'BODY') {
                 const keepBody = target === document.body && swapStyle.startsWith('outer')
