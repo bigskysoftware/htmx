@@ -21,4 +21,6 @@ htmx.on('htmx:before:init', (evt) => {
 });
 ```
 
+Cancel this event to prevent htmx from initializing the element. 
+
 This runs early in the initialization lifecycle, before attributes are fully parsed.
