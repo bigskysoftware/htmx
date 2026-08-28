@@ -68,7 +68,7 @@ On the client, wrap your inputs in a `<form>` and use [`hx-on`](/reference/attri
 
 - [`hx-post`](/reference/attributes/hx-post) submits the form to `/chat`.
 - [`hx-target`](/reference/attributes/hx-target) points at the `#messages` container.
-- [`hx-swap`](/reference/attributes/hx-swap)=[`"beforeend"`](/reference/attributes/hx-swap#beforeend) appends each new message to the bottom.
+- [`hx-swap`](/reference/attributes/hx-swap)=[`"beforeend"`](/reference/attributes/hx-swap#beforeend--append) appends each new message to the bottom.
 - [`hx-on:htmx:after:request`](/reference/attributes/hx-on) listens for the [`htmx:after:request`](/reference/events/htmx-after-request) event and calls `this.reset()` to clear the form.
 
 On the server, respond with the new message:

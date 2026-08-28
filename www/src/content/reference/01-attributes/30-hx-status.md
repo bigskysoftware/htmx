@@ -52,7 +52,7 @@ The value takes space-separated `key:value` pairs.
 
 ### `swap`
 
-Swap style for this status code. See [`hx-swap` styles](/reference/attributes/hx-swap#styles) for values.
+Swap style for this status code. See [`hx-swap` styles](/reference/attributes/hx-swap#swap-methods) for values.
 
 ```html
 <div hx-get="..." hx-status:500="swap:none"></div>

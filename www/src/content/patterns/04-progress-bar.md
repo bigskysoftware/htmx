@@ -74,7 +74,7 @@ On the server, respond with a container that polls for progress:
 </div>
 ```
 
-- [`hx-trigger`](/reference/attributes/hx-trigger)=[`"every 400ms"`](/reference/attributes/hx-trigger#polling) polls the server on an interval.
+- [`hx-trigger`](/reference/attributes/hx-trigger)=[`"every 400ms"`](/reference/attributes/hx-trigger#every-time) polls the server on an interval.
 - [`outerMorph`](/reference/attributes/hx-swap#outermorph) morphs the element in place, so CSS transitions on `transform` animate smoothly.
 
 Each poll returns updated progress. When done, the server responds with markup that omits `hx-trigger`, so the morph tears down the polling interval and polling stops.

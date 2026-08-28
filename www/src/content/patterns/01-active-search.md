@@ -88,8 +88,8 @@ On the client, create a search input that targets a results container.
 
 - [`hx-post`](/reference/attributes/hx-post) sends the input value to `/search`.
 - [`hx-trigger`](/reference/attributes/hx-trigger) combines three triggers:
-  - [`input`](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) [`changed`](/reference/attributes/hx-trigger#changed) [`delay:200ms`](/reference/attributes/hx-trigger#delay) debounces keystrokes and ignores keys that don't change the value (e.g. arrows).
-  - `keyup[key=='Enter']` sends immediately on Enter, using an [event filter](/reference/attributes/hx-trigger#event-filters).
+  - [`input`](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) [`changed`](/reference/attributes/hx-trigger#changed) [`delay:200ms`](/reference/attributes/hx-trigger#delaytime) debounces keystrokes and ignores keys that don't change the value (e.g. arrows).
+  - `keyup[key=='Enter']` sends immediately on Enter, using an [event filter](/reference/attributes/hx-trigger#filter).
   - [`load`](/reference/attributes/hx-trigger#load) populates the table on page load.
 - [`hx-target`](/reference/attributes/hx-target) puts the response into the `#results` tbody.
 - [`hx-indicator`](/reference/attributes/hx-indicator) shows a loading indicator while the request is in flight.

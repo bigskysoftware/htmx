@@ -13,7 +13,7 @@ Send a single event:
 HX-Trigger: myEvent
 ```
 
-By default, the event is dispatched on the element that made the request and bubbles. Use [`from:body`](/reference/attributes/hx-trigger#from) when listening elsewhere.
+By default, the event is dispatched on the element that made the request and bubbles. Use [`from:body`](/reference/attributes/hx-trigger#fromselector) when listening elsewhere.
 
 Listen from markup with [`hx-on`](/reference/attributes/hx-on):
 

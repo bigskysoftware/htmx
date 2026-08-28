@@ -13,7 +13,7 @@
 /attributes/hx-params         /reference/events/htmx-config-request        301
 /attributes/hx-prompt         /extensions/hx-prompt                        301
 /attributes/hx-history        /extensions/hx-history-cache                 301
-/attributes/hx-ext            /docs#extension-system                       301
+/attributes/hx-ext            /docs#using-extensions                       301
 /attributes/hx-disinherit     /docs#attribute-inheritance                  301
 /attributes/hx-inherit        /docs#attribute-inheritance                  301
 /attributes/kt-swap           /reference/attributes/hx-swap                301

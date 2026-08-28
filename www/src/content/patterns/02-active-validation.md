@@ -76,8 +76,8 @@ On the client, the input validates on each keystroke (debounced).
 ```
 
 - [`hx-post`](/reference/attributes/hx-post) sends the value to `/check-username`.
-- [`hx-trigger`](/reference/attributes/hx-trigger) fires on [`input`](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) after a 300ms [`delay`](/reference/attributes/hx-trigger#delay), and only when the value has [`changed`](/reference/attributes/hx-trigger#changed).
-- [`hx-target`](/reference/attributes/hx-target)=[`"next span"`](/reference/attributes/hx-target#relative-targets) puts the response into the next sibling `<span>`.
+- [`hx-trigger`](/reference/attributes/hx-trigger) fires on [`input`](https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event) after a 300ms [`delay`](/reference/attributes/hx-trigger#delaytime), and only when the value has [`changed`](/reference/attributes/hx-trigger#changed).
+- [`hx-target`](/reference/attributes/hx-target)=[`"next span"`](/reference/attributes/hx-target#extended-selectors) puts the response into the next sibling `<span>`.
 
 On the server, respond with a validation message:
 

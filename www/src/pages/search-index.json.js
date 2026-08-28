@@ -31,12 +31,13 @@ function extractSections(markdown) {
     const matches = [...withoutFrontmatter.matchAll(headingRegex)];
     /** @type {Array<{title: string, anchor: string, content: string}>} */
     const sections = [];
+    const slugger = new GithubSlugger();
 
     for (let i = 0; i < matches.length; i++) {
         const match = matches[i];
         const title = match[2].trim();
         const level = match[1].length;
-        const anchor = title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+        const anchor = slugger.slug(title.replace(/`/g, ''));
 
         // Get content until next heading of same or higher level
         const startPos = (match.index ?? 0) + match[0].length;
