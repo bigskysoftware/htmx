@@ -106,7 +106,7 @@ server.start("/demo");
 
 <div id="demo-content" class="not-prose demo-container min-h-[340px]"></div>
 
-## How it works
+## How It Works
 
 Wrap a table in a `<form>`. Each row has a checkbox, and an action bar appears when any are checked. Clicking a row toggles its checkbox.
 
