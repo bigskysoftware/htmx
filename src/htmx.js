@@ -2191,7 +2191,7 @@ var htmx = (() => {
                     if (isHxAttr(attr.name)) needsReinit = true;
                     if (!this.__triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: attr.value })) continue;
                     destination.setAttribute(attr.name, attr.value);
-                    if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
+                    if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file" && document.activeElement !== destination) {
                         destination.value = attr.value;
                     }
                 }

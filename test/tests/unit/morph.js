@@ -392,10 +392,43 @@ describe('Morph Swap Styles Tests', function() {
             assert.isNull(div.querySelector('button'), 'button should be removed');
         });
 
+        it('preserves focused input value when server sends stale value during live typing', async function() {
+            // Simulates live search: user types "hello" but server response echoes "hel"
+            // back in the value attribute - should not overwrite the focused input
+            const div = createProcessedHTML('<div id="target"><input id="search" value=""></div>');
+            const input = div.querySelector('#search');
+            input.value = 'hello';  // user typed this
+            input.focus();
+
+            await htmx.swap({
+                target: '#target',
+                text: '<input id="search" value="hel">',  // stale server response with different value attr
+                swap: 'innerMorph',
+                sourceElement: div
+            });
+
+            assert.equal(div.querySelector('#search'), input, 'input node should be preserved');
+            assert.equal(input.value, 'hello', 'focused input value should not be overwritten by stale server value');
+        });
+
 
     });
 
     describe('element reordering with ids', function() {
+        it('button can replace itself with morph', async function() {
+            mockResponse('GET', '/test', '<button id="btn" class="clicked">Clicked!</button>');
+            const container = createProcessedHTML('<div id="container"><button id="btn" hx-get="/test" hx-swap="outerMorph">Click me</button></div>');
+            const btn = container.querySelector('#btn');
+            
+            btn.click();
+            await forRequest();
+            
+            const newBtn = container.querySelector('#btn');
+            assert.equal(newBtn, btn, 'Button should be same element after morph');
+            assert.equal(newBtn.className, 'clicked');
+            assert.equal(newBtn.textContent, 'Clicked!');
+        });
+
         it('reorders elements with ids correctly', async function() {
             mockResponse('GET', '/test', '<div id="c">C</div><div id="b">B</div><div id="a">A</div>');
             const div = createProcessedHTML('<div id="target"><div id="a">A</div><div id="b">B</div><div id="c">C</div></div>');
