@@ -5,7 +5,7 @@ description: "How morph swaps work, when to use them, and how to control them."
 
 ## DOM Morphing
 
-DOM Morphing is a technique where existing DOM elements are "morphed" to match new conent.   A morph walks the old DOM 
+DOM Morphing is a technique where existing DOM elements are "morphed" to match new content.   A morph walks the old DOM 
 and edits it into the shape of a new one, which allows nodes that are unchanged to (usually) retain their identity.
 
 This can be very nice from a users perspective: Things like focus, text selection, scroll position and video
@@ -80,14 +80,25 @@ Some times you may wish to skip elements while morphing.  For this there are two
 <div hx-morph-skip-children class="chart">...</div>
 ```
 
-You can also specify a global selector:
+You can also extend the global selectors:
 
 ```javascript
-htmx.config.morphSkip         = 'custom-widget, .frozen';
-htmx.config.morphSkipChildren = 'lit-component, .sortable';
+htmx.config.morphSkip         = '[hx-morph-skip], custom-widget, .frozen';
+htmx.config.morphSkipChildren = '[hx-morph-skip-children], lit-component, .sortable';
 ```
 
 This lets you opt out of morphing for third party widgets, web components, etc.
+
+## Input Values and Focus
+
+Morph can be very useful for replacing or updating forms for dynamic validation.
+
+Morph swaps automatically preserve the value of the currently focused input or textarea, even when the server
+returns a different value. This prevents stale responses from overwriting what the user is typing.
+
+For unfocused inputs, htmx preserves the user's value unless the `value` attribute changes between old and new content.
+This differs from idiomorph's default behavior, which resets the `.value` property to match the `value` attribute on every morph.
+To preserve all input values, have your server return inputs without changing the `value` attribute, or add `'value'` to `htmx.config.morphIgnore`.
 
 ## Configuring
 
@@ -105,4 +116,6 @@ positional (non-id) match.  Lower is faster, but will miss more matches.
 - [`hx-swap`](/reference/attributes/hx-swap)
 - [`hx-preserve`](/reference/attributes/hx-preserve)
 - [`hx-morph-skip`](/reference/attributes/hx-morph-skip)
+- [`hx-morph-skip-children`](/reference/attributes/hx-morph-skip-children)
 - [`htmx.config.morphSkip`](/reference/config/htmx-config-morphSkip)
+- [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphSkipChildren)

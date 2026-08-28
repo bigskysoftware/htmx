@@ -392,6 +392,41 @@ describe('Morph Swap Styles Tests', function() {
             assert.isNull(div.querySelector('button'), 'button should be removed');
         });
 
+        it('preserves focused input value when server sends stale value during live typing', async function() {
+            // Simulates live search: user types "hello" but server response echoes "hel"
+            // back in the value attribute - should not overwrite the focused input
+            const div = createProcessedHTML('<div id="target"><input id="search" value=""></div>');
+            const input = div.querySelector('#search');
+            input.value = 'hello';  // user typed this
+            input.focus();
+
+            await htmx.swap({
+                target: '#target',
+                text: '<input id="search" value="hel">',  // stale server response with different value attr
+                swap: 'innerMorph',
+                sourceElement: div
+            });
+
+            assert.equal(div.querySelector('#search'), input, 'input node should be preserved');
+            assert.equal(input.value, 'hello', 'focused input value should not be overwritten by stale server value');
+        });
+
+        it('preserves focused textarea value when server sends stale content during live typing', async function() {
+            const div = createProcessedHTML('<div id="target"><textarea id="notes">old</textarea></div>');
+            const textarea = div.querySelector('#notes');
+            textarea.value = 'user typed this';
+            textarea.focus();
+
+            await htmx.swap({
+                target: '#target',
+                text: '<textarea id="notes">stale</textarea>',
+                swap: 'innerMorph',
+                sourceElement: div
+            });
+
+            assert.equal(div.querySelector('#notes'), textarea, 'textarea node should be preserved');
+            assert.equal(textarea.value, 'user typed this', 'focused textarea value should not be overwritten');
+        });
 
     });
 

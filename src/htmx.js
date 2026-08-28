@@ -2172,7 +2172,7 @@ var htmx = (() => {
             if (!this.__triggerExtensions(oldNode, "htmx:before:morph:node", {oldNode, newNode})) return;
                 
             this.__copyAttributes(oldNode, newNode);
-            if (oldNode instanceof HTMLTextAreaElement && oldNode.defaultValue != newNode.defaultValue) {
+            if (oldNode instanceof HTMLTextAreaElement && document.activeElement !== oldNode && oldNode.defaultValue != newNode.defaultValue) {
                 oldNode.value = newNode.value;
             }
             let skipChildren = this.config.morphSkipChildren && oldNode.matches?.(this.config.morphSkipChildren);
@@ -2191,7 +2191,7 @@ var htmx = (() => {
                     if (isHxAttr(attr.name)) needsReinit = true;
                     if (!this.__triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: attr.value })) continue;
                     destination.setAttribute(attr.name, attr.value);
-                    if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file") {
+                    if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file" && document.activeElement !== destination) {
                         destination.value = attr.value;
                     }
                 }
