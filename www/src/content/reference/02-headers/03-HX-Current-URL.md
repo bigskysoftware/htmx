@@ -7,7 +7,7 @@ The `HX-Current-URL` request header contains the browser's URL when the request 
 
 Use it to understand page context or build relative URLs.
 
-## Usage
+## Syntax
 
 The header is included as follows:
 

@@ -5,7 +5,7 @@ description: "Overrides content selection from server"
 
 The `HX-Reselect` response header overrides which part of the response is used for swapping, replacing whatever `hx-select` was set on the triggering element.
 
-## Usage
+## Syntax
 
 ```http
 HX-Reselect: #content

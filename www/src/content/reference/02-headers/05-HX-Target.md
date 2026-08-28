@@ -9,7 +9,7 @@ This header is only included when a target is specified.
 
 Format: `<tag>#<id>` (e.g. `div#results`) or just `<tag>` for elements without an ID.
 
-## Usage
+## Syntax
 
 The header is included as follows:
 

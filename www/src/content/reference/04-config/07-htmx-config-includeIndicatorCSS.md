@@ -9,7 +9,7 @@ The styles hide [`indicatorClass`](/reference/config/htmx-config-indicatorClass)
 
 **Default:** `true`
 
-## Usage
+## Syntax
 
 Disable built-in styles when providing your own:
 

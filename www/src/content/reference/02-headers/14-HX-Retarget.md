@@ -5,7 +5,7 @@ description: "Overrides swap target from server"
 
 The `HX-Retarget` response header overrides the element that will receive the swapped content, replacing whatever `hx-target` was set on the triggering element.
 
-## Usage
+## Syntax
 
 ```http
 HX-Retarget: #new-target

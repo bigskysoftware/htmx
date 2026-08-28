@@ -15,7 +15,7 @@ htmx does not add the class. Built-in indicator CSS hides it until [`requestClas
 
 **Default:** `"htmx-indicator"`
 
-## Usage
+## Syntax
 
 Use a custom class:
 

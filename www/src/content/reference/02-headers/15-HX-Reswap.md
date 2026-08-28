@@ -5,7 +5,7 @@ description: "Overrides swap style from server"
 
 The `HX-Reswap` response header overrides the swap style used when inserting the response, replacing whatever `hx-swap` was set on the triggering element.
 
-## Usage
+## Syntax
 
 ```http
 HX-Reswap: outerHTML

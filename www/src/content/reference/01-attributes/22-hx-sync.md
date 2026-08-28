@@ -5,7 +5,7 @@ description: "Synchronizes requests between elements"
 
 The `hx-sync` attribute coordinates concurrent requests between elements.
 
-## Usage
+## Syntax
 
 Set a synchronization element and strategy:
 

@@ -7,7 +7,7 @@ The `hx-select-oob` attribute selects response elements to swap outside the main
 
 Use it to update multiple page elements from one response.
 
-## Usage
+## Syntax
 
 Set a comma-separated list of CSS selectors. Add `:SWAP` to override a selector's swap strategy.
 

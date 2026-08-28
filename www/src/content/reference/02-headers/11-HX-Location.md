@@ -5,7 +5,7 @@ description: "Redirect without a full page load"
 
 The `HX-Location` response header redirects without reloading the page.
 
-## Usage
+## Syntax
 
 Return a path:
 

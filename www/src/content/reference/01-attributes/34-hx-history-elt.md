@@ -14,7 +14,7 @@ full page, and htmx selects its `hx-history-elt` element and swaps it into the c
 Extensions can cancel this request and restore content another way. For example,
 [`hx-history-cache`](/extensions/hx-history-cache) restores a saved DOM snapshot on a cache hit.
 
-## Usage
+## Syntax
 
 ```html
 <main hx-history-elt>

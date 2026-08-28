@@ -9,7 +9,7 @@ htmx adds it to the element selected by [`hx-indicator`](/reference/attributes/h
 
 **Default:** `"htmx-request"`
 
-## Usage
+## Syntax
 
 Use a custom request-state class:
 

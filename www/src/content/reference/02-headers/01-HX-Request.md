@@ -7,7 +7,7 @@ The `HX-Request` header indicates the request was made by htmx.
 
 It's value is always `true`.
 
-## Usage
+## Syntax
 
 ```http
 HX-Request: true
