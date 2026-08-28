@@ -38,3 +38,5 @@ htmx.config.morphSkipChildren = "my-component, other-component, .skip-kids";
 
 - **`morphSkip`:** Freezes entire element (no changes at all)
 - **`morphSkipChildren`:** Updates element attributes, freezes children only
+
+See [`hx-morph-skip-children`](/reference/attributes/hx-morph-skip-children) for the attribute.

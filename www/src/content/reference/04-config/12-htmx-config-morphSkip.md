@@ -36,3 +36,5 @@ Protect elements with complex state that would be lost.
 ```javascript
 htmx.config.morphSkip = ".widget, .animated, custom-element";
 ```
+
+See [`hx-morph-skip`](/reference/attributes/hx-morph-skip) for the attribute.

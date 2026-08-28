@@ -54,6 +54,8 @@ description: "Declarative controls for requests, swapping, and targeting."
 - [hx-disable](/reference/attributes/hx-disable) - disables elements during request
 - [hx-ignore](/reference/attributes/hx-ignore) - disables htmx processing for element
 - [hx-preserve](/reference/attributes/hx-preserve) - preserves element during swaps
+- [hx-morph-skip](/reference/attributes/hx-morph-skip) - freezes an element during a morph swap
+- [hx-morph-skip-children](/reference/attributes/hx-morph-skip-children) - morphs an element's attributes but keeps its children
 - [hx-action](/reference/attributes/hx-action) - specifies URL to receive request
 - [hx-method](/reference/attributes/hx-method) - specifies HTTP method for request
 - [hx-config](/reference/attributes/hx-config) - configures request behavior

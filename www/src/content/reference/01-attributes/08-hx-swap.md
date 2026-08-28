@@ -132,8 +132,8 @@ Morphs entire element, preserving state and focus.
 
 Skip morphing with:
 
-- `hx-morph-skip`: attributes and children
-- `hx-morph-skip-children`: children only; attributes still morph
+- [`hx-morph-skip`](/reference/attributes/hx-morph-skip): attributes and children
+- [`hx-morph-skip-children`](/reference/attributes/hx-morph-skip-children): children only; attributes still morph
 
 Global selectors: [`htmx.config.morphSkip`](/reference/config/htmx-config-morphSkip) / [`htmx.config.morphSkipChildren`](/reference/config/htmx-config-morphSkipChildren)
 
