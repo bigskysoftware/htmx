@@ -43,7 +43,7 @@ server.sse("/ticker", (stream) => {
 });
 
 server.get("/demo", () => `
-<div hx-sse:connect="/ticker" class="w-full flex flex-col gap-3">
+<div hx-sse:connect="/ticker" hx-config="sse.releaseOn:end" class="w-full flex flex-col gap-3">
   <div class="flex items-center justify-between">
     <h3 class="text-sm font-semibold text-neutral-800 dark:text-neutral-100">Quotes</h3>
     <span class="htmx-indicator flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
@@ -69,7 +69,7 @@ The code for the ticker is trivial: one attribute opens the connection.
 ```html
 <script src="https://cdn.jsdelivr.net/npm/htmx.org/dist/ext/hx-sse.js"></script>
 
-<div hx-sse:connect="/ticker">
+<div hx-sse:connect="/ticker" hx-config="sse.releaseOn:end">
   <span class="htmx-indicator">Live</span>
 
   <table>
@@ -82,7 +82,7 @@ The code for the ticker is trivial: one attribute opens the connection.
 ```
 
 - [`hx-sse:connect`](/extensions/hx-sse#hx-sseconnect) opens the connection on `load` and holds it open.
-- The connection element keeps the [`htmx-request`](/reference/config/htmx-config-requestClass) class while the request is open, so the [`htmx-indicator`](/reference/attributes/hx-indicator) badge inside it stays lit for the life of the connection.
+- [`sse.releaseOn:end`](/extensions/hx-sse#ssereleaseon) holds the request open until the stream ends. The connection element keeps the [`htmx-request`](/reference/config/htmx-config-requestClass) class for that whole time, so the [`htmx-indicator`](/reference/attributes/hx-indicator) badge inside it stays lit. `hx-sse:connect` defaults to `immediate`, which releases the request as soon as the connection opens and darkens the badge.
 
 The server pushes out HTML content when a price move occurs: an [`<hx-partial>`](/reference/tags/hx-partial) that targets the row it updates:
 

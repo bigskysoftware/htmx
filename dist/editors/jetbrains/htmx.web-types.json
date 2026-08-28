@@ -220,6 +220,16 @@
           "doc-url": "https://four.htmx.org/reference/attributes/hx-preserve"
         },
         {
+          "name": "hx-morph-skip",
+          "description": "Leaves an element untouched during a morph swap. htmx copies no attributes and morphs no children.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-morph-skip"
+        },
+        {
+          "name": "hx-morph-skip-children",
+          "description": "Morphs an element's attributes during a morph swap but leaves its children alone.",
+          "doc-url": "https://four.htmx.org/reference/attributes/hx-morph-skip-children"
+        },
+        {
           "name": "hx-preload",
           "description": "Preloads content before the user triggers a request. Requires the preload extension.",
           "description-sections": {
@@ -419,6 +429,11 @@
           "name": "before:process",
           "description": "Fires before htmx processes a DOM node. Event detail is empty.",
           "doc-url": "https://four.htmx.org/reference/events/htmx-before-process"
+        },
+        {
+          "name": "before:on:init",
+          "description": "Fires before htmx binds the hx-on attributes on an element. Cancel it to leave those attributes unbound.",
+          "doc-url": "https://four.htmx.org/reference/events/htmx-before-on-init"
         },
         {
           "name": "after:process",
