@@ -48,7 +48,7 @@ Extensions hook into htmx lifecycle events. Event names use underscores instead 
 |-----------|----------------|------------|-------------|
 | `htmx_config_request` | [`htmx:config:request`](/reference/events/htmx-config-request) | `(elt, detail)` | Configure request before sending |
 | `htmx_before_request` | [`htmx:before:request`](/reference/events/htmx-before-request) | `(elt, detail)` | Before request is sent |
-| `htmx_before_response` | `htmx:before:response` | `(elt, detail)` | After fetch, before body consumed |
+| `htmx_before_response` | [`htmx:before:response`](/reference/events/htmx-before-response) | `(elt, detail)` | After fetch, before body consumed |
 | `htmx_after_request` | [`htmx:after:request`](/reference/events/htmx-after-request) | `(elt, detail)` | After request completes |
 | `htmx_finally_request` | [`htmx:finally:request`](/reference/events/htmx-finally-request) | `(elt, detail)` | When request completes, fails, or is cancelled |
 | `htmx_error` | [`htmx:error`](/reference/events/htmx-error) | `(elt, detail)` | On request error |
@@ -60,8 +60,8 @@ Extensions hook into htmx lifecycle events. Event names use underscores instead 
 | `htmx_before_swap` | [`htmx:before:swap`](/reference/events/htmx-before-swap) | `(elt, detail)` | Before content swap |
 | `htmx_after_swap` | [`htmx:after:swap`](/reference/events/htmx-after-swap) | `(elt, detail)` | After content swap |
 | `htmx_finally_swap` | [`htmx:finally:swap`](/reference/events/htmx-finally-swap) | `(elt, detail)` | After swap (success or error) |
-| `htmx_before_settle` | `htmx:before:settle` | `(elt, detail)` | Before settle phase |
-| `htmx_after_settle` | `htmx:after:settle` | `(elt, detail)` | After settle phase |
+| `htmx_before_settle` | [`htmx:before:settle`](/reference/events/htmx-before-settle) | `(elt, detail)` | Before settle phase |
+| `htmx_after_settle` | [`htmx:after:settle`](/reference/events/htmx-after-settle) | `(elt, detail)` | After settle phase |
 | `handle_swap` | _(direct call)_ | `(swapStyle, target, fragment, swapSpec)` | Custom swap handler |
 
 #### History Events
