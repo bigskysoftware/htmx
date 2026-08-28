@@ -137,10 +137,11 @@ By using the syntax `every <timing declaration>` you can have an element poll pe
 This example will issue a `GET` to the `/latest_updates` URL every second and swap the results into
 the innerHTML of this div.
 
-If you want to add a filter to polling, it should be added *after* the poll declaration:
+If you want to add a filter to polling, it should be added *after* the poll declaration. The filter must be a
+JavaScript expression. This example will only poll when the tab is being viewed:
 
 ```html
-<div hx-get="/latest_updates" hx-trigger="every 1s [someConditional]">
+<div hx-get="/latest_updates" hx-trigger="every 1s [!document.hidden]">
   Nothing Yet!
 </div>
 ```
