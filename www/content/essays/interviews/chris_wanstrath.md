@@ -143,7 +143,7 @@ Q: I recall it being a big deal in the rails community. Did the advent of turbol
 > or in part on the server was still viable, and could be sped up using modern techniques.
 > 
 > Turbolinks being created and integrated into Rails was amazing to see, and not entirely unsurprising. I was a huge fan
-> of Sam Stephenson's work even pre-GitHub, and we had very similiar ideas about HTTP and the web. Part of my thinking was
+> of Sam Stephenson's work even pre-GitHub, and we had very similar ideas about HTTP and the web. Part of my thinking was
 > influenced by him and the Rails community, and part of what drew me to the Rails community was the shared ideas around
 > what's great about the web.
 > 
