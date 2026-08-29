@@ -15,7 +15,7 @@ directly in HTML, using [attributes](https://htmx.org/reference#attributes), so 
 [modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
 [power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
 
-htmx is small ([~14k min.gz'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),
+htmx is small ([~16k min.gz'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),
 [dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) &
 [extendable](https://htmx.org/extensions)
 
