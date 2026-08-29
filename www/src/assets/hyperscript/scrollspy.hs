@@ -7,7 +7,12 @@ behavior Scrollspy
     set link to first <a[href='${hash}']/> in me
     if link exists
       set link's @aria-current to 'true'
-      call link.scrollIntoView({block: 'nearest', behavior: 'instant'})
+      -- Only the desktop rail scrolls. The mobile TOC sits inline in the
+      -- page, so scrolling a link into view drags the page back up to the
+      -- nav and undoes the jump to the anchor.
+      if me.closest('details') is null
+        call link.scrollIntoView({block: 'nearest', behavior: 'instant'})
+      end
     end
   end
 
