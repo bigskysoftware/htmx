@@ -7,16 +7,13 @@ behavior Scrollspy
     set link to first <a[href='${hash}']/> in me
     if link exists
       set link's @aria-current to 'true'
-      -- Only the desktop rail scrolls. The mobile TOC sits inline in the
-      -- page, so scrolling a link into view drags the page back up to the
-      -- nav and undoes the jump to the anchor.
       if me.closest('details') is null
         call link.scrollIntoView({block: 'nearest', behavior: 'instant'})
       end
     end
   end
 
-  on scroll from window throttled at 50ms
+  def update()
     -- Hidden nav (mobile TOC) must not do scroll work.
     if my offsetParent is null then exit end
     set current to null
@@ -36,6 +33,16 @@ behavior Scrollspy
       set :lastHash to current
       call activate(current)
     end
+  end
+
+  on scroll from window throttled at 50ms
+    call update()
+  end
+
+  -- debounce so we get a final event too
+  --  (TODO arguably a bug in throttled)
+  on scroll from window debounced at 100ms
+    call update()
   end
 
   on hashchange from window
