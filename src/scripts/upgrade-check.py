@@ -101,6 +101,7 @@ WS_EVENT_RENAMES = {
 
 # Extension attribute renames
 EXT_ATTR_RENAMES = {
+    "preload": "rename to hx-preload",
     "sse-connect": "rename to hx-sse:connect",
     "sse-close": "rename to hx-sse:close",
     "sse-swap": "removed — SSE now integrates with standard htmx request pipeline",
