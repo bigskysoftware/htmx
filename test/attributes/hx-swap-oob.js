@@ -25,6 +25,16 @@ describe('hx-swap-oob attribute', function() {
     })
   }
 
+  it('still finds an oob target still in the document when the triggering element is detached before the response arrives', function() {
+    this.server.respondWith('GET', '/test', "Clicked<div id='d1' hx-swap-oob='true'>Swapped0</div>")
+    var div = make('<div hx-get="/test">click me</div>')
+    make('<div id="d1"></div>')
+    div.click()
+    div.remove() // simulate the trigger's region re-rendering while the request is in flight
+    this.server.respond()
+    byId('d1').innerHTML.should.equal('Swapped0')
+  })
+
   for (const config of [{ allowNestedOobSwaps: true }, { allowNestedOobSwaps: false }]) {
     it('oob swap works when the response has a body tag with config ' + JSON.stringify(config), function() {
       Object.assign(htmx.config, config)

@@ -1889,7 +1889,12 @@ var htmx = (function() {
       maybeCall(swapOptions.beforeSwapCallback)
 
       target = resolveTarget(target)
-      const rootNode = swapOptions.contextElement ? getRootNode(swapOptions.contextElement, false) : getDocument()
+      // A detached contextElement's own getRootNode() is its orphaned subtree, not
+      // the document, so OOB targets that are still live in the document would be
+      // unreachable through it - fall back to the document in that case.
+      const rootNode = (swapOptions.contextElement && swapOptions.contextElement.isConnected)
+        ? getRootNode(swapOptions.contextElement, false)
+        : getDocument()
 
       // preserve focus and selection
       const activeElt = document.activeElement
