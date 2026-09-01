@@ -71,7 +71,7 @@
   see the [demo page](/examples/move-before) for more information.
 * Fixed `revealed` event when a resize reveals an element
 * Enabled `hx-preserve` in oob-swaps
-* Better degredation of `hx-boost` on forms with query parameters in their `action`
+* Better degradation of `hx-boost` on forms with query parameters in their `action`
 * Improved shadowRoot support
 * Many smaller bug fixes
 * Moved the core extension documentation back to <https://htmx.org/extensions>
