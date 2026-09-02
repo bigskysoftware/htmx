@@ -2286,10 +2286,10 @@ var htmx = (() => {
 
             try {
                 if (document.startViewTransition) {
-                    let detail = {task, ctx};
-                    this.__trigger(ctx.sourceElement, "htmx:before:viewTransition", detail)
-                    await document.startViewTransition(detail.task).finished;
-                    this.__trigger(ctx.sourceElement, "htmx:after:viewTransition", detail)
+                    let detail = {task, ctx, transition: document.startViewTransition(() => detail.task())};
+                    this.__trigger(ctx.sourceElement, "htmx:before:viewTransition", detail);
+                    await detail.transition?.finished;
+                    this.__trigger(ctx.sourceElement, "htmx:after:viewTransition", detail);
                 } else {
                     await task();
                 }
