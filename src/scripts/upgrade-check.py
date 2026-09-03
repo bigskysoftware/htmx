@@ -52,7 +52,7 @@ EVENT_RENAMES = {
     "htmx:afterOnLoad": "htmx:after:init",
     "htmx:afterProcessNode": "htmx:after:init",
     "htmx:afterRequest": "htmx:after:request",
-    "htmx:afterSettle": "htmx:after:swap",
+    "htmx:afterSettle": "htmx:after:settle",
     "htmx:afterSwap": "htmx:after:swap",
     "htmx:beforeCleanupElement": "htmx:before:cleanup",
     "htmx:beforeHistorySave": "htmx:before:history:update",
