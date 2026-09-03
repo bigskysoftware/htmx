@@ -158,22 +158,26 @@ Fires, then ignores further events for the given interval.
 
 ### `from:<selector>`
 
-Listens on a different element. Takes a CSS selector or an [extended selector](/docs#targeting-with-extended-selectors). Two special values: `self` (only the element itself, not children) and `outside` (anything outside the element).
+Listens on a different element instead of the element itself. Takes a CSS selector or an [extended selector](/docs#targeting-with-extended-selectors).
+
+Two special values: `self` (only the element itself, not bubbled children) and `outside` (anything outside the element).
 
 ```html
 <div hx-trigger="keyup[key=='Enter'] from:body" hx-get="...">...</div>
 <div hx-trigger="my-event from:document" hx-get="...">...</div>
-<div hx-trigger="submit from:closest form" hx-get="...">...</div>
+<div hx-trigger="submit from:'closest form'" hx-get="...">...</div>
 <div hx-trigger="click from:self" hx-get="...">...</div>
 <div hx-trigger="click from:outside" hx-get="...">...</div>
 ```
 
+Selectors containing spaces or commas can be wrapped in quotes: `from:'closest form'`, `from:'.a, .b'`.
+
 ### `target:<selector>`
 
-Only fires if `event.target` matches the given CSS selector.
+Only fires if `event.target` matches the given CSS selector. Takes a plain CSS selector only, not an extended selector.
 
 ```html
-<div hx-trigger="click target:.child-button" hx-get="...">...</div>
+<div hx-trigger="click target:'.child-button, .other-button'" hx-get="...">...</div>
 ```
 
 ### `prevent`
@@ -229,7 +233,7 @@ A search box that searches on `input`, but only if the value has [`changed`](#ch
 
 ## Notes
 
-* Selectors with whitespace in [`from`](#from) or [`target`](#target) need parentheses: `from:(form input)`.
+* `from:` and `target:` selectors with whitespace or commas must be quoted: `from:'closest form'`, `target:'.a, .b'`.
 * `hx-trigger="change, reset"` may fire before the browser resets the form. As a workaround, add a short delay: `hx-trigger="change, reset delay:0.01s"`.
 
 ## See Also

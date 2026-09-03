@@ -250,10 +250,11 @@ Useful for infinite scroll, chat messages, or focusing attention on new content.
 
 Values: `top`, `bottom`
 
-Target a different element:
+Target a different element using a CSS or [extended selector](/docs#targeting-with-extended-selectors):
 
 ```html
 <div hx-swap="innerHTML scroll:top scrollTarget:#other"></div>
+<div hx-swap="innerHTML scroll:top scrollTarget:'closest .container'"></div>
 ```
 
 Scroll the window:
@@ -272,10 +273,11 @@ Scrolls to show the target element in viewport.
 
 Values: `top`, `bottom`, `none`
 
-Show a different element:
+Show a different element using a CSS or [extended selector](/docs#targeting-with-extended-selectors):
 
 ```html
 <div hx-swap="innerHTML show:top showTarget:#other"></div>
+<div hx-swap="innerHTML show:top showTarget:'closest .container'"></div>
 ```
 
 Boosted forms default to `show:top`. Disable:
