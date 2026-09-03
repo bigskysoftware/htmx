@@ -92,6 +92,21 @@ works. Request queuing is now controlled exclusively by [`hx-sync`](/reference/a
 <div hx-trigger="click" hx-get="/test" hx-sync="this:queue all">...</div>
 ```
 
+### `hx-trigger` `from:` and `target:` selector quoting
+
+In htmx 2, selectors with spaces in `from:` used parentheses: `from:(form input)`. In htmx 4, HCON parses these
+modifier values, so selectors containing spaces or commas must be wrapped in single quotes:
+
+```html
+<!-- htmx 2 -->
+<input hx-trigger="keyup from:(closest form)">
+
+<!-- htmx 4 -->
+<input hx-trigger="keyup from:'closest form'">
+```
+
+Comma-separated selectors also need quoting: `target:'.a, .b'`.
+
 ### 60-second timeout
 
 htmx 2 had no timeout (`0`). htmx 4 sets [`defaultTimeout`](/reference/config/htmx-config-defaultTimeout) to `60000`.

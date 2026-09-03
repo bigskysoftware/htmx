@@ -170,7 +170,7 @@ Two special values: `self` (only the element itself, not bubbled children) and `
 <div hx-trigger="click from:outside" hx-get="...">...</div>
 ```
 
-Selectors containing spaces or commas can be wrapped in quotes: `from:'closest form'`, `from:'.a, .b'`.
+Selectors containing spaces or commas should be wrapped in quotes: `from:'closest form'`, `from:'.a, .b'`.
 
 ### `target:<selector>`
 
