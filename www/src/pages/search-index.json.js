@@ -147,6 +147,20 @@ export const GET = async () => {
                             breadcrumb: h.depth >= 3 ? [currentH2].filter(Boolean) : [],
                         });
                     }
+                    // Also index docs sub-pages (e.g. /docs/hcon-guide)
+                    for (const file of folder.allFiles) {
+                        const keywords = file.frontmatter.keywords?.join(', ') || '';
+                        results.push({
+                            id: file.url,
+                            url: file.url,
+                            title: file.frontmatter.title,
+                            description: file.frontmatter.description || '',
+                            keywords,
+                            parent: null,
+                            collection,
+                            breadcrumb: ['Documentation']
+                        });
+                    }
                     return;
                 }
 
