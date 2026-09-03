@@ -280,7 +280,13 @@ Other modifiers you can use for triggers are:
 | `capture`                  | listen during the capture phase, from the top down, rather than the bubble phase                                                                                                                                            |
 | `passive`                  | tell the browser that the handler will not call `preventDefault()`, so the browser can scroll without waiting for your code                                                                                                 |
 
-Note that a selector with whitespace in `from` or `target` needs parentheses, for example `from:(form input)`.
+Wrap a [`from`](/reference/attributes/hx-trigger#fromselector) or [`target`](/reference/attributes/hx-trigger#targetselector) selector that contains whitespace or commas in single quotes, double quotes, or `<.../>`:
+
+```html
+<div hx-trigger="submit from:'closest form'">
+<div hx-trigger='submit from:"closest form"'>
+<div hx-trigger="submit from:<closest form/>">
+```
 
 Multiple triggers can be specified by separating the triggers with a comma.
 

@@ -105,11 +105,12 @@ Wrap values in quotes when they contain commas, spaces, or HCON delimiters.
 <button hx-vals='message:"hello world"'>
 ```
 
-Use whichever quote style the HTML attribute is not using:
+For selector values, use single quotes, double quotes, or the `<.../>` form. Choose a form that does not conflict with the HTML attribute quotes:
 
 ```html
 <input hx-trigger="keyup from:'.a, .b'">
 <input hx-trigger='keyup from:".a, .b"'>
+<input hx-trigger="keyup from:<.a, .b/>">
 ```
 
 ---
@@ -210,7 +211,7 @@ This works for any attribute that accepts HCON/JSON, including `hx-vals` and `hx
 - **Quote values for grouping, not type control.** Quotes preserve spaces, commas, and delimiters. Quoted numeric and boolean values still parse as numbers and booleans.
 - **Write durations naturally.** `200ms`, `2s`, and `1m` stay strings in HCON; htmx converts them where durations are expected.
 - **Quote dotted keys to keep them literal.** `"a.b":1` produces `{"a.b": 1}`. Bare `a.b:1` produces `{a: {b: 1}}`.
-- **Quote spaces and commas.** HCON-aware comma splitting preserves commas inside `[...]`, `(...)`, `<.../>`, and quotes.
+- **Group spaces and commas.** Use single quotes, double quotes, or `<.../>`.
 - **Use JSON for arrays.** HCON has no array literal syntax, so use JSON fallback, such as `{"items":[1,2,3]}`.
 - **Use dot-notation for nested objects.** `a.b.c:value` works; `a:{b:{c:value}}` does not.
 - **Use `js:` for expressions.** HCON values are literals, so write `hx-vals="js:{token: getToken()}"` for dynamic values.

@@ -44,7 +44,7 @@ Defaults to:
 
 Custom events work too. Dispatch them from JavaScript with [`htmx.trigger()`](/reference/methods/htmx-trigger), or from the server via the [`HX-Trigger`](/reference/headers/HX-Trigger) response header.
 
-Events from `HX-Trigger` are dispatched on the `body`, so use [`from:body`](#from) to listen for them:
+Events from `HX-Trigger` are dispatched on the `body`, so use [`from:body`](#fromselector) to listen for them:
 
 ```html
 <div hx-trigger="productsUpdated from:body" hx-get="...">...</div>
@@ -163,9 +163,17 @@ Listens on a different element. Takes a CSS selector or an [extended selector](/
 ```html
 <div hx-trigger="keyup[key=='Enter'] from:body" hx-get="...">...</div>
 <div hx-trigger="my-event from:document" hx-get="...">...</div>
-<div hx-trigger="submit from:closest form" hx-get="...">...</div>
+<div hx-trigger="submit from:<closest form/>" hx-get="...">...</div>
 <div hx-trigger="click from:self" hx-get="...">...</div>
 <div hx-trigger="click from:outside" hx-get="...">...</div>
+```
+
+Wrap [`from`](#fromselector) or [`target`](#targetselector) selectors that contain whitespace or commas in single quotes, double quotes, or `<.../>`:
+
+```html
+<div hx-trigger="submit from:'closest form'" hx-get="...">...</div>
+<div hx-trigger='submit from:"closest form"' hx-get="...">...</div>
+<div hx-trigger="submit from:<closest form/>" hx-get="...">...</div>
 ```
 
 ### `target:<selector>`
@@ -229,7 +237,6 @@ A search box that searches on `input`, but only if the value has [`changed`](#ch
 
 ## Notes
 
-* Selectors with whitespace in [`from`](#from) or [`target`](#target) need parentheses: `from:(form input)`.
 * `hx-trigger="change, reset"` may fire before the browser resets the form. As a workaround, add a short delay: `hx-trigger="change, reset delay:0.01s"`.
 
 ## See Also
