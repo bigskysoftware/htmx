@@ -1588,20 +1588,14 @@ var htmx = (() => {
                 return Promise.reject(new Error('Source not found'));
             }
 
-            // Resolve explicit target if provided; otherwise __createRequestContext
-            // will resolve from hx-target on the source element
-            if (options.target) {
-                let target = this.__resolveTarget(document.body, options.target);
-                if (!target) {
-                    return Promise.reject(new Error('Target not found'));
-                }
-                sourceElt ||= target;
-            }
             sourceElt ||= document.body;
 
             let ctx = this.__createRequestContext(sourceElt, options.event || {});
             Object.assign(ctx, options);
-            if (options.target) ctx.target = this.__resolveTarget(document.body, options.target);
+            if (options.target) {
+                ctx.target = this.__resolveTarget(document.body, options.target);
+                if (!ctx.target) return Promise.reject(new Error('Target not found'));
+            }
             Object.assign(ctx.request, {action: path, method: verb.toUpperCase()});
             if (options.headers) Object.assign(ctx.request.headers, options.headers);
 
@@ -1816,10 +1810,10 @@ var htmx = (() => {
             let inputs = [];
             if (tag === 'BUTTON' || tag.includes('-')) {
                 inputs = [elt]; // send own value only, never collect children
-            } else if (['INPUT', 'SELECT', 'TEXTAREA', 'FIELDSET'].includes(tag) || !isGet) {
+            } else if (['INPUT', 'SELECT', 'TEXTAREA', 'FIELDSET'].includes(tag) || (!isGet && elt !== document.body)) {
                 inputs = this.__queryEltAndDescendants(elt, '[name]:not(button)');
             }
-            // GET on non-form-control containers (div, etc.) sends nothing; use hx-include for explicit inclusion
+            // GET on non-form-control containers sends nothing; POST on body sends nothing; use hx-include for explicit inclusion
 
             for (let input of inputs) {
                 let name = input.name || input.getAttribute?.('name');
