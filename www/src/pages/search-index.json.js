@@ -89,10 +89,10 @@ export const GET = async () => {
                     installation: ['install', 'getting started', 'quick start'],
                     boosting: ['boost', 'progressive enhancement'],
                     history: ['back button', 'pushState'],
-                    synchronization: ['sync', 'debounce', 'throttle', 'race condition'],
+                    'synchronizing-requests': ['sync', 'synchronizing', 'debounce', 'throttle', 'race condition'],
                     'css-transitions': ['fade'],
                     'multi-target-updates': ['oob', 'out of band'],
-                    'client-side-scripting': ['javascript', 'hyperscript'],
+                    'client-side-scripting': ['javascript', 'scripting', 'hyperscript'],
                     configuration: ['settings', 'meta tag'],
                     debugging: ['debug', 'devtools', 'logAll'],
                     'requests--responses': ['XHR', 'fetch', 'ajax'],
@@ -145,6 +145,20 @@ export const GET = async () => {
                             parent: h.depth >= 3 ? currentH2 : null,
                             collection,
                             breadcrumb: h.depth >= 3 ? [currentH2].filter(Boolean) : [],
+                        });
+                    }
+                    // Also index docs sub-pages (e.g. /docs/hcon-guide)
+                    for (const file of folder.allFiles) {
+                        const keywords = file.frontmatter.keywords?.join(', ') || '';
+                        results.push({
+                            id: file.url,
+                            url: file.url,
+                            title: file.frontmatter.title,
+                            description: file.frontmatter.description || '',
+                            keywords,
+                            parent: null,
+                            collection,
+                            breadcrumb: ['Documentation']
                         });
                     }
                     return;

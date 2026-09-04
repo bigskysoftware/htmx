@@ -280,7 +280,7 @@ Other modifiers you can use for triggers are:
 | `capture`                  | listen during the capture phase, from the top down, rather than the bubble phase                                                                                                                                            |
 | `passive`                  | tell the browser that the handler will not call `preventDefault()`, so the browser can scroll without waiting for your code                                                                                                 |
 
-Note that a selector with whitespace in `from` or `target` needs parentheses, for example `from:(form input)`.
+Selectors containing spaces or commas in `from` or `target` must be wrapped in quotes: `from:'form input'`, `from:'.a, .b'`.
 
 Multiple triggers can be specified by separating the triggers with a comma.
 

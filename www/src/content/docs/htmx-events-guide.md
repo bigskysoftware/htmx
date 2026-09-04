@@ -1,6 +1,7 @@
 ---
 title: "htmx Events Guide"
 description: "Listen for htmx events to log, cancel, and modify request and swap behavior."
+keywords: ["events", "lifecycle", "event listener", "hx-on", "htmx.on", "request context", "ctx", "cancel request", "preventDefault", "CSRF", "add header", "modify request", "retarget", "reswap", "intercept", "hook", "scripting"]
 ---
 
 htmx triggers events at every step of the request and swap lifecycle. These events are the main extension point
@@ -54,6 +55,50 @@ Inside an `hx-on:*` attribute every property of `detail` is already in scope, so
 `event.detail.ctx`.
 
 Element lifecycle events use `detail.elt` instead, which is the element htmx processed.
+
+## The ctx Object
+
+`ctx` is the request context object. It is created when a request is triggered and lives until the swap lifecycle
+ends. Properties marked **writable** can be changed in an event handler to alter htmx's behavior.
+
+| Property | Type | Writable | Description |
+|----------|------|----------|-------------|
+| `sourceElement` | `Element` | | The element that triggered the request |
+| `sourceEvent` | `Event` | | The DOM event that triggered the request |
+| `target` | `Element` | **yes** | The element that will receive the swapped content. Mutate in `htmx:after:request`. Note: `HX-Retarget` is applied after this event and will overwrite your value |
+| `swap` | `string` | **yes** | The swap style (e.g. `"innerHTML"`). Mutate in `htmx:after:request`. Note: `HX-Reswap` is applied after this event and will overwrite your value |
+| `select` | `string\|null` | **yes** | CSS selector from `hx-select`. Mutate in `htmx:after:request`. Note: `HX-Reselect` is applied after this event and will overwrite your value |
+| `selectOOB` | `string\|null` | **yes** | Selector string from `hx-select-oob`. Mutate in `htmx:after:request` |
+| `push` | `string\|null` | **yes** | URL to push into history. Mutate in `htmx:after:request`. Note: `HX-Push-Url` is applied after this event and will overwrite your value |
+| `replace` | `string\|null` | **yes** | URL to replace in history. Mutate in `htmx:after:request`. Note: `HX-Replace-Url` is applied after this event and will overwrite your value |
+| `confirm` | `string\|null` | | Confirmation message from `hx-confirm`. Read before any events fire — not writable from an event |
+| `transition` | `boolean` | **yes** | Whether to use the View Transitions API. Writable up to and including `htmx:before:swap` |
+| `request` | `object` | | Sub-object with request details — see below |
+| `response` | `object` | | Added after `fetch()`. Has `raw` (the `Response`), `status` (number), `headers` (`Headers`) |
+| `text` | `string` | **yes** | Added after the response body is read. The raw HTML string. Mutate in `htmx:after:request` — by `htmx:before:swap` the fragment is already parsed |
+| `title` | `string` | **yes** | Page title extracted from the response fragment. Set during `swap()` — writable up to `htmx:after:swap` |
+| `hx` | `object` | | Parsed `HX-*` response headers. Keys are lowercased with hyphens removed: `hx.trigger`, `hx.retarget`, `hx.reswap`, etc. |
+
+### ctx.request
+
+`ctx.request` maps directly onto the [Fetch API `RequestInit`](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit).
+Changes made in `htmx:config:request` are applied before the request is sent.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `action` | `string` | The request URL |
+| `method` | `string` | HTTP method (`"GET"`, `"POST"`, etc.) |
+| `headers` | `object` | Request headers. Add or change headers here |
+| `body` | `FormData\|URLSearchParams\|null` | Request body. A `FormData` at `htmx:config:request` (the right place to add values). Encoded to `URLSearchParams` or `null` for GET/DELETE before `fetch()` |
+| `validate` | `boolean` | Whether HTML5 form validation runs before the request |
+| `credentials` | `string` | Fetch credentials mode. Defaults to `"same-origin"` |
+| `signal` | `AbortSignal` | Abort signal. Fires when `htmx:abort` is triggered on the element |
+| `abort` | `function` | Call to abort the in-flight request |
+| `mode` | `string` | Fetch mode. Always reset to `htmx.config.mode` — cannot be overridden per-element |
+| `form` | `Element\|null` | The associated form element, if any |
+| `submitter` | `Element\|null` | The submit button that triggered the request, if any |
+| `anchor` | `string` | URL fragment (the part after `#`), if present in the action URL |
+| `timeout` | `number\|string` | Request timeout. Set via `hx-config="timeout:5s"` |
 
 ## Cancelling An Event
 
@@ -171,7 +216,7 @@ htmx.on('htmx:config:request', function (evt) {
 Both are on the context, so you can change them up to the point of the swap:
 
 ```javascript
-htmx.on('htmx:before:swap', function (evt) {
+htmx.on('htmx:after:request', function (evt) {
     if (evt.detail.ctx.response.status === 404) {
         evt.detail.ctx.target = document.querySelector('#errors');
     }
