@@ -2449,6 +2449,75 @@ describe('hx-live extension', function () {
         btn.hasAttribute('disabled').should.equal(true);
     });
 
+    it(':?attr toggles boolean attribute presence based on truthiness', async function() {
+        playground().innerHTML = `
+            <input id="src" type="checkbox">
+            <custom-select id="target" :?multiple="q('#src').checked"></custom-select>
+        `;
+        htmx.process(playground());
+        let target = playground().querySelector('#target');
+        target.hasAttribute('multiple').should.equal(false);
+
+        let inp = playground().querySelector('#src');
+        inp.checked = true;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        target.hasAttribute('multiple').should.equal(true);
+
+        inp.checked = false;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        target.hasAttribute('multiple').should.equal(false);
+    });
+
+    it('hx-live:?attr (canonical form) works same as :?attr', async function() {
+        playground().innerHTML = `
+            <input id="src" type="checkbox">
+            <div id="target" hx-live:?custom-flag="q('#src').checked"></div>
+        `;
+        htmx.process(playground());
+        let target = playground().querySelector('#target');
+        target.hasAttribute('custom-flag').should.equal(false);
+
+        let inp = playground().querySelector('#src');
+        inp.checked = true;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        target.hasAttribute('custom-flag').should.equal(true);
+
+        inp.checked = false;
+        inp.dispatchEvent(new Event('change', { bubbles: true }));
+        await htmx.timeout(5);
+        target.hasAttribute('custom-flag').should.equal(false);
+    });
+
+    it(':?attr handles truthy and falsy values correctly', async function() {
+        playground().innerHTML = `
+            <input id="val" value="0">
+            <div id="target" :?active="q('#val').value === 'true' ? true : q('#val').value === 'banana' ? 'banana' : q('#val').value === '1' ? 1 : false"></div>
+        `;
+        htmx.process(playground());
+        let target = playground().querySelector('#target');
+        let inp = playground().querySelector('#val');
+
+        target.hasAttribute('active').should.equal(false);
+
+        inp.value = 'true';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        await htmx.timeout(5);
+        target.hasAttribute('active').should.equal(true);
+
+        inp.value = 'banana';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        await htmx.timeout(5);
+        target.hasAttribute('active').should.equal(true);
+
+        inp.value = '0';
+        inp.dispatchEvent(new Event('input', { bubbles: true }));
+        await htmx.timeout(5);
+        target.hasAttribute('active').should.equal(false);
+    });
+
     it(':aria-expanded writes "true"/"false", never removes', async function() {
         playground().innerHTML = `
             <input id="src" type="checkbox">
