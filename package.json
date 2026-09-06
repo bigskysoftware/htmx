@@ -49,7 +49,10 @@
     "url": "git+https://github.com/bigskysoftware/htmx.git"
   },
   "eslintConfig": {
-    "extends": ["standard", "plugin:mocha/recommended"],
+    "extends": [
+      "standard",
+      "plugin:mocha/recommended"
+    ],
     "rules": {
       "mocha/consistent-spacing-between-blocks": 0,
       "mocha/no-setup-in-describe": 0,
@@ -70,10 +73,13 @@
       "no-useless-call": 0,
       "no-useless-escape": 0,
       "no-unused-expressions": 0,
-      "no-restricted-properties": ["error", {
+      "no-restricted-properties": [
+        "error",
+        {
           "property": "substr",
           "message": "Use .slice or .substring instead of .substr"
-      }],
+        }
+      ],
       "space-before-function-paren": [
         "error",
         "never"
@@ -81,10 +87,9 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^22.18.8",
-    "@types/parse5": "^7.0.0",
-    "@web/test-runner": "^0.20.2",
-    "@web/test-runner-playwright": "^0.11.0",
+    "@types/node": "^22.20.1",
+    "@web/test-runner": "^1.0.0",
+    "@web/test-runner-playwright": "^1.0.0",
     "chai": "^4.5.0",
     "chai-dom": "^1.12.1",
     "eslint": "^8.57.1",
@@ -92,7 +97,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-mocha": "^10.5.0",
     "fs-extra": "^9.1.0",
-    "mocha": "^11.7.4",
+    "mocha": "^11.8.0",
     "mock-socket": "^9.3.1",
     "sinon": "^10.0.1",
     "typescript": "^5.9.3",
