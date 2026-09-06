@@ -1889,7 +1889,9 @@ var htmx = (function() {
       maybeCall(swapOptions.beforeSwapCallback)
 
       target = resolveTarget(target)
-      const rootNode = swapOptions.contextElement ? getRootNode(swapOptions.contextElement, false) : getDocument()
+      const rootNode = (swapOptions.contextElement && swapOptions.contextElement.isConnected)
+        ? getRootNode(swapOptions.contextElement, false)
+        : getDocument()
 
       // preserve focus and selection
       const activeElt = document.activeElement
