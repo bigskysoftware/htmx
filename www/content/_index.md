@@ -94,8 +94,9 @@ if(window.location.search=="?ads=true") {
 </a>
 </div>
 
-<div style="border: 1px solid lightgrey; margin:24px;padding:12px;border-radius: 8px; background-color: whitesmoke; color: black; filter: drop-shadow(3px 3px darkgray)">
-<b>NEWS:</b> htmx v4 is under active development and is now in beta, with a target release date of Summer '26!  More details
+<div class="alert" style="border-radius: 8px">
+<b>NEWS:</b> htmx 4.0 <a href="https://four.htmx.org/announcements/2026-08-28-htmx-4.0.0-is-released">has been released</a>!  It is not currently marked as <code>latest</code> in NPM so that people using
+the 2.x line are not accidentally upgraded.  We will mark it <code>latest</code> at some point in 2027.  More details
 at <a href="https://four.htmx.org">https://four.htmx.org</a>
 </div>
 
@@ -123,8 +124,8 @@ By removing these constraints, htmx completes HTML as a [hypertext](https://en.w
 
 ```html
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" 
-          integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" c
-          rossorigin="anonymous"></script>
+          integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+          crossorigin="anonymous"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">
     Click Me
@@ -192,6 +193,16 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         <a data-github-account="commspace" href="https://www.commspace.co.za">
         <img class="dark-hidden" src="/img/commspace.svg" alt="commspace" style="min-width:200px"/>
         <img class="dark-visible" src="/img/commspace-dark.svg" alt="commspace" style="min-width:200px"/>
+        </a>
+</div>
+</div>
+
+<h1 style="margin-top:12px;text-align:center">Gold Sponsor</h1>
+<div style="display: grid;grid-template-columns: 1fr; justify-items: center; margin-bottom:40px">
+<div>
+        <a href="https://serpapi.com/?utm_source=bigsky_software&utm_campaign=os_sponsorship">
+        <img class="dark-hidden" src="/img/serpapi.svg" alt="Web Search API" style="width:100%;max-width:320px"/>
+        <img class="dark-visible" src="/img/serpapi-dark.svg" alt="Web Search API" style="width:100%;max-width:320px"/>
         </a>
 </div>
 </div>
