@@ -1086,7 +1086,7 @@ var htmx = (() => {
             targetSelector = swapSpec.target || targetSelector;
             swapSpec.strip ??= !swapSpec.style.startsWith('outer');
             if (!targetSelector) return;
-            let targets = [...document.querySelectorAll(targetSelector)];
+            let targets = this.__findAllExt(sourceElement, targetSelector);
             for (let target of targets) {
                 let fragment = document.createDocumentFragment();
                 fragment.append(elt.cloneNode(true));

@@ -72,4 +72,28 @@ describe('hx-swap-oob', function() {
         await forRequest()
         playground().querySelectorAll('.target').forEach(el => el.innerText.should.equal('Updated'))
     })
+
+    it('swaps an oob target inside the shadow root of the triggering element', async function () {
+        mockResponse('GET', '/test', '<div hx-swap-oob="innerHTML:#oob-target">new contents</div>Clicked')
+        let name = 'oob-shadow-scoped'
+        if (!customElements.get(name)) {
+            customElements.define(name, class extends HTMLElement {
+                connectedCallback() {
+                    let root = this.attachShadow({mode: 'open'})
+                    root.innerHTML = `
+                        <button hx-get="/test" hx-target="next div">Click me!</button>
+                        <div id="main-target"></div>
+                        <div id="oob-target">this should get swapped</div>
+                    `
+                    htmx.process(root)
+                }
+            })
+        }
+        createProcessedHTML(`<div id="oob-target">this should not get swapped</div><${name}></${name}>`)
+        let wc = find(name)
+        wc.shadowRoot.querySelector('button').click()
+        await forRequest()
+        wc.shadowRoot.querySelector('#oob-target').textContent.should.equal('new contents')
+        find('#oob-target').textContent.should.equal('this should not get swapped')
+    })
 })
