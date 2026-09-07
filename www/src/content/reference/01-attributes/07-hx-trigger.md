@@ -93,17 +93,29 @@ Modifiers:
 
 ### `every <time>`
 
-Fires repeatedly on an interval.
+Fires repeatedly on an interval. The element that carries `every` **is** the poll:
+htmx arms a timer on that node and clears it when the node leaves the DOM.
 
 ```html
 <div hx-trigger="every 1s" hx-get="/updates">...</div>
 ```
+
+To stop from the server, swap **this element** for markup that omits `every`
+(`outerHTML` / `outerMorph`, or `HX-Reswap: outerHTML`). HTTP 286 does not
+cancel polling in htmx 4. Default `innerHTML` cannot self-stop, because the
+poller stays in the DOM.
 
 To add a filter to polling, add it after the interval:
 
 ```html
 <div hx-trigger="every 1s [someConditional]" hx-get="/updates">...</div>
 ```
+
+The interval still runs when the filter is false; the request is skipped. Use
+this for tab visibility (`[document.visibilityState === 'visible']`), not as a
+cancel protocol.
+
+See [Polling](/patterns/polling).
 
 ## Event Modifiers
 
