@@ -174,7 +174,7 @@
             target: restoreSwapTarget,
             swap: restoreSwapStyle,
             text: cachedHTML,
-            transition: false
+            transition: htmx.config.transitions ?? false
         };
         await htmx.swap(ctx);
 
