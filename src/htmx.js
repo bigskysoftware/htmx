@@ -788,14 +788,11 @@ var htmx = (() => {
                     if (spec.target && !evt.target?.matches?.(spec.target)) return;
                     if (spec.changed) {
                         let values = spec.values ??= new WeakMap();
-                        let changed = false;
-                        for (let fromElt of fromElts) {
-                            if (values.get(fromElt) !== fromElt.value) {
-                                changed = true;
-                                values.set(fromElt, fromElt.value);
-                            }
-                        }
-                        if (!changed) return;
+                        let target = evt.target;
+                        let value = target?.value;
+                        if (!values.has(target)) values.set(target, target?.value);
+                        if (values.get(target) === value) return;
+                        values.set(target, value);
                     }
                     if (filter) {
                         if (this.__shouldCancel(evt)) evt.preventDefault();
