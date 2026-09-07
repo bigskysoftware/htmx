@@ -587,7 +587,7 @@ def main():
                              "e.g. --ext .vue --ext .svelte)")
     parser.add_argument("--no-color", action="store_true",
                         help="Disable colored output")
-    args = parser.parse_args()
+    args = parser.parse_intermixed_args()
 
     extensions = list(DEFAULT_EXTENSIONS)
     for ext in args.ext:
