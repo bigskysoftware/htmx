@@ -1077,9 +1077,9 @@ var htmx = (() => {
 
         __createOOBTask(tasks, elt, oobValue, sourceElement) {
             let targetSelector = elt.id ? '#' + CSS.escape(elt.id) : null;
-            if (oobValue !== 'true' && oobValue && !oobValue.includes(' ')) {
-                [oobValue, targetSelector = targetSelector] = oobValue.split(/:(.*)/);
-            }
+            // if oobValue is in "swapStyle:selector" form (no space before colon), split it; otherwise treat as HCON
+            let [, style, sel] = oobValue.match(/^(\S+):(.+)/) ?? [];
+            if (style) [oobValue, targetSelector] = [style, sel || targetSelector];
             if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
 
             let swapSpec = this.__parseSwapSpec(oobValue);
@@ -2192,7 +2192,7 @@ var htmx = (() => {
                     if (!this.__triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: attr.value })) continue;
                     destination.setAttribute(attr.name, attr.value);
                     if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file" && document.activeElement !== destination) {
-                        destination.value = attr.value;
+                            destination.value = attr.value;
                     }
                 }
             }
