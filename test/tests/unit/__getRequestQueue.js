@@ -41,15 +41,17 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
         let started = []
+        let abort1 = () => {}
+        let abort2 = () => {}
 
-        queue.admit('queue last', () => started.push(1), noop)
-        queue.admit('queue last', () => started.push(2), noop)
+        queue.admit('queue last', () => started.push(1), abort1)
+        queue.admit('queue last', () => started.push(2), abort2)
         let result = queue.admit('queue last', () => started.push(3), noop)
 
         assert.equal(result, 'queued')
 
-        queue.continue()
-        queue.continue()
+        queue.continue(abort1)
+        queue.continue(abort2)
 
         assert.deepEqual(started, [3])
     })
@@ -70,16 +72,18 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
         let started = []
+        let abort1 = () => {}
+        let abort2 = () => {}
 
-        queue.admit('queue first', () => started.push(1), noop)
-        let second = queue.admit('queue first', () => started.push(2), noop)
+        queue.admit('queue first', () => started.push(1), abort1)
+        let second = queue.admit('queue first', () => started.push(2), abort2)
         let third = queue.admit('queue first', () => started.push(3), noop)
 
         assert.equal(second, 'queued')
         assert.equal(third, 'dropped')
 
-        queue.continue()
-        queue.continue()
+        queue.continue(abort1)
+        queue.continue(abort2)
 
         assert.deepEqual(started, [2])
     })
@@ -88,12 +92,13 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
         let started = []
+        let abort1 = () => {}
 
-        queue.admit('queue all', () => started.push(1), noop)
+        queue.admit('queue all', () => started.push(1), abort1)
         queue.admit('queue all', () => started.push(2), noop)
         queue.admit('queue all', () => started.push(3), noop)
 
-        queue.continue()
+        queue.continue(abort1)
 
         assert.deepEqual(started, [2])
     })
@@ -102,17 +107,44 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
 
-        queue.continue()
+        queue.continue(noop)
+    })
+
+    it('continue ignores stale calls from replaced requests', function () {
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let queue = htmx.__getRequestQueue(div)
+        let abort1 = () => {}
+        let abort2 = () => {}
+
+        queue.admit('replace', noop, abort1)
+        queue.admit('replace', noop, abort2) // replaces abort1
+
+        queue.continue(abort1) // stale — should be ignored
+
+        assert.equal(queue.admit('drop', noop, noop), 'dropped') // slot still occupied
     })
 
     it('continue clears the current request', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
+        let abort1 = () => {}
 
-        queue.admit('queue first', noop, noop)
-        queue.continue()
+        queue.admit('queue first', noop, abort1)
+        queue.continue(abort1)
 
         assert.equal(queue.admit('queue first', noop, noop), 'run')
+    })
+
+    it('abort clears the slot and advances the queue', function () {
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let queue = htmx.__getRequestQueue(div)
+        let nextStarted = false
+
+        queue.admit('queue first', noop, noop)
+        queue.admit('queue first', () => { nextStarted = true }, noop)
+        queue.abort()
+
+        assert.isTrue(nextStarted)
     })
 
     it('abort calls abort on the current request', function () {
@@ -341,22 +373,45 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         assert.equal(htmx.__getRequestQueue(a), htmx.__getRequestQueue(b))
     })
 
+    for (let strategy of ['replace', 'abort']) {
+        it(`ignores cleanup of a replaced ${strategy} request`, async function () {
+            let div = createProcessedHTML('<div hx-get="/test"></div>')
+            let queue = htmx.__getRequestQueue(div)
+            let cleanup
+            let abortFirst = () => { cleanup = Promise.resolve().then(() => queue.continue(abortFirst)) }
+            let secondAborted = false
+            let abortSecond = () => { secondAborted = true }
+            let queuedStarted = false
+
+            assert.equal(queue.admit(strategy, noop, abortFirst), 'run')
+            assert.equal(queue.admit('replace', noop, abortSecond), 'run')
+            assert.equal(queue.admit('queue all', () => { queuedStarted = true }, noop), 'queued')
+            await cleanup
+
+            assert.isFalse(queuedStarted)
+            assert.equal(queue.admit('drop', noop, noop), 'dropped')
+            assert.equal(queue.admit('replace', noop, noop), 'run')
+            assert.isTrue(secondAborted)
+        })
+    }
+
     it('replace strategy clears queued requests when aborting current', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
         let aborted = false
         let started = []
+        let abortReplace = () => {}
 
         queue.admit('drop', noop, () => { aborted = true })
         queue.admit('queue all', () => started.push(2), noop)
         queue.admit('queue all', () => started.push(3), noop)
 
-        let result = queue.admit('replace', noop, noop)
+        let result = queue.admit('replace', noop, abortReplace)
 
         assert.equal(result, 'run')
         assert.isTrue(aborted)
 
-        queue.continue()
+        queue.continue(abortReplace)
 
         assert.deepEqual(started, [])
     })

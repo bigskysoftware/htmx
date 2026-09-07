@@ -116,13 +116,15 @@ var htmx = (() => {
             return "queued"
         }
 
-        continue() {
+        continue(abortFn) {
+            if (this.#current?.abort !== abortFn) return
             this.#current = null    // free current slot
             this.#queue.shift()?.() // run next request
         }
 
         abort() {
             this.#current?.abort?.()
+            this.continue(this.#current?.abort)
         }
     }
 
@@ -545,10 +547,12 @@ var htmx = (() => {
             let requestQueue = this.__getRequestQueue(elt);
             this.__initializeAbortListener(elt);
 
+            let abortFn = () => ctx.request?.abort?.()
+
             if (requestQueue.admit(
                 syncStrategy,
                 () => this.__issueRequest(ctx), // run when ready
-                () => ctx.request?.abort?.()    // abort if replaced
+                abortFn                         // abort if replaced
             ) !== "run") return
 
             ctx.status = "issuing"
@@ -626,7 +630,7 @@ var htmx = (() => {
                     this.__enableElements(disableElements);
                 }
 
-                requestQueue.continue()
+                requestQueue.continue(abortFn)
             }
         }
 
