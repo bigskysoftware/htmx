@@ -71,7 +71,7 @@ One thing to note: the `hx-trigger` here is redundant.  If it was omitted htmx w
 which, in the case of buttons, is a click.
 
 One important thing to understand is that htmx expects _HTML_ from the server.  In this case the server would
-return a _partial_ bit of HTML, say a `<div>`, to replace the button.  What htmx does _not_ expect is JSON.
+return a _partial_ bit of HTML, say a `<div>`, to replace the target element (```<output id="output">```).  What htmx does _not_ expect is JSON.
 
 Because htmx works in terms of HTML it follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS) (HATEOAS).
 
