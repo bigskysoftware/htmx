@@ -803,7 +803,7 @@ into the DOM:
 Some server-side template languages remove tags they do not know. For these, use the equivalent `<template>` form:
 
 ```html
-<template hx type="partial" hx-target="#messages" hx-swap="beforeend">
+<template hx-type="partial" hx-target="#messages" hx-swap="beforeend">
     <div class="message">New message content</div>
 </template>
 ```
@@ -1063,7 +1063,7 @@ which, in our opinion, is a very bad default for swapping, so you will want to o
 with htmx.
 ## Link & Form Boosting
 
-In htmx you can "boos" regular HTML anchors and forms using the [`hx-boost`](/reference/attributes/hx-boost) attribute. 
+In htmx you can "boost" regular HTML anchors and forms using the [`hx-boost`](/reference/attributes/hx-boost) attribute. 
 
 This attribute will convert anchor tags and forms into `fecth()`-based requests that, by default, target the body of 
 the page.
@@ -1099,7 +1099,7 @@ This has reduced the advantages of boosting.  There is still a performance benef
 only way to use CSS transitions & element preservation on navigation, however.
 
 A disadvantage that people sometimes run into (which is one of the reasons it is faster) is that boosted elements
-to not reset the JavaScript environment.  With normal navigation, the browser completely resets the JavaScript environment.
+do not reset the JavaScript environment.  With normal navigation, the browser completely resets the JavaScript environment.
 
 When boosting you have to be careful to not redefine things on accident, which can lead to JavaScript errors.
 
