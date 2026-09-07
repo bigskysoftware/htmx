@@ -908,7 +908,7 @@ var htmx = (function() {
    *
    * @see https://htmx.org/api/#find
    *
-   * @param {ParentNode|string} eltOrSelector  the root element to find the matching element in, inclusive | the selector to match
+   * @param {ParentNode|string} eltOrSelector  the root element to search inside of, not including the root itself | the selector to match
    * @param {string} [selector] the selector to match
    * @returns {Element|null}
    */
@@ -925,7 +925,7 @@ var htmx = (function() {
    *
    * @see https://htmx.org/api/#findAll
    *
-   * @param {ParentNode|string} eltOrSelector the root element to find the matching elements in, inclusive | the selector to match
+   * @param {ParentNode|string} eltOrSelector  the root element to search inside of, not including the root itself | the selector to match
    * @param {string} [selector] the selector to match
    * @returns {NodeListOf<Element>}
    */
