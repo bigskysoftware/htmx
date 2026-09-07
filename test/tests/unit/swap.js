@@ -879,6 +879,30 @@ describe('swap() unit tests', function() {
         assert.isTrue(true);
     })
 
+    it('does not emit unhandledrejection when view transition ready rejects', async function() {
+        let unhandled = 0;
+        let onUnhandled = () => { unhandled++; };
+        window.addEventListener('unhandledrejection', onUnhandled);
+        const originalStartViewTransition = document.startViewTransition;
+        document.startViewTransition = (cb) => {
+            let finished = Promise.resolve().then(() => cb());
+            let ready = Promise.reject(new DOMException('Skipped ViewTransition due to document being hidden', 'InvalidStateError'));
+            return { ready, finished, skipped: Promise.resolve(), updateCallbackDone: finished };
+        };
+        try {
+            await htmx.swap({
+                target: "#test-playground",
+                text: "<div id='d1'>Content</div>",
+                swap: "innerHTML transition:true"
+            });
+            await htmx.timeout(50);
+            assert.equal(unhandled, 0);
+        } finally {
+            window.removeEventListener('unhandledrejection', onUnhandled);
+            document.startViewTransition = originalStartViewTransition;
+        }
+    })
+
     // Gap #12: Extension content transformation result
     it('uses array result from extension handle_swap', async function() {
         mockResponse('GET', '/test', '<div>Content</div>');
