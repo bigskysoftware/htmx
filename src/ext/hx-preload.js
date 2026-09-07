@@ -42,6 +42,8 @@
             });
             if (valsResult) await valsResult;
 
+            ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
+
             let action = ctx.request.action.replace?.(/#.*$/, '');
 
             let params = new URLSearchParams(body);
