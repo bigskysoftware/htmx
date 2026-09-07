@@ -73,8 +73,14 @@
     function parseFilename(headers, url) {
         let cd = headers.get('Content-Disposition');
         if (cd) {
-            let match = cd.match(/filename\*?=['"]?(?:UTF-8'')?([^'";]+)/i);
-            if (match) return decodeURIComponent(match[1]);
+            // RFC 6266 / 5987: filename*=UTF-8''... takes precedence over filename=
+            let star = cd.match(/filename\*\s*=\s*(?:UTF-8'')?([^;]+)/i);
+            if (star) {
+                let raw = star[1].trim().replace(/^["']|["']$/g, '');
+                try { return decodeURIComponent(raw); } catch { /* fall through */ }
+            }
+            let ascii = cd.match(/filename\s*=\s*(?:UTF-8'')?(?:"([^"]+)"|([^;]+))/i);
+            if (ascii) return (ascii[1] || ascii[2]).trim();
         }
         return url.split('/').pop().split('?')[0] || 'download';
     }
