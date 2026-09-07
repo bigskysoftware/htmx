@@ -1,6 +1,7 @@
 ---
 title: "HCON"
 description: "htmx Configuration Object Notation, the mini config language for structured HTML attributes."
+keywords: ["HCON", "htmx configuration object notation", "config language", "hx-trigger modifiers", "hx-swap modifiers", "delay", "throttle", "from", "dot notation", "JSON fallback"]
 ---
 
 HCON (htmx Configuration Object Notation) is htmx's mini config language for structured HTML attributes.

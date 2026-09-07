@@ -158,7 +158,9 @@ Fires, then ignores further events for the given interval.
 
 ### `from:<selector>`
 
-Listens on a different element. Takes a CSS selector or an [extended selector](/docs#targeting-with-extended-selectors). Two special values: `self` (only the element itself, not children) and `outside` (anything outside the element).
+Listens on a different element instead of the element itself. Takes a CSS selector or an [extended selector](/docs#targeting-with-extended-selectors).
+
+Two special values: `self` (only the element itself, not bubbled children) and `outside` (anything outside the element).
 
 ```html
 <div hx-trigger="keyup[key=='Enter'] from:body" hx-get="...">...</div>
@@ -178,10 +180,10 @@ Wrap [`from`](#fromselector) or [`target`](#targetselector) selectors that conta
 
 ### `target:<selector>`
 
-Only fires if `event.target` matches the given CSS selector.
+Only fires if `event.target` matches the given CSS selector. Takes a plain CSS selector only, not an extended selector.
 
 ```html
-<div hx-trigger="click target:.child-button" hx-get="...">...</div>
+<div hx-trigger="click target:'.child-button, .other-button'" hx-get="...">...</div>
 ```
 
 ### `prevent`
