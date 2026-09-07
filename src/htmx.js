@@ -790,8 +790,7 @@ var htmx = (() => {
                         let values = spec.values ??= new WeakMap();
                         let target = evt.target;
                         let value = target?.value;
-                        if (!values.has(target)) values.set(target, target?.value);
-                        if (values.get(target) === value) return;
+                        if (values.has(target) && values.get(target) === value) return;
                         values.set(target, value);
                     }
                     if (filter) {

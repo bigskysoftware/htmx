@@ -109,51 +109,66 @@ describe('hx-trigger attribute', function() {
 
     it('changed modifier suppresses request when input value is unchanged', async function () {
         mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
         let input = createProcessedHTML('<input hx-get="/test" hx-trigger="keydown changed" value="hello">')
-        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
-        fetchMock.calls.length.should.equal(0)
-        input.value = 'world'
+        // first fire records value and fires
         input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
         await forRequest()
         fetchMock.calls.length.should.equal(1)
+        // same value — suppressed
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+        // changed value — fires
+        input.value = 'world'
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
     })
 
     it('changed modifier fires on form keydown when child input value changes', async function () {
         mockResponse('GET', '/test', 'Changed!')
-        let form = createProcessedHTML('<form hx-get="/test" hx-trigger="keydown changed"><input id="i" value="hello"></form>')
+        mockResponse('GET', '/test', 'Changed!')
+        let form = createProcessedHTML('<form hx-get="/test" hx-swap="none" hx-trigger="keydown changed"><input id="i" value="hello"></form>')
         let input = find('#i')
-        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
-        fetchMock.calls.length.should.equal(0)
-        input.value = 'world'
+        // first fire records value and fires
         input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
         await forRequest()
         fetchMock.calls.length.should.equal(1)
+        // same value — suppressed
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+        // changed value — fires
+        input.value = 'world'
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
     })
 
     it('changed modifier tracks each input independently', async function () {
         mockResponse('GET', '/test', 'Changed!')
         mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
         let form = createProcessedHTML('<form hx-get="/test" hx-swap="none" hx-trigger="keydown changed"><input id="i1" value="a"><input id="i2" value="b"></form>')
         let i1 = find('#i1'), i2 = find('#i2')
-        // fire from i1 unchanged — no request
+        // first fire from i1 records value and fires
         i1.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
-        fetchMock.calls.length.should.equal(0)
-        // change i1, fire — request fires
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // fire from i1 unchanged — suppressed
+        i1.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+        // change i1, fire — fires
         i1.value = 'x'
         i1.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
         await forRequest()
-        fetchMock.calls.length.should.equal(1)
-        // fire from i1 again unchanged — no new request
-        i1.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
-        fetchMock.calls.length.should.equal(1)
-        // fire from i2 unchanged — no request (i2 not yet seen)
-        i2.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
-        fetchMock.calls.length.should.equal(1)
-        // change i2, fire — request fires
-        i2.value = 'y'
+        fetchMock.calls.length.should.equal(2)
+        // first fire from i2 records value and fires
         i2.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
         await forRequest()
-        fetchMock.calls.length.should.equal(2)
+        fetchMock.calls.length.should.equal(3)
+        // fire from i2 unchanged — suppressed
+        i2.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(3)
     })
 
     it('load event triggers on element creation', async function () {
