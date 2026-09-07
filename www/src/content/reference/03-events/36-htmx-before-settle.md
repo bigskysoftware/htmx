@@ -12,14 +12,14 @@ After the swap completes, right before htmx runs the settle phase (which applies
 ## Event Detail
 
 - `task` - The swap task being settled
-- `newContent` - Array of newly inserted elements
+- `newContent` - Array of newly inserted nodes, which can include text nodes
 - `settleTasks` - Array of pending settle callbacks (e.g. CSS transition steps)
 
 ## Example
 
 ```javascript
 htmx.on('htmx:before:settle', (evt) => {
-  console.log('About to settle', evt.detail.newContent.length, 'element(s)');
+  console.log('About to settle', evt.detail.newContent.length, 'node(s)');
   // Modify elements before transitions run
 });
 ```
