@@ -340,7 +340,8 @@ htmx provides a few special events for use in [`hx-trigger`](/reference/attribut
     * `root:<selector>` - a CSS selector of the root element for intersection
     * `rootMargin:<margin>` - a margin around the root element
     * `threshold:<float>` - a floating point number between 0.0 and 1.0, indicating what amount of intersection to fire
-      the event on
+      the event on. Default is 0.0, meaning that the event fires as soon as the element touches the root (even if no
+      pixels are visible). A value of 1.0 means that the event doesn't fire until the element is fully visible. 
 
 You can also use custom events to trigger requests. Dispatch them with [`htmx.trigger()`](/reference/methods/htmx-trigger)
 or from the server with the [`HX-Trigger`](/reference/headers/HX-Trigger) response header.
