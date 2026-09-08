@@ -871,6 +871,60 @@ describe('hx-trigger attribute', function() {
     }, 50)
   })
 
+  it('two delays on the same node are independent', function(done) {
+    var requests = 0
+    var server = this.server
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    this.server.respondWith('GET', '/bar', 'bar')
+    var button = make('<button></button>')
+    var div = make("<div hx-trigger='click delay:10ms,click delay:50ms from:button' hx-get='/test'></div>")
+
+    div.click()
+    button.click()
+    this.server.respond()
+    div.innerText.should.equal('')
+
+    setTimeout(function() {
+      server.respond()
+      div.innerText.should.equal('Requests: 1')
+
+      setTimeout(function() {
+        server.respond()
+        div.innerText.should.equal('Requests: 2')
+
+        done()
+      }, 50)
+    }, 20)
+  })
+
+  it('delay for multiple nodes are shared', function(done) {
+    var requests = 0
+    var server = this.server
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+    this.server.respondWith('GET', '/bar', 'bar')
+    var button1 = make('<button></button>')
+    var button2 = make('<button></button>')
+    var div = make("<div hx-trigger='click delay:10ms from:button' hx-get='/test'></div>")
+
+    button1.click()
+    button2.click()
+    this.server.respond()
+    div.innerText.should.equal('')
+
+    setTimeout(function() {
+      server.respond()
+      div.innerText.should.equal('Requests: 1')
+
+      done()
+    }, 20)
+  })
+
   it('A 0 delay does not delay the request', function(done) {
     var requests = 0
     this.server.respondWith('GET', '/test', function(xhr) {
