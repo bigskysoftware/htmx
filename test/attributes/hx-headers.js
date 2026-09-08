@@ -147,4 +147,48 @@ describe('hx-headers attribute', function() {
     this.server.respond()
     div.innerHTML.should.equal('Clicked!')
   })
+
+  it('using js: with hx-headers has event available', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var headers = xhr.requestHeaders
+      headers.i1.should.equal('test')
+      xhr.respond(200, {}, 'Clicked!')
+    })
+
+    var div = make('<div id="test" hx-post="/vars" hx-headers="js:i1:event.target.id"></div>')
+    div.click()
+    this.server.respond()
+    div.innerHTML.should.equal('Clicked!')
+  })
+
+  it('using js: with hx-headers has event available on load event', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var headers = xhr.requestHeaders
+      headers.i1.should.equal('load')
+      xhr.respond(200, {}, 'Loaded!')
+    })
+
+    var div = make('<div id="test" hx-post="/vars" hx-headers="js:i1:event.type" hx-trigger="load"></div>')
+    this.server.respond()
+    div.innerHTML.should.equal('Loaded!')
+  })
+
+  it('using js: with hx-headers has event available on load event after swapping', function() {
+    this.server.respondWith('POST', '/vars', function(xhr) {
+      var headers = xhr.requestHeaders
+      headers.i1.should.equal('load')
+      xhr.respond(200, {}, '<div id="test2" hx-post="/vars2" hx-headers="js:i2:event.type" hx-trigger="load"></div>')
+    })
+    var div = make('<div id="test" hx-post="/vars" hx-headers="js:i1:event.type" hx-trigger="load" hx-swap="afterend"></div>')
+    this.server.respond()
+    
+    this.server.respondWith('POST', '/vars2', function(xhr) {
+      var headers = xhr.requestHeaders
+      headers.i2.should.equal('load')
+      xhr.respond(200, {}, 'Nice!')
+    })
+    this.server.respond()
+    var test2 = byId('test2')
+    test2.innerHTML.should.equal("Nice!")
+  })
 })
