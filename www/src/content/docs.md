@@ -1207,7 +1207,7 @@ A user could copy and paste the URL into an email, or new tab.
 
 ### Replacing The Current URL
 
-If you want to chante the URL without updating history use the [`hx-replace-url`](/reference/attributes/hx-replace-url) 
+If you want to change the URL without updating history use the [`hx-replace-url`](/reference/attributes/hx-replace-url) 
 attribute instead:
 
 ```html
