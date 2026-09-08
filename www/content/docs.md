@@ -25,6 +25,7 @@ custom_classes = "wide-content"
   * [synchronization](#synchronization)
   * [css transitions](#css_transitions)
   * [out of band swaps](#oob_swaps)
+  * [server-sent swap commands](#partial_swaps)
   * [parameters](#parameters)
   * [confirming](#confirming)
 * [inheritance](#inheritance)
@@ -621,6 +622,27 @@ To avoid this issue you can use a `template` tag to encapsulate these elements:
   <tr id="message" hx-swap-oob="true"><td>Joe</td><td>Smith</td></tr>
 </template>
 ```
+
+#### Server-Sent Partial Swap Commands {#partial_swaps}
+
+For more complex responses that need to update multiple parts of the page, htmx supports
+[`<hx-partial>`](@/attributes/hx-partial.md) — a server-sent swap command format. The server
+wraps content in `<hx-partial hx-target="...">` tags; htmx reads the targeting instructions,
+performs the swaps, and discards the envelope entirely. Nothing from the tag itself ever
+appears in the page.
+
+```html
+<div>Updated main content</div>
+
+<hx-partial hx-target="#cart-count">3</hx-partial>
+<hx-partial hx-target="#cart-total">$29.97</hx-partial>
+```
+
+Like `hx-swap-oob`, partials execute **before** the main swap and targets are resolved
+relative to the triggering element using the full [extended CSS selector](#extended-css-selectors)
+vocabulary (`closest`, `find`, `next`, `previous`, etc.).
+
+See the [`hx-partial` documentation](@/attributes/hx-partial.md) for full details.
 
 #### Selecting Content To Swap
 
