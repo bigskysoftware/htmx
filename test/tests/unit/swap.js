@@ -250,6 +250,26 @@ describe('swap() unit tests', function() {
         replaced.getAttribute('data-value').should.equal('2');
     })
 
+    it('CSS transitions do not reset radio checked state', async function () {
+        createProcessedHTML(`
+            <div id="target">
+                <input type="radio" id="r1" name="status" value="a" checked>
+                <input type="radio" id="r2" name="status" value="b">
+            </div>
+        `)
+        find('#r2').checked = true;
+        await htmx.swap({
+            target: '#target',
+            text: `
+                <input type="radio" id="r1" name="status" value="a">
+                <input type="radio" id="r2" name="status" value="b" checked>
+            `
+        })
+        await htmx.timeout(10);
+        find('#r2').checked.should.be.true;
+        find('#r1').checked.should.be.false;
+    })
+
     it('triggers CSS transitions during swap', async function () {
         this.skip(); //fails on firefox for some reason
         createProcessedHTML("<style>#d1 { transition: opacity 100ms; }</style><div id='d1' style='opacity: 1;'>Old</div>")
