@@ -905,7 +905,7 @@ describe('hx-multipart extension', function() {
     it('handles the next parallel part while an earlier part settles', async function() {
         let button = createProcessedHTML([
             '<button hx-get="/parallel">Go</button>',
-            '<div id="one"><span id="state" data-phase="old">one</span></div>',
+            '<div id="one"><span id="state" class="old">one</span></div>',
             '<div id="two">two</div>'
         ].join(''));
         fetchMock.mockResponse('GET', '/parallel', new Response([
@@ -914,7 +914,7 @@ describe('hx-multipart extension', function() {
             'HX-Target: #one\r\n',
             'HX-Swap: innerHTML settle:100ms\r\n',
             '\r\n',
-            '<span id="state" data-phase="new">First</span>',
+            '<span id="state" class="new">First</span>',
             '\r\n--updates\r\n',
             'Content-Type: text/html\r\n',
             'HX-Target: #two\r\n',
@@ -930,8 +930,8 @@ describe('hx-multipart extension', function() {
 
         assert.isTrue(await waitUntil(() => htmx.find('#two').textContent === 'Second', 500));
         assertTextContentIs('#state', 'First');
-        assert.equal(find('#state').getAttribute('data-phase'), 'old');
+        assert.isTrue(find('#state').classList.contains('old'));
         assert.isNotNull(await done, 'parallel request did not finish');
-        assert.equal(find('#state').getAttribute('data-phase'), 'new');
+        assert.isTrue(find('#state').classList.contains('new'));
     });
 });
