@@ -789,9 +789,11 @@ var htmx = (() => {
                     if (spec.changed) {
                         let values = spec.values ??= new WeakMap();
                         let target = evt.target;
-                        let value = target?.value;
-                        if (values.has(target) && values.get(target) === value) return;
-                        values.set(target, value);
+                        if (!['checkbox', 'radio'].includes(target?.type)) {
+                            let value = target?.value;
+                            if (values.has(target) && values.get(target) === value) return;
+                            values.set(target, value);
+                        }
                     }
                     if (filter) {
                         if (this.__shouldCancel(evt)) evt.preventDefault();

@@ -171,6 +171,34 @@ describe('hx-trigger attribute', function() {
         fetchMock.calls.length.should.equal(3)
     })
 
+    it('changed modifier on checkbox fires on each click', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let input = createProcessedHTML('<input type="checkbox" hx-get="/test" hx-trigger="click changed">')
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(3)
+    })
+
+    it('changed modifier on radio fires on each click', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let input = createProcessedHTML('<input type="radio" hx-get="/test" hx-trigger="click changed">')
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+    })
+
     it('load event triggers on element creation', async function () {
         debug(this)
         mockResponse('GET', '/test', 'Loaded!')
