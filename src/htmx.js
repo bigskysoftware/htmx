@@ -1330,7 +1330,7 @@ var htmx = (() => {
                     target: this.__resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
                     swapSpec,
                     sourceElement: ctx.sourceElement,
-                    transition: ctx.transition && swapSpec.transition !== false
+                    transition: swapSpec.transition ?? ctx.transition
                 };
                 return mainSwap;
             }
