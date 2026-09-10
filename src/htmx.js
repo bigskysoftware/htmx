@@ -797,8 +797,8 @@ var htmx = (() => {
                         }
                         if (!changed) return;
                     }
+                    if (this.__shouldCancel(evt)) evt.preventDefault();
                     if (filter) {
-                        if (this.__shouldCancel(evt)) evt.preventDefault();
                         let evtArgs = {}; for (let k in evt) evtArgs[k] = evt[k];
                         if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)) return;
                     }

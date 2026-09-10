@@ -193,6 +193,23 @@ describe('Cancel behavior integration tests', function() {
         playground().innerText.should.equal('Submitted');
     });
 
+    it('delayed form submit prevents default submission immediately', async function() {
+        let defaultPrevented = null;
+        mockResponse('GET', '/test', 'Submitted')
+        const form = createProcessedHTML('<form action="/native" hx-get="/test" hx-trigger="submit delay:20ms"><button id="btn">Submit</button></form>');
+
+        form.addEventListener('submit', (evt) => {
+            defaultPrevented = evt.defaultPrevented;
+            evt.preventDefault();
+        });
+
+        find('#btn').click()
+        defaultPrevented.should.equal(true);
+        fetchMock.calls.length.should.equal(0);
+        await forRequest();
+        fetchMock.calls.length.should.equal(1);
+    });
+
     it('does not submit with false condition on form', async function() {
         let defaultPrevented = null;
         mockResponse('POST', '/test', 'Submitted')
