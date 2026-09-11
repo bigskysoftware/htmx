@@ -783,6 +783,7 @@ var htmx = (() => {
 
                 // Guarded: pre-timing checks that determine if event should proceed
                 spec.handler = (evt) => {
+                    if (this.__shouldCancel(evt)) evt.preventDefault();
                     if (spec.from === 'self' && evt.target !== elt) return;
                     if (spec.from === 'outside' && elt.contains(evt.target)) return;
                     if (spec.target && !evt.target?.matches?.(spec.target)) return;
@@ -798,7 +799,6 @@ var htmx = (() => {
                         if (!changed) return;
                     }
                     if (filter) {
-                        if (this.__shouldCancel(evt)) evt.preventDefault();
                         let evtArgs = {}; for (let k in evt) evtArgs[k] = evt[k];
                         if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)) return;
                     }

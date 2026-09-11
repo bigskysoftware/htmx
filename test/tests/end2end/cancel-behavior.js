@@ -128,6 +128,34 @@ describe('Cancel behavior integration tests', function() {
         defaultPrevented.should.equal(false);
     });
 
+    it('from:self trigger outside scope still prevents default navigation', function() {
+        let defaultPrevented = null;
+        const link = createProcessedHTML('<a href="/native" hx-get="/test" hx-trigger="click from:self"><span id="child">Click me</span></a>');
+
+        link.addEventListener('click', (evt) => {
+            defaultPrevented = evt.defaultPrevented;
+            evt.preventDefault();
+        });
+
+        find('#child').click();
+        defaultPrevented.should.equal(true);
+        fetchMock.calls.length.should.equal(0);
+    });
+
+    it('target trigger outside scope still prevents default navigation', function() {
+        let defaultPrevented = null;
+        const link = createProcessedHTML('<a href="/native" hx-get="/test" hx-trigger="click target:.match"><span id="child">Click me</span></a>');
+
+        link.addEventListener('click', (evt) => {
+            defaultPrevented = evt.defaultPrevented;
+            evt.preventDefault();
+        });
+
+        find('#child').click();
+        defaultPrevented.should.equal(true);
+        fetchMock.calls.length.should.equal(0);
+    });
+
     it('anchor with fragment identifier (#foo) does not prevent default', async function() {
         let defaultPrevented = null;
         createProcessedHTML('<a id="test-link" href="#section" hx-get="/test">Jump to section</a>');
@@ -191,6 +219,23 @@ describe('Cancel behavior integration tests', function() {
         await forRequest();
         defaultPrevented.should.equal(true);
         playground().innerText.should.equal('Submitted');
+    });
+
+    it('delayed form submit prevents default submission immediately', async function() {
+        let defaultPrevented = null;
+        mockResponse('GET', '/test', 'Submitted')
+        const form = createProcessedHTML('<form action="/native" hx-get="/test" hx-trigger="submit delay:20ms"><button id="btn">Submit</button></form>');
+
+        form.addEventListener('submit', (evt) => {
+            defaultPrevented = evt.defaultPrevented;
+            evt.preventDefault();
+        });
+
+        find('#btn').click()
+        defaultPrevented.should.equal(true);
+        fetchMock.calls.length.should.equal(0);
+        await forRequest();
+        fetchMock.calls.length.should.equal(1);
     });
 
     it('does not submit with false condition on form', async function() {
