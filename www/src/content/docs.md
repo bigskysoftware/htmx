@@ -334,7 +334,8 @@ htmx provides a few special events for use in [`hx-trigger`](/reference/attribut
     * `root:<selector>` - a CSS selector of the root element for intersection
     * `rootMargin:<margin>` - a margin around the root element
     * `threshold:<float>` - a floating point number between 0.0 and 1.0, indicating what amount of intersection to fire
-      the event on
+      the event on. Default is 0.0, meaning that the event fires as soon as the element touches the root (even if no
+      pixels are visible). A value of 1.0 means that the event doesn't fire until the element is fully visible. 
 
 You can also use custom events to trigger requests. Dispatch them with [`htmx.trigger()`](/reference/methods/htmx-trigger)
 or from the server with the [`HX-Trigger`](/reference/headers/HX-Trigger) response header.
@@ -803,7 +804,7 @@ into the DOM:
 Some server-side template languages remove tags they do not know. For these, use the equivalent `<template>` form:
 
 ```html
-<template hx type="partial" hx-target="#messages" hx-swap="beforeend">
+<template hx-type="partial" hx-target="#messages" hx-swap="beforeend">
     <div class="message">New message content</div>
 </template>
 ```
@@ -1063,7 +1064,7 @@ which, in our opinion, is a very bad default for swapping, so you will want to o
 with htmx.
 ## Link & Form Boosting
 
-In htmx you can "boos" regular HTML anchors and forms using the [`hx-boost`](/reference/attributes/hx-boost) attribute. 
+In htmx you can "boost" regular HTML anchors and forms using the [`hx-boost`](/reference/attributes/hx-boost) attribute. 
 
 This attribute will convert anchor tags and forms into `fecth()`-based requests that, by default, target the body of 
 the page.
@@ -1099,7 +1100,7 @@ This has reduced the advantages of boosting.  There is still a performance benef
 only way to use CSS transitions & element preservation on navigation, however.
 
 A disadvantage that people sometimes run into (which is one of the reasons it is faster) is that boosted elements
-to not reset the JavaScript environment.  With normal navigation, the browser completely resets the JavaScript environment.
+do not reset the JavaScript environment.  With normal navigation, the browser completely resets the JavaScript environment.
 
 When boosting you have to be careful to not redefine things on accident, which can lead to JavaScript errors.
 
@@ -1200,7 +1201,7 @@ A user could copy and paste the URL into an email, or new tab.
 
 ### Replacing The Current URL
 
-If you want to chante the URL without updating history use the [`hx-replace-url`](/reference/attributes/hx-replace-url) 
+If you want to change the URL without updating history use the [`hx-replace-url`](/reference/attributes/hx-replace-url) 
 attribute instead:
 
 ```html
