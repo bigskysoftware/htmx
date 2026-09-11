@@ -47,6 +47,8 @@ If the server returns `Content-Disposition: attachment`, the extension triggers 
 Content-Disposition: attachment; filename="report.pdf"
 ```
 
+If both `filename=` and `filename*` are present, the RFC 5987 `filename*` value is used (so a UTF-8 name is not overwritten by the ASCII fallback).
+
 ### HX-Download header
 
 When the backend cannot stream the file directly as the htmx response (e.g. it needs to redirect to a separate download endpoint), return an `HX-Download` header pointing to the file URL. The extension will fetch that URL as the download while htmx processes the original response body as a normal swap:

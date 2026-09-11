@@ -60,4 +60,50 @@ describe('hx-download extension', function() {
         assert.equal(filename, 'report.txt')
         assert.equal(button.innerText, 'Download')
     })
+
+    it('prefers RFC 5987 filename* over ASCII filename=', async function() {
+        let filename
+        URL.createObjectURL = () => 'blob:test'
+        URL.revokeObjectURL = () => {}
+        HTMLAnchorElement.prototype.click = function() {
+            filename = this.download
+        }
+
+        fetchMock.mockResponse('GET', '/report.xlsx', new Response('xlsx', {
+            headers: {
+                'Content-Disposition': 'attachment; filename="R_conciliation Inv priv_s.xlsx"; filename*=UTF-8\'\'R%C3%A9conciliation%20Inv%20priv%C3%A9s.xlsx',
+                'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            }
+        }))
+        let button = createProcessedHTML('<button hx-get="/report.xlsx" hx-swap="download">Download</button>')
+        let complete = waitForEvent('htmx:download:complete')
+
+        button.click()
+        await complete
+
+        assert.equal(filename, 'Réconciliation Inv privés.xlsx')
+    })
+
+    it('uses filename* when it is the only parameter', async function() {
+        let filename
+        URL.createObjectURL = () => 'blob:test'
+        URL.revokeObjectURL = () => {}
+        HTMLAnchorElement.prototype.click = function() {
+            filename = this.download
+        }
+
+        fetchMock.mockResponse('GET', '/cafe.txt', new Response('cafe', {
+            headers: {
+                'Content-Disposition': "attachment; filename*=UTF-8''caf%C3%A9.txt",
+                'Content-Type': 'text/plain'
+            }
+        }))
+        let button = createProcessedHTML('<button hx-get="/cafe.txt" hx-swap="download">Download</button>')
+        let complete = waitForEvent('htmx:download:complete')
+
+        button.click()
+        await complete
+
+        assert.equal(filename, 'café.txt')
+    })
 })
