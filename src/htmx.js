@@ -1231,7 +1231,6 @@ var htmx = (() => {
         initialize() {
             if (this.config.history && !this.#historyInitialized) {
                 this.#historyInitialized = true;
-                if (!history.state) history.replaceState({htmx: true}, '', location.href);
                 if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
                     navigation.addEventListener('navigate', (event) => {
                         if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
@@ -1614,8 +1613,7 @@ var htmx = (() => {
 
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
-            if (!history.state) history.replaceState({htmx: true}, '', location.href);
-            history.pushState({htmx: true}, '', path);
+             history.pushState({htmx: true}, '', path);
             this.__trigger(document, "htmx:after:history:push", {path});
         }
 
@@ -1684,6 +1682,9 @@ var htmx = (() => {
 
         __handleHistoryUpdate(ctx) {
             if (!this.config.history) return;
+            // Stamp the current entry on the first htmx swap after a fresh page load,
+            // so back traversals to this page are interceptable.
+            if (!history.state?.htmx) history.replaceState({htmx: true}, '', location.href);
             let action = this.__resolveHistoryAction(ctx);
             if (!action) return;
 
