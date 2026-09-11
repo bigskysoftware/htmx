@@ -256,13 +256,8 @@ describe('ajax() unit Tests', function() {
         let beforeRequestFired = false;
         let afterRequestFired = false;
         
-        div.addEventListener('htmx:before:request', () => {
-            beforeRequestFired = true;
-        });
-        
-        div.addEventListener('htmx:after:request', () => {
-            afterRequestFired = true;
-        });
+        document.addEventListener('htmx:before:request', () => { beforeRequestFired = true; }, {once: true});
+        document.addEventListener('htmx:after:request', () => { afterRequestFired = true; }, {once: true});
         
         await htmx.ajax('GET', '/test', {target: div, swap: 'innerHTML'});
         
@@ -350,6 +345,31 @@ describe('ajax() unit Tests', function() {
         await htmx.timeout(50);
         assert.isTrue(capturedAction.startsWith('https://other-domain.com/api'));
         assert.include(capturedAction, 'foo=bar');
+    });
+
+    it('ajax does not collect inputs from target element', async function() {
+        mockResponse('POST', '/test', 'ok');
+        createProcessedHTML('<div id="target"><input name="secret" value="should-not-send"/></div>');
+        await htmx.ajax('POST', '/test', {
+            target: '#target',
+            swap: 'innerHTML'
+        });
+        const params = new URLSearchParams(lastFetch().request.body);
+        assert.isNull(params.get('secret'));
+    });
+
+    it('ajax explicit target overrides hx-target on source element', async function() {
+        mockResponse('GET', '/test', 'targeted!');
+        createProcessedHTML('<div id="source" hx-target="#other"></div><div id="other"></div><div id="explicit"></div>');
+        const explicit = find('#explicit');
+        const other = find('#other');
+        await htmx.ajax('GET', '/test', {
+            source: '#source',
+            target: '#explicit',
+            swap: 'innerHTML'
+        });
+        assert.equal(explicit.innerHTML, 'targeted!');
+        assert.equal(other.innerHTML, '');
     });
 
     it('triggers htmx:error when __createRequestContext throws', async function() {

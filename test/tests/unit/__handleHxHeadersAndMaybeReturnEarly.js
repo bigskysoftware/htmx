@@ -80,7 +80,12 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
         let source = createProcessedHTML('<div><div id="destination"></div><button id="source" hx-get="/test">Go</button></div>')
             .querySelector('#source')
         let requestFinished = new Promise(resolve => {
-            find('#destination').addEventListener('htmx:finally:request', resolve, {once: true})
+            document.addEventListener('htmx:finally:request', function handler(evt) {
+                if (evt.detail?.ctx?.request?.action === '/location-replaced') {
+                    document.removeEventListener('htmx:finally:request', handler)
+                    resolve()
+                }
+            })
         })
         let originalPushState = history.pushState
         let originalReplaceState = history.replaceState
