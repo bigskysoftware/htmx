@@ -1330,7 +1330,7 @@ var htmx = (() => {
                     target: this.__resolveTarget(ctx.sourceElement || document.body, swapSpec.target || ctx.target),
                     swapSpec,
                     sourceElement: ctx.sourceElement,
-                    transition: ctx.transition && swapSpec.transition !== false
+                    transition: swapSpec.transition ?? ctx.transition
                 };
                 return mainSwap;
             }
@@ -2286,10 +2286,10 @@ var htmx = (() => {
 
             try {
                 if (document.startViewTransition) {
-                    let detail = {task, ctx};
-                    this.__trigger(ctx.sourceElement, "htmx:before:viewTransition", detail)
-                    await document.startViewTransition(detail.task).finished;
-                    this.__trigger(ctx.sourceElement, "htmx:after:viewTransition", detail)
+                    let detail = {task, ctx, transition: document.startViewTransition(() => detail.task())};
+                    this.__trigger(ctx.sourceElement, "htmx:before:viewTransition", detail);
+                    await detail.transition?.finished;
+                    this.__trigger(ctx.sourceElement, "htmx:after:viewTransition", detail);
                 } else {
                     await task();
                 }
