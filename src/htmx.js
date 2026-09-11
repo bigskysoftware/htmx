@@ -2303,6 +2303,7 @@ var htmx = (() => {
         }
 
         __startCSSTransitions(fragment, root) {
+            let cssAttrs = ['class', 'style', 'width', 'height'];
             let idElements = root.querySelectorAll("[id]");
             let existingElementsById = Object.fromEntries([...idElements].map(e => [e.id, e]));
             let newElementsWithIds = fragment.querySelectorAll("[id]");
@@ -2311,7 +2312,7 @@ var htmx = (() => {
                 let existing = existingElementsById[elt.id];
                 if (existing?.tagName === elt.tagName) {
                     let clone = elt.cloneNode(false); // shallow clone node
-                    this.__copyAttributes(elt, existing)
+                    for (let a of cssAttrs) existing.hasAttribute(a) ? elt.setAttribute(a, existing.getAttribute(a)) : elt.removeAttribute(a);
                     restoreTasks.push(()=>{
                         this.__copyAttributes(elt, clone)
                     })
