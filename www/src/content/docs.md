@@ -1066,7 +1066,7 @@ with htmx.
 
 In htmx you can "boost" regular HTML anchors and forms using the [`hx-boost`](/reference/attributes/hx-boost) attribute. 
 
-This attribute will convert anchor tags and forms into `fecth()`-based requests that, by default, target the body of 
+This attribute will convert anchor tags and forms into `fetch()`-based requests that, by default, target the body of 
 the page.
 
 Here is an example:
