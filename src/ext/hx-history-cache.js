@@ -196,7 +196,7 @@
             htmx.config.historyCache.disable       ??= false;
             htmx.config.historyCache.swapStyle     ??= 'outerSync';
             // Only stamp if core already tagged this entry (htmx-navigated page).
-            // If history.state is null this is a fresh/POST-result page — leave it
+            // If history.state is null this is a fresh/POST-result page - leave it
             // alone so F5 still triggers the browser's resubmit prompt.
             if (history.state?.htmx) stampCurrentEntry();
         },
