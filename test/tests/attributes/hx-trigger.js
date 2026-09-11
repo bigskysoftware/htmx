@@ -107,6 +107,98 @@ describe('hx-trigger attribute', function() {
         find('#d3').innerText.should.equal('bar')
     })
 
+    it('changed modifier suppresses request when input value is unchanged', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let input = createProcessedHTML('<input hx-get="/test" hx-trigger="keydown changed" value="hello">')
+        // first fire records value and fires
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // same value — suppressed
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+        // changed value — fires
+        input.value = 'world'
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+    })
+
+    it('changed modifier fires on form keydown when child input value changes', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let form = createProcessedHTML('<form hx-get="/test" hx-swap="none" hx-trigger="keydown changed"><input id="i" value="hello"></form>')
+        let input = find('#i')
+        // first fire records value and fires
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // same value — suppressed
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+        // changed value — fires
+        input.value = 'world'
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+    })
+
+    it('changed modifier tracks each input independently', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let form = createProcessedHTML('<form hx-get="/test" hx-swap="none" hx-trigger="keydown changed"><input id="i1" value="a"><input id="i2" value="b"></form>')
+        let i1 = find('#i1'), i2 = find('#i2')
+        // first fire from i1 records value and fires
+        i1.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // fire from i1 unchanged — suppressed
+        i1.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+        // change i1, fire — fires
+        i1.value = 'x'
+        i1.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+        // first fire from i2 records value and fires
+        i2.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(3)
+        // fire from i2 unchanged — suppressed
+        i2.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(3)
+    })
+
+    it('changed modifier on checkbox fires on each click', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let input = createProcessedHTML('<input type="checkbox" hx-get="/test" hx-trigger="click changed">')
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(3)
+    })
+
+    it('changed modifier on radio fires on each click', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let input = createProcessedHTML('<input type="radio" hx-get="/test" hx-trigger="click changed">')
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+    })
+
     it('load event triggers on element creation', async function () {
         debug(this)
         mockResponse('GET', '/test', 'Loaded!')
