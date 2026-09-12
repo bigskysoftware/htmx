@@ -144,3 +144,8 @@
   url: https://hellostake.com/au/referral-code
   github: blacksandsmedia
   image: /src/assets/img/sponsors/stake.jpeg
+
+- name: Prospex
+  tier: silver
+  url: https://prospex.ch
+  image: /src/assets/img/sponsors/prospex.svg
