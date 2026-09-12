@@ -88,6 +88,12 @@ These examples may make it a bit easier to get started using htmx with your plat
 - <https://github.com/ia3andy/renotes>
 - <https://github.com/ia3andy/htmx-todo>
 
+### RIFE2
+
+- <https://rife2.com/demo/htmx>
+- <https://github.com/rife2/rife2/blob/main/examples/main/java/rife/examples/HelloHtmx.java>
+- <https://github.com/rife2/rife2-pokemon>
+
 ## ColdFusion (CFML - a JVM Language)
 
 ### CFWheels Framework
