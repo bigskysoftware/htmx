@@ -674,7 +674,9 @@ var htmx = (() => {
                 ? this.parseInterval(ctx.request.timeout)
                 : this.config.defaultTimeout;
             if (timeout) {
-                ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.(), timeout);
+                ctx.requestTimeout = setTimeout(() => {
+                    ctx.request?.abort?.(new DOMException("Request timed out", "TimeoutError"));
+                }, timeout);
             }
         }
 

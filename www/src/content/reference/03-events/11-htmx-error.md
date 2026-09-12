@@ -28,4 +28,6 @@ htmx.on('htmx:error', (evt) => {
 });
 ```
 
+Timeouts and intentional aborts (`hx-sync` replace/abort, `htmx:abort`) both surface as a failed `fetch()`. Distinguish them with `ctx.request.signal.reason`: a timeout uses `TimeoutError` (`"Request timed out"`); a user or sync abort remains `AbortError`.
+
 Use this for centralized error handling and user feedback.
