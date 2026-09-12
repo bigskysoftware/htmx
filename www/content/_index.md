@@ -329,10 +329,14 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
        <img src="/img/rsz_instant_famous.png" alt="Instant Famous" style="width:100%;max-width:250px">
     </a>
 </div>
-<div></div>
 <div>
     <a data-github-account="blacksandsmedia" href="https://hellostake.com/au/referral-code">
        <img src="/img/stake.jpeg" alt="Stake" style="width:100%;max-width:250px">
+    </a>
+</div>
+<div>
+    <a href="https://prospex.ch">
+       <img class="dark-invert" src="/img/prospex.svg" alt="Prospex" style="width:100%;max-width:250px">
     </a>
 </div>
 </div>
