@@ -73,6 +73,41 @@ describe('hx-swap-oob', function() {
         playground().querySelectorAll('.target').forEach(el => el.innerText.should.equal('Updated'))
     })
 
+    it('swaps oob with colon form selector containing a space', async function () {
+        mockResponse('GET', '/test', '<div>Main</div><div hx-swap-oob="innerHTML:.outer .inner">New Content</div>')
+        createProcessedHTML('<div hx-get="/test">Click</div><div class="outer"><div class="inner">Original</div></div>');
+        find('[hx-get]').click()
+        await forRequest()
+        assertTextContentIs('.outer .inner', 'New Content')
+    })
+
+    it('swaps oob with colon form using closest extended selector', async function () {
+        mockResponse('GET', '/test', '<div>Main</div><div hx-swap-oob="innerHTML:closest #container">New Content</div>')
+        createProcessedHTML('<div id="container"><div hx-get="/test">Click</div><div>Original</div></div>');
+        find('[hx-get]').click()
+        await forRequest()
+        assertTextContentIs('#container', 'New Content')
+    })
+
+    it('swaps oob with global selector crossing shadow root boundary', async function () {
+        mockResponse('GET', '/test', '<div hx-swap-oob="innerHTML:global #outside">New Content</div>Clicked')
+        let name = 'oob-global-shadow'
+        if (!customElements.get(name)) {
+            customElements.define(name, class extends HTMLElement {
+                connectedCallback() {
+                    let root = this.attachShadow({mode: 'open'})
+                    root.innerHTML = `<button hx-get="/test" hx-target="next div">Click me!</button><div></div>`
+                    htmx.process(root)
+                }
+            })
+        }
+        createProcessedHTML(`<${name}></${name}><div id="outside">Original</div>`)
+        let wc = find(name)
+        wc.shadowRoot.querySelector('button').click()
+        await forRequest()
+        assertTextContentIs('#outside', 'New Content')
+    })
+
     it('swaps an oob target inside the shadow root of the triggering element', async function () {
         mockResponse('GET', '/test', '<div hx-swap-oob="innerHTML:#oob-target">new contents</div>Clicked')
         let name = 'oob-shadow-scoped'
