@@ -2285,7 +2285,11 @@ var htmx = (() => {
                 if (document.startViewTransition) {
                     let detail = {task, ctx};
                     this.__trigger(ctx.sourceElement, "htmx:before:viewTransition", detail)
-                    await document.startViewTransition(detail.task).finished;
+                    let vt = document.startViewTransition(detail.task);
+                    // ready rejects when the document is hidden; unfinished catch
+                    // still produces unhandledrejection unless we handle ready too
+                    vt.ready?.catch(() => {});
+                    await vt.finished;
                     this.__trigger(ctx.sourceElement, "htmx:after:viewTransition", detail)
                 } else {
                     await task();
