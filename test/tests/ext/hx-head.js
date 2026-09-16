@@ -201,6 +201,42 @@ describe('hx-head extension', function() {
         assert.isAtMost(headMergeTime, swapTime, 'head merge must complete before swap');
     });
 
+    it('replaces title in append mode when new title differs', async function() {
+        let title = document.createElement('title');
+        title.textContent = 'Page 1';
+        addToHead(title);
+
+        mockResponse('GET', '/page', headResponse('<title>Page 2</title>', '<div>content</div>'));
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
+
+        div.click();
+        await afterMerge();
+
+        let titles = document.head.querySelectorAll('title');
+        assert.equal(titles.length, 1, 'should have exactly one title element');
+        assert.equal(titles[0].textContent, 'Page 2', 'title should be updated to new page title');
+    });
+
+    it('does not duplicate title when navigating back and forth', async function() {
+        let title = document.createElement('title');
+        title.textContent = 'Page 1';
+        addToHead(title);
+
+        mockResponse('GET', '/page2', headResponse('<title>Page 2</title>', '<div>page 2</div>'));
+        let div = createProcessedHTML('<div hx-get="/page2" hx-swap="innerHTML">click</div>');
+        div.click();
+        await afterMerge();
+
+        mockResponse('GET', '/page1', headResponse('<title>Page 1</title>', '<div>page 1</div>'));
+        let div2 = createProcessedHTML('<div hx-get="/page1" hx-swap="innerHTML">click</div>');
+        div2.click();
+        await afterMerge();
+
+        let titles = document.head.querySelectorAll('title');
+        assert.equal(titles.length, 1, 'should still have exactly one title after navigating back');
+        assert.equal(titles[0].textContent, 'Page 1', 'title should reflect current page');
+    });
+
     it('adds stylesheets to head', async function() {
         mockResponse('GET', '/page', headResponse('<link rel="stylesheet" href="/test-styles.css">', '<div>swapped content</div>'));
         

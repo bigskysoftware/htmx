@@ -92,9 +92,10 @@
                         }
                     } else {
                         if (mergeStrategy === "append") {
-                            // we are appending and this existing element is not new content
-                            // so if and only if it is marked for re-append do we do anything
-                            if (isReAppended) {
+                            // title is singular by nature — always replace it even in append mode
+                            if (currentHeadElt.tagName === "TITLE") {
+                                removed.push(currentHeadElt)
+                            } else if (isReAppended) {
                                 removed.push(currentHeadElt)
                                 nodesToAppend.push(currentHeadElt)
                             }
