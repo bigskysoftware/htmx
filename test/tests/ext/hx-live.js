@@ -1201,6 +1201,120 @@ describe('hx-live extension', function () {
         proxy.count.should.equal(1);
     });
 
+    // -------------------------------------------------------------------------
+    // chained q: directional scoping (option 4 behaviour)
+    // -------------------------------------------------------------------------
+
+    it('chained q: next finds sibling within same parent', function() {
+        playground().innerHTML = `
+            <div id="parent">
+                <div class="el">One</div>
+                <div class="el selected">Two</div>
+                <div class="el">Three</div>
+                <div class="el">Four</div>
+            </div>
+        `;
+        let proxy = htmx.live.q('#parent .el.selected').q('next .el');
+        proxy.count.should.equal(1);
+        proxy.textContent.should.equal('Three');
+    });
+
+    it('chained q: previous finds sibling within same parent', function() {
+        playground().innerHTML = `
+            <div id="parent">
+                <div class="el">One</div>
+                <div class="el selected">Two</div>
+                <div class="el">Three</div>
+                <div class="el">Four</div>
+            </div>
+        `;
+        let proxy = htmx.live.q('#parent .el.selected').q('previous .el');
+        proxy.count.should.equal(1);
+        proxy.textContent.should.equal('One');
+    });
+
+    it('chained q: next returns empty when anchor is last sibling', function() {
+        playground().innerHTML = `
+            <div id="parent">
+                <div class="el">One</div>
+                <div class="el">Two</div>
+                <div class="el last">Three</div>
+            </div>
+        `;
+        htmx.live.q('#parent .el.last').q('next .el').count.should.equal(0);
+    });
+
+    it('chained q: previous returns empty when anchor is first sibling', function() {
+        playground().innerHTML = `
+            <div id="parent">
+                <div class="el first">One</div>
+                <div class="el">Two</div>
+                <div class="el">Three</div>
+            </div>
+        `;
+        htmx.live.q('#parent .el.first').q('previous .el').count.should.equal(0);
+    });
+
+    it('chained q: next does not escape to a different parent', function() {
+        // Two groups in separate parents. next .item from #s1 searches within
+        // #s1's parent (#group1) only — cannot reach .item inside #group2.
+        playground().innerHTML = `
+            <div id="group1">
+                <section id="s1"></section>
+            </div>
+            <div id="group2">
+                <div class="item">B</div>
+            </div>
+        `;
+        let proxy = htmx.live.q('#s1').q('next .item');
+        proxy.count.should.equal(0);
+    });
+
+    it('chained q: first scopes inside each matched element', function() {
+        playground().innerHTML = `
+            <section><span class="i">a</span><span class="i">b</span></section>
+            <section><span class="i">c</span><span class="i">d</span></section>
+        `;
+        let proxy = htmx.live.q('section').q('first .i');
+        proxy.count.should.equal(2);
+        proxy.arr().map(e => e.textContent).should.deep.equal(['a', 'c']);
+    });
+
+    it('chained q: last scopes inside each matched element', function() {
+        playground().innerHTML = `
+            <section><span class="i">a</span><span class="i">b</span></section>
+            <section><span class="i">c</span><span class="i">d</span></section>
+        `;
+        let proxy = htmx.live.q('section').q('last .i');
+        proxy.count.should.equal(2);
+        proxy.arr().map(e => e.textContent).should.deep.equal(['b', 'd']);
+    });
+
+    it('chained q: first with in this also scopes inside each element', function() {
+        playground().innerHTML = `
+            <section><span class="i">a</span><span class="i">b</span></section>
+            <section><span class="i">c</span><span class="i">d</span></section>
+        `;
+        // explicit "in this" should give the same result as the default scoped behaviour
+        let proxy = htmx.live.q('section').q('first .i in this');
+        proxy.count.should.equal(2);
+        proxy.arr().map(e => e.textContent).should.deep.equal(['a', 'c']);
+    });
+
+    it('chained q: next across multiple rows returns each successor', function() {
+        playground().innerHTML = `
+            <div id="rows">
+                <div class="row">Row 1</div>
+                <div class="row">Row 2</div>
+                <div class="row">Row 3</div>
+            </div>
+        `;
+        // 3 rows: row1→row2, row2→row3, row3→nothing. Deduped result = row2, row3.
+        let proxy = htmx.live.q('#rows .row').q('next .row');
+        proxy.count.should.equal(2);
+        proxy.arr().map(e => e.textContent.trim()).should.deep.equal(['Row 2', 'Row 3']);
+    });
+
     it('q is available in hx-on scope and bound to element', function() {
         playground().innerHTML = '<button hx-on:click="window.fooLive = q(\'next #target\').textContent">x</button><div id="target">tgt</div>';
         htmx.process(playground());
