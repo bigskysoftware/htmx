@@ -62,30 +62,27 @@ Fires when the element is loaded into the DOM. Useful for [lazy-loading](/patter
 <div hx-trigger="load" hx-get="...">Loading...</div>
 ```
 
-### `revealed`
+### `intersect` / `revealed`
 
-Fires when the element is scrolled into the viewport. Useful for [infinite scroll](/patterns/infinite-scroll).
+Both use the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) to fire when an element enters the viewport. The only difference is that `revealed` automatically disconnects the observer after the first intersection — it fires exactly once.
 
 ```html
+<!-- fires every time the element intersects -->
+<div hx-trigger="intersect" hx-get="...">...</div>
+
+<!-- fires once, then stops observing -->
 <div hx-trigger="revealed" hx-get="...">Loading...</div>
 ```
 
-_Note: `revealed` always observes the browser viewport. For scrollable containers with `overflow`, use [`intersect`](#intersect) with `root` instead._
+Modifiers (`intersect` and `revealed` both support these):
 
-### `intersect`
-
-Fires when an element becomes visible in the viewport. 
-
-Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options).
-
-Modifiers:
-
-- [`root`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root)
-- [`rootMargin`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin)
-- [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds)
+- `from:<selector>` — observe a different element instead of the element itself
+- [`root:<selector>`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root) — use a scrollable container as the intersection root instead of the viewport
+- [`rootMargin:<value>`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin) — expand or shrink the root bounds
+- [`threshold:<0–1>`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds) — minimum visible fraction before firing
 
 ```html
-<div hx-trigger="intersect once" hx-get="...">...</div>
+<div hx-trigger="intersect from:#other" hx-get="...">...</div>
 <div hx-trigger="intersect root:#scroll-container" hx-get="...">...</div>
 <div hx-trigger="intersect rootMargin:100px" hx-get="...">...</div>
 <div hx-trigger="intersect threshold:0.5" hx-get="...">...</div>
