@@ -54,9 +54,50 @@
     </div>
 </section>
 
-<!-- Example 3: Custom Events -->
+<!-- Example 3: hx-sse:close cancel testing -->
 <section class="mb-12">
-    <h2 class="text-lg font-semibold mb-2">3. Custom Events from SSE</h2>
+    <h2 class="text-lg font-semibold mb-2">3. hx-sse:close — Cancel on Event</h2>
+    <p class="text-sm text-neutral-600 mb-4">
+        Server sends a few messages then a <code>done</code> event. The connection should close cleanly
+        with no <code>AbortError</code> in the console. Check two variants:
+        server keeps the response open (regression #4078) and server closes it simultaneously.
+    </p>
+
+    <div class="flex gap-3 mb-4">
+        <button
+                hx-get="/close-event-open"
+                hx-sse:close="done"
+                hx-swap="beforeend"
+                hx-target="#close-log"
+                hx-on:htmx:sse:close="document.getElementById('close-status').textContent = 'closed: ' + event.detail.reason"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer">
+            Test (server keeps open)
+        </button>
+        <button
+                hx-get="/close-event-closed"
+                hx-sse:close="done"
+                hx-swap="beforeend"
+                hx-target="#close-log"
+                hx-on:htmx:sse:close="document.getElementById('close-status').textContent = 'closed: ' + event.detail.reason"
+                class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 cursor-pointer">
+            Test (server closes simultaneously)
+        </button>
+        <button onclick="document.getElementById('close-log').innerHTML=''; document.getElementById('close-status').textContent=''"
+                class="px-4 py-2 bg-neutral-200 rounded hover:bg-neutral-300 cursor-pointer">
+            Clear
+        </button>
+    </div>
+
+    <div class="text-sm font-mono mb-2">
+        Status: <span id="close-status" class="text-blue-600"></span>
+    </div>
+    <div id="close-log" class="space-y-1 text-sm font-mono"></div>
+    <p class="text-xs text-neutral-400 mt-2">Open DevTools console — there should be no AbortError after closing.</p>
+</section>
+
+<!-- Example 4: Custom Events -->
+<section class="mb-12">
+    <h2 class="text-lg font-semibold mb-2">4. Custom Events from SSE</h2>
     <p class="text-sm text-neutral-600 mb-4">
         SSE <code>event:</code> fields trigger custom DOM events. Listen with <code>hx-on:</code> attributes.
     </p>

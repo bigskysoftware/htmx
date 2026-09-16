@@ -1191,6 +1191,45 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
+    it('hx-sse:close does not produce an unhandled AbortError rejection (server keeps stream open)', async function() {
+        // Regression: #4078 - server leaves response open after sending close event
+        const stream = mockStreamResponse('/close-abort-open');
+        createProcessedHTML('<div hx-sse:connect="/close-abort-open" hx-sse:close="done" hx-swap="innerHTML">Waiting</div>');
+
+        await htmx.timeout(1);
+
+        let rejections = [];
+        let onRejection = e => rejections.push(e.reason);
+        window.addEventListener('unhandledrejection', onRejection);
+
+        stream.send('goodbye', 'done'); // server keeps stream open — does NOT call stream.close()
+        await waitForEvent('htmx:sse:close');
+        await htmx.timeout(20);
+
+        window.removeEventListener('unhandledrejection', onRejection);
+        assert.deepEqual(rejections, [], 'hx-sse:close should not produce an unhandled AbortError when server keeps stream open');
+    });
+
+    it('hx-sse:close does not produce an unhandled AbortError rejection (server closes stream simultaneously)', async function() {
+        // Regression: #4078 - server closes the response at the same time as sending the close event
+        const stream = mockStreamResponse('/close-abort-closed');
+        createProcessedHTML('<div hx-sse:connect="/close-abort-closed" hx-sse:close="done" hx-swap="innerHTML">Waiting</div>');
+
+        await htmx.timeout(1);
+
+        let rejections = [];
+        let onRejection = e => rejections.push(e.reason);
+        window.addEventListener('unhandledrejection', onRejection);
+
+        stream.send('goodbye', 'done');
+        stream.close(); // server closes immediately after
+        await waitForEvent('htmx:sse:close');
+        await htmx.timeout(20);
+
+        window.removeEventListener('unhandledrejection', onRejection);
+        assert.deepEqual(rejections, [], 'hx-sse:close should not produce an unhandled AbortError when server closes stream simultaneously');
+    });
+
     it('hx-sse:close closes connection on matching event', async function() {
         const stream = mockStreamResponse('/close-test');
         createProcessedHTML('<div hx-sse:connect="/close-test" hx-sse:close="done" hx-swap="innerHTML">Waiting</div>');
