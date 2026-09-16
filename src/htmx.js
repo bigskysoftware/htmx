@@ -1789,7 +1789,7 @@ var htmx = (() => {
             if (validate && form && !form.reportValidity()) return
 
             // treat a named submit button that owns hx-post as its own submitter (#4073)
-            submitter ??= (form && elt.name && elt.type === 'submit') ? elt : null;
+            submitter ??= (form && elt.type === 'submit') ? elt : null;
 
             let formData = form ? new FormData(form) : new FormData()
             let included = form ? new Set(form.elements) : new Set()
