@@ -333,7 +333,7 @@ q('button').click()
 
 ```js
 q('first .foo')                 // first match in document order
-q('last .foo')                  // last match
+q('last .foo')                  // last match in document order
 q('next .foo')                  // first match after this element
 q('previous .foo')              // closest match before this element
 q('closest .foo')               // nearest ancestor matching .foo
@@ -343,14 +343,29 @@ q('.foo in this')               // restrict to the current element
 
 `next`, `previous`, and `closest` resolve against `this`. They require an expression scope with a current element. For an ancestor lookup that works anywhere, use [`closest(selector)`](#closestselector).
 
-**Chaining** 
+**Chaining**
 
-`.q(...)` on a proxy re-runs the grammar with each element as the anchor:
+`.q(...)` on a proxy re-runs the grammar with each element as the positional anchor.
+
+`first` and `last` scope inside each matched element:
+
+```js
+q('section').q('first .item')   // first .item inside each section
+q('section').q('last .item')    // last .item inside each section
+```
+
+`next` and `previous` search within the matched element's parent, so they find siblings and their descendants but cannot reach elements under a different parent:
+
+```js
+q('.row').q('next .row')                     // each row's next sibling row
+q('#parent .el.selected').q('next .el')      // next .el after the selected one
+q('#parent .el.selected').q('previous .el')  // previous .el before the selected one
+```
+
+`closest` finds the nearest ancestor of each matched element:
 
 ```js
 q('.error').q('closest .field')   // surrounding .field of each .error
-q('section').q('first .item')     // first .item per section
-q('.row').q('next .row')          // each row's successor
 ```
 
 For plain descendant queries, CSS is shorter: `q('.card .title')` and `q('.card').q('.title')` are equivalent. Use chaining when you need a directional per matched element.
