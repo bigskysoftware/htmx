@@ -59,3 +59,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 src/scripts/content/check.py
+
+  dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock', 'package.json') }}
+          restore-keys: bun-${{ runner.os }}-
+      - run: bun install --frozen-lockfile
+      - run: bun run check:dist:test
+      - run: bun run build
+      - run: bun run check:dist
