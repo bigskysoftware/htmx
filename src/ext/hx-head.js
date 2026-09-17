@@ -70,6 +70,8 @@
                     srcToNewHeadNodes.set(newHeadChild.outerHTML, newHeadChild)
                 }
 
+                let newTitle = newHeadTag.querySelector("title")
+
                 // determine merge strategy
                 let mergeStrategy = api.attributeValue(newHeadTag, "hx-head") || defaultMergeStrategy
 
@@ -91,19 +93,15 @@
                             preserved.push(currentHeadElt)
                         }
                     } else {
-                        if (mergeStrategy === "append") {
-                            // title is singular by nature — always replace it even in append mode
-                            if (currentHeadElt.tagName === "TITLE") {
-                                removed.push(currentHeadElt)
-                            } else if (isReAppended) {
-                                removed.push(currentHeadElt)
-                                nodesToAppend.push(currentHeadElt)
-                            }
-                        } else {
-                            // if this is a merge, we remove this content since it is not in the new head
-                            if (htmx.trigger(document.body, "htmx:head:before:remove", {headElement: currentHeadElt}) !== false) {
+                        if (mergeStrategy !== "append" || (currentHeadElt.tagName === "TITLE" && newTitle)) {
+                            // if this is a merge, or a title being replaced, remove it
+                            if (api.triggerHtmxEvent(document.body, "htmx:head:before:remove", {headElement: currentHeadElt}) !== false) {
                                 removed.push(currentHeadElt)
                             }
+                        } else if (isReAppended) {
+                            // append mode: only re-eval marked elements
+                            removed.push(currentHeadElt)
+                            nodesToAppend.push(currentHeadElt)
                         }
                     }
                 }
@@ -125,7 +123,7 @@
                             newNode._preloadHint = hint
                         }
                     } else {
-                        if (htmx.trigger(document.body, "htmx:head:before:add", {headElement: newNode}) !== false) {
+                        if (api.triggerHtmxEvent(document.body, "htmx:head:before:add", {headElement: newNode}) !== false) {
                             await appendNode(newNode)
                             added.push(newNode)
                         }
@@ -135,12 +133,12 @@
                 // remove all removed elements, after we have appended the new elements to avoid
                 // additional network requests for things like style sheets
                 for (const removedElement of removed) {
-                    if (htmx.trigger(document.body, "htmx:head:before:remove", {headElement: removedElement}) !== false) {
+                    if (api.triggerHtmxEvent(document.body, "htmx:head:before:remove", {headElement: removedElement}) !== false) {
                         currentHead.removeChild(removedElement)
                     }
                 }
 
-                htmx.trigger(document.body, "htmx:head:after:merge", {
+                api.triggerHtmxEvent(document.body, "htmx:head:after:merge", {
                     added: added,
                     kept: preserved,
                     removed: removed
@@ -161,7 +159,7 @@
             let target = ctx.target
             // TODO - is there a better way to handle this?  it used to be based on if the element was boosted
             let defaultMergeStrategy = target === document.body ? "merge" : "append";
-            if (htmx.trigger(document.body, "htmx:head:before:merge", detail)) {
+            if (api.triggerHtmxEvent(document.body, "htmx:head:before:merge", detail)) {
                 let realText = ctx.response.raw.text.bind(ctx.response.raw)
                 ctx.response.raw.text = async () => {
                     let text = await realText()
