@@ -781,6 +781,10 @@
 
     function writeAttrBinding(elt, attrName, value) {
         if (typeof value === 'function') throw new TypeError('hx-live: binding returned a function');
+        if (attrName.startsWith('?')) {
+            elt.toggleAttribute(attrName.slice(1), !!value);
+            return;
+        }
         if (attrName === 'text') {
             let s = value == null ? '' : String(value);
             if (elt.textContent !== s) elt.textContent = s;

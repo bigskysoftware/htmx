@@ -178,6 +178,17 @@ The long form. Behaves identically to `:<attr>`.
 
 Use it if your build pipeline strips `:`-prefixed attributes.
 
+### `:?<attr>` / `hx-live:?<attr>`
+
+Explicit boolean attribute binding. Borrowing the `?` prefix syntax common in web components (such as Lit), truthy values add the attribute and falsy values remove it entirely via native `toggleAttribute()`.
+
+```html
+<custom-select :?multiple="q('#count').valueAsNumber > 1"></custom-select>
+<div hx-live:?custom-flag="q('#checkbox').checked"></div>
+```
+
+This is useful for custom elements, web components, or arbitrary attributes where DOM attribute *presence* dictates state rather than string value.
+
 ### `:.<class>`
 
 Bind a single class to an expression. Truthy adds it, falsy removes it.
@@ -1045,6 +1056,15 @@ When an `hx-live` element is removed, its expression drops out on the next sched
 <input   :readonly="falsyExpr">    <!-- <input>               -->
 <div     :inert="truthyExpr">      <!-- <div inert="">        -->
 <div     :inert="falsyExpr">       <!-- <div>                 -->
+```
+
+**Explicit boolean modifier** (`:?<attr>` or `hx-live:?<attr>`). Forces boolean toggle behavior for any attribute (such as custom elements and web components), invoking native `toggleAttribute()`. Truthy adds the attribute; falsy removes it.
+
+```html
+<custom-select :?multiple="truthyExpr">     <!-- <custom-select multiple=""> -->
+<custom-select :?multiple="falsyExpr">      <!-- <custom-select>             -->
+<div :?custom-flag="truthyExpr">            <!-- <div custom-flag="">        -->
+<div :?custom-flag="falsyExpr">             <!-- <div>                       -->
 ```
 
 **ARIA attributes** (`aria-*`). Values are stringified. `null` or `undefined` remove the attribute.
