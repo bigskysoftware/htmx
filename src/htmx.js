@@ -601,6 +601,8 @@ var htmx = (function() {
    * @returns {DocumentFragmentWithTitle}
    */
   function makeFragment(response) {
+    // convert <hx-*> custom tags to <template hx type="*"> so they survive HTML parsing
+    response = response.replace(/<hx-([a-z]+)((?:\s[^>]*)?)>/gi, '<template hx type="$1"$2>').replace(/<\/hx-[a-z]+>/gi, '</template>')
     // strip head tag to determine shape of response we are dealing with
     const responseWithNoHead = response.replace(/<head(\s[^>]*)?>[\s\S]*?<\/head>/i, '')
     const startTag = getStartTag(responseWithNoHead)
@@ -1842,6 +1844,54 @@ var htmx = (function() {
   }
 
   /**
+   * @param {DocumentFragment|ParentNode} fragment
+   * @param {HtmxSettleInfo} settleInfo
+   * @param {Element} sourceElement
+   * @returns {boolean}
+   */
+  function findAndSwapPartials(fragment, settleInfo, sourceElement) {
+    var hxTemplates = findAll(fragment, 'template[hx]')
+    forEach(hxTemplates, function(template) {
+      var type = getRawAttribute(template, 'type')
+      if (type === 'partial') {
+        var targetSelector = getAttributeValue(template, 'hx-target') ||
+          (template.id ? '#' + CSS.escape(template.id) : null)
+        if (targetSelector) {
+          var swapOverride = getAttributeValue(template, 'hx-swap')
+          var swapSpec = getSwapSpecification(template, swapOverride)
+          var targets = querySelectorAllExt(sourceElement || getDocument().body, targetSelector, false)
+          if (targets.length === 0) {
+            triggerErrorEvent(getDocument().body, 'htmx:partialErrorNoTarget', { template, targetSelector, sourceElement })
+          }
+          forEach(targets, function(target) {
+            target = asElement(target)
+            if (target) {
+              var fragment = template.content.cloneNode(true)
+              var beforeSwapDetails = { shouldSwap: true, target, fragment }
+              if (!triggerEvent(target, 'htmx:partialBeforeSwap', beforeSwapDetails)) return
+              target = beforeSwapDetails.target
+              if (beforeSwapDetails.shouldSwap) {
+                swap(target, beforeSwapDetails.fragment, swapSpec, {
+                  contextElement: target,
+                  afterSwapCallback: function() {
+                    forEach(settleInfo.elts, function(elt) {
+                      triggerEvent(elt, 'htmx:partialAfterSwap', beforeSwapDetails)
+                    })
+                  }
+                })
+              }
+            }
+          })
+        }
+      } else {
+        triggerEvent(getDocument().body, 'htmx:processTemplate', { type, template, settleInfo, sourceElement })
+      }
+      template.parentNode.removeChild(template)
+    })
+    return hxTemplates.length > 0
+  }
+
+  /**
    * @param {DocumentFragment} fragment
    * @param {HtmxSettleInfo} settleInfo
    * @param {Node|Document} [rootNode]
@@ -1906,7 +1956,7 @@ var htmx = (function() {
         target.textContent = content
       // Otherwise, make the fragment and process it
       } else {
-        let fragment = makeFragment(content)
+        let fragment = typeof content === 'string' ? makeFragment(content) : content
 
         settleInfo.title = swapOptions.title || fragment.title
         if (swapOptions.historyRequest) {
@@ -1938,6 +1988,8 @@ var htmx = (function() {
             template.remove()
           }
         })
+        // partial swaps — after oob, before main swap
+        var hasPartials = findAndSwapPartials(fragment, settleInfo, swapOptions.contextElement || asElement(target))
 
         // normal swap
         if (swapOptions.select) {
@@ -1948,7 +2000,12 @@ var htmx = (function() {
           fragment = newFragment
         }
         handlePreservedElements(fragment)
-        swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
+        // if the response contained only <hx-partial> tags and nothing else, skip the main swap
+        if (hasPartials && !fragment.childElementCount && !fragment.textContent.trim()) {
+          settleInfo.elts = [asElement(target)]
+        } else {
+          swapWithStyle(swapSpec.swapStyle, swapOptions.contextElement, target, fragment, settleInfo)
+        }
         restorePreservedElements()
       }
 
