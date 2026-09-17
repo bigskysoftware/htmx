@@ -139,6 +139,37 @@ const routes = {
             }
         };
         update();
+    }),
+
+    // Regression #4078: server sends close event but keeps response open
+    '/close-event-open': sse((req, res) => {
+        let n = 0;
+        const send = () => {
+            if (n++ < 3) {
+                res.write(`data: <div class="text-neutral-500">message #${n}</div>\n\n`);
+                setTimeout(send, 400);
+            } else {
+                res.write(`event: done\ndata: <div class="text-green-600">done event received — stream left open by server</div>\n\n`);
+                // intentionally do NOT call res.end() — this is the regression scenario
+            }
+        };
+        send();
+        req.on('close', () => {});
+    }),
+
+    // Regression #4078: server sends close event and closes response simultaneously
+    '/close-event-closed': sse((req, res) => {
+        let n = 0;
+        const send = () => {
+            if (n++ < 3) {
+                res.write(`data: <div class="text-neutral-500">message #${n}</div>\n\n`);
+                setTimeout(send, 400);
+            } else {
+                res.write(`event: done\ndata: <div class="text-green-600">done event received — server closed simultaneously</div>\n\n`);
+                res.end();
+            }
+        };
+        send();
     })
 };
 
