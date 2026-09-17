@@ -93,17 +93,9 @@
                             preserved.push(currentHeadElt)
                         }
                     } else {
-                        if (mergeStrategy === "append") {
-                            // title is singular by nature — always replace it even in append mode
-                            if (currentHeadElt.tagName === "TITLE") {
-                                removed.push(currentHeadElt)
-                            } else if (isReAppended) {
-                                removed.push(currentHeadElt)
-                                nodesToAppend.push(currentHeadElt)
-                            }
-                        } else {
-                            // if this is a merge, we remove this content since it is not in the new head
-                            if (htmx.trigger(document.body, "htmx:head:before:remove", {headElement: currentHeadElt}) !== false) {
+                        if (mergeStrategy !== "append" || (currentHeadElt.tagName === "TITLE" && newTitle)) {
+                            // if this is a merge, or a title being replaced, remove it
+                            if (api.triggerHtmxEvent(document.body, "htmx:head:before:remove", {headElement: currentHeadElt}) !== false) {
                                 removed.push(currentHeadElt)
                             }
                         } else if (isReAppended) {
