@@ -216,12 +216,14 @@ var htmx = (() => {
             if (this.config.includeIndicatorCSS !== false) {
                 let indicator = this.config.indicatorClass;
                 let request = this.config.requestClass;
-                let sheet = new CSSStyleSheet();
-                sheet.replaceSync(
-                    `.${indicator}{opacity:0;visibility: hidden} ` +
-                    `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}`
-                );
-                document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+                try {
+                    let sheet = new CSSStyleSheet();
+                    sheet.replaceSync(
+                        `.${indicator}{opacity:0;visibility: hidden} ` +
+                        `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}`
+                    );
+                    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+                } catch {}
             }
         }
 
