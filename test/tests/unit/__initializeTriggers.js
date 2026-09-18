@@ -254,6 +254,30 @@ describe('__initializeTriggers unit tests', function() {
             assert.isUndefined(captured[0].root);
             assert.isUndefined(captured[0].threshold);
         });
+
+        it('from: modifier observes the from element, not the trigger element', function() {
+            let observed = [];
+            const origIO = window.IntersectionObserver;
+            window.IntersectionObserver = function(cb, opts) {
+                const io = new origIO(cb, opts);
+                const origObserve = io.observe.bind(io);
+                io.observe = (el) => { observed.push(el); origObserve(el); };
+                return io;
+            };
+            playground().innerHTML = '<div id="scroller3"><div id="sentinel" hx-action="js:null" hx-trigger="intersect from:#scroller3">Test</div></div>';
+            htmx.process(playground());
+            window.IntersectionObserver = originalIO;
+            assert.equal(observed.length, 1);
+            assert.equal(observed[0], document.getElementById('scroller3'));
+            assert.notEqual(observed[0], document.getElementById('sentinel'));
+        });
+
+        it('from: modifier with threshold passes both to IntersectionObserver', function() {
+            playground().innerHTML = '<div id="scroller4"><div id="target4" hx-action="js:null" hx-trigger="intersect from:#scroller4 threshold:0.75">Test</div></div>';
+            htmx.process(playground());
+            assert.equal(captured.length, 1);
+            assert.equal(captured[0].threshold, 0.75);
+        });
     });
 
 });

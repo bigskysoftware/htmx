@@ -815,14 +815,14 @@ var htmx = (() => {
                     spec.observer = new IntersectionObserver((entries) => {
                         for (let i = 0; i < entries.length; i++) {
                             if (entries[i].isIntersecting) {
-                                this.trigger(elt, 'intersect', {}, false);
+                                this.trigger(entries[i].target, 'intersect', {}, false);
                                 if (isRevealed) spec.observer.disconnect();
                                 break;
                             }
                         }
                     }, observerOptions);
                     eventName = 'intersect';
-                    spec.observer.observe(elt);
+                    for (let fromElt of fromElts) spec.observer.observe(fromElt);
                 }
 
                 // Every: set up interval
