@@ -628,6 +628,9 @@ describe('hx-multipart extension', function() {
     });
 
     it('runs part history actions', async function() {
+        // Seed a tagged entry so the stamp-on-swap replaceState doesn't fire during the test
+        history.replaceState({htmx: true}, '', location.href);
+
         let originalPushState = history.pushState;
         let originalReplaceState = history.replaceState;
         let pushes = 0;

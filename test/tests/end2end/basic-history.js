@@ -443,6 +443,9 @@ describe('scroll restoration on history traversal', function() {
 
         location.hash = '#events';
         assert.isNull(history.state);
+        // Simulate what a real htmx swap does before pushing: stamp the anchor-jump entry
+        // so back traversals to it are interceptable by the Navigation API.
+        history.replaceState({htmx: true}, '', location.href);
         window.scrollTo(0, 500);
         await new Promise(r => setTimeout(r, 20));
 
