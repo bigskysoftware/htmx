@@ -362,6 +362,22 @@ This tells htmx:
 
 > Every 2 seconds, issue a GET to /news and load the response into the div
 
+The polling element **is** the poll. htmx arms a `setInterval` on that node and
+clears it when the node leaves the DOM (or is cleaned up during a swap). There
+is no cancelled flag, no `htmx.cancelPolling()`, and **HTTP 286 does not stop
+polling** (that 2.x / Intercooler status is ignored).
+
+To stop from the server, return a representation of the same element **without**
+`hx-trigger="every …"`, using a swap that replaces the poller itself
+([`outerHTML`](/reference/attributes/hx-swap) / [`outerMorph`](/reference/attributes/hx-swap),
+or [`HX-Reswap`](/reference/headers/HX-Reswap)`: outerHTML` if the request would
+otherwise innerHTML). Pause and resume are the same: markup without the trigger,
+then markup with it.
+
+Default [`innerHTML`](/reference/attributes/hx-swap) cannot self-stop: the poller
+stays in the DOM, so the interval keeps firing. See [Polling](/patterns/polling)
+and [Progress Bar](/patterns/progress-bar).
+
 #### Load Polling
 
 Another technique that can be used to achieve polling in htmx is "load polling", where an element specifies

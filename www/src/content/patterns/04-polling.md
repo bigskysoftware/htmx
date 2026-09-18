@@ -90,7 +90,12 @@ The interval unit is `ms`, `s`, or `m`. A bare number is milliseconds.
 
 ## Stopping the poll
 
-htmx clears the interval when the element leaves the DOM. To stop the poll, return the element without the trigger attributes.
+htmx clears the interval when the element leaves the DOM. The markup **is** the
+state: a node with `hx-trigger="every …"` polls; a node without it does not.
+
+To stop, return the **same element** without the trigger attributes, with a swap
+that replaces the poller (`outerMorph` / `outerHTML`). HTTP 286 is a no-op in
+htmx 4.
 
 ```html
 <!-- server response when there is nothing more to watch -->
@@ -99,7 +104,12 @@ htmx clears the interval when the element leaves the DOM. To stop the poll, retu
 </div>
 ```
 
-The demo above uses this to pause. The Pause button posts to `/toggle`, and the server renders the card without `hx-get` and `hx-trigger`.
+If the poll uses the default `innerHTML` swap, the poller stays in the DOM and
+keeps firing. Override the swap for that response with
+[`HX-Reswap: outerHTML`](/reference/headers/HX-Reswap) (and return the wrapper
+without `every`), or poll with `hx-swap="outerMorph"` from the start.
+
+The demo above uses this to pause. The Pause button posts to `/toggle`, and the server renders the card without `hx-get` and `hx-trigger`. Resume is the inverse: return the card *with* the trigger.
 
 ## Conditional polling
 
