@@ -1,0 +1,12 @@
+{
+  "name": "hcon-grammar",
+  "private": true,
+  "type": "module",
+  "description": "Strict, regex-free HCON grammar for htmx attributes",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
