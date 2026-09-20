@@ -1189,7 +1189,7 @@ var htmx = (() => {
 
         __handleScroll(swapSpec, target) {
             if (swapSpec.scroll) {
-                let scrollTarget = swapSpec.scrollTarget ? this.__findExt(swapSpec.scrollTarget) : target;
+                let scrollTarget = swapSpec.scrollTarget ? this.__findExt(target, swapSpec.scrollTarget) : target;
                 if (scrollTarget) {
                     if (swapSpec.scroll === 'top') {
                         scrollTarget.scrollTop = 0;
@@ -1199,7 +1199,7 @@ var htmx = (() => {
                 }
             }
             if (swapSpec.show === 'top' || swapSpec.show === 'bottom') {
-                let showTarget = swapSpec.showTarget ? this.__findExt(swapSpec.showTarget) : target;
+                let showTarget = swapSpec.showTarget ? this.__findExt(target, swapSpec.showTarget) : target;
                 showTarget?.scrollIntoView?.(swapSpec.show === 'top')
             }
         }
