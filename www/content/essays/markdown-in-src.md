@@ -150,4 +150,4 @@ I don't know exactly what the right structure for something like `/src/md` is ye
 
 But I am fairly confident that Markdown is becoming source code, and that we should increasingly treat it like source code.
 
-(Even though, no, LLMs are not like compilers :)
+(Even though, no, LLMs are not compilers :)
