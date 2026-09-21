@@ -278,6 +278,157 @@ describe('hx-head extension', function() {
         assert.isBelow(titles.length, titleCountBefore, 'title should be removed in merge mode when new head has no title');
     });
 
+    it('fires htmx:head:before:remove exactly once per removed element', async function() {
+        let meta = document.createElement('meta');
+        meta.setAttribute('name', 'hx-head-test-4088');
+        meta.setAttribute('content', 'remove-me');
+        addToHead(meta);
+
+        let removeCount = 0;
+        let onRemove = (e) => { if (e.detail.headElement === meta) removeCount++; };
+        document.body.addEventListener('htmx:head:before:remove', onRemove);
+
+        mockResponse('GET', '/page', `<html><head hx-head="merge"></head><body><div>page</div></body></html>`);
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
+        div.click();
+        await afterMerge();
+
+        document.body.removeEventListener('htmx:head:before:remove', onRemove);
+
+        assert.equal(removeCount, 1, 'htmx:head:before:remove should fire exactly once per element');
+    });
+
+    it('fires htmx:head:before:remove exactly once for hx-preserve elements being removed', async function() {
+        let meta = document.createElement('meta');
+        meta.setAttribute('name', 'hx-head-test-4088-preserve');
+        meta.setAttribute('content', 'remove-me');
+        addToHead(meta);
+
+        let removeCount = 0;
+        let onRemove = (e) => { if (e.detail.headElement === meta) removeCount++; };
+        document.body.addEventListener('htmx:head:before:remove', onRemove);
+
+        // response has no matching meta, merge mode removes it
+        mockResponse('GET', '/page', `<html><head hx-head="merge"></head><body><div>page</div></body></html>`);
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
+        div.click();
+        await afterMerge();
+
+        document.body.removeEventListener('htmx:head:before:remove', onRemove);
+
+        assert.equal(removeCount, 1, 'htmx:head:before:remove should fire exactly once even with hx-preserve elements present');
+    });
+
+    it('cancelling htmx:head:before:remove prevents removal and excludes element from after:merge removed array', async function() {
+        let meta = document.createElement('meta');
+        meta.setAttribute('name', 'hx-head-test-4088-cancel');
+        meta.setAttribute('content', 'keep-me');
+        addToHead(meta);
+
+        let removedInEvent = null;
+        let onRemove = (e) => { e.preventDefault(); };
+        let onAfter = (e) => { removedInEvent = e.detail.removed; };
+        document.body.addEventListener('htmx:head:before:remove', onRemove);
+        document.body.addEventListener('htmx:head:after:merge', onAfter, {once: true});
+
+        mockResponse('GET', '/page', `<html><head hx-head="merge"></head><body><div>page</div></body></html>`);
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
+        div.click();
+        await afterMerge();
+
+        document.body.removeEventListener('htmx:head:before:remove', onRemove);
+
+        assert.isNotNull(document.head.querySelector('meta[name="hx-head-test-4088-cancel"]'), 'element should remain when removal is cancelled');
+        assert.isFalse(removedInEvent.includes(meta), 'cancelled element should not appear in after:merge removed array');
+    });
+
+    it('does not duplicate title when navigating back and forth in append mode', async function() {
+        let title = document.createElement('title');
+        title.textContent = 'Page 1';
+        addToHead(title);
+
+        mockResponse('GET', '/page2', headResponse('<title>Page 2</title>', '<div>page 2</div>'));
+        let div = createProcessedHTML('<div hx-get="/page2" hx-swap="innerHTML">click</div>');
+        div.click();
+        await afterMerge();
+
+        mockResponse('GET', '/page1', headResponse('<title>Page 1</title>', '<div>page 1</div>'));
+        let div2 = createProcessedHTML('<div hx-get="/page1" hx-swap="innerHTML">click</div>');
+        div2.click();
+        await afterMerge();
+
+        let titles = document.head.querySelectorAll('title');
+        assert.equal(titles.length, 1, 'should have exactly one title after round-trip navigation in append mode');
+    });
+
+    it('removes existing title in append mode when response has a title', async function() {
+        let title = document.createElement('title');
+        title.textContent = 'Old Title';
+        addToHead(title);
+
+        mockResponse('GET', '/page', headResponse('<title>New Title</title>', '<div>content</div>'));
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
+        div.click();
+        await afterMerge();
+
+        let titles = document.head.querySelectorAll('title');
+        assert.equal(titles.length, 1, 'should have exactly one title');
+        assert.equal(document.title, 'New Title', 'title should be updated');
+    });
+
+    it('preserves existing title in append mode when response has no title and clearTitle is not set', async function() {
+        let title = document.createElement('title');
+        title.textContent = 'Keep Me';
+        addToHead(title);
+
+        mockResponse('GET', '/page', headResponse('<meta name="hx-head-test-4070-notitle" content="yes">', '<div>content</div>'));
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
+        div.click();
+        await afterMerge();
+
+        let added = document.head.querySelector('meta[name="hx-head-test-4070-notitle"]');
+        if (added) addedHeadElts.push(added);
+
+        assert.equal(document.head.querySelectorAll('title').length, 1, 'title should be preserved');
+        assert.equal(document.title, 'Keep Me', 'title text should be unchanged');
+    });
+
+    it('does not add title element to head when ignoreTitle:true is set', async function() {
+        let titleCountBefore = document.head.querySelectorAll('title').length;
+
+        mockResponse('GET', '/page', headResponse('<title>New Title</title><meta name="hx-head-test-ignoretitle" content="yes">', '<div>content</div>'));
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML ignoreTitle:true">click</div>');
+        div.click();
+        await afterMerge();
+
+        let added = document.head.querySelector('meta[name="hx-head-test-ignoretitle"]');
+        if (added) addedHeadElts.push(added);
+
+        assert.equal(document.head.querySelectorAll('title').length, titleCountBefore, 'hx-head should not add a title element when ignoreTitle is set');
+    });
+
+    it('removes title in append mode when response has no title and clearTitle is set', async function() {
+        let title = document.createElement('title');
+        title.textContent = 'Remove Me';
+        addToHead(title);
+
+        let origClearTitle = htmx.config.head?.clearTitle;
+        htmx.config.head = htmx.config.head || {};
+        htmx.config.head.clearTitle = true;
+
+        mockResponse('GET', '/page', headResponse('<meta name="hx-head-test-4070-cleartitle" content="yes">', '<div>content</div>'));
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
+        div.click();
+        await afterMerge();
+
+        htmx.config.head.clearTitle = origClearTitle;
+
+        let added = document.head.querySelector('meta[name="hx-head-test-4070-cleartitle"]');
+        if (added) addedHeadElts.push(added);
+
+        assert.equal(document.head.querySelectorAll('title').length, 0, 'title should be removed when clearTitle is set and response has no title');
+    });
+
     it('adds stylesheets to head', async function() {
         mockResponse('GET', '/page', headResponse('<link rel="stylesheet" href="/test-styles.css">', '<div>swapped content</div>'));
         
