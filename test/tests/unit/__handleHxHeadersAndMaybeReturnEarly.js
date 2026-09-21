@@ -118,6 +118,33 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
         }
     })
 
+    it('removes the original request indicator after HX-Location', async function() {
+        mockResponse('GET', '/test', 'ignored', {
+            headers: {
+                'HX-Location': '{"path":"/location","target":"#destination","push":"false"}'
+            }
+        })
+        mockResponse('GET', '/location', 'Located')
+        let source = createProcessedHTML('<div><button id="source" hx-get="/test" hx-indicator="#indicator">Go</button><div id="destination"></div><div id="indicator"></div></div>')
+            .querySelector('#source')
+        let indicator = find('#indicator')
+        let locationFinished = new Promise(resolve => {
+            document.addEventListener('htmx:finally:request', function handler(evt) {
+                if (evt.detail?.ctx?.request?.action === '/location') {
+                    document.removeEventListener('htmx:finally:request', handler)
+                    resolve()
+                }
+            })
+        })
+
+        source.click()
+        assert.isTrue(indicator.classList.contains('htmx-request'))
+        await locationFinished
+
+        assert.equal(find('#destination').textContent, 'Located')
+        assert.isFalse(indicator.classList.contains('htmx-request'))
+    })
+
     // HX-Refresh header tests
     it('calls location.reload() on HX-Refresh: true', function () {
         let reloadCalled = false;
@@ -132,6 +159,21 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
 
         assert.isTrue(result);
         assert.isTrue(reloadCalled);
+    })
+
+    it('keeps the request indicator on HX-Refresh', async function() {
+        htmx._loc = { reload: function() {} }
+        mockResponse('GET', '/test', 'ignored', {
+            headers: { 'HX-Refresh': 'true' }
+        })
+        let source = createProcessedHTML('<div><button id="source" hx-get="/test" hx-indicator="#indicator">Go</button><div id="indicator"></div></div>')
+            .querySelector('#source')
+        let indicator = find('#indicator')
+
+        source.click()
+        await forRequest()
+
+        assert.isTrue(indicator.classList.contains('htmx-request'))
     })
 
     it('does not reload on HX-Refresh: false', function () {
@@ -166,6 +208,21 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
 
         assert.isTrue(result);
         assert.equal(redirectUrl, 'https://example.com/new-page');
+    })
+
+    it('keeps the request indicator on HX-Redirect', async function() {
+        htmx._loc = { set href(value) {} }
+        mockResponse('GET', '/test', 'ignored', {
+            headers: { 'HX-Redirect': '/redirected' }
+        })
+        let source = createProcessedHTML('<div><button id="source" hx-get="/test" hx-indicator="#indicator">Go</button><div id="indicator"></div></div>')
+            .querySelector('#source')
+        let indicator = find('#indicator')
+
+        source.click()
+        await forRequest()
+
+        assert.isTrue(indicator.classList.contains('htmx-request'))
     })
 
     // HX-Location header tests

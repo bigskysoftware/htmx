@@ -598,7 +598,7 @@ var htmx = (() => {
                 }
 
                 if(this.__handleHeadersAndMaybeReturnEarly(ctx)){
-                    ctx.keepIndicators = true;
+                    ctx.keepIndicators = ctx.hx.refresh === 'true' || !!ctx.hx.redirect;
                     return
                 }
 
