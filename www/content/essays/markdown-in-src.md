@@ -46,7 +46,7 @@ What I want to do in the remainder of this essay is think about the ramification
 
 There is a line of thinking, captured in the quote above, that LLMs are akin to compilers, taking high-level specifications and turning them into low-level implementations.  In this view, we don't need to look at the code an LLM generates, just as we don't look at the machine code a compiler generates.
 
-As I mention in [Code is Cheap(er)](@/essays/code-is-cheap.md), I do not agree with this analogy for a few reasons, but the one relevant to this essay is: compiler workflows retain their original source code while LLM workflows typically do not.
+As I mention in [Code is Cheap(er)](@/essays/code-is-cheap.md), I do not totally agree with this analogy for a few reasons, but the one relevant to this essay is: compiler workflows retain their original source code while LLM workflows typically do not.
 
 Today, LLM-generated code is often created via a string of prompts fed into an agent as a developer builds out a feature.  In practice, this means that the generated code is the closest thing we have to "ground truth" for that feature.  There may be documentation for the feature stored elsewhere (e.g. Linear, Slack threads, wikis, etc.) but, so far as the codebase is concerned, the generated code is the source of truth.
 
