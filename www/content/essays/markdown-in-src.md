@@ -138,8 +138,6 @@ src/
 
 Here the `features`, `data`, `api` and `infrastructure` directories are all optional; the idea is to divide along different axes to best capture a solid working description of the module's behavior directly in the `/src/md` folder.
 
-I regard this as a proposal rather than a standard, and I invite discussion about the organization of `/src/md`.
-
 ## Conclusion
 
 As code gets cheaper to generate, what remains valuable is the _intent_ behind the code: what it does, why it does it, and what it must not do.
