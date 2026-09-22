@@ -87,7 +87,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^22.20.1",
+    "@types/node": "^22.20.4",
     "@web/test-runner": "^1.0.0",
     "@web/test-runner-playwright": "^1.0.0",
     "chai": "^4.5.0",
@@ -97,7 +97,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-mocha": "^10.5.0",
     "fs-extra": "^9.1.0",
-    "mocha": "^11.8.0",
+    "mocha": "^12.0.2",
     "mock-socket": "^9.3.1",
     "sinon": "^10.0.1",
     "typescript": "^5.9.3",

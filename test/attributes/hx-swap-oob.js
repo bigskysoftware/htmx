@@ -1,13 +1,14 @@
 describe('hx-swap-oob attribute', function() {
-  const savedConfig = htmx.config
+  let savedConfig
   beforeEach(function() {
+    if (!savedConfig) savedConfig = Object.assign({}, htmx.config)
     this.server = makeServer()
     htmx.config = Object.assign({}, savedConfig)
     clearWorkArea()
   })
   afterEach(function() {
     this.server.restore()
-    htmx.config = savedConfig
+    htmx.config = Object.assign({}, savedConfig)
     clearWorkArea()
   })
 
