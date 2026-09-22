@@ -1,7 +1,7 @@
 ---
 title: "hx-multipart"
 description: "Stream HTML with `multipart/mixed`"
-category: "Networking"
+category: "Streaming HTML"
 icon: "icon-[mdi--call-split]"
 keywords: ["multipart", "streaming", "mixed", "parallel", "Response.parts"]
 ---

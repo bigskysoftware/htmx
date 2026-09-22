@@ -1,7 +1,7 @@
 ---
 title: "hx-sse"
 description: "Stream HTML with `text/event-stream` (SSE)"
-category: "Networking"
+category: "Streaming HTML"
 icon: "icon-[mdi--rss]"
 keywords: ["sse", "server-sent events", "server sent events", "event stream", "streaming", "real-time"]
 ---
