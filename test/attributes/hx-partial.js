@@ -106,6 +106,23 @@ describe('hx-partial', function() {
     delete window.testVar
   })
 
+  it('does not execute script in partial when allowScriptTags is false', function() {
+    window.testVar = 0
+    try {
+      htmx.config.allowScriptTags = false
+      this.server.respondWith('GET', '/test', "<hx-partial hx-target='#d1'><script>window.testVar = 42<\/script>Partial</hx-partial>")
+      var div = make('<div hx-get="/test">click me</div>')
+      make('<div id="d1"></div>')
+      div.click()
+      this.server.respond()
+      window.testVar.should.equal(0)
+      byId('d1').innerHTML.should.equal('Partial')
+    } finally {
+      htmx.config.allowScriptTags = true
+      delete window.testVar
+    }
+  })
+
   it('template fallback form works identically', function() {
     this.server.respondWith('GET', '/test', '<template hx type="partial" hx-target="#d1">Partial</template>')
     var div = make('<div hx-get="/test">click me</div>')

@@ -575,6 +575,11 @@ var htmx = (function() {
    * @param {DocumentFragment} fragment
    */
   function normalizeScriptTags(fragment) {
+    if (!htmx.config.allowScriptTags) {
+      // remove all script tags if scripts are disabled
+      fragment.querySelectorAll('script').forEach((script) => script.remove())
+      return
+    }
     Array.from(fragment.querySelectorAll('script')).forEach(/** @param {HTMLScriptElement} script */ (script) => {
       if (isJavaScriptScriptNode(script)) {
         const newScript = duplicateScript(script)
@@ -635,12 +640,7 @@ var htmx = (function() {
       }
     }
     if (fragment) {
-      if (htmx.config.allowScriptTags) {
-        normalizeScriptTags(fragment)
-      } else {
-        // remove all script tags if scripts are disabled
-        fragment.querySelectorAll('script').forEach((script) => script.remove())
-      }
+      normalizeScriptTags(fragment)
     }
     return fragment
   }
@@ -1867,6 +1867,7 @@ var htmx = (function() {
             target = asElement(target)
             if (target) {
               var fragment = template.content.cloneNode(true)
+              normalizeScriptTags(fragment)
               var beforeSwapDetails = { shouldSwap: true, target, fragment }
               if (!triggerEvent(target, 'htmx:partialBeforeSwap', beforeSwapDetails)) return
               target = beforeSwapDetails.target
