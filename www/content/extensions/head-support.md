@@ -18,7 +18,7 @@ a feature of the library.  This extension addresses that shortcoming.
 The fastest way to install `head-support` is to load it via a CDN. Remember to always include the core htmx library before the extension and [enable the extension](#usage).
 ```HTML
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-748snOk79hP4Y80eB711CBgC/j/ujsPDVl9cMdpiXZDYicpBmI2D8w+QlWvMUg2b" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx-ext-head-support@2.0.5" integrity="sha384-cvMqHzjCJsOHgGuyB3sWXaUSv/Krm0BdzjuI1rtkjCbL1l1oHJx+cHyVRJhyuEz0" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="head-support">
