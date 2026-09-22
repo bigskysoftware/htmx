@@ -8,7 +8,6 @@
 * [Fixed](https://github.com/bigskysoftware/htmx/pull/3998) OOB swap targets not found when the context element is detached from the document [Issue 3959](https://github.com/bigskysoftware/htmx/issues/3959) (thanks @yfwmaniish)
 * [Updated](https://github.com/bigskysoftware/htmx/pull/3381) internal object iteration to use `Object.keys()` instead of `for...in` (thanks @yawaramin)
 * [Fixed](https://github.com/bigskysoftware/htmx/pull/3435) `@default` JSDoc value for `selfRequestsOnly` (thanks @blister)
-* [Updated](https://github.com/bigskysoftware/htmx/pull/4094) test dependencies to mocha 12 (thanks @MichaelWest22)
 
 ## [2.0.10] - 2026-04-21
 
