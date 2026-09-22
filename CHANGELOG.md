@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.0.11] - 2026-09-22
+
+* [Added](https://github.com/bigskysoftware/htmx/pull/4050) `<hx-partial>` tag support, backported from 4.0: a response can carry `<hx-partial hx-target="...">` elements that swap into their own targets (thanks @MichaelWest22)
+* [Fixed](https://github.com/bigskysoftware/htmx/pull/4093) `hx-push-url="false"` on an ancestor of a boosted element being ignored [Issue 3966](https://github.com/bigskysoftware/htmx/issues/3966) (thanks @MichaelWest22)
+* [Fixed](https://github.com/bigskysoftware/htmx/pull/3772) `hasHeader()` substring match on response header names, which could throw a `TypeError` [Issue 527](https://github.com/bigskysoftware/htmx/issues/527) (thanks @manwithacat)
+* [Fixed](https://github.com/bigskysoftware/htmx/pull/3998) OOB swap targets not found when the context element is detached from the document [Issue 3959](https://github.com/bigskysoftware/htmx/issues/3959) (thanks @yfwmaniish)
+* [Updated](https://github.com/bigskysoftware/htmx/pull/3381) internal object iteration to use `Object.keys()` instead of `for...in` (thanks @yawaramin)
+* [Fixed](https://github.com/bigskysoftware/htmx/pull/3435) `@default` JSDoc value for `selfRequestsOnly` (thanks @blister)
+* [Updated](https://github.com/bigskysoftware/htmx/pull/4094) test dependencies to mocha 12 (thanks @MichaelWest22)
+
 ## [2.0.10] - 2026-04-21
 
 * [Fixed](https://github.com/bigskysoftware/htmx/issues/3757) restored missing TypeScript type definitions (`htmx.esm.d.ts`) accidentally removed in 2.0.9

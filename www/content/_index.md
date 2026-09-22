@@ -123,8 +123,8 @@ By removing these constraints, htmx completes HTML as a [hypertext](https://en.w
 <h2>quick start</h2>
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" 
-          integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V"
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" 
+          integrity="sha384-748snOk79hP4Y80eB711CBgC/j/ujsPDVl9cMdpiXZDYicpBmI2D8w+QlWvMUg2b"
           crossorigin="anonymous"></script>
   <!-- have a button POST a click via AJAX -->
   <button hx-post="/clicked" hx-swap="outerHTML">

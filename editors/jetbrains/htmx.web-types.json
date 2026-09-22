@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-types",
   "name": "htmx",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "default-icon": "./htmx.svg",
   "js-types-syntax": "typescript",
   "description-markup": "markdown",
@@ -157,6 +157,12 @@
             "Inherited": ""
           },
           "doc-url": "https://htmx.org/attributes/hx-params/"
+        },
+        {
+          "name": "hx-partial",
+          "description": "`<hx-partial>` is a **server-sent swap command**, not a DOM element. It exists only in the HTTP\nresponse body. The server wraps content in `<hx-partial hx-target=\"...\">` tags to tell htmx\nwhere to swap that content; htmx reads the instructions, performs the swap, and discards the\nenvelope entirely — nothing from the `<hx-partial>` tag itself ever appears in the page.\n\nThis is similar to [`hx-swap-oob`](@/attributes/hx-swap-oob.md) but with key differences:\nthe envelope is always consumed and discarded, targets are resolved relative to the **triggering\nelement** using the full htmx extended selector vocabulary, and partials execute **before** the\nmain swap.",
+          "description-sections": {},
+          "doc-url": "https://htmx.org/attributes/hx-partial/"
         },
         {
           "name": "hx-patch",
@@ -485,9 +491,29 @@
           "doc-url": "https://htmx.org/events/#htmx:oobErrorNoTarget"
         },
         {
+          "name": "partialAfterSwap",
+          "description": "This event is triggered after a [`<hx-partial>`](@/attributes/hx-partial.md) element has been swapped into the DOM. It behaves identically to [`htmx:oobAfterSwap`](#htmx:oobAfterSwap).\n\n##### Details\n\n* `detail.elt` - the swapped in element\n* `detail.shouldSwap` - if the content was swapped (defaults to `true`)\n* `detail.target` - the target of the swap\n* `detail.fragment` - the response fragment\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:partialAfterSwap"
+        },
+        {
+          "name": "partialBeforeSwap",
+          "description": "This event is triggered before a [`<hx-partial>`](@/attributes/hx-partial.md) element is swapped into the DOM. It behaves identically to [`htmx:oobBeforeSwap`](#htmx:oobBeforeSwap). Setting `detail.shouldSwap` to `false` cancels the swap. You may also reassign `detail.target` to redirect the swap to a different element, or replace `detail.fragment` to rewrite the content before it is inserted.\n\n##### Details\n\n* `detail.elt` - the target of the swap\n* `detail.shouldSwap` - if the content will be swapped (defaults to `true`)\n* `detail.target` - the target of the swap\n* `detail.fragment` - the response fragment (may be replaced to rewrite content)\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:partialBeforeSwap"
+        },
+        {
+          "name": "partialErrorNoTarget",
+          "description": "This event is triggered on `document.body` when a [`<hx-partial>`](@/attributes/hx-partial.md) element's `hx-target` selector does not match any element in the current DOM.\n\n##### Details\n\n* `detail.content` - the partial template element with the unresolved target\n* `detail.target` - the CSS selector that could not be resolved\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:partialErrorNoTarget"
+        },
+        {
           "name": "onLoadError",
           "description": "This event is triggered when an error occurs during the `load` handling of an AJAX call\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.elt` - the element that triggered the request\n* `detail.target` - the target of the request\n* `detail.exception` - the exception that occurred\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
           "doc-url": "https://htmx.org/events/#htmx:onLoadError"
+        },
+        {
+          "name": "processTemplate",
+          "description": "This event is triggered on `document.body` when a response contains an `<hx-*>` custom tag whose `type` attribute is **not** `partial` — for example `<hx-toast>`, `<hx-notification>`, etc. It gives application code (or extensions) a hook to handle custom `<hx-*>` element types.\n\nThe template element still has its `.content` intact at the time the event fires. It is removed from the fragment immediately after the event returns.\n\nHere is an example that handles a custom `<hx-toast>` tag:\n\n```javascript\nconst listener = htmx.on('htmx:processTemplate', function(evt) {\n  if (evt.detail.type === 'toast') {\n    showToast(evt.detail.template.getAttribute('message'))\n  }\n})\n// later: htmx.off('htmx:processTemplate', listener)\n```\n\n##### Details\n\n* `detail.type` - the tag type, i.e. the part after `hx-` (e.g. `\"toast\"` for `<hx-toast>`)\n* `detail.template` - the `<template>` element representing the custom tag, with `.content` intact\n* `detail.settleInfo` - the current settle info object\n* `detail.sourceElement` - the element that triggered the original request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:processTemplate"
         },
         {
           "name": "prompt",

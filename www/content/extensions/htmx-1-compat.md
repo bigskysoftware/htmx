@@ -9,7 +9,7 @@ The `htmx-1-compat` extension allows you to almost seamlessly upgrade from htmx 
 The fastest way to install `htmx-1-compat` is to load it via a CDN. Remember to always include the core htmx library before the extension and enable the extension.
 ```HTML
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-748snOk79hP4Y80eB711CBgC/j/ujsPDVl9cMdpiXZDYicpBmI2D8w+QlWvMUg2b" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx-ext-htmx-1-compat@2.0.2" integrity="sha384-lcvVWaNjF5zPPUeeWmC0OkJ2MLqoWLlkAabuGm+EuMSTfGo5WRyHrNaAp0cJr9Pg" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="htmx-1-compat">
