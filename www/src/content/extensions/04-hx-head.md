@@ -257,13 +257,13 @@ Or via meta tag:
 <meta name="htmx-config" content='{ "head": { "clearTitle": true } }'>
 ```
 
-| Mode | Response has title | `clearTitle` | Result |
+| Response has title | Mode | `clearTitle` | Result |
 |---|---|---|---|
-| `merge` | yes | — | Title removed and replaced |
-| `merge` | no | — | Title removed |
-| `append` | yes | — | Title removed and replaced |
-| `append` | no | `false` (default) | Title preserved |
-| `append` | no | `true` | Title removed |
+| yes | `merge` | — | Title removed and replaced |
+| yes | `append` | — | Title removed and replaced |
+| no | `merge` | — | Title removed |
+| no | `append` | `false` (default) | Title preserved |
+| no | `append` | `true` | Title removed |
 
 ## Migration
 
