@@ -598,7 +598,7 @@ var htmx = (() => {
                 }
 
                 if(this.__handleHeadersAndMaybeReturnEarly(ctx)){
-                    ctx.keepIndicators = ctx.hx.refresh === 'true' || !!ctx.hx.redirect;
+                    ctx.keepIndicators ??= true;
                     return
                 }
 
@@ -663,6 +663,8 @@ var htmx = (() => {
                     path = opts.path;
                     delete opts.path;
                 }
+                if (opts.keepIndicators != null) ctx.keepIndicators = opts.keepIndicators;
+                delete opts.keepIndicators;
                 if (opts.push == null && opts.replace == null) opts.push = 'true';
                 this.ajax('GET', path, opts);
                 return true

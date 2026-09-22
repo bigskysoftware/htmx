@@ -118,10 +118,37 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
         }
     })
 
-    it('removes the original request indicator after HX-Location', async function() {
+    it('keeps the original request indicator after HX-Location by default', async function() {
         mockResponse('GET', '/test', 'ignored', {
             headers: {
                 'HX-Location': '{"path":"/location","target":"#destination","push":"false"}'
+            }
+        })
+        mockResponse('GET', '/location', 'Located')
+        let source = createProcessedHTML('<div><button id="source" hx-get="/test" hx-indicator="#indicator">Go</button><div id="destination"></div><div id="indicator"></div></div>')
+            .querySelector('#source')
+        let indicator = find('#indicator')
+        let locationFinished = new Promise(resolve => {
+            document.addEventListener('htmx:finally:request', function handler(evt) {
+                if (evt.detail?.ctx?.request?.action === '/location') {
+                    document.removeEventListener('htmx:finally:request', handler)
+                    resolve()
+                }
+            })
+        })
+
+        source.click()
+        assert.isTrue(indicator.classList.contains('htmx-request'))
+        await locationFinished
+
+        assert.equal(find('#destination').textContent, 'Located')
+        assert.isTrue(indicator.classList.contains('htmx-request'))
+    })
+
+    it('removes the original request indicator after HX-Location with keepIndicators:false', async function() {
+        mockResponse('GET', '/test', 'ignored', {
+            headers: {
+                'HX-Location': '{"path":"/location","target":"#destination","push":"false","keepIndicators":false}'
             }
         })
         mockResponse('GET', '/location', 'Located')
@@ -264,7 +291,7 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
 
         try {
             let ctx = {
-                hx: { location: '{"path":"/test", "target":"#result"}' },
+                hx: { location: '{"path":"/test", "target":"#result", "keepIndicators":false}' },
                 sourceElement: createProcessedHTML('<div></div>')
             };
 
@@ -276,6 +303,8 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
             assert.equal(ajaxArgs.path, '/test');
             assert.equal(ajaxArgs.opts.target, '#result');
             assert.equal(ajaxArgs.opts.push, 'true');
+            assert.notProperty(ajaxArgs.opts, 'keepIndicators');
+            assert.isFalse(ctx.keepIndicators);
         } finally {
             htmx.ajax = originalAjax;
         }
