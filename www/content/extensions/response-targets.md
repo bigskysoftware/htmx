@@ -18,9 +18,9 @@ The value of each attribute can be:
 (e.g. `closest tr` will target the closest table row to the element).
 * `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
 * `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.
-(e.g. `next .error` will target the closest following sibling element with `error` class)
+(e.g. `next .error` will target the first element with the `error` class that follows this element in the document)
 * `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
-(e.g `previous .error` will target the closest previous sibling with `error` class)
+(e.g. `previous .error` will target the first element with the `error` class that precedes this element in the document)
 
 ## Installing
 
@@ -38,7 +38,7 @@ An unminified version is also available at https://cdn.jsdelivr.net/npm/htmx-ext
 While the CDN approach is simple, you may want to consider [not using CDNs in production](https://blog.wesleyac.com/posts/why-not-javascript-cdn). The next easiest way to install `response-targets` is to simply copy it into your project. Download the extension from `https://cdn.jsdelivr.net/npm/htmx-ext-response-targets`, add it to the appropriate directory in your project and include it where necessary with a `<script>` tag.
 
 For npm-style build systems, you can install `response-targets` via [npm](https://www.npmjs.com/):
-```shell
+```sh
 npm install htmx-ext-response-targets
 ```
 After installing, you'll need to use appropriate tooling to bundle `node_modules/htmx-ext-response-targets/dist/response-targets.js` (or `.min.js`). For example, you might bundle the extension with htmx core from `node_modules/htmx.org/dist/htmx.js` and project-specific code.

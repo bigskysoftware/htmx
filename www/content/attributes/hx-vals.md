@@ -33,6 +33,35 @@ You can also use the spread operator to dynamically specify values. This allows 
 
 In this example, if `foo()` returns an object like `{name: "John", age: 30}`, both `name` and `age` will be included as parameters in the request.
 
+## Using hx-vals with hx-post
+
+The `hx-vals` attribute works with all HTTP methods, including `hx-post`, `hx-put`, `hx-patch`, and `hx-delete`:
+
+```html
+  <button hx-post="/submit" hx-vals='{"action": "save", "draft": "true"}'>
+    Save as Draft
+  </button>
+```
+
+When used with GET requests, the values are appended as query parameters.
+
+## JSON Syntax Requirements
+
+The `hx-vals` attribute requires **valid JSON syntax**. A common mistake is using single quotes inside the JSON, which will cause the values to be ignored:
+
+```html
+  <!-- WRONG: Single quotes inside JSON are invalid -->
+  <div hx-post="/example" hx-vals="{'myVal': 'value'}">This will NOT work</div>
+
+  <!-- CORRECT: Use double quotes inside JSON, single quotes for the attribute -->
+  <div hx-post="/example" hx-vals='{"myVal": "value"}'>This works correctly</div>
+
+  <!-- CORRECT: Or escape the double quotes if using double quotes for the attribute -->
+  <div hx-post="/example" hx-vals="{&quot;myVal&quot;: &quot;value&quot;}">This also works</div>
+```
+
+If your `hx-vals` JSON is malformed, htmx will log an error to the console and ignore the value.
+
 ## Security Considerations
 
 * By default, the value of `hx-vals` must be valid [JSON](https://developer.mozilla.org/en-US/docs/Glossary/JSON).

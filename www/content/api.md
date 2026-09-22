@@ -220,7 +220,7 @@ Finds an element matching the selector
 
 or
 
-* `elt` - the root element to find the matching element in, inclusive
+* `elt` - the root element to find the matching element inside of (not including the root itself)
 * `selector` - the selector to match
 
 ##### Example
@@ -243,7 +243,7 @@ Finds all elements matching the selector
 
 or
 
-* `elt` - the root element to find the matching elements in, inclusive
+* `elt` - the root element to find the matching elements inside of (not including the root itself)
 * `selector` - the selector to match
 
 ##### Example

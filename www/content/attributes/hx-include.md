@@ -13,9 +13,9 @@ attribute can be:
   (e.g. `closest tr` will target the closest table row to the element).
 * `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.
 * `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.
-  (e.g. `next .error` will target the closest following sibling element with `error` class)
+  (e.g. `next .error` will target the first element with the `error` class that follows this element in the document)
 * `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
-  (e.g. `previous .error` will target the closest previous sibling with `error` class)
+  (e.g. `previous .error` will target the first element with the `error` class that precedes this element in the document)
 
 Here is an example that includes a separate input value:
 

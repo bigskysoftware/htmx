@@ -49,6 +49,8 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/renceInbox/fastapi-todo>
 - <https://github.com/AutomationPanda/bulldoggy-reminders-app>
+- <https://github.com/volfpeter/holm>
+- <https://github.com/volfpeter/fasthx>
 - <https://github.com/volfpeter/fastapi-htmx-tailwind-example>
 
 ### Flask
@@ -71,6 +73,10 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/AussieGuy0/java-htmx-todo/>
 - <https://github.com/erwindrsno/simple-to-do-list>
+
+### Jooby
+
+- <https://github.com/jooby-project/htmx-demo>
 
 ### Spring Boot
 

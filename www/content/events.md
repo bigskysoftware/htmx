@@ -48,10 +48,10 @@ can be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior 
 * `detail.xhr` - the `XMLHttpRequest`
 * `detail.target` - the target of the request
 * `detail.requestConfig` - the configuration of the AJAX request
-* `detail.successful` - true if the response has a 20x status code or is marked `detail.isError = false` in the
-  `htmx:beforeSwap` event, else false
-* `detail.failed` - true if the response does not have a 20x status code or is marked `detail.isError = true` in the
-  `htmx:beforeSwap` event, else false
+* `detail.successful` - true if the matched [`htmx.config.responseHandling`](@/docs.md#response-handling) rule did not
+  mark the response as an error (by default, 2xx and 3xx codes), or `detail.isError` was set to `false` in the
+  `htmx:beforeSwap` event
+* `detail.failed` - the inverse of `detail.successful`
 
 ### Event - `htmx:afterSettle` {#htmx:afterSettle}
 

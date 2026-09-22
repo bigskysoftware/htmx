@@ -29,7 +29,7 @@ While the CDN approach is simple, you may want to consider [not using CDNs in pr
 
 For npm-style build systems, you can install `idiomorph` via [npm](https://www.npmjs.com/):
 
-```shell
+```sh
 npm install idiomorph
 ```
 
@@ -44,6 +44,8 @@ If you are using a bundler to manage your javascript (e.g. Webpack, Rollup):
 import `htmx.org`;
 import `idiomorph/htmx`;
 ```
+
+_Note: when used with the [SSE extension](@/extensions/sse.md), requires htmx-ext-sse 2.2.4+ ([#164](https://github.com/bigskysoftware/htmx-extensions/issues/164))._
 
 ## Usage
 

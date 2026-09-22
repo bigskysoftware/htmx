@@ -40,7 +40,7 @@ To run a specific test file headlessly, for example `test/core/ajax.js`, use the
 ```bash
 npm test test/core/ajax.js
 ```
-If you want to run only one specific test, you can temporarily change `it("...` to `it.only("...` in the test file, and then specify the test file as above. Don't forget to undo this before you commit! You will get eslint warnings now to let you know when you have temporary `.only` in place to help avoid commiting these.
+If you want to run only one specific test, you can temporarily change `it("...` to `it.only("...` in the test file, and then specify the test file as above. Don't forget to undo this before you commit! You will get eslint warnings now to let you know when you have temporary `.only` in place to help avoid committing these.
 
 ### Browser Mode
 To run tests directly in the browser, simply `open test/index.html` in a browser.
@@ -68,7 +68,7 @@ xdg-open coverage/lcov-report/index.html
 ```
 
 ## Test Locations
-- All tests are located in the `test/attribues` and `test/core` directories. Only .js files in these directory will be discovered by the test runner.
+- All tests are located in the `test/attributes` and `test/core` directories. Only .js files in these directory will be discovered by the test runner.
 - The `web-test-runner.config.mjs` file in the root directory contains the boilerplate HTML for the test runs, including `<script>` tags for the test dependencies.
 
 ### Local CI prediction

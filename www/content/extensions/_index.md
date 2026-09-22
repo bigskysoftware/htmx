@@ -127,11 +127,15 @@ htmx extensions are split into two categories:
       <td>{% markdown() %}  This extension allows htmx requests to be sent for drag drop  {% end %}</td>
     </tr>
     <tr>
+      <td>{% markdown() %}  [hx-keep](https://www.npmjs.com/package/hx-keep)  {% end %}</td>
+      <td>{% markdown() %}  Cache forms and html content on the client to persist state across refreshes  {% end %}</td>
+    </tr>
+    <tr>
       <td>{% markdown() %}  [dynamic-url](https://github.com/FumingPower3925/htmx-dynamic-url/blob/main/README.md)  {% end %}</td>
       <td>{% markdown() %}  Allows dynamic URL path templating using `{varName}` placeholders, resolved via configurable custom function or `window.` fallback. It does not rely on `hx-vals`. Useful when needing to perform requests to paths that depend on application state.  {% end %}</td>
     </tr>
     <tr>
-      <td>{% markdown() %}  [optimistic]([https://github.com/FumingPower3925/htmx-dynamic-url](https://github.com/lorenseanstewart/hx-optimistic/blob/main/README.md)  {% end %}</td>
+      <td>{% markdown() %}  [optimistic](https://github.com/lorenseanstewart/hx-optimistic/blob/main/README.md)  {% end %}</td>
       <td>{% markdown() %}  This extension provides a way to optimistically update the UI to increase perceived performance  {% end %}</td>
     </tr>
   </tbody>

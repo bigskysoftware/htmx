@@ -71,10 +71,10 @@ is seen again before the delay completes, it is ignored, the element will trigge
     * `find <CSS selector>` - finds the closest child matching the given css selector
     * `next` resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)
     * `next <CSS selector>` scans the DOM forward for the first element that matches the given CSS selector.
-      (e.g. `next .error` will target the closest following sibling element with `error` class)
+      (e.g. `next .error` will target the first element with the `error` class that follows this element in the document)
     * `previous` resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)
     * `previous <CSS selector>` scans the DOM backwards for the first element that matches the given CSS selector.
-      (e.g. `previous .error` will target the closest previous sibling with `error` class)
+      (e.g. `previous .error` will target the first element with the `error` class that precedes this element in the document)
 * `target:<CSS selector>` - allows you to filter via a CSS selector on the target of the event.  This can be useful when you want to listen for
 triggers from elements that might not be in the DOM at the point of initialization, by, for example, listening on the body,
 but with a target filter for a child element
@@ -137,10 +137,11 @@ By using the syntax `every <timing declaration>` you can have an element poll pe
 This example will issue a `GET` to the `/latest_updates` URL every second and swap the results into
 the innerHTML of this div.
 
-If you want to add a filter to polling, it should be added *after* the poll declaration:
+If you want to add a filter to polling, it should be added *after* the poll declaration. The filter must be a
+JavaScript expression. This example will only poll when the tab is being viewed:
 
 ```html
-<div hx-get="/latest_updates" hx-trigger="every 1s [someConditional]">
+<div hx-get="/latest_updates" hx-trigger="every 1s [!document.hidden]">
   Nothing Yet!
 </div>
 ```
