@@ -4743,9 +4743,8 @@ var htmx = (function() {
     const requestPath = responseInfo.pathInfo.finalRequestPath
     const responsePath = responseInfo.pathInfo.responsePath
 
-    let pushUrl = responseInfo.etc.push || getClosestAttributeValue(elt, 'hx-push-url')
+    const pushUrl = responseInfo.etc.push || getClosestAttributeValue(elt, 'hx-push-url')
     let replaceUrl = responseInfo.etc.replace || getClosestAttributeValue(elt, 'hx-replace-url')
-    if (pushUrl === 'false') pushUrl = null
     if (replaceUrl === 'false') replaceUrl = null
     const elementIsBoosted = getInternalData(elt).boosted
 
@@ -4764,6 +4763,11 @@ var htmx = (function() {
     }
 
     if (path) {
+      // false indicates no push, return empty object
+      if (path === 'false') {
+        return {}
+      }
+
       // true indicates we want to follow wherever the server ended up sending us
       if (path === 'true') {
         path = responsePath || requestPath // if there is no response path, go with the original request path
