@@ -394,7 +394,7 @@ describe('hx-head extension', function() {
     });
 
     it('does not add title element to head when ignoreTitle:true is set', async function() {
-        let titleCountBefore = document.head.querySelectorAll('title').length;
+        assert.equal(document.head.querySelectorAll('title').length, 0, 'no title should exist before the request');
 
         mockResponse('GET', '/page', headResponse('<title>New Title</title><meta name="hx-head-test-ignoretitle" content="yes">', '<div>content</div>'));
         let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML ignoreTitle:true">click</div>');
@@ -404,7 +404,7 @@ describe('hx-head extension', function() {
         let added = document.head.querySelector('meta[name="hx-head-test-ignoretitle"]');
         if (added) addedHeadElts.push(added);
 
-        assert.equal(document.head.querySelectorAll('title').length, titleCountBefore, 'hx-head should not add a title element when ignoreTitle is set');
+        assert.equal(document.head.querySelectorAll('title').length, 0, 'hx-head should not add a title element when ignoreTitle is set');
     });
 
     it('removes title in append mode when response has no title and clearTitle is set', async function() {
