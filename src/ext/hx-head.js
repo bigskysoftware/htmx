@@ -23,8 +23,8 @@
             })
         }
 
-        // blocking external script (no async/defer): must init before swap
-        if (newNode.tagName === "SCRIPT" && newNode.src && !newNode.async && !newNode.defer) {
+        // blocking external script (no async/defer, not a module): must init before swap
+        if (newNode.tagName === "SCRIPT" && newNode.src && !newNode.async && !newNode.defer && newNode.type !== "module") {
             return new Promise((resolve, reject) => {
                 newElt.onload = resolve
                 newElt.onerror = reject
@@ -117,7 +117,7 @@
 
                 // defer scripts need the swapped DOM to exist, so split them out
                 for (const newNode of nodesToAppend) {
-                    if (newNode.tagName === "SCRIPT" && newNode.defer) {
+                    if (newNode.tagName === "SCRIPT" && (newNode.defer || newNode.type === "module")) {
                         deferred.push(newNode)
                         if (newNode.src) {
                             let hint = document.createElement("link")
