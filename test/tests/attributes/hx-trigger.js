@@ -199,6 +199,33 @@ describe('hx-trigger attribute', function() {
         fetchMock.calls.length.should.equal(2)
     })
 
+    it('changed modifier shared across specs — blur does not double-fire after input changed', async function () {
+        mockResponse('GET', '/test', 'Saved!')
+        let input = createProcessedHTML('<input hx-get="/test" hx-trigger="keydown changed, blur changed" value="">')
+        input.value = 'hello'
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // blur with same value — shared WeakMap should suppress this
+        input.dispatchEvent(new Event('blur', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+    })
+    
+    it('changed modifier with delay — blur fires immediately and pending timer does not double-fire', async function () {
+        mockResponse('GET', '/test', 'Saved!')
+        mockResponse('GET', '/test', 'Saved!')
+        let input = createProcessedHTML('<input hx-get="/test" hx-trigger="keydown changed delay:50ms, blur changed" value="">')
+        input.value = 'hello'
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        // blur immediately before the 50ms delay fires
+        input.dispatchEvent(new Event('blur', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // wait for the delay to expire — timer should be suppressed by changed check
+        await htmx.timeout(100)
+        fetchMock.calls.length.should.equal(1)
+    })
+
     it('load event triggers on element creation', async function () {
         debug(this)
         mockResponse('GET', '/test', 'Loaded!')
