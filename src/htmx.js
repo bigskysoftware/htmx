@@ -752,6 +752,15 @@ var htmx = (() => {
                 let inner = (evt) => {
                     if (spec.halt || spec.prevent) evt.preventDefault();
                     if (spec.halt || spec.stop || spec.consume) evt.stopPropagation();
+                    if (spec.changed) {
+                        let values = this.__htmxState(elt).changedValues ??= new WeakMap();
+                        let target = evt.target;
+                        if (!['checkbox', 'radio'].includes(target?.type)) {
+                            let value = target?.value;
+                            if (values.has(target) && values.get(target) === value) return;
+                            values.set(target, value);
+                        }
+                    }
                     if (spec.once) {
                         for (let info of spec.listeners) info.fromElt.removeEventListener(info.eventName, info.handler, info);
                     }
@@ -790,15 +799,6 @@ var htmx = (() => {
                     if (spec.from === 'self' && evt.target !== elt) return;
                     if (spec.from === 'outside' && elt.contains(evt.target)) return;
                     if (spec.target && !evt.target?.matches?.(spec.target)) return;
-                    if (spec.changed) {
-                        let values = spec.values ??= new WeakMap();
-                        let target = evt.target;
-                        if (!['checkbox', 'radio'].includes(target?.type)) {
-                            let value = target?.value;
-                            if (values.has(target) && values.get(target) === value) return;
-                            values.set(target, value);
-                        }
-                    }
                     if (filter) {
                         let evtArgs = {}; for (let k in evt) evtArgs[k] = evt[k];
                         if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)) return;
