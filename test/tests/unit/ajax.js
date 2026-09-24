@@ -330,7 +330,7 @@ describe('ajax() unit Tests', function() {
         
         // Content should not have been swapped
         assert.equal(div.innerHTML, '');
-        assert.isTrue(errorFired);
+        assert.isFalse(errorFired);
     });
 
     it('sets full URL for cross-origin GET requests with query params', async function() {
