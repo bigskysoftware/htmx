@@ -87,6 +87,7 @@
             reconnectMaxDelay: 60000,
             reconnectMaxAttempts: Infinity,
             reconnectJitter: 0.3,
+            connectTimeout: htmx.config.defaultTimeout,
             pauseOnBackground: hasConnect,
             ...htmx.config.multipart,
             ...ctx.request.multipart
@@ -171,6 +172,9 @@
 
                     let ac = new AbortController();
                     connection.abortController = ac;
+                    let timedOut = false;
+                    let connectTimeout = htmx.parseInterval(config.connectTimeout) ?? config.connectTimeout;
+                    let timeoutId = connectTimeout > 0 ? setTimeout(() => { timedOut = true; ac.abort(); }, connectTimeout) : null;
                     try {
                         let headers = {...ctx.request.headers};
                         if (connection.lastPartId != null) {
@@ -184,13 +188,14 @@
                             headers,
                             signal: ac.signal
                         });
+                        clearTimeout(timeoutId);
                     } catch (error) {
-                        if (!ac.signal.aborted) {
-                            api.triggerHtmxEvent(element, 'htmx:multipart:error', {
-                                connection,
-                                error
-                            });
-                        }
+                        clearTimeout(timeoutId);
+                        if (ac.signal.aborted && !timedOut) break;
+                        api.triggerHtmxEvent(element, 'htmx:multipart:error', {
+                            connection,
+                            error
+                        });
                         connection.attempt++;
                         continue;
                     }
@@ -353,9 +358,10 @@
         /**
          * Add `multipart/mixed` and `multipart/parallel` to every htmx request's `Accept` header.
          */
-        htmx_config_request: (element, {ctx: {request}}) => {
-            request.headers['Accept'] = `${request.headers['Accept'] ?? request.headers['accept'] ?? 'text/html'}, multipart/mixed, multipart/parallel`;
-            if (api.attributeValue(element, 'hx-multipart:connect') != null) request.timeout = 0;
+        htmx_config_request: (element, {ctx}) => {
+            ctx.request.headers['Accept'] = `${ctx.request.headers['Accept'] ?? ctx.request.headers['accept'] ?? 'text/html'}, multipart/mixed, multipart/parallel`;
+            if (ctx.timeout != null) ctx.request.timeout = ctx.timeout;
+            else if (api.attributeValue(element, 'hx-multipart:connect') != null) ctx.request.timeout = 0;
         },
 
         /**
@@ -390,10 +396,7 @@
                     () => {
                         if (connectElt._htmx?.multipart) return;
 
-                        htmx.ajax(
-                            'GET',
-                            url,
-                            {source: connectElt});
+                        htmx.ajax('GET', url, {source: connectElt, timeout: (htmx.config.multipart?.connectTimeout ?? htmx.config.defaultTimeout)});
                     }
                 );
 

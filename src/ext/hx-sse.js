@@ -16,6 +16,7 @@
             reconnectMaxDelay: 60000,
             reconnectMaxAttempts: Infinity,
             reconnectJitter: 0.3,
+            connectTimeout: htmx.config.defaultTimeout,
             pauseOnBackground: hasHxSseConnect,
             releaseOn: hasHxSseConnect ? 'immediate' : 'end',
             ...htmx.config.sse,
@@ -219,6 +220,9 @@
                     // Re-fetch using saved request context (no full pipeline re-run)
                     let ac = new AbortController();
                     connection.abortController = ac;
+                    let timedOut = false;
+                    let connectTimeout = htmx.parseInterval(config.connectTimeout) ?? config.connectTimeout;
+                    let timeoutId = connectTimeout > 0 ? setTimeout(() => { timedOut = true; ac.abort(); }, connectTimeout) : null;
                     try {
                         clearLastEventIdHeader(ctx.request.headers);
                         if (connection.lastEventId) ctx.request.headers['Last-Event-ID'] = connection.lastEventId;
@@ -226,8 +230,10 @@
                             ...ctx.request,
                             signal: ac.signal
                         });
+                        clearTimeout(timeoutId);
                     } catch (e) {
-                        if (ac.signal.aborted) break;
+                        clearTimeout(timeoutId);
+                        if (ac.signal.aborted && !timedOut) break;
                         api.triggerHtmxEvent(element, 'htmx:sse:error', {connection, error: e});
                         reconnectRequested = false;
                         connection.attempt++;
@@ -334,7 +340,7 @@
         let hxTrigger = api.attributeValue(element, 'hx-trigger') || 'load';
         api.onTrigger(element, hxTrigger, () => {
             if (element._htmx?.sse) return; // prevent duplicate connections
-            htmx.ajax('GET', connectUrl, {source: element});
+            htmx.ajax('GET', connectUrl, {source: element, timeout: getConfig(element).connectTimeout});
         });
     }
 
@@ -382,9 +388,10 @@
             api = internalAPI;
         },
 
-        htmx_config_request: (element, {ctx: {request}}) => {
-            request.headers.Accept =
-                `${request.headers.Accept ?? request.headers.accept ?? 'text/html'}, text/event-stream`;
+        htmx_config_request: (element, {ctx}) => {
+            ctx.request.headers.Accept =
+                `${ctx.request.headers.Accept ?? ctx.request.headers.accept ?? 'text/html'}, text/event-stream`;
+            if (ctx.timeout != null) ctx.request.timeout = ctx.timeout;
         },
 
         // Intercept SSE responses before core consumes the body

@@ -204,6 +204,65 @@ describe('hx-multipart extension', function() {
         assertTextContentIs('#re-target', 'existingre');
     });
 
+    it('connectTimeout triggers reconnect when server hangs on reconnect fetch', async function() {
+        this.timeout(3000);
+        let requestCount = 0;
+        fetchMock.mockResponse('GET', '/mp-ct-hang', () => {
+            requestCount++;
+            if (requestCount === 1) {
+                // First response: clean EOF, triggers reconnect loop
+                return new Response('--updates--\r\n', {
+                    headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+                });
+            }
+            if (requestCount === 2) {
+                // Second fetch hangs — simulates a server that accepts TCP but never responds.
+                // connectTimeout should abort this and trigger attempt 2.
+                return new Promise(() => {});
+            }
+            // Third fetch: succeed so the loop can continue
+            return new Response('--updates--\r\n', {
+                headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+            });
+        });
+
+        createProcessedHTML([
+            '<div id="mp-ct-hang-source" hx-multipart:connect="/mp-ct-hang" ',
+            'hx-config="multipart.connectTimeout:100ms multipart.reconnectDelay:10ms multipart.reconnectMaxAttempts:3 multipart.reconnectJitter:0"></div>'
+        ].join(''));
+
+        // Wait for the timeout to fire on fetch 2 and fetch 3 to be made
+        assert.isTrue(await waitUntil(() => requestCount >= 3, 2000), `Expected ≥3 fetches, got ${requestCount}`);
+        await deleteWithSwap('#mp-ct-hang-source');
+    });
+
+    it('connectTimeout:0 disables the timeout', async function() {
+        this.timeout(3000);
+        let requestCount = 0;
+        fetchMock.mockResponse('GET', '/mp-ct-zero', () => {
+            requestCount++;
+            if (requestCount === 1) {
+                return new Response('--updates--\r\n', {
+                    headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+                });
+            }
+            // Hang forever
+            return new Promise(() => {});
+        });
+
+        createProcessedHTML([
+            '<div id="mp-ct-zero-source" hx-multipart:connect="/mp-ct-zero" ',
+            'hx-config="multipart.connectTimeout:0 multipart.reconnectDelay:10ms multipart.reconnectMaxAttempts:3 multipart.reconnectJitter:0"></div>'
+        ].join(''));
+
+        // Wait long enough that a 100ms default timeout would have fired multiple times
+        await new Promise(r => setTimeout(r, 400));
+
+        // With timeout disabled, the hanging reconnect fetch should not have been retried
+        assert.equal(requestCount, 2, 'Should only have the initial fetch plus one hanging reconnect — no further retries');
+        await deleteWithSwap('#mp-ct-zero-source');
+    });
+
     it('reconnects hx-multipart:connect after clean EOF and stops on removal', async function() {
         let requestCount = 0;
         let closeReason;
