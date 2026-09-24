@@ -2018,7 +2018,7 @@ var htmx = (function() {
         const focusOptions = { preventScroll: swapSpec.focusScroll !== undefined ? !swapSpec.focusScroll : !htmx.config.defaultFocusScroll }
         if (newActiveElt) {
           // @ts-ignore
-          if (selectionInfo.start && newActiveElt.setSelectionRange) {
+          if (selectionInfo.start != null && newActiveElt.setSelectionRange) {
             try {
               // @ts-ignore
               newActiveElt.setSelectionRange(selectionInfo.start, selectionInfo.end)
