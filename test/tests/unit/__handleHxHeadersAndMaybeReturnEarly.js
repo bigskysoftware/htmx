@@ -49,7 +49,9 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
             let result = htmx.__handleHeadersAndMaybeReturnEarly({hx: {location: '/files/a,b'}})
 
             assert.isTrue(result)
-            assert.deepEqual(request, ['GET', '/files/a,b', {push: 'true'}])
+            assert.equal(request[0], 'GET')
+            assert.equal(request[1], '/files/a,b')
+            assert.equal(request[2].push, 'true')
         } finally {
             htmx.ajax = originalAjax
         }
@@ -64,7 +66,9 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
             let result = htmx.__handleHeadersAndMaybeReturnEarly({hx: {location: 'path:/search'}})
 
             assert.isTrue(result)
-            assert.deepEqual(request, ['GET', '/search', {push: 'true'}])
+            assert.equal(request[0], 'GET')
+            assert.equal(request[1], '/search')
+            assert.equal(request[2].push, 'true')
         } finally {
             htmx.ajax = originalAjax
         }

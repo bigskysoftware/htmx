@@ -555,9 +555,9 @@ var htmx = (() => {
             ) !== "run") return
 
             ctx.status = "issuing"
+            ctx.indicators ??= [];
+            ctx.disabledElements ??= [];
 
-            let indicators = [];
-            let disableElements = [];
             try {
                 // Handle confirmation
                 if (ctx.confirm) {
@@ -573,8 +573,8 @@ var htmx = (() => {
 
                 // initialize timeout & indicators after confirmation
                 this.__initTimeout(ctx);
-                indicators = this.__showIndicators(elt);
-                disableElements = this.__disableElements(elt);
+                this.__showIndicators(ctx);
+                this.__disableElements(ctx);
 
                 ctx.fetch ||= window.fetch.bind(window)
                 // Set HX-Request-Type based on final target/select (after all modifications)
@@ -625,8 +625,8 @@ var htmx = (() => {
                 }
                 this.__trigger(elt, "htmx:finally:request", {ctx})
                 if (!ctx.keepIndicators) {
-                    this.__hideIndicators(indicators);
-                    this.__enableElements(disableElements);
+                    this.__hideIndicators(ctx.indicators);
+                    this.__enableElements(ctx.disabledElements);
                 }
 
                 requestQueue.continue(abortRequest)
@@ -664,6 +664,8 @@ var htmx = (() => {
                     delete opts.path;
                 }
                 if (opts.push == null && opts.replace == null) opts.push = 'true';
+                opts.indicators = ctx.indicators;
+                opts.disabledElements = ctx.disabledElements;
                 this.ajax('GET', path, opts);
                 return true
             }
@@ -1733,21 +1735,22 @@ var htmx = (() => {
             }
         }
 
-        __showIndicators(elt) {
+        __showIndicators(ctx) {
+            let elt = ctx.sourceElement;
             let hxIndicator = this.__attributeValue(elt, "hx-indicator");
             let indicatorElements;
             if (!hxIndicator) {
-                if (elt === document.body) return [];
-                indicatorElements = [elt]
+                if (elt === document.body) return;
+                indicatorElements = [elt];
             } else {
                 indicatorElements = this.__findAllExt(elt, hxIndicator, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
+                ctx.indicators.push(indicator);
                 let s = this.__htmxState(indicator);
                 s.rc = (s.rc || 0) + 1;
-                this.__addClass(indicator, this.config.requestClass)
+                this.__addClass(indicator, this.config.requestClass);
             }
-            return indicatorElements
         }
 
         __hideIndicators(indicatorElements) {
@@ -1760,18 +1763,16 @@ var htmx = (() => {
             }
         }
 
-        __disableElements(elt) {
+        __disableElements(ctx) {
+            let elt = ctx.sourceElement;
             let hxDisable = this.__attributeValue(elt, "hx-disable");
-            let disabledElements = []
-            if (hxDisable) {
-                disabledElements = this.__findAllExt(elt, hxDisable, "hx-disable");
-                for (let indicator of disabledElements) {
-                    let s = this.__htmxState(indicator);
+            if (!hxDisable) return;
+            for (let el of this.__findAllExt(elt, hxDisable, "hx-disable")) {
+                    ctx.disabledElements.push(el);
+                    let s = this.__htmxState(el);
                     s.dc = (s.dc || 0) + 1;
-                    indicator.disabled = true
-                }
+                    el.disabled = true;
             }
-            return disabledElements
         }
 
         __enableElements(disabledElements) {
