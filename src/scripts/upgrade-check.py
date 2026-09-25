@@ -391,6 +391,24 @@ def csrf_hint(value):
     return ""
 
 
+# htmx 2 merged these with the values on every ancestor, so a descendant's own
+# value does not replace the ancestor's.
+MERGED_ATTRS = frozenset({"hx-headers", "hx-vals"})
+
+
+def inheriting_descendants(node, name):
+    """Yield descendants that would inherit the attribute from node, skipping
+    any subtree whose root sets its own value for it (e.g. hx-target or
+    hx-target:inherited)."""
+    for child in node.children:
+        if name not in MERGED_ATTRS and any(
+                a.lower().split(":", 1)[0] == name and v
+                for a, v in child.attrs.items()):
+            continue
+        yield child
+        yield from inheriting_descendants(child, name)
+
+
 def check_inheritance(root, filepath, issues):
     """Detect implicit inheritance patterns: inheritable attr on ancestor,
     request attr on descendant."""
@@ -417,7 +435,7 @@ def check_inheritance(root, filepath, issues):
                 continue
 
             # For other attrs, check for descendants that make requests
-            for desc in node.descendants():
+            for desc in inheriting_descendants(node, name_lower):
                 source = request_source(desc, boosted)
                 if source:
                     issues.append(Issue(filepath, node.line, "inheritance",
