@@ -1,10 +1,11 @@
-"""Tests for upgrade-check.py. Run with: python3 src/scripts/test_upgrade_check.py"""
+"""Tests for upgrade-check.py. Run with: python3 test/scripts/test_upgrade_check.py"""
 import importlib.util
 import os
 import unittest
 
 _spec = importlib.util.spec_from_file_location(
-    "upgrade_check", os.path.join(os.path.dirname(__file__), "upgrade-check.py"))
+    "upgrade_check", os.path.join(os.path.dirname(__file__), "..", "..",
+                                  "src", "scripts", "upgrade-check.py"))
 uc = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(uc)
 
@@ -59,6 +60,19 @@ class InheritanceOverrideTest(unittest.TestCase):
         flagged = inheritance_issues(html)
         self.assertIn((1, "hx-vals"), flagged)
         self.assertIn((4, "hx-headers"), flagged)
+
+    def test_boost_opt_out_on_descendant_is_not_flagged(self):
+        html = ('<div hx-boost="true">\n'
+                '  <a hx-boost="false" href="/x"></a>\n'
+                '</div>\n')
+        self.assertEqual(inheritance_issues(html), [])
+
+    def test_boost_still_flagged_for_other_links(self):
+        html = ('<div hx-boost="true">\n'
+                '  <a hx-boost="false" href="/x"></a>\n'
+                '  <a href="/y"></a>\n'
+                '</div>\n')
+        self.assertEqual(inheritance_issues(html), [(1, "hx-boost")])
 
 
 if __name__ == "__main__":

@@ -425,7 +425,7 @@ def check_inheritance(root, filepath, issues):
 
             # For hx-boost, any descendant <a> or <form> is affected
             if name_lower == "hx-boost":
-                for desc in node.descendants():
+                for desc in inheriting_descendants(node, name_lower):
                     if desc.tag in ("a", "form"):
                         issues.append(Issue(filepath, node.line, "inheritance",
                                             f'{attr_name} needs :inherited suffix '
