@@ -283,6 +283,15 @@ var htmx = (() => {
             return result;
         }
 
+        // htmx 2 never inherited verbs, hx-action, hx-method or hx-trigger.
+        // Implicit inheritance of those on 4.0 loops a parent hx-get / hx-trigger="load"
+        // onto a child that has its own verb (#4104).
+        __implicitlyInheritable(name) {
+            if (!this.config.implicitInheritance) return false;
+            let local = name.startsWith("hx-") ? name.slice(3) : name;
+            return local !== "trigger" && local !== "action" && local !== "method" && !this.#verbs.includes(local);
+        }
+
         __attributeValue(elt, name, defaultVal, eltCollector) {
             name = this.__maybeAdjustMetaCharacter(name);
             let inherited = this.__maybeAdjustMetaCharacter(":inherited");
@@ -291,7 +300,7 @@ var htmx = (() => {
             let val = this.__attr(elt, name) ?? this.__attr(elt, name + inherited);
             if (val != null) return eltCollector ? eltCollector(val, elt) : val;
 
-            let n1 = CSS.escape(this.config.implicitInheritance ? name : name + inherited);
+            let n1 = CSS.escape(this.__implicitlyInheritable(name) ? name : name + inherited);
             let n2 = CSS.escape(name + inherited + append);
             let inheritSelector = this.__prefixSelector(`[${n1}],[${n2}]`);
             let appendName = this.__attrName(elt, name + append) ?? this.__attrName(elt, name + inherited + append);
