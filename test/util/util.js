@@ -108,6 +108,22 @@ function getParameters(xhr) {
   }
 }
 
+function recordHistoryUpdates() {
+  var updates = []
+  var handler = function(event) {
+    updates.push([event.type, event.detail.path])
+  }
+  htmx.on('htmx:pushedIntoHistory', handler)
+  htmx.on('htmx:replacedInHistory', handler)
+  return {
+    updates,
+    stop: function() {
+      htmx.off('htmx:pushedIntoHistory', handler)
+      htmx.off('htmx:replacedInHistory', handler)
+    }
+  }
+}
+
 function log(val) {
   console.log(val)
   return val

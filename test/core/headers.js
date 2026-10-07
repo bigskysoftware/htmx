@@ -442,6 +442,72 @@ describe('Core htmx AJAX headers', function() {
     }, 30)
   })
 
+  it('should replace Url on HX-Location if push is string false', function() {
+    var history = recordHistoryUpdates()
+    try {
+      this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "target":"#testdiv", "push":"false", "replace":"true"}' }, ''])
+      this.server.respondWith('GET', '/test2', 'Redirected!')
+      var div = make('<div id="testdiv" hx-get="/test"></div>')
+      div.click()
+      this.server.respond()
+      this.server.respond()
+      div.innerHTML.should.equal('Redirected!')
+      history.updates.should.deep.equal([['htmx:replacedInHistory', '/test2']])
+    } finally {
+      history.stop()
+    }
+  })
+
+  it('should replace Url on HX-Location if push is false', function() {
+    var history = recordHistoryUpdates()
+    try {
+      this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "target":"#testdiv", "push":false, "replace":"/custom"}' }, ''])
+      this.server.respondWith('GET', '/test2', 'Redirected!')
+      var div = make('<div id="testdiv" hx-get="/test"></div>')
+      div.click()
+      this.server.respond()
+      this.server.respond()
+      div.innerHTML.should.equal('Redirected!')
+      history.updates.should.deep.equal([['htmx:replacedInHistory', '/custom']])
+    } finally {
+      history.stop()
+    }
+  })
+
+  it('should not update history on HX-Location from a boosted source if push and replace are string false', function() {
+    var history = recordHistoryUpdates()
+    try {
+      this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "source":"#a1", "target":"#output", "push":"false", "replace":"false"}' }, ''])
+      this.server.respondWith('GET', '/test2', 'Redirected!')
+      var output = make('<div id="output"></div>')
+      make('<div hx-boost="true" hx-push-url="/inherited" hx-replace-url="/inherited"><a id="a1" href="/test">Go</a></div>')
+      byId('a1').click()
+      this.server.respond()
+      this.server.respond()
+      output.innerHTML.should.equal('Redirected!')
+      history.updates.should.deep.equal([])
+    } finally {
+      history.stop()
+    }
+  })
+
+  it('should not update history on HX-Location from a boosted source if push and replace are false', function() {
+    var history = recordHistoryUpdates()
+    try {
+      this.server.respondWith('GET', '/test', [200, { 'HX-Location': '{"path":"/test2", "source":"#a1", "target":"#output", "push":false, "replace":false}' }, ''])
+      this.server.respondWith('GET', '/test2', 'Redirected!')
+      var output = make('<div id="output"></div>')
+      make('<div hx-boost="true" hx-push-url="/inherited" hx-replace-url="/inherited"><a id="a1" href="/test">Go</a></div>')
+      byId('a1').click()
+      this.server.respond()
+      this.server.respond()
+      output.innerHTML.should.equal('Redirected!')
+      history.updates.should.deep.equal([])
+    } finally {
+      history.stop()
+    }
+  })
+
   it('should push different Url on HX-Location if push Url is string', function(done) {
     sessionStorage.removeItem('htmx-current-path-for-history')
     var HTMX_HISTORY_CACHE_NAME = 'htmx-history-cache'

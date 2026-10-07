@@ -30,8 +30,14 @@ Path is required and is url to load the response from. The rest of the data mirr
 * `values` - values to submit with the request
 * `headers` - headers to submit with the request
 * `select` - allows you to select the content you want swapped from a response
-* `push` - set to `'false'` or a path string to prevent or override the URL pushed to browser location history
-* `replace` - a path string to replace the URL in the browser location history
+* `push` - set to `'false'`, `false`, or a path string to prevent or override the URL pushed to browser location history
+* `replace` - set to `'true'` or a path string to replace the URL in the browser location history
+
+To replace the current history entry, disable the default push and specify `replace`:
+
+```html
+HX-Location: {"path":"/test2", "push":"false", "replace":"true"}
+```
 
 ## Notes
 

@@ -4744,9 +4744,13 @@ var htmx = (function() {
     const requestPath = responseInfo.pathInfo.finalRequestPath
     const responsePath = responseInfo.pathInfo.responsePath
 
-    const pushUrl = responseInfo.etc.push || getClosestAttributeValue(elt, 'hx-push-url')
-    let replaceUrl = responseInfo.etc.replace || getClosestAttributeValue(elt, 'hx-replace-url')
-    if (replaceUrl === 'false') replaceUrl = null
+    let pushUrl = responseInfo.etc.push ?? getClosestAttributeValue(elt, 'hx-push-url')
+    let replaceUrl = responseInfo.etc.replace ?? getClosestAttributeValue(elt, 'hx-replace-url')
+
+    const pushDisabled = pushUrl === 'false' || pushUrl === false
+    if (pushDisabled) pushUrl = null
+
+    if (replaceUrl === 'false' || replaceUrl === false) replaceUrl = null
     const elementIsBoosted = getInternalData(elt).boosted
 
     let saveType = null
@@ -4758,17 +4762,12 @@ var htmx = (function() {
     } else if (replaceUrl) {
       saveType = 'replace'
       path = replaceUrl
-    } else if (elementIsBoosted) {
+    } else if (elementIsBoosted && !pushDisabled) {
       saveType = 'push'
       path = responsePath || requestPath // if there is no response path, go with the original request path
     }
 
     if (path) {
-      // false indicates no push, return empty object
-      if (path === 'false') {
-        return {}
-      }
-
       // true indicates we want to follow wherever the server ended up sending us
       if (path === 'true') {
         path = responsePath || requestPath // if there is no response path, go with the original request path
@@ -5293,8 +5292,8 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {Record<string,string>} [headers]
  * @property {string} [select]
- * @property {string} [push]
- * @property {string} [replace]
+ * @property {string|false} [push]
+ * @property {string|false} [replace]
  * @property {string} [selectOOB]
  */
 
@@ -5342,8 +5341,8 @@ var htmx = (function() {
  * @property {Object|FormData} [values]
  * @property {boolean} [credentials]
  * @property {number} [timeout]
- * @property {string} [push]
- * @property {string} [replace]
+ * @property {string|false} [push]
+ * @property {string|false} [replace]
  * @property {string} [selectOOB]
  */
 
