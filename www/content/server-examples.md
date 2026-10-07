@@ -18,8 +18,9 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 ## Julia
 
-- https://github.com/leephillips/juliaVortexWeb/
-- https://github.com/leephillips/pluckit
+- <https://github.com/leephillips/juliaVortexWeb/>
+- <https://github.com/leephillips/pluckit>
+- <https://github.com/clarkevans/TodoMVC.jl>
 
 ## JavaScript
 
@@ -145,6 +146,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/paultuckey/example-todo-app-rust-htmx>
 - <https://github.com/welshdave/actix-htmx>
+- <https://codeberg.org/benjamingeer/htmx-contacts-rust-postgres>
 
 ## Scala
 
@@ -167,10 +169,6 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://github.com/corlaez/todo-hda-kt>
 - <https://github.com/mikaelstaldal/htmx-http4k-thymeleaf>
-
-## Julia
-
-- <https://github.com/clarkevans/TodoMVC.jl>
 
 ## OCaml
 
@@ -227,6 +225,7 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://templ.guide/server-side-rendering/htmx>
 - <https://github.com/jritsema/go-htmx-tailwind-example>
+- <https://codeberg.org/benjamingeer/htmx-contacts-go-postgres>
 
 ### elem-go
 
