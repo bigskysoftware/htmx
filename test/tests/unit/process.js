@@ -48,6 +48,23 @@ describe('process() unit tests', function() {
         assert.isFalse(button.hasAttribute('data-htmx-powered'))
     })
 
+    it('honors hx-ignore added to an ancestor after initialization', async function () {
+        mockResponse('GET', '/test', 'response')
+        let container = createProcessedHTML('<div><button hx-get="/test" hx-trigger="click">Click</button></div>')
+        let parent = container
+        let button = container.firstElementChild
+
+        parent.setAttribute('hx-ignore', '')
+        button.click()
+        await htmx.timeout(10)
+        assert.equal(fetchMock.calls.length, 0)
+
+        parent.removeAttribute('hx-ignore')
+        button.click()
+        await forRequest()
+        assert.equal(fetchMock.calls.length, 1)
+    })
+
     it('processes element itself if it matches', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         htmx.process(div)

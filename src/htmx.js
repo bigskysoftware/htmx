@@ -371,6 +371,7 @@ var htmx = (() => {
         __createHtmxEventHandler(elt) {
             return async (evt) => {
                 try {
+                    if (this.__ignore(elt)) return;
                     let ctx = this.__createRequestContext(elt, evt);
                     await this.__handleTriggerEvent(ctx);
                 } catch (e) {
