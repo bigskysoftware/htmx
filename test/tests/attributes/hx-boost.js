@@ -153,6 +153,22 @@ describe('hx-boost attribute', async function() {
         }
     })
 
+    it('boosted link should be triggered by custom event', async function() {
+        mockResponse('GET', '/test', 'Boosted')
+        createProcessedHTML('<div id="result"></div><a hx-boost="true" hx-trigger="foo" hx-target="#result" id="a1" href="/test">Click Me</a>')
+        htmx.trigger(find('#a1'), 'foo')
+        await forRequest()
+        find('#result').innerHTML.should.equal('Boosted')
+    })
+
+    it('boosted form should be triggered by custom event', async function () {
+        mockResponse('POST', '/test', 'Boosted')
+        createProcessedHTML('<div id="result"></div><form hx-boost="true" hx-trigger="foo" hx-target="#result" id="f1" action="/test" method="post"></form>')
+        htmx.trigger(find('#f1'), 'foo')
+        await forRequest()
+        find('#result').innerHTML.should.equal('Boosted')
+    })
+
     // // it('overriding default swap style does not effect boosting', async function() {
     // //     htmx.config.defaultSwapStyle = 'afterend'
     // //     try {
