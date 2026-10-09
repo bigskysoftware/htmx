@@ -49,7 +49,7 @@ REQUEST_ATTRS = {"hx-get", "hx-post", "hx-put", "hx-patch", "hx-delete"}
 
 # htmx 2 event → htmx 4 event
 EVENT_RENAMES = {
-    "htmx:afterOnLoad": "htmx:after:init",
+    "htmx:afterOnLoad": "htmx:after:request",
     "htmx:afterProcessNode": "htmx:after:init",
     "htmx:afterRequest": "htmx:after:request",
     "htmx:afterSettle": "htmx:after:swap",
@@ -63,7 +63,7 @@ EVENT_RENAMES = {
     "htmx:configRequest": "htmx:config:request",
     "htmx:historyCacheMiss": "htmx:before:history:restore",
     "htmx:historyRestore": "htmx:before:history:restore",
-    "htmx:load": "htmx:after:init",
+    "htmx:load": "htmx:after:process",
     "htmx:oobAfterSwap": "htmx:after:swap",
     "htmx:oobBeforeSwap": "htmx:before:swap",
     "htmx:pushedIntoHistory": "htmx:after:history:push",
