@@ -106,6 +106,31 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         span.remove()
     })
 
+    it('does not add indicator CSS when disabled after htmx is imported', function () {
+        const originalConfig = htmx.config.includeIndicatorCSS;
+        const originalSheet = htmx.__indicatorCssSheet;
+        const originalSheets = document.adoptedStyleSheets;
+        const htmxSheets = originalSheets.filter(sheet =>
+            Array.from(sheet.cssRules).some(rule => rule.cssText.includes('.htmx-indicator'))
+        );
+
+        try {
+            document.adoptedStyleSheets = originalSheets.filter(sheet => !htmxSheets.includes(sheet));
+            htmx.__indicatorCssSheet = null;
+            htmx.config.includeIndicatorCSS = false;
+            htmx.__showIndicators(createProcessedHTML('<div><span class="htmx-indicator"></span></div>'));
+
+            const injectedHtmxSheets = document.adoptedStyleSheets.filter(sheet =>
+                Array.from(sheet.cssRules).some(rule => rule.cssText.includes('.htmx-indicator'))
+            );
+            assert.deepEqual(injectedHtmxSheets, []);
+        } finally {
+            document.adoptedStyleSheets = originalSheets;
+            htmx.__indicatorCssSheet = originalSheet;
+            htmx.config.includeIndicatorCSS = originalConfig;
+        }
+    })
+
     it('includes element itself in indicators', function () {
         let div = createProcessedHTML('<div hx-indicator=".indicator" class="indicator"></div>')
 

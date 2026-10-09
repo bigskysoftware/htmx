@@ -146,10 +146,10 @@ var htmx = (() => {
         #historyAbort
         #historyInitialized
         #processingTransition
+        __indicatorCssSheet = null
 
         constructor() {
             this.__initHtmxConfig();
-            this.__initRequestIndicatorCss();
             this.#actionSelector = this.__prefixSelector('[hx-action],[hx-get],[hx-post],[hx-put],[hx-patch],[hx-delete],[hx-query]');
             this.#hxOnQuery = new XPathEvaluator().createExpression(`.//*[@*[${this.__prefixes("hx-on").map(p => `starts-with(name(), "${p}")`).join(' or ')}]]`);
             this.#internalAPI = {
@@ -213,18 +213,23 @@ var htmx = (() => {
         }
 
         __initRequestIndicatorCss() {
-            if (this.config.includeIndicatorCSS !== false) {
-                let indicator = this.config.indicatorClass;
-                let request = this.config.requestClass;
-                try {
-                    let sheet = new CSSStyleSheet();
-                    sheet.replaceSync(
-                        `.${indicator}{opacity:0;visibility: hidden} ` +
-                        `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}`
-                    );
-                    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
-                } catch {}
+            if (this.config.includeIndicatorCSS === false) {
+                if (this.__indicatorCssSheet) {
+                    document.adoptedStyleSheets = document.adoptedStyleSheets.filter(sheet => sheet !== this.__indicatorCssSheet);
+                    this.__indicatorCssSheet = null;
+                }
+                return;
             }
+            if (this.__indicatorCssSheet) return;
+            let indicator = this.config.indicatorClass;
+            let request = this.config.requestClass;
+            let sheet = new CSSStyleSheet();
+            sheet.replaceSync(
+                `.${indicator}{opacity:0;visibility: hidden} ` +
+                `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}`
+            );
+            document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+            this.__indicatorCssSheet = sheet;
         }
 
         registerExtension(name, extension) {
@@ -1737,6 +1742,7 @@ var htmx = (() => {
 
         __showIndicators(ctx) {
             let elt = ctx.sourceElement;
+            this.__initRequestIndicatorCss();
             let hxIndicator = this.__attributeValue(elt, "hx-indicator");
             let indicatorElements;
             if (!hxIndicator) {
