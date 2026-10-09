@@ -222,6 +222,22 @@ describe('hx-swap-oob attribute', function() {
     should.equal(byId('d1').innerHTML, 'Foo')
   })
 
+  for (const attribute of ['hx-swap-oob', 'data-hx-swap-oob']) {
+    it('keeps templates containing ignored nested oob swaps with ' + attribute, function() {
+      htmx.config.allowNestedOobSwaps = false
+      this.server.respondWith('GET', '/test', '<template id="kept"><div><span ' + attribute + '="innerHTML:#d1">Nested</span></div></template>')
+      var button = make('<button hx-get="/test">Click</button>')
+      var target = make('<div id="d1">Original</div>')
+      button.click()
+      this.server.respond()
+      target.innerHTML.should.equal('Original')
+      var template = button.querySelector('template')
+      should.not.equal(template, null)
+      template.content.querySelector('span').textContent.should.equal('Nested')
+      template.content.querySelector('span').hasAttribute(attribute).should.equal(false)
+    })
+  }
+
   it('oob swap keeps templates not used for oob swap encapsulation', function() {
     this.server.respondWith('GET', '/test', '' +
         'Clicked<template></template>')

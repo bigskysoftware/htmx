@@ -1899,8 +1899,10 @@ var htmx = (function() {
    */
   function findAndSwapOobElements(fragment, settleInfo, rootNode) {
     var oobElts = findAll(fragment, '[hx-swap-oob], [data-hx-swap-oob]')
+    var hasOobSwaps = false
     forEach(oobElts, function(oobElement) {
       if (htmx.config.allowNestedOobSwaps || oobElement.parentElement === null) {
+        hasOobSwaps = true
         const oobValue = getAttributeValue(oobElement, 'hx-swap-oob')
         if (oobValue != null) {
           oobSwap(oobValue, oobElement, settleInfo, rootNode)
@@ -1910,7 +1912,7 @@ var htmx = (function() {
         oobElement.removeAttribute('data-hx-swap-oob')
       }
     })
-    return oobElts.length > 0
+    return hasOobSwaps
   }
 
   /**
