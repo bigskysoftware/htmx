@@ -581,7 +581,12 @@ var htmx = (() => {
                 ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
                 if (!this.__trigger(elt, "htmx:before:request", {ctx})) return;
 
+                let targetWasConnected = ctx.target?.isConnected;
                 let response = await ctx.fetch(ctx.request.action, ctx.request);
+
+                // Ignore responses whose connected target was removed while the request was in flight.
+                // This must happen before response hooks (such as hx-head) can apply page-level effects.
+                if (targetWasConnected && !ctx.target.isConnected) return;
 
                 ctx.response = {
                     raw: response,
