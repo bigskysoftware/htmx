@@ -42,8 +42,8 @@ able to benefit from the other changes without breaking your application.
 
 ### Obsolete attributes
 
-- htmx 2 removed the deprecated [hx-ws](https://htmx.org/attributes/hx-ws/)
-  and [hx-sse](https://htmx.org/attributes/hx-sse/) attributes, that this extension restores.
+- htmx 2 removed the deprecated [hx-ws](https://v1.htmx.org/attributes/hx-ws/)
+  and [hx-sse](https://v1.htmx.org/attributes/hx-sse/) attributes, that this extension restores.
 - htmx 2 removed the deprecated `hx-on` attribute in favor of the
   wildcard [`hx-on*` attribute](https://htmx.org/attributes/hx-on/), that this extension restores.
 
