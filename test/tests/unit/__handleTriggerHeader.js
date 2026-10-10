@@ -141,6 +141,16 @@ describe('__handleTriggerHeader unit tests', function() {
         assert.equal(eventDetail.value, 42)
     })
 
+    it('wraps null detail in value property', function () {
+        let eventDetail = undefined
+        let container = createProcessedHTML('<div></div>')
+        container.addEventListener('myEvent', (e) => { eventDetail = e.detail })
+
+        htmx.__handleTriggerHeader('{"myEvent": null}', container)
+
+        assert.isNull(eventDetail.value)
+    })
+
     it('works with hx-on listeners using from:body', function () {
         let root = createProcessedHTML(`
             <div>
