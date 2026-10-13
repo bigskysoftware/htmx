@@ -137,6 +137,9 @@ var htmx = (() => {
         #internalAPI;
         #Function = Function;
         #AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        // The names a function parameter can take: identifiers that aren't reserved words
+        #identifier = /^[$_\p{ID_Start}][$\u200C\u200D\p{ID_Continue}]*$/u;
+        #reservedWords = new Set(["await", "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally", "for", "function", "if", "import", "in", "instanceof", "new", "null", "return", "super", "switch", "this", "throw", "true", "try", "typeof", "var", "void", "while", "with"]);
         #ttPolicy = { createHTML: s => s, createScript: s => s };
         #actionSelector
         #boostSelector = "a,form";
@@ -903,8 +906,15 @@ var htmx = (() => {
             code = detail.code;
             Object.assign(args, scope);
             Object.assign(args, obj)
-            let keys = Object.keys(args);
-            let values = Object.values(args);
+            let keys = [];
+            let values = [];
+            for (let [key, value] of Object.entries(args)) {
+                // Any other name would make the constructor throw, and code couldn't reference it by bare name anyway
+                if (this.#identifier.test(key) && !this.#reservedWords.has(key)) {
+                    keys.push(key);
+                    values.push(value);
+                }
+            }
             let FunctionConstructor = isAsync ? this.#AsyncFunction : this.#Function;
             let func = new FunctionConstructor(...keys, expression ? `return (${code})` : code);
             return compile ? () => func.call(thisArg, ...values) : func.call(thisArg, ...values);
