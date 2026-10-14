@@ -318,7 +318,9 @@ article.sticky-headers > section :is(h3, h4) {
     article.sticky-headers > section > h2 > :first-child {
         background: transparent;
         border-bottom-color: transparent;
-        animation: stick-bg linear both;
+        animation-name: stick-bg;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
         animation-timeline: --section;
         animation-range:
             cover calc(100vh - var(--header-offset))

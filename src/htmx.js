@@ -957,9 +957,7 @@ var htmx = (() => {
                 htmxProp.initialized = true;
                 htmxProp.eventHandler = this.__createHtmxEventHandler(elt);
                 htmxProp.boosted = hxBoost;
-                let eventName = elt.matches('a') ? 'click' : 'submit';
-                elt._htmx.listeners.push({fromElt: elt, eventName, handler: elt._htmx.eventHandler});
-                elt.addEventListener(eventName, elt._htmx.eventHandler);
+                this.__initializeTriggers(elt);
                 this.__trigger(elt, "htmx:after:init", {}, true)
             }
         }
