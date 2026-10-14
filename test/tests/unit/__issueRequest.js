@@ -337,6 +337,23 @@ describe('__issueRequest unit tests', function() {
         await htmx.__issueRequest(ctx)
         assert.isTrue(errorFired)
         assert.isTrue(ctx.request.signal.aborted)
+        assert.equal(ctx.request.signal.reason?.name, 'TimeoutError')
+    })
+
+    it('timeout abort reason is distinguishable from hx-sync replace', async function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none" hx-sync="this:replace"></div>')
+        let ctx = htmx.__createRequestContext(div, new Event('click'))
+        ctx.fetch = (url, opts) => new Promise((_, reject) => {
+            opts.signal.addEventListener('abort', () => {
+                reject(opts.signal.reason || new DOMException('The operation was aborted', 'AbortError'))
+            })
+        })
+        let p = htmx.__issueRequest(ctx)
+        await new Promise(r => setTimeout(r, 10))
+        ctx.request.abort()
+        await p
+        assert.isTrue(ctx.request.signal.aborted)
+        assert.notEqual(ctx.request.signal.reason?.name, 'TimeoutError')
     })
 
     it('htmx:abort event aborts in-flight request', async function () {
