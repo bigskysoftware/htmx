@@ -870,7 +870,7 @@ var htmx = (() => {
                     if (detail?.target) {
                         target = this.find(detail.target);
                     }
-                    this.trigger(target, name, typeof detail === 'object' ? detail : {value: detail});
+                    this.trigger(target, name, detail !== null && typeof detail === 'object' ? detail : {value: detail});
                 }
             } else {
                 value.split(',').forEach(name => this.trigger(elt, name.trim(), {}));
