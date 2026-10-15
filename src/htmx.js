@@ -1491,20 +1491,21 @@ var htmx = (() => {
         }
 
         __trigger(on, eventName, detail = {}, bubbles = true) {
+            let dispatchedName = this.__maybeAdjustMetaCharacter(eventName);
             // Convention: events with detail.error log at error level, detail.warn at warn level,
             // otherwise at event level (gated by config.logAll). One emit per event.
             if (detail.error) {
-                let prefix = `htmx: ${eventName}: ${detail.error.message ?? detail.error}`;
+                let prefix = `htmx: ${dispatchedName}: ${detail.error.message ?? detail.error}`;
                 if (detail.error instanceof Error) console.error(prefix, detail.error, { elt: on, detail });
                 else console.error(prefix, { elt: on, detail });
             } else if (detail.warn) {
-                console.warn(`htmx: ${eventName}: ${detail.warn}`, { elt: on, detail });
+                console.warn(`htmx: ${dispatchedName}: ${detail.warn}`, { elt: on, detail });
             } else if (this.config.logAll) {
-                console.log(`htmx: ${eventName}`, { elt: on, detail });
+                console.log(`htmx: ${dispatchedName}`, { elt: on, detail });
             }
             on = this.__normalizeElement(on)
             this.__triggerExtensions(on, eventName, detail);
-            return this.trigger(on, this.__maybeAdjustMetaCharacter(eventName), detail, bubbles)
+            return this.trigger(on, dispatchedName, detail, bubbles)
         }
 
         __triggerExtensions(elt, eventName, detail = {}) {
