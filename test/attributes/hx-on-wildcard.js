@@ -66,6 +66,65 @@ describe('hx-on:* attribute', function() {
     btn.innerText.should.equal('bar')
   })
 
+  ;['hx-on--validation-validate', 'hx-on-htmx-validation-validate', 'data-hx-on--validation-validate'].forEach(function(attribute) {
+    it('can perform custom validation with ' + attribute, function() {
+      var requests = 0
+      this.server.respondWith('POST', '/test', function(xhr) {
+        requests++
+        xhr.respond(200, {}, 'saved')
+      })
+      var form = make('<form hx-post="/test"><input name="value" ' + attribute + '="this.setCustomValidity(\'Invalid value\')"></form>')
+      htmx.trigger(form, 'submit')
+      this.server.respond()
+      requests.should.equal(0)
+      form.querySelector('input').validationMessage.should.equal('Invalid value')
+    })
+  })
+
+  it('can handle colon-free XHR progress events', function() {
+    var input = make('<input hx-on--xhr-progress="this.value = event.detail.loaded">')
+    htmx.trigger(input, 'htmx:xhr:progress', { loaded: 42 })
+    input.value.should.equal('42')
+  })
+
+  it('can cancel a colon-free htmx event', function() {
+    var input = make('<input hx-on--validation-validate="event.preventDefault()">')
+    htmx.trigger(input, 'htmx:validation:validate').should.equal(false)
+  })
+
+  it('preserves colon spellings without invoking them twice', function() {
+    var input = make('<input value="0" hx-on::validation:validate="this.value++">')
+    htmx.trigger(input, 'htmx:validation:validate')
+    input.value.should.equal('1')
+  })
+
+  it('does not dispatch the dash alias when the original event is canceled', function() {
+    var input = make('<input value="0" hx-on::validation:validate="event.preventDefault()" hx-on--validation-validate="this.value++">')
+    htmx.trigger(input, 'htmx:validation:validate').should.equal(false)
+    input.value.should.equal('0')
+  })
+
+  it('retains camel case and kebab case aliases for compound events', function() {
+    var elt = make('<div></div>')
+    var names = []
+    ;['htmx:custom:someEvent', 'htmx:custom:some-event', 'htmx:custom-some-event'].forEach(function(name) {
+      elt.addEventListener(name, function(event) {
+        names.push(event.type)
+        event.detail.value++
+      })
+    })
+    var detail = { value: 0 }
+    htmx.trigger(elt, 'htmx:custom:someEvent', detail).should.equal(true)
+    names.should.deep.equal(['htmx:custom:someEvent', 'htmx:custom:some-event', 'htmx:custom-some-event'])
+    detail.value.should.equal(3)
+  })
+
+  it('does not rewrite colons in custom events', function() {
+    var input = make('<input value="0" hx-on:custom:event="this.value++" hx-on:custom-event="this.value += 10">')
+    htmx.trigger(input, 'custom:event')
+    input.value.should.equal('1')
+  })
+
   it('can cancel an event via preventDefault for htmx:config-request', function() {
     this.server.respondWith('POST', '/test', function(xhr) {
       xhr.respond(200, {}, '<button>Bar</button>')
