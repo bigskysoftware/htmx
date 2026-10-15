@@ -38,6 +38,75 @@ describe('__handleStatusCodes unit tests', function() {
         assert.equal(ctx.swap, 'none')
     })
 
+    it('sets noSwap flag for 204 status', function () {
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let ctx = {
+            sourceElement: div,
+            swap: 'innerHTML',
+            response: {
+                raw: { status: 204 }
+            }
+        }
+
+        htmx.__handleStatusCodes(ctx)
+
+        assert.equal(ctx.swap, 'none')
+        assert.equal(ctx.noSwap, true)
+    })
+
+    it('sets noSwap flag for wildcard noSwap pattern', function () {
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let ctx = {
+            sourceElement: div,
+            swap: 'innerHTML',
+            response: {
+                raw: { status: 500 }
+            }
+        }
+
+        htmx.config.noSwap.push('5xx')
+        try {
+            htmx.__handleStatusCodes(ctx)
+        } finally {
+            htmx.config.noSwap = htmx.config.noSwap.filter(p => p !== '5xx')
+        }
+
+        assert.equal(ctx.swap, 'none')
+        assert.equal(ctx.noSwap, true)
+    })
+
+    it('does not set noSwap flag for swappable status', function () {
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let ctx = {
+            sourceElement: div,
+            swap: 'innerHTML',
+            response: {
+                raw: { status: 200 }
+            }
+        }
+
+        htmx.__handleStatusCodes(ctx)
+
+        assert.equal(ctx.swap, 'innerHTML')
+        assert.notOk(ctx.noSwap)
+    })
+
+    it('does not set noSwap flag when hx-status override applies', function () {
+        let div = createProcessedHTML('<div hx-get="/test" hx-status:404="swap:outerHTML"></div>')
+        let ctx = {
+            sourceElement: div,
+            swap: 'innerHTML',
+            response: {
+                raw: { status: 404 }
+            }
+        }
+
+        htmx.__handleStatusCodes(ctx)
+
+        assert.equal(ctx.swap, 'outerHTML')
+        assert.notOk(ctx.noSwap)
+    })
+
     it('does not change swap for 200 status', function () {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let ctx = {
