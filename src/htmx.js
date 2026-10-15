@@ -616,7 +616,7 @@ var htmx = (() => {
 
             } catch (error) {
                 ctx.status = "error: " + error;
-                this.__trigger(elt, "htmx:error", {ctx, error})
+                if (error?.name !== 'AbortError' || ctx.request.signal.reason === 'timeout') this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
                 // An extension that took over the response reports when it has
                 // finished delivering. Undefined for a normal request.
@@ -678,7 +678,7 @@ var htmx = (() => {
                 ? this.parseInterval(ctx.request.timeout)
                 : this.config.defaultTimeout;
             if (timeout) {
-                ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.(), timeout);
+                ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.('timeout'), timeout);
             }
         }
 
