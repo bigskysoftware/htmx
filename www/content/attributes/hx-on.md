@@ -65,6 +65,11 @@ in HTML attributes, you may use dashes in the place of colons for both the long 
 
 ```
 
+For events with more than one colon, replace the event-name colons with dashes as well. For example,
+`hx-on--validation-validate="this.setCustomValidity('Invalid value')"` handles `htmx:validation:validate`,
+and `hx-on--xhr-progress="console.log(event.detail.loaded)"` handles `htmx:xhr:progress`.
+The original colon-separated event names remain available to JavaScript listeners and colon-based `hx-on` attributes.
+
 ### hx-on (deprecated)
 The value is an event name, followed by a colon `:`, followed by the script:
 
