@@ -14,6 +14,7 @@
         htmx_config_request(elt, {ctx}) {
             let question = api.attributeValue(ctx.sourceElement, 'hx-prompt');
             if (question == null) return;
+            if (ctx.request.headers['HX-Preloaded']) return false;
             let answer = (window.htmxPrompt || window.prompt)(question);
             if (answer === null) return false;
             if (!htmx.trigger(ctx.sourceElement, 'htmx:prompt', { prompt: answer, target: ctx.target })) return false;

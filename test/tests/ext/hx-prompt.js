@@ -228,4 +228,34 @@ describe('hx-prompt extension', function() {
             assert.isUndefined(fetchMock.getLastCall());
         });
     });
+
+    describe('with hx-preload', () => {
+        before(async () => {
+            let script = document.createElement('script');
+            script.src = '../src/ext/hx-preload.js';
+            await new Promise(resolve => {
+                script.onload = resolve;
+                document.head.appendChild(script);
+            });
+        });
+
+        it('skips the preload and prompts once, on the click', async function() {
+            let prompts = 0;
+            window.htmxPrompt = () => { prompts++; return 'answer'; };
+            let fetchCount = 0;
+            mockResponse('GET', '/items/1', () => { fetchCount++; return 'ok'; });
+
+            let btn = createProcessedHTML('<button hx-get="/items/1" hx-prompt="Q?" hx-preload="mouseenter">Go</button>');
+            btn.dispatchEvent(new Event('mouseenter'));
+            await htmx.timeout(20);
+            assert.equal(prompts, 0, 'preload should not prompt');
+            assert.equal(fetchCount, 0, 'preload should be cancelled');
+
+            btn.click();
+            await forRequest();
+            assert.equal(prompts, 1);
+            assert.equal(fetchCount, 1);
+            assert.equal(lastFetch().request.headers['HX-Prompt'], 'answer');
+        });
+    });
 });
