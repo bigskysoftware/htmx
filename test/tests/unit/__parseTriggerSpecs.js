@@ -98,6 +98,15 @@ describe('__parseTriggerSpecs unit tests', function() {
         assert.equal(specs[0]['1s'], true)
     })
 
+    it('parses every trigger with a filter after the interval', function () {
+        for (let spec of ['every 1s [foo === 1]', 'every 1s[foo === 1]']) {
+            let specs = htmx.__parseTriggerSpecs(spec)
+            assert.equal(specs.length, 1)
+            assert.equal(specs[0].name, 'every[foo === 1]')
+            assert.deepEqual(Object.keys(specs[0]), ['name', '1s'])
+        }
+    })
+
     it('handles empty string', function () {
         let specs = htmx.__parseTriggerSpecs('')
         assert.equal(specs.length, 0)
