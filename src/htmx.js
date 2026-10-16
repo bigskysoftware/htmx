@@ -216,12 +216,14 @@ var htmx = (() => {
             if (this.config.includeIndicatorCSS !== false) {
                 let indicator = this.config.indicatorClass;
                 let request = this.config.requestClass;
-                let sheet = new CSSStyleSheet();
-                sheet.replaceSync(
-                    `.${indicator}{opacity:0;visibility: hidden} ` +
-                    `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}`
-                );
-                document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+                try {
+                    let sheet = new CSSStyleSheet();
+                    sheet.replaceSync(
+                        `.${indicator}{opacity:0;visibility: hidden} ` +
+                        `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}`
+                    );
+                    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+                } catch {}
             }
         }
 
@@ -555,9 +557,9 @@ var htmx = (() => {
             ) !== "run") return
 
             ctx.status = "issuing"
+            ctx.indicators ??= [];
+            ctx.disabledElements ??= [];
 
-            let indicators = [];
-            let disableElements = [];
             try {
                 // Handle confirmation
                 if (ctx.confirm) {
@@ -573,8 +575,8 @@ var htmx = (() => {
 
                 // initialize timeout & indicators after confirmation
                 this.__initTimeout(ctx);
-                indicators = this.__showIndicators(elt);
-                disableElements = this.__disableElements(elt);
+                this.__showIndicators(ctx);
+                this.__disableElements(ctx);
 
                 ctx.fetch ||= window.fetch.bind(window)
                 // Set HX-Request-Type based on final target/select (after all modifications)
@@ -619,7 +621,7 @@ var htmx = (() => {
 
             } catch (error) {
                 ctx.status = "error: " + error;
-                this.__trigger(elt, "htmx:error", {ctx, error})
+                if (error?.name !== 'AbortError' || ctx.request.signal.reason === 'timeout') this.__trigger(elt, "htmx:error", {ctx, error})
             } finally {
                 // An extension that took over the response reports when it has
                 // finished delivering. Undefined for a normal request.
@@ -630,8 +632,8 @@ var htmx = (() => {
                 }
                 this.__trigger(elt, "htmx:finally:request", {ctx})
                 if (!ctx.keepIndicators) {
-                    this.__hideIndicators(indicators);
-                    this.__enableElements(disableElements);
+                    this.__hideIndicators(ctx.indicators);
+                    this.__enableElements(ctx.disabledElements);
                 }
 
                 requestQueue.continue(abortRequest)
@@ -669,6 +671,8 @@ var htmx = (() => {
                     delete opts.path;
                 }
                 if (opts.push == null && opts.replace == null) opts.push = 'true';
+                opts.indicators = ctx.indicators;
+                opts.disabledElements = ctx.disabledElements;
                 this.ajax('GET', path, opts);
                 return true
             }
@@ -679,7 +683,7 @@ var htmx = (() => {
                 ? this.parseInterval(ctx.request.timeout)
                 : this.config.defaultTimeout;
             if (timeout) {
-                ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.(), timeout);
+                ctx.requestTimeout = setTimeout(() => ctx.request?.abort?.('timeout'), timeout);
             }
         }
 
@@ -757,6 +761,15 @@ var htmx = (() => {
                 let inner = (evt) => {
                     if (spec.halt || spec.prevent) evt.preventDefault();
                     if (spec.halt || spec.stop || spec.consume) evt.stopPropagation();
+                    if (spec.changed) {
+                        let values = this.__htmxState(elt).changedValues ??= new WeakMap();
+                        let target = evt.target;
+                        if (!['checkbox', 'radio'].includes(target?.type)) {
+                            let value = target?.value;
+                            if (values.has(target) && values.get(target) === value) return;
+                            values.set(target, value);
+                        }
+                    }
                     if (spec.once) {
                         for (let info of spec.listeners) info.fromElt.removeEventListener(info.eventName, info.handler, info);
                     }
@@ -795,15 +808,6 @@ var htmx = (() => {
                     if (spec.from === 'self' && evt.target !== elt) return;
                     if (spec.from === 'outside' && elt.contains(evt.target)) return;
                     if (spec.target && !evt.target?.matches?.(spec.target)) return;
-                    if (spec.changed) {
-                        let values = spec.values ??= new WeakMap();
-                        let target = evt.target;
-                        if (!['checkbox', 'radio'].includes(target?.type)) {
-                            let value = target?.value;
-                            if (values.has(target) && values.get(target) === value) return;
-                            values.set(target, value);
-                        }
-                    }
                     if (filter) {
                         let evtArgs = {}; for (let k in evt) evtArgs[k] = evt[k];
                         if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)) return;
@@ -820,14 +824,14 @@ var htmx = (() => {
                     spec.observer = new IntersectionObserver((entries) => {
                         for (let i = 0; i < entries.length; i++) {
                             if (entries[i].isIntersecting) {
-                                this.trigger(elt, 'intersect', {}, false);
+                                this.trigger(entries[i].target, 'intersect', {}, false);
                                 if (isRevealed) spec.observer.disconnect();
                                 break;
                             }
                         }
                     }, observerOptions);
                     eventName = 'intersect';
-                    spec.observer.observe(elt);
+                    for (let fromElt of fromElts) spec.observer.observe(fromElt);
                 }
 
                 // Every: set up interval
@@ -1192,7 +1196,7 @@ var htmx = (() => {
 
         __handleScroll(swapSpec, target) {
             if (swapSpec.scroll) {
-                let scrollTarget = swapSpec.scrollTarget ? this.__findExt(swapSpec.scrollTarget) : target;
+                let scrollTarget = swapSpec.scrollTarget ? this.__findExt(target, swapSpec.scrollTarget) : target;
                 if (scrollTarget) {
                     if (swapSpec.scroll === 'top') {
                         scrollTarget.scrollTop = 0;
@@ -1202,7 +1206,7 @@ var htmx = (() => {
                 }
             }
             if (swapSpec.show === 'top' || swapSpec.show === 'bottom') {
-                let showTarget = swapSpec.showTarget ? this.__findExt(swapSpec.showTarget) : target;
+                let showTarget = swapSpec.showTarget ? this.__findExt(target, swapSpec.showTarget) : target;
                 showTarget?.scrollIntoView?.(swapSpec.show === 'top')
             }
         }
@@ -1736,21 +1740,22 @@ var htmx = (() => {
             }
         }
 
-        __showIndicators(elt) {
+        __showIndicators(ctx) {
+            let elt = ctx.sourceElement;
             let hxIndicator = this.__attributeValue(elt, "hx-indicator");
             let indicatorElements;
             if (!hxIndicator) {
-                if (elt === document.body) return [];
-                indicatorElements = [elt]
+                if (elt === document.body) return;
+                indicatorElements = [elt];
             } else {
                 indicatorElements = this.__findAllExt(elt, hxIndicator, "hx-indicator");
             }
             for (const indicator of indicatorElements) {
+                ctx.indicators.push(indicator);
                 let s = this.__htmxState(indicator);
                 s.rc = (s.rc || 0) + 1;
-                this.__addClass(indicator, this.config.requestClass)
+                this.__addClass(indicator, this.config.requestClass);
             }
-            return indicatorElements
         }
 
         __hideIndicators(indicatorElements) {
@@ -1763,18 +1768,16 @@ var htmx = (() => {
             }
         }
 
-        __disableElements(elt) {
+        __disableElements(ctx) {
+            let elt = ctx.sourceElement;
             let hxDisable = this.__attributeValue(elt, "hx-disable");
-            let disabledElements = []
-            if (hxDisable) {
-                disabledElements = this.__findAllExt(elt, hxDisable, "hx-disable");
-                for (let indicator of disabledElements) {
-                    let s = this.__htmxState(indicator);
+            if (!hxDisable) return;
+            for (let el of this.__findAllExt(elt, hxDisable, "hx-disable")) {
+                    ctx.disabledElements.push(el);
+                    let s = this.__htmxState(el);
                     s.dc = (s.dc || 0) + 1;
-                    indicator.disabled = true
-                }
+                    el.disabled = true;
             }
-            return disabledElements
         }
 
         __enableElements(disabledElements) {

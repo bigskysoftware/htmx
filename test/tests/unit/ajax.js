@@ -330,7 +330,7 @@ describe('ajax() unit Tests', function() {
         
         // Content should not have been swapped
         assert.equal(div.innerHTML, '');
-        assert.isTrue(errorFired);
+        assert.isFalse(errorFired);
     });
 
     it('ignores a response when its target is removed while the request is in flight', async function() {
