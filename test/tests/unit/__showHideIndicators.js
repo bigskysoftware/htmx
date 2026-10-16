@@ -118,7 +118,7 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
             document.adoptedStyleSheets = originalSheets.filter(sheet => !htmxSheets.includes(sheet));
             htmx.__indicatorCssSheet = null;
             htmx.config.includeIndicatorCSS = false;
-            htmx.__showIndicators(createProcessedHTML('<div><span class="htmx-indicator"></span></div>'));
+            htmx.__showIndicators(makeCtx(createProcessedHTML('<div><span class="htmx-indicator"></span></div>')));
 
             const injectedHtmxSheets = document.adoptedStyleSheets.filter(sheet =>
                 Array.from(sheet.cssRules).some(rule => rule.cssText.includes('.htmx-indicator'))
