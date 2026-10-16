@@ -765,6 +765,18 @@ Spread reconnect attempts so many clients do not retry at once.
 
 Defaults to `0.3`, which randomizes each delay by up to ±30%. Use `0` for exact delays.
 
+### `multipart.connectTimeout`
+
+Abort a reconnect fetch that takes too long to respond and retry it.
+
+```html
+<meta name="htmx-config" content="multipart.connectTimeout:5s">
+```
+
+Defaults to [`htmx.config.defaultTimeout`](/reference/config/htmx-config-defaultTimeout). Use milliseconds or a time string such as `5s`. Set to `0` to disable the timeout entirely.
+
+For `hx-multipart:connect`, this timeout applies to both the initial connection and every reconnect fetch. A timed-out reconnect counts as a failed attempt and triggers the reconnect backoff.
+
 ### `multipart.pauseOnBackground`
 
 Close the request while the page is hidden and reconnect when it becomes visible.
