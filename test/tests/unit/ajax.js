@@ -333,6 +333,25 @@ describe('ajax() unit Tests', function() {
         assert.isFalse(errorFired);
     });
 
+    it('ignores a response when its target is removed while the request is in flight', async function() {
+        const seq = mockSequentialResponses('GET', '/test', '<title>Old page</title><p>old</p>');
+        const target = createProcessedHTML('<div id="target"></div>');
+        document.title = 'Current page';
+
+        const promise = htmx.ajax('GET', '/test', {
+            target,
+            swap: 'innerHTML'
+        });
+
+        await htmx.timeout(1);
+        target.remove();
+        await seq.next();
+        await promise;
+
+        assert.equal(document.title, 'Current page');
+        assert.equal(target.innerHTML, '');
+    });
+
     it('sets full URL for cross-origin GET requests with query params', async function() {
         let capturedAction;
         document.addEventListener('htmx:before:request', function handler(evt) {
