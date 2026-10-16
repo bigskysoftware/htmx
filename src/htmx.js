@@ -560,10 +560,13 @@ var htmx = (() => {
             let disableElements = [];
             try {
                 // Handle confirmation
-                if (ctx.confirm) {
+                if (ctx.confirm != null) {
                     let confirmed = await new Promise(resolve => {
                         let detail = {ctx, issueRequest: () => resolve(true), dropRequest: () => resolve(false)};
                         if (this.__trigger(elt, "htmx:confirm", detail)) {
+                            if (ctx.confirm.length === 0) {
+                                throw new Error("hx-confirm must have a non-empty value");
+                            }
                             let js = this.__extractJavascriptContent(ctx.confirm);
                             resolve(js ? this.__executeJavaScript(elt, {ctx}, js, true) : window.confirm(ctx.confirm));
                         }
