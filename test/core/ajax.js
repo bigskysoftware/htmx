@@ -1018,6 +1018,16 @@ describe('Core htmx AJAX Tests', function() {
     }
   })
 
+  it('preserves HTML comments in swapped content', function() {
+    this.server.respondWith('GET', '/test', '<div id="d1">a<!-- x -->b</div>')
+
+    var div = make('<div hx-get="/test"></div>')
+    div.click()
+    this.server.respond()
+
+    div.innerHTML.should.equal('<div id="d1">a<!-- x -->b</div>')
+  })
+
   it('properly handles clicked submit button with a value inside a htmx form', function() {
     var values
     this.server.respondWith('Post', '/test', function(xhr) {
