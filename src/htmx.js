@@ -1042,7 +1042,7 @@ var htmx = (() => {
 
         __parseHTML(resp) {
             let trusted = this.#ttPolicy.createHTML(resp);
-            return Document.parseHTMLUnsafe?.(trusted) || new DOMParser().parseFromString(trusted, 'text/html');
+            return Document.parseHTMLUnsafe?.(trusted, {}) || new DOMParser().parseFromString(trusted, 'text/html');
         }
 
         __makeFragment(text) {
