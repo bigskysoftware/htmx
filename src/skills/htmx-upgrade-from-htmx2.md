@@ -250,6 +250,11 @@ New request header: `HX-Request-Type` (`"full"` or `"partial"`).
 Still supported: `HX-Trigger`, `HX-Push-Url`, `HX-Replace-Url`, `HX-Redirect`, `HX-Location`,
 `HX-Refresh`, `HX-Retarget`, `HX-Reswap`, `HX-Reselect`.
 
+**Polling:** HTTP **286** no longer stops `hx-trigger="every …"`. The polling
+element is the poll. Stop by swapping **that element** for markup without
+`every` (`outerHTML` / `outerMorph`, or `HX-Reswap: outerHTML` if the request
+would otherwise `innerHTML`). Default `innerHTML` cannot self-stop.
+
 ## Step 9: Update JavaScript API Calls
 
 | htmx 2                       | htmx 4                             |
