@@ -133,5 +133,29 @@ describe('htmx events', function() {
         assert.isFalse(fired)
     })
 
+    it('HX-Trigger header with null event detail does not throw', async function () {
+        fetchMock.mockResponse('GET', '/test', new Response('OK', {
+            headers: { 'HX-Trigger': '{"resetForm":null}' }
+        }))
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
+        let errorFired = false
+        div.addEventListener('htmx:error', () => { errorFired = true })
+        div.click()
+        await forRequest()
+        assert.isFalse(errorFired)
+    })
+
+    it('HX-Trigger header fires event with null detail alongside object detail', async function () {
+        fetchMock.mockResponse('GET', '/test', new Response('OK', {
+            headers: { 'HX-Trigger': '{"resetForm":null,"showMessage":{"level":"success"}}' }
+        }))
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="none"></div>')
+        let showMessageDetail = null
+        document.addEventListener('showMessage', (e) => { showMessageDetail = e.detail }, {once: true})
+        div.click()
+        await forRequest()
+        assert.deepEqual(showMessageDetail, { level: 'success' })
+    })
+
     // TODO - verify shape of details in these events
 })

@@ -1573,7 +1573,7 @@ var htmx = (() => {
                 composed: true
             });
             let target = on?.isConnected ? on : document;
-            let result = !detail.cancelled && target.dispatchEvent(evt);
+            let result = !detail?.cancelled && target.dispatchEvent(evt);
             return result
         }
         ajax(verb, path, options) {
