@@ -1,0 +1,61 @@
+{
+  "both": [
+    ["delay:100ms", {"delay": "100ms"}],
+    ["once", {"once": true}],
+    ["once:false", {"once": false}],
+    ["count:42", {"count": 42}],
+    ["delay:100ms throttle:200ms", {"delay": "100ms", "throttle": "200ms"}],
+    ["target:\"#foo .bar\"", {"target": "#foo .bar"}],
+    ["target:'#foo .bar'", {"target": "#foo .bar"}],
+    ["sse.mode:once", {"sse": {"mode": "once"}}],
+    ["sse.mode:once sse.maxRetries:5", {"sse": {"mode": "once", "maxRetries": 5}}],
+    ["{\"delay\":\"100ms\",\"throttle\":\"200ms\"}", {"delay": "100ms", "throttle": "200ms"}],
+    ["foo:bar", {"foo": "bar"}],
+    ["\"a.b\":1", {"a.b": 1}],
+    ["from:<.foo/>", {"from": ".foo"}],
+    ["from:<div p/>", {"from": "div p"}],
+    ["from:<ul > li/>", {"from": "ul > li"}],
+    ["from:<.a, .b, .c/>", {"from": ".a, .b, .c"}],
+    ["from:<ul > li/> throttle:50ms", {"from": "ul > li", "throttle": "50ms"}],
+    ["innerHTML swap:200ms", {"innerHTML": true, "swap": "200ms"}],
+    ["beforeend target:'#table tbody'", {"beforeend": true, "target": "#table tbody"}],
+    ["credentials:\"include\" timeout:5000", {"credentials": "include", "timeout": 5000}],
+    ["validate", {"validate": true}],
+    ["token:abc retry:3", {"token": "abc", "retry": 3}],
+    ["innerHTML:#legacy", {"innerHTML": "#legacy"}],
+    ["beforeend:#table tbody", {"beforeend": "#table", "tbody": true}],
+    ["message:hello world", {"message": "hello", "world": true}]
+  ],
+  "legacy_only": [
+    {
+      "input": "delay:100ms, throttle:200ms",
+      "legacy": {"delay": "100ms", "throttle": "200ms"},
+      "why": "comma is a Map pair separator in 4.0.0; strict Map forbids comma (List start symbol)"
+    },
+    {
+      "input": "count:\"42\"",
+      "legacy": {"count": 42},
+      "why": "4.0.0 JSON-parses quoted values; strict quoted values are strings"
+    },
+    {
+      "input": "x:\"[1, 2, 3]\"",
+      "legacy": {"x": [1, 2, 3]},
+      "why": "quoted JSON array becomes a real array in 4.0.0"
+    }
+  ],
+  "strict_error": [
+    ["delay:100ms, throttle:200ms", "comma in a Map"]
+  ],
+  "interpret_error": [
+    ["beforeend:#table tbody", "colon form: style key holds a string, plus a stray flag"],
+    ["innerHTML:#outer div", "colon form plus space"],
+    ["innerHTML:#legacy", "colon form without space"]
+  ],
+  "list_both": [
+    ["click", [{"click": true}]],
+    ["click delay:500ms", [{"click": true, "delay": "500ms"}]],
+    ["click delay:500ms, keyup", [{"click": true, "delay": "500ms"}, {"keyup": true}]],
+    ["click from:'.a, .b', change", [{"click": true, "from": ".a, .b"}, {"change": true}]],
+    ["click from:<ul > li/>, change", [{"click": true, "from": "ul > li"}, {"change": true}]]
+  ]
+}
