@@ -804,7 +804,7 @@ var htmx = (() => {
                     if (spec.from === 'outside' && elt.contains(evt.target)) return;
                     if (spec.target && !evt.target?.matches?.(spec.target)) return;
                     if (filter) {
-                        let evtArgs = {}; for (let k in evt) evtArgs[k] = evt[k];
+                        let evtArgs = {}; for (let k in evt) if (/^[a-z]+$/i.test(k)) evtArgs[k] = evt[k];
                         if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)) return;
                     }
                     timed(evt);

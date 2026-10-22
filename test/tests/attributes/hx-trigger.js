@@ -52,6 +52,17 @@ describe('hx-trigger attribute', function() {
         await forRequest()
     })
 
+    it('filter does not throw when event has a non-identifier property', async function() {
+        mockResponse('GET', '/test', 'Called!')
+        let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>')
+        let event = new CustomEvent('evt')
+        event.foo = true
+        event['__nrNode:1234'] = {}
+        form.dispatchEvent(event)
+        fetchMock.calls.length.should.equal(1)
+        await forRequest()
+    })
+
     it('filters properly with true expression filter spec', async function() {
         mockResponse('GET', '/test', 'Called!')
         let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[true]">Not Called</form>')
