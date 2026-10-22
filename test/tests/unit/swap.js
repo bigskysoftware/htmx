@@ -413,6 +413,19 @@ describe('swap() unit tests', function() {
         document.title.should.equal(originalTitle);
     })
 
+    it('does not set title when noSwap is set', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<html><head><title>NoSwap Title</title></head><body><div>Content</div></body></html>", "swap":"none", "noSwap":true})
+        document.title.should.equal(originalTitle);
+    })
+
+    it('sets title when swap is none but noSwap is not set', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<html><head><title>None Swap Title</title></head><body><div>Content</div></body></html>", "swap":"none"})
+        document.title.should.equal('None Swap Title');
+        document.title = originalTitle;
+    })
+
     it('sets title from fragment without html/body tags', async function () {
         let originalTitle = document.title;
         await htmx.swap({"target":"#test-playground", "text":"<title>Fragment Title</title><div>Content</div>"})

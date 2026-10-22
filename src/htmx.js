@@ -1300,7 +1300,7 @@ var htmx = (() => {
                 }
 
                 this.__trigger(ctx.sourceElement, "htmx:after:swap", {ctx});
-                if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
+                if (ctx.title && !ctx.noSwap && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
                 this.__handleAnchorScroll(ctx);
             } finally {
                 this.__trigger(ctx.sourceElement, "htmx:finally:swap", {ctx});
@@ -2256,6 +2256,7 @@ var htmx = (() => {
             for (let pattern of [str, str.slice(0, 2) + 'x', str[0] + 'xx']) {
                 if (noSwapStrings.includes(pattern)) {
                     ctx.swap = "none";
+                    ctx.noSwap = true;
                     return
                 }
                 let statusValue = this.__attributeValue(ctx.sourceElement, "hx-status:" + pattern);
