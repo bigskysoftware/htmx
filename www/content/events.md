@@ -386,6 +386,37 @@ in the DOM to switch with.
 * `detail.content` - the element with the bad oob `id`
 * `detail.target` - the bad CSS selector
 
+### Event - `htmx:partialAfterSwap` {#htmx:partialAfterSwap}
+
+This event is triggered after a [`<hx-partial>`](@/attributes/hx-partial.md) element has been swapped into the DOM. It behaves identically to [`htmx:oobAfterSwap`](#htmx:oobAfterSwap).
+
+##### Details
+
+* `detail.elt` - the swapped in element
+* `detail.shouldSwap` - if the content was swapped (defaults to `true`)
+* `detail.target` - the target of the swap
+* `detail.fragment` - the response fragment
+
+### Event - `htmx:partialBeforeSwap` {#htmx:partialBeforeSwap}
+
+This event is triggered before a [`<hx-partial>`](@/attributes/hx-partial.md) element is swapped into the DOM. It behaves identically to [`htmx:oobBeforeSwap`](#htmx:oobBeforeSwap). Setting `detail.shouldSwap` to `false` cancels the swap. You may also reassign `detail.target` to redirect the swap to a different element, or replace `detail.fragment` to rewrite the content before it is inserted.
+
+##### Details
+
+* `detail.elt` - the target of the swap
+* `detail.shouldSwap` - if the content will be swapped (defaults to `true`)
+* `detail.target` - the target of the swap
+* `detail.fragment` - the response fragment (may be replaced to rewrite content)
+
+### Event - `htmx:partialErrorNoTarget` {#htmx:partialErrorNoTarget}
+
+This event is triggered on `document.body` when a [`<hx-partial>`](@/attributes/hx-partial.md) element's `hx-target` selector does not match any element in the current DOM.
+
+##### Details
+
+* `detail.content` - the partial template element with the unresolved target
+* `detail.target` - the CSS selector that could not be resolved
+
 ### Event - `htmx:onLoadError` {#htmx:onLoadError}
 
 This event is triggered when an error occurs during the `load` handling of an AJAX call
@@ -397,6 +428,30 @@ This event is triggered when an error occurs during the `load` handling of an AJ
 * `detail.target` - the target of the request
 * `detail.exception` - the exception that occurred
 * `detail.requestConfig` - the configuration of the AJAX request
+
+### Event - `htmx:processTemplate` {#htmx:processTemplate}
+
+This event is triggered on `document.body` when a response contains an `<hx-*>` custom tag whose `type` attribute is **not** `partial` — for example `<hx-toast>`, `<hx-notification>`, etc. It gives application code (or extensions) a hook to handle custom `<hx-*>` element types.
+
+The template element still has its `.content` intact at the time the event fires. It is removed from the fragment immediately after the event returns.
+
+Here is an example that handles a custom `<hx-toast>` tag:
+
+```javascript
+const listener = htmx.on('htmx:processTemplate', function(evt) {
+  if (evt.detail.type === 'toast') {
+    showToast(evt.detail.template.getAttribute('message'))
+  }
+})
+// later: htmx.off('htmx:processTemplate', listener)
+```
+
+##### Details
+
+* `detail.type` - the tag type, i.e. the part after `hx-` (e.g. `"toast"` for `<hx-toast>`)
+* `detail.template` - the `<template>` element representing the custom tag, with `.content` intact
+* `detail.settleInfo` - the current settle info object
+* `detail.sourceElement` - the element that triggered the original request
 
 ### Event - `htmx:prompt` {#htmx:prompt}
 

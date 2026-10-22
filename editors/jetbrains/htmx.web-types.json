@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/web-types",
   "name": "htmx",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "default-icon": "./htmx.svg",
   "js-types-syntax": "typescript",
   "description-markup": "markdown",
@@ -42,7 +42,7 @@
         },
         {
           "name": "hx-disabled-elt",
-          "description": "The `hx-disabled-elt` attribute allows you to specify elements that will have the `disabled` attribute\nadded to them for the duration of the request. The value of this attribute can be:\n\n* A CSS query selector of the element to disable.\n* `this` to disable the element itself\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n  (e.g. `closest fieldset` will disable the closest to the element `fieldset`).\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector\n* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector\n  (e.g. `next button` will disable the closest following sibling `button` element)\n* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.\n  (e.g. `previous input` will disable the closest previous sibling `input` element)",
+          "description": "The `hx-disabled-elt` attribute allows you to specify elements that will have the `disabled` attribute\nadded to them for the duration of the request. The value of this attribute can be:\n\n* A CSS query selector of the elements to disable.\n* `this` to disable the element itself\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n  (e.g. `closest fieldset` will disable the closest to the element `fieldset`).\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector\n* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector\n  (e.g. `next button` will disable the first `button` element that follows this element in the document)\n* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.\n  (e.g. `previous input` will disable the first `input` element that precedes this element in the document)",
           "description-sections": {
             "Inherited": ""
           },
@@ -100,7 +100,7 @@
         },
         {
           "name": "hx-include",
-          "description": "The `hx-include` attribute allows you to include additional element values in an AJAX request. The value of this\nattribute can be:\n\n* A CSS query selector of the elements to include.\n* `this` which will include the descendants of the element.\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n  (e.g. `closest tr` will target the closest table row to the element).\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.\n  (e.g. `next .error` will target the closest following sibling element with `error` class)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.\n  (e.g. `previous .error` will target the closest previous sibling with `error` class)",
+          "description": "The `hx-include` attribute allows you to include additional element values in an AJAX request. The value of this\nattribute can be:\n\n* A CSS query selector of the elements to include.\n* `this` which will include the descendants of the element.\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n  (e.g. `closest tr` will target the closest table row to the element).\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.\n  (e.g. `next .error` will target the first element with the `error` class that follows this element in the document)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.\n  (e.g. `previous .error` will target the first element with the `error` class that precedes this element in the document)",
           "description-sections": {
             "Inherited": ""
           },
@@ -157,6 +157,12 @@
             "Inherited": ""
           },
           "doc-url": "https://htmx.org/attributes/hx-params/"
+        },
+        {
+          "name": "hx-partial",
+          "description": "`<hx-partial>` is a **server-sent swap command**, not a DOM element. It exists only in the HTTP\nresponse body. The server wraps content in `<hx-partial hx-target=\"...\">` tags to tell htmx\nwhere to swap that content; htmx reads the instructions, performs the swap, and discards the\nenvelope entirely — nothing from the `<hx-partial>` tag itself ever appears in the page.\n\nThis is similar to [`hx-swap-oob`](@/attributes/hx-swap-oob.md) but with key differences:\nthe envelope is always consumed and discarded, targets are resolved relative to the **triggering\nelement** using the full htmx extended selector vocabulary, and partials execute **before** the\nmain swap.",
+          "description-sections": {},
+          "doc-url": "https://htmx.org/attributes/hx-partial/"
         },
         {
           "name": "hx-patch",
@@ -262,7 +268,7 @@
         },
         {
           "name": "hx-target",
-          "description": "The `hx-target` attribute allows you to target a different element for swapping than the one issuing the AJAX\nrequest.  The value of this attribute can be:\n\n* A CSS query selector of the element to target.\n* `this` which indicates that the element that the `hx-target` attribute is on is the target.\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n  (e.g. `closest tr` will target the closest table row to the element).\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.\n* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.\n  (e.g. `next .error` will target the closest following sibling element with `error` class)\n* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.\n  (e.g. `previous .error` will target the closest previous sibling with `error` class)",
+          "description": "The `hx-target` attribute allows you to target a different element for swapping than the one issuing the AJAX\nrequest.  The value of this attribute can be:\n\n* A CSS query selector of the element to target.\n* `this` which indicates that the element that the `hx-target` attribute is on is the target.\n* `closest <CSS selector>` which will find the [closest](https://developer.mozilla.org/docs/Web/API/Element/closest)\n  ancestor element or itself, that matches the given CSS selector\n  (e.g. `closest tr` will target the closest table row to the element).\n* `find <CSS selector>` which will find the first child descendant element that matches the given CSS selector.\n* `next` which resolves to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)\n* `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector.\n  (e.g. `next .error` will target the first element with the `error` class that follows this element in the document)\n* `previous` which resolves to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)\n* `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.\n  (e.g. `previous .error` will target the first element with the `error` class that precedes this element in the document)",
           "description-sections": {
             "Inherited": ""
           },
@@ -366,7 +372,7 @@
         },
         {
           "name": "afterRequest",
-          "description": "This event is triggered after an AJAX request has finished either in the case of a successful request (although\none that may have returned a remote error code such as a `404`) or in a network error situation.  This event\ncan be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior around a request cycle.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request or if the body no longer contains the element then the closest parent\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n* `detail.successful` - true if the response has a 20x status code or is marked `detail.isError = false` in the\n  `htmx:beforeSwap` event, else false\n* `detail.failed` - true if the response does not have a 20x status code or is marked `detail.isError = true` in the\n  `htmx:beforeSwap` event, else false\n\n",
+          "description": "This event is triggered after an AJAX request has finished either in the case of a successful request (although\none that may have returned a remote error code such as a `404`) or in a network error situation.  This event\ncan be paired with [`htmx:beforeRequest`](#htmx:beforeRequest) to wrap behavior around a request cycle.\n\n##### Details\n\n* `detail.elt` - the element that dispatched the request or if the body no longer contains the element then the closest parent\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.target` - the target of the request\n* `detail.requestConfig` - the configuration of the AJAX request\n* `detail.successful` - true if the matched [`htmx.config.responseHandling`](@/docs.md#response-handling) rule did not\n  mark the response as an error (by default, 2xx and 3xx codes), or `detail.isError` was set to `false` in the\n  `htmx:beforeSwap` event\n* `detail.failed` - the inverse of `detail.successful`\n\n",
           "doc-url": "https://htmx.org/events/#htmx:afterRequest"
         },
         {
@@ -485,9 +491,29 @@
           "doc-url": "https://htmx.org/events/#htmx:oobErrorNoTarget"
         },
         {
+          "name": "partialAfterSwap",
+          "description": "This event is triggered after a [`<hx-partial>`](@/attributes/hx-partial.md) element has been swapped into the DOM. It behaves identically to [`htmx:oobAfterSwap`](#htmx:oobAfterSwap).\n\n##### Details\n\n* `detail.elt` - the swapped in element\n* `detail.shouldSwap` - if the content was swapped (defaults to `true`)\n* `detail.target` - the target of the swap\n* `detail.fragment` - the response fragment\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:partialAfterSwap"
+        },
+        {
+          "name": "partialBeforeSwap",
+          "description": "This event is triggered before a [`<hx-partial>`](@/attributes/hx-partial.md) element is swapped into the DOM. It behaves identically to [`htmx:oobBeforeSwap`](#htmx:oobBeforeSwap). Setting `detail.shouldSwap` to `false` cancels the swap. You may also reassign `detail.target` to redirect the swap to a different element, or replace `detail.fragment` to rewrite the content before it is inserted.\n\n##### Details\n\n* `detail.elt` - the target of the swap\n* `detail.shouldSwap` - if the content will be swapped (defaults to `true`)\n* `detail.target` - the target of the swap\n* `detail.fragment` - the response fragment (may be replaced to rewrite content)\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:partialBeforeSwap"
+        },
+        {
+          "name": "partialErrorNoTarget",
+          "description": "This event is triggered on `document.body` when a [`<hx-partial>`](@/attributes/hx-partial.md) element's `hx-target` selector does not match any element in the current DOM.\n\n##### Details\n\n* `detail.content` - the partial template element with the unresolved target\n* `detail.target` - the CSS selector that could not be resolved\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:partialErrorNoTarget"
+        },
+        {
           "name": "onLoadError",
           "description": "This event is triggered when an error occurs during the `load` handling of an AJAX call\n\n##### Details\n\n* `detail.xhr` - the `XMLHttpRequest`\n* `detail.elt` - the element that triggered the request\n* `detail.target` - the target of the request\n* `detail.exception` - the exception that occurred\n* `detail.requestConfig` - the configuration of the AJAX request\n\n",
           "doc-url": "https://htmx.org/events/#htmx:onLoadError"
+        },
+        {
+          "name": "processTemplate",
+          "description": "This event is triggered on `document.body` when a response contains an `<hx-*>` custom tag whose `type` attribute is **not** `partial` — for example `<hx-toast>`, `<hx-notification>`, etc. It gives application code (or extensions) a hook to handle custom `<hx-*>` element types.\n\nThe template element still has its `.content` intact at the time the event fires. It is removed from the fragment immediately after the event returns.\n\nHere is an example that handles a custom `<hx-toast>` tag:\n\n```javascript\nconst listener = htmx.on('htmx:processTemplate', function(evt) {\n  if (evt.detail.type === 'toast') {\n    showToast(evt.detail.template.getAttribute('message'))\n  }\n})\n// later: htmx.off('htmx:processTemplate', listener)\n```\n\n##### Details\n\n* `detail.type` - the tag type, i.e. the part after `hx-` (e.g. `\"toast\"` for `<hx-toast>`)\n* `detail.template` - the `<template>` element representing the custom tag, with `.content` intact\n* `detail.settleInfo` - the current settle info object\n* `detail.sourceElement` - the element that triggered the original request\n\n",
+          "doc-url": "https://htmx.org/events/#htmx:processTemplate"
         },
         {
           "name": "prompt",

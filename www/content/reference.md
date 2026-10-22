@@ -30,6 +30,7 @@ The most common attributes when using htmx.
 | [`hx-select-oob`](@/attributes/hx-select-oob.md) | select content to swap in from a response, somewhere other than the target (out of band)                           |
 | [`hx-swap`](@/attributes/hx-swap.md)             | controls how content will swap in (`outerHTML`, `beforeend`, `afterend`, ...)                                      |
 | [`hx-swap-oob`](@/attributes/hx-swap-oob.md)     | mark element to swap in from a response (out of band)                                                              |
+| [`hx-partial`](@/attributes/hx-partial.md)       | server-driven multi-target swap; wraps content to be swapped into one or more targets after the main swap          |
 | [`hx-target`](@/attributes/hx-target.md)         | specifies the target element to be swapped                                                                         |
 | [`hx-trigger`](@/attributes/hx-trigger.md)       | specifies the event that triggers the request                                                                      |
 | [`hx-vals`](@/attributes/hx-vals.md)             | add values to submit with the request (JSON format)                                                                |
@@ -158,6 +159,10 @@ All other attributes available in htmx.
 | [`htmx:oobAfterSwap`](@/events.md#htmx:oobAfterSwap)  | triggered after an out of band element as been swapped in
 | [`htmx:oobBeforeSwap`](@/events.md#htmx:oobBeforeSwap)  | triggered before an out of band element swap is done, allows you to configure the swap
 | [`htmx:oobErrorNoTarget`](@/events.md#htmx:oobErrorNoTarget)  | triggered when an out of band element does not have a matching ID in the current DOM
+| [`htmx:partialAfterSwap`](@/events.md#htmx:partialAfterSwap)  | triggered after an hx-partial element has been swapped in
+| [`htmx:partialBeforeSwap`](@/events.md#htmx:partialBeforeSwap)  | triggered before an hx-partial element swap is done, allows you to configure the swap
+| [`htmx:partialErrorNoTarget`](@/events.md#htmx:partialErrorNoTarget)  | triggered when an hx-partial element's target selector does not match any element in the DOM
+| [`htmx:processTemplate`](@/events.md#htmx:processTemplate)  | triggered when a response contains an unknown `<hx-*>` custom tag, allowing application code to handle it
 | [`htmx:prompt`](@/events.md#htmx:prompt)  | triggered after a prompt is shown
 | [`htmx:pushedIntoHistory`](@/events.md#htmx:pushedIntoHistory)  | triggered after a url is pushed into history
 | [`htmx:replacedInHistory`](@/events.md#htmx:replacedInHistory)  | triggered after a url is replaced in history

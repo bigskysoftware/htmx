@@ -25,6 +25,7 @@ custom_classes = "wide-content"
   * [synchronization](#synchronization)
   * [css transitions](#css_transitions)
   * [out of band swaps](#oob_swaps)
+  * [server-sent swap commands](#partial_swaps)
   * [parameters](#parameters)
   * [confirming](#confirming)
 * [inheritance](#inheritance)
@@ -123,13 +124,13 @@ The fastest way to get going with htmx is to load it via a CDN. You can simply a
 your head tag and get going:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous"></script>
 ```
 
 An unminified version is also available as well:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.js" integrity="sha384-Q+Dky3iHVJOr6wUjQ4ulh6uQ76an/t+ak1+PjMVaxRjbZamFLAG+u9InkfjbsEQf" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.js" integrity="sha384-gmJEF2eAKY4e+FDN+qtKIivWyb6ANwDB7JUdUybKgQspPKyEX/pIRZG/0uaRoW2C" crossorigin="anonymous"></script>
 ```
 
 While the CDN approach is extremely simple, you may want to consider
@@ -139,7 +140,7 @@ While the CDN approach is extremely simple, you may want to consider
 
 The next easiest way to install htmx is to simply copy it into your project.
 
-Download `htmx.min.js` [from jsDelivr](https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js) and add it to the appropriate directory in your project
+Download `htmx.min.js` [from jsDelivr](https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js) and add it to the appropriate directory in your project
 and include it where necessary with a `<script>` tag:
 
 ```html
@@ -151,7 +152,7 @@ and include it where necessary with a `<script>` tag:
 For npm-style build systems, you can install htmx via [npm](https://www.npmjs.com/):
 
 ```sh
-npm install htmx.org@2.0.10
+npm install htmx.org@2.0.11
 ```
 
 After installing, you’ll need to use appropriate tooling to use `node_modules/htmx.org/dist/htmx.js` (or `.min.js`).
@@ -621,6 +622,27 @@ To avoid this issue you can use a `template` tag to encapsulate these elements:
   <tr id="message" hx-swap-oob="true"><td>Joe</td><td>Smith</td></tr>
 </template>
 ```
+
+#### Server-Sent Partial Swap Commands {#partial_swaps}
+
+For more complex responses that need to update multiple parts of the page, htmx supports
+[`<hx-partial>`](@/attributes/hx-partial.md) — a server-sent swap command format. The server
+wraps content in `<hx-partial hx-target="...">` tags; htmx reads the targeting instructions,
+performs the swaps, and discards the envelope entirely. Nothing from the tag itself ever
+appears in the page.
+
+```html
+<div>Updated main content</div>
+
+<hx-partial hx-target="#cart-count">3</hx-partial>
+<hx-partial hx-target="#cart-total">$29.97</hx-partial>
+```
+
+Like `hx-swap-oob`, partials execute **before** the main swap and targets are resolved
+relative to the triggering element using the full [extended CSS selector](#extended-css-selectors)
+vocabulary (`closest`, `find`, `next`, `previous`, etc.).
+
+See the [`hx-partial` documentation](@/attributes/hx-partial.md) for full details.
 
 #### Selecting Content To Swap
 
@@ -1142,7 +1164,7 @@ You can see all available extensions on the [Extensions](/extensions) page.
 The fastest way to install htmx extensions created by others is to load them via a CDN. Remember to always include the core htmx library before the extensions and [enable the extension](#enabling-extensions). For example, if you would like to use the [response-targets](/extensions/response-targets) extension, you can add this to your head tag:
 ```HTML
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.4" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
 </head>
 <body hx-ext="extension-name">

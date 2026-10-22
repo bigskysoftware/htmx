@@ -533,4 +533,20 @@ describe('Core htmx AJAX headers', function() {
     htmx._('loadHistoryFromServer')('/test')
     this.server.respond()
   })
+
+  // Regression for #527: response headers whose names *contain* an htmx
+  // header name as a substring (e.g. X-HX-Trigger) must not be treated as
+  // the htmx header. The previous implementation tested a regex against
+  // getAllResponseHeaders() and false-positively matched the substring,
+  // then crashed when getResponseHeader returned null.
+  it('does not crash or fire trigger when X-HX-Trigger header is present without HX-Trigger', function() {
+    this.server.respondWith('GET', '/test', [200, { 'X-HX-Trigger': 'foo' }, ''])
+
+    var div = make('<div hx-get="/test"></div>')
+    var invokedEvent = false
+    div.addEventListener('foo', function() { invokedEvent = true })
+    div.click()
+    this.server.respond()
+    invokedEvent.should.equal(false)
+  })
 })

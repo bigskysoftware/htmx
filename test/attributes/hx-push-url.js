@@ -414,6 +414,43 @@ describe('hx-push-url attribute', function() {
     cache[1].url.should.equal(normalizePath('/path/to/page'))
   })
 
+  it('boosted anchor should not push url when hx-push-url="false" on parent', function() {
+    this.server.respondWith('GET', '/page1', 'Page 1')
+    var pushed = false
+    var handler = htmx.on('htmx:pushedIntoHistory', function() { pushed = true })
+    try {
+      var div = make('<div hx-boost="true" hx-push-url="false" hx-target="this"><a id="a1" href="/page1">Go To Page 1</a></div>')
+      byId('a1').click()
+      this.server.respond()
+      div.innerHTML.should.equal('Page 1')
+      pushed.should.equal(false)
+      var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+      should.equal(cache, null)
+    } finally {
+      htmx.off('htmx:pushedIntoHistory', handler)
+    }
+  })
+
+  it('boosted anchor should not push url when hx-push-url="false" on parent with multiple links', function() {
+    this.server.respondWith('GET', '/page1', 'Page 1')
+    this.server.respondWith('GET', '/page2', 'Page 2')
+    var pushCount = 0
+    var handler = htmx.on('htmx:pushedIntoHistory', function() { pushCount++ })
+    try {
+      make('<div id="output"></div>')
+      var div = make('<div hx-boost="true" hx-push-url="false" hx-target="#output"><a id="a1" href="/page1">Page 1</a><a id="a2" href="/page2">Page 2</a></div>')
+      byId('a1').click()
+      this.server.respond()
+      byId('a2').click()
+      this.server.respond()
+      pushCount.should.equal(0)
+      var cache = JSON.parse(sessionStorage.getItem(HTMX_HISTORY_CACHE_NAME))
+      should.equal(cache, null)
+    } finally {
+      htmx.off('htmx:pushedIntoHistory', handler)
+    }
+  })
+
   it('pushing url without anchor will retain the page anchor tag', function() {
     var handler = htmx.on('htmx:configRequest', function(evt) {
       evt.detail.path = evt.detail.path + '#test'
