@@ -84,6 +84,24 @@ describe('hx-download extension', function() {
         assert.equal(filename, 'Réconciliation Inv privés.xlsx')
     })
 
+    it('includes ctx in download events', async function() {
+        URL.createObjectURL = () => 'blob:test'
+        URL.revokeObjectURL = () => {}
+        HTMLAnchorElement.prototype.click = function() {}
+
+        fetchMock.mockResponse('GET', '/report.txt', new Response('report', {
+            headers: { 'Content-Disposition': 'attachment; filename="report.txt"' }
+        }))
+        let button = createProcessedHTML('<button hx-get="/report.txt" hx-swap="download">Download</button>')
+        let complete = waitForEvent('htmx:download:complete')
+
+        button.click()
+        let evt = await complete
+
+        assert.ok(evt.detail.ctx)
+        assert.equal(evt.detail.ctx.sourceElement, button)
+    })
+
     it('uses filename* when it is the only parameter', async function() {
         let filename
         URL.createObjectURL = () => 'blob:test'
