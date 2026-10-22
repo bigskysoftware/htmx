@@ -1192,6 +1192,8 @@ var htmx = (() => {
         __handleScroll(swapSpec, target) {
             if (swapSpec.scroll) {
                 let scrollTarget = swapSpec.scrollTarget ? this.__findExt(target, swapSpec.scrollTarget) : target;
+                // window has no scrollTop or scrollIntoView, so use the document's scrolling element
+                if (scrollTarget === window) scrollTarget = document.scrollingElement;
                 if (scrollTarget) {
                     if (swapSpec.scroll === 'top') {
                         scrollTarget.scrollTop = 0;
@@ -1202,6 +1204,7 @@ var htmx = (() => {
             }
             if (swapSpec.show === 'top' || swapSpec.show === 'bottom') {
                 let showTarget = swapSpec.showTarget ? this.__findExt(target, swapSpec.showTarget) : target;
+                if (showTarget === window) showTarget = document.scrollingElement;
                 showTarget?.scrollIntoView?.(swapSpec.show === 'top')
             }
         }
