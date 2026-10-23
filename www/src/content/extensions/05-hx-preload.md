@@ -28,6 +28,8 @@ Add an `hx-preload` attribute to any boosted hyperlinks and [`hx-get`](/referenc
 
 All preload requests include an additional `HX-Preloaded: true` header.
 
+A preload applies [`hx-headers`](/reference/attributes/hx-headers) and fires [`htmx:config:request`](/reference/events/htmx-config-request) before it is sent, so headers added there reach the server even when the click reuses the response. The click fires the event again; `HX-Preloaded` is already set on the preload's request, so a listener can tell the two apart and call `preventDefault()` to cancel only the preload.
+
 ## hx-boost Integration
 
 When the preload extension is loaded, all [`hx-boost`](/reference/attributes/hx-boost) anchor tags are automatically preloaded on `mousedown` without needing an explicit `hx-preload` attribute. To opt out of this behaviour, set `htmx.config.preload.autoBoost = false`.

@@ -160,6 +160,73 @@ describe('hx-preload attribute', function() {
         assert.equal(lastFetch().request.headers['HX-Request-Type'], 'partial')
     })
 
+    it('sends inherited hx-headers and HX-Preloaded with the preload', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let div = createProcessedHTML('<div hx-headers:inherited=\'{"X-Inherited":"1"}\'><button hx-get="/test" hx-preload="mouseenter">Click</button></div>');
+        let btn = div.querySelector('button')
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(20)
+        assert.equal(lastFetch().request.headers['X-Inherited'], '1')
+        assert.equal(lastFetch().request.headers['HX-Preloaded'], 'true')
+    })
+
+    it('applies htmx:config:request changes to the preload', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let listener = (evt) => {
+            evt.detail.ctx.request.headers['X-Configured'] = '1'
+            evt.detail.ctx.request.body.set('q', '1')
+        }
+        document.addEventListener('htmx:config:request', listener)
+        try {
+            let btn = createProcessedHTML('<button hx-get="/test" hx-preload="mouseenter">Click</button>');
+            btn.dispatchEvent(new Event('mouseenter'))
+            await htmx.timeout(20)
+            assert.equal(lastFetch().request.headers['X-Configured'], '1')
+            assert.equal(lastFetch().url, '/test?q=1')
+            assert.isNull(lastFetch().request.body)
+        } finally {
+            document.removeEventListener('htmx:config:request', listener)
+        }
+    })
+
+    it('lets an htmx:config:request listener tell a preload from the click', async function () {
+        let fetchCount = 0
+        mockResponse('GET', '/test', () => { fetchCount++; return 'Response'; })
+        let seen = []
+        let listener = (evt) => {
+            let preloaded = evt.detail.ctx.request.headers['HX-Preloaded']
+            seen.push(preloaded)
+            if (preloaded) evt.preventDefault()
+        }
+        document.addEventListener('htmx:config:request', listener)
+        try {
+            let btn = createProcessedHTML('<button hx-get="/test" hx-preload="mouseenter">Click</button>');
+            btn.dispatchEvent(new Event('mouseenter'))
+            await htmx.timeout(20)
+            assert.equal(fetchCount, 0, 'preload should be cancelled')
+            btn.click()
+            await htmx.timeout(20)
+            assert.equal(fetchCount, 1, 'click should fetch')
+            assert.deepEqual(seen, ['true', undefined])
+            assert.isUndefined(lastFetch().request.headers['HX-Preloaded'])
+        } finally {
+            document.removeEventListener('htmx:config:request', listener)
+        }
+    })
+
+    it('reuses preload containing hx-headers for the click', async function () {
+        let fetchCount = 0;
+        mockResponse('GET', '/test', () => { fetchCount++; return 'Response'; })
+        let btn = createProcessedHTML('<button hx-get="/test" hx-headers=\'{"X-Headers":"1"}\' hx-preload="mouseenter">Click</button>');
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(20)
+        assert.equal(fetchCount, 1, 'preload should fetch')
+        btn.click()
+        await htmx.timeout(20)
+        assert.equal(fetchCount, 1, 'click should reuse preload, not fetch again')
+        assert.equal(lastFetch().request.headers['X-Headers'], '1')
+    })
+
     it('reuses preload with URL containing fragment', async function () {
         let fetchCount = 0;
         mockResponse('GET', '/test', () => { fetchCount++; return 'Response'; })
