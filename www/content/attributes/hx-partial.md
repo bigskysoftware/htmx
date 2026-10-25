@@ -82,7 +82,9 @@ See [`hx-target`](@/attributes/hx-target.md) for the full list of extended selec
 ## Multiple partials
 
 Any number of `<hx-partial>` elements may appear in a single response. They are processed in
-document order, all before the main swap.
+document order, all before the main swap. A partial that removes the element that sent the
+request does not stop the partials after it. Targets that are still in the document are
+still found.
 
 ```html
 <hx-partial hx-target="#cart-count">2</hx-partial>
