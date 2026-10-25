@@ -144,6 +144,21 @@ describe('hx-partial', function() {
     byId('d2').innerHTML.should.equal('Two')
   })
 
+  it('still applies later partials after an earlier partial replaces the requesting element', function() {
+    this.server.respondWith('GET', '/test',
+      "<div id='main'>new</div>" +
+      "<hx-partial hx-target='#box' hx-swap='outerHTML'><div id='box'>new</div></hx-partial>" +
+      "<hx-partial hx-target='#other' hx-swap='outerHTML'><div id='other'>new</div></hx-partial>")
+    make('<div id="main">old</div>')
+    make('<div id="box"><button id="btn" hx-get="/test" hx-target="#main" hx-swap="outerHTML">Go</button></div>')
+    make('<div id="other">old</div>')
+    byId('btn').click()
+    this.server.respond()
+    byId('main').textContent.should.equal('new')
+    byId('box').textContent.should.equal('new')
+    byId('other').textContent.should.equal('new')
+  })
+
   it('swaps partial using element id as implicit target', function() {
     this.server.respondWith('GET', '/test', "<hx-partial id='d1'>ByID</hx-partial>")
     var div = make('<div hx-get="/test">click me</div>')
