@@ -1249,7 +1249,6 @@ var htmx = (() => {
 
         async swap(ctx) {
             try {
-                this.__handleHistoryUpdate(ctx);
                 let {fragment, title} = this.__makeFragment(ctx.text);
                 ctx.title = title;
                 let tasks = [];
@@ -1272,6 +1271,10 @@ var htmx = (() => {
                 if(!this.__trigger(ctx.sourceElement, "htmx:before:swap", {ctx, tasks})){
                     return
                 }
+
+                // After before:swap is allowed, and still before the DOM changes,
+                // so a cancelled swap leaves history alone and snapshots see the current page.
+                this.__handleHistoryUpdate(ctx);
 
                 let swapPromises = [];
                 let transitionTasks = [];

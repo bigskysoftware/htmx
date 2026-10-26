@@ -144,6 +144,44 @@ describe('hx-push-url and hx-replace-url attributes', function() {
             document.removeEventListener('htmx:before:history:update', handler);
         }
     });
+
+    async function cancelledSwapLeavesHistory(attribute) {
+        mockResponse('GET', /\/list\?q=x/, 'filtered');
+
+        let href = location.href;
+        let length = history.length;
+        let state = history.state;
+        let historyUpdated = false;
+
+        const onHistory = () => { historyUpdated = true; };
+        const cancelSwap = (event) => event.preventDefault();
+        document.addEventListener('htmx:before:history:update', onHistory);
+        document.addEventListener('htmx:before:swap', cancelSwap);
+
+        try {
+            createProcessedHTML(`<div id="t">original</div><button hx-get="/list?q=x" hx-target="#t" ${attribute}>Click me</button>`);
+            playground().querySelector('button').click();
+            let evt = await forRequest();
+            assert.isNotNull(evt, 'request should finish');
+
+            playground().querySelector('#t').textContent.should.equal('original');
+            location.href.should.equal(href);
+            history.length.should.equal(length);
+            assert.deepEqual(history.state, state);
+            historyUpdated.should.equal(false);
+        } finally {
+            document.removeEventListener('htmx:before:history:update', onHistory);
+            document.removeEventListener('htmx:before:swap', cancelSwap);
+        }
+    }
+
+    it('cancelled htmx:before:swap with hx-replace-url leaves location and history unchanged', async function() {
+        await cancelledSwapLeavesHistory('hx-replace-url="true"');
+    });
+
+    it('cancelled htmx:before:swap with hx-push-url leaves location and history unchanged', async function() {
+        await cancelledSwapLeavesHistory('hx-push-url="true"');
+    });
     
     // this test replaces body innerHTML, so we skip it to avoid breaking other tests, but it can be run manually to verify the behavior
     it.skip('should use innerHTML swap when restoring history even if default swap is none', async function() {

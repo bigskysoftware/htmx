@@ -120,7 +120,7 @@ Cancelling has a different effect for each event:
 | [`htmx:before:request`](/reference/events/htmx-before-request) | the request is never sent |
 | [`htmx:before:response`](/reference/events/htmx-before-response) | the response body is never read and no swap happens |
 | [`htmx:after:request`](/reference/events/htmx-after-request) | the response is read but no swap happens |
-| [`htmx:before:swap`](/reference/events/htmx-before-swap) | no swap task runs |
+| [`htmx:before:swap`](/reference/events/htmx-before-swap) | no swap task runs and history is not updated |
 | [`htmx:before:init`](/reference/events/htmx-before-init) | the element is not initialized |
 | [`htmx:before:process`](/reference/events/htmx-before-process) | the node and its descendants are not processed |
 

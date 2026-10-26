@@ -24,4 +24,4 @@ htmx.on('htmx:before:swap', (evt) => {
 });
 ```
 
-Cancel this event to prevent the swap from occurring.
+Cancel this event to prevent the swap from occurring. A cancelled swap also skips the history update (`hx-push-url` / `hx-replace-url`).
