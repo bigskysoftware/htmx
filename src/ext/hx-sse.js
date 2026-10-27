@@ -348,8 +348,8 @@
         let connection = element?._htmx?.sse;
         if (!connection) return;
 
-        connection.abortController?.abort();
         connection.reader?.cancel?.();
+        connection.abortController?.abort();
         if (connection.delayCanceller) connection.delayCanceller();
         if (connection.visibilityHandler) {
             document.removeEventListener('visibilitychange', connection.visibilityHandler);
