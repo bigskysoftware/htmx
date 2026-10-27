@@ -120,6 +120,7 @@
         let element = ctx.sourceElement;
         let config = getConfig(element);
         let reconnectRequested = false;
+        let closeReason = null;
 
         function release() {
             if (releaseRequest) {
@@ -296,8 +297,9 @@
                             // hx-sse:close="eventname": close connection on matching event
                             let closeEvent = api.attributeValue(element, 'hx-sse:close');
                             if (closeEvent && detail.message.event === closeEvent) {
-                                cleanup(element, 'message');
-                                return;
+                                closeReason = 'message';
+                                connection.reader?.cancel();
+                                return; // finally block calls cleanup
                             }
                             continue;
                         }
@@ -324,7 +326,7 @@
             }
         } finally {
             release();  // Always release when stream ends
-            cleanup(element, element.isConnected ? 'ended' : 'removed');
+            cleanup(element, closeReason ?? (element.isConnected ? 'ended' : 'removed'));
         }
     }
 
@@ -352,8 +354,8 @@
         let connection = element?._htmx?.sse;
         if (!connection) return;
 
-        connection.abortController?.abort();
         connection.reader?.cancel?.();
+        connection.abortController?.abort();
         if (connection.delayCanceller) connection.delayCanceller();
         if (connection.visibilityHandler) {
             document.removeEventListener('visibilitychange', connection.visibilityHandler);
