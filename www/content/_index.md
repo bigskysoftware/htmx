@@ -209,18 +209,18 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
 
 ## Silver Sponsors
 <style>
-#silver-sponsors div {
+#silver-sponsors-grid div {
   text-align: center;
   padding: 12px;
 }
-#silver-sponsors div a * {
+#silver-sponsors-grid div a * {
     width: 80%;
 }
-#silver-sponsors img {
+#silver-sponsors-grid img {
     min-width: 150px;
 }
 </style>
-<div id="silver-sponsors" style="display: grid;grid-template-columns: repeat(3, 1fr); align-items: center; justify-items: center; ">
+<div id="silver-sponsors-grid" style="display: grid;grid-template-columns: repeat(3, 1fr); align-items: center; justify-items: center; ">
 <div>
         <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img  src="/img/jetbrains.svg" alt="Jetbrains"></a>
 </div>
