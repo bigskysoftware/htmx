@@ -217,12 +217,12 @@ var htmx = (() => {
                 let indicator = this.config.indicatorClass;
                 let request = this.config.requestClass;
                 try {
-                    let sheet = new CSSStyleSheet();
-                    sheet.replaceSync(
+                    this.indicatorStyleSheet = new CSSStyleSheet();
+                    this.indicatorStyleSheet.replaceSync(
                         `.${indicator}{opacity:0;visibility: hidden} ` +
                         `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}`
                     );
-                    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+                    document.adoptedStyleSheets = [...document.adoptedStyleSheets, this.indicatorStyleSheet];
                 } catch {}
             }
         }
