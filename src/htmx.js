@@ -1406,8 +1406,7 @@ var htmx = (() => {
                         this.__insertNodes(parentNode, target, fragment);
                         this.__cleanup(target)
                         parentNode.removeChild(target);
-                        // Prefer the first element, a leading whitespace text node can't be scrolled to
-                        target = newContent.find(node => node.nodeType === Node.ELEMENT_NODE) || newContent[0] || parentNode
+                        target = newContent.find(node => node.nodeType === 2) || parentNode
                     }
                 } else if (swapStyle === 'outerSync') {
                     this.__copyAttributes(target, fragment.firstElementChild);
