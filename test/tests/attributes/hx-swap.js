@@ -43,6 +43,40 @@ describe('hx-swap modifiers', function() {
         await forRequest()
         assert.isAbove(div.scrollTop, 0)
     })
+  
+   it('outerHTML with show:top shows the new element when the response starts with whitespace', async function () {
+        mockResponse('GET', '/test', '\n  <div id="new-content">New</div>\n')
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="outerHTML show:top">Old</div>');
+        let shown = [];
+        let originalScrollIntoView = Element.prototype.scrollIntoView;
+        Element.prototype.scrollIntoView = function (alignToTop) { shown.push([this, alignToTop]) };
+        try {
+            div.click()
+            await forRequest()
+        } finally {
+            Element.prototype.scrollIntoView = originalScrollIntoView;
+        }
+        assert.equal(shown.length, 1)
+        assert.equal(shown[0][0].id, 'new-content')
+        assert.isTrue(shown[0][1])
+    })
+
+    it('outerHTML with show:bottom shows the new element when the response starts with whitespace', async function () {
+        mockResponse('GET', '/test', '\n  <div id="new-content">New</div>\n')
+        let div = createProcessedHTML('<div hx-get="/test" hx-swap="outerHTML show:bottom">Old</div>');
+        let shown = [];
+        let originalScrollIntoView = Element.prototype.scrollIntoView;
+        Element.prototype.scrollIntoView = function (alignToTop) { shown.push([this, alignToTop]) };
+        try {
+            div.click()
+            await forRequest()
+        } finally {
+            Element.prototype.scrollIntoView = originalScrollIntoView;
+        }
+        assert.equal(shown.length, 1)
+        assert.equal(shown[0][0].id, 'new-content')
+        assert.isFalse(shown[0][1])
+    })
 
     it('scrollTarget with id selector scrolls the target element', async function () {
         mockResponse('GET', '/test', '<p>New</p>')
