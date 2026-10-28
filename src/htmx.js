@@ -2314,7 +2314,8 @@ var htmx = (() => {
                     let clone = elt.cloneNode(false); // shallow clone node
                     for (let a of cssAttrs) existing.hasAttribute(a) ? elt.setAttribute(a, existing.getAttribute(a)) : elt.removeAttribute(a);
                     restoreTasks.push(()=>{
-                        this.__copyAttributes(elt, clone)
+                        // only restore the css attributes so attributes set during settle are kept
+                        for (let a of cssAttrs) clone.hasAttribute(a) ? elt.setAttribute(a, clone.getAttribute(a)) : elt.removeAttribute(a);
                     })
                 }
             }

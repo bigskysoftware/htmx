@@ -270,6 +270,20 @@ describe('swap() unit tests', function() {
         find('#r1').checked.should.be.false;
     })
 
+    it('CSS transitions keep attributes set on swapped-in elements during settle', async function () {
+        createProcessedHTML(`<div id="target"><button id="trigger" aria-expanded="false">Options</button></div>`)
+        // stands in for a library initialising new elements from a MutationObserver
+        find('#target').addEventListener('htmx:before:settle', () => {
+            find('#trigger').setAttribute('aria-expanded', 'false');
+        });
+        await htmx.swap({
+            target: '#target',
+            text: `<button id="trigger">Options</button>`
+        })
+        await htmx.timeout(10);
+        find('#trigger').getAttribute('aria-expanded').should.equal('false');
+    })
+
     it('triggers CSS transitions during swap', async function () {
         this.skip(); //fails on firefox for some reason
         createProcessedHTML("<style>#d1 { transition: opacity 100ms; }</style><div id='d1' style='opacity: 1;'>Old</div>")
