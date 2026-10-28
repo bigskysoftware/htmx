@@ -234,6 +234,16 @@ describe('bootstrap unit tests', function() {
         assert.isTrue(document.adoptedStyleSheets.includes(htmx.indicatorStyleSheet))
     })
 
+    it('__initRequestIndicatorCss does not throw when CSSStyleSheet is unavailable', function() {
+        let backup = window.CSSStyleSheet
+        window.CSSStyleSheet = undefined
+        try {
+            assert.doesNotThrow(() => htmx.__initRequestIndicatorCss())
+        } finally {
+            window.CSSStyleSheet = backup
+        }
+    })
+
     it('constructor uses setTimeout when document is already loaded', async function() {
         assert.notEqual(document.readyState, 'loading', 'document should already be loaded')
         let HtmxClass = Object.getPrototypeOf(htmx).constructor

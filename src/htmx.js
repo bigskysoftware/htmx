@@ -222,7 +222,7 @@ var htmx = (() => {
                         `.${indicator}{opacity:0;visibility: hidden} ` +
                         `.${request} .${indicator}, .${request}.${indicator}{opacity:1;visibility: visible;transition: opacity 200ms ease-in}`
                     );
-                    document.adoptedStyleSheets = [...document.adoptedStyleSheets, this.indicatorStyleSheet];
+                    document.adoptedStyleSheets.push(this.indicatorStyleSheet);
                 } catch {}
             }
         }
