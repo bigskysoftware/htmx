@@ -203,6 +203,27 @@ describe('hx-prompt extension', function() {
         assert.isUndefined(fetchMock.getLastCall());
     });
 
+    it('obeys metaCharacter when creating events', async function() {
+        let oldMetaCharacter = htmx.config.metaCharacter
+        htmx.config.metaCharacter = '-'
+        try {
+            window.prompt = () => 'because';
+            mockResponse('DELETE', '/items/1', 'ok');
+
+            let btn = createProcessedHTML('<button hx-delete="/items/1" hx-prompt="Q?">Delete</button>');
+            let eventName;
+            btn.addEventListener('htmx:prompt', (e) => eventName = e.type);
+            btn.addEventListener('htmx-prompt', (e) => eventName = e.type);
+
+            btn.click();
+            await forRequest();
+
+            assert.equal(eventName, 'htmx-prompt', 'fired event uses metaCharacter')
+        } finally {
+            htmx.config.metaCharacter = oldMetaCharacter
+        }
+    })
+
     describe('hx-on recipe (no extension needed)', () => {
         const recipe = "ctx.request.headers['HX-Prompt'] = prompt('Reason?') ?? event.preventDefault()";
 

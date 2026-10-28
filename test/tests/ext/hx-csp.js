@@ -52,4 +52,23 @@ describe('hx-csp extension', function() {
         assert.notInclude(responseText, 'test-nonce')
         assert.isFalse(find('#target script').hasAttribute('nonce'))
     })
+
+    it('obeys metaCharacter when creating events', function() {
+        let oldMetaCharacter = htmx.config.metaCharacter
+        htmx.config.metaCharacter = '-'
+
+        // Check one event and assume the rest are consistent with it
+        let eventName
+        let handler = event => eventName = event.type
+        document.addEventListener('htmx:security:strip', handler)
+        document.addEventListener('htmx-security-strip', handler)
+        try {
+            createProcessedHTML('<button hx-get="/test">Load</button>')
+            assert.equal(eventName, 'htmx-security-strip', 'fired event uses metaCharacter')
+        } finally {
+            htmx.config.metaCharacter = oldMetaCharacter
+            document.removeEventListener('htmx:security:strip', handler)
+            document.removeEventListener('htmx-security-strip', handler)
+        }
+    })
 })

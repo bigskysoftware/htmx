@@ -1891,7 +1891,7 @@ If you do use these features, the [`hx-csp` extension](/extensions/hx-csp) with 
 
 #### CSP & Inline Styles
 
-htmx injects its indicator CSS using [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) (`document.adoptedStyleSheets`), which are not subject to `style-src` CSP restrictions.
+htmx injects its indicator CSS using [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) (`document.adoptedStyleSheets`), which are not subject to `style-src` CSP restrictions. The stylesheet is also accessible as `htmx.indicatorStyleSheet` if you need to modify or remove it at runtime — see [`htmx.config.includeIndicatorCSS`](/reference/config/htmx-config-includeIndicatorCSS) for details.
 
 The one area to be aware of is morph swaps when used alongside JS frameworks like Alpine that set `style` attributes via JavaScript. During morph, htmx reconciles attributes between the old and new element, including any `style` value. Under a strict `style-src` policy without `'unsafe-inline'`, this `setAttribute("style", ...)` call will produce a CSP violation.
 

@@ -16,6 +16,7 @@
             reconnectMaxDelay: 60000,
             reconnectMaxAttempts: Infinity,
             reconnectJitter: 0.3,
+            connectTimeout: htmx.config.defaultTimeout,
             pauseOnBackground: hasHxSseConnect,
             releaseOn: hasHxSseConnect ? 'immediate' : 'end',
             ...htmx.config.sse,
@@ -119,6 +120,7 @@
         let element = ctx.sourceElement;
         let config = getConfig(element);
         let reconnectRequested = false;
+        let closeReason = null;
 
         function release() {
             if (releaseRequest) {
@@ -219,6 +221,9 @@
                     // Re-fetch using saved request context (no full pipeline re-run)
                     let ac = new AbortController();
                     connection.abortController = ac;
+                    let timedOut = false;
+                    let connectTimeout = htmx.parseInterval(config.connectTimeout) ?? config.connectTimeout;
+                    let timeoutId = connectTimeout > 0 ? setTimeout(() => { timedOut = true; ac.abort(); }, connectTimeout) : null;
                     try {
                         clearLastEventIdHeader(ctx.request.headers);
                         if (connection.lastEventId) ctx.request.headers['Last-Event-ID'] = connection.lastEventId;
@@ -226,8 +231,10 @@
                             ...ctx.request,
                             signal: ac.signal
                         });
+                        clearTimeout(timeoutId);
                     } catch (e) {
-                        if (ac.signal.aborted) break;
+                        clearTimeout(timeoutId);
+                        if (ac.signal.aborted && !timedOut) break;
                         api.triggerHtmxEvent(element, 'htmx:sse:error', {connection, error: e});
                         reconnectRequested = false;
                         connection.attempt++;
@@ -290,8 +297,9 @@
                             // hx-sse:close="eventname": close connection on matching event
                             let closeEvent = api.attributeValue(element, 'hx-sse:close');
                             if (closeEvent && detail.message.event === closeEvent) {
-                                cleanup(element, 'message');
-                                return;
+                                closeReason = 'message';
+                                connection.reader?.cancel();
+                                return; // finally block calls cleanup
                             }
                             continue;
                         }
@@ -318,7 +326,7 @@
             }
         } finally {
             release();  // Always release when stream ends
-            cleanup(element, element.isConnected ? 'ended' : 'removed');
+            cleanup(element, closeReason ?? (element.isConnected ? 'ended' : 'removed'));
         }
     }
 
@@ -334,7 +342,7 @@
         let hxTrigger = api.attributeValue(element, 'hx-trigger') || 'load';
         api.onTrigger(element, hxTrigger, () => {
             if (element._htmx?.sse) return; // prevent duplicate connections
-            htmx.ajax('GET', connectUrl, {source: element});
+            htmx.ajax('GET', connectUrl, {source: element, timeout: getConfig(element).connectTimeout});
         });
     }
 
@@ -346,8 +354,8 @@
         let connection = element?._htmx?.sse;
         if (!connection) return;
 
-        connection.abortController?.abort();
         connection.reader?.cancel?.();
+        connection.abortController?.abort();
         if (connection.delayCanceller) connection.delayCanceller();
         if (connection.visibilityHandler) {
             document.removeEventListener('visibilitychange', connection.visibilityHandler);
@@ -382,9 +390,10 @@
             api = internalAPI;
         },
 
-        htmx_config_request: (element, {ctx: {request}}) => {
-            request.headers.Accept =
-                `${request.headers.Accept ?? request.headers.accept ?? 'text/html'}, text/event-stream`;
+        htmx_config_request: (element, {ctx}) => {
+            ctx.request.headers.Accept =
+                `${ctx.request.headers.Accept ?? ctx.request.headers.accept ?? 'text/html'}, text/event-stream`;
+            if (ctx.timeout != null) ctx.request.timeout = ctx.timeout;
         },
 
         // Intercept SSE responses before core consumes the body

@@ -43,8 +43,8 @@ describe('hx-swap modifiers', function() {
         await forRequest()
         assert.isAbove(div.scrollTop, 0)
     })
-
-    it('outerHTML with show:top shows the new element when the response starts with whitespace', async function () {
+  
+   it('outerHTML with show:top shows the new element when the response starts with whitespace', async function () {
         mockResponse('GET', '/test', '\n  <div id="new-content">New</div>\n')
         let div = createProcessedHTML('<div hx-get="/test" hx-swap="outerHTML show:top">Old</div>');
         let shown = [];
@@ -76,6 +76,36 @@ describe('hx-swap modifiers', function() {
         assert.equal(shown.length, 1)
         assert.equal(shown[0][0].id, 'new-content')
         assert.isFalse(shown[0][1])
+    })
+
+    it('scrollTarget with id selector scrolls the target element', async function () {
+        mockResponse('GET', '/test', '<p>New</p>')
+        createProcessedHTML(`
+            <div id="scroller" style="height:100px;overflow:auto">
+                <div style="height:500px">spacer before</div>
+                <div id="trigger" hx-get="/test" hx-swap="innerHTML scroll:top scrollTarget:#scroller">Old</div>
+                <div style="height:500px">spacer after</div>
+            </div>`)
+        let scroller = find('#scroller')
+        scroller.scrollTop = 300
+        find('#trigger').click()
+        await forRequest()
+        assert.equal(scroller.scrollTop, 0)
+    })
+
+    it('scrollTarget with relative selector (closest) scrolls the ancestor element', async function () {
+        mockResponse('GET', '/test', '<p>New</p>')
+        createProcessedHTML(`
+            <div class="container" style="height:100px;overflow:auto">
+                <div style="height:500px">spacer before</div>
+                <div id="trigger" hx-get="/test" hx-swap="innerHTML scroll:top scrollTarget:'closest .container'">Old</div>
+                <div style="height:500px">spacer after</div>
+            </div>`)
+        let container = find('.container')
+        container.scrollTop = 300
+        find('#trigger').click()
+        await forRequest()
+        assert.equal(container.scrollTop, 0)
     })
 
     it('processes scripts in swapped content', async function () {

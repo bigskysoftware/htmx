@@ -487,6 +487,106 @@ describe('hx-sse SSE extension', function() {
         assert.isAtLeast(reconnectAttempts.length, 3, 'Should have at least 3 reconnect attempts');
     });
 
+    it('connectTimeout triggers reconnect when server hangs on reconnect fetch', async function() {
+        this.timeout(3000);
+        let fetchCount = 0;
+        fetchMock.mockResponse('GET', '/ct-hang', () => {
+            fetchCount++;
+            if (fetchCount === 1) {
+                let ctrl;
+                const body = new ReadableStream({ start(c) { ctrl = c; } });
+                const response = new MockResponse(body, {
+                    headers: { 'Content-Type': 'text/event-stream' }
+                });
+                response.body = body;
+                setTimeout(() => ctrl.close(), 10);
+                return response;
+            }
+            // Hang forever — simulates a server that accepts the TCP connection but never responds
+            return new Promise(() => {});
+        });
+
+        createProcessedHTML('<button hx-get="/ct-hang" hx-config="sse.reconnect:true sse.connectTimeout:100ms sse.reconnectDelay:10ms sse.reconnectMaxAttempts:2 sse.reconnectJitter:0" hx-swap="innerHTML">Go</button>');
+
+        let reconnectAttempts = 0;
+        onDoc('htmx:sse:before:connection', (e) => {
+            if (e.detail.connection.attempt > 0) reconnectAttempts++;
+        });
+
+        find('button').click();
+        await waitForEvent('htmx:sse:before:connection');
+
+        // Wait long enough for the timeout to fire and at least one reconnect attempt to start
+        await new Promise(r => setTimeout(r, 400));
+
+        assert.isAtLeast(fetchCount, 2, 'Should have re-fetched after connectTimeout');
+        assert.isAtLeast(reconnectAttempts, 1, 'Should have attempted reconnect after connectTimeout');
+    });
+
+    it('connectTimeout:0 disables the timeout', async function() {
+        this.timeout(3000);
+        let fetchCount = 0;
+        fetchMock.mockResponse('GET', '/ct-zero', () => {
+            fetchCount++;
+            if (fetchCount === 1) {
+                let ctrl;
+                const body = new ReadableStream({ start(c) { ctrl = c; } });
+                const response = new MockResponse(body, {
+                    headers: { 'Content-Type': 'text/event-stream' }
+                });
+                response.body = body;
+                setTimeout(() => ctrl.close(), 10);
+                return response;
+            }
+            // Hang forever
+            return new Promise(() => {});
+        });
+
+        createProcessedHTML('<button hx-get="/ct-zero" hx-config="sse.reconnect:true sse.connectTimeout:0 sse.reconnectDelay:10ms sse.reconnectMaxAttempts:3 sse.reconnectJitter:0" hx-swap="innerHTML">Go</button>');
+
+        find('button').click();
+        await waitForEvent('htmx:sse:before:connection');
+
+        // Wait long enough that a 100ms default timeout would have fired multiple times
+        await new Promise(r => setTimeout(r, 400));
+
+        // With timeout disabled, the hanging reconnect fetch should not have been retried
+        assert.equal(fetchCount, 2, 'Should only have the initial fetch plus one hanging reconnect — no further retries');
+    });
+
+    it('explicit abort (not timeout) stops reconnection', async function() {
+        this.timeout(3000);
+        let fetchCount = 0;
+        fetchMock.mockResponse('GET', '/ct-abort', () => {
+            fetchCount++;
+            if (fetchCount === 1) {
+                let ctrl;
+                const body = new ReadableStream({ start(c) { ctrl = c; } });
+                const response = new MockResponse(body, {
+                    headers: { 'Content-Type': 'text/event-stream' }
+                });
+                response.body = body;
+                setTimeout(() => ctrl.close(), 10);
+                return response;
+            }
+            // Hang so we can abort it manually
+            return new Promise(() => {});
+        });
+
+        createProcessedHTML('<button hx-get="/ct-abort" hx-config="sse.reconnect:true sse.connectTimeout:500ms sse.reconnectDelay:10ms sse.reconnectMaxAttempts:3 sse.reconnectJitter:0" hx-swap="innerHTML">Go</button>');
+
+        find('button').click();
+        await waitForEvent('htmx:sse:before:connection');
+        // Wait for the reconnect fetch to start
+        await new Promise(r => setTimeout(r, 50));
+
+        // Explicitly abort — this is a user/cleanup abort, not a timeout
+        find('button')._htmx.sse.abortController.abort();
+        await new Promise(r => setTimeout(r, 200));
+
+        assert.equal(fetchCount, 2, 'Explicit abort should stop reconnection, not trigger another retry');
+    });
+
     it('reconnectJitter of 0 disables jitter', async function() {
         let fetchCount = 0;
         fetchMock.mockResponse('GET', '/no-jitter', () => {
@@ -1189,6 +1289,45 @@ describe('hx-sse SSE extension', function() {
         assertTextContentIs('button', 'allowed');
 
         stream.close();
+    });
+
+    it('hx-sse:close does not produce an unhandled AbortError rejection (server keeps stream open)', async function() {
+        // Regression: #4078 - server leaves response open after sending close event
+        const stream = mockStreamResponse('/close-abort-open');
+        createProcessedHTML('<div hx-sse:connect="/close-abort-open" hx-sse:close="done" hx-swap="innerHTML">Waiting</div>');
+
+        await htmx.timeout(1);
+
+        let rejections = [];
+        let onRejection = e => rejections.push(e.reason);
+        window.addEventListener('unhandledrejection', onRejection);
+
+        stream.send('goodbye', 'done'); // server keeps stream open — does NOT call stream.close()
+        await waitForEvent('htmx:sse:close');
+        await htmx.timeout(20);
+
+        window.removeEventListener('unhandledrejection', onRejection);
+        assert.deepEqual(rejections, [], 'hx-sse:close should not produce an unhandled AbortError when server keeps stream open');
+    });
+
+    it('hx-sse:close does not produce an unhandled AbortError rejection (server closes stream simultaneously)', async function() {
+        // Regression: #4078 - server closes the response at the same time as sending the close event
+        const stream = mockStreamResponse('/close-abort-closed');
+        createProcessedHTML('<div hx-sse:connect="/close-abort-closed" hx-sse:close="done" hx-swap="innerHTML">Waiting</div>');
+
+        await htmx.timeout(1);
+
+        let rejections = [];
+        let onRejection = e => rejections.push(e.reason);
+        window.addEventListener('unhandledrejection', onRejection);
+
+        stream.send('goodbye', 'done');
+        stream.close(); // server closes immediately after
+        await waitForEvent('htmx:sse:close');
+        await htmx.timeout(20);
+
+        window.removeEventListener('unhandledrejection', onRejection);
+        assert.deepEqual(rejections, [], 'hx-sse:close should not produce an unhandled AbortError when server closes stream simultaneously');
     });
 
     it('hx-sse:close closes connection on matching event', async function() {

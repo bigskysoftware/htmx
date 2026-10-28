@@ -93,9 +93,9 @@ The server must send a `Content-Length` header for percentage-based progress. Wi
 
 | Event | Detail | Description |
 |---|---|---|
-| `htmx:download:start` | `{total}` | Response headers received, streaming begins. `total` is `null` if no `Content-Length` |
-| `htmx:download:progress` | `{loaded, total, percent}` | Fired for each chunk received. `percent` is `null` if no `Content-Length` |
-| `htmx:download:complete` | `{filename, size}` | File download triggered in the browser |
+| `htmx:download:start` | `{total, ctx}` | Response headers received, streaming begins. `total` is `null` if no `Content-Length` |
+| `htmx:download:progress` | `{loaded, total, percent, ctx}` | Fired for each chunk received. `percent` is `null` if no `Content-Length` |
+| `htmx:download:complete` | `{filename, size, ctx}` | File download triggered in the browser |
 
 ## Notes
 
