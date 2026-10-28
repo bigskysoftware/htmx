@@ -1406,7 +1406,7 @@ var htmx = (() => {
                         this.__insertNodes(parentNode, target, fragment);
                         this.__cleanup(target)
                         parentNode.removeChild(target);
-                        target = newContent.find(node => node.nodeType === 2) || parentNode
+                        target = newContent.find(node => node.nodeType === 1) || parentNode
                     }
                 } else if (swapStyle === 'outerSync') {
                     this.__copyAttributes(target, fragment.firstElementChild);
