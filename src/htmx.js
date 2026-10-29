@@ -285,7 +285,7 @@ var htmx = (() => {
             return result;
         }
 
-        __attributeValue(elt, name, defaultVal, eltCollector) {
+        __attributeValue(elt, name, defaultVal, eltCollector, allowInheritance = this.config.implicitInheritance) {
             name = this.__maybeAdjustMetaCharacter(name);
             let inherited = this.__maybeAdjustMetaCharacter(":inherited");
             let append = this.__maybeAdjustMetaCharacter(":append");
@@ -293,7 +293,7 @@ var htmx = (() => {
             let val = this.__attr(elt, name) ?? this.__attr(elt, name + inherited);
             if (val != null) return eltCollector ? eltCollector(val, elt) : val;
 
-            let n1 = CSS.escape(this.config.implicitInheritance ? name : name + inherited);
+            let n1 = CSS.escape(allowInheritance ? name : name + inherited);
             let n2 = CSS.escape(name + inherited + append);
             let inheritSelector = this.__prefixSelector(`[${n1}],[${n2}]`);
             let appendName = this.__attrName(elt, name + append) ?? this.__attrName(elt, name + inherited + append);
@@ -302,7 +302,7 @@ var htmx = (() => {
                 let parent = elt.parentNode?.closest?.(inheritSelector);
                 if (eltCollector) eltCollector(appendValue, elt);
                 if (parent) {
-                    let parentVal = this.__attributeValue(parent, name, undefined, eltCollector);
+                    let parentVal = this.__attributeValue(parent, name, undefined, eltCollector, allowInheritance);
                     return parentVal ? (parentVal + "," + appendValue).replace(/[{}]/g, '') : appendValue;
                 }
                 return appendValue;
@@ -311,7 +311,7 @@ var htmx = (() => {
             let parent = elt.parentNode?.closest?.(inheritSelector);
             if (parent) {
                 val = this.__attributeValue(parent, name, undefined, eltCollector);
-                if (!eltCollector && val && this.config.implicitInheritance) {
+                if (!eltCollector && val && allowInheritance) {
                     this.__triggerExtensions(elt, "htmx:after:implicitInheritance", {elt, name, parent})
                 }
                 return val;
@@ -330,10 +330,10 @@ var htmx = (() => {
 
         __determineMethodAndAction(elt, evt) {
             let method = this.__attributeValue(elt, "hx-method");
-            let action = this.__attributeValue(elt, "hx-action");
+            let action = this.__attributeValue(elt, "hx-action", undefined, undefined, false);
             if (!action) {
                 for (let verb of this.#verbs) {
-                    let verbAction = this.__attributeValue(elt, "hx-" + verb);
+                    let verbAction = this.__attributeValue(elt, "hx-" + verb, undefined, undefined, false);
                     if (verbAction != null) {
                         action = verbAction;
                         method = verb;
@@ -398,7 +398,7 @@ var htmx = (() => {
                 transition: this.config.transitions,
                 confirm: this.__attributeValue(sourceElement, "hx-confirm"),
                 request: {
-                    validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') && !sourceElement.noValidate && !sourceEvent.submitter?.formNoValidate ? "true" : "false"),
+                    validate: "true" === this.__attributeValue(sourceElement, "hx-validate", sourceElement.matches('form') && !sourceElement.noValidate && !sourceEvent.submitter?.formNoValidate ? "true" : "false", undefined, false),
                     action: fullAction,
                     anchor,
                     method,
@@ -729,7 +729,7 @@ var htmx = (() => {
         }
 
         __initializeTriggers(elt, initialHandler = elt._htmx.eventHandler) {
-            let hxTrigger = this.__attributeValue(elt, "hx-trigger");
+            let hxTrigger = this.__attributeValue(elt, "hx-trigger", undefined, undefined, false);
             let trigger = hxTrigger || (elt.matches("form") ? "submit" :
                 elt.matches("input:not([type=button]):not([type=submit]),select,textarea") ? "change" :
                     "click");
