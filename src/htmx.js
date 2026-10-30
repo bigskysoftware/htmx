@@ -592,7 +592,6 @@ var htmx = (() => {
                 }
                 this.__extractHxHeaders(ctx);
                 if (!this.__trigger(elt, "htmx:before:response", {ctx})) return;
-                if (ctx.target?.isConnected === false) return;
                 ctx.text = await response.text();
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
 
@@ -609,6 +608,7 @@ var htmx = (() => {
                     if (ctx.hx.retarget) ctx.target = ctx.hx.retarget;   // HX-Retarget
                     if (ctx.hx.reswap) ctx.swap = ctx.hx.reswap;       // HX-Reswap
                     if (ctx.hx.reselect) ctx.select = ctx.hx.reselect; // HX-Reselect
+                    if (ctx.target?.isConnected === false) return; // prevent swap and side effects if target just got removed
                     ctx.status = "response received";
                     this.__handleStatusCodes(ctx);
                     await this.swap(ctx);
