@@ -754,6 +754,9 @@ var htmx = (() => {
 
                 // Inner: runs after delay/throttle resolves
                 let inner = (evt) => {
+                    if (evt.type === 'submit' && elt.matches('form')) {
+                        for (let pending of this.__htmxProp(elt).triggerSpecs) clearTimeout(pending.timeout);
+                    }
                     if (spec.halt || spec.prevent) evt.preventDefault();
                     if (spec.halt || spec.stop || spec.consume) evt.stopPropagation();
                     if (spec.changed) {

@@ -141,6 +141,8 @@ Note: [`change`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/ch
 
 Waits before firing. If the event fires again, the delay resets (debounce).
 
+Submitting a form cancels its pending delayed triggers.
+
 ```html
 <input hx-trigger="input delay:1s" hx-get="...">
 ```

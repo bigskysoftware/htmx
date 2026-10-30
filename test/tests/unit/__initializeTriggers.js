@@ -174,15 +174,16 @@ describe('__initializeTriggers unit tests', function() {
         assert.equal(1, called)
     });
 
-    it('multiple triggers separated by comma', function() {
-        let called = 0
-        const btn = mockTriggerButton("click, mouseenter", () => called++);
-
-        btn.click()
-        assert.equal(1, called)
-
-        btn.dispatchEvent(new Event('mouseenter'))
-        assert.equal(2, called)
+    it('form submit cancels pending delayed triggers', async function() {
+        let called = [];
+        const form = mockTriggerElement('<form hx-trigger="input delay:25ms, submit"></form>', evt => called.push(evt.type));
+        form.dispatchEvent(new Event('input'));
+        form.dispatchEvent(new Event('submit'));
+        await htmx.timeout(50);
+        assert.deepEqual(called, ['submit']);
+        form.dispatchEvent(new Event('input'));
+        await htmx.timeout(50);
+        assert.deepEqual(called, ['submit', 'input']);
     });
 
     it('every trigger polls at interval', async function () {
