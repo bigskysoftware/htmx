@@ -1078,12 +1078,12 @@ describe('hx-ws WebSocket extension', function() {
             htmx.config.ws = { reconnectDelay: 5, reconnectJitter: 0 };
 
             createProcessedHTML('<div hx-ws:connect="/ws/test"></div>');
-            await htmx.timeout(20);
+            await htmx.timeout(30);
 
             for (let code of [1001, 1005, 1006, 1011, 1012, 1013, 1014]) {
                 let count = mockWebSocketInstances.length;
                 mockWebSocketInstances[count - 1].close(code);
-                await htmx.timeout(20);
+                await htmx.timeout(30); // reconnectDelay(5) + mock open delay(10) + headroom
                 assert.equal(mockWebSocketInstances.length, count + 1, `close code ${code}`);
             }
         });
