@@ -169,6 +169,16 @@ describe('hx-boost attribute', async function() {
         find('#result').innerHTML.should.equal('Boosted')
     })
 
+    it('boosted link returning only hx-partial does not blank body', async function () {
+        createProcessedHTML('<div id="sidebar">Original</div><a id="a1" hx-boost="true" href="/partial">Click</a>')
+        mockResponse('GET', '/partial', "<hx-partial hx-target='#sidebar'>Updated</hx-partial>")
+        find('#a1').click()
+        await forRequest()
+        await htmx.timeout(10)
+        find('#sidebar').innerText.should.equal('Updated')
+        assert.isNotNull(find('#a1'), 'body should not be blanked')
+    })
+
     // // it('overriding default swap style does not effect boosting', async function() {
     // //     htmx.config.defaultSwapStyle = 'afterend'
     // //     try {

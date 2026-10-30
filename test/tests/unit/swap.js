@@ -481,6 +481,19 @@ describe('swap() unit tests', function() {
         document.title.should.equal(originalTitle);
     })
 
+    it('ignores title when ignoreTitle:true is set on a partial hx-swap', async function () {
+        let originalTitle = document.title;
+        createProcessedHTML("<div id='d1'></div>")
+        await htmx.swap({"target":"#test-playground", "text":"<title>Partial Title</title><hx-partial hx-target='#d1' hx-swap='innerHTML ignoreTitle:true'>Content</hx-partial>"})
+        document.title.should.equal(originalTitle);
+    })
+
+    it('ignores title when ignoreTitle:true is set via hx-reswap (ctx.swap)', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "text":"<title>Reswap Title</title><div>Content</div>", "swap":"innerHTML ignoreTitle:true"})
+        document.title.should.equal(originalTitle);
+    })
+
     it('sets title from fragment without html/body tags', async function () {
         let originalTitle = document.title;
         await htmx.swap({"target":"#test-playground", "text":"<title>Fragment Title</title><div>Content</div>"})
@@ -506,6 +519,27 @@ describe('swap() unit tests', function() {
         let originalTitle = document.title;
         createProcessedHTML("<div id='d1'></div>")
         await htmx.swap({"target":"#test-playground", "text":"<title>Partial Title</title><hx-partial hx-target='#d1'>Partial Content</hx-partial>"})
+        document.title.should.equal('Partial Title');
+        document.title = originalTitle;
+    })
+
+    it('swaps partial from full html document response', async function () {
+        createProcessedHTML("<div id='d1'>Original</div>")
+        await htmx.swap({"target":"#test-playground", "text":"<!DOCTYPE html><html><head><title>Page</title></head><body><hx-partial hx-target='#d1'>Updated</hx-partial></body></html>"})
+        find('#d1').innerText.should.equal('Updated');
+    })
+
+    it('does not blank target when full html document response contains only hx-partial', async function () {
+        createProcessedHTML("<div id='d1'>Original</div><div id='d2'>Keep Me</div>")
+        await htmx.swap({"target":"#d1", "text":"<!DOCTYPE html><html><body><hx-partial hx-target='#d2'>Updated</hx-partial></body></html>"})
+        find('#d1').innerText.should.equal('Original');
+        find('#d2').innerText.should.equal('Updated');
+    })
+
+    it('sets title from full html document response with only hx-partial', async function () {
+        let originalTitle = document.title;
+        createProcessedHTML("<div id='d1'></div>")
+        await htmx.swap({"target":"#test-playground", "text":"<!DOCTYPE html><html><head><title>Partial Title</title></head><body><hx-partial hx-target='#d1'>Content</hx-partial></body></html>"})
         document.title.should.equal('Partial Title');
         document.title = originalTitle;
     })

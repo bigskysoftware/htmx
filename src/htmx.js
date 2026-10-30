@@ -1152,6 +1152,7 @@ var htmx = (() => {
                     if (targetSelector) {
                         this.__processScripts(templateElt.content);
                         let swapSpec = this.__parseSwapSpec(this.__attr(templateElt, 'hx-swap') || this.config.defaultSwap);
+                        if (swapSpec.ignoreTitle) ctx.title = null;
                         let targets = this.__findAllExt(ctx.sourceElement, targetSelector);
                         for (let target of targets.length ? targets : [null]) {
                             tasks.push({
@@ -1302,7 +1303,7 @@ var htmx = (() => {
                 }
 
                 this.__trigger(ctx.sourceElement, "htmx:after:swap", {ctx});
-                if (ctx.title && ctx.swap !== 'none' && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
+                if (ctx.title && ctx.swap !== 'none') document.title = ctx.title;
                 this.__handleAnchorScroll(ctx);
             } finally {
                 this.__trigger(ctx.sourceElement, "htmx:finally:swap", {ctx});
@@ -1312,11 +1313,12 @@ var htmx = (() => {
         __processMainSwap(ctx, fragment, hasPartials) {
             // Create main task if needed
             let swapSpec = this.__parseSwapSpec(ctx.swap || this.config.defaultSwap);
+            if (swapSpec.ignoreTitle) ctx.title = null;
             // skip main swap if fragment is empty after partial/oob removal
             // swapEmpty modifier can override; default: skip if hasPartials
             if (
                 swapSpec.style === 'delete' ||    // delete always runs regardless of content
-                fragment.childElementCount > 0 || // or fragment has elements
+                (fragment.querySelector('body') || fragment).childElementCount > 0 || // or fragment has elements
                 fragment.textContent.trim() ||    // or fragment has text
                 (swapSpec.swapEmpty ?? !hasPartials)
             ) {
