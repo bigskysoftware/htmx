@@ -400,6 +400,74 @@ describe('swap() unit tests', function() {
         afterTriggered.should.be.true;
     })
 
+    it('does not update history when htmx:before:swap is cancelled', async function () {
+        let originalUrl = window.location.href;
+        let swapCancelled = false;
+        document.addEventListener('htmx:before:swap', (e) => {
+            e.preventDefault();
+            swapCancelled = true;
+        }, {once: true});
+        mockResponse('GET', '/test', '<div>content</div>');
+        const div = createProcessedHTML('<div hx-get="/test" hx-push-url="true">click</div>');
+        div.click();
+        await forRequest();
+        await htmx.timeout(10);
+        assert.isTrue(swapCancelled);
+        assert.equal(window.location.href, originalUrl);
+        history.replaceState(null, '', originalUrl);
+    })
+
+    it('does not fire htmx:after:swap when htmx:before:swap is cancelled', async function () {
+        let afterSwapFired = false;
+        document.addEventListener('htmx:before:swap', e => e.preventDefault(), { once: true });
+        document.addEventListener('htmx:after:swap', () => { afterSwapFired = true; }, { once: true });
+        mockResponse('GET', '/test', '<p>content</p>');
+        createProcessedHTML('<div hx-get="/test">click</div>');
+        find('div').click();
+        await forRequest();
+        await htmx.timeout(10);
+        assert.isFalse(afterSwapFired);
+    })
+
+    it('does not update title when htmx:before:swap is cancelled', async function () {
+        const originalTitle = document.title;
+        document.addEventListener('htmx:before:swap', e => e.preventDefault(), { once: true });
+        mockResponse('GET', '/test', '<title>Should Not Set</title><div>content</div>');
+        createProcessedHTML('<div hx-get="/test">click</div>');
+        find('div').click();
+        await forRequest();
+        await htmx.timeout(10);
+        assert.equal(document.title, originalTitle);
+    })
+
+    it('does not set title when swap is none', async function () {
+        let originalTitle = document.title;
+        await htmx.swap({"target":"#test-playground", "swap":"none", "text":"<title>Should Not Set</title><div>Content</div>"});
+        document.title.should.equal(originalTitle);
+    })
+
+    it('does not set title when hx-swap=none on element', async function () {
+        const originalTitle = document.title;
+        mockResponse('GET', '/test', '<title>Should Not Set</title><div>content</div>');
+        createProcessedHTML('<div id="target">original</div><button hx-get="/test" hx-swap="none" hx-target="#target">click</button>');
+        find('button').click();
+        await forRequest();
+        await htmx.timeout(10);
+        assert.equal(document.title, originalTitle);
+        assert.equal(find('#target').innerText, 'original');
+    })
+
+    it('does not set title for 204 no-swap status code response', async function () {
+        document.title = 'Before 204';
+        mockResponse('GET', '/test', '<title>Should Not Set</title><div>content</div>', { status: 204 });
+        createProcessedHTML('<div id="target">original</div><button hx-get="/test" hx-target="#target">click</button>');
+        find('button').click();
+        await forRequest();
+        await htmx.timeout(10);
+        assert.equal(document.title, 'Before 204');
+        assert.equal(find('#target').innerText, 'original');
+    })
+
     it('sets document title from response', async function () {
         let originalTitle = document.title;
         await htmx.swap({"target":"#test-playground", "text":"<html><head><title>New Title</title></head><body><div>Content</div></body></html>"})
