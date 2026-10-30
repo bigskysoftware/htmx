@@ -482,7 +482,7 @@ var htmx = (() => {
             // query parameters (can still be included explicitly with hx-include)
             let form = usesQueryParams
                 ? (elt.matches('form') ? elt : null)
-                : (elt.form || elt.closest("form"))
+                : (elt.matches('form') ? elt : (elt.form || elt.closest("form")))
 
             // Build request body
             let body = this.__collectFormData(elt, form, evt.submitter, ctx.request.validate, usesQueryParams)

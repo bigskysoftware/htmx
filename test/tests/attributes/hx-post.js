@@ -28,4 +28,22 @@ describe('hx-post attribute', function() {
         btn.innerHTML.should.equal('Posted!')
     })
 
+    it('POST on form with several controls named "form" sends the form values', async function() {
+        mockResponse('POST', '/test', 'Posted!')
+        let form = createProcessedHTML('<form hx-post="/test"><input name="form" value="a"/><input name="form" value="b"/><input name="i1" value="v1"/></form>')
+        form.requestSubmit()
+        await forRequest()
+        fetchMock.calls[0].request.body.getAll("form").should.deep.equal(['a', 'b'])
+        fetchMock.calls[0].request.body.get("i1").should.equal('v1')
+    })
+
+    it('POST on form with a single control named "form" sends the form values', async function() {
+        mockResponse('POST', '/test', 'Posted!')
+        let form = createProcessedHTML('<form hx-post="/test"><input name="form" value="a"/><input name="i1" value="v1"/></form>')
+        form.requestSubmit()
+        await forRequest()
+        fetchMock.calls[0].request.body.get("form").should.equal('a')
+        fetchMock.calls[0].request.body.get("i1").should.equal('v1')
+    })
+
 })
