@@ -592,6 +592,7 @@ var htmx = (() => {
                 }
                 this.__extractHxHeaders(ctx);
                 if (!this.__trigger(elt, "htmx:before:response", {ctx})) return;
+                if (ctx.target?.isConnected === false) return;
                 ctx.text = await response.text();
                 if (!this.__trigger(elt, "htmx:after:request", {ctx})) return;
 
@@ -1249,7 +1250,6 @@ var htmx = (() => {
 
         async swap(ctx) {
             try {
-                this.__handleHistoryUpdate(ctx);
                 let {fragment, title} = this.__makeFragment(ctx.text);
                 ctx.title = title;
                 let tasks = [];
@@ -1272,6 +1272,8 @@ var htmx = (() => {
                 if(!this.__trigger(ctx.sourceElement, "htmx:before:swap", {ctx, tasks})){
                     return
                 }
+
+                this.__handleHistoryUpdate(ctx);
 
                 let swapPromises = [];
                 let transitionTasks = [];
@@ -1300,7 +1302,7 @@ var htmx = (() => {
                 }
 
                 this.__trigger(ctx.sourceElement, "htmx:after:swap", {ctx});
-                if (ctx.title && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
+                if (ctx.title && ctx.swap !== 'none' && !mainSwap?.swapSpec?.ignoreTitle) document.title = ctx.title;
                 this.__handleAnchorScroll(ctx);
             } finally {
                 this.__trigger(ctx.sourceElement, "htmx:finally:swap", {ctx});

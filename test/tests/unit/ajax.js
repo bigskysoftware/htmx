@@ -333,6 +333,81 @@ describe('ajax() unit Tests', function() {
         assert.isFalse(errorFired);
     });
 
+    it('does not push history when target is removed before response', async function() {
+        const seq = mockSequentialResponses('GET', '/nav', '<p>page</p>');
+        const originalUrl = window.location.href;
+        createProcessedHTML('<div id="target" hx-get="/nav" hx-push-url="true">click</div>');
+        const target = find('#target');
+        target.click();
+        await htmx.timeout(1);
+        target.remove();
+        await seq.next();
+        await htmx.timeout(10);
+        assert.equal(window.location.href, originalUrl);
+    });
+
+    it('does not swap oob content when target is removed before response', async function() {
+        const seq = mockSequentialResponses('GET', '/test',
+            "<div>main</div><div id='oob' hx-swap-oob='true'>oob-updated</div>");
+        createProcessedHTML("<div id='target'>original</div><div id='oob'>oob-original</div>");
+        const target = find('#target');
+        const promise = htmx.ajax('GET', '/test', { target, swap: 'innerHTML' });
+        await htmx.timeout(1);
+        target.remove();
+        await seq.next();
+        await promise;
+        assert.equal(find('#oob').innerText, 'oob-original');
+    });
+
+    it('fires htmx:finally:request even when target is removed', async function() {
+        const seq = mockSequentialResponses('GET', '/test', 'content');
+        const target = createProcessedHTML('<div id="target"></div>');
+        let finallyCalled = false;
+        document.addEventListener('htmx:finally:request', () => { finallyCalled = true; }, { once: true });
+        const promise = htmx.ajax('GET', '/test', { target, swap: 'innerHTML' });
+        await htmx.timeout(1);
+        target.remove();
+        await seq.next();
+        await promise;
+        assert.isTrue(finallyCalled);
+    });
+
+    it('concurrent requests: only the one whose target is still connected swaps', async function() {
+        const seq1 = mockSequentialResponses('GET', '/a', '<p>from-a</p>');
+        const seq2 = mockSequentialResponses('GET', '/b', '<p>from-b</p>');
+        createProcessedHTML('<div id="t1">orig1</div><div id="t2">orig2</div>');
+        const t1 = find('#t1');
+        const t2 = find('#t2');
+        const p1 = htmx.ajax('GET', '/a', { target: t1, swap: 'innerHTML' });
+        const p2 = htmx.ajax('GET', '/b', { target: t2, swap: 'innerHTML' });
+        await htmx.timeout(1);
+        t1.remove();
+        await seq1.next();
+        await seq2.next();
+        await Promise.all([p1, p2]);
+        assert.equal(t1.innerHTML, 'orig1');
+        assert.include(t2.innerHTML, 'from-b');
+    });
+
+    it('ignores a response when its target is removed while the request is in flight', async function() {
+        const seq = mockSequentialResponses('GET', '/test', '<title>Old page</title><p>old</p>');
+        const target = createProcessedHTML('<div id="target"></div>');
+        document.title = 'Current page';
+
+        const promise = htmx.ajax('GET', '/test', {
+            target,
+            swap: 'innerHTML'
+        });
+
+        await htmx.timeout(1);
+        target.remove();
+        await seq.next();
+        await promise;
+
+        assert.equal(document.title, 'Current page');
+        assert.equal(target.innerHTML, '');
+    });
+
     it('sets full URL for cross-origin GET requests with query params', async function() {
         let capturedAction;
         document.addEventListener('htmx:before:request', function handler(evt) {
