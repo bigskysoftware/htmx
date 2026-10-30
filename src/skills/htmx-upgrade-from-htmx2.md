@@ -144,9 +144,9 @@ htmx 2 uses camelCase event names. htmx 4 uses colon-separated names.
 | `htmx:afterSwap`            | `htmx:after:swap`                 |
 | `htmx:afterSettle`          | `htmx:after:settle`               |
 | `htmx:beforeSend`           | `htmx:before:request`             |
-| `htmx:load`                 | `htmx:after:init`                 |
+| `htmx:load`                 | `htmx:after:process`              |
 | `htmx:beforeOnLoad`         | `htmx:before:init`                |
-| `htmx:afterOnLoad`          | `htmx:after:init`                 |
+| `htmx:afterOnLoad`          | `htmx:after:request`              |
 | `htmx:beforeProcessNode`    | `htmx:before:process`             |
 | `htmx:afterProcessNode`     | `htmx:after:process`              |
 | `htmx:beforeCleanupElement` | `htmx:before:cleanup`             |
