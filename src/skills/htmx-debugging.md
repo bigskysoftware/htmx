@@ -44,7 +44,7 @@ Paste this in the console to monitor the request/swap lifecycle:
 ```js
 ['htmx:config:request', 'htmx:before:request', 'htmx:after:request',
  'htmx:before:swap', 'htmx:after:swap', 'htmx:finally:swap', 'htmx:error', 'htmx:finally:request']
-.forEach(evt => document.body.addEventListener(evt, e => {
+.forEach(evt => document.addEventListener(evt, e => {
     console.log(evt, e.detail?.ctx?.request?.action, e.detail?.ctx?.response?.status, e.detail);
 }));
 ```
@@ -100,6 +100,14 @@ monitorEvents(htmx.find("#theElement"));
 
 **Check event listeners:**
 - An `htmx:before:swap` listener calling `preventDefault()` will cancel the swap
+
+### Listener Never Fires
+
+**Check whether the element is still in the DOM:**
+- htmx dispatches an event on `document` once its element has left the DOM, so a listener on a form the
+  response replaced never hears `htmx:after:request` or `htmx:finally:request`
+- Listen on `document` and match `evt.detail.ctx`. The event monitoring snippet above listens on
+  `document` for this reason: one on `document.body` misses these, since `document` sits above it
 
 ### Wrong Content Being Swapped
 
