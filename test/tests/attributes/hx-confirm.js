@@ -206,4 +206,21 @@ describe('hx-confirm attribute', function() {
         assert.isFalse(btn.disabled)
         window.confirm = originalConfirm
     })
+
+    it('Empty attribute style should trigger htmx:confirm', async function () {
+        mockResponse('GET', '/test', 'Success')
+        let btn = createProcessedHTML('<button hx-get="/test" hx-confirm>Click</button>')
+        let confirmFired = false
+        btn.addEventListener('htmx:confirm', (e) => {
+            confirmFired = true
+            e.preventDefault()
+            e.detail.dropRequest()
+        })
+
+        btn.click()
+        await forRequest()
+
+        assert.isTrue(confirmFired)
+    })
+
 })
