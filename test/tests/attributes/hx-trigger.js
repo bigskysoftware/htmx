@@ -137,6 +137,18 @@ describe('hx-trigger attribute', function() {
         fetchMock.calls.length.should.equal(1)
     })
 
+    for (let sync of ['', 'hx-sync="this:replace"']) {
+        it(`submit cancels a pending delayed trigger ${sync}`, async function () {
+            mockResponse('POST', '/test', 'Done')
+            let form = createProcessedHTML(`<form hx-post="/test" hx-trigger="input delay:20ms, submit" hx-swap="none" ${sync}></form>`)
+            form.dispatchEvent(new Event('input'))
+            form.dispatchEvent(new Event('submit', {cancelable: true}))
+            await htmx.timeout(60)
+            fetchMock.calls.length.should.equal(1)
+            assert.isFalse(fetchMock.calls[0].request.signal.aborted)
+        })
+    }
+
     it('once modifier works', function () {
         mockResponse('GET', '/test', "Response")
         createProcessedHTML('<button hx-trigger="click once" hx-get="/test"/></button>')

@@ -810,6 +810,13 @@ var htmx = (() => {
                         let evtArgs = {}; for (let k in evt) if (/^[a-z]+$/i.test(k)) evtArgs[k] = evt[k];
                         if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)) return;
                     }
+                    // a new trigger replaces any pending delayed or throttled trigger on this element
+                    if (eventName !== 'every') {
+                        for (let other of this.__htmxProp(elt).triggerSpecs) {
+                            clearTimeout(other.timeout);
+                            other.throttledEvent = null;
+                        }
+                    }
                     timed(evt);
                 };
 

@@ -185,6 +185,48 @@ describe('__initializeTriggers unit tests', function() {
         assert.equal(2, called)
     });
 
+    it('a trigger cancels a pending delayed trigger', async function() {
+        let called = [];
+        const form = mockTriggerElement('<form hx-trigger="input delay:25ms, submit"></form>', evt => called.push(evt.type));
+        form.dispatchEvent(new Event('input'));
+        form.dispatchEvent(new Event('submit'));
+        await htmx.timeout(50);
+        assert.deepEqual(called, ['submit']);
+        form.dispatchEvent(new Event('input'));
+        await htmx.timeout(50);
+        assert.deepEqual(called, ['submit', 'input']);
+    });
+
+    it('a trigger cancels a pending throttled trigger', async function() {
+        let called = [];
+        const form = mockTriggerElement('<form hx-trigger="input throttle:25ms, submit"></form>', evt => called.push(evt.type));
+        form.dispatchEvent(new Event('input'));
+        form.dispatchEvent(new Event('input'));
+        form.dispatchEvent(new Event('submit'));
+        await htmx.timeout(50);
+        assert.deepEqual(called, ['input', 'submit']);
+    });
+
+    it('a filtered trigger does not cancel a pending delayed trigger', async function() {
+        let called = [];
+        const form = mockTriggerElement('<form hx-trigger="input delay:25ms, submit[false]"></form>', evt => called.push(evt.type));
+        form.dispatchEvent(new Event('input'));
+        form.dispatchEvent(new Event('submit'));
+        await htmx.timeout(50);
+        assert.deepEqual(called, ['input']);
+    });
+
+    it('polling does not cancel a pending delayed trigger', async function() {
+        let called = [];
+        const div = createProcessedHTML('<div hx-trigger="custom delay:30ms, every 5ms"></div>');
+        htmx.__htmxProp(div);
+        htmx.__initializeTriggers(div, evt => called.push(evt.type));
+        div.dispatchEvent(new Event('custom'));
+        await htmx.timeout(60);
+        assert.include(called, 'every');
+        assert.include(called, 'custom');
+    });
+
     it('every trigger polls at interval', async function () {
         let called = 0
         mockTriggerButton("every 10ms", () => called++);
