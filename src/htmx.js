@@ -1843,10 +1843,9 @@ var htmx = (() => {
             for (let input of inputs) {
                 let name = input.name || input.getAttribute?.('name');
                 if (!name || input.matches(':disabled') || included.has(input)) continue;
-                let type = input.type;
-                if (input !== elt && input.tagName === 'INPUT' && ['submit', 'button', 'reset', 'image'].includes(type)) continue;
                 included.add(input);
 
+                let type = input.type;
                 if (type === 'checkbox' || type === 'radio' || (input.tagName !== 'INPUT' && 'checked' in input)) {
                     // Only add if checked
                     if (input.checked) {
