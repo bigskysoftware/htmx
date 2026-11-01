@@ -322,7 +322,7 @@ var htmx = (() => {
         __parseTriggerSpecs(spec) {
             return HCON.split(spec).flatMap(s => {
                 // support `every 1s [cond]` by moving it next to `every`
-                s = s.replace(/^(\s*every)(\s+[^\s\[]+)\s*(\[[^\]]*\])/, '$1$3$2');
+                s = s.replace(/^\s*every\s+(\S+?)\s*(\[[^\]]*\])/, 'every$2 $1');
                 let [,name,rest] = s.match(/^\s*(\S+\[[^\]]*\]|\S+)\s*(.*?)\s*$/) ?? [];
                 if (!name) return [];  // skip empty/whitespace-only tokens
                 if (/\[[^\]]*$/.test(name)) throw "unterminated:" + name;  // e.g. click[ctrlKey
