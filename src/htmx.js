@@ -1045,6 +1045,7 @@ var htmx = (() => {
 
         __parseHTML(resp) {
             let trusted = this.#ttPolicy.createHTML(resp);
+            // {} works around Chrome 150-156 dropping comments :/
             return Document.parseHTMLUnsafe?.(trusted, {}) || new DOMParser().parseFromString(trusted, 'text/html');
         }
 
