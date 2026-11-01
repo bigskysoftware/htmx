@@ -1829,7 +1829,6 @@ var htmx = (() => {
                 let name = input.name || input.getAttribute?.('name');
                 if (!name || input.matches(':disabled') || included.has(input)) continue;
                 let type = input.type;
-                // like <button> above, submitter-type inputs only send their value when they are elt itself
                 if (input !== elt && input.tagName === 'INPUT' && ['submit', 'button', 'reset', 'image'].includes(type)) continue;
                 included.add(input);
 
