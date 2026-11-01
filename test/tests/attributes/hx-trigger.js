@@ -73,15 +73,31 @@ describe('hx-trigger attribute', function() {
         await forRequest()
     })
 
-    it('filters polling with a filter after the every interval', async function () {
+    for (let spec of ['every 20ms [this.dataset.go]', 'every 20ms[this.dataset.go]']) {
+        it(`filters polling with \`${spec}\``, async function () {
+            mockResponse('GET', '/test', 'Called!')
+            let div = createProcessedHTML(`<div hx-get="/test" hx-trigger="${spec}"></div>`)
+            await htmx.timeout(100)
+            fetchMock.calls.length.should.equal(0)
+            div.dataset.go = 'true'
+            await forRequest()
+            delete div.dataset.go
+        })
+    }
+
+    it('can filter polling', async function () {
         mockResponse('GET', '/test', 'Called!')
-        let div = createProcessedHTML('<div hx-get="/test" hx-trigger="every 20ms [this.dataset.go]"></div>' +
-            '<div hx-get="/test" hx-trigger="every 20ms[this.dataset.go]"></div>')
-        await htmx.timeout(100)
-        fetchMock.calls.length.should.equal(0)
-        div.dataset.go = 'true'
-        await forRequest()
-        delete div.dataset.go
+        window.foo = false
+        try {
+            createProcessedHTML('<div id="d1" hx-get="/test" hx-trigger="every 5ms[foo]">Not Called</div>' +
+                '<div id="d2" hx-get="/test" hx-trigger="every 5ms">Not Called</div>')
+            await htmx.timeout(100)
+            find('#d1').innerHTML.should.equal('Not Called')
+            find('#d2').innerHTML.should.equal('Called!')
+            find('#d1').remove()
+        } finally {
+            delete window.foo
+        }
     })
 
     it('once modifier works', function () {
@@ -641,21 +657,6 @@ describe('hx-trigger attribute', function() {
     //     } finally {
     //         delete window.foo
     //     }
-    // })
-    //
-    // it('can filter polling', function(complete) {
-    //     this.server.respondWith('GET', '/test', 'Called!')
-    //     window.foo = false
-    //     var div = make('<div hx-get="/test" hx-trigger="every 5ms[foo]">Not Called</div>')
-    //     var div2 = make('<div hx-get="/test" hx-trigger="every 5ms">Not Called</div>')
-    //     this.server.autoRespond = true
-    //     this.server.autoRespondAfter = 0
-    //     setTimeout(function() {
-    //         div.innerHTML.should.equal('Not Called')
-    //         div2.innerHTML.should.equal('Called!')
-    //         delete window.foo
-    //         complete()
-    //     }, 100)
     // })
     //
     // it('bad condition issues error', function() {
