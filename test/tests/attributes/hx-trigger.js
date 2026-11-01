@@ -73,6 +73,17 @@ describe('hx-trigger attribute', function() {
         await forRequest()
     })
 
+    it('filters polling with a filter after the every interval', async function () {
+        mockResponse('GET', '/test', 'Called!')
+        let div = createProcessedHTML('<div hx-get="/test" hx-trigger="every 20ms [this.dataset.go]"></div>' +
+            '<div hx-get="/test" hx-trigger="every 20ms[this.dataset.go]"></div>')
+        await htmx.timeout(100)
+        fetchMock.calls.length.should.equal(0)
+        div.dataset.go = 'true'
+        await forRequest()
+        delete div.dataset.go
+    })
+
     it('once modifier works', function () {
         mockResponse('GET', '/test', "Response")
         createProcessedHTML('<button hx-trigger="click once" hx-get="/test"/></button>')
