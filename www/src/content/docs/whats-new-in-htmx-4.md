@@ -159,7 +159,7 @@ All events follow a new pattern: `htmx:phase:action[:sub-action]`. Most error ev
 
 | htmx 2.x                    | htmx 4.x                                                                          | Type    | Notes                               |
 |-----------------------------|-----------------------------------------------------------------------------------|---------|-------------------------------------|
-| `htmx:afterOnLoad`          | [`htmx:after:init`](/reference/events/htmx-after-init)                            | renamed | —                                   |
+| `htmx:afterOnLoad`          | [`htmx:after:request`](/reference/events/htmx-after-request)                      | renamed | Fires after the response is received, before swapping. |
 | `htmx:afterProcessNode`     | [`htmx:after:init`](/reference/events/htmx-after-init)                            | renamed | —                                   |
 | `htmx:afterRequest`         | [`htmx:after:request`](/reference/events/htmx-after-request)                      | renamed | —                                   |
 | `htmx:afterSettle`          | [`htmx:after:settle`](/reference/events/htmx-after-settle)                        | renamed | —                                   |
@@ -173,7 +173,7 @@ All events follow a new pattern: `htmx:phase:action[:sub-action]`. Most error ev
 | `htmx:configRequest`        | [`htmx:config:request`](/reference/events/htmx-config-request)                    | renamed | —                                   |
 | `htmx:historyCacheMiss`     | [`htmx:before:history:restore`](/reference/events/htmx-before-restore-history)    | renamed | —                                   |
 | `htmx:historyRestore`       | [`htmx:before:history:restore`](/reference/events/htmx-before-restore-history)    | renamed | —                                   |
-| `htmx:load`                 | [`htmx:after:init`](/reference/events/htmx-after-init)                            | renamed | —                                   |
+| `htmx:load`                 | [`htmx:after:process`](/reference/events/htmx-after-process)                      | renamed | Fires after new content is processed. |
 | `htmx:oobAfterSwap`         | [`htmx:after:swap`](/reference/events/htmx-after-swap)                            | renamed | —                                   |
 | `htmx:oobBeforeSwap`        | [`htmx:before:swap`](/reference/events/htmx-before-swap)                          | renamed | —                                   |
 | `htmx:pushedIntoHistory`    | [`htmx:after:history:push`](/reference/events/htmx-after-push-into-history)       | renamed | —                                   |
