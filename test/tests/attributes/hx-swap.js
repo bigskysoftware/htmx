@@ -138,6 +138,36 @@ describe('hx-swap modifiers', function() {
         }
     })
 
+    it('scrollTarget:document scrolls the window', async function () {
+        mockResponse('GET', '/test', '<p>New</p>')
+        createProcessedHTML(`
+            <div id="trigger" hx-get="/test" hx-swap="innerHTML scroll:top scrollTarget:document">Old</div>
+            <div style="height:5000px">spacer</div>`)
+        window.scrollTo(0, 1000)
+        try {
+            find('#trigger').click()
+            await forRequest()
+            assert.equal(window.scrollY, 0)
+        } finally {
+            window.scrollTo(0, 0)
+        }
+    })
+
+    it('showTarget:document shows the bottom of the window', async function () {
+        mockResponse('GET', '/test', '<p>New</p>')
+        createProcessedHTML(`
+            <div id="trigger" hx-get="/test" hx-swap="innerHTML show:bottom showTarget:document">Old</div>
+            <div style="height:5000px">spacer</div>`)
+        window.scrollTo(0, 0)
+        try {
+            find('#trigger').click()
+            await forRequest()
+            assert.isAbove(window.scrollY, 0)
+        } finally {
+            window.scrollTo(0, 0)
+        }
+    })
+
     it('processes scripts in swapped content', async function () {
         mockResponse('GET', '/test', '<div><script>window.testScriptRan = true;</script></div>')
         let div = createProcessedHTML('<div hx-get="/test">Old</div>');

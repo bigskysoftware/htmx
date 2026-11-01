@@ -1193,11 +1193,14 @@ var htmx = (() => {
             }
         }
 
+        // window and document have no scrollTop or scrollIntoView, so use the document's scrolling element
+        __normalizeScrollTarget(target) {
+            return target === window || target === document ? document.scrollingElement : target;
+        }
+
         __handleScroll(swapSpec, target) {
             if (swapSpec.scroll) {
-                let scrollTarget = swapSpec.scrollTarget ? this.__findExt(target, swapSpec.scrollTarget) : target;
-                // window has no scrollTop or scrollIntoView, so use the document's scrolling element
-                if (scrollTarget === window) scrollTarget = document.scrollingElement;
+                let scrollTarget = swapSpec.scrollTarget ? this.__normalizeScrollTarget(this.__findExt(target, swapSpec.scrollTarget)) : target;
                 if (scrollTarget) {
                     if (swapSpec.scroll === 'top') {
                         scrollTarget.scrollTop = 0;
@@ -1207,8 +1210,7 @@ var htmx = (() => {
                 }
             }
             if (swapSpec.show === 'top' || swapSpec.show === 'bottom') {
-                let showTarget = swapSpec.showTarget ? this.__findExt(target, swapSpec.showTarget) : target;
-                if (showTarget === window) showTarget = document.scrollingElement;
+                let showTarget = swapSpec.showTarget ? this.__normalizeScrollTarget(this.__findExt(target, swapSpec.showTarget)) : target;
                 showTarget?.scrollIntoView?.(swapSpec.show === 'top')
             }
         }
