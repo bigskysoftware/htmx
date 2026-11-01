@@ -83,4 +83,32 @@ describe('__makeFragment unit tests', function() {
         fragment.children[1].tagName.should.equal('TBODY');
     })
 
+    it('preserves HTML comments and passes explicit options to parseHTMLUnsafe', function () {
+        let original = Document.parseHTMLUnsafe
+        let calls = []
+        if (original) {
+            Document.parseHTMLUnsafe = function () {
+                calls.push(Array.from(arguments))
+                return original.apply(this, arguments)
+            }
+        }
+        try {
+            let {fragment} = htmx.__makeFragment('<div>a<!-- x -->b</div>')
+            let container = document.createElement('div')
+            container.append(fragment)
+            container.innerHTML.should.equal('<div>a<!-- x -->b</div>')
+            if (original) {
+                calls.length.should.be.greaterThan(0)
+                for (let args of calls) {
+                    args.length.should.equal(2)
+                    assert.deepEqual(args[1], {})
+                }
+            }
+        } finally {
+            if (original) {
+                Document.parseHTMLUnsafe = original
+            }
+        }
+    })
+
 });
