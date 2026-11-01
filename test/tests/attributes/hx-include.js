@@ -42,6 +42,29 @@ describe('hx-include attribute', function() {
         assert.equal(params.get('btn'), null);
     })
 
+    it('submit, button, reset and image inputs inside hx-include container are not sent', async function () {
+        mockResponse('POST', '/include', "OK")
+        createProcessedHTML('<div id="row"><input name="qty" value="3">' +
+            '<input type="submit" name="op" value="Delete">' +
+            '<input type="button" name="helper" value="Pick">' +
+            '<input type="reset" name="r" value="Reset">' +
+            '<input type="image" name="img" alt="x">' +
+            '<button id="trigger" hx-post="/include" hx-include="closest div">Save</button></div>')
+        find('#trigger').click()
+        await forRequest()
+        let body = fetchMock.calls[0].request.body;
+        body.get('qty').should.equal('3');
+        assert.deepEqual([...body.keys()], ['qty']);
+    })
+
+    it('submit input targeted directly by hx-include is still sent', async function () {
+        mockResponse('POST', '/include', "OK")
+        createProcessedHTML('<input type="submit" id="op" name="op" value="Delete"><button id="trigger" hx-post="/include" hx-include="#op">Go</button>')
+        find('#trigger').click()
+        await forRequest()
+        fetchMock.calls[0].request.body.get('op').should.equal('Delete');
+    })
+
     it('custom element with checked=true via hx-include sends value', async function () {
         mockResponse('GET', '/include', "OK")
         createProcessedHTML('<div id="container"></div><button id="btn" hx-get="/include" hx-include="#container">Go</button>')
