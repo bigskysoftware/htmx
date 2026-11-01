@@ -38,12 +38,14 @@
             }
         },
         htmx_after_init: function (elt, detail) {
-            maybeRetriggerEvent(elt, "htmx:afterOnLoad", detail);
             maybeRetriggerEvent(elt, "htmx:afterProcessNode", detail);
+        },
+        htmx_after_process: function (elt, detail) {
             maybeRetriggerEvent(elt, "htmx:load", detail);
         },
         htmx_after_request: function (elt, detail) {
             maybeRetriggerEvent(elt, "htmx:afterRequest", detail);
+            maybeRetriggerEvent(elt, "htmx:afterOnLoad", detail);
         },
         htmx_after_swap: function (elt, detail) {
             maybeRetriggerEvent(elt, "htmx:afterSettle", detail);
