@@ -100,6 +100,43 @@ describe('hx-trigger attribute', function() {
         }
     })
 
+    it('polling issues repeated requests', async function () {
+        mockResponse('GET', '/test', 'Called!')
+        createProcessedHTML('<div hx-get="/test" hx-trigger="every 5ms" hx-swap="none"></div>')
+        await htmx.timeout(100)
+        fetchMock.calls.length.should.be.greaterThan(1)
+    })
+
+    it('removing the element stops polling', async function () {
+        mockResponse('GET', '/test', 'Called!')
+        let div = createProcessedHTML('<div hx-get="/test" hx-trigger="every 5ms" hx-swap="none"></div>')
+        await htmx.timeout(50)
+        div.remove()
+        await htmx.timeout(20)
+        let calls = fetchMock.calls.length
+        await htmx.timeout(50)
+        fetchMock.calls.length.should.equal(calls)
+    })
+
+    it('removing the polling trigger and force processing the element stops polling', async function () {
+        mockResponse('GET', '/test', 'Called!')
+        let div = createProcessedHTML('<div hx-get="/test" hx-trigger="every 5ms" hx-swap="none"></div>')
+        div.removeAttribute('hx-trigger')
+        htmx.process(div, true)
+        await htmx.timeout(20)
+        let calls = fetchMock.calls.length
+        await htmx.timeout(50)
+        fetchMock.calls.length.should.equal(calls)
+    })
+
+    it('polling does not fire after a swap replaces the element', async function () {
+        mockResponse('GET', '/test', '<span id="done">Done</span>')
+        createProcessedHTML('<div id="poller" hx-get="/test" hx-trigger="every 5ms" hx-swap="outerHTML"></div>')
+        await htmx.timeout(60)
+        assert.notExists(find('#poller'))
+        fetchMock.calls.length.should.equal(1)
+    })
+
     it('once modifier works', function () {
         mockResponse('GET', '/test', "Response")
         createProcessedHTML('<button hx-trigger="click once" hx-get="/test"/></button>')
@@ -1519,21 +1556,5 @@ describe('hx-trigger attribute', function() {
     //     div.click()
     //     this.server.respond()
     //     div.innerHTML.should.equal('Requests: 2')
-    // })
-    //
-    // it('Removing polling trigger and processing node removes timeout', function(complete) {
-    //     this.server.respondWith('GET', '/test', 'Called!')
-    //     var div = make('<div hx-get="/test" hx-trigger="every 5ms">Not Called</div>')
-    //     div.removeAttribute('hx-trigger')
-    //     should.not.equal(div['htmx-internal-data'].timeout, undefined)
-    //     htmx.process(div)
-    //     should.equal(div['htmx-internal-data'].timeout, undefined)
-    //     this.server.autoRespond = true
-    //     this.server.autoRespondAfter = 0
-    //     setTimeout(function() {
-    //         div.innerHTML.should.equal('Not Called')
-    //         delete window.foo
-    //         complete()
-    //     }, 30)
     // })
 })
