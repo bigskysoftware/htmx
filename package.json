@@ -1,6 +1,6 @@
 {
   "name": "htmx.org",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "A hypermedia-oriented JavaScript library",
   "main": "dist/htmx.js",
   "module": "dist/htmx.esm.js",

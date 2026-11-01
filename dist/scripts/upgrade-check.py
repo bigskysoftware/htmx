@@ -49,21 +49,21 @@ REQUEST_ATTRS = {"hx-get", "hx-post", "hx-put", "hx-patch", "hx-delete"}
 
 # htmx 2 event → htmx 4 event
 EVENT_RENAMES = {
-    "htmx:afterOnLoad": "htmx:after:init",
+    "htmx:afterOnLoad": "htmx:after:request",
     "htmx:afterProcessNode": "htmx:after:init",
     "htmx:afterRequest": "htmx:after:request",
     "htmx:afterSettle": "htmx:after:swap",
     "htmx:afterSwap": "htmx:after:swap",
     "htmx:beforeCleanupElement": "htmx:before:cleanup",
     "htmx:beforeHistorySave": "htmx:before:history:update",
-    "htmx:beforeOnLoad": "htmx:before:init",
-    "htmx:beforeProcessNode": "htmx:before:process",
+    "htmx:beforeOnLoad": "htmx:before:response",
+    "htmx:beforeProcessNode": "htmx:before:init",
     "htmx:beforeRequest": "htmx:before:request",
     "htmx:beforeSwap": "htmx:before:swap",
     "htmx:configRequest": "htmx:config:request",
     "htmx:historyCacheMiss": "htmx:before:history:restore",
     "htmx:historyRestore": "htmx:before:history:restore",
-    "htmx:load": "htmx:after:init",
+    "htmx:load": "htmx:after:process",
     "htmx:oobAfterSwap": "htmx:after:swap",
     "htmx:oobBeforeSwap": "htmx:before:swap",
     "htmx:pushedIntoHistory": "htmx:after:history:push",
@@ -101,6 +101,7 @@ WS_EVENT_RENAMES = {
 
 # Extension attribute renames
 EXT_ATTR_RENAMES = {
+    "preload": "rename to hx-preload",
     "sse-connect": "rename to hx-sse:connect",
     "sse-close": "rename to hx-sse:close",
     "sse-swap": "removed — SSE now integrates with standard htmx request pipeline",
@@ -586,7 +587,7 @@ def main():
                              "e.g. --ext .vue --ext .svelte)")
     parser.add_argument("--no-color", action="store_true",
                         help="Disable colored output")
-    args = parser.parse_args()
+    args = parser.parse_intermixed_args()
 
     extensions = list(DEFAULT_EXTENSIONS)
     for ext in args.ext:

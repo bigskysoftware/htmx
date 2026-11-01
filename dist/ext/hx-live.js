@@ -637,7 +637,8 @@
                 if (p === Symbol.iterator) return () => elts.values();
                 if (p === 'q') return s => {
                     let out = new Set();
-                    for (let e of elts) for (let r of makeQ(e, e)(s).arr()) out.add(r);
+                    let isPositional = /^(next|previous)\s/.test(s);
+                    for (let e of elts) for (let r of makeQ(e, isPositional ? e.parentElement : e)(s).arr()) out.add(r);
                     return qProxy([...out]);
                 };
                 if (p === 'trigger') return (t, d, b) => { elts.forEach(e => htmx.trigger(e, t, d, b)); return proxy; };
@@ -781,6 +782,10 @@
 
     function writeAttrBinding(elt, attrName, value) {
         if (typeof value === 'function') throw new TypeError('hx-live: binding returned a function');
+        if (attrName.startsWith('?')) {
+            elt.toggleAttribute(attrName.slice(1), !!value);
+            return;
+        }
         if (attrName === 'text') {
             let s = value == null ? '' : String(value);
             if (elt.textContent !== s) elt.textContent = s;

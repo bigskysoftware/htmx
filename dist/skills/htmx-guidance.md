@@ -56,7 +56,7 @@ Specify what event triggers the request:
 | `capture`           | listen in the capture phase instead of the bubble phase                              |
 | `passive`           | tell the browser the handler will not call `preventDefault()`                         |
 
-A selector with whitespace needs parentheses: `from:(form input)`.
+A `from` or `target` selector with whitespace or commas needs single quotes, double quotes, or `<.../>`: `from:'form input'`, `from:"form input"`, or `from:<form input/>`.
 
 **Filters** (JavaScript expressions in brackets):
 
