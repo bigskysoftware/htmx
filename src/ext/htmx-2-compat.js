@@ -59,10 +59,10 @@
             maybeRetriggerEvent(elt, "htmx:beforeHistorySave", detail);
         },
         htmx_before_init: function (elt, detail) {
-            maybeRetriggerEvent(elt, "htmx:beforeOnLoad", detail);
-        },
-        htmx_before_process: function (elt, detail) {
             maybeRetriggerEvent(elt, "htmx:beforeProcessNode", detail);
+        },
+        htmx_before_response: function (elt, detail) {
+            maybeRetriggerEvent(elt, "htmx:beforeOnLoad", detail);
         },
         htmx_before_request: function (elt, detail) {
             maybeRetriggerEvent(elt, "htmx:beforeRequest", detail);

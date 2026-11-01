@@ -65,6 +65,23 @@ describe('htmx-2-compat extension', function() {
         assert.deepEqual(ids, ['btn']);
     });
 
+    it('fires htmx:beforeOnLoad when the response arrives, not at init', async function () {
+        mockResponse('GET', '/test', 'New');
+        let ids = record('htmx:beforeOnLoad');
+        let btn = createProcessedHTML('<button id="btn" hx-get="/test" hx-swap="none">Go</button>');
+        assert.deepEqual(ids, []);
+        btn.click();
+        await forRequest();
+        assert.deepEqual(ids, ['btn']);
+    });
+
+    it('fires htmx:beforeProcessNode for each initialized element', function () {
+        let ids = record('htmx:beforeProcessNode');
+        createProcessedHTML('<div id="wrap"><button id="a" hx-get="/test">A</button><button id="b" hx-get="/test">B</button></div>');
+        assert.includeMembers(ids, ['a', 'b']);
+        assert.notInclude(ids, 'wrap');
+    });
+
     it('fires htmx:afterProcessNode at init', function () {
         let ids = record('htmx:afterProcessNode');
         createProcessedHTML('<button id="btn" hx-get="/test">Go</button>');
