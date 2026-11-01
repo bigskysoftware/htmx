@@ -5,6 +5,8 @@
   * `package.json` (then `npm install` to sync `package-lock.json`)
   * `src/htmx.js`
   * `README.md`
+  * `src/editors/jetbrains/htmx.web-types.json`
+  * `src/skills/htmx-upgrade-from-htmx2.md` (`npx` commands)
 * Ensure build is up to date: `npm install; npm build`
 * Update SHA `npm run update-sha` (also writes version to `www/src/data/integrity.json`)
 * Run Tests

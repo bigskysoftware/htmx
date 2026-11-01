@@ -28,10 +28,10 @@ htmx 4 ships a command-line checker. Run it first to scope the work. It prints c
 references with a suggested fix for each hit.
 
 ```bash
-npx htmx.org@4.0.0 upgrade-check -- ./path/to/project
+npx htmx.org@4.0.1 upgrade-check -- ./path/to/project
 
 # add file extensions the scanner does not know
-npx htmx.org@4.0.0 upgrade-check --ext .vue ./path/to/project
+npx htmx.org@4.0.1 upgrade-check --ext .vue ./path/to/project
 ```
 
 Pin the version to the htmx 4 release you are moving to.
