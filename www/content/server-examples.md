@@ -237,6 +237,11 @@ These examples may make it a bit easier to get started using htmx with your plat
 
 - <https://htmgo.dev>
 
+### go-partial
+
+- <https://github.com/donseba/go-partial>
+- <https://showcase.gowebthings.com>
+
 ## Delphi
 
 ### DelphiMVCFramework
