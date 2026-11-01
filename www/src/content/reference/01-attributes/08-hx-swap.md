@@ -260,7 +260,7 @@ Target a different element using a CSS or [extended selector](/docs#targeting-wi
 Scroll the window:
 
 ```html
-<div hx-swap="innerHTML scroll:window:top"></div>
+<div hx-swap="innerHTML scroll:top scrollTarget:window"></div>
 ```
 
 ### `show`
