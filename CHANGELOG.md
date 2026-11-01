@@ -1,5 +1,28 @@
 # Changelog
 
+## [4.0.1] - 2026-11-01
+
+* Any trigger now cancels a pending `delay` or `throttle` trigger on the same element, as in 2.x
+* Fixed an older response overwriting a newer one with `hx-sync` replace ([#4028](https://github.com/bigskysoftware/htmx/pull/4028))
+* Fixed a response with only `hx-partial` blanking the body, and `ignoreTitle` support in `hx-partial`
+* Improved history back and forward reliability, and fixed the `hx-history-cache` POST stamp ([#4067](https://github.com/bigskysoftware/htmx/pull/4067))
+* `hx-trigger` now works on boosted elements ([#4127](https://github.com/bigskysoftware/htmx/pull/4127))
+* `every 2s [cond]` now honors its filter ([#4133](https://github.com/bigskysoftware/htmx/pull/4133))
+* Fixed the `changed` modifier on forms and multiple `changed` triggers on one element ([#4035](https://github.com/bigskysoftware/htmx/pull/4035), [#4096](https://github.com/bigskysoftware/htmx/pull/4096))
+* `scrollTarget` and `showTarget` now work with `window` and `document` ([#4159](https://github.com/bigskysoftware/htmx/pull/4159)), and with relative selectors ([#4089](https://github.com/bigskysoftware/htmx/pull/4089))
+* `intersect` now supports the `from` modifier ([#4080](https://github.com/bigskysoftware/htmx/pull/4080))
+* `hx-sse` and `hx-multipart`: reconnect timeout for unresponsive servers ([#4099](https://github.com/bigskysoftware/htmx/pull/4099))
+* `hx-live`: boolean attribute binding with `:?attr` ([#4022](https://github.com/bigskysoftware/htmx/pull/4022))
+* `hx-download`: exposed `ctx` in events ([#4152](https://github.com/bigskysoftware/htmx/pull/4152)), and prefer `filename*` ([#4043](https://github.com/bigskysoftware/htmx/pull/4043))
+* `hx-head` no longer appends duplicate titles ([#4083](https://github.com/bigskysoftware/htmx/pull/4083))
+* `implicitInheritance` no longer inherits verbs, `hx-action` or `hx-trigger`
+* Worked around Chrome 150-156 dropping HTML comments ([#4150](https://github.com/bigskysoftware/htmx/pull/4150))
+* `htmx-2-compat`: corrected the timing of `htmx:load`, `htmx:afterOnLoad`, `htmx:beforeOnLoad` and `htmx:beforeProcessNode`
+* Corrected event mappings in the upgrade guide and `upgrade-check` ([#4128](https://github.com/bigskysoftware/htmx/pull/4128))
+* Removed stale `hx-compat` and `hx-optimistic` files from `dist/ext` ([#4042](https://github.com/bigskysoftware/htmx/pull/4042))
+* Many, many, _many_ smaller fixes
+
+
 ## [4.0.0] - 2026-08-28
 
 The first stable release of the htmx 4.0 line. See [What's New in htmx 4](https://htmx.org/docs/whats-new-in-htmx-4)

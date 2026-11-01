@@ -152,6 +152,14 @@ describe('hx-preload attribute', function() {
         assert.equal(fetchCount, 1, 'click should reuse preload, not fetch again')
     })
 
+    it('includes HX-Request-Type header in preload fetch', async function () {
+        mockResponse('GET', '/test', 'Response')
+        let btn = createProcessedHTML('<button hx-get="/test" hx-preload="mouseenter">Click</button>');
+        btn.dispatchEvent(new Event('mouseenter'))
+        await htmx.timeout(20)
+        assert.equal(lastFetch().request.headers['HX-Request-Type'], 'partial')
+    })
+
     it('reuses preload with URL containing fragment', async function () {
         let fetchCount = 0;
         mockResponse('GET', '/test', () => { fetchCount++; return 'Response'; })

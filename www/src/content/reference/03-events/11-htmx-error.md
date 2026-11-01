@@ -13,6 +13,8 @@ The `htmx:error` event fires when an exception occurs during the request or swap
 
 This event does **not** fire for HTTP error statuses (4xx/5xx) — use [`htmx:response:error`](/reference/events/htmx-response-error) for those.
 
+This event does **not** fire for intentional aborts triggered by [`hx-sync`](/reference/attributes/hx-sync) or the [`htmx:abort`](/reference/events/htmx-abort) event — only timeout aborts fire this event.
+
 ## Event Detail
 
 - `ctx` - Request context at time of error
@@ -22,9 +24,11 @@ This event does **not** fire for HTTP error statuses (4xx/5xx) — use [`htmx:re
 
 ```javascript
 htmx.on('htmx:error', (evt) => {
-  console.error('Request failed:', evt.detail.error);
-  console.log('Context:', evt.detail.ctx);
-  // Show error message to user
+  const { error, ctx } = evt.detail;
+  const msg = error?.name === 'AbortError' && ctx.request.signal.reason === 'timeout'
+    ? 'Request timed out. Please try again.'
+    : 'Something went wrong. Please try again.';
+  showToast(msg);
 });
 ```
 

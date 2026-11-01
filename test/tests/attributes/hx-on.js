@@ -583,7 +583,7 @@ describe('hx-on="eventSpec -> code" syntax', function() {
         };
         let div = createProcessedHTML('<div hx-on="revealed -> this.classList.add(\'visible\')">x</div>');
         div.classList.contains('visible').should.equal(false);
-        observerCallback([{ isIntersecting: true }]);
+        observerCallback([{ isIntersecting: true, target: div }]);
         div.classList.contains('visible').should.equal(true);
         window.IntersectionObserver = originalIO;
     });
@@ -597,7 +597,7 @@ describe('hx-on="eventSpec -> code" syntax', function() {
         };
         let div = createProcessedHTML('<div hx-on="intersect once -> this.classList.add(\'in-view\')">x</div>');
         div.classList.contains('in-view').should.equal(false);
-        observerCallback([{ isIntersecting: true }]);
+        observerCallback([{ isIntersecting: true, target: div }]);
         div.classList.contains('in-view').should.equal(true);
         window.IntersectionObserver = originalIO;
     });

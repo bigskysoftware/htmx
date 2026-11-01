@@ -74,15 +74,14 @@ describe('hx-head extension', function() {
         assert.equal(metas.length, 1, 'should not duplicate preserved elements');
     });
 
-    it.skip('removes head elements not in new head under merge strategy', async function() {
+    it('removes head elements not in new head under merge strategy', async function() {
         let stale = document.createElement('meta');
         stale.setAttribute('name', 'hx-head-test-stale');
         stale.setAttribute('content', 'remove-me');
         addToHead(stale);
 
-        // use outerHTML swap to trigger merge strategy
-        mockResponse('GET', '/page', headResponse('', '<div>swapped</div>'));
-        let div = createProcessedHTML('<div hx-get="/page" hx-swap="outerHTML">click</div>');
+        mockResponse('GET', '/page', `<html><head hx-head="merge"></head><body><div>swapped</div></body></html>`);
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
 
         div.click();
         await afterMerge();
@@ -199,6 +198,84 @@ describe('hx-head extension', function() {
         assert.isNotNull(headMergeTime, 'head merge should have fired');
         assert.isNotNull(swapTime, 'swap should have fired');
         assert.isAtMost(headMergeTime, swapTime, 'head merge must complete before swap');
+    });
+
+    it('replaces title in append mode when new title differs', async function() {
+        let title = document.createElement('title');
+        title.textContent = 'Page 1';
+        addToHead(title);
+
+        mockResponse('GET', '/page', headResponse('<title>Page 2</title>', '<div>content</div>'));
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
+
+        div.click();
+        await afterMerge();
+
+        let titles = document.head.querySelectorAll('title');
+        assert.equal(titles.length, 1, 'should have exactly one title element');
+        assert.equal(titles[0].textContent, 'Page 2', 'title should be updated to new page title');
+    });
+
+    it('does not duplicate title when navigating back and forth', async function() {
+        let title = document.createElement('title');
+        title.textContent = 'Page 1';
+        addToHead(title);
+
+        mockResponse('GET', '/page2', headResponse('<title>Page 2</title>', '<div>page 2</div>'));
+        let div = createProcessedHTML('<div hx-get="/page2" hx-swap="innerHTML">click</div>');
+        div.click();
+        await afterMerge();
+
+        mockResponse('GET', '/page1', headResponse('<title>Page 1</title>', '<div>page 1</div>'));
+        let div2 = createProcessedHTML('<div hx-get="/page1" hx-swap="innerHTML">click</div>');
+        div2.click();
+        await afterMerge();
+
+        let titles = document.head.querySelectorAll('title');
+        assert.equal(titles.length, 1, 'should still have exactly one title after navigating back');
+        assert.equal(titles[0].textContent, 'Page 1', 'title should reflect current page');
+    });
+
+    it('preserves title in append mode when new head has no title', async function() {
+        let title = document.createElement('title');
+        title.textContent = 'My Page';
+        addToHead(title);
+
+        let titleCountBefore = document.head.querySelectorAll('title').length;
+
+        mockResponse('GET', '/page', headResponse('<meta name="hx-head-test-notitle" content="yes">', '<div>content</div>'));
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
+
+        div.click();
+        await afterMerge();
+
+        let added = document.head.querySelector('meta[name="hx-head-test-notitle"]');
+        if (added) addedHeadElts.push(added);
+
+        let titles = document.head.querySelectorAll('title');
+        assert.equal(titles.length, titleCountBefore, 'title count should not change in append mode when new head has no title');
+        assert.equal(title.textContent, 'My Page', 'original title should be preserved');
+    });
+
+    it('removes title in merge mode when incoming head has no title', async function() {
+        let title = document.createElement('title');
+        title.textContent = 'My Page';
+        addToHead(title);
+
+        let titleCountBefore = document.head.querySelectorAll('title').length;
+
+        // hx-head="merge" on the head tag forces merge strategy
+        mockResponse('GET', '/page', `<html><head hx-head="merge"><meta name="hx-head-test-merge-notitle" content="yes"></head><body><div>content</div></body></html>`);
+        let div = createProcessedHTML('<div hx-get="/page" hx-swap="innerHTML">click</div>');
+
+        div.click();
+        await afterMerge();
+
+        let added = document.head.querySelector('meta[name="hx-head-test-merge-notitle"]');
+        if (added) addedHeadElts.push(added);
+
+        let titles = document.head.querySelectorAll('title');
+        assert.isBelow(titles.length, titleCountBefore, 'title should be removed in merge mode when new head has no title');
     });
 
     it('adds stylesheets to head', async function() {

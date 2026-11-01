@@ -48,8 +48,8 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
 
         assert.equal(result, 'queued')
 
-        queue.continue()
-        queue.continue()
+        queue.continue(noop)
+        queue.continue(noop)
 
         assert.deepEqual(started, [3])
     })
@@ -78,8 +78,8 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         assert.equal(second, 'queued')
         assert.equal(third, 'dropped')
 
-        queue.continue()
-        queue.continue()
+        queue.continue(noop)
+        queue.continue(noop)
 
         assert.deepEqual(started, [2])
     })
@@ -93,7 +93,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         queue.admit('queue all', () => started.push(2), noop)
         queue.admit('queue all', () => started.push(3), noop)
 
-        queue.continue()
+        queue.continue(noop)
 
         assert.deepEqual(started, [2])
     })
@@ -102,7 +102,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let div = createProcessedHTML('<div hx-get="/test"></div>')
         let queue = htmx.__getRequestQueue(div)
 
-        queue.continue()
+        queue.continue(noop)
     })
 
     it('continue clears the current request', function () {
@@ -110,7 +110,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         let queue = htmx.__getRequestQueue(div)
 
         queue.admit('queue first', noop, noop)
-        queue.continue()
+        queue.continue(noop)
 
         assert.equal(queue.admit('queue first', noop, noop), 'run')
     })
@@ -289,6 +289,28 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         assert.isFalse(aborted)
     })
 
+    for (let strategy of ['replace', 'abort']) {
+        it(`ignores cleanup of a replaced ${strategy} request`, async function () {
+            let div = createProcessedHTML('<div hx-get="/test"></div>')
+            let queue = htmx.__getRequestQueue(div)
+            let cleanup
+            let abortFirst = () => { cleanup = Promise.resolve().then(() => queue.continue(abortFirst)) }
+            let secondAborted = false
+            let abortSecond = () => { secondAborted = true }
+            let queuedStarted = false
+
+            assert.equal(queue.admit(strategy, noop, abortFirst), 'run')
+            assert.equal(queue.admit('replace', noop, abortSecond), 'run')
+            assert.equal(queue.admit('queue all', () => { queuedStarted = true }, noop), 'queued')
+            await cleanup
+
+            assert.isFalse(queuedStarted)
+            assert.equal(queue.admit('drop', noop, noop), 'dropped')
+            assert.equal(queue.admit('replace', noop, noop), 'run')
+            assert.isTrue(secondAborted)
+        })
+    }
+
     // hx-sync value parsing tests
 
     it('hx-sync="this" defaults to queue first strategy', function () {
@@ -356,7 +378,7 @@ describe('__getRequestQueue / RequestQueue unit tests', function() {
         assert.equal(result, 'run')
         assert.isTrue(aborted)
 
-        queue.continue()
+        queue.continue(noop)
 
         assert.deepEqual(started, [])
     })

@@ -52,6 +52,17 @@ describe('hx-trigger attribute', function() {
         await forRequest()
     })
 
+    it('filter does not throw when event has a non-identifier property', async function() {
+        mockResponse('GET', '/test', 'Called!')
+        let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[foo]">Not Called</form>')
+        let event = new CustomEvent('evt')
+        event.foo = true
+        event['__nrNode:1234'] = {}
+        form.dispatchEvent(event)
+        fetchMock.calls.length.should.equal(1)
+        await forRequest()
+    })
+
     it('filters properly with true expression filter spec', async function() {
         mockResponse('GET', '/test', 'Called!')
         let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[true]">Not Called</form>')
@@ -61,6 +72,82 @@ describe('hx-trigger attribute', function() {
         fetchMock.calls.length.should.equal(1)
         await forRequest()
     })
+
+    for (let spec of ['every 20ms [this.dataset.go]', 'every 20ms[this.dataset.go]']) {
+        it(`filters polling with \`${spec}\``, async function () {
+            mockResponse('GET', '/test', 'Called!')
+            let div = createProcessedHTML(`<div hx-get="/test" hx-trigger="${spec}"></div>`)
+            await htmx.timeout(100)
+            fetchMock.calls.length.should.equal(0)
+            div.dataset.go = 'true'
+            await forRequest()
+            delete div.dataset.go
+        })
+    }
+
+    it('can filter polling', async function () {
+        mockResponse('GET', '/test', 'Called!')
+        window.foo = false
+        try {
+            createProcessedHTML('<div id="d1" hx-get="/test" hx-trigger="every 5ms[foo]">Not Called</div>' +
+                '<div id="d2" hx-get="/test" hx-trigger="every 5ms">Not Called</div>')
+            await htmx.timeout(100)
+            find('#d1').innerHTML.should.equal('Not Called')
+            find('#d2').innerHTML.should.equal('Called!')
+            find('#d1').remove()
+        } finally {
+            delete window.foo
+        }
+    })
+
+    it('polling issues repeated requests', async function () {
+        mockResponse('GET', '/test', 'Called!')
+        createProcessedHTML('<div hx-get="/test" hx-trigger="every 5ms" hx-swap="none"></div>')
+        await htmx.timeout(100)
+        fetchMock.calls.length.should.be.greaterThan(1)
+    })
+
+    it('removing the element stops polling', async function () {
+        mockResponse('GET', '/test', 'Called!')
+        let div = createProcessedHTML('<div hx-get="/test" hx-trigger="every 5ms" hx-swap="none"></div>')
+        await htmx.timeout(50)
+        div.remove()
+        await htmx.timeout(20)
+        let calls = fetchMock.calls.length
+        await htmx.timeout(50)
+        fetchMock.calls.length.should.equal(calls)
+    })
+
+    it('removing the polling trigger and force processing the element stops polling', async function () {
+        mockResponse('GET', '/test', 'Called!')
+        let div = createProcessedHTML('<div hx-get="/test" hx-trigger="every 5ms" hx-swap="none"></div>')
+        div.removeAttribute('hx-trigger')
+        htmx.process(div, true)
+        await htmx.timeout(20)
+        let calls = fetchMock.calls.length
+        await htmx.timeout(50)
+        fetchMock.calls.length.should.equal(calls)
+    })
+
+    it('polling does not fire after a swap replaces the element', async function () {
+        mockResponse('GET', '/test', '<span id="done">Done</span>')
+        createProcessedHTML('<div id="poller" hx-get="/test" hx-trigger="every 5ms" hx-swap="outerHTML"></div>')
+        await htmx.timeout(60)
+        assert.notExists(find('#poller'))
+        fetchMock.calls.length.should.equal(1)
+    })
+
+    for (let sync of ['', 'hx-sync="this:replace"']) {
+        it(`submit cancels a pending delayed trigger ${sync}`, async function () {
+            mockResponse('POST', '/test', 'Done')
+            let form = createProcessedHTML(`<form hx-post="/test" hx-trigger="input delay:20ms, submit" hx-swap="none" ${sync}></form>`)
+            form.dispatchEvent(new Event('input'))
+            form.dispatchEvent(new Event('submit', {cancelable: true}))
+            await htmx.timeout(60)
+            fetchMock.calls.length.should.equal(1)
+            assert.isFalse(fetchMock.calls[0].request.signal.aborted)
+        })
+    }
 
     it('once modifier works', function () {
         mockResponse('GET', '/test', "Response")
@@ -105,6 +192,125 @@ describe('hx-trigger attribute', function() {
         await htmx.timeout(100)
         // should not have been replaced by click
         find('#d3').innerText.should.equal('bar')
+    })
+
+    it('changed modifier suppresses request when input value is unchanged', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let input = createProcessedHTML('<input hx-get="/test" hx-trigger="keydown changed" value="hello">')
+        // first fire records value and fires
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // same value — suppressed
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+        // changed value — fires
+        input.value = 'world'
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+    })
+
+    it('changed modifier fires on form keydown when child input value changes', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let form = createProcessedHTML('<form hx-get="/test" hx-swap="none" hx-trigger="keydown changed"><input id="i" value="hello"></form>')
+        let input = find('#i')
+        // first fire records value and fires
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // same value — suppressed
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+        // changed value — fires
+        input.value = 'world'
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+    })
+
+    it('changed modifier tracks each input independently', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let form = createProcessedHTML('<form hx-get="/test" hx-swap="none" hx-trigger="keydown changed"><input id="i1" value="a"><input id="i2" value="b"></form>')
+        let i1 = find('#i1'), i2 = find('#i2')
+        // first fire from i1 records value and fires
+        i1.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // fire from i1 unchanged — suppressed
+        i1.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+        // change i1, fire — fires
+        i1.value = 'x'
+        i1.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+        // first fire from i2 records value and fires
+        i2.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(3)
+        // fire from i2 unchanged — suppressed
+        i2.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        fetchMock.calls.length.should.equal(3)
+    })
+
+    it('changed modifier on checkbox fires on each click', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let input = createProcessedHTML('<input type="checkbox" hx-get="/test" hx-trigger="click changed">')
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(3)
+    })
+
+    it('changed modifier on radio fires on each click', async function () {
+        mockResponse('GET', '/test', 'Changed!')
+        mockResponse('GET', '/test', 'Changed!')
+        let input = createProcessedHTML('<input type="radio" hx-get="/test" hx-trigger="click changed">')
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        input.click()
+        await forRequest()
+        fetchMock.calls.length.should.equal(2)
+    })
+
+    it('changed modifier shared across specs — blur does not double-fire after input changed', async function () {
+        mockResponse('GET', '/test', 'Saved!')
+        let input = createProcessedHTML('<input hx-get="/test" hx-trigger="keydown changed, blur changed" value="">')
+        input.value = 'hello'
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // blur with same value — shared WeakMap should suppress this
+        input.dispatchEvent(new Event('blur', {bubbles: true}))
+        fetchMock.calls.length.should.equal(1)
+    })
+    
+    it('changed modifier with delay — blur fires immediately and pending timer does not double-fire', async function () {
+        mockResponse('GET', '/test', 'Saved!')
+        mockResponse('GET', '/test', 'Saved!')
+        let input = createProcessedHTML('<input hx-get="/test" hx-trigger="keydown changed delay:50ms, blur changed" value="">')
+        input.value = 'hello'
+        input.dispatchEvent(new KeyboardEvent('keydown', {bubbles: true}))
+        // blur immediately before the 50ms delay fires
+        input.dispatchEvent(new Event('blur', {bubbles: true}))
+        await forRequest()
+        fetchMock.calls.length.should.equal(1)
+        // wait for the delay to expire — timer should be suppressed by changed check
+        await htmx.timeout(100)
+        fetchMock.calls.length.should.equal(1)
     })
 
     it('load event triggers on element creation', async function () {
@@ -500,21 +706,6 @@ describe('hx-trigger attribute', function() {
     //     } finally {
     //         delete window.foo
     //     }
-    // })
-    //
-    // it('can filter polling', function(complete) {
-    //     this.server.respondWith('GET', '/test', 'Called!')
-    //     window.foo = false
-    //     var div = make('<div hx-get="/test" hx-trigger="every 5ms[foo]">Not Called</div>')
-    //     var div2 = make('<div hx-get="/test" hx-trigger="every 5ms">Not Called</div>')
-    //     this.server.autoRespond = true
-    //     this.server.autoRespondAfter = 0
-    //     setTimeout(function() {
-    //         div.innerHTML.should.equal('Not Called')
-    //         div2.innerHTML.should.equal('Called!')
-    //         delete window.foo
-    //         complete()
-    //     }, 100)
     // })
     //
     // it('bad condition issues error', function() {
@@ -1377,21 +1568,5 @@ describe('hx-trigger attribute', function() {
     //     div.click()
     //     this.server.respond()
     //     div.innerHTML.should.equal('Requests: 2')
-    // })
-    //
-    // it('Removing polling trigger and processing node removes timeout', function(complete) {
-    //     this.server.respondWith('GET', '/test', 'Called!')
-    //     var div = make('<div hx-get="/test" hx-trigger="every 5ms">Not Called</div>')
-    //     div.removeAttribute('hx-trigger')
-    //     should.not.equal(div['htmx-internal-data'].timeout, undefined)
-    //     htmx.process(div)
-    //     should.equal(div['htmx-internal-data'].timeout, undefined)
-    //     this.server.autoRespond = true
-    //     this.server.autoRespondAfter = 0
-    //     setTimeout(function() {
-    //         div.innerHTML.should.equal('Not Called')
-    //         delete window.foo
-    //         complete()
-    //     }, 30)
     // })
 })

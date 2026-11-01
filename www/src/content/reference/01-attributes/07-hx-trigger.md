@@ -44,7 +44,7 @@ Defaults to:
 
 Custom events work too. Dispatch them from JavaScript with [`htmx.trigger()`](/reference/methods/htmx-trigger), or from the server via the [`HX-Trigger`](/reference/headers/HX-Trigger) response header.
 
-Events from `HX-Trigger` are dispatched on the `body`, so use [`from:body`](#from) to listen for them:
+Events from `HX-Trigger` are dispatched on the `body`, so use [`from:body`](#fromselector) to listen for them:
 
 ```html
 <div hx-trigger="productsUpdated from:body" hx-get="...">...</div>
@@ -62,30 +62,27 @@ Fires when the element is loaded into the DOM. Useful for [lazy-loading](/patter
 <div hx-trigger="load" hx-get="...">Loading...</div>
 ```
 
-### `revealed`
+### `intersect` / `revealed`
 
-Fires when the element is scrolled into the viewport. Useful for [infinite scroll](/patterns/infinite-scroll).
+Both use the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options) to fire when an element enters the viewport. The only difference is that `revealed` automatically disconnects the observer after the first intersection — it fires exactly once.
 
 ```html
+<!-- fires every time the element intersects -->
+<div hx-trigger="intersect" hx-get="...">...</div>
+
+<!-- fires once, then stops observing -->
 <div hx-trigger="revealed" hx-get="...">Loading...</div>
 ```
 
-_Note: `revealed` always observes the browser viewport. For scrollable containers with `overflow`, use [`intersect`](#intersect) with `root` instead._
+Modifiers (`intersect` and `revealed` both support these):
 
-### `intersect`
-
-Fires when an element becomes visible in the viewport. 
-
-Uses the [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#options).
-
-Modifiers:
-
-- [`root`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root)
-- [`rootMargin`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin)
-- [`threshold`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds)
+- `from:<selector>` — observe a different element instead of the element itself
+- [`root:<selector>`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/root) — use a scrollable container as the intersection root instead of the viewport
+- [`rootMargin:<value>`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin) — expand or shrink the root bounds
+- [`threshold:<0–1>`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/thresholds) — minimum visible fraction before firing
 
 ```html
-<div hx-trigger="intersect once" hx-get="...">...</div>
+<div hx-trigger="intersect from:#other" hx-get="...">...</div>
 <div hx-trigger="intersect root:#scroll-container" hx-get="...">...</div>
 <div hx-trigger="intersect rootMargin:100px" hx-get="...">...</div>
 <div hx-trigger="intersect threshold:0.5" hx-get="...">...</div>
@@ -165,12 +162,18 @@ Two special values: `self` (only the element itself, not bubbled children) and `
 ```html
 <div hx-trigger="keyup[key=='Enter'] from:body" hx-get="...">...</div>
 <div hx-trigger="my-event from:document" hx-get="...">...</div>
-<div hx-trigger="submit from:'closest form'" hx-get="...">...</div>
+<div hx-trigger="submit from:<closest form/>" hx-get="...">...</div>
 <div hx-trigger="click from:self" hx-get="...">...</div>
 <div hx-trigger="click from:outside" hx-get="...">...</div>
 ```
 
-Selectors containing spaces or commas should be wrapped in quotes: `from:'closest form'`, `from:'.a, .b'`.
+Wrap [`from`](#fromselector) or [`target`](#targetselector) selectors that contain whitespace or commas in single quotes, double quotes, or `<.../>`:
+
+```html
+<div hx-trigger="submit from:'closest form'" hx-get="...">...</div>
+<div hx-trigger='submit from:"closest form"' hx-get="...">...</div>
+<div hx-trigger="submit from:<closest form/>" hx-get="...">...</div>
+```
 
 ### `target:<selector>`
 
@@ -233,7 +236,6 @@ A search box that searches on `input`, but only if the value has [`changed`](#ch
 
 ## Notes
 
-* `from:` and `target:` selectors with whitespace or commas must be quoted: `from:'closest form'`, `target:'.a, .b'`.
 * `hx-trigger="change, reset"` may fire before the browser resets the form. As a workaround, add a short delay: `hx-trigger="change, reset delay:0.01s"`.
 
 ## See Also

@@ -12,14 +12,14 @@ After all settle tasks (CSS transitions, attribute cleanup) have completed for n
 ## Event Detail
 
 - `task` - The swap task that was settled
-- `newContent` - Array of settled elements
+- `newContent` - Array of settled nodes, which can include text nodes
 - `settleTasks` - Array of settle tasks that ran
 
 ## Example
 
 ```javascript
 htmx.on('htmx:after:settle', (evt) => {
-  console.log('Settle complete for', evt.detail.newContent.length, 'element(s)');
+  console.log('Settle complete for', evt.detail.newContent.length, 'node(s)');
   // Safe to interact with fully-settled DOM
 });
 ```

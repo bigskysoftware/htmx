@@ -89,7 +89,7 @@
         let id = elt.id ? `#${elt.id}` : '';
         let reason = eltNonce == null ? 'missing-nonce' : 'nonce-mismatch';
         console.error(`htmx: [hx-csp] blocked <${tag}${id}>: ${eltNonce == null ? 'no hx-nonce attribute' : 'nonce mismatch (possible injection)'}`, { elt, reason });
-        htmx.trigger(elt, 'htmx:security:strip', { reason, stripped });
+        internalApi.triggerHtmxEvent(elt, 'htmx:security:strip', { reason, stripped });
         return true;
     }
 
@@ -136,7 +136,7 @@
                                 let tag = thisArg?.tagName?.toLowerCase();
                                 let id = thisArg?.id ? `#${thisArg.id}` : '';
                                 console.error(`htmx: [hx-csp] blocked eval on <${tag}${id}>: nonce mismatch`, { elt: thisArg });
-                                htmx.trigger(thisArg, 'htmx:security:violation', { reason: 'nonce-mismatch-at-eval' });
+                                internalApi.triggerHtmxEvent(thisArg, 'htmx:security:violation', { reason: 'nonce-mismatch-at-eval' });
                                 return;
                             }
                             if (htmx.config.safeEval) {
@@ -200,7 +200,7 @@
             let action = detail.ctx?.request?.action;
             if (action && /^(js|javascript):/i.test(action)) {
                 console.error(`htmx: [hx-csp] blocked js:/javascript: action URL on <${elt.tagName.toLowerCase()}${elt.id ? '#'+elt.id : ''}>`, { elt });
-                htmx.trigger(elt, 'htmx:security:violation', { reason: 'javascript-url', action, ctx: detail.ctx });
+                internalApi.triggerHtmxEvent(elt, 'htmx:security:violation', { reason: 'javascript-url', action, ctx: detail.ctx });
                 detail.cancelled = true;
                 return false;
             }
@@ -209,7 +209,7 @@
             if (getNonce(submitter) !== pageNonce) {
                 let id = submitter?.id ? `#${submitter.id}` : '';
                 console.error(`htmx: [hx-csp] blocked boosted form: unnonced submitter${id} overrode formaction`);
-                htmx.trigger(elt, 'htmx:security:violation', { reason: 'unnonced-submitter', submitter, ctx: detail.ctx });
+                internalApi.triggerHtmxEvent(elt, 'htmx:security:violation', { reason: 'unnonced-submitter', submitter, ctx: detail.ctx });
                 detail.cancelled = true;
                 return false;
             }

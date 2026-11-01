@@ -499,15 +499,15 @@ export interface HtmxEventMap {
 
   /**
    * Fires after new content is inserted but before CSS transitions are applied.
-   * Modify `newContent` elements before transitions run.
+   * Modify `newContent` nodes before transitions run.
    */
-  'htmx:before:settle': { task: any; newContent: Element[]; settleTasks: any[] };
+  'htmx:before:settle': { task: any; newContent: ChildNode[]; settleTasks: any[] };
 
   /**
    * Fires after the settle phase completes, including all CSS transitions.
    * The DOM is fully stable at this point.
    */
-  'htmx:after:settle': { task: any; newContent: Element[]; settleTasks: any[] };
+  'htmx:after:settle': { task: any; newContent: ChildNode[]; settleTasks: any[] };
 
   /**
    * Fires before htmx removes listeners and internal data from an element.

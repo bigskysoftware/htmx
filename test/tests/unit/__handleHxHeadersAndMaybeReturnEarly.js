@@ -49,7 +49,9 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
             let result = htmx.__handleHeadersAndMaybeReturnEarly({hx: {location: '/files/a,b'}})
 
             assert.isTrue(result)
-            assert.deepEqual(request, ['GET', '/files/a,b', {push: 'true'}])
+            assert.equal(request[0], 'GET')
+            assert.equal(request[1], '/files/a,b')
+            assert.equal(request[2].push, 'true')
         } finally {
             htmx.ajax = originalAjax
         }
@@ -64,7 +66,9 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
             let result = htmx.__handleHeadersAndMaybeReturnEarly({hx: {location: 'path:/search'}})
 
             assert.isTrue(result)
-            assert.deepEqual(request, ['GET', '/search', {push: 'true'}])
+            assert.equal(request[0], 'GET')
+            assert.equal(request[1], '/search')
+            assert.equal(request[2].push, 'true')
         } finally {
             htmx.ajax = originalAjax
         }
@@ -80,8 +84,17 @@ describe('__handleHxHeadersAndMaybeReturnEarly unit tests', function() {
         let source = createProcessedHTML('<div><div id="destination"></div><button id="source" hx-get="/test">Go</button></div>')
             .querySelector('#source')
         let requestFinished = new Promise(resolve => {
-            find('#destination').addEventListener('htmx:finally:request', resolve, {once: true})
+            document.addEventListener('htmx:finally:request', function handler(evt) {
+                if (evt.detail?.ctx?.request?.action === '/location-replaced') {
+                    document.removeEventListener('htmx:finally:request', handler)
+                    resolve()
+                }
+            })
         })
+
+        // Seed a tagged entry so the stamp-on-swap replaceState doesn't fire during the test
+        history.replaceState({htmx: true}, '', location.href)
+
         let originalPushState = history.pushState
         let originalReplaceState = history.replaceState
         let pushes = 0

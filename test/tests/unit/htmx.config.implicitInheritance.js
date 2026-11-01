@@ -56,5 +56,19 @@ describe('htmx.config.implicitInheritance test', function() {
         assert.equal(result, '"a":1,"b":2');
     });
 
+    it('child with its own verb does not inherit parent hx-get/hx-trigger=load (#4104)', async function() {
+        mockResponse('GET', '/panel', '<form id="f" hx-post="/save" hx-target="#out"><button id="save">save</button></form><div id="out"></div>');
+        mockResponse('POST', '/save', 'saved');
+        createProcessedHTML('<div hx-get="/panel" hx-trigger="load"></div>');
+        await forRequest();
+        lastFetch().url.should.equal('/panel');
+        lastFetch().request.method.should.equal('GET');
+        document.getElementById('save').click();
+        await forRequest();
+        lastFetch().url.should.equal('/save');
+        lastFetch().request.method.should.equal('POST');
+        playground().querySelector('#out').innerText.should.equal('saved');
+    });
+
 });
 

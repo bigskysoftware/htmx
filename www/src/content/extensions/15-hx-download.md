@@ -47,6 +47,8 @@ If the server returns `Content-Disposition: attachment`, the extension triggers 
 Content-Disposition: attachment; filename="report.pdf"
 ```
 
+If both `filename=` and `filename*` are present, the RFC 5987 `filename*` value is used (so a UTF-8 name is not overwritten by the ASCII fallback).
+
 ### HX-Download header
 
 When the backend cannot stream the file directly as the htmx response (e.g. it needs to redirect to a separate download endpoint), return an `HX-Download` header pointing to the file URL. The extension will fetch that URL as the download while htmx processes the original response body as a normal swap:
@@ -91,9 +93,9 @@ The server must send a `Content-Length` header for percentage-based progress. Wi
 
 | Event | Detail | Description |
 |---|---|---|
-| `htmx:download:start` | `{total}` | Response headers received, streaming begins. `total` is `null` if no `Content-Length` |
-| `htmx:download:progress` | `{loaded, total, percent}` | Fired for each chunk received. `percent` is `null` if no `Content-Length` |
-| `htmx:download:complete` | `{filename, size}` | File download triggered in the browser |
+| `htmx:download:start` | `{total, ctx}` | Response headers received, streaming begins. `total` is `null` if no `Content-Length` |
+| `htmx:download:progress` | `{loaded, total, percent, ctx}` | Fired for each chunk received. `percent` is `null` if no `Content-Length` |
+| `htmx:download:complete` | `{filename, size, ctx}` | File download triggered in the browser |
 
 ## Notes
 

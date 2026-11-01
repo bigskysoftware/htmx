@@ -22,11 +22,11 @@ The value of this attribute can be:
 * `next` which resolves
   to [element.nextElementSibling](https://developer.mozilla.org/docs/Web/API/Element/nextElementSibling)
 * `next <CSS selector>` which will scan the DOM forward for the first element that matches the given CSS selector
-  (e.g. `next button` will disable the closest following sibling `button` element)
+  (e.g. `next button` will disable the first `button` element that follows this element in the document)
 * `previous` which resolves
   to [element.previousElementSibling](https://developer.mozilla.org/docs/Web/API/Element/previousElementSibling)
 * `previous <CSS selector>` which will scan the DOM backwards for the first element that matches the given CSS selector.
-  (e.g. `previous input` will disable the closest previous sibling `input` element)
+  (e.g. `previous input` will disable the first `input` element that precedes this element in the document)
 
 Here is an example with a button that will disable itself during a request:
 

@@ -28,10 +28,10 @@ htmx 4 ships a command-line checker. Run it first to scope the work. It prints c
 references with a suggested fix for each hit.
 
 ```bash
-npx htmx.org@4.0.0 upgrade-check -- ./path/to/project
+npx htmx.org@4.0.1 upgrade-check -- ./path/to/project
 
 # add file extensions the scanner does not know
-npx htmx.org@4.0.0 upgrade-check --ext .vue ./path/to/project
+npx htmx.org@4.0.1 upgrade-check --ext .vue ./path/to/project
 ```
 
 Pin the version to the htmx 4 release you are moving to.
@@ -144,11 +144,11 @@ htmx 2 uses camelCase event names. htmx 4 uses colon-separated names.
 | `htmx:afterSwap`            | `htmx:after:swap`                 |
 | `htmx:afterSettle`          | `htmx:after:settle`               |
 | `htmx:beforeSend`           | `htmx:before:request`             |
-| `htmx:load`                 | `htmx:after:init`                 |
-| `htmx:beforeOnLoad`         | `htmx:before:init`                |
-| `htmx:afterOnLoad`          | `htmx:after:init`                 |
-| `htmx:beforeProcessNode`    | `htmx:before:process`             |
-| `htmx:afterProcessNode`     | `htmx:after:process`              |
+| `htmx:load`                 | `htmx:after:process`              |
+| `htmx:beforeOnLoad`         | `htmx:before:response`            |
+| `htmx:afterOnLoad`          | `htmx:after:request`              |
+| `htmx:beforeProcessNode`    | `htmx:before:init`                |
+| `htmx:afterProcessNode`     | `htmx:after:init`                 |
 | `htmx:beforeCleanupElement` | `htmx:before:cleanup`             |
 | `htmx:beforeHistorySave`    | `htmx:before:history:update`      |
 | `htmx:beforeHistoryUpdate`  | `htmx:before:history:update`      |

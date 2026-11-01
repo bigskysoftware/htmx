@@ -12,7 +12,7 @@ Without JavaScript, they retain their normal browser behavior through [progressi
 | Element | Request | Trigger | History | Target | Swap |
 |---|---|---|---|---|---|
 | `<a>` | `GET` to `href` | `click` | Push URL | `<body>` | [`outerSync`](/reference/attributes/hx-swap#outersync) |
-| `<form>` | `GET` or `POST` to `action` | `submit` | No push | `<body>` | [`outerSync`](/reference/attributes/hx-swap#outersync) |
+| `<form>` | `GET` or `POST` to `action` | `submit` | Push URL | `<body>` | [`outerSync`](/reference/attributes/hx-swap#outersync) |
 
 Override target, swap, and history behavior with their corresponding attributes. Boosted links always use `click`.
 
@@ -38,7 +38,7 @@ Boost a form directly:
 </form>
 ```
 
-The form sends `POST` and swaps the response into `<body>` without pushing a URL. Add [`hx-push-url`](/reference/attributes/hx-push-url) to create a history entry.
+The form sends `POST`, pushes its URL, and swaps the response into `<body>`, as a normal form submission does. Set [`hx-push-url`](/reference/attributes/hx-push-url) to `false` to prevent the history entry.
 
 ## Advanced Syntax
 

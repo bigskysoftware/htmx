@@ -185,6 +185,48 @@ describe('__initializeTriggers unit tests', function() {
         assert.equal(2, called)
     });
 
+    it('a trigger cancels a pending delayed trigger', async function() {
+        let called = [];
+        const form = mockTriggerElement('<form hx-trigger="input delay:25ms, submit"></form>', evt => called.push(evt.type));
+        form.dispatchEvent(new Event('input'));
+        form.dispatchEvent(new Event('submit'));
+        await htmx.timeout(50);
+        assert.deepEqual(called, ['submit']);
+        form.dispatchEvent(new Event('input'));
+        await htmx.timeout(50);
+        assert.deepEqual(called, ['submit', 'input']);
+    });
+
+    it('a trigger cancels a pending throttled trigger', async function() {
+        let called = [];
+        const form = mockTriggerElement('<form hx-trigger="input throttle:25ms, submit"></form>', evt => called.push(evt.type));
+        form.dispatchEvent(new Event('input'));
+        form.dispatchEvent(new Event('input'));
+        form.dispatchEvent(new Event('submit'));
+        await htmx.timeout(50);
+        assert.deepEqual(called, ['input', 'submit']);
+    });
+
+    it('a filtered trigger does not cancel a pending delayed trigger', async function() {
+        let called = [];
+        const form = mockTriggerElement('<form hx-trigger="input delay:25ms, submit[false]"></form>', evt => called.push(evt.type));
+        form.dispatchEvent(new Event('input'));
+        form.dispatchEvent(new Event('submit'));
+        await htmx.timeout(50);
+        assert.deepEqual(called, ['input']);
+    });
+
+    it('polling does not cancel a pending delayed trigger', async function() {
+        let called = [];
+        const div = createProcessedHTML('<div hx-trigger="custom delay:30ms, every 5ms"></div>');
+        htmx.__htmxProp(div);
+        htmx.__initializeTriggers(div, evt => called.push(evt.type));
+        div.dispatchEvent(new Event('custom'));
+        await htmx.timeout(60);
+        assert.include(called, 'every');
+        assert.include(called, 'custom');
+    });
+
     it('every trigger polls at interval', async function () {
         let called = 0
         mockTriggerButton("every 10ms", () => called++);
@@ -253,6 +295,30 @@ describe('__initializeTriggers unit tests', function() {
             assert.equal(captured.length, 1);
             assert.isUndefined(captured[0].root);
             assert.isUndefined(captured[0].threshold);
+        });
+
+        it('from: modifier observes the from element, not the trigger element', function() {
+            let observed = [];
+            const origIO = window.IntersectionObserver;
+            window.IntersectionObserver = function(cb, opts) {
+                const io = new origIO(cb, opts);
+                const origObserve = io.observe.bind(io);
+                io.observe = (el) => { observed.push(el); origObserve(el); };
+                return io;
+            };
+            playground().innerHTML = '<div id="scroller3"><div id="sentinel" hx-action="js:null" hx-trigger="intersect from:#scroller3">Test</div></div>';
+            htmx.process(playground());
+            window.IntersectionObserver = originalIO;
+            assert.equal(observed.length, 1);
+            assert.equal(observed[0], document.getElementById('scroller3'));
+            assert.notEqual(observed[0], document.getElementById('sentinel'));
+        });
+
+        it('from: modifier with threshold passes both to IntersectionObserver', function() {
+            playground().innerHTML = '<div id="scroller4"><div id="target4" hx-action="js:null" hx-trigger="intersect from:#scroller4 threshold:0.75">Test</div></div>';
+            htmx.process(playground());
+            assert.equal(captured.length, 1);
+            assert.equal(captured[0].threshold, 0.75);
         });
     });
 

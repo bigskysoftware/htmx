@@ -205,6 +205,7 @@ describe('bootstrap unit tests', function() {
 
         const expectedPublicProperties = [
             'config',
+            'indicatorStyleSheet',
             'version',
         ].sort();
 
@@ -226,6 +227,21 @@ describe('bootstrap unit tests', function() {
         assert.deepEqual(ownProperties, expectedPublicProperties,
             'Public properties have changed. Expected: ' + JSON.stringify(expectedPublicProperties) +
             ', Got: ' + JSON.stringify(ownProperties));
+    })
+
+    it('indicatorStyleSheet is set after construction when includeIndicatorCSS is true', function() {
+        assert.instanceOf(htmx.indicatorStyleSheet, CSSStyleSheet)
+        assert.isTrue(document.adoptedStyleSheets.includes(htmx.indicatorStyleSheet))
+    })
+
+    it('__initRequestIndicatorCss does not throw when CSSStyleSheet is unavailable', function() {
+        let backup = window.CSSStyleSheet
+        window.CSSStyleSheet = undefined
+        try {
+            assert.doesNotThrow(() => htmx.__initRequestIndicatorCss())
+        } finally {
+            window.CSSStyleSheet = backup
+        }
     })
 
     it('constructor uses setTimeout when document is already loaded', async function() {

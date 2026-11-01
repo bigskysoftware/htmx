@@ -16,9 +16,9 @@
 //           hx-ext="download">Download</button>
 //
 // Events:
-//   htmx:download:start    {total}
-//   htmx:download:progress {loaded, total, percent}
-//   htmx:download:complete {filename, size}
+//   htmx:download:start    {total, ctx}
+//   htmx:download:progress {loaded, total, percent, ctx}
+//   htmx:download:complete {filename, size, ctx}
 //==========================================================
 (() => {
     let api;
@@ -30,7 +30,7 @@
         htmx_before_response: (elt, {ctx}) => {
             let downloadUrl = ctx.response.headers.get('HX-Download');
             if (downloadUrl) {
-                (async () => streamDownload(ctx.sourceElement, await fetch(downloadUrl), downloadUrl))();
+                (async () => streamDownload(ctx, await fetch(downloadUrl), downloadUrl))();
                 return;
             }
             let cd = ctx.response.headers.get('Content-Disposition');
@@ -38,15 +38,16 @@
             // a download has no fixed duration, so drop the request timeout and
             // hand core a promise so it holds the request until we finish
             clearTimeout(ctx.requestTimeout);
-            ctx.extensionPromise = streamDownload(ctx.sourceElement, ctx.response.raw, ctx.request.action);
+            ctx.extensionPromise = streamDownload(ctx, ctx.response.raw, ctx.request.action);
             return false;
         }
     });
 
-    function streamDownload(sourceElement, response, url) {
+    function streamDownload(ctx, response, url) {
+        let sourceElement = ctx.sourceElement;
         return (async () => {
             let total = +response.headers.get('Content-Length') || null;
-            api.triggerHtmxEvent(sourceElement, 'htmx:download:start', {total});
+            api.triggerHtmxEvent(sourceElement, 'htmx:download:start', {total, ctx});
             let reader = response.body.getReader();
             let chunks = [], loaded = 0;
             while (true) {
@@ -55,7 +56,7 @@
                 chunks.push(value);
                 loaded += value.length;
                 api.triggerHtmxEvent(sourceElement, 'htmx:download:progress', {
-                    loaded, total,
+                    loaded, total, ctx,
                     percent: total ? Math.round(loaded / total * 100) : null
                 });
             }
@@ -66,15 +67,21 @@
             let blobUrl = URL.createObjectURL(blob);
             Object.assign(document.createElement('a'), {href: blobUrl, download: filename}).click();
             URL.revokeObjectURL(blobUrl);
-            api.triggerHtmxEvent(sourceElement, 'htmx:download:complete', {filename, size: blob.size});
+            api.triggerHtmxEvent(sourceElement, 'htmx:download:complete', {filename, size: blob.size, ctx});
         })();
     }
 
     function parseFilename(headers, url) {
         let cd = headers.get('Content-Disposition');
         if (cd) {
-            let match = cd.match(/filename\*?=['"]?(?:UTF-8'')?([^'";]+)/i);
-            if (match) return decodeURIComponent(match[1]);
+            // RFC 6266 / 5987: filename*=UTF-8''... takes precedence over filename=
+            let star = cd.match(/filename\*\s*=\s*(?:UTF-8'')?([^;]+)/i);
+            if (star) {
+                let raw = star[1].trim().replace(/^["']|["']$/g, '');
+                try { return decodeURIComponent(raw); } catch { /* fall through */ }
+            }
+            let ascii = cd.match(/filename\s*=\s*(?:UTF-8'')?(?:"([^"]+)"|([^;]+))/i);
+            if (ascii) return (ascii[1] || ascii[2]).trim();
         }
         return url.split('/').pop().split('?')[0] || 'download';
     }

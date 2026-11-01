@@ -204,6 +204,65 @@ describe('hx-multipart extension', function() {
         assertTextContentIs('#re-target', 'existingre');
     });
 
+    it('connectTimeout triggers reconnect when server hangs on reconnect fetch', async function() {
+        this.timeout(3000);
+        let requestCount = 0;
+        fetchMock.mockResponse('GET', '/mp-ct-hang', () => {
+            requestCount++;
+            if (requestCount === 1) {
+                // First response: clean EOF, triggers reconnect loop
+                return new Response('--updates--\r\n', {
+                    headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+                });
+            }
+            if (requestCount === 2) {
+                // Second fetch hangs — simulates a server that accepts TCP but never responds.
+                // connectTimeout should abort this and trigger attempt 2.
+                return new Promise(() => {});
+            }
+            // Third fetch: succeed so the loop can continue
+            return new Response('--updates--\r\n', {
+                headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+            });
+        });
+
+        createProcessedHTML([
+            '<div id="mp-ct-hang-source" hx-multipart:connect="/mp-ct-hang" ',
+            'hx-config="multipart.connectTimeout:100ms multipart.reconnectDelay:10ms multipart.reconnectMaxAttempts:3 multipart.reconnectJitter:0"></div>'
+        ].join(''));
+
+        // Wait for the timeout to fire on fetch 2 and fetch 3 to be made
+        assert.isTrue(await waitUntil(() => requestCount >= 3, 2000), `Expected ≥3 fetches, got ${requestCount}`);
+        await deleteWithSwap('#mp-ct-hang-source');
+    });
+
+    it('connectTimeout:0 disables the timeout', async function() {
+        this.timeout(3000);
+        let requestCount = 0;
+        fetchMock.mockResponse('GET', '/mp-ct-zero', () => {
+            requestCount++;
+            if (requestCount === 1) {
+                return new Response('--updates--\r\n', {
+                    headers: {'Content-Type': 'multipart/mixed; boundary=updates'}
+                });
+            }
+            // Hang forever
+            return new Promise(() => {});
+        });
+
+        createProcessedHTML([
+            '<div id="mp-ct-zero-source" hx-multipart:connect="/mp-ct-zero" ',
+            'hx-config="multipart.connectTimeout:0 multipart.reconnectDelay:10ms multipart.reconnectMaxAttempts:3 multipart.reconnectJitter:0"></div>'
+        ].join(''));
+
+        // Wait long enough that a 100ms default timeout would have fired multiple times
+        await new Promise(r => setTimeout(r, 400));
+
+        // With timeout disabled, the hanging reconnect fetch should not have been retried
+        assert.equal(requestCount, 2, 'Should only have the initial fetch plus one hanging reconnect — no further retries');
+        await deleteWithSwap('#mp-ct-zero-source');
+    });
+
     it('reconnects hx-multipart:connect after clean EOF and stops on removal', async function() {
         let requestCount = 0;
         let closeReason;
@@ -628,6 +687,9 @@ describe('hx-multipart extension', function() {
     });
 
     it('runs part history actions', async function() {
+        // Seed a tagged entry so the stamp-on-swap replaceState doesn't fire during the test
+        history.replaceState({htmx: true}, '', location.href);
+
         let originalPushState = history.pushState;
         let originalReplaceState = history.replaceState;
         let pushes = 0;
@@ -905,7 +967,7 @@ describe('hx-multipart extension', function() {
     it('handles the next parallel part while an earlier part settles', async function() {
         let button = createProcessedHTML([
             '<button hx-get="/parallel">Go</button>',
-            '<div id="one"><span id="state" data-phase="old">one</span></div>',
+            '<div id="one"><span id="state" class="old">one</span></div>',
             '<div id="two">two</div>'
         ].join(''));
         fetchMock.mockResponse('GET', '/parallel', new Response([
@@ -914,7 +976,7 @@ describe('hx-multipart extension', function() {
             'HX-Target: #one\r\n',
             'HX-Swap: innerHTML settle:100ms\r\n',
             '\r\n',
-            '<span id="state" data-phase="new">First</span>',
+            '<span id="state" class="new">First</span>',
             '\r\n--updates\r\n',
             'Content-Type: text/html\r\n',
             'HX-Target: #two\r\n',
@@ -930,8 +992,8 @@ describe('hx-multipart extension', function() {
 
         assert.isTrue(await waitUntil(() => htmx.find('#two').textContent === 'Second', 500));
         assertTextContentIs('#state', 'First');
-        assert.equal(find('#state').getAttribute('data-phase'), 'old');
+        assert.isTrue(find('#state').classList.contains('old'));
         assert.isNotNull(await done, 'parallel request did not finish');
-        assert.equal(find('#state').getAttribute('data-phase'), 'new');
+        assert.isTrue(find('#state').classList.contains('new'));
     });
 });

@@ -8,11 +8,15 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         cleanupTest();
     });
 
+    function makeCtx(elt) {
+        return { sourceElement: elt, indicators: [], disabledElements: [] };
+    }
+
     it('shows indicator by adding request class', function () {
         let container = createProcessedHTML('<div hx-indicator=".indicator"><span class="indicator"></span></div>')
         let span = container.querySelector('span')
 
-        htmx.__showIndicators(container)
+        htmx.__showIndicators(makeCtx(container))
 
         assert.isTrue(span.classList.contains('htmx-request'))
     })
@@ -21,8 +25,9 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let container = createProcessedHTML('<div hx-indicator=".indicator"><span class="indicator"></span></div>')
         let span = container.querySelector('span')
 
-        let indicators = htmx.__showIndicators(container)
-        htmx.__hideIndicators(indicators)
+        let ctx = makeCtx(container)
+        htmx.__showIndicators(ctx)
+        htmx.__hideIndicators(ctx.indicators)
 
         assert.isFalse(span.classList.contains('htmx-request'))
     })
@@ -31,8 +36,8 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let container = createProcessedHTML('<div hx-indicator=".indicator"><span class="indicator"></span></div>')
         let span = container.querySelector('span')
 
-        htmx.__showIndicators(container)
-        htmx.__showIndicators(container)
+        htmx.__showIndicators(makeCtx(container))
+        htmx.__showIndicators(makeCtx(container))
 
         assert.equal(htmx.__htmxState(span).rc, 2)
         assert.isTrue(span.classList.contains('htmx-request'))
@@ -42,9 +47,11 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let container = createProcessedHTML('<div hx-indicator=".indicator"><span class="indicator"></span></div>')
         let span = container.querySelector('span')
 
-        let indicators1 = htmx.__showIndicators(container)
-        let indicators2 = htmx.__showIndicators(container)
-        htmx.__hideIndicators(indicators1)
+        let ctx1 = makeCtx(container)
+        let ctx2 = makeCtx(container)
+        htmx.__showIndicators(ctx1)
+        htmx.__showIndicators(ctx2)
+        htmx.__hideIndicators(ctx1.indicators)
 
         assert.equal(htmx.__htmxState(span).rc, 1)
         assert.isTrue(span.classList.contains('htmx-request'))
@@ -54,10 +61,12 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let container = createProcessedHTML('<div hx-indicator=".indicator"><span class="indicator"></span></div>')
         let span = container.querySelector('span')
 
-        let indicators1 = htmx.__showIndicators(container)
-        let indicators2 = htmx.__showIndicators(container)
-        htmx.__hideIndicators(indicators1)
-        htmx.__hideIndicators(indicators2)
+        let ctx1 = makeCtx(container)
+        let ctx2 = makeCtx(container)
+        htmx.__showIndicators(ctx1)
+        htmx.__showIndicators(ctx2)
+        htmx.__hideIndicators(ctx1.indicators)
+        htmx.__hideIndicators(ctx2.indicators)
 
         assert.isFalse(span.classList.contains('htmx-request'))
         assert.isUndefined(htmx.__htmxState(span).rc)
@@ -68,7 +77,7 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let span = container.querySelector('span')
         let div = container.querySelector('div')
 
-        htmx.__showIndicators(container)
+        htmx.__showIndicators(makeCtx(container))
 
         assert.isTrue(span.classList.contains('htmx-request'))
         assert.isTrue(div.classList.contains('htmx-request'))
@@ -78,7 +87,7 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let container = createProcessedHTML('<div><span class="indicator"></span></div>')
         let span = container.querySelector('span')
 
-        htmx.__showIndicators(container)
+        htmx.__showIndicators(makeCtx(container))
 
         assert.isFalse(span.classList.contains('htmx-request'))
     })
@@ -87,9 +96,10 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let span = createProcessedHTML('<span class="htmx-indicator"></span>')
         document.body.appendChild(span)
 
-        let indicators = htmx.__showIndicators(document.body)
+        let ctx = makeCtx(document.body)
+        htmx.__showIndicators(ctx)
 
-        assert.deepEqual(indicators, [])
+        assert.deepEqual(ctx.indicators, [])
         assert.isFalse(document.body.classList.contains('htmx-request'))
         assert.isFalse(span.classList.contains('htmx-request'))
 
@@ -99,7 +109,7 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
     it('includes element itself in indicators', function () {
         let div = createProcessedHTML('<div hx-indicator=".indicator" class="indicator"></div>')
 
-        htmx.__showIndicators(div)
+        htmx.__showIndicators(makeCtx(div))
 
         assert.isTrue(div.classList.contains('htmx-request'))
     })
@@ -119,12 +129,13 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let outer = container
         let inner = container.querySelector('span')
 
-        let indicators = htmx.__showIndicators(container)
+        let ctx = makeCtx(container)
+        htmx.__showIndicators(ctx)
 
         assert.isTrue(outer.classList.contains('htmx-request'))
         assert.isTrue(inner.classList.contains('htmx-request'))
 
-        htmx.__hideIndicators(indicators)
+        htmx.__hideIndicators(ctx.indicators)
 
         assert.isFalse(outer.classList.contains('htmx-request'))
         assert.isFalse(inner.classList.contains('htmx-request'))
@@ -135,9 +146,9 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let span = container.querySelector('span')
         let div = container.querySelector('div')
 
-        htmx.__showIndicators(container)
+        htmx.__showIndicators(makeCtx(container))
         container.setAttribute('hx-indicator', 'span.indicator')
-        htmx.__showIndicators(container)
+        htmx.__showIndicators(makeCtx(container))
 
         assert.equal(htmx.__htmxState(span).rc, 2)
         assert.equal(htmx.__htmxState(div).rc, 1)
@@ -146,32 +157,35 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
     it('resolves this selector for indicators', function () {
         let container = createProcessedHTML('<div hx-indicator="this"><button hx-get="/test" hx-indicator="this"></button></div>');
         let button = container.querySelector('button');
-        
-        let indicators = htmx.__showIndicators(button);
-        
+
+        let ctx = makeCtx(button)
+        htmx.__showIndicators(ctx);
+
         assert.isTrue(button.classList.contains('htmx-request'));
-        assert.equal(indicators.length, 1);
-        assert.equal(indicators[0], button);
+        assert.equal(ctx.indicators.length, 1);
+        assert.equal(ctx.indicators[0], button);
     })
 
     it('resolves this selector with inherited indicator', function () {
         let outer = createProcessedHTML('<div hx-indicator:inherited="this"><button hx-get="/test"></button></div>');
         let button = outer.querySelector('button');
-        
-        let indicators = htmx.__showIndicators(button);
-        
+
+        let ctx = makeCtx(button)
+        htmx.__showIndicators(ctx);
+
         assert.isTrue(outer.classList.contains('htmx-request'));
-        assert.equal(indicators.length, 1);
-        assert.equal(indicators[0], outer);
+        assert.equal(ctx.indicators.length, 1);
+        assert.equal(ctx.indicators[0], outer);
     })
 
     it('resolves this selector respecting indicator override', function () {
         let html = '<div hx-indicator="this"><button hx-get="/test" hx-indicator=".other" class="other"></button></div>';
         let outer = createProcessedHTML(html);
         let button = outer.querySelector('button');
-        
-        let indicators = htmx.__showIndicators(button);
-        
+
+        let ctx = makeCtx(button)
+        htmx.__showIndicators(ctx);
+
         assert.isFalse(outer.classList.contains('htmx-request'));
         assert.isTrue(button.classList.contains('htmx-request'));
     })
@@ -180,24 +194,43 @@ describe('__showIndicators / __hideIndicators unit tests', function() {
         let html = '<div hx-indicator:inherited="this"><button hx-get="/test" hx-indicator:append="this"></button></div>';
         let outer = createProcessedHTML(html);
         let button = outer.querySelector('button');
-        
-        let indicators = htmx.__showIndicators(button);
-        
+
+        let ctx = makeCtx(button)
+        htmx.__showIndicators(ctx);
+
         assert.isTrue(outer.classList.contains('htmx-request'));
         assert.isTrue(button.classList.contains('htmx-request'));
-        assert.equal(indicators.length, 2);
+        assert.equal(ctx.indicators.length, 2);
     })
 
     it('resolves this selector with comma-separated indicator values', function () {
         let html = '<div class="other"><button hx-get="/test" hx-indicator="this, .other"></button></div>';
         let container = createProcessedHTML(html);
         let button = container.querySelector('button');
-        
-        let indicators = htmx.__showIndicators(button);
-        
+
+        let ctx = makeCtx(button)
+        htmx.__showIndicators(ctx);
+
         assert.isTrue(button.classList.contains('htmx-request'));
         assert.isTrue(container.classList.contains('htmx-request'));
-        assert.equal(indicators.length, 2);
+        assert.equal(ctx.indicators.length, 2);
+    })
+
+    it('indicators are carried through an hx-location chain', async function() {
+        mockResponse('GET', '/first', '', { headers: { 'HX-Location': '{"path":"/second","target":"#dest"}' } })
+        mockResponse('GET', '/second', 'Done')
+        createProcessedHTML(
+            '<div id="indicator" class="htmx-indicator">Loading...</div>' +
+            '<div id="dest"></div>' +
+            '<button id="btn" hx-get="/first" hx-indicator="#indicator" hx-target="#dest">Click</button>'
+        )
+        find('#btn').click()
+        await forRequest()  // /first
+        assert.isTrue(find('#indicator').classList.contains('htmx-request'), 'indicator should still be active during chain')
+        await forRequest()  // /second
+        await htmx.timeout(10)
+        assert.isFalse(find('#indicator').classList.contains('htmx-request'), 'indicator should be hidden after chain completes')
+        assert.equal(find('#dest').textContent, 'Done')
     })
 
     it('keeps indicators visible when HX-Redirect is received', async function() {

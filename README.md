@@ -32,7 +32,7 @@ By removing these arbitrary constraints htmx completes HTML as a
 ## quick start
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.0/dist/htmx.min.js"
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@4.0.1/dist/htmx.min.js"
           integrity="sha384-BvJpBiO8Kh31EqtJe5DRIeWrHWnCGkwytKs9NKFi86Hhw96dEqdEMzZDeK9iEGTc"
           crossorigin="anonymous"></script>
   <!-- have a button POST a click via AJAX -->

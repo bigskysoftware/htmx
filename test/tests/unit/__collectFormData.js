@@ -296,4 +296,61 @@ describe('__collectFormData unit tests', function() {
         let formData = htmx.__collectFormData(elt, null, null, false, false);
         assert.deepEqual(formData.getAll('fruit'), ['banana', 'apple']);
     });
+
+    // ── submit button name/value regression ────────────────────────────────
+
+    it('button[hx-post] inside form sends its own name/value', function () {
+        let form = createProcessedHTML('<form><input name="txt" value="hello"><button type="submit" name="btn" value="B"></button></form>')
+        let btn = form.querySelector('button')
+        let formData = htmx.__collectFormData(btn, form, null)
+        assert.equal(formData.get('txt'), 'hello')
+        assert.equal(formData.get('btn'), 'B')
+    })
+
+    it('form[hx-post] sends clicked submit button name/value via evt.submitter', function () {
+        let form = createProcessedHTML('<form><input name="txt" value="hello"><button type="submit" name="btn" value="B"></button></form>')
+        let btn = form.querySelector('button')
+        let formData = htmx.__collectFormData(form, form, btn)
+        assert.equal(formData.get('txt'), 'hello')
+        assert.equal(formData.get('btn'), 'B')
+    })
+
+    it('standalone button[hx-post] with no form sends its own name/value', function () {
+        let btn = createProcessedHTML('<button type="submit" name="btn" value="C"></button>')
+        let formData = htmx.__collectFormData(btn, null, null)
+        assert.equal(formData.get('btn'), 'C')
+    })
+
+    it('only the clicked button value is sent when multiple submit buttons exist', function () {
+        let form = createProcessedHTML('<form><input name="txt" value="hello"><button type="submit" name="action" value="save"></button><button type="submit" name="action" value="delete"></button></form>')
+        let save = form.querySelectorAll('button')[0]
+        let del  = form.querySelectorAll('button')[1]
+        let fd1 = htmx.__collectFormData(save, form, null)
+        assert.equal(fd1.get('action'), 'save')
+        let fd2 = htmx.__collectFormData(del, form, null)
+        assert.equal(fd2.get('action'), 'delete')
+    })
+
+    it('input[type=submit][hx-post] inside form sends its own name/value', function () {
+        let form = createProcessedHTML('<form><input name="txt" value="hello"><input type="submit" name="btn" value="go"></form>')
+        let submit = form.querySelector('input[type=submit]')
+        let formData = htmx.__collectFormData(submit, form, null)
+        assert.equal(formData.get('txt'), 'hello')
+        assert.equal(formData.get('btn'), 'go')
+    })
+
+    it('button with no type (defaults to submit) inside form sends its own name/value', function () {
+        let form = createProcessedHTML('<form><input name="txt" value="hello"><button name="btn" value="implicit"></button></form>')
+        let btn = form.querySelector('button')
+        let formData = htmx.__collectFormData(btn, form, null)
+        assert.equal(formData.get('txt'), 'hello')
+        assert.equal(formData.get('btn'), 'implicit')
+    })
+
+    it('submit button value is not duplicated', function () {
+        let form = createProcessedHTML('<form><input name="txt" value="hello"><button type="submit" name="btn" value="B"></button></form>')
+        let btn = form.querySelector('button')
+        let formData = htmx.__collectFormData(btn, form, null)
+        assert.deepEqual(formData.getAll('btn'), ['B'])
+    })
 });

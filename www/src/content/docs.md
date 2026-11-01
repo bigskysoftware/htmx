@@ -71,7 +71,7 @@ One thing to note: the `hx-trigger` here is redundant.  If it was omitted htmx w
 which, in the case of buttons, is a click.
 
 One important thing to understand is that htmx expects _HTML_ from the server.  In this case the server would
-return a _partial_ bit of HTML, say a `<div>`, to replace the button.  What htmx does _not_ expect is JSON.
+return a _partial_ bit of HTML, say a `<div>`, to replace the `<output>` element.  What htmx does _not_ expect is JSON.
 
 Because htmx works in terms of HTML it follows the [original web programming model](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm), using [Hypertext As The Engine Of Application State](https://en.wikipedia.org/wiki/HATEOAS) (HATEOAS).
 
@@ -280,7 +280,13 @@ Other modifiers you can use for triggers are:
 | `capture`                  | listen during the capture phase, from the top down, rather than the bubble phase                                                                                                                                            |
 | `passive`                  | tell the browser that the handler will not call `preventDefault()`, so the browser can scroll without waiting for your code                                                                                                 |
 
-Selectors containing spaces or commas in `from` or `target` must be wrapped in quotes: `from:'form input'`, `from:'.a, .b'`.
+Wrap a [`from`](/reference/attributes/hx-trigger#fromselector) or [`target`](/reference/attributes/hx-trigger#targetselector) selector that contains whitespace or commas in single quotes, double quotes, or `<.../>`:
+
+```html
+<div hx-trigger="submit from:'closest form'">
+<div hx-trigger='submit from:"closest form"'>
+<div hx-trigger="submit from:<closest form/>">
+```
 
 Multiple triggers can be specified by separating the triggers with a comma.
 
@@ -1885,7 +1891,7 @@ If you do use these features, the [`hx-csp` extension](/extensions/hx-csp) with 
 
 #### CSP & Inline Styles
 
-htmx injects its indicator CSS using [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) (`document.adoptedStyleSheets`), which are not subject to `style-src` CSP restrictions.
+htmx injects its indicator CSS using [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/CSSStyleSheet) (`document.adoptedStyleSheets`), which are not subject to `style-src` CSP restrictions. The stylesheet is also accessible as `htmx.indicatorStyleSheet` if you need to modify or remove it at runtime — see [`htmx.config.includeIndicatorCSS`](/reference/config/htmx-config-includeIndicatorCSS) for details.
 
 The one area to be aware of is morph swaps when used alongside JS frameworks like Alpine that set `style` attributes via JavaScript. During morph, htmx reconciles attributes between the old and new element, including any `style` value. Under a strict `style-src` policy without `'unsafe-inline'`, this `setAttribute("style", ...)` call will produce a CSP violation.
 
@@ -2001,7 +2007,7 @@ They are listed below:
 | `htmx.config.morphSkipChildren`      | defaults to `'[hx-morph-skip-children]'`, CSS selector for elements whose attributes update but children are preserved during morphing                                                                                                                         |
 | `htmx.config.noSwap`                 | defaults to `[204, 304]`, array of HTTP status codes that should not trigger a swap                                                                                                                                                                            |
 | `htmx.config.allowEmptySwapAfterOOB` | defaults to `false`, whether the main swap still runs when a response contained only out-of-band elements                                                                                                                                                      |
-| `htmx.config.implicitInheritance`    | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier                                                                                                              |
+| `htmx.config.implicitInheritance`    | defaults to `false`, if set to `true` attributes will be inherited from parent elements automatically without requiring the `:inherited` modifier. Verbs (`hx-get`, `hx-post`, etc.), `hx-action` and `hx-trigger` are never implicitly inherited (same as htmx 2)                                                                                                              |
 | `htmx.config.defaultFocusScroll`     | defaults to `false`, whether to scroll focused elements into view after swap                                                                                                                                                                                   |
 | `htmx.config.defaultSettleDelay`     | defaults to `1` (ms), delay between swap and settle phases                                                                                                                                                                                                     |
 | `htmx.config.metaCharacter`          | defaults to `undefined`, allows you to use a custom character instead of `:` for attribute modifiers (e.g., `-` to use `hx-get-inherited` instead of `hx-get:inherited`)                                                                                       |
