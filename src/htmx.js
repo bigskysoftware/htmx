@@ -741,9 +741,7 @@ var htmx = (() => {
 
         // Wire up event listeners with full modifier support (once, prevent, stop,
         // delay, throttle, changed, capture, passive, from, filter, etc.)
-        // request: the handler issues the element's htmx request, so htmx prevents the native
-        // click/submit (except a modifier-key click on a link). hx-on and extension handlers
-        // prevent only through prevent/halt or their own preventDefault.
+        // request: true for the element's own hx-* request trigger, which cancels the native action
         __onTrigger(elt, specString, handler, request) {
             let specs = this.__parseTriggerSpecs(specString)
             this.__htmxProp(elt).triggerSpecs.push(...specs)
