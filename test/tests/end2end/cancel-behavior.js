@@ -266,12 +266,13 @@ describe('Cancel behavior integration tests', function() {
             defaultPrevented = evt.defaultPrevented;
         });
         
-        const evt = new MouseEvent('click', { ctrlKey: true, bubbles: true });
+        const evt = new MouseEvent('click', { ctrlKey: true, bubbles: true, cancelable: true });
         link.dispatchEvent(evt);
         await htmx.timeout(1);
         
         // Should not prevent default to allow browser's native behavior
         defaultPrevented.should.equal(false);
+        fetchMock.calls.length.should.equal(0);
     });
 
     it('meta+click on link does not prevent default (allows open in new tab on Mac)', async function() {
@@ -284,12 +285,13 @@ describe('Cancel behavior integration tests', function() {
             defaultPrevented = evt.defaultPrevented;
         });
         
-        const evt = new MouseEvent('click', { metaKey: true, bubbles: true });
+        const evt = new MouseEvent('click', { metaKey: true, bubbles: true, cancelable: true });
         link.dispatchEvent(evt);
         await htmx.timeout(1);
         
         // Should not prevent default to allow browser's native behavior
         defaultPrevented.should.equal(false);
+        fetchMock.calls.length.should.equal(0);
     });
 
     it('shift+click on link does not prevent default (allows open in new window)', async function() {
@@ -302,11 +304,13 @@ describe('Cancel behavior integration tests', function() {
             defaultPrevented = evt.defaultPrevented;
         });
         
-        const evt = new MouseEvent('click', { shiftKey: true, bubbles: true });
+        const evt = new MouseEvent('click', { shiftKey: true, bubbles: true, cancelable: true });
         link.dispatchEvent(evt);
         await htmx.timeout(1);
         
         // Should not prevent default to allow browser's native behavior
         defaultPrevented.should.equal(false);
+        fetchMock.calls.length.should.equal(0);
     });
+
 });

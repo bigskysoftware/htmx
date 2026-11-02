@@ -104,6 +104,16 @@ describe('hx-on attribute', function() {
 
     // --- synthetic events in simple form ---
 
+    it('hx-on:submit on a plain form does not prevent the native submit', function() {
+        let defaultPrevented = null;
+        let form = createProcessedHTML('<form action="/native" method="post" hx-on:submit="window.foo = 1"><button>go</button></form>');
+        form.addEventListener('submit', (evt) => defaultPrevented = evt.defaultPrevented);
+        form.dispatchEvent(new SubmitEvent('submit', { bubbles: true, cancelable: true }));
+        window.foo.should.equal(1);
+        defaultPrevented.should.equal(false);
+        delete window.foo;
+    });
+
     it('hx-on:load fires immediately when element is processed', function() {
         window.foo = false;
         createProcessedHTML('<div hx-on:load="window.foo = true">x</div>');
