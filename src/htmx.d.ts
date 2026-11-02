@@ -119,7 +119,7 @@ export interface HtmxConfig {
    * HTTP status codes for which htmx will not perform a content swap.
    * @default [204, 304]
    */
-  noSwap: number[];
+  noSwap: (number | string)[];
   /**
    * Child elements implicitly inherit htmx attributes from parents.
    * @default false
