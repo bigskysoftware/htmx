@@ -810,9 +810,7 @@ var htmx = (() => {
                         let evtArgs = {}; for (let k in evt) if (/^[a-z]+$/i.test(k)) evtArgs[k] = evt[k];
                         if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)) return;
                     }
-                    // a new trigger replaces any pending delayed or throttled trigger from the same
-                    // trigger spec string; hx-on handlers and extension triggers on the element are
-                    // registered through their own __onTrigger calls and are left alone
+                    // a new trigger replaces any pending delayed or throttled trigger from the same hx-trigger value
                     if (eventName !== 'every') {
                         for (let other of specs) {
                             clearTimeout(other.timeout);
