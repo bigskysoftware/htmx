@@ -111,4 +111,22 @@ describe('__makeFragment unit tests', function() {
         }
     })
 
+    it('still parses and swaps when parseHTMLUnsafe rejects the options argument', async function () {
+        let original = Document.parseHTMLUnsafe
+        Document.parseHTMLUnsafe = function (html) {
+            if (arguments.length > 1) {
+                throw new TypeError("Failed to execute 'parseHTMLUnsafe' on 'Document': Overload resolution failed.")
+            }
+            return original ? original.call(this, html) : new DOMParser().parseFromString(html, 'text/html')
+        }
+        try {
+            await htmx.swap({target: '#test-playground', text: '<p>a<!-- x -->b</p>'})
+            let child = playground().children[0]
+            child.tagName.should.equal('P')
+            child.textContent.should.equal('ab')
+        } finally {
+            Document.parseHTMLUnsafe = original
+        }
+    })
+
 });
