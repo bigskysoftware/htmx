@@ -32,6 +32,79 @@ describe('__disableElements / __enableElements unit tests', function() {
         assert.isFalse(button.disabled)
     })
 
+    it('preserves elements that were already disabled', function () {
+        let container = createProcessedHTML('<div hx-disable=".disable-me"><button class="disable-me" disabled></button><input class="disable-me" disabled><fieldset class="disable-me" disabled></fieldset></div>')
+        let elements = container.querySelectorAll('.disable-me')
+        assert.equal(elements.length, 3)
+
+        let ctx = makeCtx(container)
+        htmx.__disableElements(ctx)
+        htmx.__enableElements(ctx.disabledElements)
+
+        for (let element of elements) {
+            assert.isTrue(element.disabled)
+        }
+    })
+
+    it('only re-enables controls disabled by the request', function () {
+        let container = createProcessedHTML('<div hx-disable=".disable-me"><button class="disable-me" disabled></button><input class="disable-me"></div>')
+        let button = container.querySelector('button')
+        let input = container.querySelector('input')
+
+        let ctx = makeCtx(container)
+        htmx.__disableElements(ctx)
+        assert.isTrue(button.disabled)
+        assert.isTrue(input.disabled)
+        htmx.__enableElements(ctx.disabledElements)
+
+        assert.isTrue(button.disabled)
+        assert.isFalse(input.disabled)
+    })
+
+    for (let completionOrder of [[0, 1], [1, 0]]) {
+        it('preserves disabled controls when overlapping requests finish in order ' + completionOrder, function () {
+            let container = createProcessedHTML('<div hx-disable=".disable-me"><button class="disable-me" disabled></button><input class="disable-me"></div>')
+            let button = container.querySelector('button')
+            let input = container.querySelector('input')
+            let contexts = [makeCtx(container), makeCtx(container)]
+
+            htmx.__disableElements(contexts[0])
+            htmx.__disableElements(contexts[1])
+            htmx.__enableElements(contexts[completionOrder[0]].disabledElements)
+            assert.isTrue(button.disabled)
+            assert.isTrue(input.disabled)
+
+            htmx.__enableElements(contexts[completionOrder[1]].disabledElements)
+            assert.isTrue(button.disabled)
+            assert.isFalse(input.disabled)
+            assert.isUndefined(htmx.__htmxState(input).dc)
+        })
+    }
+
+    for (let outcome of ['network failure', 'cancellation']) {
+        it('preserves disabled controls after request ' + outcome, async function () {
+            let container = createProcessedHTML('<div hx-get="/test" hx-swap="none" hx-disable=".disable-me"><button class="disable-me" disabled></button><input class="disable-me"></div>')
+            let button = container.querySelector('button')
+            let input = container.querySelector('input')
+            let ctx = htmx.__createRequestContext(container, new Event('click'))
+            let fetchCalled = false
+            ctx.fetch = async () => {
+                fetchCalled = true
+                throw new Error('Network failure')
+            }
+            if (outcome === 'cancellation') {
+                container.addEventListener('htmx:before:request', event => event.preventDefault())
+            }
+
+            await htmx.__issueRequest(ctx)
+
+            assert.equal(fetchCalled, outcome === 'network failure')
+            assert.isTrue(button.disabled)
+            assert.isFalse(input.disabled)
+            assert.isUndefined(htmx.__htmxState(input).dc)
+        })
+    }
+
     it('increments counter on multiple disables', function () {
         let container = createProcessedHTML('<div hx-disable=".disable-me"><button class="disable-me"></button></div>')
         let button = container.querySelector('button')
