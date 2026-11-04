@@ -1,0 +1,45 @@
+[package]
+name = "htmx-rs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# Pinned exactly: must match wasm-bindgen-cli-support in xtask/Cargo.toml.
+wasm-bindgen = "=0.2.130"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+
+[dependencies.web-sys]
+version = "0.3"
+features = [
+  "console",
+  "CustomEvent",
+  "CustomEventInit",
+  "Document",
+  "DocumentFragment",
+  "DomTokenList",
+  "Element",
+  "Event",
+  "EventTarget",
+  "FormData",
+  "Headers",
+  "History",
+  "HtmlElement",
+  "HtmlFormElement",
+  "HtmlHeadElement",
+  "HtmlTemplateElement",
+  "Location",
+  "Node",
+  "NodeList",
+  "Request",
+  "RequestInit",
+  "Response",
+  "Url",
+  "UrlSearchParams",
+  "Window",
+]

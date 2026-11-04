@@ -1,0 +1,3 @@
+# Keeps GitHub's language bar at 100% Rust. The demo is documentation, honest.
+examples/** linguist-documentation
+dist/** linguist-generated

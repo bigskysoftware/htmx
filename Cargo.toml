@@ -1,0 +1,16 @@
+[workspace]
+members = ["crates/htmx-rs", "xtask"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "0BSD"
+description = "htmx, rewritten in Rust. Blazingly fast. Memory safe. Slightly larger."
+
+# Optimise the wasm for size, because we need all the help we can get.
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"

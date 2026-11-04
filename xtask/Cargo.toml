@@ -1,0 +1,11 @@
+[package]
+name = "xtask"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+# Pinned exactly: must match wasm-bindgen in crates/htmx-rs/Cargo.toml.
+wasm-bindgen-cli-support = "=0.2.130"
+flate2 = "1"

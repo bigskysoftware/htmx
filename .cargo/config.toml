@@ -1,0 +1,5 @@
+[alias]
+# `cargo xtask dist`  -> builds dist/htmx-rs.js (the one file you put on a CDN)
+# `cargo xtask site`  -> builds target/site (demo page + bundle, for GitHub Pages)
+# `cargo xtask serve` -> builds everything and serves the demo on http://localhost:8080
+xtask = "run --quiet -p xtask --"

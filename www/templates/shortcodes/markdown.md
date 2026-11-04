@@ -1,1 +1,0 @@
-{{body | markdown(inline=true)}}
