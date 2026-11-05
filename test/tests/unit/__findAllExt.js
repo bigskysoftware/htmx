@@ -265,4 +265,26 @@ describe('__findAllExt unit tests', function() {
         assert.equal(results.length, 2);
     })
 
+    it('htmx.findAll(elt, selector) only searches within elt', function() {
+        createProcessedHTML('<div id="a"><span class="x"></span></div><div id="b"><span class="x"></span></div>');
+        let results = htmx.findAll(document.getElementById('b'), '.x');
+        assert.equal(results.length, 1);
+        assert.equal(results[0].parentElement.id, 'b');
+        assert.equal(htmx.findAll(document.getElementById('a').firstChild, '.x').length, 0);
+    })
+
+    it('htmx.find(elt, selector) only searches within elt', function() {
+        createProcessedHTML('<div id="a"><span class="x"></span></div><div id="b"></div>');
+        assert.isTrue(htmx.find(document.getElementById('b'), '.x') === undefined);
+        assert.equal(htmx.find(document.getElementById('a'), '.x').parentElement.id, 'a');
+    })
+
+    it('htmx.findAll(elt, selector) keeps extended selectors relative to elt', function() {
+        createProcessedHTML('<div class="parent"><div id="a"></div><div class="target"></div></div><div class="target"></div>');
+        let a = document.getElementById('a');
+        assert.equal(htmx.findAll(a, 'closest .parent')[0].className, 'parent');
+        assert.equal(htmx.find(a, 'next .target').parentElement.className, 'parent');
+        assert.equal(htmx.findAll(a, 'global .target').length, 2);
+    })
+
 });
