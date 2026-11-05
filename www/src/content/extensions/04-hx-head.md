@@ -241,6 +241,30 @@ document.addEventListener('htmx:head:after:merge', event => {
 })
 ```
 
+## Configuration
+
+### `htmx.config.head.clearTitle`
+
+By default, in append mode the extension preserves the existing `<title>` element when the response head has no title. Set `clearTitle` to remove it:
+
+```js
+htmx.config.head = { clearTitle: true }
+```
+
+Or via meta tag:
+
+```html
+<meta name="htmx-config" content='{ "head": { "clearTitle": true } }'>
+```
+
+| Response has title | Mode | `clearTitle` | Result |
+|---|---|---|---|
+| yes | `merge` | — | Title removed and replaced |
+| yes | `append` | — | Title removed and replaced |
+| no | `merge` | — | Title removed |
+| no | `append` | `false` (default) | Title preserved |
+| no | `append` | `true` | Title removed |
+
 ## Migration
 
 ### Beta to RC1
