@@ -31,6 +31,16 @@ jobs:
       - run: bunx playwright install --with-deps chromium
       - run: bun run test
 
+  hcon_grammar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Strict HCON grammar (Node only, no Playwright)
+        run: node --test hcon/test/*.test.js
+
   website_tests:
     runs-on: ubuntu-latest
     defaults:
