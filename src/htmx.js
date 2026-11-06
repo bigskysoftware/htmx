@@ -1787,8 +1787,10 @@ var htmx = (() => {
             let hxDisable = this.__attributeValue(elt, "hx-disable");
             if (!hxDisable) return;
             for (let el of this.__findAllExt(elt, hxDisable, "hx-disable")) {
-                    ctx.disabledElements.push(el);
                     let s = this.__htmxState(el);
+                    // Leave pre-disabled controls alone, but count overlapping htmx requests.
+                    if (el.disabled && !s.dc) continue;
+                    ctx.disabledElements.push(el);
                     s.dc = (s.dc || 0) + 1;
                     el.disabled = true;
             }
