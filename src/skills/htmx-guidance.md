@@ -264,6 +264,19 @@ htmx 4 naming convention: `htmx:phase:action`
 
 - `htmx:before:viewTransition` / `htmx:after:viewTransition`
 
+**Where an event lands:** htmx dispatches every event on its element while that element is in the
+DOM, and on `document` once it is not. A swap that replaced the element that asked (an `outerHTML` swap of
+the form, a menu redrawn around its button) sends that request's later events — `htmx:after:request`,
+`htmx:finally:request`, `htmx:error` — to `document`, past any listener on the element. To catch the end
+of such a request, listen on `document` and match `evt.detail.ctx` to the request's context:
+
+```javascript
+document.addEventListener('htmx:finally:request', (evt) => {
+  if (evt.detail.ctx !== ctx) return
+  // the request is over, whatever became of its element
+}, { capture: true })
+```
+
 **Aborting a request:** `htmx:abort` is an event you dispatch, not one htmx fires. Send it at an element to
 cancel that element's in-flight requests:
 
