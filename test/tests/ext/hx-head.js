@@ -200,6 +200,37 @@ describe('hx-head extension', function() {
         assert.isAtMost(headMergeTime, swapTime, 'head merge must complete before swap');
     });
 
+    it('keeps a stylesheet while another head merge is waiting for it', async function() {
+        let addedLink;
+        const disableStylesheet = event => {
+            const headElement = event.detail.headElement;
+            if (headElement.tagName === 'LINK' && headElement.rel === 'stylesheet' && headElement.href.endsWith('/pending.css')) {
+                headElement.setAttribute('disabled', '');
+            }
+        };
+        document.body.addEventListener('htmx:head:before:add', disableStylesheet);
+
+        mockResponse('GET', '/slow', '<html><head hx-head="merge"><link rel="stylesheet" href="/pending.css"></head><body><p>slow response</p></body></html>');
+        mockResponse('GET', '/fast', '<html><head hx-head="merge"></head><body><p>fast response</p></body></html>');
+
+        const slowTarget = createProcessedHTML('<div></div>');
+        const fastTarget = createProcessedHTML('<div></div>');
+        const slowRequest = htmx.ajax('GET', '/slow', {target: slowTarget, swap: 'innerHTML'});
+
+        await waitForEvent('htmx:head:before:add', 500);
+        document.body.removeEventListener('htmx:head:before:add', disableStylesheet);
+        addedLink = document.head.querySelector('link[href="/pending.css"]');
+        assert.isNotNull(addedLink, 'first response should add its stylesheet');
+        if (addedLink) addedHeadElts.push(addedLink);
+
+        await htmx.ajax('GET', '/fast', {target: fastTarget, swap: 'innerHTML'});
+
+        assert.isTrue(addedLink.isConnected, 'concurrent merge must not remove a stylesheet still loading');
+        addedLink.dispatchEvent(new Event('load'));
+        await slowRequest;
+        assert.equal(slowTarget.innerHTML, '<p>slow response</p>');
+    });
+
     it('replaces title in append mode when new title differs', async function() {
         let title = document.createElement('title');
         title.textContent = 'Page 1';
