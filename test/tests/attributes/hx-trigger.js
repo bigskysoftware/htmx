@@ -149,6 +149,17 @@ describe('hx-trigger attribute', function() {
         })
     }
 
+    it('an hx-on handler does not cancel a pending delayed trigger', async function () {
+        mockResponse('GET', '/test', 'Done')
+        let input = createProcessedHTML('<input hx-get="/test" hx-trigger="input delay:20ms" hx-swap="none" hx-on:keyup="window.foo = 1">')
+        input.dispatchEvent(new Event('input'))
+        input.dispatchEvent(new KeyboardEvent('keyup'))
+        await htmx.timeout(60)
+        fetchMock.calls.length.should.equal(1)
+        window.foo.should.equal(1)
+        delete window.foo
+    })
+
     it('once modifier works', function () {
         mockResponse('GET', '/test', "Response")
         createProcessedHTML('<button hx-trigger="click once" hx-get="/test"/></button>')
