@@ -3,7 +3,7 @@ title = "htmx Idiomorph Extension"
 +++
 
 [Idiomorph](https://github.com/bigskysoftware/idiomorph) is a DOM morphing algorithm created by the htmx creator. DOM
-morphing is a process where an existing DOM tree is "morphed" into the shape of another in a way that resuses as much of
+morphing is a process where an existing DOM tree is "morphed" into the shape of another in a way that reuses as much of
 the existing DOM's nodes as possible. By preserving nodes when changing from one tree to another you can present a
 much smoother transition between the two states.
 
