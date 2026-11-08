@@ -1092,7 +1092,7 @@ var htmx = (() => {
         __createOOBTask(tasks, elt, oobValue, sourceElement) {
             let targetSelector = elt.id ? '#' + CSS.escape(elt.id) : null;
             // if oobValue is in "swapStyle:selector" form (no space before colon), split it; otherwise treat as HCON
-            let [, style, sel] = oobValue.match(/^(\S+):(.+)/) ?? [];
+            let [, style, sel] = oobValue.match(/^([^\s:]+):(.+)/) ?? [];
             if (style) [oobValue, targetSelector] = [style, sel || targetSelector];
             if (oobValue === 'true' || !oobValue) oobValue = 'outerHTML';
 
