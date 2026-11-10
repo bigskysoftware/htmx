@@ -155,6 +155,7 @@ var htmx = (() => {
             this.#internalAPI = {
                 HCON,
                 attributeValue: this.__attributeValue.bind(this),
+                findAllExt: this.__findAllExt.bind(this),
                 parseTriggerSpecs: this.__parseTriggerSpecs.bind(this),
                 determineMethodAndAction: this.__determineMethodAndAction.bind(this),
                 createRequestContext: this.__createRequestContext.bind(this),
@@ -1568,11 +1569,12 @@ var htmx = (() => {
         }
 
         find(selectorOrElt, selector) {
-            return this.__findExt(selectorOrElt, selector)
+            return this.findAll(selectorOrElt, selector)[0]
         }
 
         findAll(selectorOrElt, selector) {
-            return this.__findAllExt(selectorOrElt, selector)
+            // With an element, plain CSS selectors only match within it, as in htmx 2
+            return this.__findAllExt(selectorOrElt, selector, undefined, false, !!selector)
         }
 
         parseInterval(str) {
@@ -1897,7 +1899,7 @@ var htmx = (() => {
             return s.startsWith('<') && s.endsWith('/>') ? s.slice(1, -2) : s;
         }
 
-        __findAllExt(eltOrSelector, maybeSelector, thisAttr, global) {
+        __findAllExt(eltOrSelector, maybeSelector, thisAttr, global, scoped) {
             let selector = maybeSelector ?? eltOrSelector;
             let elt = maybeSelector ? (this.__normalizeElement(eltOrSelector) || document.body) : document;
             if (selector.startsWith('global ')) {
@@ -1948,7 +1950,7 @@ var htmx = (() => {
 
             if (unprocessedParts.length > 0) {
                 let standardSelector = unprocessedParts.join(',')
-                let rootNode = this.__getRootNode(elt, !!global)
+                let rootNode = scoped ? elt : this.__getRootNode(elt, !!global)
                 result.push(...rootNode.querySelectorAll(standardSelector))
             }
 

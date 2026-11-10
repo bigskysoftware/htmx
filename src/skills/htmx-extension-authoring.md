@@ -170,6 +170,7 @@ init: (internalAPI) => { api = internalAPI; },
 |----------|-------------|
 | `api.HCON` | Parse and merge HCON values |
 | `api.attributeValue(elt, name, defaultVal, returnElt)` | Get an attribute value with inheritance support |
+| `api.findAllExt(elt, selector, thisAttr)` | Find elements with an extended selector, resolved like `hx-target` |
 | `api.parseTriggerSpecs(spec)` | Parse a trigger specification |
 | `api.determineMethodAndAction(elt, evt)` | Get `{method, action}` for an element |
 | `api.createRequestContext(elt, evt)` | Create a request context |
