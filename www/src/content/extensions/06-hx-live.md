@@ -708,8 +708,8 @@ Read and write `data-*` attributes as JSON or plain text.
 
 ```js
 data.count                    // nearest data-count, starting at this
-q(this).data.count            // data-count on this element only
-q('#cart').data.count         // data-count on the selected cart
+local.data.count              // data-count on this element only
+q('#cart').data.count         // nearest data-count, starting at #cart
 q('#cart').closest.data.count // nearest data-count from #cart up
 ```
 
