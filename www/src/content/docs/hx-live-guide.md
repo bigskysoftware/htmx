@@ -366,7 +366,7 @@ property to do so:
 
 ```html
   <button data-count="0" 
-        hx-on:click="q('next output').innerText = ++this.data.count; ">Add 1</button>
+        hx-on:click="q('next output').innerText = ++local.data.count; ">Add 1</button>
 ```
 
 This is typically not necessary, but can be useful if you want the data to live on a particular element.
