@@ -145,6 +145,7 @@ var htmx = (() => {
         #transitionQueue
         #historyAbort
         #historyInitialized
+        #historyPath
         #processingTransition
 
         constructor() {
@@ -1251,6 +1252,7 @@ var htmx = (() => {
         initialize() {
             if (this.config.history && !this.#historyInitialized) {
                 this.#historyInitialized = true;
+                this.#historyPath = location.pathname + location.search;
                 if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
                     navigation.addEventListener('navigate', (event) => {
                         if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
@@ -1258,7 +1260,7 @@ var htmx = (() => {
                     });
                 /* c8 ignore next 3 */
                 } else {
-                    window.addEventListener('popstate', (event) => this.__restoreHistory(event.state));
+                    window.addEventListener('popstate', (event) => this.__handlePopState(event));
                 }
             }
             this.process(document.body);
@@ -1630,13 +1632,25 @@ var htmx = (() => {
         __pushUrlIntoHistory(path) {
             if (!this.config.history) return;
              history.pushState({htmx: true}, '', path);
+            this.#historyPath = location.pathname + location.search;
             this.__trigger(document, "htmx:after:history:push", {path});
         }
 
         __replaceUrlInHistory(path) {
             if (!this.config.history) return;
             history.replaceState({htmx: true}, '', path);
+            this.#historyPath = location.pathname + location.search;
             this.__trigger(document, "htmx:after:history:replace", {path});
+        }
+
+        // popstate fallback, used where initialize() does not use the Navigation API
+        __handlePopState(event) {
+            let path = location.pathname + location.search;
+            // only the #fragment changed (e.g. Back after an in-page link), so the page is already
+            // on screen: skip the restore, as the !event.hashChange check does for the Navigation API
+            if (path === this.#historyPath) return;
+            this.#historyPath = path;
+            this.__restoreHistory(event.state);
         }
 
         async __restoreHistory(state, path) {
