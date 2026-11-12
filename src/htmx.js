@@ -1251,7 +1251,8 @@ var htmx = (() => {
         initialize() {
             if (this.config.history && !this.#historyInitialized) {
                 this.#historyInitialized = true;
-                if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
+                const ffVer = navigator.userAgent.match(/Firefox\/(\d+)/)?.[1];
+                if (window.navigation && (!ffVer || +ffVer >= 159)) {
                     navigation.addEventListener('navigate', (event) => {
                         if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
                             event.intercept({handler: () => this.__restoreHistory()});
