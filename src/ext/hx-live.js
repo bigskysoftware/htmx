@@ -805,20 +805,20 @@
         writeAttr(elt, attrName, value);
     }
 
-    htmx.live = {
-        q: s => makeQ(document.documentElement)(s),
-        debounce: makeDebounce(),
-        refresh: () => schedule(),
-        take: (target, name, scope) => applyTake(htmx.live.q(target).arr(), name, scope),
-        toggle: (target, name, ...values) => htmx.live.q(target).forEach(e => applyToggle(e, name, ...values)),
-        forEvent: (...args) => forEvent(null, ...args),
-        nextFrame: () => new Promise(r => requestAnimationFrame(r))
-    };
-    htmx.live.$ = htmx.live.q;
-
     htmx.registerExtension('hx-live', {
         init: (internalAPI) => {
             api = internalAPI;
+
+            htmx.live = {
+                q: s => makeQ(document.documentElement)(s),
+                debounce: makeDebounce(),
+                refresh: () => schedule(),
+                take: (target, name, scope) => applyTake(htmx.live.q(target).arr(), name, scope),
+                toggle: (target, name, ...values) => htmx.live.q(target).forEach(e => applyToggle(e, name, ...values)),
+                forEvent: (...args) => forEvent(null, ...args),
+                nextFrame: () => new Promise(r => requestAnimationFrame(r))
+            };
+            htmx.live.$ = htmx.live.q;
         },
         htmx_before_cleanup: (elt) => {
             cleanupLive(elt);
