@@ -213,8 +213,9 @@ describe('hx-head extension', function() {
         mockResponse('GET', '/slow', '<html><head hx-head="merge"><link rel="stylesheet" href="/pending.css"></head><body><p>slow response</p></body></html>');
         mockResponse('GET', '/fast', '<html><head hx-head="merge"></head><body><p>fast response</p></body></html>');
 
-        const slowTarget = createProcessedHTML('<div></div>');
-        const fastTarget = createProcessedHTML('<div></div>');
+        // createProcessedHTML replaces the playground contents, so create both targets in one call
+        const slowTarget = createProcessedHTML('<div></div><div></div>');
+        const fastTarget = slowTarget.nextElementSibling;
         const slowRequest = htmx.ajax('GET', '/slow', {target: slowTarget, swap: 'innerHTML'});
 
         await waitForEvent('htmx:head:before:add', 500);
