@@ -491,6 +491,15 @@ def check_text(raw_text, filepath, issues):
                 issues.append(Issue(filepath, lineno, "removed-header",
                                     f'"{header}" is removed → {fix}'))
 
+        # HTTP 286 (Intercooler / htmx 2 poll cancel) is a no-op in v4
+        if re.search(r"\b286\b", line) and re.search(
+                r"poll|hx-trigger|CancelPolling", line, re.I):
+            issues.append(Issue(
+                filepath, lineno, "polling-286",
+                'HTTP 286 no longer stops polling → swap the poller for markup '
+                'without hx-trigger="every …" (outerHTML / outerMorph / '
+                'HX-Reswap: outerHTML)'))
+
 
 # ---------------------------------------------------------------------------
 # File processing
@@ -570,6 +579,7 @@ COLORS = {
     "renamed-config": "\033[33m",   # yellow
     "removed-config": "\033[31m",   # red
     "removed-header": "\033[31m",   # red
+    "polling-286": "\033[31m",      # red
 }
 RESET = "\033[0m"
 
