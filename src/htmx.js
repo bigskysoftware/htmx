@@ -1073,7 +1073,7 @@ var htmx = (() => {
             }
 
             if (!title) {
-                let titleElt = fragment.querySelector('title:not(svg title)');
+                let titleElt = [...fragment.querySelectorAll('title')].find(t => !t.closest('svg'));
                 if (titleElt) {
                     title = titleElt.textContent;
                     titleElt.remove();
