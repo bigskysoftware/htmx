@@ -1,6 +1,5 @@
 (() => {
     let api;
-    let warnedLegacyAttributes = new Set();
 
     // ========================================
     // HELPERS
@@ -365,23 +364,6 @@
     }
 
     // ========================================
-    // BACKWARD COMPATIBILITY
-    // ========================================
-
-    function checkLegacyAttributes(element) {
-        for (let attribute of ['sse-connect', 'sse-close', 'sse-swap']) {
-            if (!element.hasAttribute(attribute) || warnedLegacyAttributes.has(attribute)) continue;
-
-            if (attribute === 'sse-swap') {
-                console.warn('htmx: [hx-sse] sse-swap is removed in htmx 4. Unnamed SSE messages are swapped automatically. Named events are dispatched as DOM events.');
-            } else {
-                console.warn(`htmx: [hx-sse] legacy attribute ${attribute} is deprecated; use hx-sse:${attribute.slice(4)} instead`);
-            }
-            warnedLegacyAttributes.add(attribute);
-        }
-    }
-
-    // ========================================
     // EXTENSION REGISTRATION
     // ========================================
 
@@ -417,23 +399,11 @@
 
         htmx_after_process: (element) => {
             let mc = htmx.config.metaCharacter || ':';
-            let processSSEElement = (element) => {
-                checkLegacyAttributes(element);
-                for (let name of ['connect', 'close']) {
-                    let legacyAttr = `sse-${name}`;
-                    if (!element.hasAttribute(legacyAttr)) continue;
-
-                    let attr = (htmx.config.prefix || 'hx-') + 'sse' + mc + name;
-                    if (!element.hasAttribute(attr)) element.setAttribute(attr, element.getAttribute(legacyAttr));
-                }
-                processElement(element);
-            };
-
-            processSSEElement(element);
+            processElement(element);
             let sseAttr = CSS.escape('hx-sse' + mc + 'connect');
             let sseSelector = `[${sseAttr}]`;
             if (htmx.config.prefix) sseSelector += `,[${CSS.escape(htmx.config.prefix + 'sse' + mc + 'connect')}]`;
-            element.querySelectorAll(`${sseSelector},[sse-connect],[sse-close],[sse-swap]`).forEach(processSSEElement);
+            element.querySelectorAll(sseSelector).forEach(processElement);
         },
 
         htmx_before_cleanup: (element) => {

@@ -1605,47 +1605,6 @@ describe('hx-sse SSE extension', function() {
         stream.close();
     });
 
-    it('supports legacy sse-connect attribute and warns once', async function() {
-        let warnings = [];
-        let originalWarn = console.warn;
-        console.warn = warning => warnings.push(warning);
-
-        const stream = mockStreamResponse('/legacy-test');
-        createProcessedHTML('<div sse-connect="/legacy-test" hx-swap="innerHTML">Waiting</div>');
-        htmx.process(find('div'));
-        await htmx.timeout(1);
-
-        console.warn = originalWarn;
-
-        stream.send('legacy works');
-        await waitForEvent('htmx:sse:after:message');
-        assertTextContentIs('div', 'legacy works');
-        assert.equal(warnings.filter(warning => warning.includes('sse-connect')).length, 1);
-
-        stream.close();
-    });
-
-    it('supports legacy sse-close attribute and warns once', async function() {
-        let warnings = [];
-        let originalWarn = console.warn;
-        console.warn = warning => warnings.push(warning);
-
-        const stream = mockStreamResponse('/legacy-close');
-        createProcessedHTML('<div hx-sse:connect="/legacy-close" sse-close="done">Waiting</div>');
-        htmx.process(find('div'));
-        await htmx.timeout(1);
-
-        console.warn = originalWarn;
-
-        let closeReason;
-        onDoc('htmx:sse:close', event => closeReason = event.detail.reason);
-        stream.send('Complete', 'done');
-        await waitForEvent('htmx:sse:close');
-
-        assert.equal(closeReason, 'message');
-        assert.equal(warnings.filter(warning => warning.includes('sse-close')).length, 1);
-    });
-
     it('cleanup aborts the initial connection fetch when element is swapped out', async function() {
         const stream = mockStreamResponse('/abort-initial');
         mockResponse('GET', '/replace', '<div id="replacement">Replaced</div>');
@@ -1674,19 +1633,6 @@ describe('hx-sse SSE extension', function() {
         assertTextContentIs('#container', 'Replaced');
         assert.isTrue(closeFired, 'htmx:sse:close should fire');
         assert.isTrue(connection.abortController.signal.aborted, 'Cleanup should abort the initial connection');
-    });
-
-    it('warns once for removed sse-swap attribute', function() {
-        let warnings = [];
-        let originalWarn = console.warn;
-        console.warn = warning => warnings.push(warning);
-
-        createProcessedHTML('<div sse-swap="message"></div>');
-        htmx.process(find('div'));
-
-        console.warn = originalWarn;
-
-        assert.equal(warnings.filter(warning => warning.includes('sse-swap')).length, 1);
     });
 
     // ========================================
