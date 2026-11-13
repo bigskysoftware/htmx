@@ -1250,6 +1250,7 @@ var htmx = (() => {
         initialize() {
             if (this.config.history && !this.#historyInitialized) {
                 this.#historyInitialized = true;
+                /* c8 ignore next 2 */
                 const ffVer = navigator.userAgent.match(/Firefox\/(\d+)/)?.[1];
                 if (window.navigation && (!ffVer || +ffVer >= 159)) {
                     navigation.addEventListener('navigate', (event) => {
