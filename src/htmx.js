@@ -1698,24 +1698,55 @@ var htmx = (() => {
 
         __handleHistoryUpdate(ctx) {
             if (!this.config.history) return;
-            // Stamp the current entry on the first htmx swap after a fresh page load,
-            // so back traversals to this page are interceptable.
-            if (!history.state?.htmx) history.replaceState({htmx: true}, '', location.href);
+
             let action = this.__resolveHistoryAction(ctx);
+            let historyDetail = null;
+            if (action) {
+                historyDetail = {
+                    history: action,
+                    sourceElement: ctx.sourceElement,
+                    response: ctx.response
+                };
+                // Let extensions finish a pending Navigation API intercept before
+                // the stamp below. replaceState aborts that intercept, and
+                // hx-browser-indicator then aborts every request it is spinning
+                // for (#4183).
+                if (!this.__trigger(document, "htmx:before:history:update", historyDetail)) {
+                    this.#stampCurrentHistoryEntry();
+                    return;
+                }
+            }
+
+            // Stamp the current entry on the first htmx swap after a fresh page load,
+            // so back traversals to this page are interceptable (#4067).
+            this.#stampCurrentHistoryEntry();
             if (!action) return;
 
-            let historyDetail = {
-                history: action,
-                sourceElement: ctx.sourceElement,
-                response: ctx.response
-            };
-            if (!this.__trigger(document, "htmx:before:history:update", historyDetail)) return;
             if (action.type === 'push') {
                 this.__pushUrlIntoHistory(action.path);
             } else {
                 this.__replaceUrlInHistory(action.path);
             }
             this.__trigger(document, "htmx:after:history:update", historyDetail);
+        }
+
+        // history.replaceState aborts a pending Navigation API intercept. Defer
+        // the lazy stamp while one is in flight (the browser indicator's
+        // same-document replace) and skip it if this entry has since been left.
+        #stampCurrentHistoryEntry() {
+            if (history.state?.htmx) return;
+            let pending = typeof navigation !== 'undefined' && navigation.transition;
+            if (pending) {
+                let href = location.href;
+                // catch: stopping the indicator rejects this, and that is expected.
+                pending.finished.catch(() => {}).then(() => {
+                    if (location.href === href && !history.state?.htmx) {
+                        history.replaceState({htmx: true}, '', location.href);
+                    }
+                });
+                return;
+            }
+            history.replaceState({htmx: true}, '', location.href);
         }
 
         // hx-on:<event> binds to <event> directly

@@ -90,6 +90,54 @@ describe('__handleHistoryUpdate unit tests', function() {
         assert.include(window.location.href, '/redirected-path?foo=bar')
     })
 
+    it('defers the lazy history stamp while a navigation is pending', async function() {
+        if (typeof navigation === 'undefined') return;
+
+        history.replaceState(null, '', location.pathname + location.search);
+        let hide;
+        let aborted = false;
+        navigation.addEventListener('navigate', (event) => {
+            if (!event.canIntercept) return;
+            event.intercept({
+                handler: () => new Promise(resolve => { hide = resolve; }),
+                scroll: 'manual',
+                focusReset: 'manual'
+            });
+            event.signal.addEventListener('abort', () => { aborted = true; });
+        }, { once: true });
+        navigation.navigate(location.href, { history: 'replace' });
+        assert.isOk(navigation.transition, 'expected a pending navigation');
+
+        let div = createProcessedHTML('<div hx-get="/test"></div>');
+        let ctx = {
+            sourceElement: div,
+            push: 'false',
+            replace: 'false',
+            response: { headers: new Headers() },
+            request: { action: '/test' }
+        };
+
+        try {
+            htmx.__handleHistoryUpdate(ctx);
+            await Promise.resolve();
+            assert.isFalse(aborted, 'lazy stamp aborted the pending navigation');
+            assert.isOk(navigation.transition, 'pending navigation should still be in flight');
+            assert.isNotOk(history.state?.htmx, 'entry should stay unmarked until the navigation settles');
+
+            let finished = navigation.transition.finished.finally(() => {});
+            hide();
+            await finished;
+            await Promise.resolve();
+            assert.isTrue(history.state?.htmx === true, 'entry is stamped once the navigation settles');
+        } finally {
+            if (typeof hide === 'function' && navigation.transition) {
+                let finished = navigation.transition.finished.catch(() => {});
+                hide();
+                await finished;
+            }
+        }
+    })
+
     it('reloads page on history restore when config.history is "reload"', async function() {
         let originalLocation = htmx._loc;
         let originalHistoryConfig = htmx.config.history;
