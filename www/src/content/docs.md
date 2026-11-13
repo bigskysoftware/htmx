@@ -810,7 +810,7 @@ into the DOM:
 Some server-side template languages remove tags they do not know. For these, use the equivalent `<template>` form:
 
 ```html
-<template hx-type="partial" hx-target="#messages" hx-swap="beforeend">
+<template hx type="partial" hx-target="#messages" hx-swap="beforeend">
     <div class="message">New message content</div>
 </template>
 ```
