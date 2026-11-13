@@ -509,33 +509,6 @@
     }
     
     // ========================================
-    // BACKWARD COMPATIBILITY
-    // ========================================
-    
-    function checkLegacyAttributes(element) {
-        if (element.hasAttribute('ws-connect') || element.hasAttribute('ws-send')) {
-            console.warn('htmx: [hx-ws] legacy attributes ws-connect and ws-send are deprecated; use hx-ws:connect and hx-ws:send instead');
-
-            if (element.hasAttribute('ws-connect')) {
-                let url = element.getAttribute('ws-connect');
-                let mc = htmx.config.metaCharacter || ':';
-                let attr = (htmx.config.prefix || 'hx-') + 'ws' + mc + 'connect';
-                if (!element.hasAttribute(attr)) {
-                    element.setAttribute(attr, url);
-                }
-            }
-
-            if (element.hasAttribute('ws-send')) {
-                let mc = htmx.config.metaCharacter || ':';
-                let attr = (htmx.config.prefix || 'hx-') + 'ws' + mc + 'send';
-                if (!element.hasAttribute(attr)) {
-                    element.setAttribute(attr, '');
-                }
-            }
-        }
-    }
-    
-    // ========================================
     // EXTENSION REGISTRATION
     // ========================================
     
@@ -551,8 +524,6 @@
         
         htmx_after_process: (element) => {
             const processNode = (node) => {
-                checkLegacyAttributes(node);
-
                 let send = api.attributeValue(node, 'hx-ws:send');
                 if (api.attributeValue(node, 'hx-ws:connect') != null) {
                     initializeElement(node);
@@ -565,7 +536,7 @@
 
             processNode(element);
 
-            let sel = wsSelector('connect') + ',' + wsSelector('send') + ',[ws-connect],[ws-send]';
+            let sel = wsSelector('connect') + ',' + wsSelector('send');
             element.querySelectorAll(sel).forEach(processNode);
         },
         
