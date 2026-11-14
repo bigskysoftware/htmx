@@ -1160,6 +1160,7 @@ var htmx = (() => {
                     let targetSelector = this.__attr(templateElt, 'hx-target') || (templateElt.id ? '#' + CSS.escape(templateElt.id) : null);
                     if (targetSelector) {
                         this.__processScripts(templateElt.content);
+                        tasks.push(...this.__processOOB(templateElt.content, ctx.sourceElement));
                         let swapSpec = this.__parseSwapSpec(this.__attr(templateElt, 'hx-swap') || this.config.defaultSwap);
                         if (swapSpec.ignoreTitle) ctx.title = null;
                         let targets = this.__findAllExt(ctx.sourceElement, targetSelector);

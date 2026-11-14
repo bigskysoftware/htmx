@@ -26,6 +26,8 @@ The `<hx-partial>` tag lets you update multiple elements from a single response,
 
 Either `hx-target` or `id` is required. If both are present, `hx-target` takes precedence.
 
+Elements marked with [`hx-swap-oob`](/reference/attributes/hx-swap-oob) inside an `<hx-partial>` update their own targets. The remaining content goes to the partial's target.
+
 ## Relative Targeting
 
 `hx-target` supports the full htmx extended selector vocabulary — `closest`, `next`, `previous`, `find`, `findAll` — resolved relative to the element that triggered the request. This lets the server express structural intent without requiring stable IDs:
