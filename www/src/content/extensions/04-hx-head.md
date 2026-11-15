@@ -280,3 +280,14 @@ RC1 namespaces `hx-head` lifecycle events:
   </head>
   <div>Saved</div>
   ```
+
+## Content Security Policy (CSP)
+
+When pages use CSP nonces, scripts appended by hx-head must carry the live page
+nonce or the browser will block them. Set [`inlineScriptNonce`](/reference/configuration)
+to the page nonce on first load — hx-head stamps it onto every script it appends
+
+Alternativly for full CSP enforcement (nonce-gating, TrustedTypes, safe eval), load
+[`hx-csp`](/extensions/hx-csp) **before** hx-head. hx-csp rewrites response
+nonces to the live page nonce in the raw HTML before hx-head parses it — if
+loaded after, hx-head sees the original nonces first and the rewrite is too late
