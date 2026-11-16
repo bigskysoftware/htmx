@@ -428,6 +428,54 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(textarea.value, 'user typed this', 'focused textarea value should not be overwritten');
         });
 
+        it('keeps text typed while the request was out after the input loses focus', async function() {
+            mockResponse('POST', '/validate', '<input id="name" name="name" value="ab"><input id="other" name="other" value="">');
+            const form = createProcessedHTML('<form hx-post="/validate" hx-trigger="submit" hx-swap="innerMorph"><input id="name" name="name" value=""><input id="other" name="other" value=""></form>');
+            const name = form.querySelector('#name');
+            name.value = 'ab';
+            form.addEventListener('htmx:before:swap', () => {
+                // the user types more and tabs away before the answer lands
+                name.value = 'abcd';
+                form.querySelector('#other').focus();
+            }, {once: true});
+
+            form.requestSubmit();
+            await forRequest();
+
+            assert.equal(form.querySelector('#name'), name, 'input node should be preserved');
+            assert.equal(name.getAttribute('value'), 'ab', 'value attribute should follow the response');
+            assert.equal(name.value, 'abcd', 'text typed after the request should be kept');
+        });
+
+        it('keeps a textarea edited while the request was out after it loses focus', async function() {
+            mockResponse('GET', '/validate', '<textarea id="notes" name="notes">first</textarea>');
+            const div = createProcessedHTML('<div hx-get="/validate" hx-include="#notes" hx-target="this" hx-swap="innerMorph"><textarea id="notes" name="notes"></textarea></div>');
+            const notes = div.querySelector('#notes');
+            notes.value = 'first';
+            div.addEventListener('htmx:before:swap', () => { notes.value = 'first draft'; }, {once: true});
+
+            div.click();
+            await forRequest();
+
+            assert.equal(div.querySelector('#notes'), notes, 'textarea node should be preserved');
+            assert.equal(notes.value, 'first draft', 'text typed after the request should be kept');
+        });
+
+        it('applies the response value to an input the user did not change since the request', async function() {
+            mockResponse('POST', '/validate', '<input id="name" name="name" value="Ab"><input id="email" name="email" value="b@example.com">');
+            const form = createProcessedHTML('<form hx-post="/validate" hx-trigger="submit" hx-swap="innerMorph"><input id="name" name="name" value=""><input id="email" value=""></form>');
+            const name = form.querySelector('#name');
+            const email = form.querySelector('#email');
+            name.value = 'ab ';
+            email.value = 'a@example.com';
+
+            form.requestSubmit();
+            await forRequest();
+
+            assert.equal(name.value, 'Ab', 'a value the server normalized should replace the sent one');
+            assert.equal(email.value, 'b@example.com', 'an input that was not sent should take the response value');
+        });
+
     });
 
     describe('element reordering with ids', function() {

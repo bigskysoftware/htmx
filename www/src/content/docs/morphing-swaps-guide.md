@@ -96,6 +96,10 @@ Morph can be very useful for replacing or updating forms for dynamic validation.
 Morph swaps automatically preserve the value of the currently focused input or textarea, even when the server
 returns a different value. This prevents stale responses from overwriting what the user is typing.
 
+The same goes for an input or textarea the user changed after the request was sent, even if it has lost focus since:
+when the field's current value is not the one the request carried for its `name`, morph keeps the user's value and
+only updates the `value` attribute.
+
 For unfocused inputs, htmx preserves the user's value unless the `value` attribute changes between old and new content.
 This differs from idiomorph's default behavior, which resets the `.value` property to match the `value` attribute on every morph.
 To preserve all input values, have your server return inputs without changing the `value` attribute, or add `'value'` to `htmx.config.morphIgnore`.
