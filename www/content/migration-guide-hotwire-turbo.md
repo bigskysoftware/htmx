@@ -26,7 +26,7 @@ addEventListener("htmx:afterOnLoad", (event) => {
 * Or, [hx-on](@/attributes/hx-on.md) may be used:
   * `hx-on:submit= 'event.target.querySelectorAll("button").forEach(node => { node.disabled = true })'`
   * `hx-on:htmx:afterOnLoad= 'event.target.querySelectorAll("button").forEach(node => { node.disabled = false })'`
-* Or, [hyperscript](https://hyperscript.org) may be used: `_="on submit toggle @disabled <button/> in me until htmx:afterOnLoad"` See: [Cookbook](https://hyperscript.org/cookbook/)
+* Or, [hyperscript](https://hyperscript.org) may be used: `_="on submit toggle @disabled <button/> in me until htmx:afterOnLoad"` See: [Patterns](https://hyperscript.org/patterns/)
 
 ## Turbo Frames
 
