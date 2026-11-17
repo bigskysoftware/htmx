@@ -38,4 +38,4 @@ When used alongside the [`hx-history-cache`](/extensions/hx-history-cache) exten
 
 ### How It Works
 
-Before a page is saved to the history cache, the extension serializes each Alpine component's reactive data to a `data-alpine-state` attribute, then tears down the Alpine tree so the snapshot is clean HTML. On restore, it re-applies the saved values back into the live Alpine data stack after Alpine has re-initialized the restored content.
+After `htmx:history:cache:before:save` listeners have run, the history cache clones the page. The extension serializes each Alpine component's reactive data to a `data-alpine-state` attribute on that clone and removes generated `x-for`, `x-if`, and `x-teleport` content from the snapshot. The live components remain active, so components outside a partial swap keep working and Alpine listeners can prepare the page or cancel caching in `htmx:history:cache:before:save`. On restore, it re-applies the saved values back into the live Alpine data stack after Alpine has re-initialized the restored content.
