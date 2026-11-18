@@ -119,6 +119,7 @@ Available internal API:
 - `collectFormData(elt, form, submitter, validate, isGet)` - Collect form data
 - `getAttributeObject(elt, name, callback, scope)` - Read an object-valued attribute
 - `insertContent(task, cssTransition)` - Insert a swap task's content
+- `processScripts(fragment)` - Prepare scripts in a fragment for insertion
 - `morph(oldNode, fragment, innerHTML)` - Morph existing content
 - `isSoftMatch(oldNode, newNode)` - Test whether two nodes can be morphed
 - `initSecurity(ttPolicy, syncFn, asyncFn)` - Configure Trusted Types and script constructors
@@ -127,6 +128,40 @@ Available internal API:
 - `triggerHtmxEvent(elt, name, detail, bubbles)` - Dispatch an htmx event
 - `executeJavaScript(thisArg, values, code, expression, isAsync)` - Execute JavaScript through htmx security policy
 <!-- check_extension_api:end -->
+
+### Partial Task Fallbacks
+
+A partial task can provide `fallbackTarget` and `fallbackSwap`. `insertContent` resolves these when the primary target is missing at application time, including when an earlier task removed it. `fallbackSwap` defaults to `htmx.config.defaultSwap`. If neither target exists, the task is skipped. Target selection is unchanged for tasks without a fallback.
+
+For example, this alternative upsert processor updates an existing target or inserts at a fallback location. Load it instead of the collection-upsert extension:
+
+```javascript
+(() => {
+    let api;
+    htmx.registerExtension('partial-upsert', {
+        init: internalAPI => { api = internalAPI; },
+        htmx_process_upsert(templateElt, {ctx, tasks}) {
+            api.processScripts(templateElt.content);
+            tasks.push({
+                type: 'partial',
+                fragment: templateElt.content.cloneNode(true),
+                target: templateElt.getAttribute('hx-target'),
+                swapSpec: templateElt.getAttribute('hx-swap') || htmx.config.defaultSwap,
+                fallbackTarget: templateElt.getAttribute('hx-fallback-target'),
+                fallbackSwap: templateElt.getAttribute('hx-fallback-swap'),
+                sourceElement: ctx.sourceElement
+            });
+        }
+    });
+})();
+```
+
+```html
+<hx-upsert hx-target="#item" hx-swap="outerMorph"
+           hx-fallback-target="#items" hx-fallback-swap="beforeend">
+    <div id="item">Updated content</div>
+</hx-upsert>
+```
 
 ### Request Context
 

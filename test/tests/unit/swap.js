@@ -711,12 +711,27 @@ describe('swap() unit tests', function() {
         document.activeElement.should.equal(input)
     })
 
-    it('__insertContent accepts string swapSpec', async function () {
+    it('__insertContent accepts string swaps and resolves extension fallbacks when applied', async function () {
+        let api, extensions = backupExtensions()
+        htmx.registerExtension('fallback-test', {init: internalAPI => { api = internalAPI }})
+        restoreExtensions(extensions)
         createProcessedHTML("<div id='d1'>Old</div>")
         let fragment = document.createDocumentFragment()
         fragment.append(document.createTextNode('New'))
         await htmx.__insertContent({target: find('#d1'), swapSpec: 'innerHTML', fragment})
         find('#d1').innerText.should.equal('New')
+
+        let template = document.createElement('template')
+        template.innerHTML = '<div id="d1"><script>document.getElementById("d1").dataset.ready = "yes"</script></div>'
+        api.processScripts(template.content)
+        let task = {target: '#d1', swapSpec: 'none', fallbackTarget: '#test-playground', fallbackSwap: 'beforeend swap:1ms', fragment: template.content}
+        await api.insertContent(task)
+        assert.isUndefined(find('#d1').dataset.ready)
+        find('#d1').remove()
+        let insertion = api.insertContent(task)
+        assert.notExists(find('#d1'))
+        await insertion
+        find('#d1').dataset.ready.should.equal('yes')
     })
 
     it('outerSync cleans up powered children before replacing them', async function() {

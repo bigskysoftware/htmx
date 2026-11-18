@@ -161,6 +161,7 @@ var htmx = (() => {
                 collectFormData: this.__collectFormData.bind(this),
                 getAttributeObject: this.__getAttributeObject.bind(this),
                 insertContent: this.__insertContent.bind(this),
+                processScripts: this.__processScripts.bind(this),
                 morph: this.__morph.bind(this),
                 isSoftMatch: this.__isSoftMatch.bind(this),
                 initSecurity: (ttPolicy, syncFn, asyncFn) => {
@@ -1363,6 +1364,10 @@ var htmx = (() => {
             if (typeof target === 'string') {
                 target = document.querySelector(target);
             }
+            if (!target && task.fallbackTarget) {
+                target = document.querySelector(task.fallbackTarget);
+                swapSpec = task.fallbackSwap || this.config.defaultSwap;
+            }
             if (!target) return;
             if (typeof swapSpec === 'string') {
                 swapSpec = this.__parseSwapSpec(swapSpec);
@@ -1381,8 +1386,8 @@ var htmx = (() => {
             }
 
             this.__addClass(target, "htmx-swapping")
-            if (cssTransition && task.swapSpec?.swap) {
-                await this.timeout(task.swapSpec?.swap)
+            if (cssTransition && swapSpec?.swap) {
+                await this.timeout(swapSpec.swap)
             }
 
             if (swapStyle === 'delete') {
