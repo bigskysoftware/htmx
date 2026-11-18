@@ -736,12 +736,13 @@ var htmx = (() => {
             let trigger = hxTrigger || (elt.matches("form") ? "submit" :
                 elt.matches("input:not([type=button]):not([type=submit]),select,textarea") ? "change" :
                     "click");
-            this.__onTrigger(elt, trigger, initialHandler)
+            this.__onTrigger(elt, trigger, initialHandler, true)
         }
 
         // Wire up event listeners with full modifier support (once, prevent, stop,
         // delay, throttle, changed, capture, passive, from, filter, etc.)
-        __onTrigger(elt, specString, handler) {
+        // request: true for the element's own hx-* request trigger, which cancels the native action
+        __onTrigger(elt, specString, handler, request) {
             let specs = this.__parseTriggerSpecs(specString)
             this.__htmxProp(elt).triggerSpecs.push(...specs)
 
@@ -802,7 +803,7 @@ var htmx = (() => {
 
                 // Guarded: pre-timing checks that determine if event should proceed
                 spec.handler = (evt) => {
-                    if (this.__shouldCancel(evt)) evt.preventDefault();
+                    if (request && !this.__isModifierKeyClick(evt) && this.__shouldCancel(evt)) evt.preventDefault();
                     if (spec.from === 'self' && evt.target !== elt) return;
                     if (spec.from === 'outside' && elt.contains(evt.target)) return;
                     if (spec.target && !evt.target?.matches?.(spec.target)) return;
