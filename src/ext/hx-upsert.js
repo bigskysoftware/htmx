@@ -6,9 +6,10 @@
 //
 // Modifiers:
 //   key:attr - attribute name for sorting (default: id)
-//   sort - sort ascending
+//   sort - sort ascending (without sort, new elements are appended)
 //   sort:desc - sort descending
-//   prepend - prepend elements without keys (default: append)
+//   prepend - insert new elements at the start (when sorting, only
+//             elements without a key are prepended)
 //==========================================================
 (() => {
     let api;
@@ -37,6 +38,7 @@
         handle_swap: (style, target, fragment, swapSpec) => {
             if (style === 'upsert') {
                 let keyAttr = swapSpec.key || 'id';
+                let sorting = !!swapSpec.sort;
                 let desc = swapSpec.sort === 'desc';
                 let firstChild = target.firstChild;
                 
@@ -58,7 +60,7 @@
                     }
                     
                     let newKey = getKey(newEl);
-                    if (!newKey) {
+                    if (!newKey || !sorting) {
                         if (swapSpec.prepend) {
                             target.insertBefore(newEl, firstChild);
                         } else {

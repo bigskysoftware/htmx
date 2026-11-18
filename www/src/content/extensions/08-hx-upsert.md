@@ -52,14 +52,14 @@ The result will be:
 The upsert swap style:
 
 1. **Updates** elements with matching IDs (replaces their outerHTML)
-2. **Inserts** new elements that don't have matching IDs
+2. **Inserts** new elements that don't have matching IDs at the end of the target
 3. **Preserves** existing elements not present in the response
 
 ## Configuration
 
 ### Sorting
 
-Add `sort` to maintain elements in ascending order by ID:
+New items are appended unless `sort` is set. Add `sort` to maintain elements in ascending order by ID:
 
 ```html
 <div hx-get="/items" hx-swap="upsert sort">
@@ -82,9 +82,9 @@ Use `key:attr` to sort by a different attribute:
 </div>
 ```
 
-### Prepend Unkeyed Elements
+### Prepend
 
-By default, elements without IDs are appended. Use `prepend` to insert them at the beginning:
+By default, new elements are appended. Use `prepend` to insert them at the beginning, in the order they appear in the response. When `sort` is also set, keyed elements are placed by sort order and `prepend` only affects elements without a key:
 
 ```html
 <div hx-get="/items" hx-swap="upsert prepend">
