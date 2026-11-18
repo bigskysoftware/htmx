@@ -47,7 +47,7 @@ See the [htmx documentation on hyperscript](https://hyperscript.org) for practic
 | Intercooler | htmx |
 |-----------|-------------|
 | [`ic-action`](https://intercoolerjs.org/attributes/ic-action.html) | None. Use [Hyperscript][], e.g. `<button _="on click add .clicked">Add The "clicked" Class To Me</button>`. See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org)for more examples
-| [`ic-action-target`](https://intercoolerjs.org/attributes/ic-action-target.html) | None. Use the [Hyperscript target expression](https://hyperscript.org/expressions/target/), e.g. `<div _="on click set .button.style.color to 'red'">Set All Buttons To Red</div>`
+| [`ic-action-target`](https://intercoolerjs.org/attributes/ic-action-target.html) | None. Use a [Hyperscript class reference](https://hyperscript.org/expressions/class-reference/), e.g. `<div _="on click set .button.style.color to 'red'">Set All Buttons To Red</div>`
 | [`ic-add-class`](https://intercoolerjs.org/attributes/ic-add-class.html) | None. Use [Hyperscript][], e.g. `<button _="on click add .clicked">Add The "clicked" Class To Me</button>`. See the [htmx documentation on hyperscript](https://hyperscript.org) and [hyperscript documentation](https://hyperscript.org) for more examples
 | [`ic-append-from`](https://intercoolerjs.org/attributes/ic-append-from.html) | None. Equivalent functionality can be achieved by using for example [`hx-get`](@/attributes/hx-get.md) and [`hx-swap`](@/attributes/hx-swap.md) with value `beforeend`
 | [`ic-attr-src`](https://intercoolerjs.org/attributes/ic-attr-src.html) | None. No direct equivalent functionality exists (TBC)
