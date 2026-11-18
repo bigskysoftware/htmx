@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.0.2] - 2026-11-17
+
+* Fixed swap failure in Chrome 124-145. This reverts the 4.0.1 workaround for Chrome 150-156 dropping HTML comments ([#4215](https://github.com/bigskysoftware/htmx/pull/4215), [#4182](https://github.com/bigskysoftware/htmx/issues/4182))
+* A pending `delay` or `throttle` trigger is now cancelled only by triggers in the same `hx-trigger` value, not by `hx-on` handlers ([#4190](https://github.com/bigskysoftware/htmx/pull/4190))
+* Fixed spurious history restore on fragment navigation in Firefox 159+ ([#4214](https://github.com/bigskysoftware/htmx/pull/4214))
+* Fixed `makeFragment` in Chrome below 88 ([#4217](https://github.com/bigskysoftware/htmx/pull/4217))
+* `hx-sse` and `hx-ws`: removed the legacy `sse-*` and `ws-*` attributes. Use `hx-sse:*` and `hx-ws:*` ([#4218](https://github.com/bigskysoftware/htmx/pull/4218))
+* `hx-live`: the `htmx.live` API registers only if the extension loads ([#4207](https://github.com/bigskysoftware/htmx/pull/4207)), and doc fixes ([#4208](https://github.com/bigskysoftware/htmx/pull/4208), [#4210](https://github.com/bigskysoftware/htmx/pull/4210))
+
+
 ## [4.0.1] - 2026-11-01
 
 * Any trigger now cancels a pending `delay` or `throttle` trigger on the same element, as in 2.x
