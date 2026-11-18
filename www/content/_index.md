@@ -214,7 +214,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         <a data-github-account="JetBrainsOfficial" href="https://www.jetbrains.com"><img  src="/img/jetbrains.svg" alt="Jetbrains"></a>
 </div>
 <div>
-        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img class="dark-invert" src="/img/Github_Logo.png" alt="GitHub" style="max-width:80%;min-width:100px;"></a>
+        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img class="dark-invert" src="/img/GitHub_Logo.png" alt="GitHub" style="max-width:80%;min-width:100px;"></a>
 </div>
 <div>
         <a data-github-account="craftcms" href="https://craftcms.com">
