@@ -6,6 +6,8 @@
 (function () {
 
     let api
+    const pendingResources = new WeakSet()
+    const resourceLoadTimeout = 3000
 
     // Appends a new head node, returning a promise for render-critical resources
     // (blocking scripts, stylesheets) or null for fire-and-forget resources.
@@ -17,8 +19,16 @@
         // stylesheet: await CSSOM or content will flash unstyled
         if (newNode.tagName === "LINK" && newNode.rel === "stylesheet") {
             return new Promise(resolve => {
-                newElt.onload = resolve
-                newElt.onerror = resolve  // failed stylesheet shouldn't block swap
+                let timeout
+                const finish = () => {
+                    clearTimeout(timeout)
+                    pendingResources.delete(newElt)
+                    resolve()
+                }
+                pendingResources.add(newElt)
+                timeout = setTimeout(finish, resourceLoadTimeout)
+                newElt.onload = finish
+                newElt.onerror = finish  // failed stylesheet shouldn't block swap
                 document.head.appendChild(newElt)
             })
         }
@@ -26,8 +36,17 @@
         // blocking external script (no async/defer): must init before swap
         if (newNode.tagName === "SCRIPT" && newNode.src && !newNode.async && !newNode.defer) {
             return new Promise((resolve, reject) => {
-                newElt.onload = resolve
-                newElt.onerror = reject
+                let timeout
+                const finish = error => {
+                    clearTimeout(timeout)
+                    pendingResources.delete(newElt)
+                    if (error) reject(error)
+                    else resolve()
+                }
+                pendingResources.add(newElt)
+                timeout = setTimeout(() => finish(), resourceLoadTimeout)
+                newElt.onload = () => finish()
+                newElt.onerror = finish
                 document.head.appendChild(newElt)
             })
         }
@@ -95,7 +114,7 @@
                     } else {
                         if (mergeStrategy !== "append" || (currentHeadElt.tagName === "TITLE" && newTitle)) {
                             // if this is a merge, or a title being replaced, remove it
-                            if (api.triggerHtmxEvent(document.body, "htmx:head:before:remove", {headElement: currentHeadElt}) !== false) {
+                            if (!pendingResources.has(currentHeadElt) && api.triggerHtmxEvent(document.body, "htmx:head:before:remove", {headElement: currentHeadElt}) !== false) {
                                 removed.push(currentHeadElt)
                             }
                         } else if (isReAppended) {
