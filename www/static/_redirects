@@ -1,8 +1,17 @@
-/locality-of-behaviour                      /essays/locality-of-behaviour
-/locality-of-behavior                       /essays/locality-of-behaviour
-/essays/locality-of-behavior                /essays/locality-of-behaviour
-/posts/2020-6-19-htmx-0.0.5-is-released/    /posts/2020-6-20-htmx-0.0.6-is-released/
-/discord                                    https://discord.gg/Z6gPqAd
-/feed.xml                                   /atom.xml
-/attributes/kt-swap                         /attributes/hx-swap
+# Status 301 is explicit: Cloudflare Pages uses 302 when no status is given.
+# Pages does not ignore a trailing slash, so each rule also has a "/" form.
+/locality-of-behaviour                      /essays/locality-of-behaviour   301
+/locality-of-behaviour/                     /essays/locality-of-behaviour   301
+/locality-of-behavior                       /essays/locality-of-behaviour   301
+/locality-of-behavior/                      /essays/locality-of-behaviour   301
+/essays/locality-of-behavior                /essays/locality-of-behaviour   301
+/essays/locality-of-behavior/               /essays/locality-of-behaviour   301
+/posts/2020-6-19-htmx-0.0.5-is-released     /posts/2020-6-20-htmx-0.0.6-is-released/   301
+/posts/2020-6-19-htmx-0.0.5-is-released/    /posts/2020-6-20-htmx-0.0.6-is-released/   301
+/discord                                    https://discord.gg/Z6gPqAd      301
+/discord/                                   https://discord.gg/Z6gPqAd      301
+/feed.xml                                   /atom.xml                       301
+/attributes/kt-swap                         /attributes/hx-swap             301
+/attributes/kt-swap/                        /attributes/hx-swap             301
+# Netlify only. On Cloudflare a zone rewrite rule serves demo.htmx.org.
 https://demo.htmx.org/*                     /js/demo/it.js  200!

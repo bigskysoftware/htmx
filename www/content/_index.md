@@ -103,7 +103,7 @@ Thank you to all our generous <a href="https://github.com/sponsors/bigskysoftwar
         <a href="https://www.commspace.co.za"><img src="/img/commspace.svg" alt="commspace" style="min-width:200px"></a>
 </td>
 <td>
-        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img src="/img/Github_Logo.png" alt="GitHub" style="max-width:30%;min-width:100px;"></a>
+        <a href="https://github.blog/2023-04-12-github-accelerator-our-first-cohort-and-whats-next"><img src="/img/GitHub_Logo.png" alt="GitHub" style="max-width:30%;min-width:100px;"></a>
 </td>
 </tr>
 <tr>
