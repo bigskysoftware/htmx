@@ -1972,46 +1972,6 @@ describe('hx-ws WebSocket extension', function() {
     });
     
     // ========================================
-    // 8. BACKWARD COMPATIBILITY TESTS
-    // ========================================
-    
-    describe('Backward Compatibility', function() {
-        
-        it('supports legacy ws-connect attribute with deprecation warning', async function() {
-            let warnCalled = false;
-            let originalWarn = console.warn;
-            console.warn = () => { warnCalled = true; };
-            
-            let container = createProcessedHTML(`
-                <div hx-ext="ws" ws-connect="/ws/test"></div>
-            `);
-            await htmx.timeout(50);
-            
-            console.warn = originalWarn;
-            
-            // Should still create connection
-            assert.equal(mockWebSocketInstances.length, 1);
-            // Should warn about deprecation
-            assert.isTrue(warnCalled);
-        });
-        
-        it('supports legacy ws-send attribute', async function() {
-            let div = createProcessedHTML(`
-                <div hx-ext="ws" ws-connect="/ws/test">
-                    <button ws-send hx-trigger="click">Send</button>
-                </div>
-            `);
-            await htmx.timeout(50);
-            
-            div.querySelector('button').click();
-            await htmx.timeout(20);
-            
-            let ws = mockWebSocketInstances[0];
-            assert.isDefined(ws.lastSent);
-        });
-    });
-    
-    // ========================================
     // 9. INTEGRATION TESTS
     // ========================================
     

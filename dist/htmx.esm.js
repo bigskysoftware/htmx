@@ -182,7 +182,7 @@ var htmx = (() => {
         }
 
         #initHtmxConfig() {
-            this.version = '4.0.1'
+            this.version = '4.0.2'
             this.config = {
                 logAll: false,
                 prefix: "data-hx-",
@@ -810,9 +810,9 @@ var htmx = (() => {
                         let evtArgs = {}; for (let k in evt) if (/^[a-z]+$/i.test(k)) evtArgs[k] = evt[k];
                         if (!this.#executeJavaScript(elt, evtArgs, filter, true, false)) return;
                     }
-                    // a new trigger replaces any pending delayed or throttled trigger on this element
+                    // a new trigger replaces any pending delayed or throttled trigger from the same hx-trigger value
                     if (eventName !== 'every') {
-                        for (let other of this.#htmxProp(elt).triggerSpecs) {
+                        for (let other of specs) {
                             clearTimeout(other.timeout);
                             other.throttledEvent = null;
                         }
@@ -1052,8 +1052,7 @@ var htmx = (() => {
 
         #parseHTML(resp) {
             let trusted = this.#ttPolicy.createHTML(resp);
-            // {} works around Chrome 150-156 dropping comments :/
-            return Document.parseHTMLUnsafe?.(trusted, {}) || new DOMParser().parseFromString(trusted, 'text/html');
+            return Document.parseHTMLUnsafe?.(trusted) || new DOMParser().parseFromString(trusted, 'text/html');
         }
 
         #makeFragment(text) {
@@ -1074,7 +1073,7 @@ var htmx = (() => {
             }
 
             if (!title) {
-                let titleElt = fragment.querySelector('title:not(svg title)');
+                let titleElt = [...fragment.querySelectorAll('title')].find(t => !t.closest('svg'));
                 if (titleElt) {
                     title = titleElt.textContent;
                     titleElt.remove();
@@ -1251,7 +1250,9 @@ var htmx = (() => {
         initialize() {
             if (this.config.history && !this.#historyInitialized) {
                 this.#historyInitialized = true;
-                if (window.navigation && !/firefox/i.test(navigator.userAgent)) {
+                /* c8 ignore next 2 */
+                const ffVer = navigator.userAgent.match(/Firefox\/(\d+)/)?.[1];
+                if (window.navigation && (!ffVer || +ffVer >= 159)) {
                     navigation.addEventListener('navigate', (event) => {
                         if (event.navigationType === 'traverse' && event.canIntercept && !event.hashChange)
                             event.intercept({handler: () => this.#restoreHistory()});

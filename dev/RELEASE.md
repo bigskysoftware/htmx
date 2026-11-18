@@ -7,7 +7,7 @@
   * `README.md`
   * `src/editors/jetbrains/htmx.web-types.json`
   * `src/skills/htmx-upgrade-from-htmx2.md` (`npx` commands)
-* Ensure build is up to date: `npm install; npm build`
+* Ensure build is up to date: `npm install; npm run build`
 * Update SHA `npm run update-sha` (also writes version to `www/src/data/integrity.json`)
 * Run Tests
   * `npm run test:all`

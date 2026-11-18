@@ -102,11 +102,11 @@ WS_EVENT_RENAMES = {
 # Extension attribute renames
 EXT_ATTR_RENAMES = {
     "preload": "rename to hx-preload",
-    "sse-connect": "rename to hx-sse:connect",
-    "sse-close": "rename to hx-sse:close",
+    "sse-connect": "removed — use hx-sse:connect",
+    "sse-close": "removed — use hx-sse:close",
     "sse-swap": "removed — SSE now integrates with standard htmx request pipeline",
-    "ws-connect": "rename to hx-ws:connect",
-    "ws-send": "rename to hx-ws:send",
+    "ws-connect": "removed — use hx-ws:connect",
+    "ws-send": "removed — use hx-ws:send",
 }
 
 # Old JS API calls

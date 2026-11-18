@@ -836,8 +836,6 @@ These names changed:
 | [`wsBinaryType`](https://htmx.org/extensions/ws/#configuration) | Removed |
 | [`socketWrapper`](https://htmx.org/extensions/ws/#socket-wrapper) | Removed |
 
-`ws-connect` and `ws-send` still work with a warning.
-
 #### Events
 
 These events changed:
