@@ -49,3 +49,8 @@
   image: /src/assets/img/team/hoa.png
   github: dienhoa
   content: AI engineer trying to learn web dev.
+
+- name: Jeremy Howard
+  image: /src/assets/img/team/jeremy.png
+  github: jph00
+  content: Aussie philosopher
