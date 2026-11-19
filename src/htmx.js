@@ -1859,7 +1859,13 @@ var htmx = (function() {
         if (targetSelector) {
           var swapOverride = getAttributeValue(template, 'hx-swap')
           var swapSpec = getSwapSpecification(template, swapOverride)
-          var targets = querySelectorAllExt(sourceElement || getDocument().body, targetSelector, false)
+          // A detached sourceElement's own getRootNode() is its orphaned subtree, not
+          // the document, so partial targets that are still live in the document would
+          // be unreachable through it - fall back to the document in that case.
+          var partialContext = (sourceElement && sourceElement.isConnected)
+            ? sourceElement
+            : getDocument().body
+          var targets = querySelectorAllExt(partialContext, targetSelector, false)
           if (targets.length === 0) {
             triggerErrorEvent(getDocument().body, 'htmx:partialErrorNoTarget', { template, targetSelector, sourceElement })
           }
