@@ -29,18 +29,21 @@
                 focusReset: 'manual'
             });
 
-            event.signal.addEventListener('abort', () => {
+            let onAbort = () => {
                 if (activeCount > 0) {
                     activeAborts.forEach(abort => abort());
                     activeAborts.clear();
                     activeCount = 0;
                 }
                 cleanupNavigation = null;
-            });
+            };
+            event.signal.addEventListener('abort', onAbort);
 
             cleanupNavigation = () => {
                 hideBrowserIndicator();
-                // restore after resolving (replaceState during a pending intercept aborts the signal early)
+                // replaceState aborts this intercept. Detach first so ending the
+                // spinner is not treated as the user hitting Stop (#3861, #4183).
+                event.signal.removeEventListener('abort', onAbort);
                 history.replaceState(savedState, '');
             };
         }, {once: true});
@@ -48,7 +51,11 @@
 
     function startIndicator() {
         listenForNavigate();
-        navigation.navigate(location.href, { history: 'replace' });
+        // Ending the intercept with replaceState rejects these. That abort is
+        // expected (it is how the spinner stops) and must not surface unhandled.
+        let result = navigation.navigate(location.href, { history: 'replace' });
+        result.committed.catch(() => {});
+        result.finished.catch(() => {});
     }
 
     function stopIndicator() {
