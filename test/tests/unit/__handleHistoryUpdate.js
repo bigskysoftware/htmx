@@ -90,6 +90,22 @@ describe('__handleHistoryUpdate unit tests', function() {
         assert.include(window.location.href, '/redirected-path?foo=bar')
     })
 
+    it('keeps a state the page wrote before the first swap', function () {
+        history.replaceState({mine: 1}, '', originalUrl)
+        let div = createProcessedHTML('<div hx-get="/test"></div>')
+        let ctx = {
+            sourceElement: div,
+            push: 'false',
+            replace: 'false',
+            response: { headers: new Headers() },
+            request: { action: '/test' }
+        }
+
+        htmx.__handleHistoryUpdate(ctx)
+
+        assert.deepEqual(history.state, {mine: 1, htmx: true})
+    })
+
     it('reloads page on history restore when config.history is "reload"', async function() {
         let originalLocation = htmx._loc;
         let originalHistoryConfig = htmx.config.history;

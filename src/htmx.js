@@ -1700,8 +1700,16 @@ var htmx = (() => {
         __handleHistoryUpdate(ctx) {
             if (!this.config.history) return;
             // Stamp the current entry on the first htmx swap after a fresh page load,
-            // so back traversals to this page are interceptable.
-            if (!history.state?.htmx) history.replaceState({htmx: true}, '', location.href);
+            // so back traversals to this page are interceptable. Keep what the page
+            // already stored in the state.
+            if (!history.state?.htmx) {
+                let state = history.state;
+                history.replaceState(
+                    {...(state && typeof state === 'object' ? state : {}), htmx: true},
+                    '',
+                    location.href
+                );
+            }
             let action = this.__resolveHistoryAction(ctx);
             if (!action) return;
 
