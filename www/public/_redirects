@@ -32,7 +32,6 @@
 # Every other attribute kept its name.
 /attributes     /reference/attributes                        301
 /attributes/    /reference/attributes                        301
-/attributes/*   /reference/attributes/:splat                 301
 
 # The JavaScript API is now one page per method.
 /api                    /reference/methods                           301
@@ -103,7 +102,6 @@
 /examples/modal-uikit/           /patterns/dialogs                            301
 /examples/move-before            /patterns                                    301
 /examples/move-before/           /patterns                                    301
-/examples/move-before/*          /patterns                                    301
 /examples/progress-bar           /patterns/progress-bar                       301
 /examples/progress-bar/          /patterns/progress-bar                       301
 /examples/reset-user-input       /patterns/reset-on-submit                    301
@@ -185,7 +183,6 @@
 /posts/2020-6-19-htmx-0.0.5-is-released/ /announcements/2020-6-20-htmx-0.0.6-is-released  301
 /posts          /announcements                               301
 /posts/         /announcements                               301
-/posts/*        /announcements/:splat                        301
 
 # Locality of Behaviour, under its old top-level URLs and both spellings.
 /locality-of-behaviour          /essays/locality-of-behaviour                301
@@ -224,3 +221,9 @@
 /whats-new-in-htmx-4/   /docs/whats-new-in-htmx-4                    301
 /migration-guide-htmx-4 /docs/whats-new-in-htmx-4                    301
 /migration-guide-htmx-4/ /docs/whats-new-in-htmx-4                    301
+
+# Wildcards last. Cloudflare Pages counts each rule after the first wildcard
+# as dynamic (limit 100). Netlify keeps the same order: exceptions first.
+/attributes/*   /reference/attributes/:splat                 301
+/examples/move-before/*          /patterns                                    301
+/posts/*        /announcements/:splat                        301
