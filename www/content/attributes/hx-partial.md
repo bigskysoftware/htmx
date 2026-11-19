@@ -1,7 +1,7 @@
 +++
 title = "hx-partial"
 description = """
-  hx-partial is a server-sent swap command. The server wraps content in <hx-partial hx-target="..."> \
+  hx-partial is a server-sent swap command. The server wraps content in <hx-partial hx-target=&quot;...&quot;> \
   tags in its response; htmx reads the targeting instructions, performs the swap, and discards the \
   envelope — it is never inserted into the DOM."""
 +++
