@@ -433,6 +433,8 @@ export interface HtmxRequestCtx {
   transition: boolean;
   /** Fetch request options: modify here in htmx:config:request */
   request: HtmxRequestOptions;
+  /** Request body as sent, after htmx:config:request. Morph swaps keep field values the user changed since */
+  sentValues?: FormData;
   /** Response object, available after fetch resolves */
   response?: HtmxResponse;
   /** Response body text, available during htmx:after:request */

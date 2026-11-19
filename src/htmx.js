@@ -514,6 +514,8 @@ var htmx = (() => {
 
             if (!this.__trigger(elt, "htmx:config:request", {ctx: ctx})) return
             if (ctx.request.method === 'DIALOG') return
+            // Morph compares fields against these to keep values the user changed since
+            ctx.sentValues = ctx.request.body
 
             let javascriptContent = this.__extractJavascriptContent(ctx.request.action);
             if (javascriptContent != null) {
@@ -1295,6 +1297,7 @@ var htmx = (() => {
                 let swapPromises = [];
                 let transitionTasks = [];
                 for (let task of tasks) {
+                    task.sentValues ??= ctx.sentValues;
                     if (task.swapSpec?.transition ?? mainSwap?.transition ?? ctx.transition) {
                         transitionTasks.push(task);
                     } else {
@@ -1436,10 +1439,10 @@ var htmx = (() => {
                     target.replaceChildren(...fragment.firstElementChild.childNodes);
                     newContent = [target];
                 } else if (swapStyle === 'innerMorph') {
-                    this.__morph(target, fragment, true);
+                    this.__morph(target, fragment, true, task.sentValues);
                     newContent = [...target.childNodes];
                 } else if (swapStyle === 'outerMorph') {
-                    this.__morph(target, fragment, false);
+                    this.__morph(target, fragment, false, task.sentValues);
                     newContent.push(target);
                 } else if (swapStyle === 'beforebegin') {
                     if (parentNode) {
@@ -2016,12 +2019,12 @@ var htmx = (() => {
             htmxProp.listeners.push({fromElt: elt, eventName: "htmx:abort", handler});
         }
 
-        __morph(oldNode, fragment, innerHTML) {
+        __morph(oldNode, fragment, innerHTML, sentValues) {
             let {persistentIds, idMap} = this.__createIdMaps(oldNode, fragment);
             let pantry = document.createElement("div");
             pantry.hidden = true;
             document.body.after( pantry);
-            let ctx = {target: oldNode, idMap, persistentIds, pantry, futureMatches: new WeakSet()};
+            let ctx = {target: oldNode, idMap, persistentIds, pantry, futureMatches: new WeakSet(), sentValues};
 
             if (innerHTML) {
                 this.__morphChildren(ctx, oldNode, fragment);
@@ -2191,8 +2194,8 @@ var htmx = (() => {
             // Trigger extension hook - if returns false, skip morphing this node
             if (!this.__triggerExtensions(oldNode, "htmx:before:morph:node", {oldNode, newNode})) return;
                 
-            this.__copyAttributes(oldNode, newNode);
-            if (oldNode instanceof HTMLTextAreaElement && document.activeElement !== oldNode && oldNode.defaultValue != newNode.defaultValue) {
+            this.__copyAttributes(oldNode, newNode, ctx.sentValues);
+            if (oldNode instanceof HTMLTextAreaElement && !this.__hasUserValue(oldNode, ctx.sentValues) && oldNode.defaultValue != newNode.defaultValue) {
                 oldNode.value = newNode.value;
             }
             let skipChildren = this.config.morphSkipChildren && oldNode.matches?.(this.config.morphSkipChildren);
@@ -2202,7 +2205,13 @@ var htmx = (() => {
             }
         }
 
-        __copyAttributes(destination, source) {
+        __hasUserValue(field, sentValues) {
+            if (document.activeElement === field) return true;
+            // The request carried another value, so the user changed the field since it was sent
+            return !!field.name && !!sentValues?.has?.(field.name) && !sentValues.getAll(field.name).includes(field.value);
+        }
+
+        __copyAttributes(destination, source, sentValues) {
             let attributesToIgnore = this.config.morphIgnore || [];
             let needsReinit = false;
             let isHxAttr = name => this.__prefixes('hx-').some(p => name.startsWith(p));
@@ -2211,7 +2220,7 @@ var htmx = (() => {
                     if (isHxAttr(attr.name)) needsReinit = true;
                     if (!this.__triggerExtensions(destination, 'htmx:before:morph:attr', { attrName: attr.name, newValue: attr.value })) continue;
                     destination.setAttribute(attr.name, attr.value);
-                    if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file" && document.activeElement !== destination) {
+                    if (attr.name === "value" && destination instanceof HTMLInputElement && destination.type !== "file" && !this.__hasUserValue(destination, sentValues)) {
                             destination.value = attr.value;
                     }
                 }
