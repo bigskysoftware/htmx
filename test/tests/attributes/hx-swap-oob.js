@@ -81,6 +81,24 @@ describe('hx-swap-oob', function() {
         assertTextContentIs('.outer .inner', 'New Content')
     })
 
+    it('keeps a pseudo-class in the colon form selector', async function () {
+        mockResponse('GET', '/test', '<div hx-swap-oob="innerHTML:.target:not(.skip)">Updated</div>')
+        createProcessedHTML('<button hx-get="/test">Click</button><div class="target">Original</div><div class="target skip">Keep</div>')
+        find('[hx-get]').click()
+        await forRequest()
+        assertTextContentIs('.target:not(.skip)', 'Updated')
+        assertTextContentIs('.target.skip', 'Keep')
+    })
+
+    it('keeps a colon in a quoted attribute selector', async function () {
+        mockResponse('GET', '/test', '<div hx-swap-oob="innerHTML:[data-key=&quot;a:b&quot;]">Updated</div>')
+        createProcessedHTML('<button hx-get="/test">Click</button><div data-key="a:b">Original</div><div data-key="a">Keep</div>')
+        find('[hx-get]').click()
+        await forRequest()
+        assertTextContentIs('[data-key="a:b"]', 'Updated')
+        assertTextContentIs('[data-key="a"]', 'Keep')
+    })
+
     it('swaps oob with colon form using closest extended selector', async function () {
         mockResponse('GET', '/test', '<div>Main</div><div hx-swap-oob="innerHTML:closest #container">New Content</div>')
         createProcessedHTML('<div id="container"><div hx-get="/test">Click</div><div>Original</div></div>');
