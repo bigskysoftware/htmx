@@ -24,6 +24,16 @@ describe('hx-swap-oob', function() {
         assertTextContentIs('#oob2', 'New Inner')
     })
 
+    it('swaps an oob element out of an hx-partial', async function () {
+        mockResponse('GET', '/test', '<hx-partial hx-target="#content"><p>New content</p><div id="status" hx-swap-oob="true">New status</div></hx-partial>')
+        createProcessedHTML('<button hx-get="/test" hx-swap="none">Click</button><div id="content">Old content</div><div id="status">Old status</div>')
+        find('[hx-get]').click()
+        await forRequest()
+        assertTextContentIs('#content p', 'New content')
+        assertTextContentIs('#content + #status', 'New status')
+        assert.equal(playground().querySelectorAll('#status').length, 1)
+    })
+
     it('swaps oob element with custom selector', async function () {
         mockResponse('GET', '/test', '<div>Main</div><div id="x" hx-swap-oob="outerHTML:#target">OOB Target</div>')
         createProcessedHTML('<div hx-get="/test">Click</div><div id="target">Original Target</div>');
