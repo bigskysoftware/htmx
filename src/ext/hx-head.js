@@ -12,6 +12,7 @@
     function appendNode(newNode) {
         let newElt = document.createElement(newNode.tagName)
         for (const attr of newNode.attributes) newElt.setAttribute(attr.name, attr.value)
+        if (newNode.tagName === 'SCRIPT' && htmx.config.inlineScriptNonce) newElt.nonce = htmx.config.inlineScriptNonce
         newElt.textContent = newNode.textContent
 
         // stylesheet: await CSSOM or content will flash unstyled

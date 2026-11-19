@@ -170,26 +170,36 @@
         htmx_before_on_init: checkNonce,
 
         // Rewrites response nonces to pageNonce in raw HTML before fragment parsing.
-        // Always scrubs stolen pageNonce. Only promotes response nonce for verified same-origin.
-        htmx_after_request: (elt, detail) => {
+        // Wraps ctx.response.raw.text so the rewrite happens before hx-head's head merge,
+        // which also wraps raw.text in htmx_before_response. hx-csp loads first so its
+        // wrapper is outermost and runs first.
+        htmx_before_response: (elt, detail) => {
             if (!pageNonce) return false;
             let ctx = detail.ctx;
+            let realText = ctx.response.raw.text.bind(ctx.response.raw);
+            ctx.response.raw.text = async () => {
+                let text = await realText();
 
-            // Always scrub stolen pageNonce from any response. The server cannot know the
-            // page nonce, so its presence indicates a stolen-nonce injection attempt.
-            ctx.text = rewriteNoncesInText(ctx.text, pageNonce, '');
+                // Always scrub stolen pageNonce from any response. The server cannot know the
+                // page nonce, so its presence indicates a stolen-nonce injection attempt.
+                text = rewriteNoncesInText(text, pageNonce, '');
 
-            // Only promote response nonce for verified same-origin responses
-            let responseURL = ctx?.response?.raw?.url;
-            if (!responseURL) return;  // can't verify origin; scrub only, no promotion
-            try { if (new URL(responseURL).origin !== location.origin) return; }
-            catch (_) { return; }
+                // Only promote response nonce for verified same-origin responses
+                let responseURL = ctx?.response?.raw?.url;
+                if (responseURL) {
+                    try {
+                        if (new URL(responseURL).origin === location.origin) {
+                            let responseNonce = extractNonceFromCSP(ctx?.response?.headers?.get('Content-Security-Policy'))
+                                             ?? extractNonceFromMetaTag(text);
+                            if (responseNonce && responseNonce !== pageNonce) {
+                                text = rewriteNoncesInText(text, responseNonce);
+                            }
+                        }
+                    } catch (_) {}
+                }
 
-            let responseNonce = extractNonceFromCSP(ctx?.response?.headers?.get('Content-Security-Policy'))
-                             ?? extractNonceFromMetaTag(ctx?.text);
-            if (responseNonce && responseNonce !== pageNonce) {
-                ctx.text = rewriteNoncesInText(ctx.text, responseNonce);
-            }
+                return text;
+            };
         },
 
         // Blocks boosted form submissions where an unnonced submitter overrides formaction.
