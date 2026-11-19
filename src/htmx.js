@@ -1631,11 +1631,11 @@ var htmx = (function() {
    */
   function attributeHash(elt) {
     let hash = 0
-    for (let i = 0; i < elt.attributes.length; i++) {
-      const attribute = elt.attributes[i]
-      if (attribute.value) { // only include attributes w/ actual values (empty is same as non-existent)
-        hash = stringHash(attribute.name, hash)
-        hash = stringHash(attribute.value, hash)
+    for (const name of elt.getAttributeNames()) {
+      const value = elt.getAttribute(name)
+      if (value) { // only include attributes w/ actual values (empty is same as non-existent)
+        hash = stringHash(name, hash)
+        hash = stringHash(value, hash)
       }
     }
     return hash
@@ -2800,9 +2800,7 @@ var htmx = (function() {
     if (!elt) {
       return false
     }
-    const attributes = elt.attributes
-    for (let j = 0; j < attributes.length; j++) {
-      const attrName = attributes[j].name
+    for (const attrName of elt.getAttributeNames()) {
       if (startsWith(attrName, 'hx-on:') || startsWith(attrName, 'data-hx-on:') ||
         startsWith(attrName, 'hx-on-') || startsWith(attrName, 'data-hx-on-')) {
         return true
@@ -2971,9 +2969,8 @@ var htmx = (function() {
     // wipe any previous on handlers so that this function takes precedence
     deInitOnHandlers(elt)
 
-    for (let i = 0; i < elt.attributes.length; i++) {
-      const name = elt.attributes[i].name
-      const value = elt.attributes[i].value
+    for (const name of elt.getAttributeNames()) {
+      const value = elt.getAttribute(name)
       if (startsWith(name, 'hx-on') || startsWith(name, 'data-hx-on')) {
         const afterOnPosition = name.indexOf('-on') + 3
         const nextChar = name.slice(afterOnPosition, afterOnPosition + 1)

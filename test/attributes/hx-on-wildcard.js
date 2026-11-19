@@ -15,6 +15,49 @@ describe('hx-on:* attribute', function() {
     delete window.foo
   })
 
+  for (const attribute of ['hx-on:click', 'hx-on-click', 'data-hx-on:click', 'data-hx-on-click']) {
+    it('handles ' + attribute + ' on a form with an input named attributes', function() {
+      var form = make('<form ' + attribute + '="this.dataset.calls = Number(this.dataset.calls || 0) + 1"><input name="attributes" value="kept"><button type="button">Click</button></form>')
+      form.querySelector('button').click()
+      should.equal(form.dataset.calls, '1')
+      htmx.process(form)
+      form.querySelector('button').click()
+      form.dataset.calls.should.equal('2')
+      form.setAttribute(attribute, 'this.dataset.calls = Number(this.dataset.calls || 0) + 10')
+      htmx.process(form)
+      form.querySelector('button').click()
+      form.dataset.calls.should.equal('12')
+      form.querySelector('input').value.should.equal('kept')
+    })
+  }
+
+  it('handles form config-request when inputs named attributes are descendants', function() {
+    this.server.respondWith('POST', '/test', function(xhr) {
+      var params = parseParams(xhr.requestBody)
+      params.attributes.should.deep.equal(['first', 'second'])
+      should.equal(params.extra, 'added')
+      xhr.respond(200, {}, 'Done')
+    })
+    var wrapper = make('<div><form hx-post="/test" hx-on::config-request="event.detail.parameters.extra = \'added\'"><fieldset><input name="attributes" value="first"><input name="attributes" value="second"></fieldset><button>Submit</button></form></div>')
+    wrapper.querySelector('button').click()
+    this.server.respond()
+    wrapper.querySelector('form').innerText.should.equal('Done')
+  })
+
+  it('reinitializes AJAX attributes on a form with an input named attributes', function() {
+    this.server.respondWith('POST', '/first', 'First')
+    this.server.respondWith('POST', '/second', 'Second')
+    var form = make('<form hx-post="/first" hx-swap="none" hx-on::after-request="this.dataset.path = event.detail.pathInfo.requestPath"><input name="attributes"><button>Submit</button></form>')
+    form.querySelector('button').click()
+    this.server.respond()
+    should.equal(form.dataset.path, '/first')
+    form.setAttribute('hx-post', '/second')
+    htmx.process(form)
+    form.querySelector('button').click()
+    this.server.respond()
+    should.equal(form.dataset.path, '/second')
+  })
+
   it('can use dashes rather than colons', function() {
     var btn = make("<button hx-on-click='window.foo = true'>Foo</button>")
     btn.click()

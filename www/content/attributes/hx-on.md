@@ -92,6 +92,7 @@ Like `onevent`, two symbols are made available to event handler scripts:
 
 ### Notes
 
+* Form controls named `attributes` do not prevent `hx-on:*` handlers on the containing form from being processed.
 * `hx-on` is _not_ inherited, however due to
   [event bubbling](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#event_bubbling_and_capture),
   `hx-on` attributes on parent elements will typically be triggered by events on child elements
