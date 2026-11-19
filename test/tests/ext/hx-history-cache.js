@@ -238,6 +238,44 @@ describe('hx-history-cache extension', function () {
         assert.include(savedDetail.content, 'mutated');
     });
 
+    it('after:clone allows snapshot-only changes after before:save listeners run', async function () {
+        let events = [];
+        let cloneDetail;
+        let clonedText;
+        let savedDetail;
+        document.addEventListener('htmx:history:cache:before:save', e => {
+            events.push('before:save');
+            e.detail.target.querySelector('p').textContent = 'prepared';
+        }, { once: true });
+        document.addEventListener('htmx:history:cache:after:clone', e => {
+            events.push('after:clone');
+            cloneDetail = e.detail;
+            clonedText = e.detail.clone.querySelector('p').textContent;
+            e.detail.clone.querySelector('p').textContent = 'cached only';
+        }, { once: true });
+        document.addEventListener('htmx:history:cache:after:save', e => {
+            events.push('after:save');
+            savedDetail = e.detail;
+        }, { once: true });
+
+        mockResponse('GET', '/page2', '<p>page 2</p>');
+        createProcessedHTML(`
+            <div hx-history-elt><p>original</p></div>
+            <button hx-get="/page2" hx-push-url="true">go</button>
+        `);
+        historyElt = playground().querySelector('[hx-history-elt]');
+        playground().querySelector('button').click();
+        await forRequest();
+
+        assert.deepEqual(events, ['before:save', 'after:clone', 'after:save']);
+        assert.equal(cloneDetail.target, historyElt);
+        assert.notEqual(cloneDetail.clone, historyElt);
+        assert.isFalse(cloneDetail.clone.isConnected);
+        assert.equal(clonedText, 'prepared');
+        assert.equal(historyElt.querySelector('p').textContent, 'prepared');
+        assert.include(savedDetail.content, 'cached only');
+    });
+
     it('after:save fires with content and head', async function () {
         let afterDetail = null;
         document.addEventListener('htmx:history:cache:after:save', e => { afterDetail = e.detail; }, { once: true });

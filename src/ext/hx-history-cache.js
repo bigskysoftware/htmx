@@ -78,6 +78,7 @@
 
     function cleanContent(elt) {
         let clone = elt.cloneNode(true);
+        api.triggerHtmxEvent(document, 'htmx:history:cache:after:clone', { target: elt, clone });
         clone.querySelectorAll('.htmx-request').forEach(el => el.classList.remove('htmx-request'));
         clone.querySelectorAll('[disabled][data-disabled-by-htmx]').forEach(el => {
             el.removeAttribute('disabled');

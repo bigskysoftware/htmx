@@ -75,14 +75,21 @@
             }
         },
 
-        htmx_history_cache_before_save: (elt, detail) => {
-            if (!window.Alpine?.destroyTree) return;
-            detail.target.querySelectorAll('[x-data]').forEach(el => {
-                if (el._x_dataStack) {
-                    el.setAttribute('data-alpine-state', JSON.stringify(el._x_dataStack[0]));
+        htmx_history_cache_after_clone: (elt, detail) => {
+            if (!window.Alpine) return;
+            let elements = [detail.target, ...detail.target.querySelectorAll('*')];
+            let clones = [detail.clone, ...detail.clone.querySelectorAll('*')];
+            // Match every element before removing generated nodes from the snapshot.
+            let cloneMap = new Map(elements.map((el, i) => [el, clones[i]]));
+            for (let el of elements) {
+                if (el.hasAttribute('x-data') && el._x_dataStack) {
+                    cloneMap.get(el).setAttribute('data-alpine-state', JSON.stringify(el._x_dataStack[0]));
                 }
-            });
-            window.Alpine.destroyTree(detail.target);
+                // Alpine recreates x-if, x-for and x-teleport content on restore.
+                for (let generated of [el._x_currentIfEl, el._x_teleport, ...Object.values(el._x_lookup || {})]) {
+                    cloneMap.get(generated)?.remove();
+                }
+            }
         },
 
         htmx_history_cache_after_restore: (elt, detail) => {
