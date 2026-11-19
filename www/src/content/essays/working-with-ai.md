@@ -139,7 +139,7 @@ Good.
 
 The hyperscript parser was _already_ context-sensitive.
 
-In looking at this fix and thinking for a second, I realized that we already had the hacky context-sensitive 
+In looking at this fix and thinking for a second, I realized: we already had the hacky context-sensitive 
 infrastructure we needed without introducing a new flag on the parser, but Claude had missed it.
 
 ### "Follows" In The Hyperscript Parser
@@ -169,16 +169,14 @@ I pointed this out to Claude and, in a frisson of excitement, it told me that I 
 using this technique to fix the bug.
 
 Claude added the correct code to the `parseURLOrExpression()` which fixed the issue generally without adding any additional
-parser infrastructure.
-
-Good to go.
-
-## The Final, Semi-Organic Fix
+parser infrastructure. Good to go.
 
 However, as I was reviewing the change, I realized that the new fix was overly broad: both `fetch` and `go` shared
 this method, but only `fetch` used `as` to signal a modifier.  
 
 The existing fix prevented the perfectly valid use of `as` conversion expressions in `go` commands as well.
+
+## The Final, Semi-Organic Fix
 
 So I implemented the final fix myself, in `FetchCommand#parse()`:
 
