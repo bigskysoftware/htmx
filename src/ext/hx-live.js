@@ -205,7 +205,11 @@
         return s.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
     }
 
+    // Avoid slow JSON.parse throws on plain text
+    let MAYBE_JSON = /^(?:[\s\d"[{-]|(?:true|false|null)\s*$)/;
+
     function parseJSON(value) {
+        if (!MAYBE_JSON.test(value)) return value;
         try { return JSON.parse(value); } catch { return value; }
     }
 
