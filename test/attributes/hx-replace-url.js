@@ -31,6 +31,48 @@ describe('hx-replace-url attribute', function() {
     cache[cache.length - 1].url.should.equal(normalizePath('/test'))
   })
 
+  it('should replace URL when hx-push-url is false', function() {
+    var history = recordHistoryUpdates()
+    try {
+      this.server.respondWith('GET', '/test', 'Replaced!')
+      var div = make('<div hx-push-url="false" hx-replace-url="true" hx-target="this"><button id="b1" hx-get="/test">Go</button></div>')
+      byId('b1').click()
+      this.server.respond()
+      div.innerHTML.should.equal('Replaced!')
+      history.updates.should.deep.equal([['htmx:replacedInHistory', '/test']])
+    } finally {
+      history.stop()
+    }
+  })
+
+  it('boosted anchor should replace URL when hx-push-url is false', function() {
+    var history = recordHistoryUpdates()
+    try {
+      this.server.respondWith('GET', '/test', 'Replaced!')
+      var div = make('<div hx-boost="true" hx-push-url="false" hx-replace-url="/custom" hx-target="this"><a id="a1" href="/test">Go</a></div>')
+      byId('a1').click()
+      this.server.respond()
+      div.innerHTML.should.equal('Replaced!')
+      history.updates.should.deep.equal([['htmx:replacedInHistory', '/custom']])
+    } finally {
+      history.stop()
+    }
+  })
+
+  it('boosted anchor should still push URL when hx-replace-url is false', function() {
+    var history = recordHistoryUpdates()
+    try {
+      this.server.respondWith('GET', '/test', 'Pushed!')
+      var div = make('<div hx-boost="true" hx-replace-url="false" hx-target="this"><a id="a1" href="/test">Go</a></div>')
+      byId('a1').click()
+      this.server.respond()
+      div.innerHTML.should.equal('Pushed!')
+      history.updates.should.deep.equal([['htmx:pushedIntoHistory', '/test']])
+    } finally {
+      history.stop()
+    }
+  })
+
   it('should handle HX-Replace-Url response header', function() {
     var path
     var handler = htmx.on('htmx:replacedInHistory', function(event) {

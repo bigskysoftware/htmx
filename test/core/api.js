@@ -699,6 +699,36 @@ describe('Core htmx API test', function() {
     path.should.equal('/abc123')
   })
 
+  it('ajax api push Url should not push an inherited Url when false', function() {
+    var history = recordHistoryUpdates()
+    try {
+      this.server.respondWith('GET', '/test', 'Loaded!')
+      make('<div hx-push-url="/inherited"><div id="d1"></div></div>')
+      var div = byId('d1')
+      htmx.ajax('GET', '/test', { source: div, target: div, push: false })
+      this.server.respond()
+      div.innerHTML.should.equal('Loaded!')
+      history.updates.should.deep.equal([])
+    } finally {
+      history.stop()
+    }
+  })
+
+  it('ajax api replace Url should not replace an inherited Url when false', function() {
+    var history = recordHistoryUpdates()
+    try {
+      this.server.respondWith('GET', '/test', 'Loaded!')
+      make('<div hx-replace-url="/inherited"><div id="d1"></div></div>')
+      var div = byId('d1')
+      htmx.ajax('GET', '/test', { source: div, target: div, replace: false })
+      this.server.respond()
+      div.innerHTML.should.equal('Loaded!')
+      history.updates.should.deep.equal([])
+    } finally {
+      history.stop()
+    }
+  })
+
   it('ajax api replace Url should replace an element into the cache when true', function() {
     this.server.respondWith('POST', '/test123', 'Clicked!')
 
