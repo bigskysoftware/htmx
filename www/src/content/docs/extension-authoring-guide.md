@@ -113,6 +113,7 @@ Available internal API:
 <!-- check_extension_api:start -->
 - `HCON` - Parse and merge HCON values
 - `attributeValue(elt, name, defaultVal, returnElt)` - Get an attribute value with inheritance support
+- `findAllExt(elt, selector, thisAttr)` - Find elements with an extended selector, resolved like `hx-target`
 - `parseTriggerSpecs(spec)` - Parse a trigger specification
 - `determineMethodAndAction(elt, evt)` - Get `{method, action}` for an element
 - `createRequestContext(elt, evt)` - Create a request context

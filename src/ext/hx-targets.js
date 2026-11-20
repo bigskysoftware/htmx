@@ -22,7 +22,7 @@
             let selector = api.attributeValue(ctx.sourceElement, 'hx-targets');
             if (!selector) return;
 
-            let targets = htmx.findAll(ctx.sourceElement, selector);
+            let targets = api.findAllExt(ctx.sourceElement, selector);
             if (!targets.length) {
                 console.warn(`htmx: '${selector}' on hx-targets did not match any elements`, { selector });
                 return;
