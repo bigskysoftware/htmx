@@ -220,7 +220,7 @@ with where it didn't do so well: coming up with a clean solution.
 If I had not been familiar with the hyperscript parser and its infrastructure this fix could have easily led to technical
 debt being accrued in the project: another hacky parsing corner case, another bit of state on the parser, etc.
 
-Technical debt, I assert without evidence[^dream], grows exponentially, and therefpre it is very
+Technical debt, I assert without evidence[^dream], grows exponentially, and therefore it is very
 important to minimize it in your projects.
 
 This story shows how having a human in the loop, working with an agent and with a good understanding of the underlying
