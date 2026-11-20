@@ -20,6 +20,59 @@ export namespace HxLive {
   }
 }
 
+export namespace HxSse {
+  /** Configures the hx-sse extension. */
+  export interface Config {
+    /**
+     * Control whether a closed stream reconnects automatically.
+     *
+     * Defaults to `true` for `hx-sse:connect` and `false` for normal htmx requests.
+     */
+    reconnect?: boolean;
+    /**
+     * Set how long to wait before the first reconnect attempt, in milliseconds.
+     *
+     * Each failed attempt doubles the delay.
+     * @default 500
+     */
+    reconnectDelay?: number;
+    /**
+     * Limit how long to wait between reconnect attempts, in milliseconds.
+     * @default 60_000
+     */
+    reconnectMaxDelay?: number;
+    /**
+     * Limit how many times a closed stream tries to reconnect.
+     * @default Infinity
+     */
+    reconnectMaxAttempts?: number;
+    /**
+     * Spread reconnect attempts so many clients do not retry at once.
+     *
+     * Defaults to `0.3`, which randomizes each delay by up to ±30%. Use `0` for exact delays.
+     * @default 0.3
+     */
+    reconnectJitter?: number;
+    /**
+     * Close the stream while the page is hidden and reconnect when it becomes visible.
+     *
+     * Defaults to `true` for `hx-sse:connect` and `false` for normal htmx requests.
+     */
+    pauseOnBackground?: boolean;
+    /**
+     * Control when the request lifecycle ends (indicators hide, elements re-enable).
+     *
+     * Values:
+     * - `immediate`: release when SSE takes over (after headers arrive)
+     * - `first`: release after the first message swaps
+     * - `end`: release when the stream closes
+     *
+     * Defaults to `immediate` for `hx-sse:connect` and `end` for normal htmx requests.
+     */
+    releaseOn?: 'immediate' | 'first' | 'end';
+  }
+}
+
 export interface HtmxConfig {
   /**
    * Log all htmx events to the console.
@@ -140,6 +193,8 @@ export interface HtmxConfig {
   allowEmptySwapAfterOOB: boolean;
   /** Requires hx-live. */
   live?: HxLive.Config;
+  /** Requires hx-sse. */
+  sse?: HxSse.Config;
 }
 
 /** Context object passed to `htmx.swap()` */
