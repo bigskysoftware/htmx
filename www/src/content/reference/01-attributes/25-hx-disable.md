@@ -42,6 +42,10 @@ which will prevent further clicks from occurring.
 
 Separate selectors with commas to disable multiple elements.
 
+Elements disabled before a request starts are left unchanged by `hx-disable`.
+If requests overlap, elements disabled by htmx stay disabled until all requests
+using them have completed.
+
 This form disables text inputs and buttons:
 
 ```html
