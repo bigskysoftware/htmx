@@ -2501,18 +2501,29 @@ return (function () {
             return false;
         }
 
-        function shouldInclude(elt) {
-            if(elt.name === "" || elt.name == null || elt.disabled || closest(elt, "fieldset[disabled]")) {
+        function couldInclude(elt) {
+            if (elt.name === '' || elt.name == null || elt.disabled || closest(elt, 'fieldset[disabled]')) {
                 return false;
             }
             // ignore "submitter" types (see jQuery src/serialize.js)
-            if (elt.type === "button" || elt.type === "submit" || elt.tagName === "image" || elt.tagName === "reset" || elt.tagName === "file" ) {
+            if (elt.type === 'button' || elt.type === 'submit' || elt.tagName === 'image' || elt.tagName === 'reset' || elt.tagName === 'file') {
+                return false;
+            }
+            return true;
+        }
+
+        function shouldInclude(elt) {
+            if (!couldInclude(elt)) {
                 return false;
             }
             if (elt.type === "checkbox" || elt.type === "radio" ) {
                 return elt.checked;
             }
             return true;
+        }
+
+        function shouldValidate(elt) {
+            return couldInclude(elt);
         }
 
         function addValueToValues(name, value, values) {
@@ -2555,9 +2566,9 @@ return (function () {
                     value = toArray(elt.files);
                 }
                 addValueToValues(name, value, values);
-                if (validate) {
-                    validateElement(elt, errors);
-                }
+            }
+            if (validate && shouldValidate(elt)) {
+                validateElement(elt, errors);
             }
             if (matches(elt, 'form')) {
                 var inputs = elt.elements;
