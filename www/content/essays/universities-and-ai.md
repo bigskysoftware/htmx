@@ -157,7 +157,7 @@ code-heavy classes) down to 50%, and I expect most students will get A's on most
 Another homework related change that I have made is that my assignments are now more ambitious and realistic. I don't
 mean they are much harder.  
 
-Insead, what I mean is that I can, with the help of AI, present much larger software systems to my students with
+Instead, what I mean is that I can, with the help of AI, present much larger software systems to my students with
 better sample data, as a basis for their projects.
 
 This allows students to see software systems that go beyond "Hello World" levels of complexity and to develop the ability
@@ -213,7 +213,7 @@ I have found that AI is very good at suggesting questions based on class materia
 agent based on my class slides (see below) to create appropriate quiz questions and then create a quiz review sheet to
 help students study for the quiz based on it. 
 
-Students love the review sheet because it helps them focus their studing efforts.
+Students love the review sheet because it helps them focus their studying efforts.
 
 I think that, from a learning perspective, the butt-in-chair quizzes have been the single most positive change I have
 made to my classes. I now make quizzes 50% of a student's grade, and my class grading curve has returned to a reasonable
