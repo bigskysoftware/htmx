@@ -526,7 +526,10 @@ var htmx = (function() {
    */
   function parseHTML(resp) {
     if ('parseHTMLUnsafe' in Document) {
-      return Document.parseHTMLUnsafe(resp)
+      // pass an explicit options object: Chrome 155 drops HTML comments if the argument is omitted
+      // see https://github.com/bigskysoftware/htmx/issues/4147
+      // @ts-ignore: TypeScript's lib.dom does not declare the optional options parameter
+      return Document.parseHTMLUnsafe(resp, {})
     }
     const parser = new DOMParser()
     return parser.parseFromString(resp, 'text/html')
