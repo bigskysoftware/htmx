@@ -13,25 +13,32 @@ Use it for destructive or irreversible actions.
 <button hx-delete="/account" hx-confirm="Are you sure?">Delete Account</button>
 ```
 
-Here is an example:
+This will show a confirmation using the browser’s `window.confirm` dialog with the message "Are you sure?" before issuing the request to `/account`. If the user clicks "Cancel", the request will not be sent.
+
+### JavaScript evaluation
+
+`hx-confirm` may also contain JavaScript by using the `js:` prefix. The JavaScript must return a Promise that resolves to a boolean value. If the Promise resolves to `true`, the request will be sent; if it resolves to `false`, the request will be canceled.
 
 ```html
-<button hx-delete="/account" hx-confirm="Are you sure you wish to delete your account?">
-  Delete My Account
-</button>
+<button hx-delete="/account" hx-confirm="js:<Promise>">Delete Account</button>
 ```
 
-## Event details
+#### Example
 
-The event triggered by `hx-confirm` contains additional properties in its `detail`:
+```html
+<button hx-delete="/account" hx-confirm="js:confirmDelete()">Delete Account</button>
+```
 
-* triggeringEvent: the event that triggered the original request
-* issueRequest(skipConfirmation=false): a callback which can be used to confirm the AJAX request
-* question: the value of the `hx-confirm` attribute on the HTML element
+```js
+function confirmDelete() {
+  return new Promise(resolve => {
+    const confirm = false; 
+    // Custom confirmation logic
+    resolve(confirm);
+  });
+}
+```
 
 ## Notes
 
-* `hx-confirm` uses the browser's `window.confirm` by default. You can customize this behavior as
-  shown in the [Dialogs](/patterns/dialogs) pattern.
-* a boolean `skipConfirmation` can be passed to the `issueRequest` callback; if true (defaults to false), the
-  `window.confirm` will not be called and the AJAX request is issued directly
+* `hx-confirm` triggers the [`htmx:confirm`](/reference/events/htmx-confirm) event, which can be used to customize the confirmation behavior.
