@@ -3173,6 +3173,12 @@ var htmx = (function() {
       const kebabedEvent = makeEvent(kebabName, event.detail)
       eventResult = eventResult && elt.dispatchEvent(kebabedEvent)
     }
+    // hx-on's dash syntax normalizes the htmx prefix, but cannot express
+    // additional colons in event names such as htmx:validation:validate.
+    const dashName = startsWith(kebabName, 'htmx:') ? 'htmx:' + kebabName.slice(5).replace(/:/g, '-') : kebabName
+    if (eventResult && dashName !== kebabName) {
+      eventResult = elt.dispatchEvent(makeEvent(dashName, event.detail))
+    }
     withExtensions(asElement(elt), function(extension) {
       eventResult = eventResult && (extension.onEvent(eventName, event) !== false && !event.defaultPrevented)
     })
