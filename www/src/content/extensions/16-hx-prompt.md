@@ -73,6 +73,10 @@ The `hx-prompt` attribute supports inheritance.
 
 If the user cancels the prompt, the confirm dialog is not shown.
 
+### Composing with hx-preload
+
+An [`hx-preload`](/extensions/hx-preload) request never prompts. The extension cancels the preload of an element with `hx-prompt`, so the prompt opens once, on the click, and the click sends its own request.
+
 ### Custom Dialogs
 
 Assign a function to `window.htmxPrompt` to use a custom (synchronous) dialog.

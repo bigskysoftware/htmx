@@ -38,16 +38,29 @@
             let form = elt.form || elt.closest("form");
             let body = api.collectFormData(elt, form, evt.submitter);
             let valsResult = api.getAttributeObject(elt, 'hx-vals', obj => {
+                ctx.vals = obj; // make available for json extensions
                 for (let key in obj) body.set(key, obj[key]);
-            });
+            }, {ctx});
             if (valsResult) await valsResult;
+
+            // Apply hx-headers and fire htmx:config:request here, as a triggered request does,
+            // so the preloaded response matches the request the click would have sent
+            let headersResult = api.getAttributeObject(elt, 'hx-headers', obj => {
+                for (let key in obj) ctx.request.headers[key] = String(obj[key]);
+            }, {ctx});
+            if (headersResult) await headersResult;
+
+            Object.assign(ctx.request, {form, submitter: evt.submitter, body});
+            ctx.request.headers["HX-Preloaded"] = "true";
+            if (!api.triggerHtmxEvent(elt, "htmx:config:request", {ctx})) return;
 
             ctx.request.headers["HX-Request-Type"] = (ctx.target === document.body || ctx.select) ? "full" : "partial";
 
             let action = ctx.request.action.replace?.(/#.*$/, '');
 
-            let params = new URLSearchParams(body);
+            let params = new URLSearchParams(ctx.request.body);
             if (params.size) action += (/\?/.test(action) ? "&" : "?") + params;
+            ctx.request.body = null;
 
             let url = new URL(action, location.href);
             elt._htmx.preload = {
