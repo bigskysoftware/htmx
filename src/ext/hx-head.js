@@ -51,6 +51,7 @@
             if (headTag) {
 
                 let added = []
+                let toRemove = []
                 let removed = []
                 let preserved = []
                 let nodesToAppend = []
@@ -65,12 +66,15 @@
                 }
 
                 // put all new head elements into a Map, by their outerHTML
+                // title is excluded - core htmx handles document.title updates
                 let srcToNewHeadNodes = new Map()
                 for (const newHeadChild of newHeadTag.children) {
-                    srcToNewHeadNodes.set(newHeadChild.outerHTML, newHeadChild)
+                    if (newHeadChild.tagName !== "TITLE") {
+                        srcToNewHeadNodes.set(newHeadChild.outerHTML, newHeadChild)
+                    }
                 }
 
-                let newTitle = newHeadTag.querySelector("title")
+                let responseHasTitle = !!newHeadTag.querySelector("title")
 
                 // determine merge strategy
                 let mergeStrategy = api.attributeValue(newHeadTag, "hx-head") || defaultMergeStrategy
@@ -85,7 +89,7 @@
                     if (inNewContent || isPreserved) {
                         if (isReAppended) {
                             // remove the current version and let the new version replace it and re-execute
-                            removed.push(currentHeadElt)
+                            toRemove.push(currentHeadElt)
                         } else {
                             // this element already exists and should not be re-appended, so remove it from
                             // the new content map, preserving it in the DOM
@@ -93,14 +97,15 @@
                             preserved.push(currentHeadElt)
                         }
                     } else {
-                        if (mergeStrategy !== "append" || (currentHeadElt.tagName === "TITLE" && newTitle)) {
-                            // if this is a merge, or a title being replaced, remove it
-                            if (api.triggerHtmxEvent(document.body, "htmx:head:before:remove", {headElement: currentHeadElt}) !== false) {
-                                removed.push(currentHeadElt)
-                            }
+                        let isTitle = currentHeadElt.tagName === "TITLE"
+                        let shouldRemoveTitle = isTitle && (mergeStrategy !== "append" || (!responseHasTitle && htmx.config.head?.clearTitle))
+                        if ((!isTitle && mergeStrategy !== "append") || shouldRemoveTitle) {
+                            // in merge mode: remove non-title elements not in new content, and title if present
+                            // in append mode: only remove title if response has no title and clearTitle is set
+                            toRemove.push(currentHeadElt)
                         } else if (isReAppended) {
                             // append mode: only re-eval marked elements
-                            removed.push(currentHeadElt)
+                            toRemove.push(currentHeadElt)
                             nodesToAppend.push(currentHeadElt)
                         }
                     }
@@ -116,7 +121,7 @@
                         deferred.push(newNode)
                         if (newNode.src) {
                             let hint = document.createElement("link")
-                            hint.rel = newNode.type === "module" ? "modulepreload" : "preload"
+                            hint.rel = "preload"
                             hint.as = "script"
                             hint.href = newNode.src
                             document.head.appendChild(hint)
@@ -132,9 +137,10 @@
 
                 // remove all removed elements, after we have appended the new elements to avoid
                 // additional network requests for things like style sheets
-                for (const removedElement of removed) {
+                for (const removedElement of toRemove) {
                     if (api.triggerHtmxEvent(document.body, "htmx:head:before:remove", {headElement: removedElement}) !== false) {
                         currentHead.removeChild(removedElement)
+                        removed.push(removedElement)
                     }
                 }
 
