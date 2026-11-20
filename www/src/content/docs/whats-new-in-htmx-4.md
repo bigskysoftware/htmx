@@ -53,6 +53,15 @@ gets swapped into the target. Design your error responses to work as swap conten
 
 Revert: [`htmx.config.noSwap`](/reference/config/htmx-config-noSwap) `= [204, 304, '4xx', '5xx']`
 
+### HTTP 286 does not stop polling
+
+htmx 2 honored status `286` (Intercooler's cancel-polling signal) to stop
+`hx-trigger="every …"`. htmx 4 ignores it.
+
+The polling element **is** the poll. Stop by swapping that element for markup
+without `every` (`outerHTML` / `outerMorph`, or `HX-Reswap: outerHTML` when the
+request would otherwise `innerHTML`). See [Polling](/patterns/polling).
+
 ### [`hx-delete`](/reference/attributes/hx-delete) excludes form data
 
 Like [`hx-get`](/reference/attributes/hx-get), [`hx-delete`](/reference/attributes/hx-delete) no longer includes the
