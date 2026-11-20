@@ -752,6 +752,28 @@ describe('hx-trigger attribute', function() {
     requests.should.equal(1)
   })
 
+  it('several triggers on one element can filter on different targets', function() {
+    var requests = 0
+    this.server.respondWith('GET', '/test', function(xhr) {
+      requests++
+      xhr.respond(200, {}, 'Requests: ' + requests)
+    })
+
+    make('<div>' +
+            '<div id="d1" hx-trigger="click from:body target:#d2, click from:body target:#d3" hx-get="/test">Requests: 0</div>' +
+            '<div id="d2"></div>' +
+            '<div id="d3"></div>' +
+            '</div>')
+
+    byId('d2').click()
+    this.server.respond()
+    requests.should.equal(1)
+
+    byId('d3').click()
+    this.server.respond()
+    requests.should.equal(2)
+  })
+
   it('consume prevents event propagation', function() {
     this.server.respondWith('GET', '/foo', 'foo')
     this.server.respondWith('GET', '/bar', 'bar')

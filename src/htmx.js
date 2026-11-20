@@ -2585,6 +2585,11 @@ var htmx = (function() {
         if (maybeFilterEvent(triggerSpec, elt, evt)) {
           return
         }
+        if (triggerSpec.target && evt.target) {
+          if (!matches(asElement(evt.target), triggerSpec.target)) {
+            return
+          }
+        }
         const eventData = getInternalData(evt)
         eventData.triggerSpec = triggerSpec
         if (eventData.handledFor == null) {
@@ -2594,11 +2599,6 @@ var htmx = (function() {
           eventData.handledFor.push(elt)
           if (triggerSpec.consume) {
             evt.stopPropagation()
-          }
-          if (triggerSpec.target && evt.target) {
-            if (!matches(asElement(evt.target), triggerSpec.target)) {
-              return
-            }
           }
           if (triggerSpec.once) {
             if (elementData.triggeredOnce) {
