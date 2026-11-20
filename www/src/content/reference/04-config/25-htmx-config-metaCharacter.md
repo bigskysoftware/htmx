@@ -1,9 +1,9 @@
 ---
 title: "htmx.config.metaCharacter"
-description: "Replaces `:` in attribute modifiers"
+description: "Replaces `:` in attribute modifiers and event names"
 ---
 
-The `htmx.config.metaCharacter` option allows you to replace the `:` character used in attribute modifiers (e.g., `hx-get:inherited`) with a custom character of your choice.
+The `htmx.config.metaCharacter` option allows you to replace the `:` character used in attribute modifiers (e.g., `hx-get:inherited`) with a custom character of your choice. It also replaces `:` in the names of dispatched events (e.g. with `-`, `htmx:after:settle` becomes `htmx-after-settle`), so listeners and `hx-on` attributes must use the adjusted names.
 
 **Default:** `undefined` (uses `:`)
 

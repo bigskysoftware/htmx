@@ -81,4 +81,20 @@ describe('logger unit tests', function() {
         }
     });
 
+    it('logAll logs the dispatched event name when metaCharacter is set', function() {
+        htmx.config.logAll = true;
+        htmx.config.metaCharacter = '-';
+        let div = document.createElement('div');
+        document.body.appendChild(div);
+        try {
+            htmx.__trigger(div, 'htmx:custom', { foo: 1 });
+            let logs = captured.filter(c => c[0] === 'log');
+            assert.equal(logs.length, 1);
+            assert.include(logs[0][1], 'htmx-custom');
+        } finally {
+            htmx.config.metaCharacter = null;
+            div.remove();
+        }
+    });
+
 });

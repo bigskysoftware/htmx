@@ -8,7 +8,7 @@ description: "Settings to customize htmx behavior and defaults."
 - [htmx.config](/reference/config/htmx-config) - configures htmx behavior globally
 - [htmx.version](/reference/config/htmx-config-version) - reports current htmx version (read-only)
 - [htmx.config.prefix](/reference/config/htmx-config-prefix) - sets secondary attribute prefix
-- [htmx.config.metaCharacter](/reference/config/htmx-config-metaCharacter) - replaces `:` in attribute modifiers
+- [htmx.config.metaCharacter](/reference/config/htmx-config-metaCharacter) - replaces `:` in attribute modifiers and event names
 - [htmx.config.extensions](/reference/config/htmx-config-extensions) - restricts extension registration by name
 
 ### Request Settings
