@@ -170,7 +170,7 @@ All other attributes available in htmx.
 | [`htmx:sendAbort`](@/events.md#htmx:sendAbort)  | triggered when a request is aborted
 | [`htmx:sendError`](@/events.md#htmx:sendError)  | triggered when a network error prevents an HTTP request from happening
 | [`htmx:sseError`](@/events.md#htmx:sseError)  | triggered when an error occurs with a SSE source
-| [`htmx:sseOpen`](/events#htmx:sseOpen)  | triggered when a SSE source is opened
+| [`htmx:sseOpen`](@/extensions/sse.md#htmx-sseopen)  | triggered when a SSE source is opened
 | [`htmx:swapError`](@/events.md#htmx:swapError)  | triggered when an error occurs during the swap phase
 | [`htmx:targetError`](@/events.md#htmx:targetError)  | triggered when an invalid target is specified
 | [`htmx:timeout`](@/events.md#htmx:timeout)  | triggered when a request timeout occurs
