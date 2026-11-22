@@ -73,6 +73,10 @@ table {
   filter: drop-shadow(3px 3px var(--alertShadow));
 }
 
+.info-table {
+  overflow-x: auto;
+}
+
 .info-table table tbody tr td:first-of-type {
   white-space: nowrap;
 }
@@ -128,6 +132,11 @@ code:not(code[class*="language-"]) {
   background: #3465a41f;
   border-radius: 2px;
   padding: 2px 5px;
+}
+
+.content p code,
+.content li code {
+  overflow-wrap: anywhere;
 }
 
 .dark-hero {
@@ -261,6 +270,10 @@ ol li {
   }
   .info-table  {
       overflow-x: scroll !important;
+  }
+  .content table {
+      display: block;
+      overflow-x: auto;
   }
   .no-mobile {
       display: none !important;
