@@ -52,4 +52,28 @@ describe('hx-preserve attribute', function() {
         assertTextContentIs('#p2', 'Original2')
         assertTextContentIs('#p3', 'Original3')
     })
+
+    it('does not add a pantry to <html> when no preserved element is in the page', async function () {
+        mockResponse('GET', '/test', '<div id="new-preserved" hx-preserve>New</div><div>Content</div>')
+        let div = createProcessedHTML('<div hx-get="/test"><div>Original</div></div>');
+        let records = []
+        let observer = new MutationObserver(rs => records.push(...rs))
+        observer.observe(document.documentElement, {childList: true})
+        div.click()
+        await forRequest()
+        records.push(...observer.takeRecords())
+        observer.disconnect()
+        assertTextContentIs('#new-preserved', 'New')
+        assert.lengthOf(records, 0)
+    })
+
+    it('removes the pantry after restoring preserved elements', async function () {
+        mockResponse('GET', '/test', '<div id="preserved" hx-preserve>New</div><div>Content</div>')
+        let div = createProcessedHTML('<div hx-get="/test"><div id="preserved" hx-preserve>Original</div></div>');
+        let htmlChildren = [...document.documentElement.children]
+        div.click()
+        await forRequest()
+        assertTextContentIs('#preserved', 'Original')
+        assert.deepEqual([...document.documentElement.children], htmlChildren)
+    })
 })
