@@ -471,6 +471,21 @@ describe('Morph Swap Styles Tests', function() {
             assert.equal(div.querySelector('#b'), b);
             assert.equal(b.parentElement, a, 'b should be inside a');
         });
+
+        it('does not add a pantry to <html> when no id node has to move', async function() {
+            mockResponse('GET', '/test', '<div id="a">A2</div><p>new</p>');
+            const div = createProcessedHTML('<div id="target"><div id="a">A</div><p>old</p></div>');
+            const records = [];
+            const observer = new MutationObserver(rs => records.push(...rs));
+            observer.observe(document.documentElement, {childList: true});
+
+            await htmx.ajax('GET', '/test', {target: '#target', swap: 'innerMorph'});
+
+            records.push(...observer.takeRecords());
+            observer.disconnect();
+            assert.equal(div.querySelector('#a').textContent, 'A2');
+            assert.lengthOf(records, 0);
+        });
     });
 
     describe('attribute morphing edge cases', function() {

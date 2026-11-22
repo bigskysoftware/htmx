@@ -1024,14 +1024,21 @@ var htmx = (() => {
             }
         }
 
-        __handlePreservedElements(fragment) {
+        // Call only when an element must move: a sibling after <body> can restyle the whole page
+        __createPantry() {
             let pantry = document.createElement('div');
             pantry.hidden = true;
-            document.body.insertAdjacentElement('afterend', pantry);
+            document.body.after(pantry);
+            return pantry;
+        }
+
+        __handlePreservedElements(fragment) {
+            let pantry = null;
             let newPreservedElts = fragment.querySelectorAll?.(this.__prefixSelector('[hx-preserve]')) || [];
             for (let preservedElt of newPreservedElts) {
                 let currentElt = document.getElementById(preservedElt.id);
                 if (currentElt) {
+                    pantry ||= this.__createPantry();
                     this.__moveBefore(pantry, currentElt, null);
                 }
             }
@@ -1039,6 +1046,7 @@ var htmx = (() => {
         }
 
         __restorePreservedElements(pantry) {
+            if (!pantry) return;
             for (let preservedElt of [...pantry.children]) {
                 let newElt = document.getElementById(preservedElt.id);
                 if (newElt) {
@@ -2018,18 +2026,17 @@ var htmx = (() => {
 
         __morph(oldNode, fragment, innerHTML) {
             let {persistentIds, idMap} = this.__createIdMaps(oldNode, fragment);
-            let pantry = document.createElement("div");
-            pantry.hidden = true;
-            document.body.after( pantry);
-            let ctx = {target: oldNode, idMap, persistentIds, pantry, futureMatches: new WeakSet()};
+            let ctx = {target: oldNode, idMap, persistentIds, pantry: null, futureMatches: new WeakSet()};
 
             if (innerHTML) {
                 this.__morphChildren(ctx, oldNode, fragment);
             } else {
                 this.__morphChildren(ctx, oldNode.parentNode, fragment, oldNode, oldNode.nextSibling);
             }
-            this.__cleanup(pantry)
-            pantry.remove();
+            if (ctx.pantry) {
+                this.__cleanup(ctx.pantry)
+                ctx.pantry.remove();
+            }
         }
 
         __morphChildren(ctx, oldParent, newParent, insertionPoint = null, endPoint = null) {
@@ -2065,7 +2072,7 @@ var htmx = (() => {
                     let escapedId = CSS.escape(newChild.id);
                     matchedNode = (ctx.target.id === newChild.id && ctx.target) ||
                         ctx.target.querySelector(`[id="${escapedId}"]`) ||
-                        ctx.pantry.querySelector(`[id="${escapedId}"]`);
+                        ctx.pantry?.querySelector(`[id="${escapedId}"]`);
                     let element = matchedNode;
                     while ((element = element.parentNode)) {
                         let idSet = ctx.idMap.get(element);
@@ -2162,6 +2169,7 @@ var htmx = (() => {
 
         __removeNode(ctx, node) {
             if (ctx.idMap.has(node)) {
+                ctx.pantry ||= this.__createPantry();
                 this.__moveBefore(ctx.pantry, node, null);
             } else {
                 this.__cleanup(node)
