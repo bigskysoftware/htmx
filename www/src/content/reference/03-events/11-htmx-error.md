@@ -24,8 +24,8 @@ This event does **not** fire for intentional aborts triggered by [`hx-sync`](/re
 
 ```javascript
 htmx.on('htmx:error', (evt) => {
-  const { error, ctx } = evt.detail;
-  const msg = error?.name === 'AbortError' && ctx.request.signal.reason === 'timeout'
+  const { ctx } = evt.detail;
+  const msg = ctx?.request.signal.reason === 'timeout'
     ? 'Request timed out. Please try again.'
     : 'Something went wrong. Please try again.';
   showToast(msg);
