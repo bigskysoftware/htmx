@@ -1400,7 +1400,7 @@ var htmx = (() => {
             let parentNode = target.parentNode;
             if (swapStyle === 'innerHTML' || (swapStyle === 'outerHTML' && parentNode)) {
                 let activeElt = document.activeElement;
-                if (activeElt?.id) {
+                if (activeElt?.id && target.contains(activeElt) && (swapStyle === 'outerHTML' || activeElt !== target)) {
                     let start, end;
                     try { start = activeElt.selectionStart; end = activeElt.selectionEnd; } catch (e) {}
                     focusInfo = { elt: activeElt, start, end };
