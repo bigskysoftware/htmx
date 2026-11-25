@@ -699,6 +699,35 @@ describe('swap() unit tests', function() {
         document.activeElement.id.should.not.equal('focused-input')
     })
 
+    it('does not restore focus when focused element is outside the swap target', async function () {
+        createProcessedHTML("<input id='outside-input' value='test'><div id='swap-target'></div>")
+        let input = find('#outside-input')
+        input.focus()
+
+        await htmx.swap({"target":"#swap-target", "text":"<script>document.getElementById('outside-input').blur()</script>"})
+
+        document.activeElement.should.not.equal(input)
+    })
+
+    it('does not override focus moved by a swapped script', async function () {
+        createProcessedHTML("<input id='outside-input' value='test'><input id='next-input' value='next'><div id='swap-target'></div>")
+        find('#outside-input').focus()
+
+        await htmx.swap({"target":"#swap-target", "text":"<script>document.getElementById('next-input').focus()</script>"})
+
+        document.activeElement.id.should.equal('next-input')
+    })
+
+    it('does not restore focus when innerHTML swaps children of the focused target', async function () {
+        createProcessedHTML("<div id='editable-target' tabindex='0'>old</div>")
+        let target = find('#editable-target')
+        target.focus()
+
+        await htmx.swap({"target":"#editable-target", "text":"new<script>document.getElementById('editable-target').blur()</script>"})
+
+        document.activeElement.should.not.equal(target)
+    })
+
     it('does not restore focus for morph swaps', async function () {
         createProcessedHTML("<input id='focused-input' value='test'>")
         let input = find('#focused-input')
