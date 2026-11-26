@@ -2431,7 +2431,7 @@ var htmx = (function() {
    * @returns {boolean}
    */
   function isLocalLink(elt) {
-    return location.hostname === elt.hostname &&
+    return location.origin === elt.origin &&
       getRawAttribute(elt, 'href') &&
       getRawAttribute(elt, 'href').indexOf('#') !== 0
   }

@@ -218,4 +218,16 @@ describe('hx-boost attribute', function() {
       div.innerHTML.should.not.equal('Boosted')
     })
   }
+  it('does not boost links to the same hostname on a different port', function() {
+    var link = make('<div hx-boost="true"><a id="a1" href="' + location.protocol + '//' + location.hostname + ':' + (Number(location.port || (location.protocol === 'https:' ? 443 : 80)) + 1) + '/test">Foo</a></div>')
+    var internalData = htmx._('getInternalData')(byId('a1'))
+    should.equal(undefined, internalData.boosted)
+  })
+
+  it('boosts links to the same origin', function() {
+    var link = make('<div hx-boost="true"><a id="a1" href="' + location.origin + '/test">Foo</a></div>')
+    var internalData = htmx._('getInternalData')(byId('a1'))
+    internalData.boosted.should.equal(true)
+  })
+
 })
