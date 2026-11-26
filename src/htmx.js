@@ -808,7 +808,15 @@ var htmx = (() => {
                     if (spec.target && !evt.target?.matches?.(spec.target)) return;
                     if (filter) {
                         let evtArgs = {}; for (let k in evt) if (/^[a-z]+$/i.test(k)) evtArgs[k] = evt[k];
-                        if (!this.__executeJavaScript(elt, evtArgs, filter, true, false)) return;
+                        let passed;
+                        try {
+                            passed = this.__executeJavaScript(elt, evtArgs, filter, true, false);
+                        } catch (error) {
+                            // e.g. a filter on `key` for an event without a key (Chrome autofill fires a plain keydown Event)
+                            this.__trigger(elt, 'htmx:error', { error });
+                            return;
+                        }
+                        if (!passed) return;
                     }
                     // a new trigger replaces any pending delayed or throttled trigger from the same hx-trigger value
                     if (eventName !== 'every') {
