@@ -63,6 +63,20 @@ describe('hx-trigger attribute', function() {
         await forRequest()
     })
 
+    it('filter does not throw when the event lacks a property the filter reads', async function() {
+        mockResponse('GET', '/test', 'Called!')
+        let form = createProcessedHTML('<form hx-get="/test" hx-trigger="keydown[key==\'Enter\']">Not Called</form>')
+        let errors = []
+        form.addEventListener('htmx:error', e => errors.push(e))
+        // Chrome autofill dispatches a plain Event named keydown, so there is no `key`
+        form.dispatchEvent(new Event('keydown'))
+        fetchMock.calls.length.should.equal(0)
+        errors.length.should.equal(1)
+        form.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}))
+        fetchMock.calls.length.should.equal(1)
+        await forRequest()
+    })
+
     it('filters properly with true expression filter spec', async function() {
         mockResponse('GET', '/test', 'Called!')
         let form = createProcessedHTML('<form hx-get="/test" hx-trigger="evt[true]">Not Called</form>')
