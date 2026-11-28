@@ -2333,8 +2333,15 @@ var htmx = (() => {
                 if (existing?.tagName === elt.tagName) {
                     let clone = elt.cloneNode(false); // shallow clone node
                     for (let a of cssAttrs) existing.hasAttribute(a) ? elt.setAttribute(a, existing.getAttribute(a)) : elt.removeAttribute(a);
-                    restoreTasks.push(()=>{
-                        this.__copyAttributes(elt, clone)
+                    restoreTasks.push(() => {
+                        // Put back only the attributes borrowed from the previous element
+                        // so a CSS transition can finish. Copying every attribute here
+                        // deleted ones added after insertion (connectedCallback, etc.).
+                        // Server changes to other attributes are already on the new node.
+                        for (let a of cssAttrs) {
+                            if (clone.hasAttribute(a)) elt.setAttribute(a, clone.getAttribute(a))
+                            else elt.removeAttribute(a)
+                        }
                     })
                 }
             }

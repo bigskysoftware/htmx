@@ -250,6 +250,99 @@ describe('swap() unit tests', function() {
         replaced.getAttribute('data-value').should.equal('2');
     })
 
+    // Attributes a swapped-in element gains after insertion (custom element
+    // connectedCallback, or anything else before settle) must survive settle
+    // when that element already has an id. Server changes to class/style/width/height
+    // still apply at the end of settle, and other server attributes stay.
+    async function keepsLateAttributes(swap, text) {
+        if (!customElements.get('settle-menu')) {
+            customElements.define('settle-menu', class extends HTMLElement {
+                connectedCallback() {
+                    let button = this.querySelector('button')
+                    if (!button) return
+                    button.setAttribute('aria-haspopup', 'menu')
+                    button.setAttribute('aria-expanded', 'false')
+                    button.setAttribute('data-state', 'closed')
+                }
+            })
+        }
+        if (!customElements.get('settle-combobox')) {
+            customElements.define('settle-combobox', class extends HTMLElement {
+                connectedCallback() {
+                    let input = this.querySelector('input')
+                    if (!input) return
+                    input.setAttribute('role', 'combobox')
+                    input.setAttribute('aria-expanded', 'false')
+                    input.setAttribute('data-state', 'closed')
+                }
+            })
+        }
+
+        createProcessedHTML(`
+            <div id="page">
+                <settle-menu><button id="account-menu" type="button" class="old">Account</button></settle-menu>
+                <settle-combobox><input id="city" name="city" class="input" style="color: gray" data-value="1" value="Berln"></settle-combobox>
+            </div>
+        `)
+
+        let during = {}
+        let onBeforeSettle = () => {
+            let menu = find('#account-menu')
+            let city = find('#city')
+            during.menuClass = menu.getAttribute('class')
+            during.menuAria = menu.getAttribute('aria-haspopup')
+            during.cityClass = city.getAttribute('class')
+            during.cityStyle = city.getAttribute('style')
+            during.cityRole = city.getAttribute('role')
+            city.setAttribute('data-late', 'yes')
+        }
+        document.addEventListener('htmx:before:settle', onBeforeSettle)
+        try {
+            await htmx.swap({target: '#page', swap, text})
+        } finally {
+            document.removeEventListener('htmx:before:settle', onBeforeSettle)
+        }
+
+        during.menuClass.should.equal('old')
+        during.cityClass.should.equal('input')
+        during.cityStyle.should.contain('gray')
+        during.menuAria.should.equal('menu')
+        during.cityRole.should.equal('combobox')
+
+        let menu = find('#account-menu')
+        menu.getAttribute('class').should.equal('new')
+        menu.getAttribute('aria-haspopup').should.equal('menu')
+        menu.getAttribute('aria-expanded').should.equal('false')
+        menu.getAttribute('data-state').should.equal('closed')
+
+        let city = find('#city')
+        city.getAttribute('class').should.equal('input error')
+        assert.equal(city.getAttribute('style'), null)
+        city.getAttribute('role').should.equal('combobox')
+        city.getAttribute('aria-expanded').should.equal('false')
+        city.getAttribute('data-state').should.equal('closed')
+        city.getAttribute('data-late').should.equal('yes')
+        city.getAttribute('data-value').should.equal('2')
+        city.getAttribute('aria-invalid').should.equal('true')
+        city.getAttribute('value').should.equal('Berln')
+    }
+
+    it('keeps attributes added between an innerHTML swap and settle', async function () {
+        await keepsLateAttributes('innerHTML', `
+            <settle-menu><button id="account-menu" type="button" class="new">Account</button></settle-menu>
+            <settle-combobox><input id="city" name="city" class="input error" value="Berln" data-value="2" aria-invalid="true"></settle-combobox>
+        `)
+    })
+
+    it('keeps attributes added between an outerHTML swap and settle', async function () {
+        await keepsLateAttributes('outerHTML', `
+            <div id="page">
+                <settle-menu><button id="account-menu" type="button" class="new">Account</button></settle-menu>
+                <settle-combobox><input id="city" name="city" class="input error" value="Berln" data-value="2" aria-invalid="true"></settle-combobox>
+            </div>
+        `)
+    })
+
     it('CSS transitions do not reset radio checked state', async function () {
         createProcessedHTML(`
             <div id="target">
